@@ -1,0 +1,267 @@
+You are writing a “System Operating Manual” for coding assistants working inside a repository derived from the agent-context-base architecture.
+
+This manual will be used by frontier coding assistants such as Codex, Claude, and Gemini.
+
+The purpose of the manual is to teach a new assistant how to operate correctly inside the architecture in a short amount of time.
+
+The manual should function as an operational bootloader that stabilizes assistant behavior before implementation begins.
+
+The manual must be:
+
+extremely clear  
+highly practical  
+accurate to the architecture  
+focused on operational behavior  
+not overly verbose  
+
+It must prevent assistants from:
+
+loading too much context
+inventing new architecture
+mixing incompatible examples
+ignoring doctrine
+overengineering solutions
+introducing unnecessary frameworks
+
+The system architecture includes the following components:
+
+Context Layers
+- doctrine
+- workflows
+- stacks
+- archetypes
+- routers
+- manifests
+- examples
+- templates
+
+Operational Tools
+- manifest validator
+- context lint scripts
+- context bundle preview tool
+- prompt analyzer
+- pattern diff analyzer
+
+Routing Intelligence
+- task router
+- stack router
+- archetype router
+- alias catalog
+- repo signal detection
+
+Knowledge Artifacts
+- canonical examples
+- canonical prompt sequences
+- fixture datasets
+- observability examples
+
+Deployment Philosophy
+- Dokku-oriented deployment
+- simple deployable services
+- smoke-test verification
+
+The assistant should treat this architecture as a deterministic system for assembling context.
+
+Your manual must include the following sections.
+
+SECTION 1 — What this system is
+
+Explain what the agent-context architecture is and what problem it solves.
+
+Explain why the repository contains layered context instead of a flat documentation structure.
+
+Explain that the goal is to load only the smallest relevant context required to complete a task.
+
+SECTION 2 — Core mental model
+
+Provide a short conceptual model that describes the entire system.
+
+For example:
+
+User request → routers infer intent → manifests assemble context → doctrine constrains behavior → examples shape implementation.
+
+Expand this into a concise explanation.
+
+SECTION 3 — Context layers explained
+
+Explain the role of each context layer:
+
+Doctrine
+Workflows
+Stacks
+Archetypes
+Routers
+Manifests
+Examples
+Templates
+
+Explain what each layer provides and how assistants should use it.
+
+Clarify which layers are stable and which are task-specific.
+
+SECTION 4 — Assistant operating procedure
+
+Define the correct step-by-step procedure assistants should follow when responding to a task.
+
+The procedure should include stages such as:
+
+1. interpret user intent
+2. infer archetype
+3. infer stack
+4. consult router system
+5. load smallest relevant context bundle
+6. read doctrine constraints
+7. consult workflows
+8. consult canonical examples
+9. implement solution
+10. verify against doctrine and workflows
+11. suggest smoke tests or validation if appropriate
+
+Explain each step clearly.
+
+SECTION 5 — Context loading rules
+
+Explain the correct rules for loading context.
+
+Examples:
+
+load doctrine before implementation  
+do not load entire directories unnecessarily  
+prioritize canonical examples  
+prefer manifest-defined bundles  
+avoid unrelated stacks or archetypes  
+
+Explain how the assistant should decide when more context is needed.
+
+SECTION 6 — Using manifests
+
+Explain how manifests define context bundles.
+
+Describe the meaning of:
+
+required context  
+optional context  
+preferred examples  
+triggers  
+repo signals  
+
+Explain how manifests guide implementation behavior.
+
+SECTION 7 — Using canonical examples
+
+Explain the purpose of canonical examples.
+
+Explain:
+
+why examples should guide structure  
+why assistants should prefer preferred examples  
+why assistants should avoid blending incompatible examples  
+
+Explain how examples influence code generation.
+
+SECTION 8 — Avoiding failure modes
+
+Describe common assistant mistakes and how to avoid them.
+
+Examples:
+
+loading excessive context  
+inventing architecture  
+introducing frameworks outside stack packs  
+ignoring doctrine  
+overengineering simple tasks  
+
+Explain how the architecture prevents these mistakes.
+
+SECTION 9 — Validation and integrity tools
+
+Explain the role of operational scripts:
+
+manifest validation  
+context linting  
+context bundle preview  
+pattern diff analysis  
+prompt analyzers  
+
+Explain when assistants should use or recommend these tools.
+
+SECTION 10 — Deployment awareness
+
+Explain the system’s deployment philosophy.
+
+Clarify that many projects will target Dokku-style deployment.
+
+Explain how assistants should keep implementations compatible with simple deployable services.
+
+Explain when deployment considerations should influence design.
+
+SECTION 11 — Working with prompt-first repositories
+
+Explain special behavior when working in prompt-first repos.
+
+Include rules such as:
+
+prompt files use strictly monotonic numbering  
+references should use explicit filenames  
+prompt sequences should remain deterministic  
+
+Explain how assistants should respect these constraints.
+
+SECTION 12 — When to stop
+
+Define clear stopping rules.
+
+Explain when an assistant should stop expanding scope and return results.
+
+Examples:
+
+task completed  
+implementation matches canonical pattern  
+tests or smoke tests added where appropriate  
+no additional context required  
+
+Explain that assistants should avoid unnecessary expansion.
+
+SECTION 13 — Quick reference checklist
+
+Provide a short operational checklist assistants can follow during tasks.
+
+Example structure:
+
+Interpret task  
+Infer stack and archetype  
+Load minimal context  
+Consult doctrine  
+Consult workflow  
+Consult canonical example  
+Implement solution  
+Verify constraints  
+Stop when complete
+
+SECTION 14 — Final operational summary
+
+Provide a concise final summary describing how assistants should think when working inside this architecture.
+
+The summary should reinforce the core philosophy:
+
+smallest relevant context  
+deterministic routing  
+doctrine-driven behavior  
+example-guided implementation  
+
+QUALITY REQUIREMENTS
+
+The manual must be:
+
+precise  
+insightful  
+concise but complete  
+consistent with the architecture  
+
+Avoid generic advice.
+
+Write as if this manual will be read by a highly capable assistant that needs operational clarity rather than philosophical discussion.
+
+Ensure the manual would realistically improve assistant performance inside the repository.
+
+The final output should read like a short but authoritative operating manual for working within the agent-context-base system.

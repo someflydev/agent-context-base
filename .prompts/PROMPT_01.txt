@@ -1,0 +1,437 @@
+You are designing and implementing the best possible foundational base repository for future software projects that will be used with frontier coding assistants such as Codex, Claude, and Gemini.
+
+This repository is not a finished application. It is a reusable agent-oriented base repo that future projects will start from. Its purpose is to provide an excellent context architecture, routing system, doctrine layer, workflow layer, stack packs, archetype packs, canonical example strategy, manifest/profile loading system, and bootstrap-ready structure so that future repos can be created cleanly and used effectively with coding assistants.
+
+The output should be implementation-oriented and as concrete as possible. Do not produce vague advice. Produce directory structures, file contents, contracts, naming conventions, manifest schemas, routing logic, examples, and strong documentation drafts.
+
+The base repo should reflect how I actually build and think. It should strongly support these real patterns and preferences:
+
+- prompt-first repo workflows
+- reusable AGENT.md / CLAUDE.md context systems
+- doctrine separated from workflows and examples
+- deterministic task routing
+- canonical examples
+- smoke-test-heavy development
+- bootstrap-friendly architecture
+- strong repo-level guidance for coding assistants
+- polyglot extensibility
+- Docker-backed local development where appropriate
+- Dokku-oriented deployment thinking instead of Traefik-first deployment thinking
+- modern Python stack preferences: FastAPI, uv, ruff, orjson, polars
+- modern Rust stack preferences: Axum and modern Rust tooling
+- Go web stack preference: Echo
+- Elixir web stack preference: Phoenix
+- support for Redis/KeyDB, MongoDB, DuckDB, Trino, NATS Jetstream, Meilisearch, TimescaleDB, Elasticsearch, Qdrant, local RAG, CLI tools, data pipelines, and prompt meta-runner style repos
+- support for future VPS deployment patterns, especially Dokku-oriented app packaging and conventions
+- strong anti-sprawl design so future projects load only the smallest relevant context
+
+The base repo should be designed to help pioneer uniquely effective usage patterns for all three frontier assistants:
+- Codex
+- Claude
+- Gemini
+
+The system must reduce the burden on the human operator. The human should not need to memorize skill names, workflow names, or exact manifest names in order to use the repo effectively. The repo itself should help the assistant infer what to load based on normal task descriptions and repository signals.
+
+Treat this as a serious systems-design and implementation task.
+
+Your work must include the following sections in order.
+
+SECTION 1 — Purpose and philosophy of the base repo
+Define exactly what this base repo is and is not.
+Explain:
+- why this should exist as a reusable foundation repo
+- why it should not become a giant forever-monorepo for all actual projects
+- why it should help future repos start clean
+- why assistant-oriented context architecture matters
+- why doctrine, workflows, stacks, archetypes, examples, manifests, and templates should be separated
+- why task inference matters more than forcing the human to remember internal names
+- why this system should be optimized for minimal relevant context loading
+
+SECTION 2 — Recommended final repository architecture
+Design the final directory tree for the base repo.
+This should be the best long-term architecture for my actual style of work.
+It should include, at minimum, thoughtful versions of:
+- AGENT.md
+- CLAUDE.md
+- README.md
+- docs/
+- context/doctrine/
+- context/skills/
+- context/workflows/
+- context/stacks/
+- context/archetypes/
+- context/router/
+- manifests/
+- examples/
+- templates/
+- scripts/
+- smoke-tests/ or tests/
+- optional bootstrap or validation helpers
+
+Use deterministic, clear names.
+Keep the tree realistic and maintainable.
+Make sure the structure supports future copy/bootstrap into new repos.
+
+SECTION 3 — Directory semantics contract
+For every major directory and important top-level file in the architecture, define:
+- what belongs there
+- what does not belong there
+- naming conventions
+- typical file size / ideal scope
+- whether it is durable doctrine, task-specific, stack-specific, archetype-specific, or example/reference material
+- when assistants should load it
+- when assistants should avoid loading it
+Be very explicit about the difference between:
+- doctrine
+- skills
+- workflows
+- stacks
+- archetypes
+- router files
+- manifests
+- canonical examples
+- templates
+
+SECTION 4 — Top-level routing strategy
+Design the routing strategy for the base repo.
+The goal is that an assistant can infer the correct context bundle with minimal human effort.
+Design:
+- a plain-English task router strategy
+- a stack inference strategy
+- an archetype inference strategy
+- a canonical examples priority strategy
+- stop conditions
+- anti-hallucination guardrails
+- escalation logic when more context is actually needed
+- a “load smallest relevant bundle first” rule system
+
+Create the best possible routing logic for:
+- Codex
+- Claude
+- Gemini
+while still preserving one shared base structure.
+
+SECTION 5 — AGENT.md and CLAUDE.md design
+Design the ideal AGENT.md and CLAUDE.md for this base repo.
+Explain:
+- what should be shared between them
+- what should differ, if anything
+- how to keep them as routers instead of giant dumping grounds
+- how to encode required first reads
+- how to encode stack/archetype/task routing
+- how to reference canonical examples
+- how to describe stop conditions
+- how to describe task inference and minimal-loading behavior
+Then draft complete, high-quality versions of:
+1. AGENT.md
+2. CLAUDE.md
+
+These drafts should be strong enough to use as real starter files in the base repo.
+
+SECTION 6 — Doctrine pack design
+Design the doctrine layer of the repo.
+Create a doctrine pack structure that reflects my real preferences and usage patterns.
+At minimum include doctrine docs for:
+- core principles
+- naming and clarity
+- testing philosophy
+- smoke test philosophy
+- commit hygiene
+- documentation philosophy
+- prompt-first conventions
+- canonical example usage
+- context loading and anti-sprawl rules
+- deployment philosophy with Dokku-oriented thinking
+- when to favor simple single-service deployability
+- when to avoid introducing unnecessary infrastructure complexity
+For each doctrine doc:
+- define its purpose
+- key contents
+- what the assistant should learn from it
+- common mistakes it should prevent
+
+SECTION 7 — Workflow pack design
+Design the workflow layer.
+These are task-oriented documents the assistant loads based on what it is trying to do.
+Create a thoughtful workflow pack set for at least:
+- add feature
+- fix bug
+- refactor
+- add smoke tests
+- bootstrap repo
+- generate prompt sequence
+- post-flight refinement
+- add deployment support
+- add seed data
+- add API endpoint
+- extend CLI
+- add local RAG indexing
+- add storage integration
+For each workflow doc:
+- define its purpose
+- its expected sequence
+- preconditions
+- outputs
+- common pitfalls
+- related doctrine docs
+- related canonical examples
+
+SECTION 8 — Stack pack design
+Design stack-specific packs for the technologies I actually care about.
+At minimum include:
+- Python FastAPI uv ruff orjson polars
+- Rust Axum modern tooling
+- Go Echo
+- Elixir Phoenix
+- Redis or KeyDB plus MongoDB
+- DuckDB Trino Polars
+- NATS Jetstream
+- Meilisearch
+- TimescaleDB (PostgreSQL extension for real-time analytics on time-series)
+- Elasticsearch
+- Qdrant vector database
+- Dokku deployment conventions
+- prompt-first repo support
+For each stack pack:
+- explain the purpose
+- expected project structure
+- common file paths
+- typical change surfaces
+- common assistant mistakes
+- testing expectations
+- smoke test expectations
+- deployment implications if relevant
+- canonical examples that should exist
+
+SECTION 9 — Archetype pack design
+Design archetype packs for the common project shapes I actually build.
+At minimum include:
+- prompt-first repo
+- backend API service
+- CLI tool
+- data pipeline
+- local RAG system
+- multi-storage experiment
+- polyglot lab
+- Dokku-deployable web app/service
+For each archetype:
+- define the purpose
+- likely stacks
+- required doctrine
+- required workflows
+- recommended examples
+- recommended scripts
+- recommended smoke tests
+- key warnings and anti-patterns
+
+SECTION 10 — Task router and friendly alias system
+This section is critical.
+The human should not need to memorize internal names.
+Design a task router system that can interpret natural requests and map them to internal context bundles.
+Design:
+- a context/router/task-router.md approach
+- friendly aliases for skills/workflows/stacks
+- routing heuristics based on verbs, nouns, and repo signals
+- optional machine-readable router metadata
+- escalation strategy if inference is ambiguous
+Create:
+1. a high-quality draft of task-router.md
+2. a stack-router.md
+3. an archetype-router.md
+4. an alias strategy or alias catalog
+Include many examples of normal English requests and how they map to load bundles.
+
+SECTION 11 — Manifest/profile system
+Design the manifest/profile system that future repos can inherit.
+The manifests should define load bundles and task routing hints.
+Use YAML unless you have a very strong reason to choose another format.
+Define:
+- manifest schema
+- required vs optional context
+- load_order
+- trigger words
+- archetype metadata
+- stack metadata
+- compatible workflows
+- preferred examples
+- anti-pattern warnings
+Then create at least 12 example manifests relevant to my workflows, such as:
+- backend-api-fastapi-polars
+- backend-api-rust-axum
+- backend-api-go-echo
+- webapp-elixir-phoenix
+- prompt-first-meta-repo
+- local-rag-base
+- multi-storage-zoo
+- cli-python
+- data-pipeline-polars
+- dokku-deployable-fastapi
+- dokku-deployable-go-echo
+- dokku-deployable-phoenix
+
+SECTION 12 — Canonical examples strategy
+Design the canonical examples system.
+Explain:
+- what makes an example canonical
+- how many canonical examples to keep per area
+- how to mark preferred examples
+- how to retire outdated examples
+- how to avoid blended/conflicting examples
+Then design the examples/ directory structure.
+Include example categories relevant to my real work, such as:
+- canonical API endpoint examples
+- canonical smoke tests
+- canonical Docker examples
+- canonical Dokku deployment examples
+- canonical CLI command examples
+- canonical prompt-first examples
+- canonical seed data examples
+- canonical storage integration examples
+- canonical local RAG examples
+
+SECTION 13 — Templates strategy
+Design the templates layer for future repo creation.
+This should support future cloning/bootstrap into real repos.
+Create a templates strategy for:
+- AGENT.md starter
+- CLAUDE.md starter
+- README starter
+- manifest starter
+- prompt-first repo starter
+- FastAPI repo starter
+- Rust Axum starter
+- Go Echo starter
+- Elixir Phoenix starter
+- Dokku deployment starter
+- smoke test starter
+- seed data starter
+Explain what belongs in templates vs examples.
+Explain how templates should stay minimal and composable.
+
+SECTION 14 — Script and automation strategy
+Design the scripts/ layer of the base repo.
+These are helper tools for maintaining or bootstrapping the system.
+Propose and describe scripts such as:
+- validate manifests
+- validate routing references
+- detect stale examples
+- build starter repo from profiles
+- preview context bundle
+- generate repo-specific AGENT.md or CLAUDE.md
+- lint alias collisions
+- check docs for broken internal references
+For each script:
+- define what it does
+- what inputs it takes
+- what outputs it produces
+- what language is best suited for the script
+- whether it belongs in the base repo now or in a later repo-factory tool
+
+SECTION 15 — Smoke-test philosophy and starter strategy
+Design the smoke-test starter layer for the base repo.
+This base repo should strongly encourage future repos to include smoke tests, but should not assume all future repos are identical.
+Explain:
+- what smoke tests mean across different archetypes
+- what minimal smoke tests should exist for APIs, CLIs, pipelines, RAG systems, and deployable services
+- how smoke tests differ from unit/integration tests
+- how smoke test starter assets should be organized in the base repo
+- how assistants should know when a change requires new or updated smoke tests
+
+SECTION 16 — Dokku-oriented deployment doctrine
+Design a strong Dokku-oriented base philosophy.
+Do not assume Traefik as the primary deployment pattern.
+Explain how the base repo should prepare future projects for Dokku-style deployment where appropriate.
+Include:
+- why Dokku is a good fit for many single-service or small multi-service apps
+- what conventions future repos should adopt if Dokku deployment is likely
+- what example files or templates should exist
+- how to think about Procfiles, app config, environment management, persistent storage, and build/deploy simplicity
+- when Dokku is a better fit than more elaborate reverse-proxy/container-orchestration setups
+- when it is not
+This should be practical and balanced, not fanboyish.
+
+SECTION 17 — Example future project scenarios
+Create at least 12 concrete future-project scenarios based on the kinds of things I actually build.
+For each scenario:
+- name the project
+- describe the goal
+- define the archetype
+- define the stack
+- specify which doctrine/workflow/stack/archetype docs should be included
+- specify which manifests should be chosen
+- specify which examples are most important
+- specify any Dokku relevance
+Examples should include a mix of:
+- FastAPI/polars services
+- Rust/Axum services
+- Go/Echo services
+- Elixir/Phoenix services
+- prompt-first repos
+- local RAG systems
+- multi-storage experiments
+- CLI tools
+- data pipelines
+
+SECTION 18 — Cross-model guidance
+Explain how this one base repo can serve Codex, Claude, and Gemini well.
+Discuss:
+- routing style
+- preferred doc sizes
+- example usage
+- failure patterns
+- when to give more rationale
+- when to keep routing terse
+- how to reduce model-specific drift while keeping one shared system
+
+SECTION 19 — Quality rubric
+Create a strong rubric for evaluating whether the base repo is excellent.
+Score areas such as:
+- clarity
+- routing quality
+- doctrine quality
+- workflow usefulness
+- stack specificity
+- archetype usefulness
+- canonical example quality
+- anti-sprawl protection
+- bootstrap readiness
+- frontier-model friendliness
+- maintainability
+Make the rubric practical enough to use for iterative improvement.
+
+SECTION 20 — Deliverables for the first implementation pass
+End with a concrete, prioritized implementation plan for building the base repo.
+The plan should include:
+- which files to create first
+- which docs are mandatory for v1
+- which manifests are mandatory for v1
+- which examples are mandatory for v1
+- which templates are mandatory for v1
+- which automation scripts can wait until phase 2
+- what a strong but realistic v1 looks like
+Also produce a “recommended first commit sequence” for building the base repo in sensible grouped steps.
+
+Important constraints:
+- Be concrete and implementation-oriented.
+- Reflect my real stacks and habits.
+- Favor Dokku over Traefik in deployment-oriented guidance.
+- Do not assume Starlette as a primary stack example.
+- Prefer FastAPI, uv, ruff, orjson, polars for Python examples.
+- Prefer Go Echo over Chi for Go examples in this base repo.
+- Include Elixir Phoenix meaningfully.
+- Keep the base repo clean and reusable.
+- Make the system task-inferable so the user does not need to memorize skill names.
+- Use clear deterministic filenames.
+- Keep docs composable and scoped.
+- Design for future cloning or bootstrap generation into separate repos.
+- Where useful, include sample file contents, directory trees, YAML manifests, and draft docs.
+
+At the very end, output these concrete artifacts:
+1. the final recommended base repo tree
+2. a draft AGENT.md
+3. a draft CLAUDE.md
+4. a draft task-router.md
+5. 12 example manifests
+6. a prioritized v1 implementation plan
+7. a recommended first commit sequence
+

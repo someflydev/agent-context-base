@@ -1,0 +1,283 @@
+You are designing and implementing an agent-oriented context architecture for a software repository or family of repositories so that coding assistants can load only the minimal relevant instructions, examples, and doctrine needed for a given task.
+
+Your goal is to create an excellent, scalable, human-maintainable system that works well across Codex, Claude, and Gemini, especially for the kinds of systems I actually build: prompt-first repos, backend APIs, CLI tools, data pipelines, local RAG systems, multi-storage experiments, polyglot labs, Docker-backed services, HTMX/Plotly interactive systems, and reusable smoke-test-heavy projects.
+
+The output should not be a vague essay. It should be a concrete implementation-oriented plan and, where appropriate, actual files or file contents that could be committed into a repo.
+
+Core objective:
+Design a repo structure, context-loading strategy, file conventions, and routing documents (AGENT.md / CLAUDE.md and supporting docs) so that frontier coding assistants:
+1. load durable global doctrine separately from task-specific instructions
+2. can identify the repo archetype and active stack quickly
+3. can map a user request to the right subset of skills, workflows, and examples
+4. can prefer canonical examples over inventing new patterns
+5. can avoid unnecessary context bloat
+6. can operate consistently across Codex, Claude, and Gemini with only lightweight adaptation
+7. can support future expansion to new stacks and archetypes without breaking the existing mental model
+
+Assume the repo may be one of several archetypes:
+- prompt-first repo
+- backend API service
+- CLI tool
+- data pipeline
+- local RAG system
+- event-driven system
+- multi-storage experiment
+- polyglot lab
+- interactive HTMX/Plotly data application
+- Docker/VPS deployable service
+- Docker-backed development labs
+
+Assume some likely stacks and paths that fit my real workflows:
+- Python + FastAPI + uv + ruff + orjson + Polars + HTMX + Plotly
+- Go + Echo services (HTMX/tailwind/plotly)
+- Rust + Axum services (HTMX/tailwind/plotly)
+- Elixir + Phoenix services (HTMX/tailwind/plotly)
+- Docker Compose + Dokku
+- Redis / KeyDB + MongoDB
+- Trino / DuckDB / Polars
+- NATS Jetstream
+- Meilisearch
+- TimescaleDB (PostgreSQL extension for real-time analytics on time-series)
+- Elasticsearch
+- Qdrant vector database
+- local model / local RAG / indexing workflows
+- prompt-first repo conventions with ordered prompt files and operator guides
+- reusable smoke test systems and post-flight/stage-2 refinement workflows
+
+Your work must include the following sections in order.
+
+SECTION 1 — Design principles
+Define the principles behind an agent-oriented context architecture.
+Explain clearly:
+- why giant CLAUDE.md / AGENT.md files are insufficient
+- why context should be layered
+- how doctrine, skills, workflows, stacks, archetypes, templates, and examples differ
+- why canonical examples matter so much for frontier models
+- how to reduce context bloat without under-specifying the task
+
+SECTION 2 — Folder structure options
+Design at least 4 viable folder structure strategies for this problem.
+For each strategy:
+- give the exact directory tree
+- explain when it is best
+- explain tradeoffs
+- explain failure modes
+- explain how well it fits Codex vs Claude vs Gemini
+One of the options must be a hybrid strategy that you recommend as the best long-term fit for my workflows.
+
+SECTION 3 — Recommended final architecture
+Choose the best architecture for my actual style of work.
+It should strongly reflect:
+- prompt-first repo thinking
+- software archetype reuse
+- polyglot extensibility
+- doctrine + workflow + stack + example separation
+- deterministic task routing
+- future manifest-based loading or profile-based loading
+Provide the full directory tree for the recommended architecture.
+
+SECTION 4 — File semantics contract
+For each major directory in the recommended architecture, define:
+- what belongs there
+- what does not belong there
+- naming conventions
+- expected file size / scope
+- when the agent should load it
+- whether it is global, archetype-specific, stack-specific, or task-specific
+
+Directories to define at minimum:
+- context/doctrine
+- context/skills
+- context/workflows
+- context/stacks
+- context/archetypes
+- manifests
+- examples
+- templates
+- docs
+- scripts
+- tests or smoke-tests
+
+SECTION 5 — Agent routing rules
+Design a robust AGENT.md and CLAUDE.md strategy.
+Explain:
+- what should be shared between them
+- what should differ if anything
+- what should be top-level vs delegated to linked files
+- how to encode “load order”
+- how to encode “do not load unless needed”
+- how to prioritize canonical examples
+- how to define stop conditions and anti-hallucination guardrails
+
+Then draft a high-quality example AGENT.md and a high-quality example CLAUDE.md for the recommended architecture.
+
+SECTION 6 — Task-to-context mapping
+Create a mapping table for at least 20 task types relevant to my workflows.
+Examples include:
+- add API endpoint
+- extend CLI command
+- add HTMX fragment workflow
+- add Plotly chart
+- add seed data generator
+- add smoke tests
+- bootstrap new prompt-first repo
+- generate new prompt sequence
+- refactor Docker Compose stack
+- add local RAG indexing step
+- add Redis-backed workflow
+- add MongoDB aggregation workflow
+- add Trino catalog experiment
+- add NATS Jetstream workflow
+- add Meilisearch workflow
+- add TimescaleDB workflow
+- add Qdrant workflow
+- add Rust Axum service route
+- add Go Echo middleware
+- add Elixir Phoenix middleware
+- stage-2 post-flight refinement
+For each task type, specify:
+- doctrine files to load
+- workflow files to load
+- stack files to load
+- archetype files to load
+- example folders/files to consult
+- files that are probably irrelevant and should not be loaded initially
+
+SECTION 7 — Archetype packs
+Design a reusable “archetype pack” pattern for at least these archetypes:
+- prompt-first repo
+- backend API
+- CLI tool
+- data pipeline
+- local RAG system
+- multi-storage experiment
+- polyglot lab
+For each archetype, provide:
+- purpose
+- required doctrine
+- required workflows
+- common stacks
+- canonical examples needed
+- likely scripts or smoke tests
+- special warnings / anti-patterns
+
+SECTION 8 — Stack packs
+Design stack-specific packs for at least:
+- Python FastAPI Polars HTM
+- Go Echo
+- Rust Axum
+- Docker Compose Dokku
+- Redis MongoDB
+- Trino DuckDB Polars
+- NATS Jetstream Meilisearch
+- TimescaleDB ElasticSearch
+Each stack pack should include:
+- overview
+- coding conventions
+- common file paths
+- typical change surfaces
+- testing expectations
+- canonical example wish list
+- risks and model failure modes
+
+SECTION 9 — Canonical examples strategy
+Design the exact strategy for canonical examples.
+Explain:
+- how to choose them
+- how many to keep
+- how to mark one as preferred
+- how to retire outdated examples
+- how to avoid the assistant blending conflicting examples
+Then propose a canonical examples directory layout for the recommended architecture.
+
+SECTION 10 — Manifest/profile loading system
+Design a lightweight manifest or profile system that maps repo/task types to files to load.
+You may use YAML, JSON, TOML, or markdown frontmatter.
+Include:
+- schema design
+- examples for at least 8 manifests
+- load_order semantics
+- optional vs required context
+- trigger keywords
+- stack/archetype compatibility metadata
+- notes on future automation via scripts or tools
+
+SECTION 11 — Example implementations for my real workflows
+Provide at least 10 concrete examples drawn from the kinds of things I actually build.
+Examples should include combinations like:
+- prompt-first repo for a polyglot backend lab
+- Python FastAPI Polars service with smoke tests and seed data
+- FastAPI HTMX Plotly dashboard with Docker-backed local services
+- Go Echo backend service with canonical middleware and smoke tests
+- Rust Axum API with route patterns and integration tests
+- local RAG repo with indexing, metadata extraction, and minimal web UI
+- multi-storage zoo repo with Trino (other dbs cataloged in Trino) and Docker compose
+- prompt meta-runner repo with post-flight and stage-2 prompts
+For each example:
+- specify which folders/files should be created
+- specify which archetype and stack manifests should exist
+- specify which docs are mandatory first reads
+- specify which canonical examples are most important
+
+SECTION 12 — Cross-model guidance
+Explain how to slightly adapt the system for:
+- Codex
+- Claude
+- Gemini
+without breaking the shared structure.
+Discuss:
+- verbosity tolerance
+- preference for examples vs doctrine
+- routing style
+- failure patterns
+- how to keep one shared repo system that serves all three well
+
+SECTION 13 — Anti-patterns and quality rubric
+List the most likely mistakes in building this system.
+Then define a quality rubric to evaluate whether a repo’s agent context architecture is excellent.
+The rubric should score:
+- clarity
+- modularity
+- minimal-load design
+- example quality
+- routing quality
+- archetype reuse
+- stack specificity
+- anti-drift protection
+- frontier-model friendliness
+- long-term maintainability
+
+SECTION 14 — Deliverables
+Produce a practical deliverables list for an initial implementation pass and a phase-2 expansion pass.
+Initial implementation should be realistic and high leverage.
+Phase-2 should include more ambitious automation and refinement.
+
+SECTION 15 — Optional automation ideas
+Propose scripts or tools that could later automate parts of this system, such as:
+- manifest validation
+- stale example detection
+- AGENT.md / CLAUDE.md consistency checks
+- task-to-context recommendation
+- context bundle preview
+- archetype bootstrap generation
+- canonical example linting
+
+Important constraints:
+- Be concrete, not generic.
+- Prefer structures that reduce ambiguity for the model.
+- Prefer deterministic loading paths over free-form scanning.
+- Favor small, composable files over giant multipurpose documents.
+- Make the system easy for a human maintainer to evolve over time.
+- Do not optimize only for one model.
+- Keep the architecture aligned with how I actually work: prompt-first repos, canonical examples, smoke tests, Docker-backed development, polyglot experimentation, reusable workflows, and strong doctrine.
+- Where useful, include sample file contents, sample manifests, example directory trees, mapping tables, and implementation notes.
+- When proposing file names, use clear deterministic names.
+- When giving examples of prompt-first repo support, respect my preference for strictly monotonic prompt numbering and explicit file-name references.
+
+End by producing:
+1. the recommended final architecture
+2. the sample AGENT.md
+3. the sample CLAUDE.md
+4. 8 example manifests
+5. a 20-row task-to-context mapping table
+6. a prioritized implementation plan

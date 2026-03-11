@@ -1,0 +1,95 @@
+You are performing the third-pass enhancement for the agent-context-base repository.
+
+The repository already contains:
+
+- routing system
+- doctrine docs
+- workflows
+- stack packs
+- archetype packs
+- manifests
+- canonical example directories
+- templates
+- helper scripts
+- a new_repo.py bootstrap tool
+
+Your task is to implement reliability and operational improvements without turning the repo into a full repo-factory system.
+
+The goal of this pass is to make the system:
+
+- more reliable
+- easier to reason about
+- easier to maintain
+- safer for long-lived usage
+- more predictable for Codex, Claude, and Gemini
+
+Do not redesign the architecture unless absolutely necessary.
+
+Focus on improvements in these areas:
+
+1. Context health and integrity checks
+2. Context bundle preview improvements
+3. Canonical example metadata and ranking
+4. Assistant memory anchors
+5. Stop-condition doctrine
+6. Pattern diff tooling
+7. Context weighting metadata
+8. Assistant failure modes documentation
+9. Context evolution changelog
+10. Session-start guidance
+11. Prompt-first repo analyzer
+12. Deployment readiness checklists
+13. Repo signal detection hints
+14. Minimal fixture datasets
+15. Observability pattern examples
+16. System self-explanation docs
+
+For each improvement:
+
+- design any new files
+- update existing files if needed
+- implement scripts if required
+- keep tools readable and practical
+- avoid unnecessary complexity
+
+All work must be organized into commit-ready batches.
+
+For each batch:
+1. batch title
+2. purpose
+3. files added or updated
+4. full file contents
+5. suggested commit message beginning with `[BASE_V3_XX]`
+
+Scripts should:
+
+- use Python
+- prefer standard library
+- include docstrings
+- include simple CLI help
+- avoid heavy dependencies
+
+Documentation should:
+
+- be concise
+- be assistant-friendly
+- cross-reference relevant files
+
+Canonical examples should remain minimal and focused.
+
+Ensure:
+
+- all references are valid
+- metadata files are consistent
+- router logic remains coherent
+- manifests still work
+- bootstrap scripts remain compatible
+- prompt-first numbering rules remain intact
+- FastAPI, Rust/Axum, Go/Echo, Phoenix remain represented
+- Dokku deployment philosophy remains coherent
+
+At the end provide:
+
+1. a concise summary of the new capabilities added in this pass
+2. a list of suggested commit titles
+3. optional ideas for future improvements that do not belong in this pass

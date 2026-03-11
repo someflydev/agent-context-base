@@ -1,0 +1,309 @@
+You are analyzing and visualizing the architecture of an advanced “agent-context-base” repository designed to support frontier coding assistants such as Codex, Claude, and Gemini.
+
+The repository is not a software product itself. It is a reusable context architecture used as a foundation for future software projects.
+
+It contains structured layers that help assistants load the smallest relevant context for any task and avoid hallucinating patterns or inventing architectures.
+
+Your task is to produce a deeply insightful visual mental model of how the system works.
+
+The goal is to make the architecture extremely understandable to both humans and assistants.
+
+The diagrams must be extremely accurate and must reflect the real structure of the system.
+
+This system includes the following major elements:
+
+Context Layers
+- doctrine
+- workflows
+- stacks
+- archetypes
+- routers
+- manifests
+- examples
+- templates
+
+Operational Components
+- scripts for validation
+- scripts for previewing context bundles
+- scripts for bootstrapping repos
+- context linting tools
+- prompt analyzers
+
+Routing Intelligence
+- task router
+- stack router
+- archetype router
+- alias catalog
+- repo signal detection
+
+Knowledge Artifacts
+- canonical examples
+- canonical prompt sequences
+- fixture data
+- observability examples
+
+Metadata
+- manifest schemas
+- example metadata
+- alias metadata
+- context weighting metadata
+
+Assistant Interaction Flow
+- user task description
+- task inference
+- stack detection
+- archetype detection
+- context bundle assembly
+- canonical example selection
+- implementation reasoning
+- validation and refinement
+
+Deployment Philosophy
+- Dokku-oriented deployment patterns
+- simple deployable services
+- smoke-test verification before deployment
+
+The repository’s purpose is to ensure assistants do not scan an entire repo blindly but instead follow a deterministic reasoning path.
+
+The diagrams you produce must explain this path.
+
+Your output must include the following sections.
+
+SECTION 1 — System overview diagram
+
+Create a top-level diagram showing the entire architecture of the agent-context-base repository.
+
+The diagram should show:
+
+User
+Assistant
+Context System
+Project Repo
+
+Inside the context system show:
+
+Doctrine layer
+Workflow layer
+Stack layer
+Archetype layer
+Router layer
+Manifest layer
+Examples layer
+Templates layer
+Scripts layer
+
+Use a diagram format such as Mermaid or ASCII architecture diagrams.
+
+The diagram must clearly show directional relationships.
+
+Example relationships:
+
+User request → router system  
+Router → manifests  
+Manifests → context layers  
+Context layers → canonical examples  
+Examples → assistant reasoning  
+
+Explain the diagram in detail.
+
+SECTION 2 — Context layer stack diagram
+
+Create a layered diagram showing how context layers are structured.
+
+Top layers should represent:
+
+Human task intent
+
+Then:
+
+Router layer
+
+Then:
+
+Manifest layer
+
+Then:
+
+Context layers:
+- doctrine
+- workflows
+- stacks
+- archetypes
+
+Then:
+
+Examples
+
+Then:
+
+Generated implementation.
+
+Explain how information flows downward through these layers.
+
+Also explain which layers are stable versus which are task-specific.
+
+SECTION 3 — Router inference flow diagram
+
+Create a flow diagram showing how the system interprets a user request.
+
+Start with:
+
+User task description.
+
+Then show how the system detects:
+
+task intent
+stack signals
+repo signals
+aliases
+archetype clues
+
+Then show how routers select manifests.
+
+Then show how manifests select context bundles.
+
+Include decision points in the diagram.
+
+Explain the reasoning process carefully.
+
+SECTION 4 — Manifest-driven context assembly diagram
+
+Create a diagram explaining how manifests assemble context bundles.
+
+Show how manifests reference:
+
+doctrine
+workflows
+stacks
+archetypes
+examples
+
+Explain:
+
+required context
+optional context
+preferred examples
+trigger words
+repo signals
+
+Explain why manifests are the system’s “context glue”.
+
+SECTION 5 — Canonical example influence diagram
+
+Create a diagram explaining how canonical examples shape assistant output.
+
+The diagram should show:
+
+Context bundle → examples → assistant reasoning → generated code
+
+Explain:
+
+why examples prevent hallucinated architecture
+why example ranking matters
+why examples must stay minimal and canonical.
+
+SECTION 6 — Assistant execution loop diagram
+
+Create a diagram of the assistant reasoning loop when implementing tasks.
+
+Include stages such as:
+
+task interpretation
+context loading
+example consultation
+implementation attempt
+validation
+smoke test generation
+refinement
+
+Explain how doctrine and workflows guide this loop.
+
+SECTION 7 — Context integrity and validation diagram
+
+Create a diagram explaining how validation scripts protect the system.
+
+Include components such as:
+
+manifest validator
+context lint
+pattern diff analyzer
+prompt analyzer
+context bundle preview tool
+
+Explain how these tools prevent drift and maintain system health.
+
+SECTION 8 — Deployment and operational layer diagram
+
+Create a diagram explaining how the context system prepares projects for deployment.
+
+Show relationships between:
+
+archetypes
+stack packs
+deployment doctrine
+Dokku patterns
+smoke tests
+
+Explain how deployment readiness fits into the architecture.
+
+SECTION 9 — Failure modes diagram
+
+Create a diagram that shows common failure modes when assistants interact with codebases.
+
+Examples:
+
+loading too much context
+blending incompatible examples
+inventing new frameworks
+misinterpreting repo structure
+overengineering
+
+Show how the architecture prevents these failures.
+
+SECTION 10 — Evolution diagram
+
+Create a diagram explaining how the system evolves over time.
+
+Include:
+
+new stacks
+new archetypes
+new examples
+manifest updates
+router improvements
+
+Explain how the architecture allows safe growth without destabilizing the system.
+
+SECTION 11 — Visual mental model summary
+
+Provide a concise mental model that captures the system in one conceptual statement.
+
+For example:
+
+“Routers infer intent, manifests assemble context, doctrine constrains behavior, examples shape implementation.”
+
+Then expand this mental model into a short explanation that ties the whole architecture together.
+
+QUALITY REQUIREMENTS
+
+All diagrams must be:
+
+accurate
+internally consistent
+clear
+not overly abstract
+faithful to the system design
+
+Do not produce vague diagrams.
+
+Use explicit components and explicit relationships.
+
+Use Mermaid diagrams when possible so they could be rendered in documentation.
+
+Explain every diagram in plain language.
+
+Ensure the diagrams collectively provide a complete mental model of how the system works.
+
+Make the explanation insightful enough that an experienced engineer could use it to design similar systems.
+
+The final output should feel like a mini technical whitepaper on the architecture of the agent-context-base system.

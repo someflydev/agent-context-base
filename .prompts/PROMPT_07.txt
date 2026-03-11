@@ -1,0 +1,312 @@
+You are designing a deterministic “Context Boot Sequence” for coding assistants working inside a repository derived from the agent-context-base architecture.
+
+The purpose of the Context Boot Sequence is to make assistants behave like a predictable runtime environment when they begin operating in the repository.
+
+Instead of randomly scanning files or loading large amounts of context, the assistant should follow a well-defined initialization procedure.
+
+This boot sequence should function similarly to how an operating system initializes a process environment.
+
+The boot sequence must ensure that assistants:
+
+- understand the architecture of the repository
+- identify the correct context layers
+- infer the correct stack and archetype
+- load only the smallest relevant context bundle
+- consult canonical examples before implementing code
+- respect doctrine constraints
+- avoid introducing new patterns unnecessarily
+
+The boot sequence must be deterministic, minimal, and reliable.
+
+The architecture of the repository includes the following layers:
+
+Context Layers
+- doctrine
+- workflows
+- stacks
+- archetypes
+- routers
+- manifests
+- examples
+- templates
+
+Operational Scripts
+- context lint
+- manifest validator
+- context bundle preview
+- pattern diff analyzer
+- prompt analyzer
+
+Routing Intelligence
+- task router
+- stack router
+- archetype router
+- alias catalog
+- repo signal detection
+
+Knowledge Artifacts
+- canonical examples
+- prompt-first examples
+- fixture datasets
+- observability examples
+
+Deployment Philosophy
+- Dokku-oriented deployment
+- simple deployable services
+- smoke-test verification
+
+Your task is to design the Context Boot Sequence specification that assistants must follow when entering the repository.
+
+The output should function as both:
+
+1. a conceptual explanation of the boot sequence
+2. a practical implementation document that can live inside the repository
+
+Your output must include the following sections.
+
+SECTION 1 — Boot sequence philosophy
+
+Explain why assistants need a boot sequence.
+
+Describe how uncontrolled context loading causes:
+
+- hallucinated architecture
+- mixed patterns
+- excessive scanning
+- inconsistent reasoning
+
+Explain how a deterministic boot sequence prevents these issues.
+
+SECTION 2 — Boot sequence mental model
+
+Define a concise conceptual model of the boot sequence.
+
+Example structure:
+
+Assistant enters repo  
+→ read boot anchors  
+→ detect repo signals  
+→ infer archetype  
+→ infer stack  
+→ consult routers  
+→ select manifest  
+→ assemble context bundle  
+→ consult canonical examples  
+→ begin implementation loop
+
+Explain each stage clearly.
+
+SECTION 3 — Boot stage overview diagram
+
+Create a diagram showing the stages of the boot process.
+
+The diagram should show:
+
+Assistant startup  
+Boot anchors  
+Repo signal detection  
+Router system  
+Manifest resolution  
+Context bundle assembly  
+Canonical example loading  
+Implementation loop
+
+Use a Mermaid diagram.
+
+Explain the diagram.
+
+SECTION 4 — Boot stage definitions
+
+Define each stage of the boot process.
+
+Stages should include something like:
+
+Stage 0 — Boot anchors  
+Stage 1 — Repo identity detection  
+Stage 2 — Task interpretation  
+Stage 3 — Router consultation  
+Stage 4 — Manifest selection  
+Stage 5 — Context bundle assembly  
+Stage 6 — Canonical example prioritization  
+Stage 7 — Implementation loop initialization
+
+Explain:
+
+purpose of each stage  
+inputs  
+outputs  
+constraints  
+
+SECTION 5 — Boot anchors
+
+Define the concept of boot anchors.
+
+Boot anchors are small files that assistants should read first.
+
+Examples:
+
+context/anchors/repo-identity.md  
+context/anchors/context-loading-principles.md  
+context/anchors/anti-patterns.md  
+
+Explain why anchors must remain short and stable.
+
+Provide example contents for these anchor files.
+
+SECTION 6 — Repo signal detection
+
+Explain how assistants should detect repository signals.
+
+Signals include files such as:
+
+pyproject.toml  
+mix.exs  
+go.mod  
+Cargo.toml  
+PROMPTS.md  
+
+Explain how these signals help infer:
+
+stack  
+archetype  
+deployment expectations
+
+Provide a table mapping signals to stacks/archetypes.
+
+SECTION 7 — Router consultation
+
+Explain how routers determine which context should be loaded.
+
+Routers include:
+
+task router  
+stack router  
+archetype router  
+alias catalog  
+
+Explain how routers convert natural language requests into context bundles.
+
+Provide examples.
+
+SECTION 8 — Manifest resolution
+
+Explain how manifests define context bundles.
+
+Describe the meaning of fields such as:
+
+required context  
+optional context  
+preferred examples  
+trigger words  
+repo signals  
+
+Explain how manifests serve as the system’s “context glue”.
+
+SECTION 9 — Context bundle assembly
+
+Explain how the final context bundle is constructed.
+
+The bundle should include:
+
+relevant doctrine  
+relevant workflows  
+relevant stack pack  
+relevant archetype pack  
+canonical examples  
+
+Explain the principle of minimal context loading.
+
+SECTION 10 — Canonical example loading
+
+Explain how assistants should select canonical examples.
+
+Explain:
+
+why examples influence generated code  
+why preferred examples must dominate  
+why incompatible examples must not be blended  
+
+SECTION 11 — Implementation loop
+
+Explain the assistant’s reasoning loop after boot completes.
+
+Stages should include:
+
+context review  
+implementation planning  
+code generation  
+verification against doctrine  
+optional smoke-test generation  
+refinement  
+
+Explain how workflows guide this loop.
+
+SECTION 12 — Guardrails and stop conditions
+
+Define guardrails that prevent assistants from drifting.
+
+Examples:
+
+do not introduce new frameworks without stack pack support  
+do not load unrelated stacks  
+do not rewrite architecture unnecessarily  
+stop when task is satisfied  
+
+SECTION 13 — Boot sequence checklist
+
+Create a concise checklist assistants can follow during startup.
+
+Example structure:
+
+Read boot anchors  
+Detect repo signals  
+Interpret task  
+Consult routers  
+Select manifest  
+Assemble context bundle  
+Consult canonical examples  
+Begin implementation  
+
+SECTION 14 — Failure mode mitigation
+
+Explain how the boot sequence prevents common assistant failure modes.
+
+Examples:
+
+overloading context  
+architecture hallucination  
+example blending  
+framework drift  
+
+SECTION 15 — Integration with AGENT.md and CLAUDE.md
+
+Explain how the boot sequence should be referenced by AGENT.md and CLAUDE.md.
+
+Provide example lines those files should include.
+
+SECTION 16 — Final mental model
+
+Provide a concise mental model summarizing the system.
+
+Example style:
+
+“Boot anchors stabilize understanding.  
+Routers infer intent.  
+Manifests assemble context.  
+Doctrine constrains behavior.  
+Examples shape implementation.”
+
+QUALITY REQUIREMENTS
+
+The boot sequence must be:
+
+accurate  
+minimal  
+deterministic  
+assistant-friendly  
+
+The explanation should read like the initialization specification for a runtime system.
+
+Avoid vague advice.
+
+Ensure the boot sequence could realistically guide assistants to operate consistently inside the architecture.

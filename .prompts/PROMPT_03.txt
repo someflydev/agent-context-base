@@ -1,0 +1,351 @@
+You are performing the second-pass enhancement batch for an existing “agent-context-base” repository.
+
+The v1 repo already exists and includes:
+- AGENT.md
+- CLAUDE.md
+- README.md
+- doctrine docs
+- workflow docs
+- stack docs
+- archetype docs
+- router docs
+- alias catalog
+- starter manifests
+- examples README files
+- starter templates
+- basic scripts such as manifest validation and context preview
+
+Your task now is to produce a serious v2 enhancement pass that makes the base repo materially more useful in real-world practice.
+
+This is not a greenfield redesign.
+This is a targeted implementation upgrade.
+You should preserve the v1 architecture unless a small, clearly justified improvement is necessary.
+
+The main goals of this second-pass enhancement are:
+
+1. Add actual canonical example files, not just README placeholders.
+2. Make manifests richer, more precise, and more automation-friendly.
+3. Implement a practical `new_repo.py` bootstrap script that can generate new project repos from the base repo concepts.
+4. Strengthen consistency between:
+   - router docs
+   - alias catalog
+   - manifests
+   - templates
+   - canonical examples
+5. Improve the repo’s usefulness for Codex, Claude, and Gemini in real implementation sessions.
+6. Keep the repo clean, composable, and maintainable.
+7. Continue optimizing for my actual working style:
+   - prompt-first repos
+   - FastAPI + uv + ruff + orjson + polars
+   - Rust + Axum
+   - Go + Echo
+   - Elixir + Phoenix
+   - Redis/KeyDB + MongoDB
+   - DuckDB + Trino + Polars
+   - NATS Jetstream
+   - Meilisearch
+   - TimescaleDB (PostgreSQL extension for real-time analytics on time-series)
+   - Elasticsearch
+   - Qdrant vector database
+   - local RAG systems
+   - CLI tools
+   - smoke-test-heavy philosophy
+   - Dokku-oriented deployment thinking
+   - strong doctrine
+   - deterministic routing
+   - separate future project repos instead of one giant forever-monorepo
+
+This task is implementation-oriented.
+Do not drift back into high-level architecture talk unless a small correction is required to support implementation quality.
+
+You must generate actual files and actual contents in commit-ready batches.
+
+IMPORTANT CONSTRAINTS
+
+- Favor practical v2 improvements over abstract future fantasies.
+- Add real canonical examples, but keep them minimal, high-signal, and maintainable.
+- Canonical examples should illustrate preferred patterns, not every possible pattern.
+- Keep examples clearly distinct from templates.
+- Make manifests meaningfully richer without making them bloated.
+- `new_repo.py` should be real, usable, and readable, not pseudo-code.
+- Keep Python script dependencies minimal.
+- Respect my prompt-first conventions, including strictly monotonic prompt numbering and explicit filename references.
+- Keep Dokku-oriented guidance practical and balanced.
+- Do not reintroduce Traefik as the primary deployment philosophy.
+- Use Go Echo, not Go Chi, in this repo’s primary stack examples.
+- Do not center Starlette.
+- Prefer excellent markdown and straightforward Python.
+- Keep file paths deterministic and cross-references accurate.
+
+Your work must be organized into commit-ready enhancement batches.
+
+For each batch:
+1. Give the batch number and title.
+2. Explain the purpose of the batch.
+3. List created or updated files.
+4. Provide full file contents for every created or updated file.
+5. End the batch with:
+   - why these files belong together in one commit
+   - a suggested Tim Pope style multi-line commit message with a bracketed prefix such as `[BASE_V2_XX]`
+
+SECOND-PASS OBJECTIVES
+
+SECTION 1 — Enhancement strategy
+Start by briefly stating the second-pass strategy:
+- what v1 lacked
+- what v2 should improve first
+- how canonical examples, richer manifests, and bootstrap generation work together
+Keep this brief and implementation-focused.
+
+SECTION 2 — Canonical examples enhancement plan
+Design the second-pass canonical examples expansion.
+You must add actual example files under appropriate directories, not just README files.
+Examples should be deliberately chosen to reflect my real work and preferred patterns.
+
+At minimum, add canonical examples for:
+- FastAPI endpoint pattern
+- FastAPI smoke test pattern
+- FastAPI seed data pattern
+- Rust Axum route pattern
+- Go Echo handler pattern
+- Elixir Phoenix route/controller or context surface pattern
+- Dokku deployment starter pattern
+- prompt-first prompt directory pattern
+- local RAG indexing metadata/config pattern
+- storage integration pattern (for example DuckDB/Polars or Redis/Mongo shape)
+- CLI command pattern
+- post-flight refinement checklist or workflow artifact
+
+For each canonical example category:
+- decide the exact files to add
+- keep examples small but real
+- include comments or nearby docs only where they help
+- make the preferred pattern obvious
+- avoid over-engineered examples
+- align each example with the appropriate doctrine/workflow/stack docs
+
+SECTION 3 — Richer manifest schema and richer manifests
+Upgrade the manifests to be more useful for automation and routing.
+Design an improved manifest schema that remains readable.
+Possible fields may include:
+- name
+- description
+- archetype
+- primary_stack
+- secondary_stacks
+- triggers
+- aliases
+- required_context
+- optional_context
+- preferred_examples
+- recommended_templates
+- repo_signals
+- task_hints
+- warnings
+- bootstrap_defaults
+- dokku_relevance
+- smoke_test_expectations
+- prompt_first_support
+
+Use a consistent schema.
+Then generate improved full contents for all existing manifests and add any additional manifests that materially help.
+
+At minimum ensure high-quality rich manifests for:
+- backend-api-fastapi-polars
+- backend-api-rust-axum
+- backend-api-go-echo
+- webapp-elixir-phoenix
+- prompt-first-meta-repo
+- local-rag-base
+- multi-storage-zoo
+- cli-python
+- data-pipeline-polars
+- dokku-deployable-fastapi
+- dokku-deployable-go-echo
+- dokku-deployable-phoenix
+
+If a small set of new manifests would materially improve the system, add them and justify briefly.
+
+SECTION 4 — `new_repo.py` bootstrap script design and implementation
+Implement a practical `scripts/new_repo.py` that helps create a new project repo from the base repo concepts.
+
+This should be a real v2 tool, not pseudo-code.
+
+It should support:
+- choosing an archetype
+- choosing a primary stack
+- optionally enabling Dokku support
+- optionally enabling prompt-first support
+- optionally enabling smoke-test starter files
+- optionally enabling seed-data starter files
+- optionally selecting one or more manifests
+- generating a starter folder structure
+- generating repo-specific AGENT.md and CLAUDE.md from templates and selected context
+- generating a starter README.md from template inputs
+- generating a starter manifest bundle or profile summary
+- copying or rendering selected templates
+- optionally writing a `.generated-profile.yaml` or similar record of what was chosen
+
+It does not need to be a giant production framework.
+It should be clean, readable, useful, and realistic for v2.
+
+Implementation requirements for `new_repo.py`:
+- use standard library only unless a dependency is strongly justified
+- support CLI flags
+- have a clear `--help`
+- validate inputs
+- avoid silently overwriting existing repos unless explicitly allowed
+- make generated output deterministic
+- include docstrings and readable structure
+- keep code maintainable
+- include examples in the script docstring or README updates
+
+If helpful, also update:
+- `scripts/README.md`
+- templates
+- manifest validator
+- context preview script
+so the bootstrap flow is coherent.
+
+SECTION 5 — Template improvements
+Enhance templates where necessary so `new_repo.py` can generate useful starter repos.
+Add or update templates for:
+- repo README
+- repo AGENT.md
+- repo CLAUDE.md
+- selected manifest profile summary
+- Dokku support starter
+- prompt-first repo starter
+- smoke test starter
+- seed data starter
+
+Templates should remain starter scaffolds, not canonical complete examples.
+Keep the distinction from examples very clear.
+
+SECTION 6 — Router and alias consistency upgrades
+Update router files and alias catalog if needed so that:
+- routing matches the richer manifests
+- canonical examples are easier to prioritize
+- stack/archetype/task inference is improved
+- the assistant can map common plain-English requests onto the richer system
+Only update these files where there is actual improvement.
+Do not churn them unnecessarily.
+
+SECTION 7 — Validation and preview improvements
+Upgrade supporting scripts if needed.
+At minimum, consider whether to improve:
+- `validate_manifests.py`
+- `preview_context_bundle.py`
+
+Potential improvements:
+- validate richer schema fields
+- verify referenced files exist
+- verify preferred examples exist
+- verify templates referenced by manifests exist
+- preview context in load order
+- show archetype, stack, and warnings
+Keep the scripts practical and readable.
+
+SECTION 8 — Commit-ready batching plan
+Organize the second-pass implementation into sensible batches.
+A good default order is:
+- Batch 1: manifest schema upgrades and supporting validator updates
+- Batch 2: canonical examples for FastAPI, smoke tests, seed data, CLI, and prompt-first repo
+- Batch 3: canonical examples for Rust, Go, Elixir, Dokku, storage, and local RAG
+- Batch 4: template upgrades
+- Batch 5: `new_repo.py` bootstrap implementation
+- Batch 6: preview/router/alias consistency updates and any README/script doc updates
+
+You may refine or split these batches if quality demands it, but preserve a sensible staged order and explain why.
+
+SECTION 9 — Exact file generation
+Generate the actual contents for the second-pass files.
+You must provide full file contents for every file created or updated in each batch.
+
+Suggested target additions/updates may include, if appropriate:
+
+UPDATED FILES
+- manifests/*.yaml
+- scripts/validate_manifests.py
+- scripts/preview_context_bundle.py
+- scripts/README.md
+- templates/README.md
+- context/router/task-router.md
+- context/router/stack-router.md
+- context/router/archetype-router.md
+- context/router/alias-catalog.yaml
+- examples/README.md
+- specific examples/*/README.md files if needed
+
+NEW CANONICAL EXAMPLE FILES
+- examples/canonical-api/fastapi-endpoint-example.md
+- examples/canonical-api/fastapi-endpoint-example.py
+- examples/canonical-smoke-tests/fastapi-smoke-test-example.py
+- examples/canonical-seed-data/polars-seed-data-example.py
+- examples/canonical-cli/python-cli-command-example.py
+- examples/canonical-prompts/prompt-first-layout-example.md
+- examples/canonical-prompts/PROMPT_01.txt
+- examples/canonical-prompts/PROMPT_02_s.txt
+- examples/canonical-dokku/Procfile.example
+- examples/canonical-dokku/app-json-example.json
+- examples/canonical-storage/duckdb-polars-example.py
+- examples/canonical-storage/redis-mongo-shape-example.md
+- examples/canonical-rag/local-rag-index-config-example.yaml
+- examples/canonical-rag/local-rag-metadata-shape-example.md
+- examples/canonical-api/rust-axum-route-example.rs
+- examples/canonical-api/go-echo-handler-example.go
+- examples/canonical-api/phoenix-route-controller-example.ex
+- examples/canonical-api/phoenix-router-surface-example.ex
+- examples/canonical-workflows/post-flight-refinement-checklist.md
+
+NEW OR UPDATED TEMPLATES
+- templates/readme/README.template.md
+- templates/agent-md/AGENT.template.md
+- templates/claude-md/CLAUDE.template.md
+- templates/manifest/profile-summary.template.yaml
+- templates/dokku/Dokku.template.md
+- templates/prompt-first/PROMPTS.md.template
+- templates/prompt-first/PROMPT_01.template.txt
+- templates/prompt-first/PROMPT_02_s.template.txt
+- templates/smoke-tests/smoke_test.template.py
+- templates/seed-data/seed_data.template.py
+
+NEW SCRIPT
+- scripts/new_repo.py
+
+You may adjust exact filenames if a small improvement is clearly warranted, but preserve clarity and consistency.
+
+SECTION 10 — Quality safeguards
+Before outputting the files, ensure internally that:
+- all file references are valid
+- all manifests reference files that exist after your changes
+- canonical examples match the doctrine and stack philosophy
+- examples are small but real
+- templates are clearly starter scaffolds, not examples
+- `new_repo.py` is coherent with the templates and manifests
+- routing and aliasing remain aligned
+- prompt-first examples reflect strictly monotonic numbering and filename-based references
+- Dokku appears coherently in doctrine, manifests, examples, templates, and bootstrap generation
+- Go Echo, Elixir Phoenix, Rust Axum, and FastAPI/uv/ruff/orjson/polars are all meaningfully represented
+
+OUTPUT FORMAT REQUIREMENTS
+
+For each batch:
+1. Batch heading
+2. Purpose
+3. Files created/updated
+4. For each file:
+   - file path line
+   - one fenced code block containing the full contents
+5. Batch closing note:
+   - why the grouping makes sense as a commit
+   - suggested commit message
+
+At the very end, provide:
+1. a concise summary of what v2 now adds over v1
+2. an ordered list of suggested commit titles only
+3. any tiny follow-up suggestions that belong in a future v3, not this pass
+
+Do not ask clarifying questions.
+Do not revert to architecture-only discussion.
+Perform the second-pass enhancement batch now with actual canonical example files, richer manifests, and a usable `new_repo.py` bootstrap script.

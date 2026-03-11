@@ -1,0 +1,322 @@
+You are now moving from architecture/design into implementation.
+
+Your task is to generate the actual contents of the first-pass “agent-context-base” repository, file by file, in carefully chosen, commit-ready batches.
+
+This repository is a reusable base repo that future software projects will start from. It is not a finished product app. It is a reusable foundation for future repos that will be used with Codex, Claude, and Gemini.
+
+The repository should reflect the actual way I build and work:
+- prompt-first repo workflows
+- strong AGENT.md / CLAUDE.md routing
+- doctrine separated from workflows, examples, manifests, and templates
+- minimal relevant context loading
+- task inference so the human does not need to memorize internal names
+- canonical examples
+- smoke-test-heavy philosophy
+- future bootstrap-friendly architecture
+- modern Python preferences: FastAPI, uv, ruff, orjson, polars
+- Rust + Axum
+- Go + Echo
+- Elixir + Phoenix
+- Redis/KeyDB + MongoDB
+- DuckDB + Trino + Polars
+- NATS Jetstream
+- Meilisearch
+- TimescaleDB (PostgreSQL extension for real-time analytics on time-series)
+- Elasticsearch
+- Qdrant vector database
+- local RAG support
+- Dokku-oriented deployment guidance
+- separate real project repos in the future, not one giant forever-monorepo
+
+This task is implementation-oriented. Do not re-argue the architecture unless necessary for file correctness. Produce actual files and actual contents.
+
+Your output must be organized as a sequence of commit-ready batches.
+
+For each batch:
+1. Give the batch number and a short batch title.
+2. Explain the purpose of the batch.
+3. List the files created or updated in that batch.
+4. Provide the complete contents of each file in separate copy/paste-ready code blocks.
+5. End the batch with:
+   - why these files belong together in one commit
+   - a suggested Tim Pope style multi-line commit message beginning with a bracketed prefix appropriate for this repo, such as `[BASE_XX]`
+
+The files must be realistic, coherent, internally consistent, and aligned with the stated architecture.
+
+Important implementation constraints:
+- Use clear deterministic filenames.
+- Keep file scope tight and composable.
+- Prefer practical v1 content over bloated “someday maybe” docs.
+- Make docs useful to a coding assistant and a human maintainer.
+- Keep AGENT.md and CLAUDE.md as routers, not giant dumping grounds.
+- Make the routing system inferable from normal language requests.
+- Use Dokku-oriented guidance where deployment philosophy matters.
+- Do not center Starlette.
+- Use Go Echo rather than Chi in this repo.
+- Make Elixir Phoenix a real first-class stack pack.
+- Respect my prompt-first preferences.
+- When discussing prompt-first repo conventions, respect my requirement for strictly monotonic prompt numbering and explicit filename references.
+- Keep examples and templates clearly distinct.
+- Favor a strong v1 over trying to fully solve v3.
+- Do not omit important files just to be minimal, but do not bloat the repo either.
+- Do not produce placeholder text like “TODO: fill this later” unless absolutely necessary.
+- If a file is intentionally a stub, say so explicitly and make it a useful stub.
+
+The base repo should be generated in a practical staged order.
+
+Use this target v1 shape as the baseline unless a small improvement is clearly warranted:
+
+- AGENT.md
+- CLAUDE.md
+- README.md
+- docs/
+  - repo-purpose.md
+  - repo-layout.md
+- context/
+  - doctrine/
+    - core-principles.md
+    - naming-and-clarity.md
+    - testing-philosophy.md
+    - smoke-test-philosophy.md
+    - commit-hygiene.md
+    - prompt-first-conventions.md
+    - canonical-examples.md
+    - context-loading-rules.md
+    - deployment-philosophy-dokku.md
+  - workflows/
+    - add-feature.md
+    - fix-bug.md
+    - refactor.md
+    - add-smoke-tests.md
+    - bootstrap-repo.md
+    - generate-prompt-sequence.md
+    - post-flight-refinement.md
+    - add-deployment-support.md
+    - add-seed-data.md
+    - add-api-endpoint.md
+    - extend-cli.md
+    - add-local-rag-indexing.md
+    - add-storage-integration.md
+  - stacks/
+    - python-fastapi-uv-ruff-orjson-polars.md
+    - rust-axum-modern.md
+    - go-echo.md
+    - elixir-phoenix.md
+    - redis-keydb-mongo.md
+    - duckdb-trino-polars.md
+    - nats-jetstream.md
+    - meilisearch.md
+    - timescaledb.md
+    - elasticsearch.md
+    - qdrant.md
+    - dokku-conventions.md
+    - prompt-first-repo.md
+  - archetypes/
+    - prompt-first-repo.md
+    - backend-api-service.md
+    - cli-tool.md
+    - data-pipeline.md
+    - local-rag-system.md
+    - multi-storage-experiment.md
+    - polyglot-lab.md
+    - dokku-deployable-service.md
+  - router/
+    - task-router.md
+    - stack-router.md
+    - archetype-router.md
+    - alias-catalog.yaml
+- manifests/
+  - backend-api-fastapi-polars.yaml
+  - backend-api-rust-axum.yaml
+  - backend-api-go-echo.yaml
+  - webapp-elixir-phoenix.yaml
+  - prompt-first-meta-repo.yaml
+  - local-rag-base.yaml
+  - multi-storage-zoo.yaml
+  - cli-python.yaml
+  - data-pipeline-polars.yaml
+  - dokku-deployable-fastapi.yaml
+  - dokku-deployable-go-echo.yaml
+  - dokku-deployable-phoenix.yaml
+- examples/
+  - README.md
+  - canonical-api/
+    - README.md
+  - canonical-smoke-tests/
+    - README.md
+  - canonical-dokku/
+    - README.md
+  - canonical-cli/
+    - README.md
+  - canonical-prompts/
+    - README.md
+  - canonical-seed-data/
+    - README.md
+  - canonical-storage/
+    - README.md
+  - canonical-rag/
+    - README.md
+- templates/
+  - README.md
+  - agent-md/
+    - AGENT.template.md
+  - claude-md/
+    - CLAUDE.template.md
+  - manifest/
+    - manifest.template.yaml
+  - readme/
+    - README.template.md
+- scripts/
+  - README.md
+  - validate_manifests.py
+  - preview_context_bundle.py
+- smoke-tests/
+  - README.md
+- .gitignore
+
+Your job is to generate the full contents for the first-pass repo in sensible commit-ready batches.
+
+Use the following implementation strategy:
+
+BATCHING REQUIREMENTS
+
+Batch 1 should create the top-level foundation and routing entrypoints:
+- README.md
+- AGENT.md
+- CLAUDE.md
+- .gitignore
+- docs/repo-purpose.md
+- docs/repo-layout.md
+
+Batch 2 should create the core doctrine docs.
+
+Batch 3 should create the workflow docs.
+
+Batch 4 should create the stack docs.
+
+Batch 5 should create the archetype docs.
+
+Batch 6 should create the router files and alias catalog.
+
+Batch 7 should create the manifests.
+
+Batch 8 should create the examples README files and canonical examples strategy surface.
+
+Batch 9 should create the templates.
+
+Batch 10 should create the scripts and smoke-tests README.
+
+You may split any batch into sub-batches if needed for quality and manageability, but preserve the overall order and explain why.
+
+CONTENT REQUIREMENTS FOR SPECIFIC FILE TYPES
+
+For AGENT.md:
+- make it a concise but powerful routing document
+- define required first reads
+- define smallest-relevant-bundle behavior
+- define task inference behavior
+- define when to load doctrine/workflows/stacks/archetypes/examples
+- define stop conditions
+- define canonical-example priority
+- define anti-sprawl rules
+
+For CLAUDE.md:
+- similar to AGENT.md, but slightly richer where helpful
+- still a router, not a full philosophy dump
+- include more reasoning-oriented phrasing only if it improves quality
+
+For doctrine docs:
+- give each doc a crisp purpose
+- make them directly useful during coding sessions
+- include practical rules, not only abstract philosophy
+- prevent common drift and over-engineering mistakes
+
+For workflow docs:
+- structure them as task playbooks
+- include sequence, preconditions, outputs, related docs, and common pitfalls
+- make them usable during live implementation work
+
+For stack docs:
+- focus on real project structure, common file paths, change surfaces, test implications, smoke test expectations, and common assistant mistakes
+- make them realistic and grounded in the named stack
+
+For archetype docs:
+- define the project shape, common goals, required context, common workflows, likely examples, and typical anti-patterns
+
+For router docs:
+- they must let a model infer context from ordinary requests
+- include many routing examples
+- favor plain-English triggers and obvious repo signals
+
+For alias-catalog.yaml:
+- include friendly aliases for stacks, tasks, and common capabilities
+- make it easy for a model to map normal user language onto internal context files
+
+For manifests:
+- keep schema consistent
+- include fields such as name, archetype, stacks, triggers, required_context, optional_context, preferred_examples, and warnings
+- make them realistic enough for future script validation
+
+For examples README files:
+- explain what canonical examples of that type should contain
+- explain how to choose preferred examples
+- explain how to avoid example drift or contradictory examples
+- even if no full example code is included yet, make these directories purposeful
+
+For templates:
+- keep them minimal but useful
+- make clear they are starter scaffolds, not canonical completed examples
+
+For scripts:
+- implement practical v1 scripts, not giant frameworks
+- `validate_manifests.py` should validate presence and basic schema expectations for manifests
+- `preview_context_bundle.py` should accept a manifest path or manifest name and print an ordered list of files that should be loaded
+- use Python and keep dependencies minimal
+- align style with readability and maintainability
+- include docstrings and straightforward error handling
+
+For smoke-tests/README.md:
+- explain the role of smoke tests in future repos
+- explain how smoke tests differ by archetype
+- explain that this base repo contains doctrine and starter guidance, not one-size-fits-all smoke tests for every future project
+
+STYLE REQUIREMENTS
+
+- Prefer excellent markdown.
+- Use headings and short sections.
+- Avoid overstuffed files.
+- Use lists only where they improve clarity.
+- Avoid tables unless they truly help.
+- Make each file feel intentionally scoped.
+- Keep cross-references accurate.
+- Make internal file references explicit by filename/path.
+- Do not invent nonexistent files outside the target v1 shape unless a small addition is necessary and justified.
+
+CODE BLOCK REQUIREMENTS
+
+For every file, output:
+1. a line indicating the file path
+2. one fenced code block with the full file contents
+
+Do not abbreviate with “same as above,” “omitted,” or partial snippets.
+
+QUALITY CONTROL REQUIREMENTS
+
+Before outputting the batches, internally ensure:
+- file names are consistent everywhere
+- cross-references point to files that actually exist in this v1 repo
+- routing logic is consistent with manifests
+- doctrine and workflow distinctions remain clear
+- examples and templates remain distinct
+- Dokku guidance is aligned across doctrine, stacks, archetypes, manifests, and examples
+- prompt-first conventions reflect strictly monotonic numbering with explicit filename references
+- FastAPI/uv/ruff/orjson/polars, Rust/Axum, Go/Echo, and Elixir/Phoenix are all represented meaningfully
+
+At the very end, after all batches, provide:
+1. a short summary of the resulting v1 repo
+2. a concise ordered list of the suggested commit sequence titles only
+3. any small integrity warnings if you believe a tiny follow-up cleanup batch would be wise
+
+Do not ask clarifying questions.
+Do not switch back into architecture-only mode.
+Generate the actual first-pass base repo contents in commit-ready batches now.

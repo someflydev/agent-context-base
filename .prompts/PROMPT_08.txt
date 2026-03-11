@@ -1,0 +1,301 @@
+You are designing a “Context Complexity Budget” system for an agent-context-based repository used by coding assistants such as Codex, Claude, and Gemini.
+
+This repository already has:
+- doctrine docs
+- workflows
+- stack packs
+- archetype packs
+- routers
+- manifests
+- canonical examples
+- templates
+- assistant operating manual
+- context boot sequence
+
+Your task is to design a rigorous but practical budgeting system that mathematically limits how much context an assistant is allowed to load during a task.
+
+The goal is to reduce context sprawl, prevent cross-stack contamination, reduce hallucinated architecture, and make assistant behavior more deterministic.
+
+This system should act as a control layer between:
+- router proposals
+- manifest-defined context bundles
+- actual context loading
+
+In other words:
+routers and manifests may suggest candidate context,
+but the budget system decides what is actually allowed to load in the first pass,
+and how bounded escalation may work if more context is needed.
+
+The design must be concrete, insightful, and implementation-oriented.
+
+The budget system should reflect the real architecture and working style of this repository, including:
+- prompt-first repos
+- backend APIs
+- CLI tools
+- local RAG systems
+- multi-storage experiments
+- data pipelines
+- FastAPI + uv + ruff + orjson + polars
+- Rust + Axum
+- Go + Echo
+- Elixir + Phoenix
+- Redis/KeyDB + MongoDB
+- DuckDB + Trino + Polars
+- NATS Jetstream
+- Meilisearch
+- TimescaleDB (PostgreSQL extension for real-time analytics on time-series)
+- Elasticsearch
+- Qdrant vector database
+- Dokku-oriented deployment
+- smoke-test-heavy philosophy
+- canonical example guidance
+- minimal relevant context loading
+- deterministic routing and boot sequence behavior
+
+Your output must include the following sections.
+
+SECTION 1 — Why a context complexity budget is needed
+Explain the failure modes that arise without a budget system.
+Include examples such as:
+- context sprawl
+- cross-stack contamination
+- excessive example loading
+- false thoroughness
+- uncontrolled escalation
+Explain why “load minimal context” is insufficient unless it is turned into measurable policy.
+
+SECTION 2 — Core mental model
+Define the conceptual model of the budget system.
+Explain the relationship between:
+- routers
+- manifests
+- candidate context bundles
+- budget evaluator
+- approved first-pass bundle
+- bounded escalation
+Provide a concise formula-like mental model.
+
+SECTION 3 — System architecture diagram
+Create a Mermaid diagram showing how the budget system fits into the overall architecture.
+The diagram should include:
+User task
+Routers
+Manifests
+Candidate bundle
+Budget evaluator
+Approved bundle
+Canonical examples
+Implementation loop
+Optional bounded escalation
+
+Explain the diagram carefully.
+
+SECTION 4 — Budget design principles
+Define the principles the system should follow, such as:
+- first-pass minimalism
+- explicit cost model
+- different artifact classes have different costs
+- hard caps matter
+- escalation must be rule-based
+- multi-stack tasks cost more
+- examples are powerful but limited
+- the budget must be explainable
+
+SECTION 5 — Budget dimensions
+Define all the variables that the budget system should measure.
+At minimum discuss:
+- file count
+- estimated file size or token size
+- artifact type
+- conceptual diversity
+- stack count
+- archetype count
+- example count
+- ambiguity
+- confidence
+- change surface area
+For each dimension, explain why it matters.
+
+SECTION 6 — Cost model
+Design a practical scoring model for context artifacts.
+Define base costs for artifact types such as:
+- anchor
+- manifest
+- doctrine
+- workflow
+- stack pack
+- archetype pack
+- canonical example
+- large example
+- validation script reference
+- deployment doctrine
+Then define modifiers such as:
+- file size cost
+- preferred example discount
+- direct match discount
+- cross-domain penalty
+- ambiguity penalty
+Present the scoring formula clearly and explain it.
+
+SECTION 7 — Hard caps
+Define hard caps separate from point-based costs.
+For example:
+- maximum stacks in first pass
+- maximum archetypes in first pass
+- maximum workflows in first pass
+- maximum examples in first pass
+- maximum total files in first pass
+Explain why hard caps are necessary even when a scoring system exists.
+
+SECTION 8 — Budget profiles
+Design a practical set of budget profiles, such as:
+- tiny
+- small
+- medium
+- large
+- cross-system
+For each profile, define:
+- max points
+- max files
+- max stacks
+- max archetypes
+- max workflows
+- max examples
+- escalation policy
+- intended task sizes
+Provide example YAML for each profile.
+
+SECTION 9 — Artifact metadata strategy
+Design how artifact metadata should be stored so the evaluator can score candidate files.
+Discuss two approaches:
+- sidecar metadata files
+- central registry files
+Recommend one for v1 and explain why.
+Then define the metadata schema for context files and example files.
+Provide example metadata entries for:
+- a workflow doc
+- a stack pack
+- a canonical API example
+- a prompt-first example
+- a Dokku deployment example
+
+SECTION 10 — First-pass bundle assembly
+Explain exactly how the system should assemble a first-pass bundle under budget.
+Describe:
+- how candidate files are proposed
+- how files are scored
+- how files are prioritized
+- how low-value files are trimmed
+- how canonical examples are chosen under cap
+- how the final approved bundle is produced
+
+SECTION 11 — Bounded escalation policy
+Design the escalation system.
+Explain:
+- what conditions allow escalation
+- how much budget an escalation adds
+- how many escalations are allowed
+- what must be explained when escalation occurs
+- when escalation must stop
+Provide example escalation notes.
+
+SECTION 12 — Example task walkthroughs
+Walk through at least 10 realistic tasks from this ecosystem.
+For each task:
+- infer task/archetype/stack
+- choose budget profile
+- show candidate files
+- show approximate scoring
+- show the approved first-pass bundle
+- show whether escalation is needed
+Use realistic examples such as:
+- add paginated FastAPI endpoint
+- extend Go Echo handler with smoke tests
+- add Phoenix route/controller flow
+- generate prompt sequence
+- add local RAG indexing config
+- add DuckDB/Polars integration
+- refactor Rust Axum route surface
+- add Dokku support to a service
+- extend CLI command
+- update multi-storage experiment
+
+SECTION 13 — Integration with boot sequence
+Explain how the budget system fits into the Context Boot Sequence.
+Show where the budget evaluator is invoked.
+Explain how budget approval becomes part of deterministic assistant startup.
+
+SECTION 14 — Integration with AGENT.md, CLAUDE.md, and the operating manual
+Explain what high-level instructions those documents should include about the budget system.
+Provide example wording they could use.
+
+SECTION 15 — Recommended files and directory layout
+Design the files that should be added to support the budget system.
+At minimum include suggestions like:
+- context/doctrine/context-complexity-budget.md
+- context/budgets/tiny.yaml
+- context/budgets/small.yaml
+- context/budgets/medium.yaml
+- context/budgets/large.yaml
+- context/budgets/cross-system.yaml
+- context/metadata/context-artifacts.yaml
+- examples/metadata/example-artifacts.yaml
+- scripts/evaluate_context_budget.py
+- scripts/explain_context_budget.py
+Explain what each file should do.
+
+SECTION 16 — Evaluator and explainer script design
+Design two practical scripts:
+1. evaluate_context_budget.py
+2. explain_context_budget.py
+Explain:
+- expected inputs
+- outputs
+- CLI options
+- integration points with routers/manifests/preview tools
+- how they should remain readable and maintainable
+
+SECTION 17 — Failure mode mitigation
+Explain how the budget system prevents:
+- excessive context loading
+- cross-stack blending
+- over-reliance on examples
+- architecture hallucination
+- endless escalation
+- unjustified deployment context loading
+
+SECTION 18 — Tradeoffs and limitations
+Be honest about what the budget system cannot solve perfectly.
+Explain where human judgment or assistant judgment is still required.
+Discuss risks such as:
+- underloading context
+- overly rigid scoring
+- stale metadata
+- budget gaming
+Explain how to mitigate those issues.
+
+SECTION 19 — Quality rubric
+Provide a rubric for evaluating whether the context complexity budget system is excellent.
+Score areas such as:
+- clarity
+- enforceability
+- explainability
+- low-sprawl behavior
+- practical metadata design
+- budget profile usefulness
+- escalation discipline
+- compatibility with existing architecture
+
+SECTION 20 — Final summary
+End with a concise summary mental model of the system.
+It should feel like the final control layer that turns the architecture into a bounded runtime for assistants.
+
+QUALITY REQUIREMENTS
+- Be concrete and implementation-oriented.
+- Be mathematically explicit where useful.
+- Keep the design realistic and maintainable.
+- Avoid hand-wavy “AI should know” language.
+- Make the system compatible with routers, manifests, canonical examples, the operating manual, and the boot sequence.
+- Ensure the design fits the real stacks and archetypes in this ecosystem.
+- Keep Dokku, prompt-first repos, FastAPI, Rust/Axum, Go/Echo, Phoenix, local RAG, data pipelines, and multi-storage experiments in mind throughout.
+- Make the final result accurate, insightful, and strong enough to guide a future implementation pass.
