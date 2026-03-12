@@ -1,244 +1,88 @@
-# Agent-Oriented Context Architecture
+# Agent-Oriented Base Repo Architecture
 
-## SECTION 1 - Design principles
+This document is the implementation-oriented architectural brief for `agent-context-base`. It refines `.prompts/PROMPT_00_s.txt` into a reusable base repo contract for future projects.
 
-### Why giant `AGENT.md` and `CLAUDE.md` files are insufficient
+## SECTION 1 - Purpose and philosophy of the base repo
 
-Giant router files fail because they mix durable doctrine, stack details, task steps, examples, and exceptions into one surface. Frontier models then:
+### What this base repo is
 
-- over-read irrelevant instructions
-- blend conflicting patterns
-- miss the actual active stack
-- carry stale rules forward because everything looks equally important
+This repo is a reusable foundation for future software projects that will be used with Codex, Claude, and Gemini. It is optimized for:
 
-Top-level agent files should be routers, not encyclopedias.
+- prompt-first repo workflows
+- deterministic task routing
+- doctrine separated from workflows, stacks, archetypes, examples, manifests, and templates
+- strong canonical examples
+- smoke-test-heavy development
+- minimal real-infra integration tests for significant features
+- Docker-backed local development with strict dev/test isolation
+- Dokku-oriented deployment conventions for small services
 
-### Why context should be layered
+### What this base repo is not
 
-Layering separates stable truth from changeable execution details:
+- It is not a product monorepo.
+- It is not a dumping ground for every pattern from every future repo.
+- It is not a substitute for project-specific manifests and examples in derived repos.
+- It is not a giant `AGENT.md` or `CLAUDE.md` with all instructions flattened into one file.
 
-- doctrine: durable repo philosophy and invariants
-- workflows: task sequences
-- archetypes: repo-shape expectations
-- stacks: language/framework specifics
-- examples: canonical reference implementations
-- manifests: machine-readable routing metadata
-- templates: starting points for new repos or modules
+### Why it should exist
 
-This reduces token load and makes updates local rather than repo-wide.
+- Starting from a clean base repo is faster than repeatedly rebuilding routing, doctrine, manifests, examples, templates, and bootstrap scripts.
+- Frontier assistants behave better when the repo already encodes task routing and preferred patterns.
+- Stable architecture docs reduce operator memory burden and lower onboarding friction.
 
-### How doctrine, skills, workflows, stacks, archetypes, templates, and examples differ
+### Why it should not become a forever-monorepo
 
-| Layer | Purpose | Stability | Typical question answered |
-| --- | --- | --- | --- |
-| doctrine | durable rules and preferences | high | "What do we believe and enforce?" |
-| skills | reusable specialized operating knowledge | medium-high | "What narrow capability pack should be applied?" |
-| workflows | task execution sequences | medium | "How do I perform this change safely?" |
-| stacks | technology-specific conventions | medium | "How does this language/framework repo behave?" |
-| archetypes | repo-shape patterns | medium-high | "What kind of repo is this?" |
-| templates | bootstrap scaffolds | medium | "What should a new instance start from?" |
-| examples | canonical solved patterns | medium-low | "What concrete implementation should I imitate?" |
-| manifests | routing metadata | high | "What should I load first?" |
+- Actual products need their own manifests, examples, scripts, and constraints.
+- A giant shared repo would accumulate conflicting patterns across domains and stacks.
+- Context quality falls when assistants see too many irrelevant sibling systems.
 
-### Why canonical examples matter
+### Why assistant-oriented context architecture matters
 
-Frontier models imitate local patterns better than they infer abstract policy. Canonical examples:
+- Frontier assistants perform better with scoped deterministic context than with giant instruction dumps.
+- Separate layers let assistants load stable doctrine without also loading unrelated implementation detail.
+- Routing files and manifests let the assistant infer what to read from normal English requests.
 
-- collapse ambiguity into one preferred pattern
-- reduce invention pressure
-- provide file placement, naming, and test shape at once
-- make cross-model behavior more consistent
+### Why layers must stay separate
 
-Examples are often more operationally valuable than prose doctrine when both exist.
+| Layer | Why it exists |
+| --- | --- |
+| doctrine | durable rules, philosophy, invariants |
+| workflows | task sequences |
+| stacks | framework and infrastructure specifics |
+| archetypes | repo-shape expectations |
+| router files | inference and loading rules |
+| manifests | machine-readable bundle hints |
+| examples | preferred concrete implementations |
+| templates | minimal starter scaffolds |
 
-### How to reduce context bloat without under-specifying the task
+### Why task inference matters more than internal naming
 
-Use a deterministic loading sequence:
+The human should be able to say "add a Redis cache to the Hono service" or "package this FastAPI app for Dokku" and have the assistant infer the right workflow, stack pack, archetype pack, and examples. The operator should not need to remember `add-storage-integration` or `docker-compose-dokku`.
 
-1. repo profile
-2. routing files
-3. only the doctrine docs required by the task
-4. one workflow
-5. one archetype pack
-6. only the active stack packs
-7. the smallest canonical example set
+### Why minimal relevant context is the optimization target
 
-Avoid free-form scanning until a stop condition is hit.
+- It reduces hallucinated blending across stacks.
+- It lowers routing latency and operator burden.
+- It keeps doctrine durable and examples trustworthy.
+- It makes the same repo architecture work across Codex, Claude, and Gemini.
 
-## SECTION 2 - Folder structure options
+## SECTION 2 - Recommended final repository architecture
 
-### Option A: Flat Pack Library
-
-```text
-.
-├── AGENT.md
-├── CLAUDE.md
-├── docs/
-├── context/
-│   ├── doctrine/
-│   ├── skills/
-│   ├── workflows/
-│   ├── stacks/
-│   ├── archetypes/
-│   └── examples/
-└── manifests/
-```
-
-Best when:
-
-- one repo family has limited stack variation
-- human maintainers want very simple navigation
-
-Tradeoffs:
-
-- easy to understand
-- weak deterministic routing unless manifests are strong
-- examples tend to sprawl into the wrong folders
-
-Failure modes:
-
-- `context/stacks/` becomes a junk drawer
-- agent loads too many sibling files because structure is shallow
-
-Model fit:
-
-- Codex: good if manifests are precise
-- Claude: fine, but may over-read without strong router guidance
-- Gemini: acceptable, but needs stronger metadata cues
-
-### Option B: Stack-First Matrix
-
-```text
-.
-├── context/
-│   ├── python-fastapi/
-│   │   ├── doctrine/
-│   │   ├── workflows/
-│   │   └── examples/
-│   ├── ts-hono/
-│   ├── go-echo/
-│   └── rust-axum/
-└── manifests/
-```
-
-Best when:
-
-- one organization has many repos but each repo is dominated by one stack
-
-Tradeoffs:
-
-- strong stack locality
-- weak archetype reuse
-- cross-stack doctrine duplicates fast
-
-Failure modes:
-
-- prompt-first or multi-storage repos do not fit cleanly
-- doctrine drifts across stack folders
-
-Model fit:
-
-- Codex: efficient for single-stack repos
-- Claude: good for direct stack lookup
-- Gemini: workable but brittle for mixed-stack repos
-
-### Option C: Manifest-First Bundle Store
-
-```text
-.
-├── AGENT.md
-├── CLAUDE.md
-├── manifests/
-│   ├── repo.profile.yaml
-│   ├── bundles/
-│   ├── tasks/
-│   ├── stacks/
-│   └── archetypes/
-├── context/
-└── examples/
-```
-
-Best when:
-
-- automation and machine-assisted loading are the primary goal
-
-Tradeoffs:
-
-- deterministic and scriptable
-- less friendly for human browsing
-- metadata upkeep becomes real work
-
-Failure modes:
-
-- manifests become stale
-- humans stop trusting routing because bundles point at outdated files
-
-Model fit:
-
-- Codex: excellent if manifests are current
-- Claude: good when paired with human-readable routers
-- Gemini: strong because metadata is explicit
-
-### Option D: Hybrid Layered Router (recommended)
+Recommended long-term tree:
 
 ```text
 .
 ├── AGENT.md
 ├── CLAUDE.md
 ├── README.md
-├── docs/
-├── context/
-│   ├── doctrine/
-│   ├── skills/
-│   ├── workflows/
-│   ├── stacks/
-│   ├── archetypes/
-│   └── router/
-├── manifests/
-├── examples/
-├── templates/
-├── scripts/
-└── smoke-tests/
-```
-
-Best when:
-
-- repos vary by archetype and stack
-- prompt-first and software repos must share a mental model
-- future automation matters but humans still need clarity
-
-Tradeoffs:
-
-- slightly more structure to maintain
-- needs discipline around manifests and canonical examples
-
-Failure modes:
-
-- router files become too verbose
-- examples and templates get confused
-- stacks proliferate without an owner
-
-Model fit:
-
-- Codex: best balance of deterministic routing and minimal load
-- Claude: best if routers stay concise and delegated
-- Gemini: best when manifests reinforce folder semantics
-
-## SECTION 3 - Recommended final architecture
-
-Recommended for your workflows: the Hybrid Layered Router.
-
-It matches prompt-first repo thinking, polyglot extensibility, canonical-example reuse, and future manifest-driven automation.
-
-```text
-.
-├── AGENT.md
-├── CLAUDE.md
-├── README.md
+├── .prompts/
+│   ├── PROMPT_00_s.txt
+│   └── sequences/
 ├── docs/
 │   ├── agent-context-architecture.md
 │   ├── operator-manual.md
-│   └── repo-bootstrap-checklist.md
+│   ├── repo-bootstrap-checklist.md
+│   └── rubric.md
 ├── context/
 │   ├── doctrine/
 │   │   ├── 00-core-principles.md
@@ -251,7 +95,8 @@ It matches prompt-first repo thinking, polyglot extensibility, canonical-example
 │   │   ├── 07-prompt-first-conventions.md
 │   │   ├── 08-canonical-example-policy.md
 │   │   ├── 09-context-loading-rules.md
-│   │   └── 10-deployment-dokku-thinking.md
+│   │   ├── 10-deployment-dokku-thinking.md
+│   │   └── 11-single-service-bias.md
 │   ├── skills/
 │   │   ├── README.md
 │   │   ├── canonical-example-curator.md
@@ -273,15 +118,15 @@ It matches prompt-first repo thinking, polyglot extensibility, canonical-example
 │   ├── stacks/
 │   │   ├── python-fastapi-polars-htmx-plotly.md
 │   │   ├── typescript-hono-bun-drizzle-tsx.md
-│   │   ├── go-echo-templ.md
 │   │   ├── rust-axum.md
+│   │   ├── go-echo-templ.md
 │   │   ├── elixir-phoenix.md
-│   │   ├── docker-compose-dokku.md
+│   │   ├── backend-extension-candidates.md
 │   │   ├── redis-mongodb.md
 │   │   ├── trino-duckdb-polars.md
 │   │   ├── nats-jetstream-meilisearch.md
 │   │   ├── timescaledb-elasticsearch-qdrant.md
-│   │   └── backend-extension-candidates.md
+│   │   └── docker-compose-dokku.md
 │   ├── archetypes/
 │   │   ├── prompt-first-repo.md
 │   │   ├── backend-api.md
@@ -289,739 +134,819 @@ It matches prompt-first repo thinking, polyglot extensibility, canonical-example
 │   │   ├── data-pipeline.md
 │   │   ├── local-rag-system.md
 │   │   ├── multi-storage-experiment.md
-│   │   └── polyglot-lab.md
+│   │   ├── polyglot-lab.md
+│   │   └── dokku-deployable-web-service.md
 │   └── router/
 │       ├── load-order.md
-│       ├── task-routing.md
+│       ├── task-router.md
+│       ├── stack-router.md
+│       ├── archetype-router.md
+│       ├── alias-catalog.md
 │       ├── example-priority.md
 │       └── stop-conditions.md
 ├── manifests/
+│   ├── README.md
 │   ├── repo.profile.yaml
-│   ├── archetype.prompt-first.yaml
-│   ├── archetype.backend-api.yaml
-│   ├── stack.python-fastapi-polars-htmx-plotly.yaml
-│   ├── stack.typescript-hono-bun-drizzle-tsx.yaml
-│   ├── workflow.add-api-endpoint.yaml
-│   ├── workflow.add-smoke-tests.yaml
-│   └── infra.compose-dokku.yaml
+│   ├── schema.profile.example.yaml
+│   └── profiles/
+│       ├── backend-api-fastapi-polars.yaml
+│       ├── backend-api-typescript-hono-bun.yaml
+│       ├── backend-api-rust-axum.yaml
+│       ├── backend-api-go-echo.yaml
+│       ├── webapp-elixir-phoenix.yaml
+│       ├── prompt-first-meta-repo.yaml
+│       ├── local-rag-base.yaml
+│       ├── multi-storage-zoo.yaml
+│       ├── cli-python.yaml
+│       ├── data-pipeline-polars.yaml
+│       ├── dokku-deployable-fastapi.yaml
+│       ├── dokku-deployable-typescript-hono-bun.yaml
+│       ├── dokku-deployable-go-echo.yaml
+│       └── dokku-deployable-phoenix.yaml
 ├── examples/
-│   └── canonical/
-│       ├── README.md
-│       ├── prompt-first/
-│       ├── api-endpoints/
-│       ├── htmx-plotly/
-│       ├── smoke-tests/
-│       └── docker-compose/
+│   ├── canonical/
+│   │   ├── README.md
+│   │   ├── api-endpoints/
+│   │   ├── smoke-tests/
+│   │   ├── docker-compose/
+│   │   ├── dokku-deployment/
+│   │   ├── cli/
+│   │   ├── prompt-first/
+│   │   ├── seed-data/
+│   │   ├── storage-integration/
+│   │   └── local-rag/
+│   └── retired/
 ├── templates/
-│   └── base/
-│       ├── README.md
-│       └── repo.profile.template.yaml
+│   ├── base/
+│   ├── manifests/
+│   ├── prompt-first/
+│   ├── fastapi/
+│   ├── hono-bun/
+│   ├── rust-axum/
+│   ├── go-echo/
+│   ├── phoenix/
+│   ├── dokku/
+│   ├── smoke-tests/
+│   └── seed-data/
 ├── scripts/
 │   ├── README.md
-│   └── validate_context_layout.py
-└── smoke-tests/
-    └── README.md
+│   ├── validate_context_layout.py
+│   ├── validate_manifests.py
+│   ├── validate_router_refs.py
+│   ├── detect_stale_examples.py
+│   ├── preview_context_bundle.py
+│   ├── build_repo_from_profile.py
+│   ├── generate_agent_files.py
+│   ├── lint_alias_collisions.py
+│   └── check_internal_links.py
+├── smoke-tests/
+│   ├── README.md
+│   ├── api/
+│   ├── cli/
+│   ├── pipeline/
+│   ├── rag/
+│   └── deploy/
+└── tests/
+    └── integration/
 ```
 
-## SECTION 4 - File semantics contract
+## SECTION 3 - Directory semantics contract
 
-### `context/doctrine`
+| Path | What belongs there | What does not belong there | Naming | Ideal scope | Type | Load when | Avoid when |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `AGENT.md` | Codex router | doctrine dumps, full stack docs | fixed | 80-180 lines | router | Codex is active | never as sole source of truth |
+| `CLAUDE.md` | Claude router | giant all-repo narrative | fixed | 80-180 lines | router | Claude is active | never bulk-loaded for code-only task if another router already loaded |
+| `README.md` | repo purpose and entrypoints | task details, stack internals | fixed | 40-120 lines | global | always first | never substitute for manifests |
+| `docs/` | human-oriented architecture and operator docs | code examples that should be canonical examples | kebab-case | 1 concept per file | durable reference | during design, bootstrap, maintenance | for small code edits once routing is settled |
+| `context/doctrine/` | durable rules and preferences | task steps, templates, code snippets | numeric prefix + kebab-case | 1 durable principle | doctrine | whenever task touches that rule | when irrelevant to current task |
+| `context/skills/` | narrow reusable capability packs | broad architecture doctrine | kebab-case | specialized and compact | skill | only when named or clearly matched | for normal routing if a workflow already covers it |
+| `context/workflows/` | task sequences | framework specifics | kebab-case verb phrase | 1 task | task-specific | once task is known | when task is unrelated |
+| `context/stacks/` | stack-specific conventions | generic doctrine | stack name | 1 stack or paired infra family | stack-specific | once stack is known | never load sibling stacks by default |
+| `context/archetypes/` | repo-shape expectations | stack-specific details | archetype name | 1 archetype | archetype-specific | once repo shape is known | for unrelated repo shapes |
+| `context/router/` | load order, heuristics, stop rules, aliases | stack details, templates | fixed names | short deterministic docs | router | near the start | not all at once if not needed |
+| `manifests/` | machine-readable bundle hints | prose-heavy docs | kebab-case | 1 profile per file | routing metadata | always profile first, examples later | not a substitute for code truth |
+| `examples/canonical/` | preferred concrete patterns | scaffolds meant for generation | category folders | 1 preferred example per pattern family | canonical reference | before inventing a new pattern | when unrelated to change surface |
+| `templates/` | minimal composable starters | productionized examples | category folders | smallest scaffold that composes | bootstrap material | only during bootstrap/scaffold | for routine edits |
+| `scripts/` | validation, bundle preview, bootstrap helpers | app logic | snake_case | 1 script = 1 job | automation | during maintenance/bootstrap | when a shell one-liner is enough |
+| `smoke-tests/` | reusable smoke starter assets and conventions | full integration suites | category folders | smallest runnable checks | testing starter | when adding verification | for logic-only refactors |
+| `tests/integration/` | minimal real-infra integration tests | unit tests and smoke starter docs | stack/test naming | few happy-path tests with a few edge cases | repo tests | when feature touches infra boundary | for pure docs/prompts changes |
 
-- Belongs: durable principles, invariants, repo preferences
-- Does not belong: task checklists, stack-specific code details, long examples
-- Naming: numbered files for stable load order
-- Size: 40-120 lines per file
-- Load when: the task touches the rule governed by the doctrine
-- Scope: global
+### Specific distinctions
 
-### `context/skills`
+| Layer | Definition | Example |
+| --- | --- | --- |
+| doctrine | durable preferences and invariants | `04-compose-port-isolation.md` |
+| skills | narrow reusable knowledge packs | `canonical-example-curator.md` |
+| workflows | how to execute a task | `add-api-endpoint.md` |
+| stacks | framework/tooling specifics | `go-echo-templ.md` |
+| archetypes | project shape patterns | `local-rag-system.md` |
+| router files | inference and bundle selection rules | `task-router.md` |
+| manifests | machine-readable load hints | `backend-api-fastapi-polars.yaml` |
+| canonical examples | preferred implementation references | `examples/canonical/api-endpoints/` |
+| templates | starter scaffolds intended for copying | `templates/fastapi/` |
 
-- Belongs: reusable specialty packs when a task requires a narrow competency
-- Does not belong: repo-wide doctrine or one-off task notes
-- Naming: verb-capability or domain-capability
-- Size: 1 focused file plus optional assets
-- Load when: task wording clearly calls for the capability
-- Scope: reusable specialty layer
+## SECTION 4 - Top-level routing strategy
 
-### `context/workflows`
+### Plain-English task router strategy
 
-- Belongs: sequence-oriented task execution guidance
-- Does not belong: permanent philosophy or framework reference
-- Naming: imperative verb phrase
-- Size: 40-100 lines
-- Load when: a task matches the workflow intent
-- Scope: task-specific
+1. Parse the user's words first, not internal names.
+2. Map verbs to workflows.
+3. Map nouns to archetypes and stack packs.
+4. Confirm with repo profile and repo signals.
+5. Load the smallest bundle that can answer or implement safely.
 
-### `context/stacks`
+### Stack inference strategy
 
-- Belongs: language/framework/storage/deploy conventions
-- Does not belong: repo-specific history or ad hoc fixes
-- Naming: deterministic stack slug
-- Size: 60-150 lines
-- Load when: the repo uses the stack or the task touches it
-- Scope: stack-specific
+1. Repo profile manifest.
+2. Tool files and lockfiles.
+3. Dominant source tree.
+4. Existing canonical examples already referenced locally.
+5. Deployment/config signals.
 
-### `context/archetypes`
+### Archetype inference strategy
 
-- Belongs: repo-shape expectations and common file layouts
-- Does not belong: framework minutiae
-- Naming: archetype slug
-- Size: 50-120 lines
-- Load when: repo profile or task implies the archetype
-- Scope: archetype-specific
+1. Repo profile.
+2. Directory structure.
+3. Operator request wording.
+4. Existing tests and examples.
 
-### `manifests`
+### Canonical examples priority strategy
 
-- Belongs: load metadata, triggers, compatibility, infra rules
-- Does not belong: prose essays
-- Naming: `<kind>.<slug>.yaml`
-- Size: 20-120 lines
-- Load when: always start with repo profile; then task-specific manifests as needed
-- Scope: routing metadata
+1. Use the preferred example for the relevant pattern family.
+2. Use a secondary example only if the preferred one is stack-incompatible.
+3. Retired examples are reference-only and should not drive new work.
 
-### `examples`
+### Stop conditions
 
-- Belongs: canonical implementation references with metadata
-- Does not belong: incomplete experiments or stale scratch code
-- Naming: stable pattern-oriented folders
-- Size: 1 small self-contained example per pattern
-- Load when: after doctrine/workflow/archetype/stack selection
-- Scope: reference material
+- stack ambiguous
+- archetype ambiguous
+- manifest and repo signals conflict
+- persistence or service boundary touched without smoke and integration path
+- dev/test isolation unclear
+- only stale or conflicting example exists
 
-### `templates`
+### Anti-hallucination guardrails
 
-- Belongs: bootstrap starters for new repos or new modules
-- Does not belong: finished canonical examples
-- Naming: `*.template.*` or starter-file names inside template folders
-- Size: concise bootstrap artifacts
-- Load when: bootstrapping, not during normal feature work
-- Scope: scaffolding
+- never infer ports without the manifest
+- never reuse dev env files or volumes for test
+- never invent stack conventions if a stack pack exists
+- never blend multiple canonical examples for the same pattern family
+- never claim infra isolation if the compose names, ports, volumes, and seeds are not separate
 
-### `docs`
+### Escalation logic
 
-- Belongs: operator manuals, architecture rationale, checklists
-- Does not belong: canonical examples or machine-routing metadata
-- Naming: descriptive nouns
-- Size: long-form okay
-- Load when: first-time orientation or when a router points there
-- Scope: human reference
+Escalate bundle size only when:
 
-### `scripts`
+- one workflow does not cover the task
+- a second archetype materially changes behavior
+- a second stack is genuinely part of the target surface
+- no canonical example exists
 
-- Belongs: validation, bundling, bootstrap helpers
-- Does not belong: repo business logic from downstream projects
-- Naming: action-oriented snake_case
-- Size: small utilities
-- Load when: executing validation or automation, not as default reading
-- Scope: tooling
+### Load-smallest-bundle-first rules
 
-### `smoke-tests` or `tests`
+1. `README.md`
+2. `manifests/repo.profile.yaml`
+3. `AGENT.md` or `CLAUDE.md`
+4. `context/router/task-router.md`
+5. doctrine files directly relevant to the task
+6. one workflow
+7. one archetype pack
+8. required stack packs
+9. one preferred canonical example
+10. templates only for bootstrap
 
-- Belongs: operational smoke tests and minimal real-infra integration contracts
-- Does not belong: doctrine docs
-- Naming: scenario-first
-- Size: scenario-sized
-- Load when: task affects runtime behavior, infra, persistence, queues, search, or deployment
-- Scope: verification
+### Model-specific notes
 
-### Repo-level infrastructure conventions
+| Model | Guidance |
+| --- | --- |
+| Codex | optimize for deterministic routing, concrete files, small bundle size |
+| Claude | allow slightly more prose, but keep router strict and delegated |
+| Gemini | rely on explicit manifests, aliases, and short factual routing docs |
 
-Keep infra rules in two places:
+## SECTION 5 - AGENT.md and CLAUDE.md design
 
-- durable doctrine: `context/doctrine/04-compose-port-isolation.md`
-- routing metadata: `manifests/infra.compose-dokku.yaml`
+### Shared content
 
-Required rules:
-
-- Compose files stay named `docker-compose.yml` and `docker-compose.test.yml`
-- top-level Compose `name:` is repo-derived
-- primary/dev stack uses `<repo-slug>`
-- test stack uses `<repo-slug>-test`
-- host ports are explicit non-default values
-- test ports use a separate non-default band
-- test env files, volumes, databases, fixtures, and seeds are isolated from dev-like data
-
-## SECTION 5 - Agent routing rules
-
-### Shared strategy for `AGENT.md` and `CLAUDE.md`
-
-Shared:
-
-- first reads
-- smallest-bundle-first rule
-- example-first bias
+- repo purpose
+- required first reads
+- minimal-bundle rule
+- context priority
 - stop conditions
-- anti-hallucination guardrails
+- canonical example rule
+- router delegate file list
 
-Different:
+### Differences
 
-- `AGENT.md` can be more imperative and brief
-- `CLAUDE.md` can afford slightly more explanation but should still route rather than dump
+- `AGENT.md` should be slightly more procedural and terse.
+- `CLAUDE.md` can allow one extra model-specific note about resisting over-reading.
+- Neither should duplicate doctrine or stack content.
 
-### Top-level versus delegated content
+### Router-not-dump design
 
-Top-level files should contain:
+- keep both files short
+- push real detail into doctrine, workflows, stacks, archetypes, and router docs
+- encode first reads and stop conditions directly
 
-- purpose
-- first reads
-- load order
-- stop conditions
-- links to delegated packs
+### Required first reads
 
-Delegated files should contain:
+- `README.md`
+- `manifests/repo.profile.yaml`
+- `context/router/load-order.md`
+- `context/router/task-router.md`
 
-- doctrine specifics
-- task workflows
-- stack conventions
-- archetype conventions
-- example priority policy
+### Stack/archetype/task routing references
 
-### Encoding load order
+- `context/router/stack-router.md`
+- `context/router/archetype-router.md`
+- `context/router/alias-catalog.md`
 
-Use explicit numbered lists in top-level files and metadata in manifests:
+### Canonical example reference rule
 
-1. repo profile
-2. router files
-3. doctrine subset
-4. workflow
-5. archetype pack
-6. stack pack subset
-7. examples
+Both router files should say: use preferred canonical examples before inventing new patterns.
 
-### Encoding "do not load unless needed"
+### Stop conditions in router files
 
-State exclusion rules directly in routers and manifests:
+Both router files should tell the model to stop when:
 
-- unrelated stacks are excluded by default
-- retired examples are excluded unless no active example exists
-- deployment docs stay unloaded during local-only changes
+- stack or archetype is unclear
+- manifest disagrees with repo signals
+- storage or infra changes lack real verification path
 
-### Prioritizing canonical examples
+### Draft status
 
-- examples carry metadata in folder README or manifest
-- one preferred example per pattern family
-- conflicting alternates are marked as secondary or retired
+Draft starter versions have been implemented in:
 
-### Stop conditions and anti-hallucination guardrails
+- `AGENT.md`
+- `CLAUDE.md`
 
-- stop when stack or archetype inference conflicts
-- stop when no preferred example exists for a sensitive change
-- stop when infra or persistence is touched without smoke/integration coverage
-- do not invent file paths or port rules without manifest support
+These should be treated as the v1 router drafts for this base repo.
 
-The sample `AGENT.md` and `CLAUDE.md` are the committed top-level files in this repo.
+## SECTION 6 - Doctrine pack design
 
-## SECTION 6 - Task-to-context mapping
+| Doctrine doc | Purpose | Assistant should learn | Common mistake prevented |
+| --- | --- | --- | --- |
+| `00-core-principles.md` | define the repo's operating philosophy | small deterministic bundles, clarity, composability | turning the repo into a giant instruction blob |
+| `01-naming-and-clarity.md` | naming rules and file clarity | deterministic names, explicitness, low ambiguity | vague names like `helpers2.py` or `service-final.ts` |
+| `02-testing-philosophy.md` | overall testing doctrine | unit tests plus smoke tests plus minimal real integration where significant | mock-only confidence |
+| `03-smoke-test-philosophy.md` | define smoke-test expectations | startup, health, key flow verification | confusing smoke tests with large integration suites |
+| `04-compose-port-isolation.md` | Docker Compose and data isolation invariants | conventional filenames, repo-derived names, non-default ports, test isolation | test touching dev data or port collisions |
+| `05-commit-hygiene.md` | commit and diff quality | scoped changes, readable commits, no accidental churn | giant mixed commits |
+| `06-documentation-philosophy.md` | docs discipline | concise, composable, referenceable docs | giant stale prose dumps |
+| `07-prompt-first-conventions.md` | prompt-first repo patterns | ordered prompts, operator guidance, reusable context docs | mixing prompt strategy into random notes |
+| `08-canonical-example-policy.md` | example governance | one preferred example per pattern family | blending conflicting examples |
+| `09-context-loading-rules.md` | anti-sprawl rules | load smallest relevant bundle first | loading whole `context/` tree |
+| `10-deployment-dokku-thinking.md` | deployment doctrine | prefer simple Dokku path for suitable apps | defaulting to infra-heavy setups |
+| `11-single-service-bias.md` | simplicity doctrine | prefer single deployable service when it fits | introducing unnecessary service boundaries |
 
-| Task type | Doctrine to load | Workflow to load | Stack packs | Archetype packs | Canonical examples | Do not load initially |
+## SECTION 7 - Workflow pack design
+
+| Workflow doc | Purpose | Expected sequence | Preconditions | Outputs | Common pitfalls | Related doctrine | Related examples |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `add-feature.md` | default feature workflow | infer task, inspect code, implement, verify, update docs | active stack known | feature + tests | over-scoping | `00,02,09` | area-specific example |
+| `fix-bug.md` | diagnose and patch regressions | reproduce, narrow cause, patch, verify, add regression test | bug surface known | fix + regression coverage | patching without reproduction | `00,02,03` | smoke or endpoint example |
+| `refactor.md` | improve structure safely | define behavior, refactor incrementally, verify | baseline behavior understood | same behavior, cleaner shape | hidden behavior drift | `00,01,02,09` | stack-specific examples |
+| `add-smoke-tests.md` | add lightweight verification | identify critical path, add smoke, wire scripts | runnable target exists | smoke checks | writing full suite instead of smoke | `02,03,04` | `smoke-tests` |
+| `bootstrap-repo.md` | scaffold new repo | choose manifest, choose archetype, choose stack, apply templates | repo purpose known | initial file skeleton | over-bootstrapping unused layers | `00,04,06,09,10` | templates + prompt-first examples |
+| `generate-prompt-sequence.md` | build ordered prompt packs | define operator path, sequence prompts, add guide | prompt-first archetype | prompt files + docs | unclear sequence or duplicate prompts | `06,07,09` | `prompt-first` |
+| `post-flight-refinement.md` | harden after first implementation pass | audit outputs, tighten docs/tests, retire weak patterns | first pass exists | refined prompts/docs/tests | endlessly reopening architecture | `00,05,06,08` | prompt and smoke examples |
+| `add-deployment-support.md` | package for deploy | choose deploy path, add Procfile/config, verify env and storage | service exists | deploy files + docs | premature infra complexity | `04,10,11` | `dokku-deployment` |
+| `add-seed-data.md` | add deterministic dev/test seed flows | define seed model, isolate dev/test, script resets | persistence exists | seed/reset commands | sharing dev/test data paths | `02,04` | `seed-data` |
+| `add-api-endpoint.md` | add route/handler | schema, handler, wiring, tests, smoke | backend stack known | new endpoint | skipping response contracts | `01,02,03` | `api-endpoints` |
+| `extend-cli.md` | add command/subcommand | command shape, parser wiring, output, tests | cli exists | new CLI command | unstable UX and flags | `01,02,03` | `cli` |
+| `add-local-rag-indexing.md` | add indexing/retrieval flow | source ingest, chunking, indexing, retrieval check | local-rag archetype or target | index pipeline + smoke | vague metadata model | `02,03,04,07` | `local-rag` |
+| `add-storage-integration.md` | add db/search/queue integration | define boundary, wire client, add infra, add tests | storage target known | integration + infra + tests | mock-only coverage | `02,03,04,10,11` | `storage-integration`, `docker-compose` |
+
+## SECTION 8 - Stack pack design
+
+### Primary backend stacks
+
+| Stack pack | Purpose | Expected structure | Typical change surfaces | Common mistakes | Testing and smoke expectations | Integration expectations | Local infra rules | Deployment notes | Canonical examples |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `python-fastapi-polars-htmx-plotly.md` | Python backend/API and HTMX/Plotly services | `app/` or `src/`, routers, schemas, services, tests | endpoints, services, transforms, templates | using Flask-like patterns, skipping `uv`, missing `orjson`/Polars usage where relevant | route tests, service tests, smoke for startup/health and key path | real Docker-backed tests when Postgres/Redis/Mongo/Search touched | `docker-compose.yml`, `docker-compose.test.yml`, repo-derived `name:`, non-default ports, separate test data roots | strong Dokku fit for single service | endpoint, smoke, seed, docker, dokku |
+| `typescript-hono-bun-drizzle-tsx.md` | lightweight TS backend with HTMX/tailwind/Plotly-friendly rendering | `src/`, routes, db, views, tests | routes, handlers, Drizzle schema, server entry | Express assumptions, npm-first drift, weak test isolation | smoke for startup and core route, tests for handlers and schema-adjacent logic | real infra tests when DB/cache/search touched | same compose and isolation rules; separate port band from dev | strong Dokku fit | endpoint, smoke, storage, dokku |
+| `rust-axum.md` | modern Rust service stack | `src/`, handlers, state, tests | routes, extractors, middleware, storage clients | overengineering crates, missing integration path | cargo tests plus smoke path | real infra tests for persistence and queues | explicit non-default ports and isolated test compose stack | Dokku fit if packaging is simple | endpoint, smoke, docker |
+| `go-echo-templ.md` | Go web/API service with templ views | `cmd/`, `internal/`, `web/`, tests | handlers, middleware, templ components | chi-oriented drift, weak templ examples | go tests plus smoke for startup and route | real infra tests for DB/queue/search boundaries | same compose rules; explicit port bands | strong Dokku fit | endpoint, HTMX, smoke, dokku |
+| `elixir-phoenix.md` | Phoenix web/API service | `lib/`, `test/`, templates/components | controllers, contexts, channels, LiveView | overloading LiveView where static HTMX-like flow is enough, weak fixture isolation | mix test plus smoke for startup and critical route | real infra tests for DB/search/queue | same compose rules, explicit non-default host ports, separate test DB and volume names | Dokku fit if app is small and packaging remains clear | deployment, smoke, seed |
+
+### Extension-path backend candidates
+
+`backend-extension-candidates.md` should cover Nim/Jester/HappyX, Zig/Zap/Jetzig, Scala/Tapir/http4s/ZIO, Clojure/Kit/next.jdbc/Hiccup, Kotlin/http4k/Exposed, Crystal/Kemal/Avram, OCaml/Dream/Caqti/TyXML, and Dart/Dart Frog as architecturally compatible future additions.
+
+For each candidate, the pack should define:
+
+- where code usually lives
+- likely test surface
+- likely compose/deploy shape
+- common assistant failure mode
+- whether the candidate is v1-ready or future-path only
+
+### Infra and storage packs
+
+| Stack pack | Purpose | Typical changes | Common mistakes | Testing and smoke expectations | Local infra expectations | Canonical examples |
 | --- | --- | --- | --- | --- | --- | --- |
-| add API endpoint | `02-testing-philosophy`, `09-context-loading-rules` | `add-api-endpoint` | active backend stack, `docker-compose-dokku` if infra-backed | `backend-api` | `examples/canonical/api-endpoints/` | unrelated storage packs |
-| extend CLI command | `01-naming-and-clarity`, `02-testing-philosophy` | `extend-cli` | language stack only | `cli-tool` | future `examples/canonical/cli/` | HTMX or deploy docs |
-| add HTMX fragment workflow | `01-naming-and-clarity`, `08-canonical-example-policy` | `add-feature` | active web stack | `backend-api` or `interactive` derivative | `examples/canonical/htmx-plotly/` | queue/search packs |
-| add Plotly chart | `06-documentation-philosophy`, `08-canonical-example-policy` | `add-feature` | active web stack, maybe `trino-duckdb-polars` | `backend-api` or data app | `examples/canonical/htmx-plotly/` | unrelated CLI docs |
-| add seed data generator | `04-compose-port-isolation`, `02-testing-philosophy` | `add-seed-data` | active backend stack, relevant storage pack | active archetype | `examples/canonical/docker-compose/` | unrelated prompt docs |
-| add smoke tests | `03-smoke-test-philosophy`, `04-compose-port-isolation` | `add-smoke-tests` | active stack, `docker-compose-dokku` if needed | active archetype | `examples/canonical/smoke-tests/` | unrelated alternative stacks |
-| bootstrap new prompt-first repo | `07-prompt-first-conventions`, `09-context-loading-rules` | `bootstrap-repo` | prompt support, optional stack pack | `prompt-first-repo` | `examples/canonical/prompt-first/` | storage/search packs |
-| generate new prompt sequence | `07-prompt-first-conventions` | `generate-prompt-sequence` | none unless runtime involved | `prompt-first-repo` | `examples/canonical/prompt-first/` | backend stacks |
-| refactor Docker Compose stack | `04-compose-port-isolation`, `10-deployment-dokku-thinking` | `refactor` or `add-deployment-support` | `docker-compose-dokku`, relevant storage packs | active archetype | `examples/canonical/docker-compose/` | unrelated app frameworks |
-| add local RAG indexing step | `02-testing-philosophy`, `09-context-loading-rules` | `add-local-rag-indexing` | `python-fastapi...` or relevant runtime, `timescaledb-elasticsearch-qdrant` if used | `local-rag-system` | future `examples/canonical/local-rag/` | unrelated web stacks |
-| add Redis-backed workflow | `04-compose-port-isolation`, `02-testing-philosophy` | `add-storage-integration` | `redis-mongodb`, active app stack | `backend-api` or `event-driven` derivative | future `examples/canonical/storage/redis/` | prompt-only docs |
-| add MongoDB aggregation workflow | `02-testing-philosophy`, `04-compose-port-isolation` | `add-storage-integration` | `redis-mongodb` | `backend-api`, `multi-storage-experiment` | future `examples/canonical/storage/mongodb/` | queue/search packs |
-| add Trino catalog experiment | `09-context-loading-rules`, `04-compose-port-isolation` | `add-storage-integration` | `trino-duckdb-polars` | `multi-storage-experiment` | future `examples/canonical/storage/trino/` | Phoenix or HTMX docs |
-| add NATS Jetstream workflow | `02-testing-philosophy`, `04-compose-port-isolation` | `add-storage-integration` | `nats-jetstream-meilisearch` | `backend-api` or event-driven derivative | future `examples/canonical/messaging/` | prompt-first docs |
-| add Meilisearch workflow | `02-testing-philosophy`, `08-canonical-example-policy` | `add-storage-integration` | `nats-jetstream-meilisearch` | `backend-api` | future `examples/canonical/search/` | unrelated database packs |
-| add TimescaleDB workflow | `02-testing-philosophy`, `04-compose-port-isolation` | `add-storage-integration` | `timescaledb-elasticsearch-qdrant` | `backend-api` or analytics app | future `examples/canonical/storage/timescaledb/` | unrelated prompt docs |
-| add Qdrant workflow | `02-testing-philosophy`, `04-compose-port-isolation` | `add-storage-integration` | `timescaledb-elasticsearch-qdrant` | `local-rag-system` or `backend-api` | future `examples/canonical/storage/qdrant/` | unrelated queue packs |
-| add TypeScript Hono service route | `01-naming-and-clarity`, `02-testing-philosophy` | `add-api-endpoint` | `typescript-hono-bun-drizzle-tsx` | `backend-api` | `examples/canonical/api-endpoints/ts-hono/` | Rust/Go/Python stack docs |
-| add Rust Axum service route | `01-naming-and-clarity`, `02-testing-philosophy` | `add-api-endpoint` | `rust-axum` | `backend-api` | `examples/canonical/api-endpoints/rust-axum/` | other backend stacks |
-| add Go Echo templ middleware or handler flow | `01-naming-and-clarity`, `08-canonical-example-policy` | `add-feature` or `add-api-endpoint` | `go-echo-templ` | `backend-api` | `examples/canonical/api-endpoints/go-echo/` | unrelated stacks |
-| add Elixir Phoenix middleware | `01-naming-and-clarity`, `02-testing-philosophy` | `add-feature` | `elixir-phoenix` | `backend-api` | future `examples/canonical/api-endpoints/elixir-phoenix/` | non-Elixir stacks |
-| stage-2 post-flight refinement | `05-commit-hygiene`, `07-prompt-first-conventions`, `09-context-loading-rules` | `post-flight-refinement` | active stack only if code changes | `prompt-first-repo` or active repo archetype | `examples/canonical/prompt-first/` | unrelated bootstrap templates |
+| `redis-mongodb.md` | cache/document storage integrations | connection config, repositories, caching, aggregation | forgetting seed/reset isolation and index setup | smoke for connectivity and key happy path; real infra tests for reads/writes | separate dev/test services, volumes, env files, ports | storage integration, compose, seed |
+| `trino-duckdb-polars.md` | analytics and local data experimentation | ETL flows, query layers, catalog config | treating Trino as same as DuckDB; skipping data reproducibility | smoke query against test catalog; integration for transform outputs | isolated catalog config and test datasets | pipeline, storage, docker |
+| `nats-jetstream-meilisearch.md` | queue + lightweight search flows | publishers, consumers, indexing, search APIs | mock-only queue tests, missing durable stream config | smoke publish/consume and index/search happy path | separate streams/indexes for dev/test | storage, smoke |
+| `timescaledb-elasticsearch-qdrant.md` | time-series, search, vector integrations | migrations, indexers, retrieval/search flows | blending search and source-of-truth responsibilities | smoke for startup and one query/index path; real infra tests for writes/reads | isolated test DB/index/collection names | storage, local-rag, docker |
+| `docker-compose-dokku.md` | local infra and Dokku packaging conventions | compose files, Dockerfiles, Procfiles, deploy docs | default ports, non-isolated test data, Traefik-first assumptions | smoke for startup and deploy packaging check | conventional filenames, repo-derived `name:`, non-default bands, separate `.env` and `.env.test`, separate data paths | docker, dokku, smoke |
 
-## SECTION 7 - Archetype packs
+## SECTION 9 - Archetype pack design
 
-### Prompt-first repo
+| Archetype | Purpose | Likely stacks | Required doctrine | Required workflows | Recommended examples | Recommended scripts | Recommended smoke tests | Warnings |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `prompt-first-repo` | ordered prompt workflows and operator context | prompt-first support plus optional polyglot subprojects | `00,06,07,08,09` | `bootstrap-repo`, `generate-prompt-sequence`, `post-flight-refinement` | prompt-first | link checker, bundle preview | prompt sequence lint or doc presence smoke | do not bury operator flow in giant README |
+| `backend-api` | API/web service | FastAPI, Hono, Axum, Echo, Phoenix | `00,01,02,03,04,09` | `add-feature`, `add-api-endpoint`, `fix-bug`, `add-smoke-tests` | api-endpoints, smoke-tests | manifest validation | startup, health, key route | do not skip contract tests |
+| `cli-tool` | command-line utility | Python or other single-binary/service-light stacks | `00,01,02,03,06,09` | `extend-cli`, `fix-bug`, `add-smoke-tests` | cli | bundle preview | help output, one happy-path command | do not add server-only assumptions |
+| `data-pipeline` | ETL/batch systems | Python Polars, DuckDB, Trino | `00,02,03,04,06,09` | `add-feature`, `add-seed-data`, `add-smoke-tests` | seed-data, pipeline, docker | stale example detection | sample run, output existence, reset flow | do not let fixtures pollute dev data |
+| `local-rag-system` | local indexing and retrieval | FastAPI plus Qdrant, Elasticsearch, DuckDB | `00,02,03,04,07,09,10` | `add-local-rag-indexing`, `add-storage-integration`, `add-smoke-tests` | local-rag, storage | bundle preview, link checker | ingest smoke, query smoke | define metadata model early |
+| `multi-storage-experiment` | compare and combine storage engines | Trino, DuckDB, Redis, Mongo, Elastic, Qdrant, Timescale | `00,02,03,04,09,11` | `add-storage-integration`, `add-seed-data`, `refactor` | storage, docker | manifest validator | service-start and one happy-path query per system | avoid turning experiment into production architecture by default |
+| `polyglot-lab` | multiple languages intentionally | combinations of all primary stacks | `00,01,04,06,09` | `bootstrap-repo`, `refactor`, `post-flight-refinement` | prompt-first, docker | alias lint, bundle preview | one smoke per subproject | do not load every stack for one task |
+| `dokku-deployable-web-service` | small web service packaged for Dokku | FastAPI, Hono, Echo, Phoenix, Axum | `00,04,10,11` | `add-deployment-support`, `add-smoke-tests` | dokku, docker | deploy checker | health route and packaging smoke | do not assume Traefik or orchestration-first deployment |
 
-- Purpose: ordered prompt files, operator guidance, staged refinement
-- Required doctrine: `07-prompt-first-conventions`, `09-context-loading-rules`, `05-commit-hygiene`
-- Required workflows: `bootstrap-repo`, `generate-prompt-sequence`, `post-flight-refinement`
-- Common stacks: none mandatory; may pair with any backend stack
-- Canonical examples: monotonic prompt numbering, meta-runner patterns, output-target declaration
-- Likely scripts or smoke tests: prompt lint, prompt sequence validator
-- Warnings: never break numbering monotonicity; never hide output targets
+## SECTION 10 - Task router and friendly alias system
 
-### Backend API
+### Router files
 
-- Purpose: HTTP service repos with persistence/integration surfaces
-- Required doctrine: testing, smoke, compose isolation
-- Required workflows: add endpoint, add feature, add smoke tests, add storage integration
-- Common stacks: FastAPI, Hono, Echo, Axum, Phoenix
-- Canonical examples: route handler, middleware, smoke test, integration test
-- Likely scripts: health checks, seed/reset helpers
-- Warnings: mock-only coverage for persistence is insufficient
+- `context/router/task-router.md`
+- `context/router/stack-router.md`
+- `context/router/archetype-router.md`
+- `context/router/alias-catalog.md`
 
-### CLI tool
+### Router behavior
 
-- Purpose: command-line programs with deterministic IO contracts
-- Required doctrine: naming, testing, docs philosophy
-- Required workflows: extend CLI, fix bug, refactor
-- Common stacks: Python, Rust, Go, Bun
-- Canonical examples: command registration, config loading, error output
-- Likely scripts: smoke scripts for command success/failure
-- Warnings: avoid burying side effects in argument parsing
+- use verbs to infer workflow
+- use nouns to infer stack and archetype
+- confirm with manifest and repo signals
+- load smallest relevant bundle first
+- stop on ambiguity rather than inventing
 
-### Data pipeline
+### Alias strategy
 
-- Purpose: extract-transform-load or analysis pipelines
-- Required doctrine: testing, data isolation, documentation
-- Required workflows: add feature, add seed data, add storage integration
-- Common stacks: Python/Polars, DuckDB, Trino
-- Canonical examples: batch step, schema contract, fixture dataset
-- Likely scripts: pipeline smoke run, schema validation
-- Warnings: dev/test data paths must be distinct
+The alias catalog maps normal English to internal doc names. Example:
 
-### Local RAG system
+| Normal request fragment | Internal mapping |
+| --- | --- |
+| "add route" | workflow `add-api-endpoint` |
+| "make it deploy on Dokku" | workflow `add-deployment-support`, stack `docker-compose-dokku` |
+| "wire Redis" | workflow `add-storage-integration`, stack `redis-mongodb` |
+| "generate prompts" | workflow `generate-prompt-sequence`, archetype `prompt-first-repo` |
+| "add a command" | workflow `extend-cli`, archetype `cli-tool` |
 
-- Purpose: local indexing, retrieval, metadata extraction, minimal UI/API
-- Required doctrine: testing, compose isolation, canonical examples
-- Required workflows: add local RAG indexing, add feature, add smoke tests
-- Common stacks: Python plus Qdrant/Elasticsearch/Meilisearch
-- Canonical examples: chunking step, metadata extraction, query route
-- Likely scripts: indexing smoke, retrieval smoke
-- Warnings: do not treat embeddings/index data as shared across dev and test
+### Machine-readable router metadata
 
-### Multi-storage experiment
+Recommended later addition:
 
-- Purpose: compare databases, search engines, queues, or analytics systems
-- Required doctrine: context loading, compose isolation, documentation
-- Required workflows: add storage integration, refactor, add smoke tests
-- Common stacks: Trino, DuckDB, MongoDB, Redis, NATS, Meilisearch, TimescaleDB, Elasticsearch, Qdrant
-- Canonical examples: side-by-side compose stack, catalog config, comparison harness
-- Likely scripts: matrix smoke tests
-- Warnings: avoid turning experiments into undocumented production defaults
+- `manifests/router.aliases.yaml`
+- `manifests/router.task-map.yaml`
 
-### Polyglot lab
+These can mirror the markdown router docs without replacing them.
 
-- Purpose: one repo family exploring several language/runtime options
-- Required doctrine: naming, context loading, canonical examples
-- Required workflows: bootstrap repo, add feature, refactor
-- Common stacks: all primary and extension backends
-- Canonical examples: equivalent route and smoke patterns across stacks
-- Likely scripts: cross-stack smoke suites
-- Warnings: keep per-stack conventions separate; never blend code patterns
+### Request mapping examples
 
-## SECTION 8 - Stack packs
+| Request | Load bundle |
+| --- | --- |
+| "Add a `/metrics/daily` endpoint to the FastAPI service." | workflow `add-api-endpoint`; archetype `backend-api`; stack `python-fastapi-polars-htmx-plotly`; examples `api-endpoints`, `smoke-tests` |
+| "Refactor the Bun service to isolate dev and test compose volumes." | workflow `refactor`; stack `typescript-hono-bun-drizzle-tsx`, `docker-compose-dokku`; doctrine `04` |
+| "Create a prompt sequence for post-flight hardening." | workflows `generate-prompt-sequence`, `post-flight-refinement`; archetype `prompt-first-repo`; examples `prompt-first` |
+| "Add Qdrant-backed retrieval to the local RAG repo." | workflow `add-local-rag-indexing`; archetype `local-rag-system`; stack `timescaledb-elasticsearch-qdrant`; examples `local-rag`, `storage-integration` |
+| "Seed test data for Mongo and make sure dev data stays untouched." | workflow `add-seed-data`; stack `redis-mongodb`; doctrine `04`; examples `seed-data` |
+| "Package this Echo app for Dokku and keep smoke coverage." | workflow `add-deployment-support`; archetypes `backend-api`, `dokku-deployable-web-service`; stacks `go-echo-templ`, `docker-compose-dokku`; examples `dokku-deployment`, `smoke-tests` |
 
-### Python FastAPI Polars HTMX Plotly
+## SECTION 11 - Manifest/profile system
 
-- Overview: API and interactive data app stack with `uv`, `ruff`, `orjson`, and Polars-heavy data paths
-- Coding conventions: thin route layer, typed service functions, explicit schema boundaries, Polars for table logic
-- Common paths: `app/`, `app/routes/`, `app/services/`, `app/templates/`, `tests/`
-- Typical change surfaces: route handlers, HTMX partials, Plotly serialization, seed scripts
-- Testing expectations: unit plus smoke; real Docker-backed tests when persistence or external services are involved
-- Infra expectations: compose names from repo slug; non-default host ports; separate test env and volumes
-- Canonical example wish list: route + service + smoke test + HTMX fragment + Plotly endpoint
-- Risks: bloated route files, pandas drift, mock-only DB coverage
+### Recommended schema
 
-### TypeScript Hono Bun Drizzle TSX
+```yaml
+schema_version: 1
+kind: context_profile
+name: Backend API FastAPI Polars
+slug: backend-api-fastapi-polars
+summary: FastAPI plus Polars backend starter profile.
+archetypes:
+  - backend-api
+stacks:
+  - python-fastapi-polars-htmx-plotly
+compatible_workflows:
+  - add-feature
+  - add-api-endpoint
+  - add-smoke-tests
+required_context:
+  doctrine:
+    - context/doctrine/00-core-principles.md
+    - context/doctrine/02-testing-philosophy.md
+  workflows:
+    - context/workflows/add-api-endpoint.md
+  archetypes:
+    - context/archetypes/backend-api.md
+  stacks:
+    - context/stacks/python-fastapi-polars-htmx-plotly.md
+optional_context:
+  doctrine:
+    - context/doctrine/04-compose-port-isolation.md
+load_order:
+  - README.md
+  - AGENT.md
+  - manifests/repo.profile.yaml
+trigger_words:
+  - fastapi
+  - polars
+preferred_examples:
+  - examples/canonical/api-endpoints
+anti_patterns:
+  - mock-only persistence testing
+bootstrap_defaults:
+  compose:
+    dev_file: docker-compose.yml
+    test_file: docker-compose.test.yml
+    dev_name_pattern: "<repo_slug>"
+    test_name_pattern: "<repo_slug>-test"
+  ports:
+    dev_band: "18100-18199"
+    test_band: "28100-28199"
+  isolation:
+    dev_env_file: .env
+    test_env_file: .env.test
+    dev_data_root: ./.data/dev
+    test_data_root: ./.data/test
+    separate_seed_flows: true
+```
 
-- Overview: lightweight backend and HTMX-serving stack
-- Coding conventions: route modules stay small, service layer explicit, Drizzle schema authoritative
-- Common paths: `src/routes/`, `src/services/`, `src/db/`, `src/views/`, `tests/`
-- Typical change surfaces: Hono route modules, TSX view fragments, Drizzle migrations
-- Testing expectations: route smoke tests and real infra tests for DB/search/queue interactions
-- Infra expectations: explicit port bands for dev and test; isolated DB and env files
-- Canonical examples: Hono route, TSX fragment, Drizzle-backed smoke test
-- Risks: route files turning into controllers plus service logic plus SQL
+### Required fields
 
-### Go Echo templ
+- `schema_version`
+- `kind`
+- `name`
+- `slug`
+- `summary`
+- `archetypes`
+- `stacks`
+- `required_context`
+- `load_order`
+- `trigger_words`
+- `bootstrap_defaults`
 
-- Overview: server-rendered HTMX-friendly service with strong compile-time templates
-- Coding conventions: handlers thin, templ components composable, services explicit
-- Common paths: `cmd/`, `internal/http/`, `internal/services/`, `internal/views/`, `tests/`
-- Typical change surfaces: Echo middleware, templ components, service wiring
-- Testing expectations: handler smoke tests and infra-backed tests for storage or queue changes
-- Infra expectations: same Compose and port isolation rules
-- Canonical examples: middleware + handler + templ fragment + smoke test
-- Risks: business logic inside handlers, duplicate DTO shapes
+### Optional fields
 
-### Rust Axum
+- `compatible_workflows`
+- `optional_context`
+- `repo_signals`
+- `preferred_examples`
+- `anti_patterns`
+- `dokku`
 
-- Overview: strongly typed API service stack
-- Coding conventions: extractor-driven handlers, explicit state wiring, crates kept coherent
-- Common paths: `src/routes/`, `src/state/`, `src/services/`, `tests/`
-- Typical change surfaces: route registration, state/config, integration tests
-- Testing expectations: cargo unit tests plus infra-backed integration tests when boundaries matter
-- Infra expectations: same compose naming and isolation rules
-- Canonical examples: Axum route + shared state + integration test
-- Risks: over-generic abstractions and async error-type sprawl
+### Example profiles
 
-### Additional backend candidates
+V1 should ship at least these profiles:
 
-- Nim `Jester` `HappyX`: keep routing simple, prefer one clear service layer
-- Zig `Zap` `Jetzig`: prioritize explicit HTTP flow and minimal magic
-- Scala `Tapir` `http4s` `ZIO`: use typed endpoints and effect boundaries carefully
-- Clojure `Kit` `next.jdbc` `Hiccup`: keep data shape docs explicit
-- Kotlin `http4k` `Exposed`: prefer functional routing and thin transaction boundaries
-- Crystal `Kemal` `Avram`: keep ORM and HTTP concerns separate
-- OCaml `Dream` `Caqti` `TyXML`: use module boundaries to reduce cognitive load
-- Dart `Dart Frog`: keep route folder conventions explicit
+1. `backend-api-fastapi-polars.yaml`
+2. `backend-api-typescript-hono-bun.yaml`
+3. `backend-api-rust-axum.yaml`
+4. `backend-api-go-echo.yaml`
+5. `webapp-elixir-phoenix.yaml`
+6. `prompt-first-meta-repo.yaml`
+7. `local-rag-base.yaml`
+8. `multi-storage-zoo.yaml`
+9. `cli-python.yaml`
+10. `data-pipeline-polars.yaml`
+11. `dokku-deployable-fastapi.yaml`
+12. `dokku-deployable-typescript-hono-bun.yaml`
+13. `dokku-deployable-go-echo.yaml`
+14. `dokku-deployable-phoenix.yaml`
 
-Each extension stack pack should define:
+### Load order semantics
 
-- expected folders
-- route and handler conventions
-- smoke-test expectations
-- one canonical example per common change surface
+- `required_context` is the first bundle for that profile.
+- `optional_context` is only loaded if the task clearly needs it.
+- `preferred_examples` are consulted before inventing new patterns.
 
-### Docker Compose Dokku
+## SECTION 12 - Canonical examples strategy
 
-- Overview: local orchestration plus simple deploy packaging
-- Conventions: keep filenames conventional, set top-level `name:` from repo slug
-- Dev/test isolation: primary `<repo>`, test `<repo>-test`
-- Port strategy: non-default explicit host ports; test band distinct from primary
-- Risks: accidental shared volumes, default ports, implicit project names
+### What makes an example canonical
 
-### Redis MongoDB
+- it reflects an actively preferred pattern
+- it is small enough to imitate directly
+- it matches current doctrine and stack guidance
+- it includes the expected verification shape
 
-- Overview: cache/document-store pair for workflow state and aggregation experiments
-- Conventions: treat each service as an explicit dependency with smoke coverage
-- Change surfaces: connection config, data access layer, seed/reset scripts
-- Testing expectations: real infra tests for pipelines, TTL behavior, aggregation logic
-- Risks: hidden shared state, brittle fixtures
-
-### Trino DuckDB Polars
-
-- Overview: analytics and exploration stack
-- Conventions: DuckDB local fast path, Trino cataloged comparison path, Polars in process
-- Change surfaces: query modules, catalog config, local dataset scripts
-- Testing expectations: query smoke tests with known fixtures
-- Risks: inconsistent schema assumptions across engines
-
-### NATS Jetstream Meilisearch
-
-- Overview: eventing plus lightweight search
-- Conventions: explicit subject naming, idempotent consumers, index refresh clarity
-- Change surfaces: publisher/consumer contracts, indexing steps, search queries
-- Testing expectations: real infra tests for publish-consume-index flow
-- Risks: silently async failures, stale index assumptions
-
-### TimescaleDB Elasticsearch
-
-- Overview: time-series analytics plus full-text/search analytics
-- Conventions: keep schema/mapping artifacts versioned and testable
-- Change surfaces: migrations, index mappings, query adapters
-- Testing expectations: real infra tests for inserts, refresh, retrieval
-- Risks: drift between SQL and search representations
-
-## SECTION 9 - Canonical examples strategy
-
-Choose examples that are:
-
-- small enough to load quickly
-- complete enough to copy safely
-- representative of the preferred local pattern
-- tested or smoke-validated
-
-Keep:
+### How many examples to keep
 
 - one preferred example per pattern family
-- at most two alternates when genuinely needed
-- retired examples in a clearly marked `retired/` subtree or removed entirely
+- at most one secondary active example per family when stack variation demands it
+- retire the rest
 
-Mark preferred examples with metadata in their local README or manifest.
+### How to mark preferred examples
 
-Retirement rules:
+Use a short index file or manifest metadata with:
 
-- retire when stack version, doctrine, or preferred architecture changes materially
-- replace with a new preferred example in the same pattern family
-- note the reason for retirement
+- `status: preferred`
+- `pattern_family: api-endpoint`
+- `stack: python-fastapi-polars-htmx-plotly`
 
-Avoid example blending by:
+### How to retire outdated examples
 
-- grouping examples by pattern family
-- marking one preferred implementation
-- explicitly noting incompatible alternates
+- move them to `examples/retired/`
+- annotate why they were retired
+- never let them appear as default examples
 
-Recommended layout:
+### How to avoid conflicting examples
+
+- do not keep two equally endorsed examples for the same pattern family and stack
+- split examples by pattern family and stack when necessary
+
+### Recommended example layout
 
 ```text
 examples/canonical/
 ├── README.md
-├── prompt-first/
-│   ├── monotonic-sequence/
-│   └── post-flight-stage2/
 ├── api-endpoints/
-│   ├── python-fastapi/
-│   ├── ts-hono/
-│   ├── go-echo/
-│   └── rust-axum/
-├── htmx-plotly/
 ├── smoke-tests/
 ├── docker-compose/
-└── retired/
+├── dokku-deployment/
+├── cli/
+├── prompt-first/
+├── seed-data/
+├── storage-integration/
+└── local-rag/
 ```
 
-## SECTION 10 - Manifest/profile loading system
+## SECTION 13 - Templates strategy
 
-### Schema design
+### Templates to keep
 
-Use YAML with predictable fields:
+- `templates/base/AGENT.md`
+- `templates/base/CLAUDE.md`
+- `templates/base/README.md`
+- `templates/manifests/repo.profile.template.yaml`
+- `templates/prompt-first/`
+- `templates/fastapi/`
+- `templates/hono-bun/`
+- `templates/rust-axum/`
+- `templates/go-echo/`
+- `templates/phoenix/`
+- `templates/dokku/`
+- `templates/smoke-tests/`
+- `templates/seed-data/`
 
-```yaml
-kind: repo_profile | archetype | stack | workflow | infra
-slug: string
-summary: string
-load_order: integer
-required_files:
-  - path
-optional_files:
-  - path
-trigger_keywords:
-  - string
-compatibility:
-  archetypes: [slug]
-  stacks: [slug]
-infra:
-  compose:
-    dev_file: docker-compose.yml
-    test_file: docker-compose.test.yml
-    dev_name: <repo-slug>
-    test_name: <repo-slug>-test
-  ports:
-    dev_band: "18xxx"
-    test_band: "28xxx"
-  isolation:
-    separate_env_files: true
-    separate_volumes: true
-    separate_seed_flows: true
-```
+### Templates vs examples
 
-### Load order semantics
+| Templates | Examples |
+| --- | --- |
+| meant to be copied and customized | meant to be studied and imitated |
+| minimal and composable | concrete and opinionated |
+| may contain placeholders | should look like realistic final patterns |
 
-- lower `load_order` means earlier read
-- `repo_profile` is always first
-- workflows are loaded after doctrine and before examples
-- examples are optional unless a task touches a known pattern family
+### Template discipline
 
-### Optional versus required context
+- keep templates small
+- compose templates instead of creating giant all-in-one starters
+- do not let templates drift into full sample apps
 
-- `required_files`: must be read before action
-- `optional_files`: load only if task scope expands
+## SECTION 14 - Script and automation strategy
 
-### Trigger keywords
+| Script | What it does | Inputs | Outputs | Best language | Timing |
+| --- | --- | --- | --- | --- | --- |
+| `validate_manifests.py` | schema and path validation | manifest files | pass/fail + errors | Python | v1 |
+| `validate_router_refs.py` | ensure router targets exist | router docs | pass/fail + missing refs | Python | v1 |
+| `detect_stale_examples.py` | find examples no longer referenced or marked stale | example dirs + manifests | report | Python | phase 2 |
+| `build_repo_from_profile.py` | compose templates into a starter repo | chosen profile + templates | generated repo skeleton | Python | phase 2 |
+| `preview_context_bundle.py` | show what a request would load | request text + profile | ordered file list | Python | v1 |
+| `generate_agent_files.py` | build repo-specific routers from template + profile | profile | `AGENT.md` and `CLAUDE.md` | Python | phase 2 |
+| `lint_alias_collisions.py` | detect ambiguous alias mappings | alias catalog | report | Python | phase 2 |
+| `check_internal_links.py` | verify docs references | docs tree | pass/fail + broken links | Python | v1 |
 
-Use user-facing natural language, not internal jargon. The human should not need to memorize manifest names.
+## SECTION 15 - Smoke-test and integration-test philosophy and starter strategy
 
-### Compatibility metadata
+### Smoke tests across archetypes
 
-Each manifest lists compatible archetypes and stacks so routers can avoid invalid combinations.
+| Archetype | Minimal smoke test |
+| --- | --- |
+| API service | start app, hit health, hit one core route |
+| CLI tool | run help and one core happy-path command |
+| data pipeline | run one small batch and verify expected output artifact |
+| local RAG | ingest one sample source and answer one retrieval query |
+| Dokku-deployable service | start packaged app and hit health route |
 
-### Infrastructure metadata
+### Minimal real-infra integration tests
 
-Put Compose filenames, repo-derived `name:` values, host-port bands, and dev/test isolation rules in the repo profile and infra manifest.
+Significant features require real Docker-backed integration tests when they touch:
 
-### Future automation notes
+- persistence
+- queues
+- search indexes
+- vector stores
+- cross-service boundaries
 
-- scripts can validate manifest schema
-- scripts can produce a context bundle preview
-- bootstrap tools can select template sets from manifests
+These tests should be mostly happy-path with a few reasonable edge cases.
 
-The eight example manifests are committed under `manifests/`.
+### How smoke differs from unit and integration tests
 
-## SECTION 11 - Example implementations for real workflows
+| Test type | Purpose |
+| --- | --- |
+| unit | logic-level correctness |
+| smoke | fast "does the thing start and basically work" signal |
+| integration | real infra boundary verification |
 
-### 1. Prompt-first repo for a polyglot backend lab
+### Starter asset organization
 
-- Create: `.prompts/`, `context/`, `manifests/repo.profile.yaml`, `examples/canonical/prompt-first/`
-- Archetypes: `prompt-first-repo`, `polyglot-lab`
-- Mandatory first reads: `AGENT.md`, repo profile, prompt-first doctrine
-- Most important examples: monotonic prompt sequence, post-flight refinement
-- Isolation: if services exist, dev and test compose stacks use distinct names and port bands
+- `smoke-tests/api/`
+- `smoke-tests/cli/`
+- `smoke-tests/pipeline/`
+- `smoke-tests/rag/`
+- `smoke-tests/deploy/`
 
-### 2. Python FastAPI Polars service with smoke tests and seed data
+### When assistants should add or update smoke tests
 
-- Create: `app/`, `tests/`, `docker-compose.yml`, `docker-compose.test.yml`, seed scripts
-- Archetype: `backend-api`
-- Stacks: `python-fastapi-polars-htmx-plotly`, `docker-compose-dokku`
-- Mandatory first reads: testing doctrine, compose isolation doctrine, add endpoint workflow
-- Examples: Python endpoint, smoke test, docker compose example
-- Isolation: `repo-slug` and `repo-slug-test`, separate DB volumes and `.env.test`
+- new endpoint
+- new CLI command
+- changed startup or health behavior
+- changed seed/reset flow
+- changed deploy packaging
 
-### 3. FastAPI HTMX Plotly dashboard with Docker-backed local services
+### When assistants should add or update real-infra integration tests
 
-- Create: template/view folders, fragment routes, Plotly data endpoints, smoke tests
-- Archetype: backend API plus interactive data app variant
-- Stacks: Python stack, Redis/Mongo or analytics pack as needed
-- Mandatory first reads: canonical example policy, stack pack, smoke-test workflow
-- Examples: HTMX fragment and Plotly example set
-- Isolation: separate dev/test ports for web, Redis, and DB services
+- any significant persistence feature
+- queue/search/vector integration
+- new cross-service behavior
+- anything where mocks would not prove operational correctness
 
-### 4. TypeScript Hono Bun Drizzle TSX service with HTMX fragments and smoke tests
+## SECTION 16 - Dokku-oriented deployment doctrine
 
-- Create: `src/routes/`, `src/views/`, `src/db/`, `tests/`, compose files
-- Archetype: `backend-api`
-- Stacks: TS Hono/Bun/Drizzle, Docker Compose
-- Mandatory first reads: naming doctrine, add endpoint workflow, smoke-test workflow
-- Examples: TS Hono route and TSX fragment
-- Isolation: distinct Bun app ports and DB ports in dev/test bands
+### Why Dokku fits many future repos
 
-### 5. Go Echo templ backend service with canonical middleware and smoke tests
+- many future projects are small services or small web apps
+- Dokku keeps deploy operations simple
+- Procfile and app config are easier to reason about than orchestration-heavy setups
 
-- Create: `cmd/`, `internal/http/`, `internal/views/`, `tests/`
-- Archetype: `backend-api`
-- Stacks: Go Echo templ, Docker Compose
-- Mandatory first reads: Go stack pack, add feature workflow
-- Examples: middleware and templ example
-- Isolation: separate test compose file and volumes
+### Conventions to adopt
 
-### 6. Rust Axum API with route patterns and integration tests
+- include a `Procfile` when Dokku is likely
+- keep runtime env config explicit
+- document persistent storage needs plainly
+- avoid assuming a reverse proxy system more elaborate than needed
 
-- Create: `src/routes/`, `src/services/`, `tests/integration/`, compose files if persistence exists
-- Archetype: `backend-api`
-- Stacks: Rust Axum, optional storage packs
-- Mandatory first reads: Rust stack pack, testing doctrine
-- Examples: Axum route and infra-backed integration example
-- Isolation: separate DB and message-bus test instances
+### Example files and templates
 
-### 7. Nim or Zig backend sketch for experimental server rendering
+- `templates/dokku/Procfile`
+- `templates/dokku/app.json`
+- canonical Dokku deployment example
 
-- Create: one service folder, one smoke test, one example route
-- Archetype: `polyglot-lab`
-- Stacks: backend extension candidate plus Docker Compose if needed
-- Mandatory first reads: backend-extension pack, canonical-example policy
-- Examples: parallel endpoint pattern from a primary stack
-- Isolation: keep experimental service on its own non-default port band
+### How to think about config and persistence
 
-### 8. Local RAG repo with indexing, metadata extraction, and minimal web UI
+- treat env vars as explicit inputs
+- document volumes and storage mounts clearly
+- keep build and release steps simple
 
-- Create: indexer module, retrieval API/UI, local vector/search services, smoke tests
-- Archetype: `local-rag-system`
-- Stacks: Python or TS plus `timescaledb-elasticsearch-qdrant` as needed
-- Mandatory first reads: local RAG workflow, compose isolation doctrine
-- Examples: indexing and retrieval canonical examples
-- Isolation: separate dev/test indexes, collections, and data dirs
+### When Dokku is better than more elaborate setups
 
-### 9. Multi-storage zoo repo with Trino and Docker Compose
+- single service
+- small service plus one or two backing services
+- operator wants low ceremony deployment
 
-- Create: `docker-compose.yml`, `docker-compose.test.yml`, per-store configs, comparison scripts
-- Archetype: `multi-storage-experiment`
-- Stacks: `trino-duckdb-polars`, `redis-mongodb`, `timescaledb-elasticsearch-qdrant`
-- Mandatory first reads: compose isolation doctrine, add storage integration workflow
-- Examples: docker compose and storage comparison examples
-- Isolation: every store gets separate dev/test env files and volumes
+### When Dokku is not the right fit
 
-### 10. Prompt meta-runner repo with post-flight and stage-2 prompts
+- many independently scaling services
+- highly dynamic service mesh needs
+- orchestration-first operational requirements
 
-- Create: `.prompts/`, meta-runner docs, validation scripts, stage-2 workflow notes
-- Archetype: `prompt-first-repo`
-- Stacks: prompt-first support only unless runtime helpers are added
-- Mandatory first reads: prompt-first doctrine, generate prompt sequence workflow, post-flight workflow
-- Examples: prompt-first canonical examples
-- Isolation: if helper services exist, same parallel dev/test rules apply
+## SECTION 17 - Example future project scenarios
 
-## SECTION 12 - Cross-model guidance
+| Project | Goal | Archetype | Stack | Required bundles | Manifest | Key examples | Dokku relevance |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Market Pulse API | serve daily metrics over FastAPI and Polars | backend-api | FastAPI + Polars | doctrine `00,02,03,04`; workflow `add-api-endpoint`; stack `python-fastapi-polars-htmx-plotly` | `backend-api-fastapi-polars` | api-endpoints, smoke-tests, seed-data | high |
+| Hono Ops Console | lightweight HTMX admin service | backend-api | Hono + Bun + Drizzle + TSX | doctrine `00,02,03,04`; workflow `add-feature`; stack `typescript-hono-bun-drizzle-tsx` | `backend-api-typescript-hono-bun` | api-endpoints, smoke-tests, docker | high |
+| Axum Stream API | Rust event/status API | backend-api | Rust + Axum | doctrine `00,02,03`; workflow `add-api-endpoint`; stack `rust-axum` | `backend-api-rust-axum` | api-endpoints, smoke-tests | medium |
+| Echo Plot Board | Go web app with templ and Plotly | backend-api | Go + Echo + templ | doctrine `00,02,03,04`; workflow `add-feature`; stack `go-echo-templ` | `backend-api-go-echo` | smoke-tests, docker, dokku | high |
+| Phoenix Signals | Phoenix-based interactive service | dokku-deployable-web-service | Elixir + Phoenix | doctrine `00,04,10`; workflow `add-deployment-support`; stack `elixir-phoenix` | `webapp-elixir-phoenix` | dokku, smoke-tests | high |
+| Prompt Forge | meta-runner prompt repo | prompt-first-repo | prompt-first support | doctrine `00,06,07,08,09`; workflows `bootstrap-repo`, `generate-prompt-sequence` | `prompt-first-meta-repo` | prompt-first | low |
+| Local Corpus Lab | local document retrieval tool | local-rag-system | FastAPI + Qdrant + DuckDB | doctrine `00,02,03,04,07`; workflows `add-local-rag-indexing`, `add-storage-integration` | `local-rag-base` | local-rag, storage-integration, smoke-tests | medium |
+| Storage Zoo | compare Redis, Mongo, Trino, DuckDB, Qdrant | multi-storage-experiment | multiple data stacks | doctrine `00,02,03,04,11`; workflow `add-storage-integration` | `multi-storage-zoo` | storage-integration, docker | low |
+| Polars CLI Runner | local data CLI | cli-tool | Python + Polars | doctrine `00,01,02,03`; workflow `extend-cli` | `cli-python` | cli, smoke-tests | low |
+| Batch Melt | scheduled ETL pipeline | data-pipeline | Python + Polars + DuckDB | doctrine `00,02,03,04`; workflows `add-feature`, `add-seed-data` | `data-pipeline-polars` | seed-data, smoke-tests | low |
+| FastAPI Dokku Starter | deployable single-service API | dokku-deployable-web-service | FastAPI + Docker | doctrine `00,04,10,11`; workflow `add-deployment-support` | `dokku-deployable-fastapi` | dokku, docker, smoke-tests | high |
+| Bun Dokku Starter | deployable Hono service | dokku-deployable-web-service | Hono + Bun | doctrine `00,04,10,11`; workflow `add-deployment-support` | `dokku-deployable-typescript-hono-bun` | dokku, smoke-tests | high |
 
-### Codex
+## SECTION 18 - Cross-model guidance
 
-- Best with terse routers and explicit file paths
-- Responds well to manifests and canonical examples
-- Failure pattern: moving too fast with partial inference
-- Mitigation: strong stop conditions and ordered first reads
+### One shared system, three model styles
 
-### Claude
-
-- Tolerates more prose but may over-read if given permission
-- Benefits from delegated files and explicit "do not load unless needed" rules
-- Failure pattern: synthesizing elegant but non-canonical structures
-- Mitigation: example-first priority and compatibility metadata
-
-### Gemini
-
-- Benefits from explicit metadata and deterministic manifests
-- Failure pattern: broader inference from partial repo signals
-- Mitigation: make routing files and manifest compatibility very explicit
-
-One shared system serves all three if:
-
-- the top-level routers stay small
-- manifests stay current
-- canonical examples are clearly preferred
-- doctrine is separated from workflows and stacks
-
-## SECTION 13 - Anti-patterns and quality rubric
-
-### Likely mistakes
-
-- giant top-level instruction files
-- doctrine mixed with examples
-- multiple conflicting canonical examples with no preferred marker
-- stack packs that encode repo-specific hacks
-- templates used as live examples
-- implicit Compose project names
-- default host ports
-- shared dev/test volumes or seed flows
-- mock-only testing for persistence-heavy changes
-- no manifest ownership or refresh discipline
-
-### Quality rubric
-
-Score each category from 1 to 5.
-
-| Category | 1 | 3 | 5 |
+| Area | Codex | Claude | Gemini |
 | --- | --- | --- | --- |
-| clarity | vague and overlapping | mostly clear | deterministic and easy to navigate |
-| modularity | giant docs | some layering | clean doctrine/workflow/stack/archetype separation |
-| minimal-load design | frequent bulk loading | partial routing | smallest-bundle-first works reliably |
-| example quality | stale or absent | mixed quality | preferred canonical examples are current and trusted |
-| routing quality | ad hoc | partly manifest-driven | deterministic across common tasks |
-| archetype reuse | one-off repo design | some reuse | archetype packs are portable and composable |
-| stack specificity | generic advice | partial conventions | concrete paths, risks, and test expectations |
-| anti-drift protection | none | manual discipline only | manifests, examples, and routers are validated |
-| frontier-model friendliness | optimized for one model | usable by several | explicitly balanced for Codex, Claude, Gemini |
-| long-term maintainability | brittle and duplicated | acceptable | small files, clear owners, easy retirement paths |
+| routing style | explicit and procedural | concise but can tolerate a bit more rationale | explicit metadata and short factual cues |
+| preferred doc size | small | small to medium | small |
+| example usage | strong | strong | very strong |
+| likely failure | over-implementation or stack drift | over-reading or over-explaining | vague inference without explicit metadata |
+| response style | action-oriented | explanatory when needed | terse and metadata-driven |
 
-## SECTION 14 - Deliverables
+### How to reduce model-specific drift
 
-### Initial implementation pass
+- keep one shared doctrine layer
+- keep router files deterministic
+- let manifests carry machine-readable hints
+- let examples anchor implementation
+- avoid assistant-specific forks unless the top-level router wording truly needs it
 
-- top-level routers
-- architecture spec
-- doctrine core
-- workflow core
-- primary stack packs
-- primary archetype packs
-- repo profile and infra manifests
-- first canonical-example folders
-- layout validation script
+## SECTION 19 - Quality rubric
 
-### Phase 2 expansion pass
+Score each area from 1 to 5.
 
-- richer example inventory
-- archetype bootstrap generator
-- manifest schema validation
+| Area | 1 | 3 | 5 |
+| --- | --- | --- | --- |
+| clarity | vague names and overlapping docs | mostly clear | deterministic names and clean boundaries |
+| routing quality | assistant must guess heavily | some routing hints | strong natural-language inference and stop rules |
+| doctrine quality | generic slogans | useful but uneven | durable actionable doctrine with real constraints |
+| workflow usefulness | incomplete task steps | decent task guidance | clear sequences, outputs, pitfalls, references |
+| stack specificity | generic framework notes | moderate detail | concrete change surfaces and verification expectations |
+| archetype usefulness | barely differentiated | usable | clearly shapes task behavior and example choice |
+| canonical example quality | random examples | some preferred examples | one strong preferred example per pattern family |
+| anti-sprawl protection | bulk loading common | some guardrails | smallest-bundle discipline is encoded everywhere |
+| bootstrap readiness | hard to start new repo | workable | clear templates, manifests, scripts, and docs |
+| frontier-model friendliness | inconsistent across models | acceptable | shared deterministic system works across Codex/Claude/Gemini |
+| maintainability | docs drift fast | manageable | scoped docs, validation scripts, retirement paths |
+
+## SECTION 20 - Deliverables for the first implementation pass
+
+### Mandatory v1 files
+
+- `README.md`
+- `AGENT.md`
+- `CLAUDE.md`
+- `docs/agent-context-architecture.md`
+- `context/router/task-router.md`
+- `context/router/stack-router.md`
+- `context/router/archetype-router.md`
+- `context/router/alias-catalog.md`
+- core doctrine docs already present
+- core workflow docs already present
+- core stack docs already present
+- core archetype docs already present
+- `manifests/README.md`
+- `manifests/repo.profile.yaml`
+- v1 profile manifests
+
+### Mandatory v1 manifests
+
+- `backend-api-fastapi-polars.yaml`
+- `backend-api-typescript-hono-bun.yaml`
+- `backend-api-rust-axum.yaml`
+- `backend-api-go-echo.yaml`
+- `webapp-elixir-phoenix.yaml`
+- `prompt-first-meta-repo.yaml`
+- `local-rag-base.yaml`
+- `multi-storage-zoo.yaml`
+- `cli-python.yaml`
+- `data-pipeline-polars.yaml`
+- `dokku-deployable-fastapi.yaml`
+- `dokku-deployable-typescript-hono-bun.yaml`
+
+### Mandatory v1 examples
+
+- canonical API endpoint example
+- canonical smoke test example
+- canonical Docker Compose isolation example
+- canonical Dokku deployment example
+- canonical prompt-first example
+- canonical seed data example
+- canonical storage integration example
+- canonical local RAG example
+
+### Mandatory v1 templates
+
+- base `AGENT.md`
+- base `CLAUDE.md`
+- base `README.md`
+- repo profile template
+- FastAPI starter
+- Hono/Bun starter
+- Go/Echo starter
+- Dokku starter
+- smoke-test starter
+
+### Phase 2 automation
+
+- repo builder from profile
+- agent file generator
 - stale example detection
-- bundle preview tooling
-- AGENT/CLAUDE consistency checks
-- automated task-to-context recommender
+- alias collision lint
 
-## SECTION 15 - Optional automation ideas
+### Strong but realistic v1
 
-- manifest validation script against required keys
-- stale example detector based on stack version or retired markers
-- `AGENT.md` and `CLAUDE.md` consistency checker
-- task-to-context recommendation CLI
-- context bundle preview generator
-- archetype bootstrap generator
-- canonical example linting for preferred/secondary/retired state
-- Compose name and host-port band validator
-- test-data isolation validator for env files, volumes, and seed scripts
+V1 should not try to fully scaffold every future stack. A strong v1 delivers:
 
-## End-state summary
+- deterministic routing
+- doctrine/workflow/stack/archetype separation
+- manifest schema and several high-value profiles
+- a minimal canonical example set
+- basic validation scripts
+- Dokku-ready conventions
+- dev/test Compose isolation rules encoded clearly
 
-1. Recommended final architecture: Hybrid Layered Router with manifests and canonical examples.
-2. Sample `AGENT.md`: committed at repo root.
-3. Sample `CLAUDE.md`: committed at repo root.
-4. Eight example manifests: committed under `manifests/`.
-5. Twenty-row task-to-context mapping table: in Section 6.
-6. Prioritized implementation plan: in Section 14.
+### Recommended first commit sequence
+
+1. `docs: lock base repo purpose, architecture, and routing doctrine`
+2. `docs: replace top-level assistant routers with deterministic minimal loaders`
+3. `docs: add task, stack, archetype routers and alias catalog`
+4. `docs: standardize manifest schema and repo profile`
+5. `feat: add v1 starter profile manifests`
+6. `docs: expand canonical example and template strategy references`
+7. `feat: add manifest and router validation helpers`
+8. `docs: add quality rubric and bootstrap checklist refinements`
