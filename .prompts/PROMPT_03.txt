@@ -76,6 +76,7 @@ IMPORTANT CONSTRAINTS
 - Do not center Starlette.
 - Prefer excellent markdown and straightforward Python.
 - Keep file paths deterministic and cross-references accurate.
+- Preserve and strengthen the infrastructure-isolation doctrine: conventional `docker-compose.yml` and `docker-compose.test.yml` filenames, repo-derived Compose `name:` values, explicit non-default host ports, isolated primary/dev and test stacks, and test seed/reset flows that cannot touch primary/dev data.
 
 Your work must be organized into commit-ready enhancement batches.
 
@@ -143,6 +144,10 @@ Possible fields may include:
 - task_hints
 - warnings
 - bootstrap_defaults
+- compose_files
+- compose_project_names
+- port_bands
+- data_isolation
 - dokku_relevance
 - smoke_test_expectations
 - prompt_first_support
@@ -178,6 +183,9 @@ It should support:
 - optionally enabling prompt-first support
 - optionally enabling smoke-test starter files
 - optionally enabling seed-data starter files
+- generating conventional `docker-compose.yml` and `docker-compose.test.yml` files with repo-derived Compose `name:` values when a Docker-backed layout is selected
+- generating distinct primary/dev and test port assignments for web and backing services
+- generating isolated env, volume, and data naming for primary/dev versus test infrastructure
 - optionally selecting one or more manifests
 - generating a starter folder structure
 - generating repo-specific AGENT.md and CLAUDE.md from templates and selected context
@@ -215,6 +223,7 @@ Add or update templates for:
 - repo CLAUDE.md
 - selected manifest profile summary
 - Dokku support starter
+- Docker Compose starter files for primary/dev and test stacks
 - prompt-first repo starter
 - smoke test starter
 - seed data starter
@@ -304,6 +313,8 @@ NEW OR UPDATED TEMPLATES
 - templates/claude-md/CLAUDE.template.md
 - templates/manifest/profile-summary.template.yaml
 - templates/dokku/Dokku.template.md
+- templates/compose/docker-compose.template.yaml
+- templates/compose/docker-compose-test.template.yaml
 - templates/prompt-first/PROMPTS.md.template
 - templates/prompt-first/PROMPT_01.template.txt
 - templates/prompt-first/PROMPT_02_s.template.txt
@@ -327,6 +338,7 @@ Before outputting the files, ensure internally that:
 - prompt-first examples reflect strictly monotonic numbering and filename-based references
 - Dokku appears coherently in doctrine, manifests, examples, templates, and bootstrap generation
 - Go Echo, Elixir Phoenix, Rust Axum, and FastAPI/uv/ruff/orjson/polars are all meaningfully represented
+- Docker-backed generation preserves conventional Compose filenames, repo-derived Compose `name:` values, non-default port allocation, and isolated primary/dev-vs-test seed/data boundaries
 
 OUTPUT FORMAT REQUIREMENTS
 

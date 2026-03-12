@@ -61,6 +61,7 @@ Important implementation constraints:
 - Do not omit important files just to be minimal, but do not bloat the repo either.
 - Do not produce placeholder text like “TODO: fill this later” unless absolutely necessary.
 - If a file is intentionally a stub, say so explicitly and make it a useful stub.
+- Treat Docker-backed environment isolation as a real v1 requirement: conventional `docker-compose.yml` and `docker-compose.test.yml` filenames, repo-derived Compose `name:` values, explicit non-default host ports, and strict separation between primary/dev data and test fixture data.
 
 The base repo should be generated in a practical staged order.
 
@@ -78,6 +79,7 @@ Use this target v1 shape as the baseline unless a small improvement is clearly w
     - naming-and-clarity.md
     - testing-philosophy.md
     - smoke-test-philosophy.md
+    - compose-port-and-data-isolation.md
     - commit-hygiene.md
     - prompt-first-conventions.md
     - canonical-examples.md
@@ -230,6 +232,7 @@ For doctrine docs:
 - make them directly useful during coding sessions
 - include practical rules, not only abstract philosophy
 - prevent common drift and over-engineering mistakes
+- include a dedicated doctrine doc for conventional Compose filenames, repo-derived Compose `name:` values, non-default host ports, isolated primary/dev vs test infrastructure, and safe seed/reset boundaries
 
 For workflow docs:
 - structure them as task playbooks
@@ -311,6 +314,7 @@ Before outputting the batches, internally ensure:
 - Dokku guidance is aligned across doctrine, stacks, archetypes, manifests, and examples
 - prompt-first conventions reflect strictly monotonic numbering with explicit filename references
 - FastAPI/uv/ruff/orjson/polars, Rust/Axum, Go/Echo, and Elixir/Phoenix are all represented meaningfully
+- the doctrine layer clearly explains conventional Compose filenames, repo-derived Compose `name:` values, non-default port allocation, and primary/dev-vs-test data isolation
 
 At the very end, after all batches, provide:
 1. a short summary of the resulting v1 repo
