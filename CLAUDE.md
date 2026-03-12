@@ -1,14 +1,16 @@
 # CLAUDE.md
 
 Use this file as a routing entrypoint, not as the full source of truth.
+Follow `docs/context-boot-sequence.md` as the deterministic startup contract for this repo.
 
 Start with:
 
 1. `README.md`
-2. `docs/repo-purpose.md`
-3. `docs/repo-layout.md`
-4. `docs/session-start.md`
-5. `context/router/task-router.md`
+2. `docs/context-boot-sequence.md`
+3. `docs/repo-purpose.md`
+4. `docs/repo-layout.md`
+5. `docs/session-start.md`
+6. `context/router/task-router.md`
 
 Then infer the smallest useful bundle instead of loading the whole repo.
 

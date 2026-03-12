@@ -3,16 +3,18 @@
 Purpose: route the assistant to the smallest relevant context bundle for the current task.
 
 This file is a router. Durable doctrine lives under `context/doctrine/`.
+Follow `docs/context-boot-sequence.md` as the deterministic startup contract for this repo.
 
 ## Required First Reads
 
 Read these first:
 
 1. `README.md`
-2. `docs/repo-purpose.md`
-3. `docs/repo-layout.md`
-4. `docs/session-start.md`
-5. `context/router/task-router.md`
+2. `docs/context-boot-sequence.md`
+3. `docs/repo-purpose.md`
+4. `docs/repo-layout.md`
+5. `docs/session-start.md`
+6. `context/router/task-router.md`
 
 Only then load `context/router/stack-router.md`, `context/router/archetype-router.md`, or a manifest if the task still needs narrowing.
 

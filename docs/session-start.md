@@ -5,9 +5,10 @@ Use this file when beginning a new task or returning to a long-lived repo after 
 ## Read First
 
 1. `README.md`
-2. `docs/repo-purpose.md`
-3. `docs/repo-layout.md`
-4. `context/router/task-router.md`
+2. `docs/context-boot-sequence.md`
+3. `docs/repo-purpose.md`
+4. `docs/repo-layout.md`
+5. `context/router/task-router.md`
 
 ## Fast Checks
 

@@ -18,10 +18,11 @@ This repo is not a product app. It is a base system for future project repos tha
 Read in this order:
 
 1. `AGENT.md` or `CLAUDE.md`
-2. `docs/repo-purpose.md`
-3. `docs/repo-layout.md`
-4. `docs/session-start.md`
-5. `context/router/task-router.md`
+2. `docs/context-boot-sequence.md`
+3. `docs/repo-purpose.md`
+4. `docs/repo-layout.md`
+5. `docs/session-start.md`
+6. `context/router/task-router.md`
 
 Then load only the smallest bundle that matches the task:
 
