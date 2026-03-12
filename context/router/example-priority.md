@@ -15,3 +15,6 @@ Pattern families should have one preferred example each for:
 - HTMX fragment flow
 - smoke test structure
 - Docker Compose dev/test isolation
+- Dokku app packaging
+- seed data flow
+- storage integration

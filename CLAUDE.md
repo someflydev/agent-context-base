@@ -1,60 +1,71 @@
 # CLAUDE.md
 
-Purpose: route Claude-style assistants to the minimum useful context without turning this file into a doctrine dump.
+Purpose: route Claude-style assistants to the minimum useful context while keeping routing deterministic.
+
+This file should stay short. It delegates doctrine, workflows, stacks, archetypes, and examples to scoped files.
 
 ## Required First Reads
 
-Load these files first:
+Read these first:
 
 1. `README.md`
 2. `manifests/repo.profile.yaml`
 3. `context/router/load-order.md`
-4. `context/router/task-routing.md`
+4. `context/router/task-router.md`
+
+Read `context/router/stack-router.md` and `context/router/archetype-router.md` only when the stack or archetype is not already clear from the manifest and repo signals.
 
 ## Routing Policy
 
-Use a layered context strategy:
+Use this sequence:
 
-1. Durable doctrine first.
-2. Then one workflow for the task.
-3. Then one archetype pack.
-4. Then only the stack packs actually needed.
-5. Then canonical examples relevant to the exact change surface.
+1. Identify the task from the operator's normal English request.
+2. Identify the archetype.
+3. Identify the active stack.
+4. Load only the doctrine docs needed for that task.
+5. Load one workflow.
+6. Load one archetype pack.
+7. Load only the stack packs that match the active change surface.
+8. Load the preferred canonical example for the pattern.
 
-Do not recursively read the whole repository to "get context."
+Do not recursively read the repository just because context is available.
 
-## Shared Doctrine
+## Shared Truth Layer
 
-Treat the following as the durable truth layer:
+Treat these as durable truth:
 
+- `manifests/repo.profile.yaml`
 - `context/doctrine/`
-- infrastructure invariants declared in `manifests/repo.profile.yaml`
+- router rules in `context/router/`
 
-Treat workflows, stack packs, archetype packs, and examples as delegated context selected per task.
+Treat workflows, archetypes, stacks, examples, and templates as selected support context, not always-on truth.
 
 ## Example-First Policy
 
-- Check canonical examples before generating a new implementation pattern.
-- Prefer examples labeled preferred in the example index or manifest.
-- Avoid blending multiple examples that solve the same problem in incompatible ways.
+- Prefer one canonical example per pattern family.
+- Use secondary examples only when the preferred example is incompatible with the active stack.
+- If no suitable example exists, say so explicitly before generating a new pattern.
 
 ## When To Stop
 
-Pause and surface the uncertainty if:
+Stop and surface the problem when:
 
-- the task spans more than one archetype and there is no explicit composition rule
-- repo signals disagree with the manifest profile
-- a significant infra or persistence change has no smoke-test or minimal integration-test path
-- only deprecated examples exist for the requested change
+- repo signals and manifest metadata conflict
+- the task spans multiple archetypes without an explicit composition rule
+- the task touches persistence, queues, search indexes, or cross-service boundaries but lacks a real Docker-backed integration-test path
+- Docker-backed changes would blur dev and test isolation
+- only deprecated or contradictory examples exist
 
 ## Model-Specific Note
 
-Claude often tolerates longer prose, but this repo is optimized for smaller deterministic bundles. Follow the router files instead of expanding the context window unnecessarily.
+Claude can absorb longer prose, but this repo is tuned for smaller composable bundles. Follow the router and avoid loading neighboring files unless the task requires them.
 
 ## Delegated Files
 
-- `context/router/load-order.md`
-- `context/router/task-routing.md`
+- `docs/agent-context-architecture.md`
+- `context/router/task-router.md`
+- `context/router/stack-router.md`
+- `context/router/archetype-router.md`
+- `context/router/alias-catalog.md`
 - `context/router/example-priority.md`
 - `context/router/stop-conditions.md`
-- `docs/agent-context-architecture.md`

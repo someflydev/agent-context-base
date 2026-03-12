@@ -1,22 +1,11 @@
 # Task Routing
 
-Infer task type from plain English first. The operator should not need to memorize internal names.
+Compatibility note: this file remains as a short pointer for older links.
 
-Routing rules:
+Use `context/router/task-router.md` as the primary task routing document.
 
-- feature addition -> `context/workflows/add-feature.md`
-- API route or handler change -> `context/workflows/add-api-endpoint.md`
-- CLI change -> `context/workflows/extend-cli.md`
-- storage/search/queue addition -> `context/workflows/add-storage-integration.md`
-- prompt-sequence work -> `context/workflows/generate-prompt-sequence.md`
-- post-run refinement -> `context/workflows/post-flight-refinement.md`
-- smoke verification -> `context/workflows/add-smoke-tests.md`
+Key rules retained here:
 
-Stack inference sources:
-
-1. repo profile manifest
-2. lockfiles and tool files
-3. dominant source tree
-4. canonical examples already present
-
-If stack inference conflicts across these sources, stop and surface the mismatch.
+- infer task type from plain English first
+- load the smallest relevant bundle first
+- stop on stack or archetype conflicts
