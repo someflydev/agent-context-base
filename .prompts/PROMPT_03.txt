@@ -294,7 +294,7 @@ NEW CANONICAL EXAMPLE FILES
 - examples/canonical-cli/python-cli-command-example.py
 - examples/canonical-prompts/prompt-first-layout-example.md
 - examples/canonical-prompts/PROMPT_01.txt
-- examples/canonical-prompts/PROMPT_02_s.txt
+- examples/canonical-prompts/PROMPT_00_s.txt
 - examples/canonical-dokku/Procfile.example
 - examples/canonical-dokku/app-json-example.json
 - examples/canonical-storage/duckdb-polars-example.py
@@ -317,7 +317,7 @@ NEW OR UPDATED TEMPLATES
 - templates/compose/docker-compose-test.template.yaml
 - templates/prompt-first/PROMPTS.md.template
 - templates/prompt-first/PROMPT_01.template.txt
-- templates/prompt-first/PROMPT_02_s.template.txt
+- templates/prompt-first/PROMPT_00_s.template.txt
 - templates/smoke-tests/smoke_test.template.py
 - templates/seed-data/seed_data.template.py
 
