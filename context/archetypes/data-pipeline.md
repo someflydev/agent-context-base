@@ -1,16 +1,33 @@
 # Data Pipeline
 
-Purpose: extract-transform-load or analytical processing repos.
+Use this archetype for repos that ingest, transform, and emit data as a primary concern.
 
-Expected structure:
+## Common Goals
 
-- jobs or pipeline steps
-- schema or contract docs
-- fixture datasets
-- smoke or integration checks
+- deterministic small fixtures
+- clear transform stages
+- repeatable local runs
+- explicit storage boundaries
 
-Common workflows:
+## Required Context
 
-- add feature
-- add seed data
-- add storage integration
+- `context/doctrine/testing-philosophy.md`
+- `context/stacks/duckdb-trino-polars.md`
+
+## Common Workflows
+
+- `context/workflows/add-feature.md`
+- `context/workflows/add-storage-integration.md`
+- `context/workflows/add-seed-data.md`
+
+## Likely Examples
+
+- `examples/canonical-seed-data/README.md`
+- `examples/canonical-storage/README.md`
+
+## Typical Anti-Patterns
+
+- oversized fixtures
+- hidden schema assumptions
+- no real query verification for the first important boundary
+

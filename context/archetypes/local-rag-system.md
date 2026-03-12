@@ -1,16 +1,34 @@
 # Local RAG System
 
-Purpose: local indexing and retrieval repos with optional UI or API.
+Use this archetype for repos centered on local ingestion, indexing, retrieval, and answer generation over a bounded corpus.
 
-Expected structure:
+## Common Goals
 
-- indexing pipeline
-- metadata extraction
-- query/retrieval surface
-- isolated vector/search stores for dev and test
+- deterministic tiny corpus
+- explicit chunking and indexing behavior
+- reliable local retrieval
+- clear storage and embedding boundaries
 
-Common workflows:
+## Required Context
 
-- add local RAG indexing
-- add feature
-- add smoke tests
+- `context/workflows/add-local-rag-indexing.md`
+- `context/stacks/qdrant.md`
+- any supporting search or storage stack docs
+
+## Common Workflows
+
+- `context/workflows/add-local-rag-indexing.md`
+- `context/workflows/add-storage-integration.md`
+- `context/workflows/add-smoke-tests.md`
+
+## Likely Examples
+
+- `examples/canonical-rag/README.md`
+- `examples/canonical-storage/README.md`
+
+## Typical Anti-Patterns
+
+- no tiny reproducible corpus
+- many retrieval strategies in the first pass
+- no real vector-store verification
+

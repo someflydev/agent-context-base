@@ -1,16 +1,31 @@
 # Multi-Storage Experiment
 
-Purpose: compare or combine multiple data systems in one repo.
+Use this archetype for repos intentionally comparing or combining multiple storage systems in one project.
 
-Expected structure:
+## Common Goals
 
-- per-store config
-- comparison scripts
-- isolated Docker-backed stacks
-- storage-specific smoke tests
+- make each storage boundary explicit
+- keep comparison scope narrow
+- isolate ports, data roots, and fixtures cleanly
 
-Common workflows:
+## Required Context
 
-- add storage integration
-- refactor
-- add smoke tests
+- `context/doctrine/compose-port-and-data-isolation.md`
+- relevant storage stack docs
+
+## Common Workflows
+
+- `context/workflows/add-storage-integration.md`
+- `context/workflows/add-seed-data.md`
+- `context/workflows/post-flight-refinement.md`
+
+## Likely Examples
+
+- `examples/canonical-storage/README.md`
+
+## Typical Anti-Patterns
+
+- adding too many storage systems at once
+- shared fixtures that hide boundary differences
+- no test isolation between services
+

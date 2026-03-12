@@ -1,20 +1,34 @@
 # Prompt-First Repo
 
-Purpose: repos organized around ordered prompts and operator guidance.
+Use this archetype when the repository itself exists to coordinate prompts, routing, manifests, examples, templates, and bootstrap guidance.
 
-Expected structure:
+## Common Goals
 
-- `.prompts/`
-- prompt docs or manuals
-- router files and manifests
+- make task routing obvious
+- keep context loading small
+- separate doctrine from workflows and examples
+- support future descendant repos cleanly
 
-Common workflows:
+## Required Context
 
-- bootstrap repo
-- generate prompt sequence
-- post-flight refinement
+- `context/doctrine/prompt-first-conventions.md`
+- `context/doctrine/context-loading-rules.md`
+- `context/stacks/prompt-first-repo.md`
 
-Warnings:
+## Common Workflows
 
-- keep numbering monotonic
-- keep output targets explicit
+- `context/workflows/bootstrap-repo.md`
+- `context/workflows/generate-prompt-sequence.md`
+- `context/workflows/post-flight-refinement.md`
+
+## Likely Examples
+
+- `examples/canonical-prompts/README.md`
+- `examples/README.md`
+
+## Typical Anti-Patterns
+
+- giant router files
+- blurred boundaries between examples and templates
+- prompt naming that is not monotonic or explicit
+

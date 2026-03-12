@@ -1,19 +1,31 @@
 # Polyglot Lab
 
-Purpose: compare equivalent approaches across multiple languages or runtimes.
+Use this archetype for repos exploring more than one language or framework family on purpose.
 
-Expected structure:
+## Common Goals
 
-- per-stack folders or service roots
-- shared doctrine and examples
-- stack-specific smoke verification
+- keep each sub-surface clearly owned
+- reuse doctrine and routing language across ecosystems
+- avoid accidental stack mixing
 
-Common workflows:
+## Required Context
 
-- bootstrap repo
-- add feature
-- refactor
+- `context/doctrine/context-loading-rules.md`
+- stack docs for only the touched surfaces
 
-Warnings:
+## Common Workflows
 
-- do not blend conventions across stacks
+- `context/workflows/bootstrap-repo.md`
+- `context/workflows/add-feature.md`
+- `context/workflows/post-flight-refinement.md`
+
+## Likely Examples
+
+- `examples/README.md`
+
+## Typical Anti-Patterns
+
+- loading every stack doc for every task
+- one shared example set contradicting stack-specific patterns
+- unclear deploy boundaries
+
