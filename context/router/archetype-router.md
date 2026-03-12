@@ -1,41 +1,42 @@
 # Archetype Router
 
-Purpose: infer the project shape so assistants load the right doctrine, workflows, and examples.
+Infer project shape from the repo goal, not only from language choice.
 
-## Archetype Priority
+## Common Archetype Mappings
 
-Use the archetype declared in `manifests/repo.profile.yaml` unless repo signals clearly prove it is stale.
+- routing docs, manifests, templates, prompt packs, repo bootstrap
+  - `context/archetypes/prompt-first-repo.md`
+- HTTP service, API routes, handlers, backing storage
+  - `context/archetypes/backend-api-service.md`
+- command tree, flags, shell-facing behavior
+  - `context/archetypes/cli-tool.md`
+- ingestion, transforms, analytics outputs
+  - `context/archetypes/data-pipeline.md`
+- retrieval, chunking, indexing, embeddings
+  - `context/archetypes/local-rag-system.md`
+- many storage backends compared intentionally
+  - `context/archetypes/multi-storage-experiment.md`
+- multiple language surfaces in one repo
+  - `context/archetypes/polyglot-lab.md`
+- single deployable service with Dokku emphasis
+  - `context/archetypes/dokku-deployable-service.md`
 
-## Archetype Signals
+## Routing Examples
 
-| Archetype | Signals |
-| --- | --- |
-| `prompt-first-repo` | `.prompts/`, operator guides, ordered prompt docs, little or no product code |
-| `backend-api` | API handlers, service entrypoint, schemas, request/response tests |
-| `cli-tool` | command tree, subcommands, parser wiring, terminal-oriented tests |
-| `data-pipeline` | batch jobs, transforms, schedules, dataset outputs, seed/reset flows |
-| `local-rag-system` | indexing jobs, chunking/embedding pipeline, retrieval UI or API |
-| `multi-storage-experiment` | many storage engines, compare/contrast docs, catalog or benchmark code |
-| `polyglot-lab` | multiple language subprojects used intentionally |
-| `dokku-deployable-web-service` | Procfile, Dockerfile, app packaging, web process, runtime env management |
+- "Create a new prompt-driven starter repo"
+  - `context/archetypes/prompt-first-repo.md`
+- "Build an API service with FastAPI and Redis"
+  - `context/archetypes/backend-api-service.md`
+- "Add a subcommand for local data export"
+  - `context/archetypes/cli-tool.md`
+- "Index notes into Qdrant and answer questions locally"
+  - `context/archetypes/local-rag-system.md`
+- "Compare MongoDB and Elasticsearch in one experimental repo"
+  - `context/archetypes/multi-storage-experiment.md`
 
-## Composition Rules
+## Guardrails
 
-Common valid compositions:
+- archetype is about project shape, not just framework choice
+- use one primary archetype unless the repo is intentionally composite
+- if two archetypes compete, choose the one that best matches the user-visible goal
 
-- `backend-api` + `dokku-deployable-web-service`
-- `prompt-first-repo` + `polyglot-lab`
-- `data-pipeline` + `multi-storage-experiment`
-- `local-rag-system` + `backend-api`
-
-If more than one archetype seems primary and the composition is not explicit, stop and clarify.
-
-## Load Guidance
-
-Load one primary archetype pack first. Add a secondary archetype only when it changes task behavior materially.
-
-Examples:
-
-- Adding a route to a FastAPI service: load `backend-api`, not `dokku-deployable-web-service`, unless deploy packaging changes too.
-- Adding a Procfile and release task: load `dokku-deployable-web-service` plus the active backend archetype.
-- Editing prompt sequences in a meta-runner repo: load `prompt-first-repo`, not backend archetypes.

@@ -1,62 +1,60 @@
 # Stack Router
 
-Purpose: infer the active technology stack from repo signals without over-reading the repository.
-
-## Stack Inference Priority
-
-1. `manifests/repo.profile.yaml`
-2. explicit repo tool files and lockfiles
-3. dominant source tree and framework entrypoints
-4. current canonical examples already used in the repo
-5. deployment/config files
-
-If these disagree, stop and surface the mismatch.
+Infer the active stack from repo signals, touched files, and user language.
 
 ## Primary Stack Signals
 
-| Stack | Strong signals |
-| --- | --- |
-| `python-fastapi-polars-htmx-plotly` | `pyproject.toml`, `uv.lock`, `app/`, `src/`, `fastapi`, `polars`, `orjson` |
-| `typescript-hono-bun-drizzle-tsx` | `bun.lockb`, `package.json`, `hono`, `drizzle`, `tsx`, `src/` |
-| `rust-axum` | `Cargo.toml`, `src/main.rs`, `axum` |
-| `go-echo-templ` | `go.mod`, `cmd/`, `internal/`, `echo`, `templ` |
-| `elixir-phoenix` | `mix.exs`, `lib/`, `phoenix`, `heex` |
-| `docker-compose-dokku` | `docker-compose.yml`, `docker-compose.test.yml`, `Dockerfile`, `Procfile`, Dokku app config |
-| `redis-mongodb` | compose services, `redis`, `keydb`, `mongo`, storage adapters |
-| `trino-duckdb-polars` | `duckdb`, `trino`, Polars pipelines, catalog config |
-| `nats-jetstream-meilisearch` | `nats`, `jetstream`, `meilisearch`, queue/index clients |
-| `timescaledb-elasticsearch-qdrant` | `timescaledb`, `elasticsearch`, `qdrant`, vector/time-series clients |
-| `backend-extension-candidates` | repo profile or explicit adoption docs for Nim, Zig, Scala, Clojure, Kotlin, Crystal, OCaml, or Dart backends |
+- `pyproject.toml`, `uv.lock`, `src/...`, `fastapi`
+  - load `context/stacks/python-fastapi-uv-ruff-orjson-polars.md`
+- `package.json`, `bun.lockb`, `bun.lock`, `hono`, `drizzle`, `tsx`
+  - load `context/stacks/typescript-hono-bun.md`
+- `Cargo.toml`, `src/main.rs`, `axum`
+  - load `context/stacks/rust-axum-modern.md`
+- `go.mod`, `cmd/server/main.go`, `echo`, `.templ`
+  - load `context/stacks/go-echo.md`
+- `mix.exs`, `phoenix`, `lib/..._web/router.ex`
+  - load `context/stacks/elixir-phoenix.md`
 
-## Mixed-Stack Rule
+## Storage And Infra Signals
 
-Mixed stacks are allowed only when they are intentional and named in the repo profile. Example:
+- `redis`, `keydb`, `mongo`
+  - load `context/stacks/redis-keydb-mongo.md`
+- `duckdb`, `trino`, `polars`
+  - load `context/stacks/duckdb-trino-polars.md`
+- `nats`, `jetstream`
+  - load `context/stacks/nats-jetstream.md`
+- `meilisearch`
+  - load `context/stacks/meilisearch.md`
+- `timescaledb`
+  - load `context/stacks/timescaledb.md`
+- `elasticsearch`
+  - load `context/stacks/elasticsearch.md`
+- `qdrant`, `vector search`
+  - load `context/stacks/qdrant.md`
 
-- FastAPI API plus Qdrant
-- Hono service plus Redis
-- Prompt-first repo plus polyglot lab
+## Deployment And Meta Signals
 
-Do not load sibling backend stacks just because they exist in the base repo.
+- `Procfile`, `app.json`, `dokku`, deployment wiring
+  - load `context/stacks/dokku-conventions.md`
+- task is about routing, prompts, manifests, templates, or repo bootstrap
+  - load `context/stacks/prompt-first-repo.md`
 
-## Default Stack Bundles
+## Routing Examples
 
-| If task mentions | Load |
-| --- | --- |
-| FastAPI, uv, ruff, polars, HTMX, Plotly | `context/stacks/python-fastapi-polars-htmx-plotly.md` |
-| Hono, Bun, Drizzle, TSX, HTMX | `context/stacks/typescript-hono-bun-drizzle-tsx.md` |
-| Axum, Cargo | `context/stacks/rust-axum.md` |
-| Echo, templ, Go | `context/stacks/go-echo-templ.md` |
-| Phoenix, mix, LiveView | `context/stacks/elixir-phoenix.md` |
-| Redis, KeyDB, MongoDB | `context/stacks/redis-mongodb.md` |
-| DuckDB, Trino, Polars | `context/stacks/trino-duckdb-polars.md` |
-| NATS, Jetstream, Meilisearch | `context/stacks/nats-jetstream-meilisearch.md` |
-| TimescaleDB, Elasticsearch, Qdrant | `context/stacks/timescaledb-elasticsearch-qdrant.md` |
-| Dokku, Compose, Dockerfile, Procfile | `context/stacks/docker-compose-dokku.md` |
+- "Add a health route to my Bun app"
+  - `context/stacks/typescript-hono-bun.md`
+- "Wire Qdrant for retrieval"
+  - `context/stacks/qdrant.md`
+- "Add a Phoenix release path for Dokku"
+  - `context/stacks/elixir-phoenix.md`
+  - `context/stacks/dokku-conventions.md`
+- "Use Polars to reshape query output in FastAPI"
+  - `context/stacks/python-fastapi-uv-ruff-orjson-polars.md`
+  - `context/stacks/duckdb-trino-polars.md` if the change also touches analytical storage
 
-## Stack Stop Conditions
+## Guardrails
 
-Stop when:
+- load only the stacks on the active change path
+- do not load every storage stack because a repo may support them eventually
+- when two application stacks seem plausible, stop and resolve the dominant one
 
-- two backend stacks both appear active for the same service
-- the user asks for a stack not represented in the repo profile or stack docs
-- generated code would cross from one stack's conventions into another's without an explicit bridge

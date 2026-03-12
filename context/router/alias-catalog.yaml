@@ -1,0 +1,96 @@
+version: 1
+
+tasks:
+  - alias: add endpoint
+    target: context/workflows/add-api-endpoint.md
+  - alias: new route
+    target: context/workflows/add-api-endpoint.md
+  - alias: fix bug
+    target: context/workflows/fix-bug.md
+  - alias: regression
+    target: context/workflows/fix-bug.md
+  - alias: bootstrap repo
+    target: context/workflows/bootstrap-repo.md
+  - alias: smoke test
+    target: context/workflows/add-smoke-tests.md
+  - alias: deploy
+    target: context/workflows/add-deployment-support.md
+  - alias: seed data
+    target: context/workflows/add-seed-data.md
+  - alias: local rag
+    target: context/workflows/add-local-rag-indexing.md
+  - alias: storage integration
+    target: context/workflows/add-storage-integration.md
+  - alias: prompt sequence
+    target: context/workflows/generate-prompt-sequence.md
+
+stacks:
+  - alias: fastapi
+    target: context/stacks/python-fastapi-uv-ruff-orjson-polars.md
+  - alias: python api
+    target: context/stacks/python-fastapi-uv-ruff-orjson-polars.md
+  - alias: hono
+    target: context/stacks/typescript-hono-bun.md
+  - alias: bun service
+    target: context/stacks/typescript-hono-bun.md
+  - alias: drizzle
+    target: context/stacks/typescript-hono-bun.md
+  - alias: axum
+    target: context/stacks/rust-axum-modern.md
+  - alias: echo
+    target: context/stacks/go-echo.md
+  - alias: templ
+    target: context/stacks/go-echo.md
+  - alias: phoenix
+    target: context/stacks/elixir-phoenix.md
+  - alias: redis
+    target: context/stacks/redis-keydb-mongo.md
+  - alias: keydb
+    target: context/stacks/redis-keydb-mongo.md
+  - alias: mongodb
+    target: context/stacks/redis-keydb-mongo.md
+  - alias: duckdb
+    target: context/stacks/duckdb-trino-polars.md
+  - alias: trino
+    target: context/stacks/duckdb-trino-polars.md
+  - alias: nats
+    target: context/stacks/nats-jetstream.md
+  - alias: jetstream
+    target: context/stacks/nats-jetstream.md
+  - alias: meilisearch
+    target: context/stacks/meilisearch.md
+  - alias: timescaledb
+    target: context/stacks/timescaledb.md
+  - alias: elasticsearch
+    target: context/stacks/elasticsearch.md
+  - alias: qdrant
+    target: context/stacks/qdrant.md
+  - alias: dokku
+    target: context/stacks/dokku-conventions.md
+
+archetypes:
+  - alias: backend api
+    target: context/archetypes/backend-api-service.md
+  - alias: cli
+    target: context/archetypes/cli-tool.md
+  - alias: data pipeline
+    target: context/archetypes/data-pipeline.md
+  - alias: local rag system
+    target: context/archetypes/local-rag-system.md
+  - alias: multi storage
+    target: context/archetypes/multi-storage-experiment.md
+  - alias: polyglot lab
+    target: context/archetypes/polyglot-lab.md
+  - alias: dokku service
+    target: context/archetypes/dokku-deployable-service.md
+  - alias: prompt first repo
+    target: context/archetypes/prompt-first-repo.md
+
+capabilities:
+  - alias: canonical example
+    target: context/skills/canonical-example-selection.md
+  - alias: infer task
+    target: context/skills/task-inference.md
+  - alias: repo signals
+    target: context/skills/repo-signal-detection.md
+

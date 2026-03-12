@@ -1,93 +1,65 @@
 # Task Router
 
-Purpose: map normal English requests to the smallest relevant context bundle.
+Map ordinary requests onto the smallest useful workflow bundle.
 
 ## Core Rule
 
-Infer the task from the request itself. Do not require the human to remember workflow, stack, or manifest names.
+Route from what the user is trying to do, not from internal file names.
 
-## Routing Sequence
+## Common Task Mappings
 
-1. Classify the request by verb.
-2. Identify the dominant nouns.
-3. Confirm the active archetype.
-4. Confirm the active stack.
-5. Load the smallest bundle that can safely support the task.
+- "add a feature", "build this capability", "implement this flow"
+  - load `context/workflows/add-feature.md`
+- "fix a bug", "regression", "this is broken"
+  - load `context/workflows/fix-bug.md`
+- "refactor", "clean this up", "simplify this"
+  - load `context/workflows/refactor.md`
+- "add smoke tests", "happy-path check", "boot verification"
+  - load `context/workflows/add-smoke-tests.md`
+- "bootstrap a repo", "new repo from base", "starter repo"
+  - load `context/workflows/bootstrap-repo.md`
+- "make a prompt sequence", "split this into prompts"
+  - load `context/workflows/generate-prompt-sequence.md`
+- "deploy", "Dokku", "Procfile", "release phase"
+  - load `context/workflows/add-deployment-support.md`
+- "seed data", "fixtures", "sample records"
+  - load `context/workflows/add-seed-data.md`
+- "new endpoint", "new route", "new handler"
+  - load `context/workflows/add-api-endpoint.md`
+- "new command", "CLI flag", "subcommand"
+  - load `context/workflows/extend-cli.md`
+- "local rag", "index docs", "retrieval"
+  - load `context/workflows/add-local-rag-indexing.md`
+- "add redis", "connect postgres", "wire search", "storage integration"
+  - load `context/workflows/add-storage-integration.md`
 
-## Verb Heuristics
+## Compound Requests
 
-| Verb family | Default workflow |
-| --- | --- |
-| add, build, create, implement | `context/workflows/add-feature.md` |
-| fix, debug, repair | `context/workflows/fix-bug.md` |
-| refactor, simplify, clean up, reorganize | `context/workflows/refactor.md` |
-| bootstrap, start, scaffold | `context/workflows/bootstrap-repo.md` |
-| generate prompts, create prompt sequence | `context/workflows/generate-prompt-sequence.md` |
-| tighten after run, refine, harden, post-flight | `context/workflows/post-flight-refinement.md` |
-| add smoke test, verify startup, add health check | `context/workflows/add-smoke-tests.md` |
-| add endpoint, add route, add handler | `context/workflows/add-api-endpoint.md` |
-| add seed data, seed fixture, reset sample data | `context/workflows/add-seed-data.md` |
-| add deploy, package for dokku, add Procfile | `context/workflows/add-deployment-support.md` |
-| extend cli, add command, add subcommand | `context/workflows/extend-cli.md` |
-| add rag, index docs, embed corpus | `context/workflows/add-local-rag-indexing.md` |
-| add storage, add redis, add mongo, add search, add queue | `context/workflows/add-storage-integration.md` |
+If a request spans two workflows, pick the dominant one first and load the second only if needed.
 
-## Noun Heuristics
+Examples:
 
-| Noun or phrase | Extra context |
-| --- | --- |
-| endpoint, handler, route, middleware | API workflow and backend archetype |
-| prompt, sequence, operator guide | prompt-first archetype |
-| smoke, health, startup, check | smoke-test doctrine and workflow |
-| compose, docker, volume, port, env | compose isolation doctrine and docker stack pack |
-| dokku, Procfile, app.json, deploy | Dokku doctrine and deployment workflow |
-| redis, keydb, mongo | storage workflow plus `context/stacks/redis-mongodb.md` |
-| duckdb, trino, polars | storage workflow plus `context/stacks/trino-duckdb-polars.md` |
-| nats, jetstream, meilisearch | storage workflow plus `context/stacks/nats-jetstream-meilisearch.md` |
-| timescaledb, elasticsearch, qdrant | storage workflow plus `context/stacks/timescaledb-elasticsearch-qdrant.md` |
-| rag, embeddings, index, chunking | local-rag archetype and RAG workflow |
-| htmx, plotly, fragment, chart | stack-specific UI patterns inside the active backend stack |
+- "Add an endpoint backed by Redis"
+  - start with `context/workflows/add-api-endpoint.md`
+  - then load `context/workflows/add-storage-integration.md`
+- "Bootstrap a repo and generate prompt files"
+  - start with `context/workflows/bootstrap-repo.md`
+  - then load `context/workflows/generate-prompt-sequence.md`
 
-## Smallest Relevant Bundle First
+## Routing Examples
 
-Default first bundle:
+- "Set up a FastAPI repo for a small analytics API"
+  - workflow: `context/workflows/bootstrap-repo.md`
+- "Add a Bun route that writes through Drizzle"
+  - workflow: `context/workflows/add-api-endpoint.md`
+- "Search results look wrong after indexing"
+  - workflow: `context/workflows/fix-bug.md`
+- "Give me a quick boot check before I deploy"
+  - workflow: `context/workflows/add-smoke-tests.md`
+- "Add a local vector index for docs"
+  - workflow: `context/workflows/add-local-rag-indexing.md`
 
-1. `manifests/repo.profile.yaml`
-2. `context/doctrine/00-core-principles.md`
-3. `context/doctrine/09-context-loading-rules.md`
-4. one workflow
-5. one archetype
-6. one or more active stack packs
-7. one preferred canonical example
+## Stop And Clarify Internally
 
-Do not load more until a concrete gap appears.
+Stop expanding context when the task is already clearly mapped. Do not load every workflow "just in case."
 
-## Escalation Logic
-
-Escalate only when one of these is true:
-
-- the target stack is ambiguous
-- the target archetype is ambiguous
-- the task crosses storage or service boundaries
-- the task changes deployment behavior
-- the task requires a new canonical example because no valid one exists
-
-## Anti-Hallucination Rules
-
-- If the repo already contains the target pattern, prefer local code over prose docs.
-- If the manifest and repo disagree, say so and stop.
-- If the task touches persistence, queues, search, or cross-service boundaries, require smoke tests and minimal real-infra integration tests.
-- Never assume default ports.
-- Never assume test data may share env files, volumes, or seed flows with dev.
-
-## Example Request Mappings
-
-| Request | Bundle |
-| --- | --- |
-| "Add a JSON endpoint for daily metrics in the FastAPI service." | doctrine `00,01,02,03`; workflow `add-api-endpoint`; archetype `backend-api`; stack `python-fastapi-polars-htmx-plotly`; examples `api-endpoints`, `smoke-tests` |
-| "Wire a Redis cache into this Hono service." | doctrine `00,02,03,04`; workflow `add-storage-integration`; archetype `backend-api`; stacks `typescript-hono-bun-drizzle-tsx`, `redis-mongodb`; examples `storage-integration`, `docker-compose`, `smoke-tests` |
-| "Create the first prompt sequence for this repo." | doctrine `00,06,07,09`; workflow `generate-prompt-sequence`; archetype `prompt-first-repo`; stack `prompt-first-repo-support`; examples `prompt-first` |
-| "Package this Echo app for Dokku." | doctrine `00,04,10`; workflow `add-deployment-support`; archetype `dokku-deployable-web-service`; stacks `go-echo-templ`, `docker-compose-dokku`; examples `dokku-deployment`, `docker-compose` |
-| "Add a smoke test for startup and health." | doctrine `00,02,03,04`; workflow `add-smoke-tests`; active archetype; active stack; examples `smoke-tests` |
-| "Bootstrap a local RAG repo around FastAPI and Qdrant." | doctrine `00,02,03,04,07,09,10`; workflows `bootstrap-repo`, `add-local-rag-indexing`; archetype `local-rag-system`; stacks `python-fastapi-polars-htmx-plotly`, `timescaledb-elasticsearch-qdrant`, `docker-compose-dokku`; examples `local-rag`, `docker-compose`, `smoke-tests` |
-| "Refactor the compose layout so dev and test can run side by side." | doctrine `00,04,09`; workflow `refactor`; archetype current repo archetype; stack `docker-compose-dokku`; examples `docker-compose`, `smoke-tests` |
