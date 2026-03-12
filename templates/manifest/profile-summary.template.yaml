@@ -1,4 +1,4 @@
-schema_version: 1
+schema_version: 2
 repo_name: {{repo_name}}
 repo_slug: {{repo_slug}}
 description: {{description}}
@@ -15,6 +15,12 @@ compose_files:
 {{compose_file_lines}}
 compose_project_name_dev: {{compose_project_name_dev}}
 compose_project_name_test: {{compose_project_name_test}}
+context_entrypoints:
+{{context_entrypoint_lines}}
+validation_commands:
+{{validation_command_lines}}
+compose_invariants:
+{{compose_invariant_lines}}
 ports:
 {{port_lines}}
 starter_paths:

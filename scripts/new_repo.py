@@ -703,6 +703,8 @@ def render_readme(
     prompt_first: bool,
     docker_enabled: bool,
     app_port: int,
+    compose_project_name_dev: str,
+    compose_project_name_test: str,
     support_ports: dict[str, int],
     test_support_ports: dict[str, int],
 ) -> str:
@@ -711,7 +713,13 @@ def render_readme(
     template_path = repo_root() / "templates/readme/README.template.md"
     compose_section = ""
     if docker_enabled:
-        lines = [f"## Local Infra", "", f"- app: `http://127.0.0.1:{app_port}`"]
+        lines = [
+            "## Local Infra",
+            "",
+            f"- app: `http://127.0.0.1:{app_port}`",
+            f"- Compose dev name: `{compose_project_name_dev}`",
+            f"- Compose test name: `{compose_project_name_test}`",
+        ]
         for service, port in support_ports.items():
             lines.append(f"- {service} dev port: `{port}`")
         for service, port in test_support_ports.items():
@@ -792,6 +800,7 @@ def render_profile_summary(
     compose_files: list[str],
     port_map: dict[str, int],
     starter_paths: dict[str, str],
+    validation_commands: list[str],
 ) -> str:
     """Render the generated profile summary."""
 
@@ -812,6 +821,20 @@ def render_profile_summary(
         "compose_project_name_test": compose_project_name_test,
         "port_lines": format_yaml_mapping({key: str(value) for key, value in port_map.items()}),
         "starter_path_lines": format_yaml_mapping(starter_paths),
+        "context_entrypoint_lines": format_yaml_list(
+            ["README.md", "AGENT.md", "CLAUDE.md", "manifests/project-profile.yaml"]
+        ),
+        "validation_command_lines": format_yaml_list(validation_commands),
+        "compose_invariant_lines": format_yaml_list(
+            [
+                "docker-compose.yml and docker-compose.test.yml both declare a top-level name",
+                "dev and test Compose names differ",
+                "test Compose name ends with -test",
+                "dev and test host ports do not overlap",
+                "dev data stays under docker/volumes/dev",
+                "test data stays under docker/volumes/test",
+            ]
+        ),
     }
     return render_template(
         repo_root() / "templates/manifest/profile-summary.template.yaml",
@@ -965,9 +988,10 @@ def render_prompt_meta_starters() -> dict[str, str]:
     """Render prompt-first validation helper files."""
 
     return {
-        "scripts/check_repo.py": """from pathlib import Path\n\n\ndef main() -> None:\n    required = [Path(\"README.md\"), Path(\"AGENT.md\"), Path(\"CLAUDE.md\")]\n    missing = [path.as_posix() for path in required if not path.exists()]\n    if missing:\n        raise SystemExit(f\"Missing required files: {missing}\")\n    print(\"repo surface looks present\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
-        "scripts/check_generated_profile.py": """from pathlib import Path\n\n\ndef main() -> None:\n    profile = Path(\".generated-profile.yaml\")\n    if not profile.exists():\n        raise SystemExit(\".generated-profile.yaml is missing\")\n    print(\"generated profile exists\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
-        "scripts/seed_data.py": """from pathlib import Path\n\n\ndef main() -> None:\n    target = Path(\"docs/generated-notes.txt\")\n    target.parent.mkdir(parents=True, exist_ok=True)\n    target.write_text(\"replace with deterministic repo notes\\n\", encoding=\"utf-8\")\n    print(f\"Wrote {target}\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
+        "scripts/check_repo.py": """#!/usr/bin/env python3\n\"\"\"Check the minimal prompt-first repo surface exists.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    required = [Path(\"README.md\"), Path(\"AGENT.md\"), Path(\"CLAUDE.md\")]\n    missing = [path.as_posix() for path in required if not path.exists()]\n    if missing:\n        raise SystemExit(f\"Missing required files: {missing}\")\n    print(\"repo surface looks present\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
+        "scripts/check_generated_profile.py": """#!/usr/bin/env python3\n\"\"\"Check the generated profile file exists.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    profile = Path(\".generated-profile.yaml\")\n    if not profile.exists():\n        raise SystemExit(\".generated-profile.yaml is missing\")\n    print(\"generated profile exists\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
+        "scripts/validate_repo.py": """#!/usr/bin/env python3\n\"\"\"Validate the prompt-first starter repo surface.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    required = [\n        Path(\"README.md\"),\n        Path(\"AGENT.md\"),\n        Path(\"CLAUDE.md\"),\n        Path(\"manifests/project-profile.yaml\"),\n    ]\n    missing = [path.as_posix() for path in required if not path.exists()]\n    if missing:\n        raise SystemExit(f\"Missing required files: {missing}\")\n\n    prompt_dir = Path(\".prompts\")\n    prompt_files = sorted(path.name for path in prompt_dir.glob(\"*.txt\"))\n    expected = [f\"{index:03d}-{name.split('-', 1)[1]}\" for index, name in enumerate(prompt_files, start=1)]\n    if prompt_files and prompt_files != expected:\n        raise SystemExit(f\"Prompt files must stay monotonic: {prompt_files}\")\n\n    print(\"repo validation passed\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
+        "scripts/seed_data.py": """#!/usr/bin/env python3\n\"\"\"Write deterministic prompt-first starter notes.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    target = Path(\"docs/generated-notes.txt\")\n    target.parent.mkdir(parents=True, exist_ok=True)\n    target.write_text(\"replace with deterministic repo notes\\n\", encoding=\"utf-8\")\n    print(f\"Wrote {target}\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
     }
 
 
@@ -1065,7 +1089,7 @@ def resolved_starter_paths(primary_stack: str, slug: str) -> dict[str, str]:
         return {
             "route": "README.md",
             "smoke": "scripts/check_repo.py",
-            "integration": "scripts/check_generated_profile.py",
+            "integration": "scripts/validate_repo.py",
             "seed": "scripts/seed_data.py",
         }
     return {
@@ -1074,6 +1098,34 @@ def resolved_starter_paths(primary_stack: str, slug: str) -> dict[str, str]:
         "integration": profile.integration_path,
         "seed": profile.seed_path,
     }
+
+
+def validate_bootstrap_plan(
+    *,
+    compose_project_name_dev: str,
+    compose_project_name_test: str,
+    app_port: int,
+    test_app_port: int,
+    dev_support_ports: dict[str, int],
+    test_support_ports: dict[str, int],
+) -> None:
+    """Validate the generated Compose naming and port plan before writing files."""
+
+    if not compose_project_name_dev.strip():
+        raise ValueError("compose_project_name_dev must be non-empty")
+    if not compose_project_name_test.strip():
+        raise ValueError("compose_project_name_test must be non-empty")
+    if compose_project_name_dev == compose_project_name_test:
+        raise ValueError("Compose dev and test project names must differ")
+    if not compose_project_name_test.endswith("-test"):
+        raise ValueError("Compose test project name must end with '-test'")
+
+    used_ports = {"app_dev": app_port, "app_test": test_app_port, **dev_support_ports, **test_support_ports}
+    seen: dict[int, str] = {}
+    for label, port in used_ports.items():
+        if port in seen:
+            raise ValueError(f"Port collision between {seen[port]} and {label}: {port}")
+        seen[port] = label
 
 
 def main(argv: list[str]) -> int:
@@ -1176,6 +1228,8 @@ def main(argv: list[str]) -> int:
         prompt_first,
         docker_enabled,
         app_port,
+        compose_project_name_dev,
+        compose_project_name_test,
         dev_support_ports,
         test_support_ports,
     )
@@ -1186,6 +1240,17 @@ def main(argv: list[str]) -> int:
     port_map = {"app_dev": app_port, "app_test": test_app_port}
     port_map.update({f"{name}_dev": port for name, port in dev_support_ports.items()})
     port_map.update({f"{name}_test": port for name, port in test_support_ports.items()})
+    validation_commands = ["python scripts/validate_repo.py"] if args.primary_stack == "prompt-first-repo" else []
+    if docker_enabled:
+        validation_commands.append("docker compose -f docker-compose.test.yml config")
+    validate_bootstrap_plan(
+        compose_project_name_dev=compose_project_name_dev,
+        compose_project_name_test=compose_project_name_test,
+        app_port=app_port,
+        test_app_port=test_app_port,
+        dev_support_ports={f"{name}_dev": port for name, port in dev_support_ports.items()},
+        test_support_ports={f"{name}_test": port for name, port in test_support_ports.items()},
+    )
     profile_summary = render_profile_summary(
         repo_name=repo_name,
         slug=slug,
@@ -1204,6 +1269,7 @@ def main(argv: list[str]) -> int:
         compose_files=["docker-compose.yml", "docker-compose.test.yml"],
         port_map=port_map,
         starter_paths=starter_paths,
+        validation_commands=validation_commands or ["echo no extra validation commands configured"],
     )
     generated_files["manifests/project-profile.yaml"] = profile_summary
     if not args.no_profile:
@@ -1222,7 +1288,7 @@ def main(argv: list[str]) -> int:
     elif args.primary_stack == "elixir-phoenix":
         route_only_keys.update({starter_paths["route"], f"lib/{phoenix_app_name(slug)}_web/controllers/health_controller.ex"})
     elif args.primary_stack == "prompt-first-repo":
-        route_only_keys.update()
+        route_only_keys.update({"scripts/validate_repo.py"})
     else:
         route_only_keys.update({starter_paths["route"], "app/__init__.py"})
     for relative_path, content in starter_files.items():

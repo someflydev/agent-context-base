@@ -17,4 +17,5 @@ Then infer the smallest useful context bundle from the task, repo signals, and a
 - load one workflow first
 - prefer one canonical example over several near-matches
 - keep dev and test infrastructure isolated
+- stop when stack, archetype, or Compose isolation becomes ambiguous
 - keep prompt numbering monotonic when this repo stores prompt files

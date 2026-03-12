@@ -29,6 +29,6 @@ Infer the task from normal language, then load:
 
 - keep this file concise
 - do not duplicate doctrine here
-- stop when stack or archetype ambiguity would cause context sprawl
+- stop when stack, archetype, or Compose isolation ambiguity would cause context sprawl
 - `docker-compose.test.yml` is the only target for destructive test reset flows
 - prefer exact filename references in prompts and implementation requests
