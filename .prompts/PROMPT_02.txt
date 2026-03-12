@@ -231,6 +231,14 @@ For CLAUDE.md:
 - still a router, not a full philosophy dump
 - include more reasoning-oriented phrasing only if it improves quality
 
+For .gitignore:
+- include practical ignore rules for the stacks and tools represented in this repo
+- at minimum ignore Python virtualenv directories such as `venv/`, `.venv/`, and `.venv_tools/`
+- ignore JavaScript package directories such as `node_modules/`
+- ignore Elixir build and dependency directories such as `_build/` and `deps/`
+- ignore editor swap files such as `*.swp` and `*.swo`
+- ignore local Docker-backed data roots such as `docker/volumes/` so service volumes and fixture data are never committed
+
 For doctrine docs:
 - give each doc a crisp purpose
 - make them directly useful during coding sessions
@@ -318,6 +326,7 @@ Before outputting the batches, internally ensure:
 - file names are consistent everywhere
 - cross-references point to files that actually exist in this v1 repo
 - routing logic is consistent with manifests
+- `.gitignore` covers stack-specific junk and local-only data paths such as `node_modules/`, `venv/`, `.venv/`, `.venv_tools/`, `_build/`, `deps/`, `*.swp`, `*.swo`, and `docker/volumes/`
 - doctrine and workflow distinctions remain clear
 - examples and templates remain distinct
 - Dokku guidance is aligned across doctrine, stacks, archetypes, manifests, and examples

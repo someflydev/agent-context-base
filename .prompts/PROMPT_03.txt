@@ -190,6 +190,7 @@ It should support:
 - generating a starter folder structure
 - generating repo-specific AGENT.md and CLAUDE.md from templates and selected context
 - generating a starter README.md from template inputs
+- generating or updating a stack-aware `.gitignore` for the selected languages and tools
 - generating a starter manifest bundle or profile summary
 - copying or rendering selected templates
 - optionally writing a `.generated-profile.yaml` or similar record of what was chosen
@@ -221,6 +222,7 @@ Add or update templates for:
 - repo README
 - repo AGENT.md
 - repo CLAUDE.md
+- repo `.gitignore`
 - selected manifest profile summary
 - Dokku support starter
 - Docker Compose starter files for primary/dev and test stacks
@@ -311,6 +313,7 @@ NEW OR UPDATED TEMPLATES
 - templates/readme/README.template.md
 - templates/agent-md/AGENT.template.md
 - templates/claude-md/CLAUDE.template.md
+- templates/gitignore/.gitignore.template
 - templates/manifest/profile-summary.template.yaml
 - templates/dokku/Dokku.template.md
 - templates/compose/docker-compose.template.yaml
@@ -334,6 +337,7 @@ Before outputting the files, ensure internally that:
 - examples are small but real
 - templates are clearly starter scaffolds, not examples
 - `new_repo.py` is coherent with the templates and manifests
+- generated `.gitignore` content covers selected stack artifacts and local-only data roots such as `node_modules/`, `venv/`, `.venv/`, `.venv_tools/`, `_build/`, `deps/`, `*.swp`, `*.swo`, and `docker/volumes/`
 - routing and aliasing remain aligned
 - prompt-first examples reflect strictly monotonic numbering and filename-based references
 - Dokku appears coherently in doctrine, manifests, examples, templates, and bootstrap generation

@@ -1,4 +1,3 @@
----
 Round: 1
 Timestamp: 2026-03-12T01:27:33Z
 Summary: Applied approved safe-auto fixes and one intent-confirmed v1 alignment for `context/skills/`.
@@ -8,6 +7,17 @@ Changes Applied:
 - .prompts/PROMPT_02.txt :: Added `context/skills/` to the v1 target tree with three core skill docs and updated batch/content requirements :: make `context/skills/` a real v1 layer per confirmed human intent and remove earlier architecture drift :: PF-003
 - .prompts/PROMPT_03.txt :: Renamed prompt-first example/template references from `PROMPT_02_s` to `PROMPT_00_s` :: keep numbering conventions consistent with the repo's seed/system prompt pattern :: PF-002
 - .prompts/PROMPT_04.txt :: Changed “Assistant memory anchors” to “Assistant memory anchors under `context/anchors/`” :: align terminology with the later concrete boot-anchor model :: PF-006
+Notes / Followups:
+- PF-001 remains: `PROMPT_05.txt`, `PROMPT_06.txt`, and `PROMPT_07.txt` still need deterministic output file targets before they can safely feed later prompts.
+- PF-004 remains: later v3/meta prompts still lack an explicit repo-green gate before expansion.
+---
+Round: 2
+Timestamp: 2026-03-12T11:59:19Z
+Summary: Added explicit `.gitignore` requirements for the base repo and for generated repos derived from the selected stacks.
+Summary: This keeps local-only artifacts, editor swap files, virtualenvs, package directories, Elixir build outputs, and Docker volume roots out of git.
+Changes Applied:
+- .prompts/PROMPT_02.txt :: Added a dedicated `.gitignore` requirements block and a matching quality-control check :: ensure the v1 base repo ignores stack-specific junk and local Docker volume data :: PF-008
+- .prompts/PROMPT_03.txt :: Added stack-aware `.gitignore` generation requirements, a `.gitignore` template, and a quality safeguard for selected stacks :: ensure future generated repos also ignore local-only artifacts for their chosen languages and services :: PF-009
 Notes / Followups:
 - PF-001 remains: `PROMPT_05.txt`, `PROMPT_06.txt`, and `PROMPT_07.txt` still need deterministic output file targets before they can safely feed later prompts.
 - PF-004 remains: later v3/meta prompts still lack an explicit repo-green gate before expansion.
