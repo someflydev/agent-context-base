@@ -1,4 +1,4 @@
-version: 1
+version: 2
 
 tasks:
   - alias: add endpoint
@@ -11,9 +11,19 @@ tasks:
     target: context/workflows/fix-bug.md
   - alias: bootstrap repo
     target: context/workflows/bootstrap-repo.md
+  - alias: new repo
+    target: context/workflows/bootstrap-repo.md
+  - alias: bootstrap starter
+    target: context/workflows/bootstrap-repo.md
   - alias: smoke test
     target: context/workflows/add-smoke-tests.md
+  - alias: integration test
+    target: context/workflows/add-storage-integration.md
+  - alias: real db test
+    target: context/workflows/add-storage-integration.md
   - alias: deploy
+    target: context/workflows/add-deployment-support.md
+  - alias: dokku deploy
     target: context/workflows/add-deployment-support.md
   - alias: seed data
     target: context/workflows/add-seed-data.md
@@ -23,6 +33,10 @@ tasks:
     target: context/workflows/add-storage-integration.md
   - alias: prompt sequence
     target: context/workflows/generate-prompt-sequence.md
+  - alias: post flight
+    target: context/workflows/post-flight-refinement.md
+  - alias: refinement
+    target: context/workflows/post-flight-refinement.md
 
 stacks:
   - alias: fastapi
@@ -35,6 +49,8 @@ stacks:
     target: context/stacks/typescript-hono-bun.md
   - alias: drizzle
     target: context/stacks/typescript-hono-bun.md
+  - alias: tsx
+    target: context/stacks/typescript-hono-bun.md
   - alias: axum
     target: context/stacks/rust-axum-modern.md
   - alias: echo
@@ -42,6 +58,8 @@ stacks:
   - alias: templ
     target: context/stacks/go-echo.md
   - alias: phoenix
+    target: context/stacks/elixir-phoenix.md
+  - alias: liveview
     target: context/stacks/elixir-phoenix.md
   - alias: redis
     target: context/stacks/redis-keydb-mongo.md
@@ -67,6 +85,10 @@ stacks:
     target: context/stacks/qdrant.md
   - alias: dokku
     target: context/stacks/dokku-conventions.md
+  - alias: procfile
+    target: context/stacks/dokku-conventions.md
+  - alias: prompt first
+    target: context/stacks/prompt-first-repo.md
 
 archetypes:
   - alias: backend api
@@ -85,6 +107,10 @@ archetypes:
     target: context/archetypes/dokku-deployable-service.md
   - alias: prompt first repo
     target: context/archetypes/prompt-first-repo.md
+  - alias: local rag repo
+    target: context/archetypes/local-rag-system.md
+  - alias: storage lab
+    target: context/archetypes/multi-storage-experiment.md
 
 capabilities:
   - alias: canonical example
@@ -93,4 +119,5 @@ capabilities:
     target: context/skills/task-inference.md
   - alias: repo signals
     target: context/skills/repo-signal-detection.md
-
+  - alias: generated profile
+    target: context/skills/repo-signal-detection.md

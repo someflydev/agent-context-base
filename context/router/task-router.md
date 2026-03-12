@@ -16,8 +16,11 @@ Route from what the user is trying to do, not from internal file names.
   - load `context/workflows/refactor.md`
 - "add smoke tests", "happy-path check", "boot verification"
   - load `context/workflows/add-smoke-tests.md`
+- "integration test", "real db test", "docker-backed test"
+  - load `context/workflows/add-storage-integration.md`
 - "bootstrap a repo", "new repo from base", "starter repo"
   - load `context/workflows/bootstrap-repo.md`
+  - prefer `scripts/new_repo.py` when the task is repo generation instead of a manual copy pass
 - "make a prompt sequence", "split this into prompts"
   - load `context/workflows/generate-prompt-sequence.md`
 - "deploy", "Dokku", "Procfile", "release phase"
@@ -32,6 +35,8 @@ Route from what the user is trying to do, not from internal file names.
   - load `context/workflows/add-local-rag-indexing.md`
 - "add redis", "connect postgres", "wire search", "storage integration"
   - load `context/workflows/add-storage-integration.md`
+- "post-flight", "cleanup this pass", "refine before commit"
+  - load `context/workflows/post-flight-refinement.md`
 
 ## Compound Requests
 
@@ -45,6 +50,11 @@ Examples:
 - "Bootstrap a repo and generate prompt files"
   - start with `context/workflows/bootstrap-repo.md`
   - then load `context/workflows/generate-prompt-sequence.md`
+- "Add a storage-backed route plus a real integration test"
+  - start with `context/workflows/add-api-endpoint.md`
+  - then load `context/workflows/add-storage-integration.md`
+- "Clean up the implementation before commit"
+  - start with `context/workflows/post-flight-refinement.md`
 
 ## Routing Examples
 
@@ -58,8 +68,9 @@ Examples:
   - workflow: `context/workflows/add-smoke-tests.md`
 - "Add a local vector index for docs"
   - workflow: `context/workflows/add-local-rag-indexing.md`
+- "Make this generated repo less sloppy before I commit"
+  - workflow: `context/workflows/post-flight-refinement.md`
 
 ## Stop And Clarify Internally
 
 Stop expanding context when the task is already clearly mapped. Do not load every workflow "just in case."
-

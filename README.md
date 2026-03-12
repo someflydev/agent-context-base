@@ -1,8 +1,8 @@
 # agent-context-base
 
-`agent-context-base` is a reusable foundation for future repos. It is designed for prompt-first work, small context bundles, and predictable routing across Codex, Claude, and Gemini.
+`agent-context-base` is a reusable foundation for future repos. It is designed for prompt-first work, small context bundles, deterministic routing, and practical repo bootstrap across Codex, Claude, and Gemini.
 
-This repo is not a product app. It is a starter system for future project repos that need:
+This repo is not a product app. It is a base system for future project repos that need:
 
 - strong `AGENT.md` and `CLAUDE.md` routing
 - doctrine separated from workflows, stacks, archetypes, examples, manifests, and templates
@@ -11,6 +11,7 @@ This repo is not a product app. It is a starter system for future project repos 
 - smoke-test-heavy delivery backed by minimal real-infra integration tests for meaningful boundaries
 - Docker-backed dev and test isolation
 - Dokku-oriented deployment conventions
+- a real starter bootstrap script instead of copy-paste repo assembly
 
 ## Start Here
 
@@ -29,9 +30,19 @@ Then load only the smallest bundle that matches the task:
 - the needed stack packs
 - one preferred canonical example
 
-## First-Class v1 Coverage
+## What v2 Adds
 
-The v1 base gives explicit support to:
+The second pass adds:
+
+- actual canonical example files under `examples/`, not README placeholders only
+- richer manifest files with routing, bootstrap, Compose, and support metadata
+- `scripts/new_repo.py` for deterministic repo bootstrap
+- stronger alignment between manifests, routers, aliases, templates, and examples
+- starter templates for Compose, Dokku, prompt-first prompts, profile summaries, smoke tests, integration tests, and seed data
+
+## First-Class Coverage
+
+The base now gives explicit support to:
 
 - Python with FastAPI, `uv`, Ruff, `orjson`, and Polars
 - TypeScript with Hono, Bun, Drizzle ORM, and TSX
@@ -58,7 +69,22 @@ It also leaves clean extension space for additional stacks such as Nim, Zig, Sca
 - `scripts/`: lightweight repo utilities
 - `smoke-tests/`: doctrine for future smoke-test suites
 
+## Bootstrap Flow
+
+Use `scripts/new_repo.py` when you want a first-pass descendant repo:
+
+```bash
+python scripts/new_repo.py analytics-api \
+  --archetype backend-api-service \
+  --primary-stack python-fastapi-uv-ruff-orjson-polars \
+  --smoke-tests \
+  --integration-tests \
+  --seed-data \
+  --dokku
+```
+
+That script renders a starter README, `AGENT.md`, `CLAUDE.md`, `.gitignore`, generated profile files, optional prompt files, and isolated Compose layouts with repo-derived names.
+
 ## Intent
 
 Future repos should copy from this base selectively, then specialize with project-local manifests, examples, smoke tests, and deployment details. The base should stay composable, strict, and easy for both humans and coding assistants to navigate.
-

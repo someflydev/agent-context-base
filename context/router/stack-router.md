@@ -6,13 +6,13 @@ Infer the active stack from repo signals, touched files, and user language.
 
 - `pyproject.toml`, `uv.lock`, `src/...`, `fastapi`
   - load `context/stacks/python-fastapi-uv-ruff-orjson-polars.md`
-- `package.json`, `bun.lockb`, `bun.lock`, `hono`, `drizzle`, `tsx`
+- `package.json`, `bun.lockb`, `bun.lock`, `hono`, `drizzle`, `tsx`, `src/routes/*.tsx`
   - load `context/stacks/typescript-hono-bun.md`
 - `Cargo.toml`, `src/main.rs`, `axum`
   - load `context/stacks/rust-axum-modern.md`
 - `go.mod`, `cmd/server/main.go`, `echo`, `.templ`
   - load `context/stacks/go-echo.md`
-- `mix.exs`, `phoenix`, `lib/..._web/router.ex`
+- `mix.exs`, `phoenix`, `lib/..._web/router.ex`, `lib/..._web/controllers`
   - load `context/stacks/elixir-phoenix.md`
 
 ## Storage And Infra Signals
@@ -36,7 +36,7 @@ Infer the active stack from repo signals, touched files, and user language.
 
 - `Procfile`, `app.json`, `dokku`, deployment wiring
   - load `context/stacks/dokku-conventions.md`
-- task is about routing, prompts, manifests, templates, or repo bootstrap
+- task is about routing, prompts, manifests, templates, generated profiles, or repo bootstrap
   - load `context/stacks/prompt-first-repo.md`
 
 ## Routing Examples
@@ -51,10 +51,13 @@ Infer the active stack from repo signals, touched files, and user language.
 - "Use Polars to reshape query output in FastAPI"
   - `context/stacks/python-fastapi-uv-ruff-orjson-polars.md`
   - `context/stacks/duckdb-trino-polars.md` if the change also touches analytical storage
+- "Generate a new repo from this base"
+  - `context/stacks/prompt-first-repo.md`
+- "Wire a Qdrant-backed local index"
+  - `context/stacks/qdrant.md`
 
 ## Guardrails
 
 - load only the stacks on the active change path
 - do not load every storage stack because a repo may support them eventually
 - when two application stacks seem plausible, stop and resolve the dominant one
-

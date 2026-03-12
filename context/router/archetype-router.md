@@ -4,7 +4,7 @@ Infer project shape from the repo goal, not only from language choice.
 
 ## Common Archetype Mappings
 
-- routing docs, manifests, templates, prompt packs, repo bootstrap
+- routing docs, manifests, templates, prompt packs, generated profiles, repo bootstrap
   - `context/archetypes/prompt-first-repo.md`
 - HTTP service, API routes, handlers, backing storage
   - `context/archetypes/backend-api-service.md`
@@ -18,7 +18,7 @@ Infer project shape from the repo goal, not only from language choice.
   - `context/archetypes/multi-storage-experiment.md`
 - multiple language surfaces in one repo
   - `context/archetypes/polyglot-lab.md`
-- single deployable service with Dokku emphasis
+- single deployable service with Dokku emphasis, `Procfile`, `app.json`, or release commands
   - `context/archetypes/dokku-deployable-service.md`
 
 ## Routing Examples
@@ -33,10 +33,11 @@ Infer project shape from the repo goal, not only from language choice.
   - `context/archetypes/local-rag-system.md`
 - "Compare MongoDB and Elasticsearch in one experimental repo"
   - `context/archetypes/multi-storage-experiment.md`
+- "Set up a single service repo that will deploy to Dokku"
+  - `context/archetypes/dokku-deployable-service.md`
 
 ## Guardrails
 
 - archetype is about project shape, not just framework choice
 - use one primary archetype unless the repo is intentionally composite
 - if two archetypes compete, choose the one that best matches the user-visible goal
-
