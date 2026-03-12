@@ -1,0 +1,23 @@
+name: webapp-elixir-phoenix
+archetype: backend-api-service
+stacks:
+  - elixir-phoenix
+triggers:
+  - phoenix app
+  - elixir webapp
+  - liveview service
+required_context:
+  - context/doctrine/core-principles.md
+  - context/doctrine/testing-philosophy.md
+  - context/workflows/add-feature.md
+  - context/stacks/elixir-phoenix.md
+  - context/archetypes/backend-api-service.md
+optional_context:
+  - context/workflows/add-deployment-support.md
+  - context/doctrine/compose-port-and-data-isolation.md
+preferred_examples:
+  - examples/canonical-api/README.md
+  - examples/canonical-smoke-tests/README.md
+warnings:
+  - Controller or LiveView additions that change persistence behavior should include real database integration coverage.
+

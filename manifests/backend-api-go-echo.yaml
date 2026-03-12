@@ -1,0 +1,23 @@
+name: backend-api-go-echo
+archetype: backend-api-service
+stacks:
+  - go-echo
+triggers:
+  - echo api
+  - go service
+  - templ web service
+required_context:
+  - context/doctrine/core-principles.md
+  - context/doctrine/testing-philosophy.md
+  - context/workflows/add-api-endpoint.md
+  - context/stacks/go-echo.md
+  - context/archetypes/backend-api-service.md
+optional_context:
+  - context/workflows/add-storage-integration.md
+  - context/doctrine/compose-port-and-data-isolation.md
+preferred_examples:
+  - examples/canonical-api/README.md
+  - examples/canonical-smoke-tests/README.md
+warnings:
+  - Prefer Echo plus templ patterns here; do not import Chi-oriented structure.
+

@@ -1,0 +1,24 @@
+name: prompt-first-meta-repo
+archetype: prompt-first-repo
+stacks:
+  - prompt-first-repo
+triggers:
+  - prompt first repo
+  - agent context repo
+  - repo foundation
+required_context:
+  - context/doctrine/core-principles.md
+  - context/doctrine/prompt-first-conventions.md
+  - context/doctrine/context-loading-rules.md
+  - context/workflows/bootstrap-repo.md
+  - context/stacks/prompt-first-repo.md
+  - context/archetypes/prompt-first-repo.md
+optional_context:
+  - context/workflows/generate-prompt-sequence.md
+  - context/skills/task-inference.md
+preferred_examples:
+  - examples/canonical-prompts/README.md
+  - examples/README.md
+warnings:
+  - Keep routers concise and keep doctrine, workflows, examples, and templates separate.
+

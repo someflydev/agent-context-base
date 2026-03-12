@@ -1,0 +1,25 @@
+name: backend-api-fastapi-polars
+archetype: backend-api-service
+stacks:
+  - python-fastapi-uv-ruff-orjson-polars
+triggers:
+  - fastapi api
+  - python backend
+  - polars service
+required_context:
+  - context/doctrine/core-principles.md
+  - context/doctrine/testing-philosophy.md
+  - context/workflows/add-api-endpoint.md
+  - context/stacks/python-fastapi-uv-ruff-orjson-polars.md
+  - context/archetypes/backend-api-service.md
+optional_context:
+  - context/workflows/add-storage-integration.md
+  - context/doctrine/compose-port-and-data-isolation.md
+  - context/stacks/redis-keydb-mongo.md
+  - context/stacks/duckdb-trino-polars.md
+preferred_examples:
+  - examples/canonical-api/README.md
+  - examples/canonical-smoke-tests/README.md
+warnings:
+  - Add minimal real-infra integration tests when endpoints touch databases, caches, queues, or search.
+

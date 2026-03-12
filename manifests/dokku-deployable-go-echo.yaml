@@ -1,0 +1,23 @@
+name: dokku-deployable-go-echo
+archetype: dokku-deployable-service
+stacks:
+  - go-echo
+  - dokku-conventions
+triggers:
+  - deploy go echo app
+  - dokku go service
+required_context:
+  - context/doctrine/deployment-philosophy-dokku.md
+  - context/workflows/add-deployment-support.md
+  - context/stacks/go-echo.md
+  - context/stacks/dokku-conventions.md
+  - context/archetypes/dokku-deployable-service.md
+optional_context:
+  - context/workflows/add-smoke-tests.md
+  - context/doctrine/compose-port-and-data-isolation.md
+preferred_examples:
+  - examples/canonical-dokku/README.md
+  - examples/canonical-smoke-tests/README.md
+warnings:
+  - Keep the boot command and templ asset path explicit so Dokku behavior is predictable.
+

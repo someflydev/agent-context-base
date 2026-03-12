@@ -1,0 +1,24 @@
+name: backend-api-typescript-hono-bun
+archetype: backend-api-service
+stacks:
+  - typescript-hono-bun
+triggers:
+  - hono api
+  - bun backend
+  - drizzle service
+required_context:
+  - context/doctrine/core-principles.md
+  - context/doctrine/testing-philosophy.md
+  - context/workflows/add-api-endpoint.md
+  - context/stacks/typescript-hono-bun.md
+  - context/archetypes/backend-api-service.md
+optional_context:
+  - context/workflows/add-storage-integration.md
+  - context/doctrine/compose-port-and-data-isolation.md
+  - context/stacks/redis-keydb-mongo.md
+preferred_examples:
+  - examples/canonical-api/README.md
+  - examples/canonical-smoke-tests/README.md
+warnings:
+  - Treat Drizzle schema and migration changes as behavior changes, not just scaffold changes.
+

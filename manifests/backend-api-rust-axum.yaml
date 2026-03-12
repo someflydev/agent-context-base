@@ -1,0 +1,22 @@
+name: backend-api-rust-axum
+archetype: backend-api-service
+stacks:
+  - rust-axum-modern
+triggers:
+  - axum api
+  - rust backend
+required_context:
+  - context/doctrine/core-principles.md
+  - context/doctrine/testing-philosophy.md
+  - context/workflows/add-api-endpoint.md
+  - context/stacks/rust-axum-modern.md
+  - context/archetypes/backend-api-service.md
+optional_context:
+  - context/workflows/add-storage-integration.md
+  - context/doctrine/compose-port-and-data-isolation.md
+preferred_examples:
+  - examples/canonical-api/README.md
+  - examples/canonical-smoke-tests/README.md
+warnings:
+  - Keep the first pass small; do not add trait-heavy abstraction layers before one real path exists.
+

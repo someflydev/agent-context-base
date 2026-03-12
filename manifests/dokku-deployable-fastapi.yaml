@@ -1,0 +1,23 @@
+name: dokku-deployable-fastapi
+archetype: dokku-deployable-service
+stacks:
+  - python-fastapi-uv-ruff-orjson-polars
+  - dokku-conventions
+triggers:
+  - deploy fastapi to dokku
+  - dokku fastapi service
+required_context:
+  - context/doctrine/deployment-philosophy-dokku.md
+  - context/workflows/add-deployment-support.md
+  - context/stacks/python-fastapi-uv-ruff-orjson-polars.md
+  - context/stacks/dokku-conventions.md
+  - context/archetypes/dokku-deployable-service.md
+optional_context:
+  - context/workflows/add-smoke-tests.md
+  - context/doctrine/compose-port-and-data-isolation.md
+preferred_examples:
+  - examples/canonical-dokku/README.md
+  - examples/canonical-smoke-tests/README.md
+warnings:
+  - Prove local boot and any real storage boundary before trusting deploy wiring.
+

@@ -1,0 +1,25 @@
+name: local-rag-base
+archetype: local-rag-system
+stacks:
+  - qdrant
+  - prompt-first-repo
+triggers:
+  - local rag
+  - vector retrieval
+  - index docs locally
+required_context:
+  - context/doctrine/core-principles.md
+  - context/doctrine/testing-philosophy.md
+  - context/workflows/add-local-rag-indexing.md
+  - context/stacks/qdrant.md
+  - context/archetypes/local-rag-system.md
+optional_context:
+  - context/stacks/elasticsearch.md
+  - context/stacks/meilisearch.md
+  - context/doctrine/compose-port-and-data-isolation.md
+preferred_examples:
+  - examples/canonical-rag/README.md
+  - examples/canonical-storage/README.md
+warnings:
+  - Always keep a tiny deterministic corpus for smoke and integration verification.
+

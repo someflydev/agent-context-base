@@ -1,0 +1,21 @@
+name: cli-python
+archetype: cli-tool
+stacks:
+  - python-fastapi-uv-ruff-orjson-polars
+triggers:
+  - python cli
+  - uv cli
+  - command line tool
+required_context:
+  - context/doctrine/core-principles.md
+  - context/doctrine/testing-philosophy.md
+  - context/workflows/extend-cli.md
+  - context/archetypes/cli-tool.md
+optional_context:
+  - context/workflows/add-seed-data.md
+  - context/stacks/duckdb-trino-polars.md
+preferred_examples:
+  - examples/canonical-cli/README.md
+warnings:
+  - If commands touch real storage or search, add integration coverage instead of relying on output snapshots only.
+

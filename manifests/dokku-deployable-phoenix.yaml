@@ -1,0 +1,23 @@
+name: dokku-deployable-phoenix
+archetype: dokku-deployable-service
+stacks:
+  - elixir-phoenix
+  - dokku-conventions
+triggers:
+  - deploy phoenix app
+  - dokku phoenix service
+required_context:
+  - context/doctrine/deployment-philosophy-dokku.md
+  - context/workflows/add-deployment-support.md
+  - context/stacks/elixir-phoenix.md
+  - context/stacks/dokku-conventions.md
+  - context/archetypes/dokku-deployable-service.md
+optional_context:
+  - context/workflows/add-smoke-tests.md
+  - context/doctrine/compose-port-and-data-isolation.md
+preferred_examples:
+  - examples/canonical-dokku/README.md
+  - examples/canonical-smoke-tests/README.md
+warnings:
+  - Release and migration behavior must be explicit; do not hide critical steps behind undocumented hooks.
+

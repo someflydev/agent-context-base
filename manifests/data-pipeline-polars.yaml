@@ -1,0 +1,24 @@
+name: data-pipeline-polars
+archetype: data-pipeline
+stacks:
+  - python-fastapi-uv-ruff-orjson-polars
+  - duckdb-trino-polars
+triggers:
+  - polars pipeline
+  - duckdb transform
+  - data pipeline
+required_context:
+  - context/doctrine/core-principles.md
+  - context/doctrine/testing-philosophy.md
+  - context/workflows/add-feature.md
+  - context/archetypes/data-pipeline.md
+  - context/stacks/duckdb-trino-polars.md
+optional_context:
+  - context/workflows/add-seed-data.md
+  - context/doctrine/compose-port-and-data-isolation.md
+preferred_examples:
+  - examples/canonical-seed-data/README.md
+  - examples/canonical-storage/README.md
+warnings:
+  - Keep fixtures tiny and verify at least one real query or write boundary when the pipeline touches storage.
+

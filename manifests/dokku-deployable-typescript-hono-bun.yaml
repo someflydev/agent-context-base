@@ -1,0 +1,23 @@
+name: dokku-deployable-typescript-hono-bun
+archetype: dokku-deployable-service
+stacks:
+  - typescript-hono-bun
+  - dokku-conventions
+triggers:
+  - deploy bun service to dokku
+  - dokku hono app
+required_context:
+  - context/doctrine/deployment-philosophy-dokku.md
+  - context/workflows/add-deployment-support.md
+  - context/stacks/typescript-hono-bun.md
+  - context/stacks/dokku-conventions.md
+  - context/archetypes/dokku-deployable-service.md
+optional_context:
+  - context/workflows/add-smoke-tests.md
+  - context/doctrine/compose-port-and-data-isolation.md
+preferred_examples:
+  - examples/canonical-dokku/README.md
+  - examples/canonical-smoke-tests/README.md
+warnings:
+  - If the service uses Drizzle migrations, document and verify the release path explicitly.
+
