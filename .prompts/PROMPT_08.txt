@@ -41,6 +41,7 @@ The budget system should reflect the real architecture and working style of this
 - Rust + Axum
 - Go + Echo + templ
 - Elixir + Phoenix
+- additional backend candidates to keep compatible in the bounded-context design: Nim + Jester + HappyX, Zig + Zap + Jetzig, Scala + Tapir + http4s + ZIO, Clojure + Kit + next.jdbc + Hiccup, Kotlin + http4k + Exposed (ORM), Crystal + Kemal + Avram (ORM), OCaml + Dream + Caqti + TyXML, Dart + Dart Frog
 - Redis/KeyDB + MongoDB
 - DuckDB + Trino + Polars
 - NATS Jetstream
@@ -302,4 +303,5 @@ QUALITY REQUIREMENTS
 - Make the system compatible with routers, manifests, canonical examples, the operating manual, and the boot sequence.
 - Ensure the design fits the real stacks and archetypes in this ecosystem.
 - Keep Dokku, prompt-first repos, FastAPI, TypeScript/Hono/Bun/Drizzle/TSX, Rust/Axum, Go/Echo/templ, Phoenix, local RAG, data pipelines, and multi-storage experiments in mind throughout.
+- Keep the budget system compatible with additional backend candidates such as Nim/Jester/HappyX, Zig/Zap/Jetzig, Scala/Tapir/http4s/ZIO, Clojure/Kit/next.jdbc/Hiccup, Kotlin/http4k/Exposed, Crystal/Kemal/Avram, OCaml/Dream/Caqti/TyXML, and Dart/Dart Frog without forcing them all into the first-pass bundle.
 - Make the final result accurate, insightful, and strong enough to guide a future implementation pass.

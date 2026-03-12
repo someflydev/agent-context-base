@@ -18,6 +18,7 @@ The repository should reflect the actual way I build and work:
 - Rust + Axum
 - Go + Echo + templ
 - Elixir + Phoenix
+- additional backend options to keep compatible in the overall architecture: Nim + Jester + HappyX, Zig + Zap + Jetzig, Scala + Tapir + http4s + ZIO, Clojure + Kit + next.jdbc + Hiccup, Kotlin + http4k + Exposed (ORM), Crystal + Kemal + Avram (ORM), OCaml + Dream + Caqti + TyXML, Dart + Dart Frog
 - Redis/KeyDB + MongoDB
 - DuckDB + Trino + Polars
 - NATS Jetstream
@@ -56,6 +57,7 @@ Important implementation constraints:
 - Use Go Echo plus templ rather than Chi-based Go examples in this repo.
 - Include TypeScript + Hono + Bun + Drizzle ORM + TSX as a real first-class stack pack for lightweight backend services, especially HTMX/tailwind/Plotly-oriented apps.
 - Make Elixir Phoenix a real first-class stack pack.
+- Keep the repo structure and routing language extensible to additional backend options such as Nim/Jester/HappyX, Zig/Zap/Jetzig, Scala/Tapir/http4s/ZIO, Clojure/Kit/next.jdbc/Hiccup, Kotlin/http4k/Exposed, Crystal/Kemal/Avram, OCaml/Dream/Caqti/TyXML, and Dart/Dart Frog without forcing them all into the v1 file set.
 - Respect my prompt-first preferences.
 - When discussing prompt-first repo conventions, respect my requirement for strictly monotonic prompt numbering and explicit filename references.
 - Keep examples and templates clearly distinct.
@@ -341,6 +343,7 @@ Before outputting the batches, internally ensure:
 - Dokku guidance is aligned across doctrine, stacks, archetypes, manifests, and examples
 - prompt-first conventions reflect strictly monotonic numbering with explicit filename references
 - FastAPI/uv/ruff/orjson/polars, TypeScript/Hono/Bun/Drizzle/TSX, Rust/Axum, Go/Echo/templ, and Elixir/Phoenix are all represented meaningfully
+- the overall architecture still leaves a clean extension path for additional HTMX/tailwind/Plotly-oriented backends such as Nim/Jester/HappyX, Zig/Zap/Jetzig, Scala/Tapir/http4s/ZIO, Clojure/Kit/next.jdbc/Hiccup, Kotlin/http4k/Exposed, Crystal/Kemal/Avram, OCaml/Dream/Caqti/TyXML, and Dart/Dart Frog
 - the doctrine layer clearly explains conventional Compose filenames, repo-derived Compose `name:` values, non-default port allocation, and primary/dev-vs-test data isolation
 
 At the very end, after all batches, provide:

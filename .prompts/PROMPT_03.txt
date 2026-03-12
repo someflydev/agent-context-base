@@ -41,6 +41,7 @@ The main goals of this second-pass enhancement are:
    - Rust + Axum
    - Go + Echo + templ
    - Elixir + Phoenix
+   - additional backend candidates to keep compatible in routing and architecture: Nim + Jester + HappyX, Zig + Zap + Jetzig, Scala + Tapir + http4s + ZIO, Clojure + Kit + next.jdbc + Hiccup, Kotlin + http4k + Exposed (ORM), Crystal + Kemal + Avram (ORM), OCaml + Dream + Caqti + TyXML, Dart + Dart Frog
    - Redis/KeyDB + MongoDB
    - DuckDB + Trino + Polars
    - NATS Jetstream
@@ -76,6 +77,7 @@ IMPORTANT CONSTRAINTS
 - Do not reintroduce Traefik as the primary deployment philosophy.
 - Use Go Echo plus templ, not Go Chi-style patterns, in this repo’s primary Go stack examples.
 - Include TypeScript + Hono + Bun + Drizzle ORM + TSX as a first-class backend option for lightweight HTMX/tailwind/Plotly-oriented services.
+- Keep router, manifests, and templates extensible to additional backend candidates such as Nim/Jester/HappyX, Zig/Zap/Jetzig, Scala/Tapir/http4s/ZIO, Clojure/Kit/next.jdbc/Hiccup, Kotlin/http4k/Exposed, Crystal/Kemal/Avram, OCaml/Dream/Caqti/TyXML, and Dart/Dart Frog without turning this pass into a full multi-stack explosion.
 - Do not center Starlette.
 - Prefer excellent markdown and straightforward Python.
 - Keep file paths deterministic and cross-references accurate.
@@ -356,6 +358,7 @@ Before outputting the files, ensure internally that:
 - prompt-first examples reflect strictly monotonic numbering and filename-based references
 - Dokku appears coherently in doctrine, manifests, examples, templates, and bootstrap generation
 - TypeScript Hono Bun Drizzle TSX, Go Echo templ, Elixir Phoenix, Rust Axum, and FastAPI/uv/ruff/orjson/polars are all meaningfully represented
+- the architecture and routing surfaces leave a clean extension path for additional backends such as Nim/Jester/HappyX, Zig/Zap/Jetzig, Scala/Tapir/http4s/ZIO, Clojure/Kit/next.jdbc/Hiccup, Kotlin/http4k/Exposed, Crystal/Kemal/Avram, OCaml/Dream/Caqti/TyXML, and Dart/Dart Frog
 - Docker-backed generation preserves conventional Compose filenames, repo-derived Compose `name:` values, non-default port allocation, and isolated primary/dev-vs-test seed/data boundaries
 
 OUTPUT FORMAT REQUIREMENTS

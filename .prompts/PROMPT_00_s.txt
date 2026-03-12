@@ -33,6 +33,7 @@ Assume some likely stacks and paths that fit my real workflows:
 - Go + Echo + templ services (HTMX/tailwind/plotly)
 - Rust + Axum services (HTMX/tailwind/plotly)
 - Elixir + Phoenix services (HTMX/tailwind/plotly)
+- Additional possible HTMX/tailwind/plotly-friendly backends to account for in the architecture: Nim + Jester + HappyX, Zig + Zap + Jetzig, Scala + Tapir + http4s + ZIO, Clojure + Kit + next.jdbc + Hiccup, Kotlin + http4k + Exposed (ORM), Crystal + Kemal + Avram (ORM), OCaml + Dream + Caqti + TyXML, Dart + Dart Frog
 - Docker Compose + Dokku
 - Redis / KeyDB + MongoDB
 - Trino / DuckDB / Polars
@@ -178,6 +179,7 @@ Design stack-specific packs for at least:
 - TypeScript Hono Bun Drizzle TSX
 - Go Echo templ
 - Rust Axum
+- Additional backend candidates: Nim Jester HappyX, Zig Zap Jetzig, Scala Tapir http4s ZIO, Clojure Kit next.jdbc Hiccup, Kotlin http4k Exposed, Crystal Kemal Avram, OCaml Dream Caqti TyXML, Dart Dart Frog
 - Docker Compose Dokku
 - Redis MongoDB
 - Trino DuckDB Polars
@@ -225,6 +227,7 @@ Examples should include combinations like:
 - TypeScript Hono Bun Drizzle TSX backend service with HTMX fragments and smoke tests
 - Go Echo templ backend service with canonical middleware and smoke tests
 - Rust Axum API with route patterns and integration tests
+- one or more additional backend sketches drawn from Nim/Jester/HappyX, Zig/Zap/Jetzig, Scala/Tapir/http4s/ZIO, Clojure/Kit/next.jdbc/Hiccup, Kotlin/http4k/Exposed, Crystal/Kemal/Avram, OCaml/Dream/Caqti/TyXML, or Dart/Dart Frog when useful
 - local RAG repo with indexing, metadata extraction, and minimal web UI
 - multi-storage zoo repo with Trino (other dbs cataloged in Trino) and Docker compose
 - prompt meta-runner repo with post-flight and stage-2 prompts

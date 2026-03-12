@@ -24,6 +24,7 @@ The base repo should reflect how I actually build and think. It should strongly 
 - modern Rust stack preferences: Axum and modern Rust tooling
 - Go web stack preference: Echo
 - Elixir web stack preference: Phoenix
+- additional backend options to keep architecturally compatible: Nim + Jester + HappyX, Zig + Zap + Jetzig, Scala + Tapir + http4s + ZIO, Clojure + Kit + next.jdbc + Hiccup, Kotlin + http4k + Exposed (ORM), Crystal + Kemal + Avram (ORM), OCaml + Dream + Caqti + TyXML, Dart + Dart Frog
 - support for Redis/KeyDB, MongoDB, DuckDB, Trino, NATS Jetstream, Meilisearch, TimescaleDB, Elasticsearch, Qdrant, local RAG, CLI tools, data pipelines, and prompt meta-runner style repos
 - support for future VPS deployment patterns, especially Dokku-oriented app packaging and conventions
 - strong anti-sprawl design so future projects load only the smallest relevant context
@@ -196,6 +197,7 @@ At minimum include:
 - Rust Axum modern tooling
 - Go Echo templ
 - Elixir Phoenix
+- extension-path backend candidates: Nim Jester HappyX, Zig Zap Jetzig, Scala Tapir http4s ZIO, Clojure Kit next.jdbc Hiccup, Kotlin http4k Exposed, Crystal Kemal Avram, OCaml Dream Caqti TyXML, Dart Dart Frog
 - Redis or KeyDB plus MongoDB
 - DuckDB Trino Polars
 - NATS Jetstream
@@ -442,6 +444,7 @@ Important constraints:
 - Include TypeScript + Hono + Bun + Drizzle ORM + TSX meaningfully as a first-class backend option for HTMX/tailwind/Plotly-oriented services.
 - Prefer Go Echo plus templ over Chi-based Go examples in this base repo.
 - Include Elixir Phoenix meaningfully.
+- Keep the architecture open to additional backend options such as Nim/Jester/HappyX, Zig/Zap/Jetzig, Scala/Tapir/http4s/ZIO, Clojure/Kit/next.jdbc/Hiccup, Kotlin/http4k/Exposed, Crystal/Kemal/Avram, OCaml/Dream/Caqti/TyXML, and Dart/Dart Frog without forcing them all into v1 deliverables.
 - Keep the base repo clean and reusable.
 - Make the system task-inferable so the user does not need to memorize skill names.
 - Use clear deterministic filenames.

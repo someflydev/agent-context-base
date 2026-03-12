@@ -83,3 +83,18 @@ Notes / Followups:
 - PF-001 remains: `PROMPT_05.txt`, `PROMPT_06.txt`, and `PROMPT_07.txt` still need deterministic output file targets before they can safely feed later prompts.
 - PF-004 remains: later v3/meta prompts still lack an explicit repo-green gate before expansion.
 ---
+Round: 7
+Timestamp: 2026-03-12T12:36:00Z
+Summary: Added additional possible backend candidates alongside the FastAPI, Hono/Bun, Axum, Echo/templ, and Phoenix references.
+Summary: Kept the change conservative by adding extension-path language rather than exploding the v1 and v2 file targets into eight more mandatory stack packs.
+Changes Applied:
+- .prompts/PROMPT_00_s.txt :: Added additional backend candidates to the architecture brief stack lists and example guidance :: widen the architectural option set without changing the current concrete file plan :: PF-035
+- .prompts/PROMPT_01.txt :: Added extension-path backend candidates to the base-repo design and stack-pack guidance :: keep the design prompt aware of more backend options while preserving v1 focus :: PF-036
+- .prompts/PROMPT_02.txt :: Added architectural compatibility language for additional backend candidates to the v1 generation prompt :: keep the repo structure extensible without forcing more mandatory v1 files :: PF-037
+- .prompts/PROMPT_03.txt :: Added routing and enhancement guidance for additional backend candidates :: keep the v2 prompt architecturally open without creating a broad new implementation scope :: PF-038
+- .prompts/PROMPT_04.txt :: Added extension-path coverage language for additional backend candidates in the v3 representation checklist :: preserve later-pass coverage awareness :: PF-039
+- .prompts/PROMPT_08.txt :: Added bounded-context compatibility language for additional backend candidates :: keep the budget-system prompt aware of the expanded backend option set :: PF-040
+Notes / Followups:
+- PF-001 remains: `PROMPT_05.txt`, `PROMPT_06.txt`, and `PROMPT_07.txt` still need deterministic output file targets before they can safely feed later prompts.
+- PF-004 remains: later v3/meta prompts still lack an explicit repo-green gate before expansion.
+---

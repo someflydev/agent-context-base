@@ -87,6 +87,7 @@ Ensure:
 - bootstrap scripts remain compatible
 - prompt-first numbering rules remain intact
 - FastAPI, TypeScript/Hono/Bun/Drizzle/TSX, Rust/Axum, Go/Echo/templ, and Phoenix remain represented
+- additional backend candidates such as Nim/Jester/HappyX, Zig/Zap/Jetzig, Scala/Tapir/http4s/ZIO, Clojure/Kit/next.jdbc/Hiccup, Kotlin/http4k/Exposed, Crystal/Kemal/Avram, OCaml/Dream/Caqti/TyXML, and Dart/Dart Frog remain legible as extension paths
 - Dokku deployment philosophy remains coherent
 - repo-derived Compose `name:` values, non-default port strategy, and primary/dev-vs-test isolation remain enforced and explainable
 
