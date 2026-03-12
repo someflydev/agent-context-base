@@ -1,0 +1,15 @@
+name: example-manifest-name
+archetype: backend-api-service
+stacks:
+  - example-stack
+triggers:
+  - plain language trigger
+required_context:
+  - context/doctrine/core-principles.md
+optional_context:
+  - context/workflows/add-feature.md
+preferred_examples:
+  - examples/canonical-api/README.md
+warnings:
+  - Replace this warning with a repo-specific boundary note.
+
