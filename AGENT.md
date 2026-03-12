@@ -1,93 +1,75 @@
 # AGENT.md
 
-Purpose: route Codex-style agents to the smallest useful context bundle for the current task.
+Purpose: route the assistant to the smallest relevant context bundle for the current task.
 
-This file is a router, not a doctrine dump.
+This file is a router. Durable doctrine lives under `context/doctrine/`.
 
 ## Required First Reads
 
-Read these in order:
+Read these first:
 
 1. `README.md`
-2. `manifests/repo.profile.yaml`
-3. `context/router/load-order.md`
+2. `docs/repo-purpose.md`
+3. `docs/repo-layout.md`
 4. `context/router/task-router.md`
 
-Read `context/router/stack-router.md` and `context/router/archetype-router.md` only if the task, repo signals, or manifest do not already make the stack and archetype obvious.
+Only then load `context/router/stack-router.md`, `context/router/archetype-router.md`, or a manifest if the task still needs narrowing.
 
-## Routing Rules
+## Smallest Relevant Bundle
 
-1. Infer the task from normal English, not from internal file names.
-2. Infer the repo archetype from `manifests/repo.profile.yaml`, repo structure, and task wording.
-3. Infer the active stack from manifest metadata, lockfiles, tool files, source trees, and existing canonical examples.
-4. Load only the doctrine docs required by the exact change.
-5. Load one workflow first. Load a second workflow only if the task clearly spans both.
-6. Load one primary archetype pack. Load a second archetype only if the repo is intentionally composite.
-7. Load only the stack packs that match the active code path.
-8. Consult preferred canonical examples before introducing a new pattern.
-9. Open templates only for bootstrap or scaffold tasks.
+Default bundle:
 
-Do not bulk-load `context/`, `examples/`, `templates/`, or `docs/`.
+1. one task router file
+2. only the doctrine files needed for the change
+3. one primary workflow
+4. one archetype if project shape matters
+5. the stack files that match the touched surface
+6. one preferred canonical example
 
-## Context Priority
+Do not bulk-load `context/`, `examples/`, `templates/`, or `manifests/`.
 
-When sources disagree, prefer:
+## Task Inference
 
-1. current repo code, tests, and configuration
-2. `manifests/repo.profile.yaml`
-3. doctrine docs
-4. workflow docs
-5. archetype docs
-6. stack docs
-7. canonical examples
-8. templates
+Infer the task from ordinary language. Do not require the user to know internal filenames.
 
-## Minimal Bundle Rule
+- "add an endpoint" -> `context/workflows/add-api-endpoint.md`
+- "bootstrap a repo" -> `context/workflows/bootstrap-repo.md`
+- "fix a bug" -> `context/workflows/fix-bug.md`
+- "add smoke tests" -> `context/workflows/add-smoke-tests.md`
+- "set up local rag" -> `context/workflows/add-local-rag-indexing.md`
 
-Load the smallest relevant bundle first:
+Use repo signals, manifests, and touched files to infer stack and archetype.
 
-- repo profile
-- router docs
-- task-specific doctrine
-- one workflow
-- one archetype
-- required stack packs
-- preferred example
+## When To Load More
 
-Escalate only when the active change surface is still ambiguous.
+Load doctrine when the task affects naming, testing, prompt-first rules, commit shape, Docker isolation, deployment, or example selection.
 
-## Canonical Example Rule
+Load workflows when the task is action-oriented.
 
-- Prefer one preferred example for a pattern family.
-- Do not blend multiple conflicting examples into a hybrid pattern.
-- If no suitable example exists, say so explicitly and create the smallest new pattern consistent with doctrine and stack docs.
+Load stacks when implementation details depend on a concrete language, framework, storage system, queue, or search engine.
+
+Load archetypes when the project shape matters more than a single framework choice.
+
+Load examples only after the active workflow and stack are known.
+
+## Canonical Example Priority
+
+Prefer one canonical example over blending several near-matches. If no example fits, state that and follow doctrine plus stack guidance.
 
 ## Stop Conditions
 
-Stop and surface the gap when:
+Stop and surface the gap if:
 
-- manifest signals and repo contents disagree
-- more than one archetype looks primary and there is no composition rule
-- more than one stack looks active for the target surface
-- the change touches persistence, queues, search, or cross-service boundaries and no minimal real-infra integration-test path is defined
-- the change touches Docker-backed infra and dev/test isolation is unclear
-- the only matching example is retired or contradictory
+- the task implies more than one primary archetype and composition is unclear
+- more than one stack is plausible for the touched surface
+- persistence, messaging, or search behavior changed but no minimal real-infra integration-test path is defined
+- Docker dev and test isolation is unclear
+- the request would cause context sprawl instead of a focused bundle
 
-## Guardrails
+## Anti-Sprawl Rules
 
-- Do not invent stack conventions when a stack pack exists.
-- Do not invent ports ad hoc; follow the manifest port bands.
-- Keep Compose filenames conventional: `docker-compose.yml` and `docker-compose.test.yml`.
-- Use repo-derived Compose `name:` values so dev and test stacks can run in parallel.
-- Never let test seeds, fixtures, env files, databases, or volumes touch dev-like data.
-- Treat `AGENT.md` as a router only. The durable truth lives in doctrine and manifests.
+- Do not turn `AGENT.md` into a doctrine dump.
+- Do not invent new router names when an existing workflow or stack clearly fits.
+- Do not load multiple examples unless comparing and resolving a conflict.
+- Do not promote templates to canonical examples.
 
-## Key Delegates
-
-- `docs/agent-context-architecture.md`
-- `context/router/task-router.md`
-- `context/router/stack-router.md`
-- `context/router/archetype-router.md`
-- `context/router/alias-catalog.md`
-- `context/router/example-priority.md`
-- `context/router/stop-conditions.md`

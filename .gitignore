@@ -1,0 +1,56 @@
+# OS and editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.tmp
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+.venv_tools/
+venv/
+dist/
+build/
+*.egg-info/
+
+# JavaScript and Bun
+node_modules/
+.bun/
+coverage/
+*.tsbuildinfo
+
+# Rust
+target/
+
+# Go
+bin/
+pkg/
+*.test
+
+# Elixir and Phoenix
+_build/
+deps/
+erl_crash.dump
+.elixir_ls/
+
+# Docker-backed local data
+docker/volumes/
+docker/fixtures/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Search and local indexes
+data/
+tmp/
+logs/
+.qdrant/
+.meili/
+
