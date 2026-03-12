@@ -44,6 +44,13 @@ Assume some likely stacks and paths that fit my real workflows:
 - prompt-first repo conventions with ordered prompt files and operator guides
 - reusable smoke test systems and post-flight/stage-2 refinement workflows
 
+Operational infrastructure invariants that the architecture must support:
+- When future repos include Docker Compose files, keep the conventional filenames `docker-compose.yml` and `docker-compose.test.yml`, but set the top-level Compose `name:` field from the repo slug so container groups are easy to identify in `docker ps`.
+- Define repo-derived Compose `name:` values for the primary/dev stack and the test stack so both can run at the same time without collisions. The test stack should use an explicit test suffix such as `<repo>-test`.
+- Do not expose backing services or local web apps on default host ports. Use explicit non-default host ports, and ensure the test stack uses a different non-default port set from the primary/dev stack.
+- Treat test fixture data, test seed/reset flows, test volumes, test databases, and test env files as fully isolated from primary/dev-like data. No test seeding or fixture task may touch the primary/dev data path.
+- Design the system so primary/dev infrastructure and test infrastructure can run in parallel for side-by-side comparison of sites and APIs.
+
 Your work must include the following sections in order.
 
 SECTION 1 — Design principles
@@ -97,6 +104,7 @@ Directories to define at minimum:
 - docs
 - scripts
 - tests or smoke-tests
+Also define where repo-level infrastructure conventions live, including conventional Compose filename rules, Compose `name:` field rules, port-allocation rules, and test-data isolation rules.
 
 SECTION 5 — Agent routing rules
 Design a robust AGENT.md and CLAUDE.md strategy.
@@ -177,6 +185,7 @@ Each stack pack should include:
 - common file paths
 - typical change surfaces
 - testing expectations
+- local infrastructure expectations, including Compose `name:` conventions, non-default port strategy, and dev/test isolation where relevant
 - canonical example wish list
 - risks and model failure modes
 
@@ -200,6 +209,7 @@ Include:
 - optional vs required context
 - trigger keywords
 - stack/archetype compatibility metadata
+- bootstrap or infrastructure metadata for conventional Compose filenames, repo-derived Compose `name:` values, non-default port allocation, and isolated test-vs-primary environments
 - notes on future automation via scripts or tools
 
 SECTION 11 — Example implementations for my real workflows
@@ -218,6 +228,7 @@ For each example:
 - specify which archetype and stack manifests should exist
 - specify which docs are mandatory first reads
 - specify which canonical examples are most important
+- specify how primary/dev and test infrastructure stay isolated while running in parallel
 
 SECTION 12 — Cross-model guidance
 Explain how to slightly adapt the system for:
@@ -273,6 +284,9 @@ Important constraints:
 - Where useful, include sample file contents, sample manifests, example directory trees, mapping tables, and implementation notes.
 - When proposing file names, use clear deterministic names.
 - When giving examples of prompt-first repo support, respect my preference for strictly monotonic prompt numbering and explicit file-name references.
+- For Docker-backed repos, keep the files named `docker-compose.yml` and `docker-compose.test.yml`, and enforce repo-derived Compose `name:` values rather than generic implicit project names.
+- Ensure any local primary/dev and test stacks can run simultaneously on different non-default host ports.
+- Ensure seed-data, fixture, and reset flows for tests are isolated from primary/dev data stores, volumes, and env files.
 
 End by producing:
 1. the recommended final architecture

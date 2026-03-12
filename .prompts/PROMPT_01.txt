@@ -32,6 +32,13 @@ The base repo should be designed to help pioneer uniquely effective usage patter
 
 The system must reduce the burden on the human operator. The human should not need to memorize skill names, workflow names, or exact manifest names in order to use the repo effectively. The repo itself should help the assistant infer what to load based on normal task descriptions and repository signals.
 
+Operational infrastructure invariants for future repos derived from this base:
+- When Docker Compose files are created, they should keep the conventional filenames `docker-compose.yml` and `docker-compose.test.yml`, while the top-level Compose `name:` field should be repo-derived so `docker ps` output is easy to read.
+- Compose `name:` values should be repo-derived so the primary/dev stack and test stack can run in parallel without collisions, with the test stack carrying an explicit test suffix such as `<repo>-test`.
+- Host ports for local web servers and backing services should be explicit non-default values, and the test stack must use a different non-default port band from the primary/dev stack.
+- Test fixture data, test seed/reset flows, test env files, test databases, and test volumes must be fully isolated from primary/dev data.
+- The system should make it easy for operators to run primary/dev and test infrastructures side by side and compare their behavior.
+
 Treat this as a serious systems-design and implementation task.
 
 Your work must include the following sections in order.
@@ -136,6 +143,7 @@ At minimum include doctrine docs for:
 - naming and clarity
 - testing philosophy
 - smoke test philosophy
+- compose, port, and data-isolation rules for local infrastructure
 - commit hygiene
 - documentation philosophy
 - prompt-first conventions
@@ -200,6 +208,7 @@ For each stack pack:
 - common assistant mistakes
 - testing expectations
 - smoke test expectations
+- local infrastructure expectations, including conventional Compose filenames, repo-derived Compose `name:` values, non-default ports, and test-vs-primary isolation where relevant
 - deployment implications if relevant
 - canonical examples that should exist
 
@@ -255,6 +264,7 @@ Define:
 - compatible workflows
 - preferred examples
 - anti-pattern warnings
+- bootstrap defaults for conventional Compose filenames, repo-derived Compose `name:` values, host-port allocation, and isolated test-vs-primary data paths where relevant
 Then create at least 12 example manifests relevant to my workflows, such as:
 - backend-api-fastapi-polars
 - backend-api-rust-axum
@@ -425,6 +435,7 @@ Important constraints:
 - Keep docs composable and scoped.
 - Design for future cloning or bootstrap generation into separate repos.
 - Where useful, include sample file contents, directory trees, YAML manifests, and draft docs.
+- Treat local infrastructure isolation as a first-class requirement: conventional Compose filenames, repo-derived Compose `name:` values, non-default ports, parallel primary/dev and test stacks, and no test seed flow touching primary/dev data.
 
 At the very end, output these concrete artifacts:
 1. the final recommended base repo tree
@@ -434,4 +445,3 @@ At the very end, output these concrete artifacts:
 5. 12 example manifests
 6. a prioritized v1 implementation plan
 7. a recommended first commit sequence
-
