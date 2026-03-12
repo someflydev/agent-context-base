@@ -23,9 +23,10 @@ Use this skill to infer stack and archetype from the repository itself.
 2. inspect dominant source directories
 3. inspect test and infra directories
 4. map findings through `context/router/stack-router.md` and `context/router/archetype-router.md`
+5. if the repo is still ambiguous, run `python scripts/prompt_first_repo_analyzer.py <repo>`
 
 ## Avoid
 
 - choosing a stack from one transient script
 - assuming a future-supported stack is already active
-
+- ignoring `context/router/repo-signal-hints.json` when machine-readable hints already exist

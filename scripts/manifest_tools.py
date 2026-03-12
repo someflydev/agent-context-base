@@ -107,6 +107,17 @@ def parse_scalar(raw: str) -> object:
     return value
 
 
+def parse_port_band(raw: str) -> tuple[int, int]:
+    """Parse a port band like 14000-14099."""
+
+    start_raw, end_raw = raw.split("-", 1)
+    start = int(start_raw)
+    end = int(end_raw)
+    if start > end:
+        raise ValueError(f"invalid port band '{raw}': start must be <= end")
+    return start, end
+
+
 def parse_manifest(path: Path) -> dict[str, object]:
     """Parse the limited YAML subset used by manifests in this repo."""
 
@@ -299,5 +310,61 @@ def validate_manifest(repo_root: Path, manifest_path: Path) -> list[str]:
                 f"{manifest_path}: '{key}' must be one of {sorted(VALID_SUPPORT_LEVELS)}"
             )
 
-    return errors
+    compose_files = normalize_string_list(data.get("compose_files"))
+    required_compose_files = {"docker-compose.yml", "docker-compose.test.yml"}
+    if compose_files and not required_compose_files.issubset(set(compose_files)):
+        errors.append(
+            f"{manifest_path}: 'compose_files' must include {sorted(required_compose_files)}"
+        )
 
+    compose_project_name_dev = data.get("compose_project_name_dev")
+    compose_project_name_test = data.get("compose_project_name_test")
+    if isinstance(compose_project_name_dev, str) and "{repo_slug}" not in compose_project_name_dev:
+        errors.append(f"{manifest_path}: 'compose_project_name_dev' should include '{{repo_slug}}'")
+    if isinstance(compose_project_name_test, str):
+        if "{repo_slug}" not in compose_project_name_test:
+            errors.append(f"{manifest_path}: 'compose_project_name_test' should include '{{repo_slug}}'")
+        if "-test" not in compose_project_name_test:
+            errors.append(f"{manifest_path}: 'compose_project_name_test' should end with a '-test' variant")
+    if (
+        isinstance(compose_project_name_dev, str)
+        and isinstance(compose_project_name_test, str)
+        and compose_project_name_dev == compose_project_name_test
+    ):
+        errors.append(f"{manifest_path}: dev and test compose project names must differ")
+
+    port_keys = (
+        "port_band_app_dev",
+        "port_band_app_test",
+        "port_band_data_dev",
+        "port_band_data_test",
+    )
+    port_ranges: dict[str, tuple[int, int]] = {}
+    for key in port_keys:
+        value = data.get(key)
+        if isinstance(value, str):
+            try:
+                port_ranges[key] = parse_port_band(value)
+            except ValueError as exc:
+                errors.append(f"{manifest_path}: '{key}' {exc}")
+    for left_index, left_key in enumerate(port_keys):
+        left_range = port_ranges.get(left_key)
+        if left_range is None:
+            continue
+        for right_key in port_keys[left_index + 1 :]:
+            right_range = port_ranges.get(right_key)
+            if right_range is None:
+                continue
+            if left_range[0] <= right_range[1] and right_range[0] <= left_range[1]:
+                errors.append(
+                    f"{manifest_path}: port bands '{left_key}' and '{right_key}' must not overlap"
+                )
+
+    data_isolation = normalize_string_list(data.get("data_isolation"))
+    if data_isolation:
+        if not any(item == "docker/volumes/dev" for item in data_isolation):
+            errors.append(f"{manifest_path}: 'data_isolation' should include 'docker/volumes/dev'")
+        if not any(item == "docker/volumes/test" for item in data_isolation):
+            errors.append(f"{manifest_path}: 'data_isolation' should include 'docker/volumes/test'")
+
+    return errors

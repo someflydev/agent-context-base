@@ -1,0 +1,155 @@
+{
+  "version": 1,
+  "defaults": {
+    "weight": 40,
+    "tier": "support",
+    "reason": "Fallback weight for secondary material."
+  },
+  "rules": [
+    {
+      "prefix": "README.md",
+      "weight": 100,
+      "tier": "entrypoint",
+      "reason": "Primary repository entrypoint."
+    },
+    {
+      "prefix": "docs/repo-purpose.md",
+      "weight": 96,
+      "tier": "entrypoint",
+      "reason": "Core purpose and scope definition."
+    },
+    {
+      "prefix": "docs/repo-layout.md",
+      "weight": 94,
+      "tier": "entrypoint",
+      "reason": "Defines repository layers and where to look next."
+    },
+    {
+      "prefix": "docs/session-start.md",
+      "weight": 93,
+      "tier": "entrypoint",
+      "reason": "Session-start guidance for loading the smallest useful bundle."
+    },
+    {
+      "prefix": "context/anchors/",
+      "weight": 90,
+      "tier": "anchor",
+      "reason": "Small memory anchors for repeated assistant guidance."
+    },
+    {
+      "prefix": "manifests/",
+      "weight": 88,
+      "tier": "bundle",
+      "reason": "Machine-readable bundle definitions and repo signals."
+    },
+    {
+      "prefix": "context/router/",
+      "weight": 86,
+      "tier": "routing",
+      "reason": "Routing logic for task, stack, and archetype inference."
+    },
+    {
+      "prefix": "context/doctrine/",
+      "weight": 82,
+      "tier": "doctrine",
+      "reason": "Stable decision rules and long-lived guardrails."
+    },
+    {
+      "prefix": "context/workflows/",
+      "weight": 78,
+      "tier": "workflow",
+      "reason": "Task execution playbooks."
+    },
+    {
+      "prefix": "context/archetypes/",
+      "weight": 72,
+      "tier": "archetype",
+      "reason": "Project-shape guidance."
+    },
+    {
+      "prefix": "context/stacks/",
+      "weight": 70,
+      "tier": "stack",
+      "reason": "Concrete framework and infrastructure guidance."
+    },
+    {
+      "prefix": "context/skills/",
+      "weight": 68,
+      "tier": "skill",
+      "reason": "Short reusable capabilities."
+    },
+    {
+      "prefix": "examples/",
+      "weight": 64,
+      "tier": "example",
+      "reason": "Canonical examples after routing is already narrowed."
+    },
+    {
+      "prefix": "docs/deployment-readiness-checklists.md",
+      "weight": 62,
+      "tier": "ops",
+      "reason": "Release-readiness reference once implementation exists."
+    },
+    {
+      "prefix": "docs/assistant-failure-modes.md",
+      "weight": 60,
+      "tier": "ops",
+      "reason": "Failure-mode reference for predictable assistant behavior."
+    },
+    {
+      "prefix": "docs/system-self-explanation.md",
+      "weight": 58,
+      "tier": "ops",
+      "reason": "Explains how the system fits together."
+    },
+    {
+      "prefix": "templates/",
+      "weight": 32,
+      "tier": "template",
+      "reason": "Starter scaffolds, not canonical patterns."
+    },
+    {
+      "prefix": "scripts/",
+      "weight": 28,
+      "tier": "tooling",
+      "reason": "Operational utilities usually read after context is chosen."
+    }
+  ],
+  "overrides": {
+    "context/doctrine/stop-conditions.md": {
+      "weight": 97,
+      "tier": "guardrail",
+      "reason": "Explicit stop conditions prevent context sprawl and unsafe guesses."
+    },
+    "context/doctrine/context-loading-rules.md": {
+      "weight": 95,
+      "tier": "guardrail",
+      "reason": "Defines the smallest relevant bundle policy."
+    },
+    "context/doctrine/compose-port-and-data-isolation.md": {
+      "weight": 94,
+      "tier": "guardrail",
+      "reason": "Critical for dev-vs-test isolation and predictable local infra."
+    },
+    "context/doctrine/prompt-first-conventions.md": {
+      "weight": 93,
+      "tier": "guardrail",
+      "reason": "Protects monotonic prompt numbering and prompt-first constraints."
+    },
+    "context/doctrine/canonical-examples.md": {
+      "weight": 92,
+      "tier": "guardrail",
+      "reason": "Controls example selection and prevents pattern blending."
+    },
+    "context/router/repo-signal-hints.json": {
+      "weight": 89,
+      "tier": "routing",
+      "reason": "Machine-readable hints for repo analyzer and signal detection."
+    },
+    "examples/catalog.json": {
+      "weight": 66,
+      "tier": "example",
+      "reason": "Canonical example ranking metadata."
+    }
+  }
+}

@@ -1,0 +1,301 @@
+{
+  "version": 1,
+  "stacks": [
+    {
+      "name": "python-fastapi-uv-ruff-orjson-polars",
+      "patterns": [
+        "pyproject.toml",
+        "uv.lock",
+        "app/main.py",
+        "app/api/*.py",
+        "tests/smoke/*.py"
+      ],
+      "guidance": "Treat FastAPI routes plus Python smoke tests as the primary service surface."
+    },
+    {
+      "name": "typescript-hono-bun",
+      "patterns": [
+        "package.json",
+        "bun.lock",
+        "src/index.ts",
+        "src/routes/*.ts",
+        "src/routes/*.tsx"
+      ],
+      "guidance": "Prefer the Hono workflow and keep TSX route fragments explicit."
+    },
+    {
+      "name": "rust-axum-modern",
+      "patterns": [
+        "Cargo.toml",
+        "src/main.rs",
+        "tests/*.rs"
+      ],
+      "guidance": "Use Axum route guidance and keep smoke versus integration concerns separate."
+    },
+    {
+      "name": "go-echo",
+      "patterns": [
+        "go.mod",
+        "cmd/server/main.go",
+        "internal/http/*.go",
+        "tests/**/*.go"
+      ],
+      "guidance": "Treat Echo handlers plus templ-facing surfaces as the active implementation path."
+    },
+    {
+      "name": "elixir-phoenix",
+      "patterns": [
+        "mix.exs",
+        "lib/*_web/router.ex",
+        "lib/*_web/controllers/*.ex",
+        "test/*_web/controllers/*.exs"
+      ],
+      "guidance": "Router and controller files are the strongest Phoenix implementation signals."
+    },
+    {
+      "name": "duckdb-trino-polars",
+      "patterns": [
+        "app/pipeline.py",
+        "tests/smoke/test_pipeline_smoke.py",
+        "tests/integration/test_pipeline_round_trip.py"
+      ],
+      "guidance": "Prefer data-pipeline doctrine and deterministic fixture guidance."
+    },
+    {
+      "name": "qdrant",
+      "patterns": [
+        "app/index_documents.py",
+        "data/corpus/*",
+        "tests/smoke/test_index_smoke.py"
+      ],
+      "guidance": "Local RAG signals should load indexing, retrieval, and metadata guidance."
+    },
+    {
+      "name": "redis-keydb-mongo",
+      "patterns": [
+        "docker-compose.yml",
+        "docker-compose.test.yml",
+        "tests/integration/test_storage_round_trip.py",
+        "scripts/seed_data.py"
+      ],
+      "guidance": "Multi-storage repos need isolation and real boundary tests before adding more context."
+    },
+    {
+      "name": "prompt-first-repo",
+      "patterns": [
+        "PROMPTS.md",
+        ".prompts/*.txt",
+        "AGENT.md",
+        "CLAUDE.md",
+        "manifests/project-profile.yaml"
+      ],
+      "guidance": "Prompt-first repos should favor routing, prompt numbering, and profile validation guidance."
+    }
+  ],
+  "archetypes": [
+    {
+      "name": "backend-api-service",
+      "patterns": [
+        "app/api/*.py",
+        "src/routes/*.ts",
+        "src/routes/*.tsx",
+        "cmd/server/*.go",
+        "lib/*_web/router.ex"
+      ],
+      "guidance": "HTTP entrypoints and handler/controller files dominate the active repo shape."
+    },
+    {
+      "name": "cli-tool",
+      "patterns": [
+        "cli.py",
+        "scripts/*.py",
+        "tests/test_cli*.py"
+      ],
+      "guidance": "Operator-facing command surfaces usually imply the CLI archetype."
+    },
+    {
+      "name": "data-pipeline",
+      "patterns": [
+        "app/pipeline.py",
+        "tests/integration/test_pipeline_round_trip.py",
+        "scripts/seed_data.py"
+      ],
+      "guidance": "Favor deterministic transforms, fixtures, and repeatable pipeline checks."
+    },
+    {
+      "name": "local-rag-system",
+      "patterns": [
+        "app/index_documents.py",
+        "data/corpus/*",
+        "tests/integration/test_qdrant_round_trip.py"
+      ],
+      "guidance": "Corpora, index configuration, and vector round trips indicate a local RAG repo."
+    },
+    {
+      "name": "multi-storage-experiment",
+      "patterns": [
+        "docker-compose.test.yml",
+        "tests/integration/test_storage_round_trip.py",
+        "docs/storage-matrix.md"
+      ],
+      "guidance": "Favor explicit comparison of storage behaviors over hidden abstraction."
+    },
+    {
+      "name": "prompt-first-repo",
+      "patterns": [
+        "README.md",
+        "AGENT.md",
+        "CLAUDE.md",
+        "PROMPTS.md",
+        ".prompts/*.txt",
+        "manifests/project-profile.yaml"
+      ],
+      "guidance": "Prompt files and generated profiles make prompt-first the leading archetype."
+    },
+    {
+      "name": "dokku-deployable-service",
+      "patterns": [
+        "Procfile",
+        "app.json",
+        "docs/deployment.md",
+        "scripts/smoke/*.sh"
+      ],
+      "guidance": "Dokku artifacts indicate a deployable single-service posture."
+    }
+  ],
+  "workflows": [
+    {
+      "name": "add-api-endpoint",
+      "patterns": [
+        "app/api/*.py",
+        "src/routes/*.ts",
+        "src/routes/*.tsx",
+        "cmd/server/*.go",
+        "lib/*_web/router.ex"
+      ],
+      "guidance": "Routes, handlers, and controllers imply the API endpoint workflow."
+    },
+    {
+      "name": "add-smoke-tests",
+      "patterns": [
+        "tests/smoke/*",
+        "scripts/check_repo.py",
+        "scripts/smoke/*.sh"
+      ],
+      "guidance": "Prefer the smallest meaningful happy-path check before expanding test scope."
+    },
+    {
+      "name": "add-storage-integration",
+      "patterns": [
+        "docker-compose.test.yml",
+        "tests/integration/*",
+        "scripts/seed_data.py",
+        "scripts/seed-data.ts"
+      ],
+      "guidance": "Real boundary changes should load storage integration doctrine and examples."
+    },
+    {
+      "name": "add-deployment-support",
+      "patterns": [
+        "Procfile",
+        "app.json",
+        "docs/deployment.md"
+      ],
+      "guidance": "Deployment artifacts should pull in Dokku philosophy and readiness checklists."
+    },
+    {
+      "name": "generate-prompt-sequence",
+      "patterns": [
+        "PROMPTS.md",
+        ".prompts/*.txt"
+      ],
+      "guidance": "Prompt files should keep numbering monotonic and the prompt index current."
+    },
+    {
+      "name": "add-local-rag-indexing",
+      "patterns": [
+        "app/index_documents.py",
+        "data/corpus/*",
+        "tests/integration/test_qdrant_round_trip.py"
+      ],
+      "guidance": "Load local RAG workflow guidance when indexing or retrieval signals appear."
+    },
+    {
+      "name": "post-flight-refinement",
+      "patterns": [
+        "README.md",
+        "AGENT.md",
+        "CLAUDE.md",
+        "docs/repo-layout.md"
+      ],
+      "guidance": "Meta-structure edits often imply post-flight refinement."
+    }
+  ],
+  "extension_paths": [
+    {
+      "name": "nim-jester-happyx",
+      "patterns": [
+        "*.nim",
+        "src/**/*.nim"
+      ],
+      "guidance": "Use the backend-api archetype plus canonical API and smoke-test doctrine as the extension path."
+    },
+    {
+      "name": "zig-zap-jetzig",
+      "patterns": [
+        "build.zig",
+        "src/**/*.zig"
+      ],
+      "guidance": "Favor minimal stack docs extending routing, smoke-test, and Compose isolation conventions."
+    },
+    {
+      "name": "scala-tapir-http4s-zio",
+      "patterns": [
+        "build.sbt",
+        "project/*.scala",
+        "src/main/scala/**/*.scala"
+      ],
+      "guidance": "Map Scala services through the backend-api archetype and explicit example selection."
+    },
+    {
+      "name": "clojure-kit-next-jdbc-hiccup",
+      "patterns": [
+        "deps.edn",
+        "src/**/*.clj"
+      ],
+      "guidance": "Keep extension work focused on repo signals, smoke tests, and deployment isolation."
+    },
+    {
+      "name": "kotlin-http4k-exposed",
+      "patterns": [
+        "build.gradle.kts",
+        "src/main/kotlin/**/*.kt"
+      ],
+      "guidance": "Favor backend-api routing, storage boundaries, and prompt-first manifests."
+    },
+    {
+      "name": "crystal-kemal-avram",
+      "patterns": [
+        "shard.yml",
+        "src/**/*.cr"
+      ],
+      "guidance": "Add a focused stack pack later without changing router or doctrine structure."
+    },
+    {
+      "name": "ocaml-dream-caqti-tyxml",
+      "patterns": [
+        "dune-project",
+        "lib/**/*.ml"
+      ],
+      "guidance": "Keep OCaml support legible as an extension path instead of inflating the base file set."
+    },
+    {
+      "name": "dart-dart-frog",
+      "patterns": [
+        "pubspec.yaml",
+        "routes/**/*.dart"
+      ],
+      "guidance": "Treat Dart Frog as an archetype-plus-stack extension, not a special-case architecture."
+    }
+  ]
+}

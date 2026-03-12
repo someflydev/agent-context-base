@@ -40,17 +40,39 @@ Checks that manifest files:
 - keep `name` aligned with the filename
 - keep stack, archetype, and support flags consistent
 
+## `validate_context.py`
+
+Runs the broader integrity pass for the base itself:
+
+- manifest validation
+- context weighting, repo signal, and example catalog checks
+- prompt numbering checks
+- bootstrap verification for Compose naming, port allocation, and environment isolation
+
 ## `preview_context_bundle.py`
 
 Accepts a manifest name or manifest path and prints the ordered context bundle that should be loaded first.
+
+It can also show context weights, assistant anchors, ranked examples, and repo-signal comparisons.
+
+## `prompt_first_repo_analyzer.py`
+
+Infers likely stacks, archetypes, workflows, and manifests from the target repo's actual file signals.
+
+## `pattern_diff.py`
+
+Shows a readable diff between two files or two directory trees so a repo surface can be compared against a canonical example or a template.
 
 Examples:
 
 ```bash
 python scripts/validate_manifests.py
+python scripts/validate_context.py
 python scripts/preview_context_bundle.py backend-api-fastapi-polars
-python scripts/preview_context_bundle.py manifests/local-rag-base.yaml
+python scripts/preview_context_bundle.py manifests/local-rag-base.yaml --show-weights --show-anchors
 python scripts/preview_context_bundle.py dokku-deployable-go-echo --show-templates
+python scripts/prompt_first_repo_analyzer.py .
+python scripts/pattern_diff.py examples/canonical-api examples/canonical-smoke-tests
 ```
 
 ## `manifest_tools.py`

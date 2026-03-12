@@ -18,6 +18,7 @@ Use canonical examples to show the preferred pattern for a recurring problem:
 
 - prefer one canonical example per pattern family
 - prefer examples that match the active stack and archetype
+- use `examples/catalog.json` when ranking several plausible examples
 - retire examples that contradict doctrine or newer first-class stack guidance
 
 ## Examples Versus Templates
@@ -34,4 +35,3 @@ When doctrine changes, review affected examples quickly. A stale example is ofte
 ## When No Example Exists
 
 If no canonical example fits, say so explicitly and implement the smallest doctrine-consistent solution. Consider adding a new canonical example only if the pattern is likely to recur.
-

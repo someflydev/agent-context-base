@@ -1,0 +1,291 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "path": "examples/canonical-api/fastapi-endpoint-example.md",
+      "category": "api",
+      "summary": "FastAPI route explanation with the preferred service-boundary posture.",
+      "stacks": ["python-fastapi-uv-ruff-orjson-polars"],
+      "archetypes": ["backend-api-service", "dokku-deployable-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["http-route", "service-boundary", "json-response"],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/fastapi-endpoint-example.py",
+      "category": "api",
+      "summary": "FastAPI handler example with explicit router and response shape.",
+      "stacks": ["python-fastapi-uv-ruff-orjson-polars"],
+      "archetypes": ["backend-api-service", "dokku-deployable-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["http-route", "service-boundary", "json-response"],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/typescript-hono-handler-example.ts",
+      "category": "api",
+      "summary": "Hono plus TSX route example for the Bun-first backend path.",
+      "stacks": ["typescript-hono-bun"],
+      "archetypes": ["backend-api-service", "dokku-deployable-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["http-route", "tsx-response", "service-boundary"],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/rust-axum-route-example.rs",
+      "category": "api",
+      "summary": "Axum route shape with explicit JSON response handling.",
+      "stacks": ["rust-axum-modern"],
+      "archetypes": ["backend-api-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["http-route", "json-response"],
+      "rank": 96,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/go-echo-handler-example.go",
+      "category": "api",
+      "summary": "Echo handler example aligned with the Go plus templ stack path.",
+      "stacks": ["go-echo"],
+      "archetypes": ["backend-api-service", "dokku-deployable-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["http-route", "json-response"],
+      "rank": 96,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/phoenix-route-controller-example.ex",
+      "category": "api",
+      "summary": "Phoenix controller example for explicit route handling.",
+      "stacks": ["elixir-phoenix"],
+      "archetypes": ["backend-api-service", "dokku-deployable-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["controller", "json-response"],
+      "rank": 95,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/phoenix-router-surface-example.ex",
+      "category": "api",
+      "summary": "Phoenix router surface example for route organization.",
+      "stacks": ["elixir-phoenix"],
+      "archetypes": ["backend-api-service", "dokku-deployable-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["router", "controller"],
+      "rank": 93,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-cli/python-cli-command-example.py",
+      "category": "cli",
+      "summary": "Minimal Python CLI command example with explicit output.",
+      "stacks": ["python-fastapi-uv-ruff-orjson-polars"],
+      "archetypes": ["cli-tool"],
+      "workflows": ["extend-cli"],
+      "patterns": ["cli-command", "stdout-shape"],
+      "rank": 92,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-dokku/Procfile.example",
+      "category": "dokku",
+      "summary": "Explicit Dokku Procfile with web and release surfaces.",
+      "stacks": ["python-fastapi-uv-ruff-orjson-polars", "typescript-hono-bun", "go-echo", "elixir-phoenix"],
+      "archetypes": ["dokku-deployable-service"],
+      "workflows": ["add-deployment-support"],
+      "patterns": ["procfile", "release-phase"],
+      "rank": 98,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-dokku/app-json-example.json",
+      "category": "dokku",
+      "summary": "Minimal app.json shape for Dokku-oriented repos.",
+      "stacks": ["python-fastapi-uv-ruff-orjson-polars", "typescript-hono-bun", "go-echo", "elixir-phoenix"],
+      "archetypes": ["dokku-deployable-service"],
+      "workflows": ["add-deployment-support"],
+      "patterns": ["app-json", "postdeploy-smoke"],
+      "rank": 97,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-integration-tests/fastapi-db-integration-test-example.py",
+      "category": "integration-test",
+      "summary": "Minimal real database round-trip test for FastAPI repos.",
+      "stacks": ["python-fastapi-uv-ruff-orjson-polars"],
+      "archetypes": ["backend-api-service", "dokku-deployable-service"],
+      "workflows": ["add-storage-integration"],
+      "patterns": ["real-boundary-test", "docker-compose-test"],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-prompts/001-bootstrap-repo.txt",
+      "category": "prompt",
+      "summary": "Prompt-first bootstrap sequence entrypoint.",
+      "stacks": ["prompt-first-repo"],
+      "archetypes": ["prompt-first-repo"],
+      "workflows": ["generate-prompt-sequence", "bootstrap-repo"],
+      "patterns": ["prompt-sequence", "monotonic-numbering"],
+      "rank": 96,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-prompts/002-refine-test-surface.txt",
+      "category": "prompt",
+      "summary": "Prompt-first refinement step focused on test surface quality.",
+      "stacks": ["prompt-first-repo"],
+      "archetypes": ["prompt-first-repo"],
+      "workflows": ["generate-prompt-sequence", "post-flight-refinement"],
+      "patterns": ["prompt-sequence", "monotonic-numbering"],
+      "rank": 95,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-prompts/prompt-first-layout-example.md",
+      "category": "prompt",
+      "summary": "Prompt-first layout example tying prompt files to repo surfaces.",
+      "stacks": ["prompt-first-repo"],
+      "archetypes": ["prompt-first-repo"],
+      "workflows": ["generate-prompt-sequence", "bootstrap-repo"],
+      "patterns": ["prompt-layout", "monotonic-numbering"],
+      "rank": 94,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-rag/local-rag-index-config-example.yaml",
+      "category": "rag",
+      "summary": "Local RAG index configuration example with explicit metadata fields.",
+      "stacks": ["qdrant"],
+      "archetypes": ["local-rag-system"],
+      "workflows": ["add-local-rag-indexing"],
+      "patterns": ["index-config", "metadata-shape"],
+      "rank": 98,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-rag/local-rag-metadata-shape-example.md",
+      "category": "rag",
+      "summary": "Local RAG metadata shape example for deterministic retrieval.",
+      "stacks": ["qdrant"],
+      "archetypes": ["local-rag-system"],
+      "workflows": ["add-local-rag-indexing"],
+      "patterns": ["metadata-shape", "retrieval-surface"],
+      "rank": 97,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-seed-data/polars-seed-data-example.py",
+      "category": "seed-data",
+      "summary": "Deterministic Python seed-data example aligned with Polars repos.",
+      "stacks": ["python-fastapi-uv-ruff-orjson-polars", "duckdb-trino-polars"],
+      "archetypes": ["backend-api-service", "data-pipeline"],
+      "workflows": ["add-seed-data"],
+      "patterns": ["seed-data", "deterministic-fixture"],
+      "rank": 95,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-smoke-tests/fastapi-smoke-test-example.py",
+      "category": "smoke-test",
+      "summary": "Small FastAPI smoke test showing the preferred boot check shape.",
+      "stacks": ["python-fastapi-uv-ruff-orjson-polars"],
+      "archetypes": ["backend-api-service", "dokku-deployable-service"],
+      "workflows": ["add-smoke-tests"],
+      "patterns": ["smoke-test", "boot-check"],
+      "rank": 99,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-storage/duckdb-polars-example.py",
+      "category": "storage",
+      "summary": "Minimal DuckDB plus Polars storage example.",
+      "stacks": ["duckdb-trino-polars"],
+      "archetypes": ["data-pipeline"],
+      "workflows": ["add-storage-integration"],
+      "patterns": ["storage-boundary", "deterministic-query"],
+      "rank": 94,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-storage/redis-mongo-shape-example.md",
+      "category": "storage",
+      "summary": "Redis and Mongo shape example for multi-storage repos.",
+      "stacks": ["redis-keydb-mongo", "typescript-hono-bun"],
+      "archetypes": ["multi-storage-experiment", "backend-api-service"],
+      "workflows": ["add-storage-integration"],
+      "patterns": ["storage-boundary", "cache-plus-db"],
+      "rank": 93,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-workflows/post-flight-refinement-checklist.md",
+      "category": "workflow",
+      "summary": "Compact post-flight refinement checklist.",
+      "stacks": ["python-fastapi-uv-ruff-orjson-polars", "typescript-hono-bun", "rust-axum-modern", "go-echo", "elixir-phoenix", "prompt-first-repo"],
+      "archetypes": ["backend-api-service", "dokku-deployable-service", "prompt-first-repo"],
+      "workflows": ["post-flight-refinement"],
+      "patterns": ["review-checklist", "cleanup-pass"],
+      "rank": 91,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-observability/structured-log-example.json",
+      "category": "observability",
+      "summary": "Structured log example with stable keys for service and repo profile context.",
+      "stacks": ["python-fastapi-uv-ruff-orjson-polars", "typescript-hono-bun", "rust-axum-modern", "go-echo", "elixir-phoenix"],
+      "archetypes": ["backend-api-service", "dokku-deployable-service"],
+      "workflows": ["add-feature", "post-flight-refinement"],
+      "patterns": ["structured-log", "request-id"],
+      "rank": 88,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-observability/metrics-example.txt",
+      "category": "observability",
+      "summary": "Metrics exposition example with small label cardinality.",
+      "stacks": ["python-fastapi-uv-ruff-orjson-polars", "typescript-hono-bun", "rust-axum-modern", "go-echo", "elixir-phoenix"],
+      "archetypes": ["backend-api-service", "dokku-deployable-service"],
+      "workflows": ["add-feature", "post-flight-refinement"],
+      "patterns": ["metric-line", "low-cardinality"],
+      "rank": 87,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-observability/trace-span-example.json",
+      "category": "observability",
+      "summary": "Trace span example with parent-child linkage and route attributes.",
+      "stacks": ["python-fastapi-uv-ruff-orjson-polars", "typescript-hono-bun", "rust-axum-modern", "go-echo", "elixir-phoenix"],
+      "archetypes": ["backend-api-service", "dokku-deployable-service"],
+      "workflows": ["add-feature", "post-flight-refinement"],
+      "patterns": ["trace-span", "request-attributes"],
+      "rank": 86,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/fixtures/minimal-report-runs.json",
+      "category": "fixture",
+      "summary": "Tiny report-run dataset for seed and storage tests.",
+      "stacks": ["python-fastapi-uv-ruff-orjson-polars", "duckdb-trino-polars", "typescript-hono-bun"],
+      "archetypes": ["backend-api-service", "data-pipeline", "multi-storage-experiment"],
+      "workflows": ["add-seed-data", "add-storage-integration"],
+      "patterns": ["minimal-fixture", "tabular-data"],
+      "rank": 84,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/fixtures/minimal-document-corpus.jsonl",
+      "category": "fixture",
+      "summary": "Tiny document corpus fixture for local RAG and indexing tests.",
+      "stacks": ["qdrant", "prompt-first-repo"],
+      "archetypes": ["local-rag-system", "prompt-first-repo"],
+      "workflows": ["add-local-rag-indexing", "generate-prompt-sequence"],
+      "patterns": ["minimal-fixture", "document-corpus"],
+      "rank": 84,
+      "stability": "canonical"
+    }
+  ]
+}
