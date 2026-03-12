@@ -16,7 +16,7 @@ The repository should reflect the actual way I build and work:
 - modern Python preferences: FastAPI, uv, ruff, orjson, polars
 - TypeScript + Hono + Bun + Drizzle ORM + TSX
 - Rust + Axum
-- Go + Echo
+- Go + Echo + templ
 - Elixir + Phoenix
 - Redis/KeyDB + MongoDB
 - DuckDB + Trino + Polars
@@ -53,7 +53,7 @@ Important implementation constraints:
 - Make the routing system inferable from normal language requests.
 - Use Dokku-oriented guidance where deployment philosophy matters.
 - Do not center Starlette.
-- Use Go Echo rather than Chi in this repo.
+- Use Go Echo plus templ rather than Chi-based Go examples in this repo.
 - Include TypeScript + Hono + Bun + Drizzle ORM + TSX as a real first-class stack pack for lightweight backend services, especially HTMX/tailwind/Plotly-oriented apps.
 - Make Elixir Phoenix a real first-class stack pack.
 - Respect my prompt-first preferences.
@@ -340,7 +340,7 @@ Before outputting the batches, internally ensure:
 - examples and templates remain distinct
 - Dokku guidance is aligned across doctrine, stacks, archetypes, manifests, and examples
 - prompt-first conventions reflect strictly monotonic numbering with explicit filename references
-- FastAPI/uv/ruff/orjson/polars, TypeScript/Hono/Bun/Drizzle/TSX, Rust/Axum, Go/Echo, and Elixir/Phoenix are all represented meaningfully
+- FastAPI/uv/ruff/orjson/polars, TypeScript/Hono/Bun/Drizzle/TSX, Rust/Axum, Go/Echo/templ, and Elixir/Phoenix are all represented meaningfully
 - the doctrine layer clearly explains conventional Compose filenames, repo-derived Compose `name:` values, non-default port allocation, and primary/dev-vs-test data isolation
 
 At the very end, after all batches, provide:

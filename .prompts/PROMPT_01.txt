@@ -194,7 +194,7 @@ At minimum include:
 - Python FastAPI uv ruff orjson polars
 - TypeScript Hono Bun Drizzle TSX
 - Rust Axum modern tooling
-- Go Echo
+- Go Echo templ
 - Elixir Phoenix
 - Redis or KeyDB plus MongoDB
 - DuckDB Trino Polars
@@ -319,7 +319,7 @@ Create a templates strategy for:
 - FastAPI repo starter
 - TypeScript Hono Bun Drizzle TSX starter
 - Rust Axum starter
-- Go Echo starter
+- Go Echo templ starter
 - Elixir Phoenix starter
 - Dokku deployment starter
 - smoke test starter
@@ -386,7 +386,7 @@ Examples should include a mix of:
 - FastAPI/polars services
 - TypeScript/Hono/Bun/Drizzle/TSX services
 - Rust/Axum services
-- Go/Echo services
+- Go/Echo/templ services
 - Elixir/Phoenix services
 - prompt-first repos
 - local RAG systems
@@ -440,7 +440,7 @@ Important constraints:
 - Do not assume Starlette as a primary stack example.
 - Prefer FastAPI, uv, ruff, orjson, polars for Python examples.
 - Include TypeScript + Hono + Bun + Drizzle ORM + TSX meaningfully as a first-class backend option for HTMX/tailwind/Plotly-oriented services.
-- Prefer Go Echo over Chi for Go examples in this base repo.
+- Prefer Go Echo plus templ over Chi-based Go examples in this base repo.
 - Include Elixir Phoenix meaningfully.
 - Keep the base repo clean and reusable.
 - Make the system task-inferable so the user does not need to memorize skill names.

@@ -86,7 +86,7 @@ Ensure:
 - manifests still work
 - bootstrap scripts remain compatible
 - prompt-first numbering rules remain intact
-- FastAPI, TypeScript/Hono/Bun/Drizzle/TSX, Rust/Axum, Go/Echo, and Phoenix remain represented
+- FastAPI, TypeScript/Hono/Bun/Drizzle/TSX, Rust/Axum, Go/Echo/templ, and Phoenix remain represented
 - Dokku deployment philosophy remains coherent
 - repo-derived Compose `name:` values, non-default port strategy, and primary/dev-vs-test isolation remain enforced and explainable
 

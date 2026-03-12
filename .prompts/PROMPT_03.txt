@@ -39,7 +39,7 @@ The main goals of this second-pass enhancement are:
    - FastAPI + uv + ruff + orjson + polars
    - TypeScript + Hono + Bun + Drizzle ORM + TSX
    - Rust + Axum
-   - Go + Echo
+   - Go + Echo + templ
    - Elixir + Phoenix
    - Redis/KeyDB + MongoDB
    - DuckDB + Trino + Polars
@@ -74,7 +74,7 @@ IMPORTANT CONSTRAINTS
 - Respect my prompt-first conventions, including strictly monotonic prompt numbering and explicit filename references.
 - Keep Dokku-oriented guidance practical and balanced.
 - Do not reintroduce Traefik as the primary deployment philosophy.
-- Use Go Echo, not Go Chi, in this repo’s primary stack examples.
+- Use Go Echo plus templ, not Go Chi-style patterns, in this repo’s primary Go stack examples.
 - Include TypeScript + Hono + Bun + Drizzle ORM + TSX as a first-class backend option for lightweight HTMX/tailwind/Plotly-oriented services.
 - Do not center Starlette.
 - Prefer excellent markdown and straightforward Python.
@@ -113,7 +113,7 @@ At minimum, add canonical examples for:
 - FastAPI seed data pattern
 - TypeScript Hono handler/route pattern with Drizzle ORM and TSX
 - Rust Axum route pattern
-- Go Echo handler pattern
+- Go Echo templ handler pattern
 - Elixir Phoenix route/controller or context surface pattern
 - Dokku deployment starter pattern
 - prompt-first prompt directory pattern
@@ -355,7 +355,7 @@ Before outputting the files, ensure internally that:
 - routing and aliasing remain aligned
 - prompt-first examples reflect strictly monotonic numbering and filename-based references
 - Dokku appears coherently in doctrine, manifests, examples, templates, and bootstrap generation
-- TypeScript Hono Bun Drizzle TSX, Go Echo, Elixir Phoenix, Rust Axum, and FastAPI/uv/ruff/orjson/polars are all meaningfully represented
+- TypeScript Hono Bun Drizzle TSX, Go Echo templ, Elixir Phoenix, Rust Axum, and FastAPI/uv/ruff/orjson/polars are all meaningfully represented
 - Docker-backed generation preserves conventional Compose filenames, repo-derived Compose `name:` values, non-default port allocation, and isolated primary/dev-vs-test seed/data boundaries
 
 OUTPUT FORMAT REQUIREMENTS

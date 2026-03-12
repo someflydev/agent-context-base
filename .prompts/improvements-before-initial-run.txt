@@ -68,3 +68,18 @@ Notes / Followups:
 - PF-001 remains: `PROMPT_05.txt`, `PROMPT_06.txt`, and `PROMPT_07.txt` still need deterministic output file targets before they can safely feed later prompts.
 - PF-004 remains: later v3/meta prompts still lack an explicit repo-green gate before expansion.
 ---
+Round: 6
+Timestamp: 2026-03-12T12:36:00Z
+Summary: Refined the Go backend references to explicitly prefer Echo plus templ.
+Summary: Kept manifest and stack-pack filenames stable while making the intended Go web stack more specific.
+Changes Applied:
+- .prompts/PROMPT_00_s.txt :: Updated the architecture brief and example bullets to mention Go + Echo + templ :: align the initial architecture brief with the preferred Go web stack details :: PF-029
+- .prompts/PROMPT_01.txt :: Updated the base-repo design prompt to refer to Go Echo templ in stack lists, starter wording, and preference guidance :: make the base-repo design prompt explicit about the preferred Go stack details :: PF-030
+- .prompts/PROMPT_02.txt :: Updated the v1 generation prompt to describe the Go backend as Echo plus templ :: ensure the implementation pass builds the intended Go stack path :: PF-031
+- .prompts/PROMPT_03.txt :: Updated the v2 enhancement prompt to mention templ in the Go backend and canonical example requirements :: keep the enhancement pass consistent with the preferred Go stack details :: PF-032
+- .prompts/PROMPT_04.txt :: Updated the v3 representation checklist to include templ in the Go backend coverage :: preserve fidelity in later reliability coverage checks :: PF-033
+- .prompts/PROMPT_08.txt :: Updated the bounded-context prompt to include templ in the Go backend stack and example task wording :: ensure the bounded-context pass reasons about the intended Go stack composition :: PF-034
+Notes / Followups:
+- PF-001 remains: `PROMPT_05.txt`, `PROMPT_06.txt`, and `PROMPT_07.txt` still need deterministic output file targets before they can safely feed later prompts.
+- PF-004 remains: later v3/meta prompts still lack an explicit repo-green gate before expansion.
+---

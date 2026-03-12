@@ -39,7 +39,7 @@ The budget system should reflect the real architecture and working style of this
 - FastAPI + uv + ruff + orjson + polars
 - TypeScript + Hono + Bun + Drizzle ORM + TSX
 - Rust + Axum
-- Go + Echo
+- Go + Echo + templ
 - Elixir + Phoenix
 - Redis/KeyDB + MongoDB
 - DuckDB + Trino + Polars
@@ -214,7 +214,7 @@ For each task:
 Use realistic examples such as:
 - add paginated FastAPI endpoint
 - add HTMX-friendly TypeScript Hono route
-- extend Go Echo handler with smoke tests and database integration tests
+- extend Go Echo templ handler with smoke tests and database integration tests
 - add Phoenix route/controller flow
 - generate prompt sequence
 - add local RAG indexing config
@@ -301,5 +301,5 @@ QUALITY REQUIREMENTS
 - Avoid hand-wavy “AI should know” language.
 - Make the system compatible with routers, manifests, canonical examples, the operating manual, and the boot sequence.
 - Ensure the design fits the real stacks and archetypes in this ecosystem.
-- Keep Dokku, prompt-first repos, FastAPI, TypeScript/Hono/Bun/Drizzle/TSX, Rust/Axum, Go/Echo, Phoenix, local RAG, data pipelines, and multi-storage experiments in mind throughout.
+- Keep Dokku, prompt-first repos, FastAPI, TypeScript/Hono/Bun/Drizzle/TSX, Rust/Axum, Go/Echo/templ, Phoenix, local RAG, data pipelines, and multi-storage experiments in mind throughout.
 - Make the final result accurate, insightful, and strong enough to guide a future implementation pass.
