@@ -22,6 +22,7 @@ mixing incompatible examples
 ignoring doctrine
 overengineering solutions
 introducing unnecessary frameworks
+reusing default ports or mixing test fixture data with primary/dev data
 
 The system architecture includes the following components:
 
@@ -59,6 +60,7 @@ Deployment Philosophy
 - Dokku-oriented deployment
 - simple deployable services
 - smoke-test verification
+- repo-derived Compose `name:` values and isolated primary/dev versus test infrastructure
 
 The assistant should treat this architecture as a deterministic system for assembling context.
 
@@ -192,6 +194,8 @@ Explain the system’s deployment philosophy.
 Clarify that many projects will target Dokku-style deployment.
 
 Explain how assistants should keep implementations compatible with simple deployable services.
+
+Explain that local Docker-backed environments should keep the files named `docker-compose.yml` and `docker-compose.test.yml`, use repo-derived Compose `name:` values, use non-default host ports, and keep primary/dev-versus-test data paths isolated.
 
 Explain when deployment considerations should influence design.
 

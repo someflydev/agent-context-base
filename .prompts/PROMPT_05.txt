@@ -62,8 +62,10 @@ Deployment Philosophy
 - Dokku-oriented deployment patterns
 - simple deployable services
 - smoke-test verification before deployment
+- repo-derived Compose `name:` values with isolated primary/dev and test topologies for local comparison
 
 The repository’s purpose is to ensure assistants do not scan an entire repo blindly but instead follow a deterministic reasoning path.
+That deterministic path should also preserve environment isolation when local infrastructure is involved.
 
 The diagrams you produce must explain this path.
 

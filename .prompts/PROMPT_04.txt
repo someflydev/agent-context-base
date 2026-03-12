@@ -43,6 +43,7 @@ Focus on improvements in these areas:
 14. Minimal fixture datasets
 15. Observability pattern examples
 16. System self-explanation docs
+17. Compose `name:` field, port-allocation, and environment-isolation checks
 
 For each improvement:
 
@@ -87,6 +88,7 @@ Ensure:
 - prompt-first numbering rules remain intact
 - FastAPI, Rust/Axum, Go/Echo, Phoenix remain represented
 - Dokku deployment philosophy remains coherent
+- repo-derived Compose `name:` values, non-default port strategy, and primary/dev-vs-test isolation remain enforced and explainable
 
 At the end provide:
 

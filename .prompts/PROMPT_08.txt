@@ -11,6 +11,7 @@ This repository already has:
 - templates
 - assistant operating manual
 - context boot sequence
+- deployment and isolation doctrine for Docker-backed local infrastructure
 
 Your task is to design a rigorous but practical budgeting system that mathematically limits how much context an assistant is allowed to load during a task.
 
@@ -47,6 +48,7 @@ The budget system should reflect the real architecture and working style of this
 - Elasticsearch
 - Qdrant vector database
 - Dokku-oriented deployment
+- repo-derived Compose `name:` values and isolated primary/dev versus test local stacks
 - smoke-test-heavy philosophy
 - canonical example guidance
 - minimal relevant context loading
