@@ -1,0 +1,75 @@
+schema_version: 1
+kind: context_profile
+name: Dokku Deployable Phoenix
+slug: dokku-deployable-phoenix
+summary: Phoenix deployment profile for Dokku-oriented small web applications and services.
+archetypes:
+  - backend-api
+  - dokku-deployable-web-service
+stacks:
+  - elixir-phoenix
+  - docker-compose-dokku
+compatible_workflows:
+  - add-deployment-support
+  - add-smoke-tests
+  - add-feature
+required_context:
+  doctrine:
+    - context/doctrine/00-core-principles.md
+    - context/doctrine/04-compose-port-isolation.md
+    - context/doctrine/10-deployment-dokku-thinking.md
+    - context/doctrine/11-single-service-bias.md
+  workflows:
+    - context/workflows/add-deployment-support.md
+  archetypes:
+    - context/archetypes/backend-api.md
+    - context/archetypes/dokku-deployable-web-service.md
+  stacks:
+    - context/stacks/elixir-phoenix.md
+    - context/stacks/docker-compose-dokku.md
+optional_context:
+  workflows:
+    - context/workflows/add-smoke-tests.md
+  doctrine:
+    - context/doctrine/03-smoke-test-philosophy.md
+load_order:
+  - README.md
+  - CLAUDE.md
+  - manifests/repo.profile.yaml
+  - context/router/task-router.md
+trigger_words:
+  - dokku
+  - phoenix
+  - procfile
+repo_signals:
+  files:
+    - mix.exs
+    - Dockerfile
+    - Procfile
+  directories:
+    - lib
+    - test
+preferred_examples:
+  - examples/canonical/dokku-deployment
+  - examples/canonical/smoke-tests
+anti_patterns:
+  - hidden release migration behavior
+  - shared dev and test database config
+bootstrap_defaults:
+  compose:
+    dev_file: docker-compose.yml
+    test_file: docker-compose.test.yml
+    dev_name_pattern: "<repo_slug>"
+    test_name_pattern: "<repo_slug>-test"
+  ports:
+    dev_band: "19400-19499"
+    test_band: "29400-29499"
+    disallow_default_host_ports: true
+  isolation:
+    dev_env_file: .env
+    test_env_file: .env.test
+    dev_data_root: ./.data/dev
+    test_data_root: ./.data/test
+    separate_seed_flows: true
+    separate_fixture_data: true
+    separate_volumes: true

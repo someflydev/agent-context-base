@@ -1,0 +1,81 @@
+schema_version: 1
+kind: context_profile
+name: Local RAG Base
+slug: local-rag-base
+summary: Local RAG starter profile for indexing, retrieval, metadata extraction, and lightweight local UI/API flows.
+archetypes:
+  - local-rag-system
+  - backend-api
+stacks:
+  - python-fastapi-polars-htmx-plotly
+  - timescaledb-elasticsearch-qdrant
+  - docker-compose-dokku
+compatible_workflows:
+  - bootstrap-repo
+  - add-local-rag-indexing
+  - add-storage-integration
+  - add-smoke-tests
+required_context:
+  doctrine:
+    - context/doctrine/00-core-principles.md
+    - context/doctrine/02-testing-philosophy.md
+    - context/doctrine/03-smoke-test-philosophy.md
+    - context/doctrine/04-compose-port-isolation.md
+    - context/doctrine/07-prompt-first-conventions.md
+  workflows:
+    - context/workflows/add-local-rag-indexing.md
+  archetypes:
+    - context/archetypes/local-rag-system.md
+    - context/archetypes/backend-api.md
+  stacks:
+    - context/stacks/python-fastapi-polars-htmx-plotly.md
+    - context/stacks/timescaledb-elasticsearch-qdrant.md
+optional_context:
+  workflows:
+    - context/workflows/add-storage-integration.md
+    - context/workflows/add-smoke-tests.md
+  stacks:
+    - context/stacks/docker-compose-dokku.md
+load_order:
+  - README.md
+  - AGENT.md
+  - manifests/repo.profile.yaml
+  - context/router/task-router.md
+trigger_words:
+  - rag
+  - qdrant
+  - retrieval
+  - embeddings
+  - chunking
+repo_signals:
+  files:
+    - pyproject.toml
+    - uv.lock
+  directories:
+    - app
+    - data
+    - tests
+preferred_examples:
+  - examples/canonical/local-rag
+  - examples/canonical/storage-integration
+anti_patterns:
+  - unclear metadata schema
+  - mock-only retrieval verification
+bootstrap_defaults:
+  compose:
+    dev_file: docker-compose.yml
+    test_file: docker-compose.test.yml
+    dev_name_pattern: "<repo_slug>"
+    test_name_pattern: "<repo_slug>-test"
+  ports:
+    dev_band: "18700-18799"
+    test_band: "28700-28799"
+    disallow_default_host_ports: true
+  isolation:
+    dev_env_file: .env
+    test_env_file: .env.test
+    dev_data_root: ./.data/dev
+    test_data_root: ./.data/test
+    separate_seed_flows: true
+    separate_fixture_data: true
+    separate_volumes: true

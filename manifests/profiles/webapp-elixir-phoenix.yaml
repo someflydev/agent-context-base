@@ -1,0 +1,76 @@
+schema_version: 1
+kind: context_profile
+name: Webapp Elixir Phoenix
+slug: webapp-elixir-phoenix
+summary: Web app starter profile for Phoenix-based services and APIs.
+archetypes:
+  - backend-api
+  - dokku-deployable-web-service
+stacks:
+  - elixir-phoenix
+  - docker-compose-dokku
+compatible_workflows:
+  - add-feature
+  - fix-bug
+  - add-api-endpoint
+  - add-smoke-tests
+  - add-deployment-support
+required_context:
+  doctrine:
+    - context/doctrine/00-core-principles.md
+    - context/doctrine/02-testing-philosophy.md
+    - context/doctrine/10-deployment-dokku-thinking.md
+  workflows:
+    - context/workflows/add-feature.md
+  archetypes:
+    - context/archetypes/backend-api.md
+    - context/archetypes/dokku-deployable-web-service.md
+  stacks:
+    - context/stacks/elixir-phoenix.md
+optional_context:
+  doctrine:
+    - context/doctrine/04-compose-port-isolation.md
+  workflows:
+    - context/workflows/add-deployment-support.md
+    - context/workflows/add-smoke-tests.md
+  stacks:
+    - context/stacks/docker-compose-dokku.md
+load_order:
+  - README.md
+  - CLAUDE.md
+  - manifests/repo.profile.yaml
+  - context/router/task-router.md
+trigger_words:
+  - phoenix
+  - elixir
+  - liveview
+repo_signals:
+  files:
+    - mix.exs
+  directories:
+    - lib
+    - test
+preferred_examples:
+  - examples/canonical/dokku-deployment
+  - examples/canonical/smoke-tests
+anti_patterns:
+  - defaulting to orchestration-first deployment
+  - mixing dev and test database names
+bootstrap_defaults:
+  compose:
+    dev_file: docker-compose.yml
+    test_file: docker-compose.test.yml
+    dev_name_pattern: "<repo_slug>"
+    test_name_pattern: "<repo_slug>-test"
+  ports:
+    dev_band: "18500-18599"
+    test_band: "28500-28599"
+    disallow_default_host_ports: true
+  isolation:
+    dev_env_file: .env
+    test_env_file: .env.test
+    dev_data_root: ./.data/dev
+    test_data_root: ./.data/test
+    separate_seed_flows: true
+    separate_fixture_data: true
+    separate_volumes: true

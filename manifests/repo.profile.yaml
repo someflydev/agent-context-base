@@ -1,63 +1,82 @@
+schema_version: 1
 kind: repo_profile
+name: agent-context-base
 slug: agent-context-base
-summary: Base repository for agent-oriented context architecture and bootstrap-ready routing packs.
-load_order: 10
+summary: Base repository for agent-oriented context architecture, routing, manifests, canonical examples, and bootstrap-ready starter assets.
 archetypes:
   - prompt-first-repo
   - polyglot-lab
-required_files:
+stacks:
+  - prompt-first-repo-support
+  - docker-compose-dokku
+  - python-fastapi-polars-htmx-plotly
+  - typescript-hono-bun-drizzle-tsx
+  - go-echo-templ
+  - rust-axum
+  - elixir-phoenix
+required_reads:
   - README.md
   - AGENT.md
   - CLAUDE.md
   - context/router/load-order.md
-  - context/router/task-routing.md
-optional_files:
-  - docs/operator-manual.md
-  - docs/repo-bootstrap-checklist.md
-trigger_keywords:
+  - context/router/task-router.md
+recommended_reads:
+  - context/router/stack-router.md
+  - context/router/archetype-router.md
+  - context/router/alias-catalog.md
+  - docs/agent-context-architecture.md
+trigger_words:
   - architecture
+  - base repo
   - context loading
-  - agent routing
+  - task routing
   - canonical examples
-compatibility:
-  archetypes:
-    - prompt-first-repo
-    - backend-api
-    - cli-tool
-    - data-pipeline
-    - local-rag-system
-    - multi-storage-experiment
-    - polyglot-lab
-  stacks:
-    - python-fastapi-polars-htmx-plotly
-    - typescript-hono-bun-drizzle-tsx
-    - go-echo-templ
-    - rust-axum
-    - elixir-phoenix
-    - docker-compose-dokku
-    - redis-mongodb
-    - trino-duckdb-polars
-    - nats-jetstream-meilisearch
-    - timescaledb-elasticsearch-qdrant
+compatible_archetypes:
+  - prompt-first-repo
+  - backend-api
+  - cli-tool
+  - data-pipeline
+  - local-rag-system
+  - multi-storage-experiment
+  - polyglot-lab
+  - dokku-deployable-web-service
+compatible_stacks:
+  - python-fastapi-polars-htmx-plotly
+  - typescript-hono-bun-drizzle-tsx
+  - go-echo-templ
+  - rust-axum
+  - elixir-phoenix
+  - backend-extension-candidates
+  - redis-mongodb
+  - trino-duckdb-polars
+  - nats-jetstream-meilisearch
+  - timescaledb-elasticsearch-qdrant
+  - docker-compose-dokku
 context_policy:
   load_smallest_bundle_first: true
   prefer_canonical_examples: true
   stop_on_stack_conflict: true
-infra:
+  stop_on_archetype_conflict: true
+  do_not_bulk_load_context_dirs: true
+bootstrap_defaults:
   compose:
     dev_file: docker-compose.yml
     test_file: docker-compose.test.yml
-    dev_name: agent-context-base
-    test_name: agent-context-base-test
+    dev_name_pattern: "<repo_slug>"
+    test_name_pattern: "<repo_slug>-test"
   ports:
     dev_band: "18400-18499"
     test_band: "28400-28499"
     disallow_default_host_ports: true
   isolation:
-    separate_env_files: true
+    dev_env_file: .env
+    test_env_file: .env.test
+    dev_data_root: ./.data/dev
+    test_data_root: ./.data/test
     separate_volumes: true
     separate_seed_flows: true
     separate_fixture_data: true
-canonical_examples:
+    allow_parallel_dev_and_test_stacks: true
+examples:
   root: examples/canonical
-  preferred_marker: "preferred: true"
+  preferred_marker: preferred

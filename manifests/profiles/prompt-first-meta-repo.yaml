@@ -1,0 +1,75 @@
+schema_version: 1
+kind: context_profile
+name: Prompt-First Meta Repo
+slug: prompt-first-meta-repo
+summary: Prompt-first starter profile for repos centered on ordered prompts, operator guidance, and assistant routing.
+archetypes:
+  - prompt-first-repo
+  - polyglot-lab
+stacks:
+  - prompt-first-repo-support
+compatible_workflows:
+  - bootstrap-repo
+  - generate-prompt-sequence
+  - post-flight-refinement
+  - refactor
+required_context:
+  doctrine:
+    - context/doctrine/00-core-principles.md
+    - context/doctrine/06-documentation-philosophy.md
+    - context/doctrine/07-prompt-first-conventions.md
+    - context/doctrine/09-context-loading-rules.md
+  workflows:
+    - context/workflows/bootstrap-repo.md
+    - context/workflows/generate-prompt-sequence.md
+  archetypes:
+    - context/archetypes/prompt-first-repo.md
+    - context/archetypes/polyglot-lab.md
+  stacks:
+    - context/stacks/prompt-first-repo-support.md
+optional_context:
+  doctrine:
+    - context/doctrine/08-canonical-example-policy.md
+  workflows:
+    - context/workflows/post-flight-refinement.md
+load_order:
+  - README.md
+  - AGENT.md
+  - manifests/repo.profile.yaml
+  - context/router/task-router.md
+trigger_words:
+  - prompt-first
+  - prompt sequence
+  - operator guide
+  - meta-runner
+repo_signals:
+  files:
+    - AGENT.md
+    - CLAUDE.md
+  directories:
+    - .prompts
+    - docs
+    - manifests
+preferred_examples:
+  - examples/canonical/prompt-first
+anti_patterns:
+  - treating prompts as loose notes instead of ordered workflows
+  - loading all stack packs for doc-only prompt work
+bootstrap_defaults:
+  compose:
+    dev_file: docker-compose.yml
+    test_file: docker-compose.test.yml
+    dev_name_pattern: "<repo_slug>"
+    test_name_pattern: "<repo_slug>-test"
+  ports:
+    dev_band: "18600-18699"
+    test_band: "28600-28699"
+    disallow_default_host_ports: true
+  isolation:
+    dev_env_file: .env
+    test_env_file: .env.test
+    dev_data_root: ./.data/dev
+    test_data_root: ./.data/test
+    separate_seed_flows: true
+    separate_fixture_data: true
+    separate_volumes: true
