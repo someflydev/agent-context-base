@@ -1,15 +1,33 @@
 # Add Smoke Tests
 
-Purpose: create fast operational confidence checks.
+Use this workflow when a repo or feature needs fast confidence checks for the main path.
 
-Sequence:
+## Preconditions
 
-1. identify the one or two most important happy paths
-2. decide whether the smoke is local-only or Docker-backed
-3. target the isolated test stack when infra is involved
-4. verify setup, execution, and failure messaging
+- the primary path to prove is known
+- the boot command or entrypoint is known
 
-Pitfalls:
+## Sequence
 
-- testing too much
-- using dev data or ports
+1. choose the smallest meaningful happy path
+2. define deterministic setup and teardown
+3. write a fast smoke test with few assertions
+4. verify it fails loudly on obvious breakage
+5. identify whether the feature also needs minimal real-infra integration tests
+
+## Outputs
+
+- one or more fast smoke tests
+- documented invocation path if needed
+
+## Related Docs
+
+- `context/doctrine/smoke-test-philosophy.md`
+- `smoke-tests/README.md`
+
+## Common Pitfalls
+
+- turning smoke tests into a slow integration suite
+- using mocks to prove wiring that should be exercised for real
+- assuming smoke tests are enough for storage-backed behavior
+

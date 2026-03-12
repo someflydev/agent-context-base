@@ -1,15 +1,33 @@
 # Post-Flight Refinement
 
-Purpose: add stage-2 tightening after a first implementation pass.
+Use this workflow after implementation to tighten quality without reopening architecture debates.
 
-Sequence:
+## Preconditions
 
-1. inspect the first-pass outputs
-2. identify drift, missing tests, weak examples, or overloaded docs
-3. refine the smallest layer that fixes the issue
-4. do not rebuild the architecture from scratch unless a core contradiction exists
+- the main implementation path already works
 
-Pitfalls:
+## Sequence
 
-- treating refinement as a blank-sheet rewrite
-- expanding context instead of tightening it
+1. remove obvious naming drift
+2. confirm references and docs are accurate
+3. tighten comments and examples
+4. rerun validations and tests
+5. split the work into reviewable commits if needed
+
+## Outputs
+
+- clearer naming
+- cleaner docs
+- smaller review surface
+
+## Related Docs
+
+- `context/doctrine/naming-and-clarity.md`
+- `context/doctrine/commit-hygiene.md`
+
+## Common Pitfalls
+
+- turning refinement into endless redesign
+- adding unrelated features while "cleaning up"
+- forgetting to update manifests after moving files
+

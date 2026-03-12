@@ -1,17 +1,37 @@
 # Bootstrap Repo
 
-Purpose: initialize a new repo from this base.
+Use this workflow when creating a new project repo from this base.
 
-Sequence:
+## Preconditions
 
-1. set repo slug and update `manifests/repo.profile.yaml`
-2. select archetype packs
-3. select stack packs
-4. prune irrelevant packs if the repo is intentionally narrow
-5. add at least one preferred canonical example per common task
-6. wire smoke tests and infra rules if containers exist
+- the target archetype is chosen
+- the likely primary stack is chosen
+- deployment posture is at least roughly known
 
-Pitfalls:
+## Sequence
 
-- copying every pack into every repo
-- leaving repo profile generic
+1. choose the manifest closest to the target repo
+2. copy only the relevant router, doctrine, workflow, stack, example, and template files
+3. create project-local manifests and examples
+4. wire `AGENT.md`, `CLAUDE.md`, README, and stack basics
+5. define Docker-backed dev and test isolation
+6. add smoke tests and any minimal real-infra integration tests required by the first significant feature
+
+## Outputs
+
+- a focused descendant repo, not a wholesale clone
+- project-local routing and manifests
+- initial test and deployment posture
+
+## Related Docs
+
+- `context/archetypes/prompt-first-repo.md`
+- `context/doctrine/compose-port-and-data-isolation.md`
+- `context/doctrine/deployment-philosophy-dokku.md`
+
+## Common Pitfalls
+
+- copying every file from the base without pruning
+- leaving examples and templates indistinguishable
+- delaying dev versus test isolation until later
+

@@ -1,16 +1,34 @@
 # Generate Prompt Sequence
 
-Purpose: add a new ordered prompt set in a prompt-first repo.
+Use this workflow when a task should be split into explicit prompt files or prompt steps.
 
-Sequence:
+## Preconditions
 
-1. confirm monotonic numbering
-2. define the exact output target for each prompt
-3. separate system brief, implementation steps, and meta-runner support
-4. keep file references explicit
-5. add validation or resume notes if the sequence is operational
+- the work benefits from staged execution
+- the sequence can be expressed as monotonic steps
 
-Pitfalls:
+## Sequence
 
-- renumbering existing prompts casually
-- prompts that do not declare outputs
+1. identify the end state
+2. break work into commit-friendly increments
+3. assign strictly monotonic prompt numbers
+4. reference exact filenames in each prompt
+5. make each prompt depend on actual repo state, not wishful state
+6. keep each prompt dominated by one main goal
+
+## Outputs
+
+- an ordered prompt sequence with explicit filenames
+- a clear mapping from prompts to expected commits or change sets
+
+## Related Docs
+
+- `context/doctrine/prompt-first-conventions.md`
+- `context/doctrine/commit-hygiene.md`
+
+## Common Pitfalls
+
+- renumbering older prompts
+- making one prompt depend on files not yet created
+- vague instructions like "update the API stuff"
+

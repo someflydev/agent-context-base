@@ -1,16 +1,35 @@
 # Add API Endpoint
 
-Purpose: add a route or handler in a backend service.
+Use this workflow when adding a new HTTP route, handler, or controller action.
 
-Sequence:
+## Preconditions
 
-1. confirm active backend stack
-2. inspect the preferred endpoint example for that stack
-3. add route, handler, service, and test in the local preferred shape
-4. add smoke coverage for the happy path
-5. add real integration coverage if storage, queues, or search are touched
+- the active web stack is known
+- request and response shape are clear enough to implement
 
-Pitfalls:
+## Sequence
 
-- business logic inside route files
-- skipping smoke coverage
+1. identify router, handler, validation, service, and persistence touch points
+2. follow the canonical route shape for the stack
+3. implement the happy path first
+4. add smoke coverage for one representative request
+5. add minimal real-infra integration tests if the endpoint writes or reads through real storage, queues, or search systems
+6. update docs or manifests if the endpoint changes repo signals materially
+
+## Outputs
+
+- route implementation
+- smoke test
+- integration coverage when boundary changes require it
+
+## Related Docs
+
+- stack doc for the active web framework
+- `examples/canonical-api/README.md`
+
+## Common Pitfalls
+
+- putting business logic directly in transport handlers
+- treating a storage-backed endpoint as smoke-test-only work
+- copying route structure from the wrong stack example
+

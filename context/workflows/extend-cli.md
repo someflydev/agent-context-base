@@ -1,15 +1,34 @@
 # Extend CLI
 
-Purpose: add or change a CLI command cleanly.
+Use this workflow when adding commands, flags, or output modes to a CLI tool.
 
-Sequence:
+## Preconditions
 
-1. inspect command registration pattern
-2. add input validation and clear output shape
-3. keep side effects out of parsing code
-4. add success and failure smoke paths
+- the existing command surface is understood
+- expected input and output shape are clear
 
-Pitfalls:
+## Sequence
 
-- hidden global state
-- inconsistent output formatting
+1. place the new command within the existing command tree
+2. keep flags and help text explicit
+3. add smoke coverage for the main invocation
+4. add integration coverage if the command touches real storage, network, or search boundaries
+5. document the operator-facing usage if the command is important
+
+## Outputs
+
+- new or updated command path
+- smoke test
+- integration test when needed
+
+## Related Docs
+
+- `context/archetypes/cli-tool.md`
+- `examples/canonical-cli/README.md`
+
+## Common Pitfalls
+
+- adding hidden side effects to a command
+- unclear defaults
+- unstructured output that breaks downstream use
+
