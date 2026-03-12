@@ -1,23 +1,74 @@
+schema_version: 2
 name: dokku-deployable-fastapi
+description: Dokku-oriented FastAPI deployment profile for single-service repos with explicit boot and release surfaces.
 archetype: dokku-deployable-service
-stacks:
-  - python-fastapi-uv-ruff-orjson-polars
+primary_stack: python-fastapi-uv-ruff-orjson-polars
+secondary_stacks:
   - dokku-conventions
 triggers:
   - deploy fastapi to dokku
   - dokku fastapi service
+  - procfile fastapi
+aliases:
+  - dokku fastapi
+  - fastapi deploy
 required_context:
   - context/doctrine/deployment-philosophy-dokku.md
+  - context/doctrine/compose-port-and-data-isolation.md
   - context/workflows/add-deployment-support.md
   - context/stacks/python-fastapi-uv-ruff-orjson-polars.md
   - context/stacks/dokku-conventions.md
   - context/archetypes/dokku-deployable-service.md
 optional_context:
   - context/workflows/add-smoke-tests.md
-  - context/doctrine/compose-port-and-data-isolation.md
+  - context/workflows/post-flight-refinement.md
+  - context/doctrine/testing-philosophy.md
 preferred_examples:
-  - examples/canonical-dokku/README.md
-  - examples/canonical-smoke-tests/README.md
+  - examples/canonical-dokku/Procfile.example
+  - examples/canonical-dokku/app-json-example.json
+  - examples/canonical-smoke-tests/fastapi-smoke-test-example.py
+recommended_templates:
+  - templates/readme/README.template.md
+  - templates/agent-md/AGENT.template.md
+  - templates/claude-md/CLAUDE.template.md
+  - templates/gitignore/.gitignore.template
+  - templates/compose/docker-compose.template.yaml
+  - templates/compose/docker-compose-test.template.yaml
+  - templates/dokku/Dokku.template.md
+  - templates/manifest/profile-summary.template.yaml
+repo_signals:
+  - Procfile
+  - app.json
+  - docs/deployment.md
+  - scripts/smoke/
+task_hints:
+  - add-deployment-support
+  - add-smoke-tests
+  - post-flight-refinement
 warnings:
   - Prove local boot and any real storage boundary before trusting deploy wiring.
-
+  - Keep release or migration commands explicit instead of hiding them behind undocumented hooks.
+bootstrap_defaults:
+  - include_docker_compose
+  - include_smoke_tests
+  - include_generated_profile
+  - include_dokku
+compose_files:
+  - docker-compose.yml
+  - docker-compose.test.yml
+compose_project_name_dev: "{repo_slug}"
+compose_project_name_test: "{repo_slug}-test"
+port_band_app_dev: 14000-14099
+port_band_app_test: 15000-15099
+port_band_data_dev: 24000-24099
+port_band_data_test: 25000-25099
+data_isolation:
+  - docker/volumes/dev
+  - docker/volumes/test
+  - test verification must stay separate from primary or dev service data
+dokku_relevance: first-class
+smoke_test_expectations:
+  - boot health route
+  - post-deploy smoke target
+  - explicit failure when release wiring is incomplete
+prompt_first_support: supported

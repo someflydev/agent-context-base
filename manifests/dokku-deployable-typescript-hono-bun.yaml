@@ -1,23 +1,75 @@
+schema_version: 2
 name: dokku-deployable-typescript-hono-bun
+description: Dokku-oriented Hono and Bun deployment profile for lightweight services with explicit release steps.
 archetype: dokku-deployable-service
-stacks:
-  - typescript-hono-bun
+primary_stack: typescript-hono-bun
+secondary_stacks:
   - dokku-conventions
 triggers:
   - deploy bun service to dokku
   - dokku hono app
+  - procfile hono
+aliases:
+  - dokku hono
+  - bun deploy
 required_context:
   - context/doctrine/deployment-philosophy-dokku.md
+  - context/doctrine/compose-port-and-data-isolation.md
   - context/workflows/add-deployment-support.md
   - context/stacks/typescript-hono-bun.md
   - context/stacks/dokku-conventions.md
   - context/archetypes/dokku-deployable-service.md
 optional_context:
   - context/workflows/add-smoke-tests.md
-  - context/doctrine/compose-port-and-data-isolation.md
+  - context/workflows/post-flight-refinement.md
+  - context/doctrine/testing-philosophy.md
 preferred_examples:
-  - examples/canonical-dokku/README.md
-  - examples/canonical-smoke-tests/README.md
+  - examples/canonical-dokku/Procfile.example
+  - examples/canonical-dokku/app-json-example.json
+  - examples/canonical-api/typescript-hono-handler-example.ts
+recommended_templates:
+  - templates/readme/README.template.md
+  - templates/agent-md/AGENT.template.md
+  - templates/claude-md/CLAUDE.template.md
+  - templates/gitignore/.gitignore.template
+  - templates/compose/docker-compose.template.yaml
+  - templates/compose/docker-compose-test.template.yaml
+  - templates/dokku/Dokku.template.md
+  - templates/manifest/profile-summary.template.yaml
+  - templates/typescript-hono-bun/README.template.md
+repo_signals:
+  - Procfile
+  - app.json
+  - package.json
+  - src/index.ts
+task_hints:
+  - add-deployment-support
+  - add-smoke-tests
+  - post-flight-refinement
 warnings:
   - If the service uses Drizzle migrations, document and verify the release path explicitly.
-
+  - Keep Bun boot and smoke commands deterministic instead of hiding them in opaque scripts.
+bootstrap_defaults:
+  - include_docker_compose
+  - include_smoke_tests
+  - include_generated_profile
+  - include_dokku
+compose_files:
+  - docker-compose.yml
+  - docker-compose.test.yml
+compose_project_name_dev: "{repo_slug}"
+compose_project_name_test: "{repo_slug}-test"
+port_band_app_dev: 14000-14099
+port_band_app_test: 15000-15099
+port_band_data_dev: 24000-24099
+port_band_data_test: 25000-25099
+data_isolation:
+  - docker/volumes/dev
+  - docker/volumes/test
+  - release verification must stay separate from disposable integration data
+dokku_relevance: first-class
+smoke_test_expectations:
+  - boot health route
+  - post-deploy smoke target
+  - clear failure when release or migration steps are missing
+prompt_first_support: supported

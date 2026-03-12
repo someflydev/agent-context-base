@@ -1,21 +1,70 @@
+schema_version: 2
 name: cli-python
+description: Preferred Python CLI profile for uv-driven tools with structured output and explicit command surfaces.
 archetype: cli-tool
-stacks:
-  - python-fastapi-uv-ruff-orjson-polars
+primary_stack: python-fastapi-uv-ruff-orjson-polars
+secondary_stacks:
+  - duckdb-trino-polars
 triggers:
   - python cli
   - uv cli
   - command line tool
+aliases:
+  - python command
+  - ops cli
 required_context:
   - context/doctrine/core-principles.md
   - context/doctrine/testing-philosophy.md
   - context/workflows/extend-cli.md
   - context/archetypes/cli-tool.md
+  - context/stacks/python-fastapi-uv-ruff-orjson-polars.md
 optional_context:
   - context/workflows/add-seed-data.md
+  - context/workflows/post-flight-refinement.md
   - context/stacks/duckdb-trino-polars.md
+  - context/doctrine/canonical-examples.md
 preferred_examples:
-  - examples/canonical-cli/README.md
+  - examples/canonical-cli/python-cli-command-example.py
+  - examples/canonical-workflows/post-flight-refinement-checklist.md
+recommended_templates:
+  - templates/readme/README.template.md
+  - templates/agent-md/AGENT.template.md
+  - templates/claude-md/CLAUDE.template.md
+  - templates/gitignore/.gitignore.template
+  - templates/manifest/profile-summary.template.yaml
+  - templates/seed-data/seed_data.template.py
+repo_signals:
+  - pyproject.toml
+  - src/
+  - scripts/
+  - tests/
+task_hints:
+  - extend-cli
+  - add-seed-data
+  - post-flight-refinement
 warnings:
-  - If commands touch real storage or search, add integration coverage instead of relying on output snapshots only.
-
+  - If commands touch real storage or services, add integration coverage instead of relying on snapshots only.
+  - Keep machine-readable output explicit so shell workflows stay deterministic.
+bootstrap_defaults:
+  - include_smoke_tests
+  - include_seed_data
+  - include_generated_profile
+compose_files:
+  - docker-compose.yml
+  - docker-compose.test.yml
+compose_project_name_dev: "{repo_slug}"
+compose_project_name_test: "{repo_slug}-test"
+port_band_app_dev: 14000-14099
+port_band_app_test: 15000-15099
+port_band_data_dev: 24000-24099
+port_band_data_test: 25000-25099
+data_isolation:
+  - docker/volumes/dev
+  - docker/volumes/test
+  - destructive test reset flows must stay pointed at docker-compose.test.yml
+dokku_relevance: not-applicable
+smoke_test_expectations:
+  - one representative command succeeds
+  - output format stays readable
+  - failure mode is short and actionable
+prompt_first_support: supported

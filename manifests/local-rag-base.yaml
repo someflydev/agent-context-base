@@ -1,25 +1,80 @@
+schema_version: 2
 name: local-rag-base
+description: Preferred local RAG profile with deterministic corpus metadata, Qdrant indexing, and prompt-first workflow support.
 archetype: local-rag-system
-stacks:
-  - qdrant
+primary_stack: qdrant
+secondary_stacks:
   - prompt-first-repo
+  - meilisearch
+  - elasticsearch
 triggers:
   - local rag
   - vector retrieval
   - index docs locally
+aliases:
+  - local retrieval
+  - qdrant rag
 required_context:
   - context/doctrine/core-principles.md
   - context/doctrine/testing-philosophy.md
+  - context/doctrine/compose-port-and-data-isolation.md
   - context/workflows/add-local-rag-indexing.md
   - context/stacks/qdrant.md
   - context/archetypes/local-rag-system.md
 optional_context:
+  - context/workflows/generate-prompt-sequence.md
+  - context/workflows/post-flight-refinement.md
   - context/stacks/elasticsearch.md
   - context/stacks/meilisearch.md
-  - context/doctrine/compose-port-and-data-isolation.md
+  - context/stacks/prompt-first-repo.md
 preferred_examples:
-  - examples/canonical-rag/README.md
-  - examples/canonical-storage/README.md
+  - examples/canonical-rag/local-rag-index-config-example.yaml
+  - examples/canonical-rag/local-rag-metadata-shape-example.md
+  - examples/canonical-prompts/prompt-first-layout-example.md
+recommended_templates:
+  - templates/readme/README.template.md
+  - templates/agent-md/AGENT.template.md
+  - templates/claude-md/CLAUDE.template.md
+  - templates/gitignore/.gitignore.template
+  - templates/compose/docker-compose.template.yaml
+  - templates/compose/docker-compose-test.template.yaml
+  - templates/manifest/profile-summary.template.yaml
+  - templates/prompt-first/PROMPTS.md.template
+repo_signals:
+  - app/index_documents.py
+  - data/corpus/
+  - tests/integration/
+  - qdrant
+task_hints:
+  - add-local-rag-indexing
+  - generate-prompt-sequence
+  - add-smoke-tests
+  - post-flight-refinement
 warnings:
   - Always keep a tiny deterministic corpus for smoke and integration verification.
-
+  - Keep metadata small and citation-friendly so retrieval debugging stays practical.
+bootstrap_defaults:
+  - include_docker_compose
+  - include_prompt_first
+  - include_smoke_tests
+  - include_integration_tests
+  - include_generated_profile
+compose_files:
+  - docker-compose.yml
+  - docker-compose.test.yml
+compose_project_name_dev: "{repo_slug}"
+compose_project_name_test: "{repo_slug}-test"
+port_band_app_dev: 14000-14099
+port_band_app_test: 15000-15099
+port_band_data_dev: 24000-24099
+port_band_data_test: 25000-25099
+data_isolation:
+  - docker/volumes/dev
+  - docker/volumes/test
+  - disposable test collections must stay separate from dev collections
+dokku_relevance: optional
+smoke_test_expectations:
+  - one ingest smoke path
+  - one query smoke path
+  - clear citation or path assertion
+prompt_first_support: first-class

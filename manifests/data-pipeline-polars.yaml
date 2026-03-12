@@ -1,24 +1,77 @@
+schema_version: 2
 name: data-pipeline-polars
+description: Preferred data pipeline profile using DuckDB, Trino, and Polars with deterministic seed and fixture flows.
 archetype: data-pipeline
-stacks:
+primary_stack: duckdb-trino-polars
+secondary_stacks:
   - python-fastapi-uv-ruff-orjson-polars
-  - duckdb-trino-polars
 triggers:
   - polars pipeline
   - duckdb transform
   - data pipeline
+aliases:
+  - analytics pipeline
+  - duckdb job
 required_context:
   - context/doctrine/core-principles.md
   - context/doctrine/testing-philosophy.md
+  - context/doctrine/compose-port-and-data-isolation.md
   - context/workflows/add-feature.md
+  - context/workflows/add-seed-data.md
   - context/archetypes/data-pipeline.md
   - context/stacks/duckdb-trino-polars.md
 optional_context:
-  - context/workflows/add-seed-data.md
-  - context/doctrine/compose-port-and-data-isolation.md
+  - context/workflows/add-storage-integration.md
+  - context/workflows/post-flight-refinement.md
+  - context/stacks/python-fastapi-uv-ruff-orjson-polars.md
+  - context/doctrine/canonical-examples.md
 preferred_examples:
-  - examples/canonical-seed-data/README.md
-  - examples/canonical-storage/README.md
+  - examples/canonical-seed-data/polars-seed-data-example.py
+  - examples/canonical-storage/duckdb-polars-example.py
+recommended_templates:
+  - templates/readme/README.template.md
+  - templates/agent-md/AGENT.template.md
+  - templates/claude-md/CLAUDE.template.md
+  - templates/gitignore/.gitignore.template
+  - templates/compose/docker-compose.template.yaml
+  - templates/compose/docker-compose-test.template.yaml
+  - templates/manifest/profile-summary.template.yaml
+  - templates/seed-data/seed_data.template.py
+repo_signals:
+  - app/pipeline.py
+  - pyproject.toml
+  - scripts/seed_data.py
+  - tests/integration/
+task_hints:
+  - add-feature
+  - add-seed-data
+  - add-storage-integration
+  - post-flight-refinement
 warnings:
-  - Keep fixtures tiny and verify at least one real query or write boundary when the pipeline touches storage.
-
+  - Keep fixtures tiny and verify at least one real query or write boundary when storage behavior changes.
+  - Do not share dev and test DuckDB or Trino roots casually.
+bootstrap_defaults:
+  - include_docker_compose
+  - include_smoke_tests
+  - include_integration_tests
+  - include_seed_data
+  - include_generated_profile
+compose_files:
+  - docker-compose.yml
+  - docker-compose.test.yml
+compose_project_name_dev: "{repo_slug}"
+compose_project_name_test: "{repo_slug}-test"
+port_band_app_dev: 14000-14099
+port_band_app_test: 15000-15099
+port_band_data_dev: 24000-24099
+port_band_data_test: 25000-25099
+data_isolation:
+  - docker/volumes/dev
+  - docker/volumes/test
+  - test seed and reset flows must never reuse dev analytical data
+dokku_relevance: optional
+smoke_test_expectations:
+  - one representative pipeline step
+  - deterministic seed write or query
+  - concise failure output
+prompt_first_support: supported

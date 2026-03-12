@@ -1,24 +1,75 @@
+schema_version: 2
 name: backend-api-typescript-hono-bun
+description: Preferred TypeScript backend profile using Hono, Bun, Drizzle ORM, and TSX-friendly route files.
 archetype: backend-api-service
-stacks:
-  - typescript-hono-bun
+primary_stack: typescript-hono-bun
+secondary_stacks:
+  - redis-keydb-mongo
 triggers:
   - hono api
   - bun backend
   - drizzle service
+aliases:
+  - hono service
+  - bun route
 required_context:
   - context/doctrine/core-principles.md
   - context/doctrine/testing-philosophy.md
+  - context/doctrine/compose-port-and-data-isolation.md
   - context/workflows/add-api-endpoint.md
   - context/stacks/typescript-hono-bun.md
   - context/archetypes/backend-api-service.md
 optional_context:
+  - context/workflows/add-smoke-tests.md
   - context/workflows/add-storage-integration.md
-  - context/doctrine/compose-port-and-data-isolation.md
-  - context/stacks/redis-keydb-mongo.md
+  - context/workflows/post-flight-refinement.md
+  - context/doctrine/canonical-examples.md
 preferred_examples:
-  - examples/canonical-api/README.md
-  - examples/canonical-smoke-tests/README.md
+  - examples/canonical-api/typescript-hono-handler-example.ts
+  - examples/canonical-storage/redis-mongo-shape-example.md
+recommended_templates:
+  - templates/readme/README.template.md
+  - templates/agent-md/AGENT.template.md
+  - templates/claude-md/CLAUDE.template.md
+  - templates/gitignore/.gitignore.template
+  - templates/compose/docker-compose.template.yaml
+  - templates/compose/docker-compose-test.template.yaml
+  - templates/manifest/profile-summary.template.yaml
+  - templates/typescript-hono-bun/README.template.md
+repo_signals:
+  - package.json
+  - bun.lock
+  - src/index.ts
+  - src/routes/
+task_hints:
+  - add-api-endpoint
+  - add-smoke-tests
+  - add-storage-integration
+  - post-flight-refinement
 warnings:
-  - Treat Drizzle schema and migration changes as behavior changes, not just scaffold changes.
-
+  - Treat Drizzle schema and migration changes as behavior changes, not scaffold-only edits.
+  - Keep TSX response fragments under test when HTML output is part of the user-visible contract.
+bootstrap_defaults:
+  - include_docker_compose
+  - include_smoke_tests
+  - include_integration_tests
+  - include_generated_profile
+compose_files:
+  - docker-compose.yml
+  - docker-compose.test.yml
+compose_project_name_dev: "{repo_slug}"
+compose_project_name_test: "{repo_slug}-test"
+port_band_app_dev: 14000-14099
+port_band_app_test: 15000-15099
+port_band_data_dev: 24000-24099
+port_band_data_test: 25000-25099
+data_isolation:
+  - docker/volumes/dev
+  - docker/volumes/test
+  - test fixtures must stay isolated from primary or dev Drizzle data
+dokku_relevance: supported
+smoke_test_expectations:
+  - boot health route
+  - representative Hono route check
+  - visible failure when a real DB dependency is unavailable
+prompt_first_support: supported

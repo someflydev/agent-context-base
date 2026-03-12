@@ -1,11 +1,17 @@
+schema_version: 2
 name: prompt-first-meta-repo
+description: Preferred prompt-first repo profile for context, manifests, templates, and staged prompt sequences.
 archetype: prompt-first-repo
-stacks:
-  - prompt-first-repo
+primary_stack: prompt-first-repo
+secondary_stacks:
+  - qdrant
 triggers:
   - prompt first repo
   - agent context repo
   - repo foundation
+aliases:
+  - context base
+  - prompt meta repo
 required_context:
   - context/doctrine/core-principles.md
   - context/doctrine/prompt-first-conventions.md
@@ -15,10 +21,54 @@ required_context:
   - context/archetypes/prompt-first-repo.md
 optional_context:
   - context/workflows/generate-prompt-sequence.md
+  - context/workflows/post-flight-refinement.md
   - context/skills/task-inference.md
+  - context/skills/repo-signal-detection.md
 preferred_examples:
-  - examples/canonical-prompts/README.md
-  - examples/README.md
+  - examples/canonical-prompts/prompt-first-layout-example.md
+  - examples/canonical-prompts/001-bootstrap-repo.txt
+  - examples/canonical-prompts/002-refine-test-surface.txt
+  - examples/canonical-workflows/post-flight-refinement-checklist.md
+recommended_templates:
+  - templates/readme/README.template.md
+  - templates/agent-md/AGENT.template.md
+  - templates/claude-md/CLAUDE.template.md
+  - templates/manifest/profile-summary.template.yaml
+  - templates/prompt-first/PROMPTS.md.template
+  - templates/prompt-first/001-bootstrap.template.txt
+  - templates/prompt-first/002-refine.template.txt
+repo_signals:
+  - AGENT.md
+  - CLAUDE.md
+  - manifests/
+  - .prompts/
+task_hints:
+  - bootstrap-repo
+  - generate-prompt-sequence
+  - post-flight-refinement
 warnings:
   - Keep routers concise and keep doctrine, workflows, examples, and templates separate.
-
+  - Prompt files must use strict monotonic numbering and exact filename references.
+bootstrap_defaults:
+  - include_prompt_first
+  - include_generated_profile
+  - include_smoke_tests
+compose_files:
+  - docker-compose.yml
+  - docker-compose.test.yml
+compose_project_name_dev: "{repo_slug}"
+compose_project_name_test: "{repo_slug}-test"
+port_band_app_dev: 14000-14099
+port_band_app_test: 15000-15099
+port_band_data_dev: 24000-24099
+port_band_data_test: 25000-25099
+data_isolation:
+  - docker/volumes/dev
+  - docker/volumes/test
+  - any future test reset helper must target docker-compose.test.yml only
+dokku_relevance: not-applicable
+smoke_test_expectations:
+  - validate the core repo surface
+  - validate the generated profile exists
+  - fail clearly when required top-level files are missing
+prompt_first_support: first-class

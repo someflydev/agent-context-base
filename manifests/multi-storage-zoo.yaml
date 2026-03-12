@@ -1,7 +1,9 @@
+schema_version: 2
 name: multi-storage-zoo
+description: Preferred multi-storage experiment profile for intentionally comparing backing systems without sharing fixtures casually.
 archetype: multi-storage-experiment
-stacks:
-  - redis-keydb-mongo
+primary_stack: redis-keydb-mongo
+secondary_stacks:
   - meilisearch
   - timescaledb
   - elasticsearch
@@ -10,19 +12,67 @@ triggers:
   - compare storage systems
   - storage experiment
   - multi storage repo
+aliases:
+  - storage zoo
+  - backend comparison lab
 required_context:
   - context/doctrine/core-principles.md
   - context/doctrine/compose-port-and-data-isolation.md
   - context/workflows/add-storage-integration.md
   - context/archetypes/multi-storage-experiment.md
-optional_context:
   - context/stacks/redis-keydb-mongo.md
+optional_context:
+  - context/workflows/add-smoke-tests.md
+  - context/workflows/post-flight-refinement.md
   - context/stacks/meilisearch.md
   - context/stacks/timescaledb.md
   - context/stacks/elasticsearch.md
   - context/stacks/qdrant.md
 preferred_examples:
-  - examples/canonical-storage/README.md
+  - examples/canonical-storage/redis-mongo-shape-example.md
+  - examples/canonical-rag/local-rag-metadata-shape-example.md
+  - examples/canonical-workflows/post-flight-refinement-checklist.md
+recommended_templates:
+  - templates/readme/README.template.md
+  - templates/agent-md/AGENT.template.md
+  - templates/claude-md/CLAUDE.template.md
+  - templates/gitignore/.gitignore.template
+  - templates/compose/docker-compose.template.yaml
+  - templates/compose/docker-compose-test.template.yaml
+  - templates/manifest/profile-summary.template.yaml
+repo_signals:
+  - docker-compose.yml
+  - docker-compose.test.yml
+  - app/
+  - tests/integration/
+task_hints:
+  - add-storage-integration
+  - add-smoke-tests
+  - post-flight-refinement
 warnings:
   - Keep each storage path isolated and do not share test fixtures casually across backends.
-
+  - Add or update one real boundary check per backend that matters instead of one giant generic suite.
+bootstrap_defaults:
+  - include_docker_compose
+  - include_smoke_tests
+  - include_integration_tests
+  - include_generated_profile
+compose_files:
+  - docker-compose.yml
+  - docker-compose.test.yml
+compose_project_name_dev: "{repo_slug}"
+compose_project_name_test: "{repo_slug}-test"
+port_band_app_dev: 14000-14099
+port_band_app_test: 15000-15099
+port_band_data_dev: 24000-24099
+port_band_data_test: 25000-25099
+data_isolation:
+  - docker/volumes/dev
+  - docker/volumes/test
+  - test reset flows must target per-backend disposable data only
+dokku_relevance: optional
+smoke_test_expectations:
+  - boot one representative path
+  - verify one backend routing decision
+  - fail fast when expected services are missing
+prompt_first_support: supported

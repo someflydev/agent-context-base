@@ -1,23 +1,75 @@
+schema_version: 2
 name: webapp-elixir-phoenix
+description: Preferred Phoenix webapp profile for controller or context-driven services with explicit route surfaces.
 archetype: backend-api-service
-stacks:
-  - elixir-phoenix
+primary_stack: elixir-phoenix
+secondary_stacks:
+  - redis-keydb-mongo
 triggers:
   - phoenix app
   - elixir webapp
   - liveview service
+aliases:
+  - phoenix web
+  - elixir controller
 required_context:
   - context/doctrine/core-principles.md
   - context/doctrine/testing-philosophy.md
+  - context/doctrine/compose-port-and-data-isolation.md
   - context/workflows/add-feature.md
   - context/stacks/elixir-phoenix.md
   - context/archetypes/backend-api-service.md
 optional_context:
+  - context/workflows/add-smoke-tests.md
   - context/workflows/add-deployment-support.md
-  - context/doctrine/compose-port-and-data-isolation.md
+  - context/workflows/post-flight-refinement.md
+  - context/doctrine/canonical-examples.md
 preferred_examples:
-  - examples/canonical-api/README.md
-  - examples/canonical-smoke-tests/README.md
+  - examples/canonical-api/phoenix-route-controller-example.ex
+  - examples/canonical-api/phoenix-router-surface-example.ex
+  - examples/canonical-workflows/post-flight-refinement-checklist.md
+recommended_templates:
+  - templates/readme/README.template.md
+  - templates/agent-md/AGENT.template.md
+  - templates/claude-md/CLAUDE.template.md
+  - templates/gitignore/.gitignore.template
+  - templates/compose/docker-compose.template.yaml
+  - templates/compose/docker-compose-test.template.yaml
+  - templates/manifest/profile-summary.template.yaml
+repo_signals:
+  - mix.exs
+  - lib/*_web/router.ex
+  - lib/*_web/controllers/
+  - test/
+task_hints:
+  - add-feature
+  - add-smoke-tests
+  - add-deployment-support
+  - post-flight-refinement
 warnings:
   - Controller or LiveView additions that change persistence behavior should include real database integration coverage.
-
+  - Keep release and migration behavior explicit when the service is deployable.
+bootstrap_defaults:
+  - include_docker_compose
+  - include_smoke_tests
+  - include_integration_tests
+  - include_generated_profile
+compose_files:
+  - docker-compose.yml
+  - docker-compose.test.yml
+compose_project_name_dev: "{repo_slug}"
+compose_project_name_test: "{repo_slug}-test"
+port_band_app_dev: 14000-14099
+port_band_app_test: 15000-15099
+port_band_data_dev: 24000-24099
+port_band_data_test: 25000-25099
+data_isolation:
+  - docker/volumes/dev
+  - docker/volumes/test
+  - test fixtures must never target the primary or dev database
+dokku_relevance: supported
+smoke_test_expectations:
+  - boot health route or page
+  - representative controller or context happy path
+  - concise failure when DB prerequisites are missing
+prompt_first_support: supported

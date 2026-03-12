@@ -1,23 +1,74 @@
+schema_version: 2
 name: backend-api-go-echo
+description: Preferred Go service profile using Echo plus templ for small deployable backend services.
 archetype: backend-api-service
-stacks:
-  - go-echo
+primary_stack: go-echo
+secondary_stacks:
+  - redis-keydb-mongo
 triggers:
   - echo api
   - go service
   - templ web service
+aliases:
+  - go echo
+  - templ handler
 required_context:
   - context/doctrine/core-principles.md
   - context/doctrine/testing-philosophy.md
+  - context/doctrine/compose-port-and-data-isolation.md
   - context/workflows/add-api-endpoint.md
   - context/stacks/go-echo.md
   - context/archetypes/backend-api-service.md
 optional_context:
+  - context/workflows/add-smoke-tests.md
   - context/workflows/add-storage-integration.md
-  - context/doctrine/compose-port-and-data-isolation.md
+  - context/workflows/post-flight-refinement.md
+  - context/doctrine/canonical-examples.md
 preferred_examples:
-  - examples/canonical-api/README.md
-  - examples/canonical-smoke-tests/README.md
+  - examples/canonical-api/go-echo-handler-example.go
+  - examples/canonical-workflows/post-flight-refinement-checklist.md
+recommended_templates:
+  - templates/readme/README.template.md
+  - templates/agent-md/AGENT.template.md
+  - templates/claude-md/CLAUDE.template.md
+  - templates/gitignore/.gitignore.template
+  - templates/compose/docker-compose.template.yaml
+  - templates/compose/docker-compose-test.template.yaml
+  - templates/manifest/profile-summary.template.yaml
+repo_signals:
+  - go.mod
+  - cmd/server/main.go
+  - internal/http/
+  - internal/views/
+task_hints:
+  - add-api-endpoint
+  - add-smoke-tests
+  - add-storage-integration
+  - post-flight-refinement
 warnings:
-  - Prefer Echo plus templ patterns here; do not import Chi-oriented structure.
-
+  - Prefer Echo plus templ patterns here and do not drift into Chi-oriented structure.
+  - Verify rendered HTML or fragment output when templ surfaces are part of the contract.
+bootstrap_defaults:
+  - include_docker_compose
+  - include_smoke_tests
+  - include_integration_tests
+  - include_generated_profile
+compose_files:
+  - docker-compose.yml
+  - docker-compose.test.yml
+compose_project_name_dev: "{repo_slug}"
+compose_project_name_test: "{repo_slug}-test"
+port_band_app_dev: 14000-14099
+port_band_app_test: 15000-15099
+port_band_data_dev: 24000-24099
+port_band_data_test: 25000-25099
+data_isolation:
+  - docker/volumes/dev
+  - docker/volumes/test
+  - destructive test cleanup must never touch dev data roots
+dokku_relevance: supported
+smoke_test_expectations:
+  - boot health route
+  - one representative handler check
+  - confirm templ output shape when HTML matters
+prompt_first_support: supported

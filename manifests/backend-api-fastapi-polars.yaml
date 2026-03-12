@@ -1,25 +1,83 @@
+schema_version: 2
 name: backend-api-fastapi-polars
+description: Preferred FastAPI backend profile for prompt-first service repos using uv, Ruff, orjson, and Polars.
 archetype: backend-api-service
-stacks:
-  - python-fastapi-uv-ruff-orjson-polars
+primary_stack: python-fastapi-uv-ruff-orjson-polars
+secondary_stacks:
+  - duckdb-trino-polars
+  - redis-keydb-mongo
 triggers:
   - fastapi api
   - python backend
   - polars service
+aliases:
+  - fastapi service
+  - analytics api
 required_context:
   - context/doctrine/core-principles.md
   - context/doctrine/testing-philosophy.md
+  - context/doctrine/compose-port-and-data-isolation.md
   - context/workflows/add-api-endpoint.md
   - context/stacks/python-fastapi-uv-ruff-orjson-polars.md
   - context/archetypes/backend-api-service.md
 optional_context:
+  - context/workflows/add-smoke-tests.md
+  - context/workflows/add-seed-data.md
   - context/workflows/add-storage-integration.md
-  - context/doctrine/compose-port-and-data-isolation.md
-  - context/stacks/redis-keydb-mongo.md
+  - context/workflows/post-flight-refinement.md
   - context/stacks/duckdb-trino-polars.md
+  - context/stacks/redis-keydb-mongo.md
 preferred_examples:
-  - examples/canonical-api/README.md
-  - examples/canonical-smoke-tests/README.md
+  - examples/canonical-api/fastapi-endpoint-example.py
+  - examples/canonical-smoke-tests/fastapi-smoke-test-example.py
+  - examples/canonical-integration-tests/fastapi-db-integration-test-example.py
+  - examples/canonical-seed-data/polars-seed-data-example.py
+recommended_templates:
+  - templates/readme/README.template.md
+  - templates/agent-md/AGENT.template.md
+  - templates/claude-md/CLAUDE.template.md
+  - templates/gitignore/.gitignore.template
+  - templates/compose/docker-compose.template.yaml
+  - templates/compose/docker-compose-test.template.yaml
+  - templates/manifest/profile-summary.template.yaml
+  - templates/smoke-tests/smoke_test.template.py
+  - templates/integration-tests/integration_test.template.py
+  - templates/seed-data/seed_data.template.py
+repo_signals:
+  - pyproject.toml
+  - uv.lock
+  - app/main.py
+  - tests/smoke/
+task_hints:
+  - add-api-endpoint
+  - add-smoke-tests
+  - add-storage-integration
+  - add-seed-data
 warnings:
   - Add minimal real-infra integration tests when endpoints touch databases, caches, queues, or search.
-
+  - Keep Polars shaping explicit inside a service boundary instead of leaking frame logic into routes.
+bootstrap_defaults:
+  - include_docker_compose
+  - include_smoke_tests
+  - include_integration_tests
+  - include_seed_data
+  - include_generated_profile
+compose_files:
+  - docker-compose.yml
+  - docker-compose.test.yml
+compose_project_name_dev: "{repo_slug}"
+compose_project_name_test: "{repo_slug}-test"
+port_band_app_dev: 14000-14099
+port_band_app_test: 15000-15099
+port_band_data_dev: 24000-24099
+port_band_data_test: 25000-25099
+data_isolation:
+  - docker/volumes/dev
+  - docker/volumes/test
+  - test reset and seed flows must target docker-compose.test.yml only
+dokku_relevance: supported
+smoke_test_expectations:
+  - boot health route
+  - representative API happy path
+  - readable failure output when storage prerequisites are missing
+prompt_first_support: supported

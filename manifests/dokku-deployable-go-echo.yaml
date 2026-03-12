@@ -1,23 +1,74 @@
+schema_version: 2
 name: dokku-deployable-go-echo
+description: Dokku-oriented Go Echo deployment profile for single-service repos with explicit templ-aware boot behavior.
 archetype: dokku-deployable-service
-stacks:
-  - go-echo
+primary_stack: go-echo
+secondary_stacks:
   - dokku-conventions
 triggers:
   - deploy go echo app
   - dokku go service
+  - procfile go service
+aliases:
+  - dokku go
+  - echo deploy
 required_context:
   - context/doctrine/deployment-philosophy-dokku.md
+  - context/doctrine/compose-port-and-data-isolation.md
   - context/workflows/add-deployment-support.md
   - context/stacks/go-echo.md
   - context/stacks/dokku-conventions.md
   - context/archetypes/dokku-deployable-service.md
 optional_context:
   - context/workflows/add-smoke-tests.md
-  - context/doctrine/compose-port-and-data-isolation.md
+  - context/workflows/post-flight-refinement.md
+  - context/doctrine/testing-philosophy.md
 preferred_examples:
-  - examples/canonical-dokku/README.md
-  - examples/canonical-smoke-tests/README.md
+  - examples/canonical-dokku/Procfile.example
+  - examples/canonical-dokku/app-json-example.json
+  - examples/canonical-api/go-echo-handler-example.go
+recommended_templates:
+  - templates/readme/README.template.md
+  - templates/agent-md/AGENT.template.md
+  - templates/claude-md/CLAUDE.template.md
+  - templates/gitignore/.gitignore.template
+  - templates/compose/docker-compose.template.yaml
+  - templates/compose/docker-compose-test.template.yaml
+  - templates/dokku/Dokku.template.md
+  - templates/manifest/profile-summary.template.yaml
+repo_signals:
+  - Procfile
+  - app.json
+  - cmd/server/main.go
+  - scripts/smoke/
+task_hints:
+  - add-deployment-support
+  - add-smoke-tests
+  - post-flight-refinement
 warnings:
-  - Keep the boot command and templ asset path explicit so Dokku behavior is predictable.
-
+  - Keep the boot command and templ asset path explicit so Dokku behavior stays predictable.
+  - Deployment proof does not replace local storage or queue integration checks.
+bootstrap_defaults:
+  - include_docker_compose
+  - include_smoke_tests
+  - include_generated_profile
+  - include_dokku
+compose_files:
+  - docker-compose.yml
+  - docker-compose.test.yml
+compose_project_name_dev: "{repo_slug}"
+compose_project_name_test: "{repo_slug}-test"
+port_band_app_dev: 14000-14099
+port_band_app_test: 15000-15099
+port_band_data_dev: 24000-24099
+port_band_data_test: 25000-25099
+data_isolation:
+  - docker/volumes/dev
+  - docker/volumes/test
+  - isolate deploy smoke data from local test fixtures
+dokku_relevance: first-class
+smoke_test_expectations:
+  - boot health route
+  - post-deploy smoke target
+  - templ or handler boot path remains explicit
+prompt_first_support: supported
