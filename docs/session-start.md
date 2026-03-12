@@ -17,6 +17,9 @@ Use this file when beginning a new task or returning to a long-lived repo after 
 
 ## Recommended Anchor Pairings
 
+- startup identity and repo shape: `context/anchors/repo-identity.md`
+- loading discipline: `context/anchors/context-loading-principles.md`
+- drift prevention: `context/anchors/anti-patterns.md`
 - general routing ambiguity: `context/anchors/session-start.md`
 - integrity or metadata work: `context/anchors/context-integrity.md`
 - Compose or infra work: `context/anchors/compose-isolation.md`
