@@ -1,0 +1,14 @@
+{
+  "trace_id": "7d5e8f4a0cc9438b8c1b59e1d4df2f10",
+  "span_id": "52ef4d84058f6a93",
+  "parent_span_id": "0000000000000000",
+  "name": "GET /reports/summary",
+  "kind": "server",
+  "start_time": "2026-03-12T15:04:05.000Z",
+  "end_time": "2026-03-12T15:04:05.018Z",
+  "attributes": {
+    "http.method": "GET",
+    "http.route": "/reports/summary",
+    "repo.profile": "backend-api-fastapi-polars"
+  }
+}

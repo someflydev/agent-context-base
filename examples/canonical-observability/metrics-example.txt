@@ -1,0 +1,6 @@
+# HELP app_report_runs_total Count of completed report runs.
+# TYPE app_report_runs_total counter
+app_report_runs_total{report_id="daily-signups",status="ok"} 42
+# HELP app_request_duration_ms Duration of representative API requests.
+# TYPE app_request_duration_ms gauge
+app_request_duration_ms{route="/reports/summary",method="GET"} 18

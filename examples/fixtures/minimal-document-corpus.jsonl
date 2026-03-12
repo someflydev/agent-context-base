@@ -1,0 +1,2 @@
+{"doc_id":"intro","title":"Intro","body":"Agent-context repos stay small, explicit, and prompt-first."}
+{"doc_id":"ports","title":"Ports","body":"Dev and test Compose stacks use explicit non-default host ports."}

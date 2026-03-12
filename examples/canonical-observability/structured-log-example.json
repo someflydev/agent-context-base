@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-03-12T15:04:05Z",
+  "level": "info",
+  "service": "analytics-api",
+  "event": "report_summary_generated",
+  "request_id": "req_01hv3k8bqv6k0h1xw3w9d8s4qj",
+  "repo_profile": "backend-api-fastapi-polars",
+  "duration_ms": 18,
+  "outcome": "ok"
+}

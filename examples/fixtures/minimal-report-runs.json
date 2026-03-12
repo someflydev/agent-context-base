@@ -1,0 +1,14 @@
+[
+  {
+    "tenant_id": "acme",
+    "report_id": "daily-signups",
+    "status": "ready",
+    "total_events": 42
+  },
+  {
+    "tenant_id": "acme",
+    "report_id": "weekly-revenue",
+    "status": "pending",
+    "total_events": 7
+  }
+]
