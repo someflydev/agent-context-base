@@ -1,28 +1,29 @@
 # Examples
 
-This directory defines the canonical example surfaces for future repos derived from this base.
+This directory contains the canonical implementation patterns for future repos derived from this base.
 
-## Purpose
+Examples are intentionally different from templates:
 
-Examples exist to show preferred patterns for recurring implementation problems. They should reduce ambiguity during coding sessions.
+- examples show a preferred completed pattern
+- templates provide a starter scaffold to specialize later
 
-## What Belongs Here
+## Example Categories
 
-- one clear example category per recurring pattern family
-- notes on how to choose the right example
-- notes on what makes an example canonical instead of incidental
-
-## What Does Not Belong Here
-
-- starter scaffolds better suited for `templates/`
-- mutually contradictory patterns presented as equals
-- legacy or speculative patterns with no stable recommendation
+- `canonical-api/`: route, handler, controller, and service-boundary examples
+- `canonical-cli/`: command, flag, and output-shape examples
+- `canonical-dokku/`: Dokku deployment wiring and release posture
+- `canonical-integration-tests/`: real-infra tests against isolated `docker-compose.test.yml`
+- `canonical-prompts/`: monotonic prompt-file layout and prompt text
+- `canonical-rag/`: local indexing config and metadata shape
+- `canonical-seed-data/`: deterministic seed data flows
+- `canonical-smoke-tests/`: smallest meaningful happy-path checks
+- `canonical-storage/`: database, cache, queue, search, and vector boundary patterns
+- `canonical-workflows/`: compact workflow artifacts such as post-flight checklists
 
 ## Selection Rule
 
-Pick the example closest to the active workflow, archetype, and stack. Prefer one example over a blended hybrid.
+Pick the category closest to the active workflow, archetype, and stack. Prefer one direct example over a blended hybrid.
 
-## Drift Rule
+## Maintenance Rule
 
-When doctrine or a first-class stack pack changes, review the affected example category promptly.
-
+When doctrine, manifests, or first-class stack guidance changes, review the affected canonical example quickly. A stale example creates more confusion than no example.

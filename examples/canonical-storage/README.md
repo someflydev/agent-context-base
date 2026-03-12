@@ -2,6 +2,11 @@
 
 Use this category for preferred patterns around databases, caches, queues, search systems, and vector stores.
 
+Primary files in this category:
+
+- `duckdb-polars-example.py`
+- `redis-mongo-shape-example.md`
+
 ## A Strong Canonical Storage Example Should Show
 
 - storage client or adapter boundary
@@ -19,4 +24,3 @@ Choose this category when the main implementation question is about wiring a sto
 - storage logic demonstrated only through mocks
 - examples that share dev and test data
 - one huge multi-backend example that is hard to adapt safely
-

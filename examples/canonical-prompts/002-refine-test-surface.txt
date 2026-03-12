@@ -1,0 +1,16 @@
+Refine the first-pass service after the initial files exist.
+
+Required changes:
+
+- update `tests/smoke/test_health.py`
+- add `tests/integration/test_report_runs.py`
+- add `scripts/seed_data.py`
+- update `docker-compose.test.yml`
+- update `manifests/backend-api-fastapi-polars.yaml`
+
+Constraints:
+
+- keep prompt numbering monotonic
+- use `docker-compose.test.yml` only for destructive test reset flows
+- prove one real write and one real read against isolated test infrastructure
+

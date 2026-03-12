@@ -2,6 +2,10 @@
 
 Use this category for preferred happy-path verification patterns.
 
+Primary file in this category:
+
+- `fastapi-smoke-test-example.py`
+
 ## A Strong Canonical Smoke Example Should Show
 
 - deterministic setup
@@ -19,4 +23,3 @@ Choose this category when the main question is "what is the smallest meaningful 
 - examples that become full end-to-end suites
 - mocks that hide the wiring the smoke test is meant to prove
 - examples that ignore the need for real-infra integration tests for meaningful boundaries
-

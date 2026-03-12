@@ -2,6 +2,11 @@
 
 Use this category for preferred local ingestion, indexing, retrieval, and answer flow patterns.
 
+Primary files in this category:
+
+- `local-rag-index-config-example.yaml`
+- `local-rag-metadata-shape-example.md`
+
 ## A Strong Canonical RAG Example Should Show
 
 - tiny deterministic corpus
@@ -19,4 +24,3 @@ Choose this category when the repo adds local retrieval or question-answer behav
 - many retrieval strategies in one example
 - examples that depend on large opaque corpora
 - no distinction between smoke validation and backend integration verification
-

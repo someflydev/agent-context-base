@@ -2,6 +2,10 @@
 
 Use this category for preferred command, flag, and output-structure patterns.
 
+Primary file in this category:
+
+- `python-cli-command-example.py`
+
 ## A Strong Canonical CLI Example Should Show
 
 - clear command hierarchy
@@ -19,4 +23,3 @@ Choose this category when adding commands, subcommands, or operator-facing workf
 - clever but obscure command naming
 - hidden side effects
 - no distinction between human-readable output and machine-usable output
-

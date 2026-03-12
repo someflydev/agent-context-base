@@ -2,6 +2,12 @@
 
 Use this category for preferred prompt-file and prompt-sequence patterns in prompt-first repos.
 
+Primary files in this category:
+
+- `prompt-first-layout-example.md`
+- `001-bootstrap-repo.txt`
+- `002-refine-test-surface.txt`
+
 ## A Strong Canonical Prompt Example Should Show
 
 - strictly monotonic numbering
@@ -19,4 +25,3 @@ Choose this category when a task should be split into explicit prompts or when a
 - renumbered historical prompts
 - vague change requests with no file references
 - prompts that assume files exist before they are created
-

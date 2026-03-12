@@ -2,6 +2,10 @@
 
 Use this category for preferred dev seed and test fixture patterns.
 
+Primary file in this category:
+
+- `polars-seed-data-example.py`
+
 ## A Strong Canonical Seed Example Should Show
 
 - clear distinction between dev seed data and test fixture data
@@ -19,4 +23,3 @@ Choose this category when adding starter data, fixture loading, or reset workflo
 - shared mutable seed data between dev and test
 - oversized seed sets
 - destructive reset commands with unclear targets
-

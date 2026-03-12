@@ -2,6 +2,11 @@
 
 Use this category for preferred single-service Dokku deployment patterns.
 
+Primary files in this category:
+
+- `Procfile.example`
+- `app-json-example.json`
+
 ## A Strong Canonical Dokku Example Should Show
 
 - explicit boot path
@@ -19,4 +24,3 @@ Choose this category when deployment support is a first-order concern and the re
 - platform-wide orchestration examples
 - hidden release hooks
 - examples that treat deployment as proof of persistence correctness
-

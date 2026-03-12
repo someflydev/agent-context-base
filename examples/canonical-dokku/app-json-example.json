@@ -1,0 +1,17 @@
+{
+  "name": "analytics-service",
+  "description": "Single-service Dokku deployable with explicit release and smoke-test posture.",
+  "scripts": {
+    "dokku:postdeploy": "./scripts/smoke/deploy_smoke.sh"
+  },
+  "env": {
+    "APP_ENV": {
+      "description": "Runtime environment name for the service.",
+      "value": "production"
+    },
+    "DATABASE_URL": {
+      "description": "Primary database connection string."
+    }
+  }
+}
+

@@ -1,0 +1,19 @@
+corpus_dir: docs/corpus
+collection_name: local-docs
+embedding_provider: local-bge-small
+chunking:
+  chunk_size: 800
+  chunk_overlap: 120
+vector_store:
+  backend: qdrant
+  url: http://127.0.0.1:16333
+  distance: cosine
+metadata_fields:
+  - doc_id
+  - path
+  - section
+  - checksum
+smoke_query:
+  question: Which file explains compose test isolation?
+  expected_path: context/doctrine/compose-port-and-data-isolation.md
+

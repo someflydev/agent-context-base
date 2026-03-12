@@ -1,0 +1,17 @@
+Create a first-pass FastAPI service layout in this repo.
+
+Required changes:
+
+- add `app/main.py`
+- add `app/api/reports.py`
+- add `tests/smoke/test_health.py`
+- update `README.md`
+- update `AGENT.md`
+
+Constraints:
+
+- keep the route surface small
+- use `docker-compose.yml` and `docker-compose.test.yml`
+- keep host ports explicit and non-default
+- do not add placeholder files without content
+
