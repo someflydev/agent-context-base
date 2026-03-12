@@ -20,6 +20,7 @@ The base repo should reflect how I actually build and think. It should strongly 
 - Docker-backed local development where appropriate
 - Dokku-oriented deployment thinking instead of Traefik-first deployment thinking
 - modern Python stack preferences: FastAPI, uv, ruff, orjson, polars
+- modern TypeScript backend preference: Hono + Bun + Drizzle ORM + TSX for lightweight HTMX/tailwind/Plotly services
 - modern Rust stack preferences: Axum and modern Rust tooling
 - Go web stack preference: Echo
 - Elixir web stack preference: Phoenix
@@ -190,6 +191,7 @@ SECTION 8 — Stack pack design
 Design stack-specific packs for the technologies I actually care about.
 At minimum include:
 - Python FastAPI uv ruff orjson polars
+- TypeScript Hono Bun Drizzle TSX
 - Rust Axum modern tooling
 - Go Echo
 - Elixir Phoenix
@@ -269,6 +271,7 @@ Define:
 - bootstrap defaults for conventional Compose filenames, repo-derived Compose `name:` values, host-port allocation, and isolated test-vs-primary data paths where relevant
 Then create at least 12 example manifests relevant to my workflows, such as:
 - backend-api-fastapi-polars
+- backend-api-typescript-hono-bun
 - backend-api-rust-axum
 - backend-api-go-echo
 - webapp-elixir-phoenix
@@ -278,6 +281,7 @@ Then create at least 12 example manifests relevant to my workflows, such as:
 - cli-python
 - data-pipeline-polars
 - dokku-deployable-fastapi
+- dokku-deployable-typescript-hono-bun
 - dokku-deployable-go-echo
 - dokku-deployable-phoenix
 
@@ -311,6 +315,7 @@ Create a templates strategy for:
 - manifest starter
 - prompt-first repo starter
 - FastAPI repo starter
+- TypeScript Hono Bun Drizzle TSX starter
 - Rust Axum starter
 - Go Echo starter
 - Elixir Phoenix starter
@@ -375,6 +380,7 @@ For each scenario:
 - specify any Dokku relevance
 Examples should include a mix of:
 - FastAPI/polars services
+- TypeScript/Hono/Bun/Drizzle/TSX services
 - Rust/Axum services
 - Go/Echo services
 - Elixir/Phoenix services
@@ -429,6 +435,7 @@ Important constraints:
 - Favor Dokku over Traefik in deployment-oriented guidance.
 - Do not assume Starlette as a primary stack example.
 - Prefer FastAPI, uv, ruff, orjson, polars for Python examples.
+- Include TypeScript + Hono + Bun + Drizzle ORM + TSX meaningfully as a first-class backend option for HTMX/tailwind/Plotly-oriented services.
 - Prefer Go Echo over Chi for Go examples in this base repo.
 - Include Elixir Phoenix meaningfully.
 - Keep the base repo clean and reusable.

@@ -29,6 +29,7 @@ Assume the repo may be one of several archetypes:
 
 Assume some likely stacks and paths that fit my real workflows:
 - Python + FastAPI + uv + ruff + orjson + Polars + HTMX + Plotly
+- TypeScript + Hono + Bun + Drizzle ORM + TSX services (HTMX/tailwind/plotly)
 - Go + Echo services (HTMX/tailwind/plotly)
 - Rust + Axum services (HTMX/tailwind/plotly)
 - Elixir + Phoenix services (HTMX/tailwind/plotly)
@@ -139,6 +140,7 @@ Examples include:
 - add Meilisearch workflow
 - add TimescaleDB workflow
 - add Qdrant workflow
+- add TypeScript Hono service route
 - add Rust Axum service route
 - add Go Echo middleware
 - add Elixir Phoenix middleware
@@ -172,6 +174,7 @@ For each archetype, provide:
 SECTION 8 — Stack packs
 Design stack-specific packs for at least:
 - Python FastAPI Polars HTM
+- TypeScript Hono Bun Drizzle TSX
 - Go Echo
 - Rust Axum
 - Docker Compose Dokku
@@ -218,6 +221,7 @@ Examples should include combinations like:
 - prompt-first repo for a polyglot backend lab
 - Python FastAPI Polars service with smoke tests and seed data
 - FastAPI HTMX Plotly dashboard with Docker-backed local services
+- TypeScript Hono Bun Drizzle TSX backend service with HTMX fragments and smoke tests
 - Go Echo backend service with canonical middleware and smoke tests
 - Rust Axum API with route patterns and integration tests
 - local RAG repo with indexing, metadata extraction, and minimal web UI

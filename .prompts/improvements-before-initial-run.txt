@@ -22,3 +22,33 @@ Notes / Followups:
 - PF-001 remains: `PROMPT_05.txt`, `PROMPT_06.txt`, and `PROMPT_07.txt` still need deterministic output file targets before they can safely feed later prompts.
 - PF-004 remains: later v3/meta prompts still lack an explicit repo-green gate before expansion.
 ---
+Round: 3
+Timestamp: 2026-03-12T12:00:00Z
+Summary: Added TypeScript + Hono + Bun as a first-class backend option alongside FastAPI, Axum, Echo, and Phoenix throughout the prompt set.
+Summary: Extended stack lists, manifests, template/example surfaces, and representative task bullets to keep backend options consistent.
+Changes Applied:
+- .prompts/PROMPT_00_s.txt :: Added TypeScript + Hono + Bun to the architecture brief stack lists and example task/example bullets :: keep the initial architecture brief aligned with the expanded backend set :: PF-010
+- .prompts/PROMPT_01.txt :: Added TypeScript + Hono + Bun to the base-repo design, stack-pack, manifest, starter-template, and scenario sections :: make the base-repo design prompt treat Hono/Bun as a first-class backend path :: PF-011
+- .prompts/PROMPT_02.txt :: Added TypeScript + Hono + Bun to the v1 repo generation prompt, including stack docs and manifest targets :: ensure the first implementation pass includes the Hono/Bun backend path :: PF-012
+- .prompts/PROMPT_03.txt :: Added TypeScript + Hono + Bun to the v2 enhancement prompt, including manifests, canonical examples, and starter templates :: keep the enhancement pass consistent with the expanded backend set :: PF-013
+- .prompts/PROMPT_04.txt :: Added TypeScript/Hono/Bun to the v3 representation checklist :: preserve cross-stack coverage in the reliability pass :: PF-014
+- .prompts/PROMPT_08.txt :: Added TypeScript + Hono + Bun to the budget-system context and example-task list :: ensure the bounded-context pass accounts for the added backend option :: PF-015
+Notes / Followups:
+- PF-001 remains: `PROMPT_05.txt`, `PROMPT_06.txt`, and `PROMPT_07.txt` still need deterministic output file targets before they can safely feed later prompts.
+- PF-004 remains: later v3/meta prompts still lack an explicit repo-green gate before expansion.
+---
+Round: 4
+Timestamp: 2026-03-12T12:17:02Z
+Summary: Refined the new TypeScript backend references to explicitly prefer Drizzle ORM and TSX with Hono + Bun.
+Summary: Kept manifest and template filenames stable while making the stack description itself more specific.
+Changes Applied:
+- .prompts/PROMPT_00_s.txt :: Updated the TypeScript backend stack labels and example text to mention Drizzle ORM and TSX :: align the initial architecture brief with the preferred TypeScript backend toolchain :: PF-016
+- .prompts/PROMPT_01.txt :: Updated the TypeScript backend preference, stack-pack naming, starter wording, and scenario wording to mention Drizzle ORM and TSX :: make the base-repo design prompt explicit about the preferred TypeScript stack details :: PF-017
+- .prompts/PROMPT_02.txt :: Updated the v1 generation prompt to describe the TypeScript backend as Hono + Bun + Drizzle ORM + TSX :: ensure the implementation pass builds the intended TypeScript backend path :: PF-018
+- .prompts/PROMPT_03.txt :: Updated the v2 enhancement prompt to mention Drizzle ORM and TSX in the TypeScript backend and canonical example requirements :: keep the enhancement pass consistent with the preferred TypeScript stack details :: PF-019
+- .prompts/PROMPT_04.txt :: Updated the v3 representation checklist to include Drizzle and TSX in the TypeScript backend coverage :: preserve fidelity in later reliability coverage checks :: PF-020
+- .prompts/PROMPT_08.txt :: Updated the budget-system context references to include Drizzle ORM and TSX in the TypeScript backend stack :: ensure the bounded-context pass reasons about the intended TypeScript stack composition :: PF-021
+Notes / Followups:
+- PF-001 remains: `PROMPT_05.txt`, `PROMPT_06.txt`, and `PROMPT_07.txt` still need deterministic output file targets before they can safely feed later prompts.
+- PF-004 remains: later v3/meta prompts still lack an explicit repo-green gate before expansion.
+---

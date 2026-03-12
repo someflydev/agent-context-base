@@ -37,6 +37,7 @@ The main goals of this second-pass enhancement are:
 7. Continue optimizing for my actual working style:
    - prompt-first repos
    - FastAPI + uv + ruff + orjson + polars
+   - TypeScript + Hono + Bun + Drizzle ORM + TSX
    - Rust + Axum
    - Go + Echo
    - Elixir + Phoenix
@@ -73,6 +74,7 @@ IMPORTANT CONSTRAINTS
 - Keep Dokku-oriented guidance practical and balanced.
 - Do not reintroduce Traefik as the primary deployment philosophy.
 - Use Go Echo, not Go Chi, in this repo’s primary stack examples.
+- Include TypeScript + Hono + Bun + Drizzle ORM + TSX as a first-class backend option for lightweight HTMX/tailwind/Plotly-oriented services.
 - Do not center Starlette.
 - Prefer excellent markdown and straightforward Python.
 - Keep file paths deterministic and cross-references accurate.
@@ -107,6 +109,7 @@ At minimum, add canonical examples for:
 - FastAPI endpoint pattern
 - FastAPI smoke test pattern
 - FastAPI seed data pattern
+- TypeScript Hono handler/route pattern with Drizzle ORM and TSX
 - Rust Axum route pattern
 - Go Echo handler pattern
 - Elixir Phoenix route/controller or context surface pattern
@@ -157,6 +160,7 @@ Then generate improved full contents for all existing manifests and add any addi
 
 At minimum ensure high-quality rich manifests for:
 - backend-api-fastapi-polars
+- backend-api-typescript-hono-bun
 - backend-api-rust-axum
 - backend-api-go-echo
 - webapp-elixir-phoenix
@@ -166,6 +170,7 @@ At minimum ensure high-quality rich manifests for:
 - cli-python
 - data-pipeline-polars
 - dokku-deployable-fastapi
+- dokku-deployable-typescript-hono-bun
 - dokku-deployable-go-echo
 - dokku-deployable-phoenix
 
@@ -303,6 +308,7 @@ NEW CANONICAL EXAMPLE FILES
 - examples/canonical-storage/redis-mongo-shape-example.md
 - examples/canonical-rag/local-rag-index-config-example.yaml
 - examples/canonical-rag/local-rag-metadata-shape-example.md
+- examples/canonical-api/typescript-hono-handler-example.ts
 - examples/canonical-api/rust-axum-route-example.rs
 - examples/canonical-api/go-echo-handler-example.go
 - examples/canonical-api/phoenix-route-controller-example.ex
@@ -319,6 +325,7 @@ NEW OR UPDATED TEMPLATES
 - templates/compose/docker-compose.template.yaml
 - templates/compose/docker-compose-test.template.yaml
 - templates/prompt-first/PROMPTS.md.template
+- templates/typescript-hono-bun/README.template.md
 - templates/prompt-first/PROMPT_01.template.txt
 - templates/prompt-first/PROMPT_00_s.template.txt
 - templates/smoke-tests/smoke_test.template.py
@@ -341,7 +348,7 @@ Before outputting the files, ensure internally that:
 - routing and aliasing remain aligned
 - prompt-first examples reflect strictly monotonic numbering and filename-based references
 - Dokku appears coherently in doctrine, manifests, examples, templates, and bootstrap generation
-- Go Echo, Elixir Phoenix, Rust Axum, and FastAPI/uv/ruff/orjson/polars are all meaningfully represented
+- TypeScript Hono Bun Drizzle TSX, Go Echo, Elixir Phoenix, Rust Axum, and FastAPI/uv/ruff/orjson/polars are all meaningfully represented
 - Docker-backed generation preserves conventional Compose filenames, repo-derived Compose `name:` values, non-default port allocation, and isolated primary/dev-vs-test seed/data boundaries
 
 OUTPUT FORMAT REQUIREMENTS

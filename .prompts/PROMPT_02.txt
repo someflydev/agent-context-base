@@ -14,6 +14,7 @@ The repository should reflect the actual way I build and work:
 - smoke-test-heavy philosophy
 - future bootstrap-friendly architecture
 - modern Python preferences: FastAPI, uv, ruff, orjson, polars
+- TypeScript + Hono + Bun + Drizzle ORM + TSX
 - Rust + Axum
 - Go + Echo
 - Elixir + Phoenix
@@ -53,6 +54,7 @@ Important implementation constraints:
 - Use Dokku-oriented guidance where deployment philosophy matters.
 - Do not center Starlette.
 - Use Go Echo rather than Chi in this repo.
+- Include TypeScript + Hono + Bun + Drizzle ORM + TSX as a real first-class stack pack for lightweight backend services, especially HTMX/tailwind/Plotly-oriented apps.
 - Make Elixir Phoenix a real first-class stack pack.
 - Respect my prompt-first preferences.
 - When discussing prompt-first repo conventions, respect my requirement for strictly monotonic prompt numbering and explicit filename references.
@@ -105,6 +107,7 @@ Use this target v1 shape as the baseline unless a small improvement is clearly w
     - add-storage-integration.md
   - stacks/
     - python-fastapi-uv-ruff-orjson-polars.md
+    - typescript-hono-bun.md
     - rust-axum-modern.md
     - go-echo.md
     - elixir-phoenix.md
@@ -133,6 +136,7 @@ Use this target v1 shape as the baseline unless a small improvement is clearly w
     - alias-catalog.yaml
 - manifests/
   - backend-api-fastapi-polars.yaml
+  - backend-api-typescript-hono-bun.yaml
   - backend-api-rust-axum.yaml
   - backend-api-go-echo.yaml
   - webapp-elixir-phoenix.yaml
@@ -142,6 +146,7 @@ Use this target v1 shape as the baseline unless a small improvement is clearly w
   - cli-python.yaml
   - data-pipeline-polars.yaml
   - dokku-deployable-fastapi.yaml
+  - dokku-deployable-typescript-hono-bun.yaml
   - dokku-deployable-go-echo.yaml
   - dokku-deployable-phoenix.yaml
 - examples/
@@ -331,7 +336,7 @@ Before outputting the batches, internally ensure:
 - examples and templates remain distinct
 - Dokku guidance is aligned across doctrine, stacks, archetypes, manifests, and examples
 - prompt-first conventions reflect strictly monotonic numbering with explicit filename references
-- FastAPI/uv/ruff/orjson/polars, Rust/Axum, Go/Echo, and Elixir/Phoenix are all represented meaningfully
+- FastAPI/uv/ruff/orjson/polars, TypeScript/Hono/Bun/Drizzle/TSX, Rust/Axum, Go/Echo, and Elixir/Phoenix are all represented meaningfully
 - the doctrine layer clearly explains conventional Compose filenames, repo-derived Compose `name:` values, non-default port allocation, and primary/dev-vs-test data isolation
 
 At the very end, after all batches, provide:
