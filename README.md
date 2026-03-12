@@ -20,7 +20,8 @@ Read in this order:
 1. `AGENT.md` or `CLAUDE.md`
 2. `docs/repo-purpose.md`
 3. `docs/repo-layout.md`
-4. `context/router/task-router.md`
+4. `docs/session-start.md`
+5. `context/router/task-router.md`
 
 Then load only the smallest bundle that matches the task:
 
@@ -30,9 +31,22 @@ Then load only the smallest bundle that matches the task:
 - the needed stack packs
 - one preferred canonical example
 
-## What v2 Adds
+## What v3 Adds
 
-The second pass adds:
+The third pass adds:
+
+- full context health validation across manifests, metadata, prompt numbering, and bootstrap invariants
+- assistant memory anchors under `context/anchors/`
+- context weighting metadata, repo signal hints, and canonical example ranking metadata
+- richer context bundle preview and a prompt-first repo analyzer
+- pattern diff tooling for comparing candidates against examples or templates
+- deployment readiness checklists, assistant failure-mode docs, and a context evolution changelog
+- minimal fixture datasets and observability pattern examples
+- stronger Compose `name:`, host-port, and environment-isolation enforcement
+
+## What v2 Added
+
+The second pass added:
 
 - actual canonical example files under `examples/`, not README placeholders only
 - richer manifest files with routing, bootstrap, Compose, and support metadata
@@ -54,6 +68,8 @@ The base now gives explicit support to:
 
 It also leaves clean extension space for additional stacks such as Nim, Zig, Scala, Clojure, Kotlin, Crystal, OCaml, and Dart without forcing them into the initial file set.
 
+Those extension paths remain intentionally legible for framework families such as Nim plus Jester plus HappyX, Zig plus Zap plus Jetzig, Scala plus Tapir plus http4s plus ZIO, Clojure plus Kit plus next.jdbc plus Hiccup, Kotlin plus http4k plus Exposed, Crystal plus Kemal plus Avram, OCaml plus Dream plus Caqti plus TyXML, and Dart plus Dart Frog.
+
 ## Repository Shape
 
 - `docs/`: repo-level purpose and layout
@@ -62,6 +78,7 @@ It also leaves clean extension space for additional stacks such as Nim, Zig, Sca
 - `context/stacks/`: stack-specific guidance
 - `context/archetypes/`: project-shape guidance
 - `context/router/`: routing rules and alias mapping
+- `context/anchors/`: compact assistant memory anchors
 - `context/skills/`: short reusable assistant capabilities
 - `manifests/`: machine-readable context bundles
 - `examples/`: canonical example strategy surfaces
@@ -84,6 +101,17 @@ python scripts/new_repo.py analytics-api \
 ```
 
 That script renders a starter README, `AGENT.md`, `CLAUDE.md`, `.gitignore`, generated profile files, optional prompt files, and isolated Compose layouts with repo-derived names.
+
+## Operational Checks
+
+Useful repo-maintenance commands:
+
+```bash
+python scripts/validate_context.py
+python scripts/preview_context_bundle.py backend-api-fastapi-polars --show-weights --show-anchors
+python scripts/prompt_first_repo_analyzer.py .
+python scripts/pattern_diff.py examples/canonical-api examples/canonical-smoke-tests
+```
 
 ## Intent
 

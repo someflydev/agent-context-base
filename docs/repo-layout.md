@@ -15,6 +15,7 @@ Repo-level orientation only. Keep these files short and stable.
 
 - `docs/repo-purpose.md`
 - `docs/repo-layout.md`
+- `docs/session-start.md`
 
 ## `context/doctrine/`
 
@@ -29,6 +30,11 @@ Stable rules. Use for decisions that should survive across tasks:
 - canonical examples
 - context loading
 - Dokku deployment philosophy
+- stop conditions
+
+## `context/anchors/`
+
+Compact assistant memory anchors for session start, integrity work, Compose isolation, and prompt-first invariants.
 
 ## `context/workflows/`
 
@@ -65,13 +71,15 @@ Machine-readable context bundles. They describe expected stacks, likely triggers
 
 Canonical example surfaces. They document what a strong example of each category should contain. These are not scaffolds.
 
+`examples/catalog.json` adds machine-readable ranking metadata for example selection.
+
 ## `templates/`
 
 Starter scaffolds. These are intentionally lighter than examples and should never override doctrine or canonical example guidance.
 
 ## `scripts/`
 
-Small utilities for validating manifests and previewing context bundles. Keep them dependency-light and readable.
+Small utilities for validating manifests, previewing bundles, analyzing repo signals, and diffing patterns. Keep them dependency-light and readable.
 
 ## `smoke-tests/`
 
@@ -85,4 +93,3 @@ When adding new stacks later, extend the same pattern:
 2. add aliases
 3. add manifests if the stack becomes first-class
 4. add examples only when there is a stable canonical pattern
-

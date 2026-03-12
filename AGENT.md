@@ -11,7 +11,8 @@ Read these first:
 1. `README.md`
 2. `docs/repo-purpose.md`
 3. `docs/repo-layout.md`
-4. `context/router/task-router.md`
+4. `docs/session-start.md`
+5. `context/router/task-router.md`
 
 Only then load `context/router/stack-router.md`, `context/router/archetype-router.md`, or a manifest if the task still needs narrowing.
 
@@ -20,11 +21,12 @@ Only then load `context/router/stack-router.md`, `context/router/archetype-route
 Default bundle:
 
 1. one task router file
-2. only the doctrine files needed for the change
-3. one primary workflow
-4. one archetype if project shape matters
-5. the stack files that match the touched surface
-6. one preferred canonical example
+2. one anchor if a compact reminder helps
+3. only the doctrine files needed for the change
+4. one primary workflow
+5. one archetype if project shape matters
+6. the stack files that match the touched surface
+7. one preferred canonical example
 
 Do not bulk-load `context/`, `examples/`, `templates/`, or `manifests/`.
 
@@ -58,12 +60,15 @@ Prefer one canonical example over blending several near-matches. If no example f
 
 ## Stop Conditions
 
+Use `context/doctrine/stop-conditions.md` as the explicit pause-point reference.
+
 Stop and surface the gap if:
 
 - the task implies more than one primary archetype and composition is unclear
 - more than one stack is plausible for the touched surface
-- persistence, messaging, or search behavior changed but no minimal real-infra integration-test path is defined
+- persistence, messaging, search, or deployment behavior changed but no minimal verification path is defined
 - Docker dev and test isolation is unclear
+- prompt numbering or profile references would stop being monotonic or explicit
 - the request would cause context sprawl instead of a focused bundle
 
 ## Anti-Sprawl Rules
@@ -72,4 +77,3 @@ Stop and surface the gap if:
 - Do not invent new router names when an existing workflow or stack clearly fits.
 - Do not load multiple examples unless comparing and resolving a conflict.
 - Do not promote templates to canonical examples.
-

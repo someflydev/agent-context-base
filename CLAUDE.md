@@ -7,7 +7,8 @@ Start with:
 1. `README.md`
 2. `docs/repo-purpose.md`
 3. `docs/repo-layout.md`
-4. `context/router/task-router.md`
+4. `docs/session-start.md`
+5. `context/router/task-router.md`
 
 Then infer the smallest useful bundle instead of loading the whole repo.
 
@@ -37,12 +38,13 @@ Then add only the stack and archetype files the task truly needs.
 Prefer this order:
 
 1. router
-2. doctrine
-3. workflow
-4. archetype
-5. stack
-6. canonical example
-7. template
+2. anchor
+3. doctrine
+4. workflow
+5. archetype
+6. stack
+7. canonical example
+8. template
 
 Templates are scaffolds. Examples are preferred patterns. Keep them distinct.
 
@@ -52,6 +54,7 @@ Pause and explain the ambiguity when:
 
 - stack choice is unclear from the task and repo signals
 - a persistence or service-boundary change lacks real-infra test guidance
+- deployment, Compose isolation, or prompt numbering would become ambiguous
 - prompt numbering or referenced filenames would become non-monotonic or vague
 - a request would create an oversized context bundle with no clear primary path
 
@@ -61,4 +64,3 @@ Pause and explain the ambiguity when:
 - Prefer existing manifests and canonical examples over improvisation.
 - Respect `docker-compose.yml` and `docker-compose.test.yml` as the standard filenames.
 - Keep dev data and test data strictly isolated.
-
