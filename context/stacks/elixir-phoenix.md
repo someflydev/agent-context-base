@@ -1,19 +1,34 @@
-# Elixir Phoenix
+# Elixir: Phoenix
 
-Purpose: Elixir-first service stack for interactive or API-heavy systems.
+Use this pack for Phoenix web apps and services where Elixir concurrency and LiveView-friendly patterns are relevant.
 
-Typical paths:
+## Typical Repo Surface
 
-- `lib/..._web/`
-- `lib/.../`
+- `mix.exs`
+- `lib/<app>/application.ex`
+- `lib/<app>_web/router.ex`
+- `lib/<app>_web/controllers/`
+- `lib/<app>/`
+- `priv/repo/migrations/`
 - `test/`
 
-Conventions:
+## Common Change Surfaces
 
-- keep context boundaries clear
-- place controller/live/plug logic in the appropriate Phoenix layer
+- Phoenix router and pipeline changes
+- controller or LiveView entrypoints
+- context modules
+- Ecto schemas and queries
+- release and runtime config
 
-Testing:
+## Testing Expectations
 
-- mix tests
-- real infra tests when external stores or queues matter
+- smoke test boot and one representative web path
+- integration tests against isolated PostgreSQL or other real dependencies when persistence behavior changes
+- include migration-path verification when schema changes matter
+
+## Common Assistant Mistakes
+
+- stuffing domain logic into controllers
+- treating Ecto-backed changes as smoke-test-only work
+- ignoring release and runtime config when deployment support is added
+
