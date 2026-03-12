@@ -239,7 +239,7 @@ context review
 implementation planning  
 code generation  
 verification against doctrine  
-optional smoke-test generation  
+smoke-test and minimal real-infra integration-test generation when warranted  
 refinement  
 
 Explain how workflows guide this loop.

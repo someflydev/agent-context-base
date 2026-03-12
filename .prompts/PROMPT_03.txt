@@ -51,6 +51,7 @@ The main goals of this second-pass enhancement are:
    - local RAG systems
    - CLI tools
    - smoke-test-heavy philosophy
+   - minimal real-infra integration tests for significant features
    - Dokku-oriented deployment thinking
    - strong doctrine
    - deterministic routing
@@ -108,6 +109,7 @@ Examples should be deliberately chosen to reflect my real work and preferred pat
 At minimum, add canonical examples for:
 - FastAPI endpoint pattern
 - FastAPI smoke test pattern
+- FastAPI database integration test pattern against real Docker-backed test infrastructure
 - FastAPI seed data pattern
 - TypeScript Hono handler/route pattern with Drizzle ORM and TSX
 - Rust Axum route pattern
@@ -187,6 +189,7 @@ It should support:
 - optionally enabling Dokku support
 - optionally enabling prompt-first support
 - optionally enabling smoke-test starter files
+- optionally enabling integration-test starter files for significant database-backed or service-boundary features
 - optionally enabling seed-data starter files
 - generating conventional `docker-compose.yml` and `docker-compose.test.yml` files with repo-derived Compose `name:` values when a Docker-backed layout is selected
 - generating distinct primary/dev and test port assignments for web and backing services
@@ -233,6 +236,7 @@ Add or update templates for:
 - Docker Compose starter files for primary/dev and test stacks
 - prompt-first repo starter
 - smoke test starter
+- integration test starter
 - seed data starter
 
 Templates should remain starter scaffolds, not canonical complete examples.
@@ -297,6 +301,7 @@ NEW CANONICAL EXAMPLE FILES
 - examples/canonical-api/fastapi-endpoint-example.md
 - examples/canonical-api/fastapi-endpoint-example.py
 - examples/canonical-smoke-tests/fastapi-smoke-test-example.py
+- examples/canonical-integration-tests/fastapi-db-integration-test-example.py
 - examples/canonical-seed-data/polars-seed-data-example.py
 - examples/canonical-cli/python-cli-command-example.py
 - examples/canonical-prompts/prompt-first-layout-example.md
@@ -329,6 +334,7 @@ NEW OR UPDATED TEMPLATES
 - templates/prompt-first/PROMPT_01.template.txt
 - templates/prompt-first/PROMPT_00_s.template.txt
 - templates/smoke-tests/smoke_test.template.py
+- templates/integration-tests/integration_test.template.py
 - templates/seed-data/seed_data.template.py
 
 NEW SCRIPT
@@ -345,6 +351,7 @@ Before outputting the files, ensure internally that:
 - templates are clearly starter scaffolds, not examples
 - `new_repo.py` is coherent with the templates and manifests
 - generated `.gitignore` content covers selected stack artifacts and local-only data roots such as `node_modules/`, `venv/`, `.venv/`, `.venv_tools/`, `_build/`, `deps/`, `*.swp`, `*.swo`, and `docker/volumes/`
+- significant database-backed or service-boundary features include minimal real-infra integration-test patterns against the isolated test stack, not smoke tests alone
 - routing and aliasing remain aligned
 - prompt-first examples reflect strictly monotonic numbering and filename-based references
 - Dokku appears coherently in doctrine, manifests, examples, templates, and bootstrap generation

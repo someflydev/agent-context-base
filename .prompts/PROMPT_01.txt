@@ -13,7 +13,7 @@ The base repo should reflect how I actually build and think. It should strongly 
 - doctrine separated from workflows and examples
 - deterministic task routing
 - canonical examples
-- smoke-test-heavy development
+- smoke-test-heavy development backed by minimal real-infra integration tests for significant features
 - bootstrap-friendly architecture
 - strong repo-level guidance for coding assistants
 - polyglot extensibility
@@ -41,6 +41,7 @@ Operational infrastructure invariants for future repos derived from this base:
 - Host ports for local web servers and backing services should be explicit non-default values, and the test stack must use a different non-default port band from the primary/dev stack.
 - Test fixture data, test seed/reset flows, test env files, test databases, and test volumes must be fully isolated from primary/dev data.
 - The system should make it easy for operators to run primary/dev and test infrastructures side by side and compare their behavior.
+- For any significant feature that touches persistence, queues, search indexes, or cross-service boundaries, future repos should expect minimal mostly happy-path integration tests with a few reasonable edge cases against real Docker-backed test infrastructure, not mock-only coverage.
 
 Treat this as a serious systems-design and implementation task.
 
@@ -212,6 +213,7 @@ For each stack pack:
 - common assistant mistakes
 - testing expectations
 - smoke test expectations
+- minimal integration-test expectations against real Docker-backed test infrastructure where persistence or service boundaries are involved
 - local infrastructure expectations, including conventional Compose filenames, repo-derived Compose `name:` values, non-default ports, and test-vs-primary isolation where relevant
 - deployment implications if relevant
 - canonical examples that should exist
@@ -344,15 +346,17 @@ For each script:
 - what language is best suited for the script
 - whether it belongs in the base repo now or in a later repo-factory tool
 
-SECTION 15 — Smoke-test philosophy and starter strategy
-Design the smoke-test starter layer for the base repo.
-This base repo should strongly encourage future repos to include smoke tests, but should not assume all future repos are identical.
+SECTION 15 — Smoke-test and integration-test philosophy and starter strategy
+Design the smoke-test and minimal integration-test starter layer for the base repo.
+This base repo should strongly encourage future repos to include smoke tests, and to add minimal real-infra integration tests for significant features, but should not assume all future repos are identical.
 Explain:
 - what smoke tests mean across different archetypes
+- what minimal mostly happy-path integration tests against real Docker-backed test infrastructure should exist for significant features
 - what minimal smoke tests should exist for APIs, CLIs, pipelines, RAG systems, and deployable services
-- how smoke tests differ from unit/integration tests
+- how smoke tests differ from unit tests and from minimal real-infra integration tests
 - how smoke test starter assets should be organized in the base repo
 - how assistants should know when a change requires new or updated smoke tests
+- how assistants should know when a significant feature also requires new or updated real-infra integration tests
 
 SECTION 16 — Dokku-oriented deployment doctrine
 Design a strong Dokku-oriented base philosophy.

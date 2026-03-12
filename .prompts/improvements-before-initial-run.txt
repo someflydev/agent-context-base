@@ -52,3 +52,19 @@ Notes / Followups:
 - PF-001 remains: `PROMPT_05.txt`, `PROMPT_06.txt`, and `PROMPT_07.txt` still need deterministic output file targets before they can safely feed later prompts.
 - PF-004 remains: later v3/meta prompts still lack an explicit repo-green gate before expansion.
 ---
+Round: 5
+Timestamp: 2026-03-12T12:27:14Z
+Summary: Added an explicit requirement for minimal real-infra integration tests against isolated Docker-backed test infrastructure for significant features.
+Summary: Smoke tests remain required, but they are no longer treated as sufficient coverage for meaningful database-backed or service-boundary changes.
+Changes Applied:
+- .prompts/PROMPT_00_s.txt :: Added real-infra integration-test expectations to the architecture brief and operational invariants :: make the top-level architecture explicitly require isolated test-infra integration coverage for significant features :: PF-022
+- .prompts/PROMPT_01.txt :: Expanded testing philosophy and stack/testing expectations to include minimal real-infra integration tests for significant features :: align the base-repo design prompt with the stronger testing requirement :: PF-023
+- .prompts/PROMPT_02.txt :: Added workflow, stack, smoke-test README, and quality-control requirements for minimal real-infra integration tests :: ensure the first implementation pass builds the testing doctrine into generated repo content :: PF-024
+- .prompts/PROMPT_03.txt :: Added canonical integration-test and starter-template requirements for database-backed features in the v2 enhancement pass :: give the enhancement pass a concrete path for real test-infra integration patterns :: PF-025
+- .prompts/PROMPT_06.txt :: Updated the operating-manual prompt to recommend minimal real-infra integration tests alongside smoke tests where appropriate :: keep the assistant operating guidance aligned with the stronger testing rule :: PF-026
+- .prompts/PROMPT_07.txt :: Updated the boot-sequence prompt so implementation guidance can include real-infra integration-test generation when warranted :: extend the runtime guidance beyond smoke tests alone :: PF-027
+- .prompts/PROMPT_08.txt :: Updated the bounded-context prompt to include the stronger real-infra integration-test expectation in its testing philosophy and example tasks :: keep later control-layer docs aligned with the testing doctrine :: PF-028
+Notes / Followups:
+- PF-001 remains: `PROMPT_05.txt`, `PROMPT_06.txt`, and `PROMPT_07.txt` still need deterministic output file targets before they can safely feed later prompts.
+- PF-004 remains: later v3/meta prompts still lack an explicit repo-green gate before expansion.
+---

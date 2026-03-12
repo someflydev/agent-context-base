@@ -11,7 +11,7 @@ The repository should reflect the actual way I build and work:
 - minimal relevant context loading
 - task inference so the human does not need to memorize internal names
 - canonical examples
-- smoke-test-heavy philosophy
+- smoke-test-heavy philosophy backed by minimal real-infra integration tests for significant features
 - future bootstrap-friendly architecture
 - modern Python preferences: FastAPI, uv, ruff, orjson, polars
 - TypeScript + Hono + Bun + Drizzle ORM + TSX
@@ -259,10 +259,12 @@ For skill docs:
 For workflow docs:
 - structure them as task playbooks
 - include sequence, preconditions, outputs, related docs, and common pitfalls
+- include required smoke tests and minimal real-infra integration tests when a significant feature touches persistence or service boundaries
 - make them usable during live implementation work
 
 For stack docs:
 - focus on real project structure, common file paths, change surfaces, test implications, smoke test expectations, and common assistant mistakes
+- include minimal integration-test expectations against real Docker-backed test infrastructure where persistence or service boundaries are involved
 - make them realistic and grounded in the named stack
 
 For archetype docs:
@@ -304,6 +306,7 @@ For smoke-tests/README.md:
 - explain the role of smoke tests in future repos
 - explain how smoke tests differ by archetype
 - explain that this base repo contains doctrine and starter guidance, not one-size-fits-all smoke tests for every future project
+- explain that significant features should usually pair smoke tests with minimal real-infra integration tests against the isolated test stack, especially for database-backed behavior
 
 STYLE REQUIREMENTS
 
@@ -332,6 +335,7 @@ Before outputting the batches, internally ensure:
 - cross-references point to files that actually exist in this v1 repo
 - routing logic is consistent with manifests
 - `.gitignore` covers stack-specific junk and local-only data paths such as `node_modules/`, `venv/`, `.venv/`, `.venv_tools/`, `_build/`, `deps/`, `*.swp`, `*.swo`, and `docker/volumes/`
+- significant features that touch persistence or service boundaries include minimal mostly happy-path integration tests with a few reasonable edge cases against real Docker-backed test infrastructure, not smoke tests alone
 - doctrine and workflow distinctions remain clear
 - examples and templates remain distinct
 - Dokku guidance is aligned across doctrine, stacks, archetypes, manifests, and examples

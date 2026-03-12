@@ -50,7 +50,7 @@ The budget system should reflect the real architecture and working style of this
 - Qdrant vector database
 - Dokku-oriented deployment
 - repo-derived Compose `name:` values and isolated primary/dev versus test local stacks
-- smoke-test-heavy philosophy
+- smoke-test-heavy philosophy with minimal real-infra integration tests for significant features
 - canonical example guidance
 - minimal relevant context loading
 - deterministic routing and boot sequence behavior
@@ -214,7 +214,7 @@ For each task:
 Use realistic examples such as:
 - add paginated FastAPI endpoint
 - add HTMX-friendly TypeScript Hono route
-- extend Go Echo handler with smoke tests
+- extend Go Echo handler with smoke tests and database integration tests
 - add Phoenix route/controller flow
 - generate prompt sequence
 - add local RAG indexing config

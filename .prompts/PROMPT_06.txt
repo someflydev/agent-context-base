@@ -117,7 +117,7 @@ The procedure should include stages such as:
 8. consult canonical examples
 9. implement solution
 10. verify against doctrine and workflows
-11. suggest smoke tests or validation if appropriate
+11. suggest smoke tests and minimal real-infra integration tests if appropriate
 
 Explain each step clearly.
 
@@ -195,7 +195,7 @@ Clarify that many projects will target Dokku-style deployment.
 
 Explain how assistants should keep implementations compatible with simple deployable services.
 
-Explain that local Docker-backed environments should keep the files named `docker-compose.yml` and `docker-compose.test.yml`, use repo-derived Compose `name:` values, use non-default host ports, and keep primary/dev-versus-test data paths isolated.
+Explain that local Docker-backed environments should keep the files named `docker-compose.yml` and `docker-compose.test.yml`, use repo-derived Compose `name:` values, use non-default host ports, keep primary/dev-versus-test data paths isolated, and support minimal real-infra integration tests against the isolated test stack for significant database-backed or service-boundary features.
 
 Explain when deployment considerations should influence design.
 
@@ -221,7 +221,7 @@ Examples:
 
 task completed  
 implementation matches canonical pattern  
-tests or smoke tests added where appropriate  
+tests, smoke tests, or minimal real-infra integration tests added where appropriate  
 no additional context required  
 
 Explain that assistants should avoid unnecessary expansion.

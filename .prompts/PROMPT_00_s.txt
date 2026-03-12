@@ -1,6 +1,6 @@
 You are designing and implementing an agent-oriented context architecture for a software repository or family of repositories so that coding assistants can load only the minimal relevant instructions, examples, and doctrine needed for a given task.
 
-Your goal is to create an excellent, scalable, human-maintainable system that works well across Codex, Claude, and Gemini, especially for the kinds of systems I actually build: prompt-first repos, backend APIs, CLI tools, data pipelines, local RAG systems, multi-storage experiments, polyglot labs, Docker-backed services, HTMX/Plotly interactive systems, and reusable smoke-test-heavy projects.
+Your goal is to create an excellent, scalable, human-maintainable system that works well across Codex, Claude, and Gemini, especially for the kinds of systems I actually build: prompt-first repos, backend APIs, CLI tools, data pipelines, local RAG systems, multi-storage experiments, polyglot labs, Docker-backed services, HTMX/Plotly interactive systems, and reusable smoke-test-heavy and real-integration-test-backed projects.
 
 The output should not be a vague essay. It should be a concrete implementation-oriented plan and, where appropriate, actual files or file contents that could be committed into a repo.
 
@@ -43,7 +43,7 @@ Assume some likely stacks and paths that fit my real workflows:
 - Qdrant vector database
 - local model / local RAG / indexing workflows
 - prompt-first repo conventions with ordered prompt files and operator guides
-- reusable smoke test systems and post-flight/stage-2 refinement workflows
+- reusable smoke test systems, minimal real-infra integration test systems, and post-flight/stage-2 refinement workflows
 
 Operational infrastructure invariants that the architecture must support:
 - When future repos include Docker Compose files, keep the conventional filenames `docker-compose.yml` and `docker-compose.test.yml`, but set the top-level Compose `name:` field from the repo slug so container groups are easy to identify in `docker ps`.
@@ -51,6 +51,7 @@ Operational infrastructure invariants that the architecture must support:
 - Do not expose backing services or local web apps on default host ports. Use explicit non-default host ports, and ensure the test stack uses a different non-default port set from the primary/dev stack.
 - Treat test fixture data, test seed/reset flows, test volumes, test databases, and test env files as fully isolated from primary/dev-like data. No test seeding or fixture task may touch the primary/dev data path.
 - Design the system so primary/dev infrastructure and test infrastructure can run in parallel for side-by-side comparison of sites and APIs.
+- For any significant feature that touches persistence, queues, search indexes, or cross-service boundaries, require minimal mostly happy-path integration tests with a few reasonable edge cases against real Docker-backed test infrastructure, not mock-only coverage.
 
 Your work must include the following sections in order.
 
