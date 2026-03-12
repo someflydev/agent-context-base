@@ -1,24 +1,33 @@
-# repo-name
+# {{repo_name}}
 
-Short description of what this repo is for.
+{{description}}
 
 ## Start Here
 
 1. Read `AGENT.md` or `CLAUDE.md`
 2. Read `docs/repo-purpose.md`
 3. Read `docs/repo-layout.md`
-4. Load the smallest relevant workflow, stack, archetype, and example bundle
+4. Read `manifests/project-profile.yaml`
 
-## Primary Stack
+## Repo Profile
 
-- replace with the actual stack or stacks
+- archetype: `{{archetype}}`
+- primary stack: `{{primary_stack_display}}`
+- selected manifests: `{{selected_manifests}}`
+- Dokku support: `{{dokku_status}}`
+- prompt-first support: `{{prompt_first_status}}`
 
-## Primary Workflows
+## Common Workflows
 
-- replace with the most common tasks in this repo
+{{workflow_bullets}}
 
 ## Testing Posture
 
-- smoke tests for key happy paths
-- minimal real-infra integration tests for significant storage or service boundaries
+- smoke tests live under `tests/smoke/`
+- integration tests live under `tests/integration/` when a real boundary exists
+- destructive test reset flows must target `docker-compose.test.yml` only
+
+{{compose_section}}
+
+{{dokku_section}}
 

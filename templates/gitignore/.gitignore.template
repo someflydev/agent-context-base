@@ -1,0 +1,43 @@
+# Editor and OS noise
+.DS_Store
+*.swp
+*.swo
+
+# Python
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+.venv_tools/
+venv/
+dist/
+build/
+*.pyc
+
+# TypeScript and Bun
+node_modules/
+.bun/
+coverage/
+
+# Elixir
+_build/
+deps/
+
+# Rust
+target/
+
+# Go
+bin/
+coverage.out
+
+# Local Docker data
+docker/volumes/
+
+# Env files
+.env
+.env.test
+.env.local
+
+{{stack_gitignore}}
+

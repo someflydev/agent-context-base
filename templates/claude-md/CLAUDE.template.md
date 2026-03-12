@@ -7,7 +7,8 @@ Start with:
 1. `README.md`
 2. `docs/repo-purpose.md`
 3. `docs/repo-layout.md`
-4. `context/router/task-router.md`
+4. `manifests/project-profile.yaml`
+5. `.generated-profile.yaml`
 
 Then infer the smallest useful context bundle from the task, repo signals, and active change surface.
 
@@ -16,4 +17,4 @@ Then infer the smallest useful context bundle from the task, repo signals, and a
 - load one workflow first
 - prefer one canonical example over several near-matches
 - keep dev and test infrastructure isolated
-
+- keep prompt numbering monotonic when this repo stores prompt files

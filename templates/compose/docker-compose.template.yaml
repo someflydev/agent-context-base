@@ -1,0 +1,16 @@
+name: {{compose_project_name}}
+
+services:
+  app:
+    image: {{app_image}}
+    working_dir: /workspace
+    command: {{app_command}}
+    env_file:
+      - .env
+    ports:
+      - "{{app_port}}:{{app_container_port}}"
+    volumes:
+      - .:/workspace
+{{app_depends_on_block}}
+{{support_services_block}}
+

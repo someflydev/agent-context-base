@@ -1,0 +1,15 @@
+Create the first implementation pass for `{{repo_name}}`.
+
+Required changes:
+
+- add `{{starter_route_path}}`
+- add `{{starter_test_path}}`
+- update `README.md`
+- update `AGENT.md`
+
+Constraints:
+
+- keep the first pass small
+- use explicit filenames in the prompt response
+- preserve `docker-compose.yml` and `docker-compose.test.yml` isolation
+

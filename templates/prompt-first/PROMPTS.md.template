@@ -1,0 +1,16 @@
+# Prompt Files
+
+Store project prompts under `.prompts/`.
+
+Rules:
+
+- keep numbering strictly monotonic
+- keep one dominant goal per prompt
+- reference exact repo paths such as `{{starter_route_path}}` and `{{starter_test_path}}`
+- do not renumber historical prompts after follow-up work
+
+Suggested sequence:
+
+1. `001-bootstrap-repo.txt`
+2. `002-refine-test-surface.txt`
+

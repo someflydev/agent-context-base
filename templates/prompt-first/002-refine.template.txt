@@ -1,0 +1,15 @@
+Refine the initial implementation for `{{repo_name}}`.
+
+Required changes:
+
+- update `{{starter_test_path}}`
+- add `{{starter_integration_test_path}}`
+- add `{{starter_seed_path}}`
+- update `manifests/project-profile.yaml`
+
+Constraints:
+
+- keep prompt numbering monotonic
+- keep destructive test reset flows limited to `docker-compose.test.yml`
+- add one real-infra integration path if the feature touches storage
+

@@ -1,0 +1,21 @@
+schema_version: 1
+repo_name: {{repo_name}}
+repo_slug: {{repo_slug}}
+description: {{description}}
+archetype: {{archetype}}
+primary_stack: {{primary_stack}}
+selected_manifests:
+{{selected_manifest_lines}}
+dokku_enabled: {{dokku_enabled}}
+prompt_first_enabled: {{prompt_first_enabled}}
+smoke_tests_enabled: {{smoke_tests_enabled}}
+integration_tests_enabled: {{integration_tests_enabled}}
+seed_data_enabled: {{seed_data_enabled}}
+compose_files:
+{{compose_file_lines}}
+compose_project_name_dev: {{compose_project_name_dev}}
+compose_project_name_test: {{compose_project_name_test}}
+ports:
+{{port_lines}}
+starter_paths:
+{{starter_path_lines}}
