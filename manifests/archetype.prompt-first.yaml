@@ -1,0 +1,24 @@
+kind: archetype
+slug: prompt-first-repo
+summary: Ordered prompt repos with explicit output targets and resumable prompt execution.
+load_order: 40
+required_files:
+  - context/archetypes/prompt-first-repo.md
+  - context/doctrine/07-prompt-first-conventions.md
+  - context/workflows/generate-prompt-sequence.md
+optional_files:
+  - context/workflows/post-flight-refinement.md
+  - examples/canonical/prompt-first/README.md
+trigger_keywords:
+  - prompt-first
+  - prompt sequence
+  - stage-2
+  - post-flight
+compatibility:
+  stacks:
+    - python-fastapi-polars-htmx-plotly
+    - typescript-hono-bun-drizzle-tsx
+    - go-echo-templ
+    - rust-axum
+    - elixir-phoenix
+    - docker-compose-dokku

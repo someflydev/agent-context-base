@@ -1,0 +1,63 @@
+kind: repo_profile
+slug: agent-context-base
+summary: Base repository for agent-oriented context architecture and bootstrap-ready routing packs.
+load_order: 10
+archetypes:
+  - prompt-first-repo
+  - polyglot-lab
+required_files:
+  - README.md
+  - AGENT.md
+  - CLAUDE.md
+  - context/router/load-order.md
+  - context/router/task-routing.md
+optional_files:
+  - docs/operator-manual.md
+  - docs/repo-bootstrap-checklist.md
+trigger_keywords:
+  - architecture
+  - context loading
+  - agent routing
+  - canonical examples
+compatibility:
+  archetypes:
+    - prompt-first-repo
+    - backend-api
+    - cli-tool
+    - data-pipeline
+    - local-rag-system
+    - multi-storage-experiment
+    - polyglot-lab
+  stacks:
+    - python-fastapi-polars-htmx-plotly
+    - typescript-hono-bun-drizzle-tsx
+    - go-echo-templ
+    - rust-axum
+    - elixir-phoenix
+    - docker-compose-dokku
+    - redis-mongodb
+    - trino-duckdb-polars
+    - nats-jetstream-meilisearch
+    - timescaledb-elasticsearch-qdrant
+context_policy:
+  load_smallest_bundle_first: true
+  prefer_canonical_examples: true
+  stop_on_stack_conflict: true
+infra:
+  compose:
+    dev_file: docker-compose.yml
+    test_file: docker-compose.test.yml
+    dev_name: agent-context-base
+    test_name: agent-context-base-test
+  ports:
+    dev_band: "18400-18499"
+    test_band: "28400-28499"
+    disallow_default_host_ports: true
+  isolation:
+    separate_env_files: true
+    separate_volumes: true
+    separate_seed_flows: true
+    separate_fixture_data: true
+canonical_examples:
+  root: examples/canonical
+  preferred_marker: "preferred: true"

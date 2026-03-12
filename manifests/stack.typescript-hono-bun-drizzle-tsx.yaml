@@ -1,0 +1,25 @@
+kind: stack
+slug: typescript-hono-bun-drizzle-tsx
+summary: Lightweight TypeScript backend stack with Hono, Bun, Drizzle, and TSX rendering.
+load_order: 60
+required_files:
+  - context/stacks/typescript-hono-bun-drizzle-tsx.md
+  - context/doctrine/02-testing-philosophy.md
+optional_files:
+  - context/workflows/add-api-endpoint.md
+  - context/workflows/add-smoke-tests.md
+  - examples/canonical/api-endpoints/README.md
+  - examples/canonical/htmx-plotly/README.md
+trigger_keywords:
+  - hono
+  - bun
+  - drizzle
+  - tsx
+  - typescript
+compatibility:
+  archetypes:
+    - backend-api
+    - prompt-first-repo
+testing:
+  smoke_required_for_runtime_changes: true
+  integration_required_for_boundary_changes: true
