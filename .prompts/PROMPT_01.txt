@@ -4,6 +4,8 @@ This repository is not a finished application. It is a reusable agent-oriented b
 
 The output should be implementation-oriented and as concrete as possible. Do not produce vague advice. Produce directory structures, file contents, contracts, naming conventions, manifest schemas, routing logic, examples, and strong documentation drafts.
 
+Treat `.prompts/PROMPT_00_s.txt` as the baseline architectural brief for this repo. Refine and operationalize that design for the reusable base repo; do not restart from a competing architecture unless a small correction is required for consistency or implementation quality.
+
 The base repo should reflect how I actually build and think. It should strongly support these real patterns and preferences:
 
 - prompt-first repo workflows

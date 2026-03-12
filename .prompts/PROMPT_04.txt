@@ -30,7 +30,7 @@ Focus on improvements in these areas:
 1. Context health and integrity checks
 2. Context bundle preview improvements
 3. Canonical example metadata and ranking
-4. Assistant memory anchors
+4. Assistant memory anchors under `context/anchors/`
 5. Stop-condition doctrine
 6. Pattern diff tooling
 7. Context weighting metadata

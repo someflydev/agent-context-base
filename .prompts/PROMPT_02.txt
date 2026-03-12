@@ -85,6 +85,10 @@ Use this target v1 shape as the baseline unless a small improvement is clearly w
     - canonical-examples.md
     - context-loading-rules.md
     - deployment-philosophy-dokku.md
+  - skills/
+    - task-inference.md
+    - repo-signal-detection.md
+    - canonical-example-selection.md
   - workflows/
     - add-feature.md
     - fix-bug.md
@@ -198,7 +202,7 @@ Batch 4 should create the stack docs.
 
 Batch 5 should create the archetype docs.
 
-Batch 6 should create the router files and alias catalog.
+Batch 6 should create the router files, alias catalog, and core skill docs.
 
 Batch 7 should create the manifests.
 
@@ -233,6 +237,11 @@ For doctrine docs:
 - include practical rules, not only abstract philosophy
 - prevent common drift and over-engineering mistakes
 - include a dedicated doctrine doc for conventional Compose filenames, repo-derived Compose `name:` values, non-default host ports, isolated primary/dev vs test infrastructure, and safe seed/reset boundaries
+
+For skill docs:
+- keep them short and operational
+- focus on reusable assistant capabilities such as task inference, repo-signal detection, and canonical-example selection
+- make them composable with router and manifest logic rather than duplicating workflow or stack packs
 
 For workflow docs:
 - structure them as task playbooks
