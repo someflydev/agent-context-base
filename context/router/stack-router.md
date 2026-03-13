@@ -18,6 +18,8 @@ Infer the active stack from repo signals, touched files, and user language.
   - load `context/stacks/kotlin-http4k-exposed.md`
 - `deps.edn`, `src/**/*.clj`, `kit`, `next.jdbc`, `hiccup`
   - load `context/stacks/clojure-kit-nextjdbc-hiccup.md`
+- `dune-project`, `*.opam`, `bin/**/*.ml`, `lib/**/*.ml`, `dream`, `caqti`, `tyxml`
+  - load `context/stacks/ocaml-dream-caqti-tyxml.md`
 - `build.zig`, `build.zig.zon`, `src/main.zig`, `zap`, `jetzig`
   - load `context/stacks/zig-zap-jetzig.md`
 - `Cargo.toml`, `src/main.rs`, `axum`
@@ -65,6 +67,8 @@ Infer the active stack from repo signals, touched files, and user language.
   - `context/stacks/kotlin-http4k-exposed.md`
 - "Add a Kit route or Hiccup fragment to my Clojure service"
   - `context/stacks/clojure-kit-nextjdbc-hiccup.md`
+- "Add a Dream endpoint or TyXML fragment to my OCaml service"
+  - `context/stacks/ocaml-dream-caqti-tyxml.md`
 - "Add a JSON or fragment endpoint to my Zig service"
   - `context/stacks/zig-zap-jetzig.md`
 - "Wire Qdrant for retrieval"

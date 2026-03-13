@@ -74,6 +74,17 @@
       "guidance": "Use Kit-style Integrant wiring, keep Reitit routes explicit, and let next.jdbc plus Hiccup define data and fragment boundaries."
     },
     {
+      "name": "ocaml-dream-caqti-tyxml",
+      "patterns": [
+        "dune-project",
+        "*.opam",
+        "bin/**/*.ml",
+        "lib/**/*.ml",
+        "test/**/*.ml"
+      ],
+      "guidance": "Use Dream for explicit route composition, keep Caqti requests named, and let TyXML define HTML fragment boundaries."
+    },
+    {
       "name": "zig-zap-jetzig",
       "patterns": [
         "build.zig",
@@ -323,14 +334,6 @@
         "src/main/kotlin/**/*.kt"
       ],
       "guidance": "Favor backend-api routing, storage boundaries, and prompt-first manifests."
-    },
-    {
-      "name": "ocaml-dream-caqti-tyxml",
-      "patterns": [
-        "dune-project",
-        "lib/**/*.ml"
-      ],
-      "guidance": "Keep OCaml support legible as an extension path instead of inflating the base file set."
     },
     {
       "name": "dart-dart-frog",

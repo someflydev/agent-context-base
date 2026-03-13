@@ -85,6 +85,14 @@ stacks:
     target: context/stacks/clojure-kit-nextjdbc-hiccup.md
   - alias: hiccup
     target: context/stacks/clojure-kit-nextjdbc-hiccup.md
+  - alias: ocaml
+    target: context/stacks/ocaml-dream-caqti-tyxml.md
+  - alias: dream
+    target: context/stacks/ocaml-dream-caqti-tyxml.md
+  - alias: caqti
+    target: context/stacks/ocaml-dream-caqti-tyxml.md
+  - alias: tyxml
+    target: context/stacks/ocaml-dream-caqti-tyxml.md
   - alias: zig
     target: context/stacks/zig-zap-jetzig.md
   - alias: zap
