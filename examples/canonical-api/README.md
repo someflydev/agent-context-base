@@ -6,6 +6,10 @@ Primary files in this category:
 
 - `fastapi-endpoint-example.py`
 - `fastapi-example/app.py`
+- `nim-jester-json-endpoint-example.nim`
+- `nim-happyx-html-fragment-example.nim`
+- `nim-jester-data-endpoint-example.nim`
+- `nim-jester-happyx-example/main.nim`
 - `typescript-hono-handler-example.ts`
 - `rust-axum-route-example.rs`
 - `rust-axum-example/src/main.rs`
@@ -24,6 +28,22 @@ Primary files in this category:
   Verification level: smoke-verified
   Harness: fastapi_min_app
   Last verified by: verification/examples/python/test_fastapi_examples.py
+- `nim-jester-json-endpoint-example.nim`
+  Verification level: syntax-checked
+  Harness: nim_jester_happyx_min_app
+  Last verified by: verification/examples/nim/test_nim_jester_happyx_examples.py
+- `nim-happyx-html-fragment-example.nim`
+  Verification level: syntax-checked
+  Harness: nim_jester_happyx_min_app
+  Last verified by: verification/examples/nim/test_nim_jester_happyx_examples.py
+- `nim-jester-data-endpoint-example.nim`
+  Verification level: syntax-checked
+  Harness: nim_jester_happyx_min_app
+  Last verified by: verification/examples/nim/test_nim_jester_happyx_examples.py
+- `nim-jester-happyx-example/main.nim`
+  Verification level: smoke-verified
+  Harness: nim_jester_happyx_min_app
+  Last verified by: verification/examples/nim/test_nim_jester_happyx_examples.py
 - `go-echo-handler-example.go`
   Verification level: syntax-checked
   Harness: go_echo_min_app
