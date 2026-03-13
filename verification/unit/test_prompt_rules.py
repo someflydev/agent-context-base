@@ -21,6 +21,7 @@ def validate_prompt_tree(root: Path) -> list[str]:
     ]
     seen_numbers: dict[int, str] = {}
     executable_numbers: list[int] = []
+    template_numbers: set[int] = set()
 
     for path in prompt_files:
         match = PROMPT_PATTERN.match(path.name)
@@ -41,7 +42,9 @@ def validate_prompt_tree(root: Path) -> list[str]:
             errors.append(f"system suffix reserved for prompt 00: {path.name}")
         if "t" in suffix and "s" in suffix:
             errors.append(f"template prompts must not also be system prompts: {path.name}")
-        if "t" not in suffix:
+        if "t" in suffix:
+            template_numbers.add(number)
+        else:
             executable_numbers.append(number)
 
         text = path.read_text(encoding="utf-8")
@@ -51,7 +54,8 @@ def validate_prompt_tree(root: Path) -> list[str]:
 
     if executable_numbers:
         expected = list(range(min(executable_numbers), max(executable_numbers) + 1))
-        if sorted(executable_numbers) != expected:
+        covered_numbers = sorted(set(executable_numbers) | template_numbers)
+        if covered_numbers != expected:
             errors.append("prompt numbering must be strictly monotonic for executable prompts")
     return errors
 
