@@ -34,6 +34,16 @@
       "guidance": "Prefer Jester routes for transport and HappyX only where HTML fragments are an explicit contract surface."
     },
     {
+      "name": "crystal-kemal-avram",
+      "patterns": [
+        "shard.yml",
+        "src/**/*.cr",
+        "db/migrations/*",
+        "spec/**/*.cr"
+      ],
+      "guidance": "Use Kemal for explicit routing and keep Avram model or query boundaries visible where data access matters."
+    },
+    {
       "name": "scala-tapir-http4s-zio",
       "patterns": [
         "build.sbt",
@@ -151,6 +161,7 @@
         "src/routes/*.ts",
         "src/routes/*.tsx",
         "src/main.nim",
+        "src/**/*.cr",
         "src/**/*.clj",
         "src/main.zig",
         "cmd/server/*.go",
@@ -225,6 +236,7 @@
         "src/routes/*.ts",
         "src/routes/*.tsx",
         "src/main.nim",
+        "src/**/*.cr",
         "src/main.zig",
         "cmd/server/*.go",
         "lib/*_web/router.ex"
@@ -311,14 +323,6 @@
         "src/main/kotlin/**/*.kt"
       ],
       "guidance": "Favor backend-api routing, storage boundaries, and prompt-first manifests."
-    },
-    {
-      "name": "crystal-kemal-avram",
-      "patterns": [
-        "shard.yml",
-        "src/**/*.cr"
-      ],
-      "guidance": "Add a focused stack pack later without changing router or doctrine structure."
     },
     {
       "name": "ocaml-dream-caqti-tyxml",

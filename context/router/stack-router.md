@@ -10,6 +10,8 @@ Infer the active stack from repo signals, touched files, and user language.
   - load `context/stacks/typescript-hono-bun.md`
 - `*.nimble`, `src/**/*.nim`, `jester`, `happyx`
   - load `context/stacks/nim-jester-happyx.md`
+- `shard.yml`, `src/**/*.cr`, `kemal`, `avram`
+  - load `context/stacks/crystal-kemal-avram.md`
 - `build.sbt`, `project/*.scala`, `src/main/scala/**/*.scala`, `tapir`, `http4s`, `zio`
   - load `context/stacks/scala-tapir-http4s-zio.md`
 - `build.gradle.kts`, `settings.gradle.kts`, `src/main/kotlin/**/*.kt`, `http4k`, `exposed`
@@ -55,6 +57,8 @@ Infer the active stack from repo signals, touched files, and user language.
   - `context/stacks/typescript-hono-bun.md`
 - "Add an HTMX fragment route to my Nim service"
   - `context/stacks/nim-jester-happyx.md`
+- "Add a Kemal endpoint or Avram query to my Crystal service"
+  - `context/stacks/crystal-kemal-avram.md`
 - "Add a typed Tapir route to my Scala service"
   - `context/stacks/scala-tapir-http4s-zio.md`
 - "Add an Exposed-backed endpoint to my Kotlin service"

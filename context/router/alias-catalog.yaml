@@ -57,6 +57,12 @@ stacks:
     target: context/stacks/nim-jester-happyx.md
   - alias: happyx
     target: context/stacks/nim-jester-happyx.md
+  - alias: crystal
+    target: context/stacks/crystal-kemal-avram.md
+  - alias: kemal
+    target: context/stacks/crystal-kemal-avram.md
+  - alias: avram
+    target: context/stacks/crystal-kemal-avram.md
   - alias: scala
     target: context/stacks/scala-tapir-http4s-zio.md
   - alias: tapir
