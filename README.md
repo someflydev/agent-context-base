@@ -1,114 +1,22 @@
 # agent-context-base
 
-`agent-context-base` is a reusable foundation for future repos. It is designed for prompt-first work, small context bundles, deterministic routing, and practical repo bootstrap across Codex, Claude, and Gemini.
+Prompt-first repository foundation for AI-assisted development with small context bundles, verified examples, and deterministic repo bootstrap.
 
-This repo is not a product app. It is a base system for future project repos that need:
+`agent-context-base` is not an app template and not a prompt dump. It is a context system for building repos that humans and assistants can both navigate reliably. The repository separates durable rules, task playbooks, stack guidance, project-shape guidance, canonical examples, and generation templates so assistants can load less context and still make better decisions.
 
-- strong `AGENT.md` and `CLAUDE.md` routing
-- doctrine separated from workflows, stacks, archetypes, examples, manifests, and templates
-- task inference from normal language instead of memorized internal names
-- canonical examples before ad hoc patterns
-- smoke-test-heavy delivery backed by minimal real-infra integration tests for meaningful boundaries
-- Docker-backed dev and test isolation
-- Dokku-oriented deployment conventions
-- a real starter bootstrap script instead of copy-paste repo assembly
+## Why This Exists
 
-## Start Here
+AI-assisted development fails in predictable ways: assistants scan too much, mix incompatible patterns, lose track of active state, and claim progress without proving the changed boundary. This repo exists to make that behavior harder. It gives you routing docs, machine-readable manifests, verified canonical examples, bootstrap tooling, and continuity patterns such as `MEMORY.md` and handoff snapshots.
 
-Read in this order:
+## Key Capabilities
 
-1. `AGENT.md` or `CLAUDE.md`
-2. `docs/context-boot-sequence.md`
-3. `docs/repo-purpose.md`
-4. `docs/repo-layout.md`
-5. `docs/session-start.md`
-6. `context/router/task-router.md`
+- Route normal-language tasks onto one workflow, one stack surface, and one archetype.
+- Package the smallest useful context bundle with manifests instead of ad hoc browsing.
+- Bootstrap new repos with `scripts/new_repo.py`, generated profiles, and isolated dev/test Compose layouts.
+- Prefer canonical examples over improvised patterns, backed by verification metadata and harnesses.
+- Preserve continuity across long sessions with `MEMORY.md`, stop-hook guidance, and handoff snapshots.
 
-Then load only the smallest bundle that matches the task:
-
-- core doctrine relevant to the change
-- one primary workflow
-- one archetype
-- the needed stack packs
-- one preferred canonical example
-
-If the repo has a `MEMORY.md`, read it after the stable startup files and repo-signal checks. Use it as current-task continuity, not as doctrine.
-
-## What v4 Adds
-
-The fourth pass adds:
-
-- a bounded runtime memory layer under `context/memory/`
-- `MEMORY.md` and handoff snapshot templates for derived repos
-- canonical continuity examples for mutable memory and durable handoffs
-- stop-hook guidance for meaningful pause points
-- helper scripts for memory initialization, handoff creation, and freshness checks
-- operating-manual and boot-sequence integration for cross-session continuity
-
-## What v3 Adds
-
-The third pass adds:
-
-- full context health validation across manifests, metadata, prompt numbering, and bootstrap invariants
-- assistant memory anchors under `context/anchors/`
-- context weighting metadata, repo signal hints, and canonical example ranking metadata
-- richer context bundle preview and a prompt-first repo analyzer
-- pattern diff tooling for comparing candidates against examples or templates
-- deployment readiness checklists, assistant failure-mode docs, and a context evolution changelog
-- minimal fixture datasets and observability pattern examples
-- stronger Compose `name:`, host-port, and environment-isolation enforcement
-
-## What v2 Added
-
-The second pass added:
-
-- actual canonical example files under `examples/`, not README placeholders only
-- richer manifest files with routing, bootstrap, Compose, and support metadata
-- `scripts/new_repo.py` for deterministic repo bootstrap
-- stronger alignment between manifests, routers, aliases, templates, and examples
-- starter templates for Compose, Dokku, prompt-first prompts, profile summaries, smoke tests, integration tests, and seed data
-
-## First-Class Coverage
-
-The base now gives explicit support to:
-
-- Python with FastAPI, `uv`, Ruff, `orjson`, and Polars
-- TypeScript with Hono, Bun, Drizzle ORM, and TSX
-- Nim with Jester and HappyX
-- Scala with Tapir, http4s, and ZIO
-- Kotlin with http4k and Exposed
-- Clojure with Kit, `next.jdbc`, and Hiccup
-- OCaml with Dream, Caqti, and TyXML
-- Rust with Axum
-- Go with Echo and templ
-- Elixir with Phoenix
-- Redis or KeyDB, MongoDB, DuckDB, Trino, NATS JetStream, Meilisearch, TimescaleDB, Elasticsearch, and Qdrant
-- prompt-first repo workflows and Dokku deployment conventions
-
-It also leaves clean extension space for additional stacks such as Crystal and Dart without forcing them into the initial file set.
-
-Those extension paths remain intentionally legible for framework families such as Crystal plus Kemal plus Avram and Dart plus Dart Frog.
-
-## Repository Shape
-
-- `docs/`: repo-level purpose and layout
-- `context/doctrine/`: stable rules and philosophy
-- `context/workflows/`: task playbooks
-- `context/stacks/`: stack-specific guidance
-- `context/archetypes/`: project-shape guidance
-- `context/router/`: routing rules and alias mapping
-- `context/memory/`: runtime continuity rules for `MEMORY.md`, stop hooks, and handoffs
-- `context/anchors/`: compact assistant memory anchors
-- `context/skills/`: short reusable assistant capabilities
-- `manifests/`: machine-readable context bundles
-- `examples/`: canonical example strategy surfaces
-- `templates/`: starter scaffolds, not canonical implementations
-- `scripts/`: lightweight repo utilities
-- `smoke-tests/`: doctrine for future smoke-test suites
-
-## Bootstrap Flow
-
-Use `scripts/new_repo.py` when you want a first-pass descendant repo:
+## Example Workflow
 
 ```bash
 python scripts/new_repo.py analytics-api \
@@ -116,28 +24,51 @@ python scripts/new_repo.py analytics-api \
   --primary-stack python-fastapi-uv-ruff-orjson-polars \
   --smoke-tests \
   --integration-tests \
-  --seed-data \
-  --dokku
+  --seed-data
 ```
 
-That script renders a starter README, `AGENT.md`, `CLAUDE.md`, `.gitignore`, generated profile files, optional prompt files, and isolated Compose layouts with repo-derived names.
+Then open the generated repo, read `AGENT.md` or `CLAUDE.md`, load the matching manifest and one canonical example, implement a vertical slice, verify it, and update `MEMORY.md` if the work will continue later.
 
-## Operational Checks
+## Supported Project Shapes
 
-Useful repo-maintenance commands:
+- Backend API services
+- CLI tools
+- Data pipelines
+- Local RAG systems
+- Multi-storage experiments
+- Prompt-first meta repos
+- Dokku-deployable services
+
+First-class stacks include FastAPI, Hono/Bun, Rust/Axum, Go/Echo, Phoenix, Scala/Tapir/http4s/ZIO, Kotlin/http4k/Exposed, Nim/Jester/HappyX, plus supporting storage and infra packs such as Redis, MongoDB, DuckDB, Trino, NATS JetStream, Meilisearch, Elasticsearch, TimescaleDB, and Qdrant.
+
+## Deeper Documentation
+
+| Doc | Description |
+| --- | --- |
+| `docs/repo-purpose.md` | What this repository is for, what it is not for, and the core terms used throughout the system. |
+| `docs/repo-layout.md` | Map of the top-level layers and where to look for doctrine, manifests, examples, templates, and scripts. |
+| `docs/context-boot-sequence.md` | Deterministic startup contract for assistants working inside this repo or a derived repo. |
+| `docs/session-start.md` | Short operational checklist for beginning or resuming a task. |
+| `docs/architecture/ASSISTANT_RUNTIME_MODEL.md` | High-level architecture of the assistant runtime, including routing, manifests, examples, verification, and continuity. |
+| `docs/architecture/CONTEXT_ENGINEERING_GUIDE.md` | Principles for keeping context small, high-signal, and explainable. |
+| `docs/usage/STARTING_NEW_PROJECTS.md` | Practical guide for using this base to classify an idea, generate a repo, and start implementation. |
+| `docs/usage/ASSISTANT_BEHAVIOR_SPEC.md` | Normative behavior contract for assistants operating in repos derived from this system. |
+| `docs/usage/ADVANCED_ASSISTANT_OPERATIONS.md` | Guidance for long-running sessions, multi-agent work, cross-repo coordination, and higher-autonomy workflows. |
+| `docs/memory-layer-overview.md` | How `MEMORY.md`, stop hooks, and handoff snapshots fit into the runtime. |
+| `docs/deployment-readiness-checklists.md` | Concise deployment and release-readiness checks for service and prompt-first repos. |
+| `docs/assistant-failure-modes.md` | Common failure patterns and the repo features that mitigate them. |
+| `docs/architecture-mental-model.md` | Small set of diagrams showing runtime flow, repo generation, verification, and multi-agent coordination. |
+| `docs/context-evolution.md` | Changelog of durable architectural changes to the base itself. |
+
+## How To Understand This Repository
+
+Start with `AGENT.md` or `CLAUDE.md`, then read the boot sequence and repo map. After that, inspect one manifest under `manifests/`, one preferred example under `examples/`, and the corresponding validation tools under `scripts/` and `verification/`.
+
+If you want to see the system in action, these commands are the fastest entrypoints:
 
 ```bash
-python scripts/init_memory.py --help
-python scripts/create_handoff_snapshot.py --help
-python scripts/check_memory_freshness.py
-python scripts/validate_context.py
-python scripts/run_verification.py --tier fast
-python scripts/verify_examples.py --stack python-fastapi-uv-ruff-orjson-polars
 python scripts/preview_context_bundle.py backend-api-fastapi-polars --show-weights --show-anchors
 python scripts/prompt_first_repo_analyzer.py .
-python scripts/pattern_diff.py examples/canonical-api examples/canonical-smoke-tests
+python scripts/validate_context.py
+python scripts/run_verification.py --tier fast
 ```
-
-## Intent
-
-Future repos should copy from this base selectively, then specialize with project-local manifests, examples, smoke tests, and deployment details. The base should stay composable, strict, and easy for both humans and coding assistants to navigate.
