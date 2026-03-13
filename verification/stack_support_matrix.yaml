@@ -28,6 +28,18 @@ stacks:
       - middleware example
       - templ rendering example
       - storage-backed handler example
+  - stack: nim-jester-happyx
+    support_level: 3
+    verified_examples:
+      - nim-jester-json-endpoint-example
+      - nim-happyx-html-fragment-example
+      - nim-jester-data-endpoint-example
+      - nim-jester-happyx-runtime-example
+    missing_verification:
+      - native Nim compile-aware check
+      - storage-backed Nim example
+      - richer HappyX component runtime example
+    notes: Docker-backed smoke coverage is present for the runnable bundle; source examples stay structure-verified.
   - stack: rust-axum-modern
     support_level: 3
     verified_examples:

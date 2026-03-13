@@ -22,6 +22,7 @@ DEFAULT_MODULES = [
     "verification.examples.python.test_fastapi_examples",
     "verification.examples.python.test_polars_examples",
     "verification.examples.python.test_cli_examples",
+    "verification.examples.nim.test_nim_jester_happyx_examples",
     "verification.examples.go.test_echo_examples",
     "verification.examples.rust.test_axum_examples",
     "verification.examples.elixir.test_phoenix_examples",
@@ -63,6 +64,8 @@ def modules_for_entry(entry: dict[str, object]) -> list[str]:
         return ["verification.examples.python.test_cli_examples"]
     if "canonical-storage" in path or "canonical-seed-data" in path:
         return ["verification.examples.python.test_polars_examples"]
+    if language == "nim":
+        return ["verification.examples.nim.test_nim_jester_happyx_examples"]
     if language == "go":
         return ["verification.examples.go.test_echo_examples"]
     if language == "rust":

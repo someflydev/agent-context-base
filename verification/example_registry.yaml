@@ -46,6 +46,118 @@ examples:
     docker_supported: true
     scenario_harness: fastapi_min_app
     confidence: high
+  - name: nim-jester-json-endpoint-example-doc
+    path: examples/canonical-api/nim-jester-json-endpoint-example.md
+    language: markdown
+    stack_tags:
+      - nim-jester-happyx
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: nim_jester_happyx_min_app
+    confidence: medium
+  - name: nim-jester-json-endpoint-example
+    path: examples/canonical-api/nim-jester-json-endpoint-example.nim
+    language: nim
+    stack_tags:
+      - nim-jester-happyx
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - jester route registration
+      - json response surface
+    docker_supported: false
+    scenario_harness: nim_jester_happyx_min_app
+    confidence: medium
+  - name: nim-happyx-html-fragment-example-doc
+    path: examples/canonical-api/nim-happyx-html-fragment-example.md
+    language: markdown
+    stack_tags:
+      - nim-jester-happyx
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: nim_jester_happyx_min_app
+    confidence: medium
+  - name: nim-happyx-html-fragment-example
+    path: examples/canonical-api/nim-happyx-html-fragment-example.nim
+    language: nim
+    stack_tags:
+      - nim-jester-happyx
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - happyx component surface
+      - htmx-friendly fragment route
+    docker_supported: false
+    scenario_harness: nim_jester_happyx_min_app
+    confidence: medium
+  - name: nim-jester-data-endpoint-example-doc
+    path: examples/canonical-api/nim-jester-data-endpoint-example.md
+    language: markdown
+    stack_tags:
+      - nim-jester-happyx
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: nim_jester_happyx_min_app
+    confidence: medium
+  - name: nim-jester-data-endpoint-example
+    path: examples/canonical-api/nim-jester-data-endpoint-example.nim
+    language: nim
+    stack_tags:
+      - nim-jester-happyx
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - chart payload shape
+      - jester data route
+    docker_supported: false
+    scenario_harness: nim_jester_happyx_min_app
+    confidence: medium
+  - name: nim-jester-happyx-runtime-example
+    path: examples/canonical-api/nim-jester-happyx-example/main.nim
+    language: nim
+    stack_tags:
+      - nim-jester-happyx
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - docker build
+      - container boots
+      - health request
+      - json api request
+      - html fragment request
+      - chart dataset request
+    docker_supported: true
+    scenario_harness: nim_jester_happyx_min_app
+    confidence: medium
   - name: typescript-hono-handler-example
     path: examples/canonical-api/typescript-hono-handler-example.ts
     language: typescript
