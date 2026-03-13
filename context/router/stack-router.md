@@ -8,6 +8,8 @@ Infer the active stack from repo signals, touched files, and user language.
   - load `context/stacks/python-fastapi-uv-ruff-orjson-polars.md`
 - `package.json`, `bun.lockb`, `bun.lock`, `hono`, `drizzle`, `tsx`, `src/routes/*.tsx`
   - load `context/stacks/typescript-hono-bun.md`
+- `*.nimble`, `src/**/*.nim`, `jester`, `happyx`
+  - load `context/stacks/nim-jester-happyx.md`
 - `Cargo.toml`, `src/main.rs`, `axum`
   - load `context/stacks/rust-axum-modern.md`
 - `go.mod`, `cmd/server/main.go`, `echo`, `.templ`
@@ -43,6 +45,8 @@ Infer the active stack from repo signals, touched files, and user language.
 
 - "Add a health route to my Bun app"
   - `context/stacks/typescript-hono-bun.md`
+- "Add an HTMX fragment route to my Nim service"
+  - `context/stacks/nim-jester-happyx.md`
 - "Wire Qdrant for retrieval"
   - `context/stacks/qdrant.md`
 - "Add a Phoenix release path for Dokku"

@@ -50,6 +50,7 @@ This base intentionally gives better detail to the stacks used most often:
 
 - FastAPI plus `uv`, Ruff, `orjson`, and Polars
 - Hono plus Bun, Drizzle ORM, and TSX
+- Nim with Jester and HappyX
 - Axum
 - Echo plus templ
 - Phoenix
@@ -57,4 +58,4 @@ This base intentionally gives better detail to the stacks used most often:
 
 Other backend stacks should extend the same structure instead of forcing their full treatment into v1.
 
-Legible extension paths currently include Nim with Jester or HappyX, Zig with Zap or Jetzig, Scala with Tapir or http4s or ZIO, Clojure with Kit or next.jdbc or Hiccup, Kotlin with http4k or Exposed, Crystal with Kemal or Avram, OCaml with Dream or Caqti or TyXML, and Dart with Dart Frog.
+Legible extension paths currently include Zig with Zap or Jetzig, Scala with Tapir or http4s or ZIO, Clojure with Kit or next.jdbc or Hiccup, Kotlin with http4k or Exposed, Crystal with Kemal or Avram, OCaml with Dream or Caqti or TyXML, and Dart with Dart Frog.

@@ -51,6 +51,12 @@ stacks:
     target: context/stacks/typescript-hono-bun.md
   - alias: tsx
     target: context/stacks/typescript-hono-bun.md
+  - alias: nim
+    target: context/stacks/nim-jester-happyx.md
+  - alias: jester
+    target: context/stacks/nim-jester-happyx.md
+  - alias: happyx
+    target: context/stacks/nim-jester-happyx.md
   - alias: axum
     target: context/stacks/rust-axum-modern.md
   - alias: echo

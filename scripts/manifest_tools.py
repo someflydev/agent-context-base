@@ -74,6 +74,7 @@ ARCHETYPE_PATHS = {
 STACK_PATHS = {
     "python-fastapi-uv-ruff-orjson-polars": "context/stacks/python-fastapi-uv-ruff-orjson-polars.md",
     "typescript-hono-bun": "context/stacks/typescript-hono-bun.md",
+    "nim-jester-happyx": "context/stacks/nim-jester-happyx.md",
     "rust-axum-modern": "context/stacks/rust-axum-modern.md",
     "go-echo": "context/stacks/go-echo.md",
     "elixir-phoenix": "context/stacks/elixir-phoenix.md",

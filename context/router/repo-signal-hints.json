@@ -24,6 +24,16 @@
       "guidance": "Prefer the Hono workflow and keep TSX route fragments explicit."
     },
     {
+      "name": "nim-jester-happyx",
+      "patterns": [
+        "*.nimble",
+        "src/main.nim",
+        "src/**/*.nim",
+        "tests/**/*.nim"
+      ],
+      "guidance": "Prefer Jester routes for transport and HappyX only where HTML fragments are an explicit contract surface."
+    },
+    {
       "name": "rust-axum-modern",
       "patterns": [
         "Cargo.toml",
@@ -99,6 +109,7 @@
         "app/api/*.py",
         "src/routes/*.ts",
         "src/routes/*.tsx",
+        "src/main.nim",
         "cmd/server/*.go",
         "lib/*_web/router.ex"
       ],
@@ -170,6 +181,7 @@
         "app/api/*.py",
         "src/routes/*.ts",
         "src/routes/*.tsx",
+        "src/main.nim",
         "cmd/server/*.go",
         "lib/*_web/router.ex"
       ],
@@ -232,14 +244,6 @@
     }
   ],
   "extension_paths": [
-    {
-      "name": "nim-jester-happyx",
-      "patterns": [
-        "*.nim",
-        "src/**/*.nim"
-      ],
-      "guidance": "Use the backend-api archetype plus canonical API and smoke-test doctrine as the extension path."
-    },
     {
       "name": "zig-zap-jetzig",
       "patterns": [
