@@ -45,6 +45,10 @@ Primary files in this category:
 - `go-echo-example/main.go`
 - `phoenix-route-controller-example.ex`
 - `phoenix-router-surface-example.ex`
+- `ruby-hanami-api-endpoint-example.rb`
+- `ruby-hanami-html-fragment-example.rb`
+- `ruby-hanami-data-endpoint-example.rb`
+- `ruby-hanami-example/app/router.rb`
 
 ## Verification Metadata
 
@@ -208,6 +212,22 @@ Primary files in this category:
   Verification level: syntax-checked
   Harness: none
   Last verified by: verification/examples/elixir/test_phoenix_examples.py
+- `ruby-hanami-api-endpoint-example.rb`
+  Verification level: syntax-checked
+  Harness: ruby_hanami_min_app
+  Last verified by: verification/examples/ruby/test_ruby_hanami_examples.py
+- `ruby-hanami-html-fragment-example.rb`
+  Verification level: syntax-checked
+  Harness: ruby_hanami_min_app
+  Last verified by: verification/examples/ruby/test_ruby_hanami_examples.py
+- `ruby-hanami-data-endpoint-example.rb`
+  Verification level: syntax-checked
+  Harness: ruby_hanami_min_app
+  Last verified by: verification/examples/ruby/test_ruby_hanami_examples.py
+- `ruby-hanami-example/app/router.rb`
+  Verification level: smoke-verified
+  Harness: ruby_hanami_min_app
+  Last verified by: verification/examples/ruby/test_ruby_hanami_examples.py
 
 ## A Strong Canonical API Example Should Show
 

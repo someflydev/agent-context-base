@@ -1,0 +1,5 @@
+<section id="report-card-<%= tenant_id %>" class="report-card" hx-swap-oob="true">
+  <strong>Tenant <%= tenant_id %></strong>
+  <span><%= snapshot[:total_events] %> events in the last hour</span>
+  <small data-report-id="<%= snapshot[:report_id] %>">Status: <%= snapshot[:status] %></small>
+</section>
