@@ -52,6 +52,18 @@ stacks:
       - storage-backed Kotlin example beyond in-memory H2
       - richer middleware or auth example
     notes: Docker-backed smoke coverage is present for the runnable bundle; source examples stay structure-verified.
+  - stack: dart-dartfrog
+    support_level: 3
+    verified_examples:
+      - dart-dartfrog-api-endpoint-example
+      - dart-dartfrog-html-fragment-example
+      - dart-dartfrog-data-endpoint-example
+      - dart-dartfrog-runtime-example
+    missing_verification:
+      - native Dart analyzer or compile-aware check
+      - storage-backed Dart Frog example
+      - richer middleware or auth example
+    notes: Docker-backed smoke coverage is present for the runnable bundle; source examples stay structure-verified.
   - stack: clojure-kit-nextjdbc-hiccup
     support_level: 3
     verified_examples:

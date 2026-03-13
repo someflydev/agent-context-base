@@ -77,6 +77,12 @@ stacks:
     target: context/stacks/kotlin-http4k-exposed.md
   - alias: exposed
     target: context/stacks/kotlin-http4k-exposed.md
+  - alias: dart
+    target: context/stacks/dart-dartfrog.md
+  - alias: dart frog
+    target: context/stacks/dart-dartfrog.md
+  - alias: dart_frog
+    target: context/stacks/dart-dartfrog.md
   - alias: clojure
     target: context/stacks/clojure-kit-nextjdbc-hiccup.md
   - alias: kit

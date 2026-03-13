@@ -336,7 +336,7 @@
       "guidance": "Favor backend-api routing, storage boundaries, and prompt-first manifests."
     },
     {
-      "name": "dart-dart-frog",
+      "name": "dart-dartfrog",
       "patterns": [
         "pubspec.yaml",
         "routes/**/*.dart"

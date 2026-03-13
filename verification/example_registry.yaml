@@ -510,6 +510,118 @@ examples:
     docker_supported: true
     scenario_harness: kotlin_http4k_exposed_min_app
     confidence: medium
+  - name: dart-dartfrog-api-endpoint-example-doc
+    path: examples/canonical-api/dart-dartfrog-api-endpoint-example.md
+    language: markdown
+    stack_tags:
+      - dart-dartfrog
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: dart_dartfrog_min_app
+    confidence: medium
+  - name: dart-dartfrog-api-endpoint-example
+    path: examples/canonical-api/dart-dartfrog-api-endpoint-example.dart
+    language: dart
+    stack_tags:
+      - dart-dartfrog
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - dart_frog response surface
+      - explicit path and query parameter extraction
+    docker_supported: false
+    scenario_harness: dart_dartfrog_min_app
+    confidence: medium
+  - name: dart-dartfrog-html-fragment-example-doc
+    path: examples/canonical-api/dart-dartfrog-html-fragment-example.md
+    language: markdown
+    stack_tags:
+      - dart-dartfrog
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: dart_dartfrog_min_app
+    confidence: medium
+  - name: dart-dartfrog-html-fragment-example
+    path: examples/canonical-api/dart-dartfrog-html-fragment-example.dart
+    language: dart
+    stack_tags:
+      - dart-dartfrog
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - html fragment markers
+      - text/html response headers
+    docker_supported: false
+    scenario_harness: dart_dartfrog_min_app
+    confidence: medium
+  - name: dart-dartfrog-data-endpoint-example-doc
+    path: examples/canonical-api/dart-dartfrog-data-endpoint-example.md
+    language: markdown
+    stack_tags:
+      - dart-dartfrog
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: dart_dartfrog_min_app
+    confidence: medium
+  - name: dart-dartfrog-data-endpoint-example
+    path: examples/canonical-api/dart-dartfrog-data-endpoint-example.dart
+    language: dart
+    stack_tags:
+      - dart-dartfrog
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - chart payload shape
+      - dart_frog data route
+    docker_supported: false
+    scenario_harness: dart_dartfrog_min_app
+    confidence: medium
+  - name: dart-dartfrog-runtime-example
+    path: examples/canonical-api/dart-dartfrog-example/routes/index.dart
+    language: dart
+    stack_tags:
+      - dart-dartfrog
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - docker build
+      - container boots
+      - health request
+      - json api request
+      - html fragment request
+      - chart dataset request
+    docker_supported: true
+    scenario_harness: dart_dartfrog_min_app
+    confidence: medium
   - name: clojure-kit-nextjdbc-hiccup-api-endpoint-example-doc
     path: examples/canonical-api/clojure-kit-nextjdbc-hiccup-api-endpoint-example.md
     language: markdown

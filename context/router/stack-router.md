@@ -16,6 +16,8 @@ Infer the active stack from repo signals, touched files, and user language.
   - load `context/stacks/scala-tapir-http4s-zio.md`
 - `build.gradle.kts`, `settings.gradle.kts`, `src/main/kotlin/**/*.kt`, `http4k`, `exposed`
   - load `context/stacks/kotlin-http4k-exposed.md`
+- `pubspec.yaml`, `routes/**/*.dart`, `dart_frog`
+  - load `context/stacks/dart-dartfrog.md`
 - `deps.edn`, `src/**/*.clj`, `kit`, `next.jdbc`, `hiccup`
   - load `context/stacks/clojure-kit-nextjdbc-hiccup.md`
 - `dune-project`, `*.opam`, `bin/**/*.ml`, `lib/**/*.ml`, `dream`, `caqti`, `tyxml`
@@ -65,6 +67,8 @@ Infer the active stack from repo signals, touched files, and user language.
   - `context/stacks/scala-tapir-http4s-zio.md`
 - "Add an Exposed-backed endpoint to my Kotlin service"
   - `context/stacks/kotlin-http4k-exposed.md`
+- "Add a JSON, fragment, or chart endpoint to my Dart Frog service"
+  - `context/stacks/dart-dartfrog.md`
 - "Add a Kit route or Hiccup fragment to my Clojure service"
   - `context/stacks/clojure-kit-nextjdbc-hiccup.md`
 - "Add a Dream endpoint or TyXML fragment to my OCaml service"

@@ -354,6 +354,83 @@
       "stability": "verified-runtime"
     },
     {
+      "path": "examples/canonical-api/dart-dartfrog-api-endpoint-example.md",
+      "category": "api",
+      "summary": "Dart Frog notes for a minimal JSON endpoint with explicit path and query extraction.",
+      "stacks": ["dart-dartfrog"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["http-route", "service-boundary", "json-response"],
+      "rank": 89,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/dart-dartfrog-api-endpoint-example.dart",
+      "category": "api",
+      "summary": "Dart Frog route example returning a named JSON payload with explicit path and query parameters.",
+      "stacks": ["dart-dartfrog"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["http-route", "json-response", "service-boundary"],
+      "rank": 98,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/dart-dartfrog-html-fragment-example.md",
+      "category": "api",
+      "summary": "Dart Frog fragment endpoint notes for HTMX-style partial updates.",
+      "stacks": ["dart-dartfrog"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["html-fragment", "partial-update", "http-route"],
+      "rank": 88,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/dart-dartfrog-html-fragment-example.dart",
+      "category": "api",
+      "summary": "Dart Frog fragment route returning HTMX-friendly HTML markers and a text/html response.",
+      "stacks": ["dart-dartfrog"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["html-fragment", "partial-update", "http-route"],
+      "rank": 97,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/dart-dartfrog-data-endpoint-example.md",
+      "category": "api",
+      "summary": "Chart-oriented Dart Frog endpoint notes for interactive data services.",
+      "stacks": ["dart-dartfrog"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["data-endpoint", "chart-payload", "json-response"],
+      "rank": 88,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/dart-dartfrog-data-endpoint-example.dart",
+      "category": "api",
+      "summary": "Dart Frog data endpoint example returning a Plotly-style series payload.",
+      "stacks": ["dart-dartfrog"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["data-endpoint", "chart-payload", "json-response"],
+      "rank": 99,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/dart-dartfrog-example/routes/index.dart",
+      "category": "api",
+      "summary": "Runnable Dart Frog runtime bundle with JSON, fragment, and chart-data endpoints for Docker-backed verification.",
+      "stacks": ["dart-dartfrog"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint", "add-smoke-tests"],
+      "patterns": ["http-route", "runtime-bundle", "docker-smoke"],
+      "rank": 101,
+      "stability": "verified-runtime"
+    },
+    {
       "path": "examples/canonical-api/clojure-kit-nextjdbc-hiccup-api-endpoint-example.md",
       "category": "api",
       "summary": "Kit-flavored notes for a Clojure JSON endpoint backed by next.jdbc.",

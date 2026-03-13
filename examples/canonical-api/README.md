@@ -18,6 +18,10 @@ Primary files in this category:
 - `kotlin-http4k-exposed-html-fragment-example.kt`
 - `kotlin-http4k-exposed-data-endpoint-example.kt`
 - `kotlin-http4k-exposed-example/src/main/kotlin/example/Main.kt`
+- `dart-dartfrog-api-endpoint-example.dart`
+- `dart-dartfrog-html-fragment-example.dart`
+- `dart-dartfrog-data-endpoint-example.dart`
+- `dart-dartfrog-example/routes/index.dart`
 - `clojure-kit-nextjdbc-hiccup-api-endpoint-example.clj`
 - `clojure-kit-nextjdbc-hiccup-html-fragment-example.clj`
 - `clojure-kit-nextjdbc-hiccup-data-endpoint-example.clj`
@@ -100,6 +104,22 @@ Primary files in this category:
   Verification level: smoke-verified
   Harness: kotlin_http4k_exposed_min_app
   Last verified by: verification/examples/kotlin/test_http4k_exposed_examples.py
+- `dart-dartfrog-api-endpoint-example.dart`
+  Verification level: syntax-checked
+  Harness: dart_dartfrog_min_app
+  Last verified by: verification/examples/dart/test_dart_dartfrog_examples.py
+- `dart-dartfrog-html-fragment-example.dart`
+  Verification level: syntax-checked
+  Harness: dart_dartfrog_min_app
+  Last verified by: verification/examples/dart/test_dart_dartfrog_examples.py
+- `dart-dartfrog-data-endpoint-example.dart`
+  Verification level: syntax-checked
+  Harness: dart_dartfrog_min_app
+  Last verified by: verification/examples/dart/test_dart_dartfrog_examples.py
+- `dart-dartfrog-example/routes/index.dart`
+  Verification level: smoke-verified
+  Harness: dart_dartfrog_min_app
+  Last verified by: verification/examples/dart/test_dart_dartfrog_examples.py
 - `clojure-kit-nextjdbc-hiccup-api-endpoint-example.clj`
   Verification level: syntax-checked
   Harness: clojure_kit_nextjdbc_hiccup_min_app
