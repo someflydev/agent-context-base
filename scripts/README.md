@@ -30,6 +30,51 @@ python scripts/new_repo.py prompt-kit \
   --prompt-first
 ```
 
+## `init_memory.py`
+
+Creates a repo-local `MEMORY.md` from the starter template if it is missing.
+
+It can also create a default handoff directory for longer-running tasks.
+
+Examples:
+
+```bash
+python scripts/init_memory.py
+python scripts/init_memory.py --with-handoffs
+python scripts/init_memory.py /tmp/example-repo --memory-path docs/MEMORY.md
+```
+
+## `create_handoff_snapshot.py`
+
+Creates a timestamped handoff snapshot under `artifacts/handoffs/` by default.
+
+It can carry forward current state from `MEMORY.md` and accepts explicit flags for checkpoint details.
+
+Examples:
+
+```bash
+python scripts/create_handoff_snapshot.py --title "memory-layer-pass" --from-memory
+python scripts/create_handoff_snapshot.py \
+  --title "prompt-batch-003" \
+  --from-memory \
+  --completed "wrote memory docs" \
+  --remaining "wire AGENT.md and CLAUDE.md" \
+  --next-file AGENT.md \
+  --next-file CLAUDE.md
+```
+
+## `check_memory_freshness.py`
+
+Warns when `MEMORY.md` is missing key sections, looks stale, still contains placeholders, or has grown beyond the intended high-signal size.
+
+Examples:
+
+```bash
+python scripts/check_memory_freshness.py
+python scripts/check_memory_freshness.py --strict
+python scripts/check_memory_freshness.py /tmp/example-repo --max-age-hours 24
+```
+
 ## `validate_manifests.py`
 
 Checks that manifest files:
@@ -67,6 +112,9 @@ Examples:
 
 ```bash
 python scripts/validate_manifests.py
+python scripts/init_memory.py --with-handoffs
+python scripts/create_handoff_snapshot.py --title "routing-pass" --from-memory
+python scripts/check_memory_freshness.py --strict
 python scripts/validate_context.py
 python scripts/preview_context_bundle.py backend-api-fastapi-polars
 python scripts/preview_context_bundle.py manifests/local-rag-base.yaml --show-weights --show-anchors
