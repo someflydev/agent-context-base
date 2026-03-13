@@ -1,10 +1,27 @@
 # Scripts
 
-This directory contains lightweight repository utilities.
+This directory contains lightweight repository utilities used during repo classification, generation, validation, and context inspection.
+
+In the normal workflow, a coding assistant runs most of these scripts on your behalf while it is deciding how to generate a repo, checking what context to load, or verifying that the base remains internally consistent. Humans usually run them directly only when they want to inspect available options, validate repo health, or troubleshoot what the assistant is doing.
+
+Common assistant-invoked scripts:
+
+- `new_repo.py` to generate a new repo once the project shape and stack are clear
+- `preview_context_bundle.py` to inspect which context should load first for a given manifest
+- `prompt_first_repo_analyzer.py` to classify an existing repo by file signals
+- `validate_manifests.py` and `validate_context.py` to verify the base after changes
+
+Common human-invoked scripts:
+
+- `new_repo.py --list-*` when you want to inspect available archetypes, stacks, or manifests yourself
+- `validate_context.py` when you want a direct health check on the base
+- `pattern_diff.py` when you want to compare a repo surface against an example or template manually
 
 ## `new_repo.py`
 
 Bootstraps a new descendant repo from the base conventions.
+
+This is usually invoked by the assistant after it has translated a short project description into an archetype, primary stack, and optional flags. Humans mainly run it directly when they already know the desired shape or want to inspect `--list-archetypes`, `--list-stacks`, or `--list-manifests`.
 
 Capabilities:
 
@@ -34,7 +51,7 @@ python scripts/new_repo.py prompt-kit \
 
 Creates a repo-local `MEMORY.md` from the starter template if it is missing.
 
-It can also create a default handoff directory for longer-running tasks.
+Assistants typically run this after the generated repo exists and the work is likely to span multiple sessions. Humans usually run it directly only when setting up continuity or repairing a repo that is missing its memory file.
 
 Examples:
 
@@ -48,7 +65,7 @@ python scripts/init_memory.py /tmp/example-repo --memory-path docs/MEMORY.md
 
 Creates a timestamped handoff snapshot under `artifacts/handoffs/` by default.
 
-It can carry forward current state from `MEMORY.md` and accepts explicit flags for checkpoint details.
+Assistants use this when a task needs a durable checkpoint between sessions or before a risky branch of work. Humans usually run it directly when they want to force a clean handoff snapshot at a specific moment.
 
 Examples:
 
@@ -66,6 +83,8 @@ python scripts/create_handoff_snapshot.py \
 ## `check_memory_freshness.py`
 
 Warns when `MEMORY.md` is missing key sections, looks stale, still contains placeholders, or has grown beyond the intended high-signal size.
+
+This is mainly a validation script for assistants or humans who want to confirm that continuity notes are still usable.
 
 Examples:
 
@@ -85,6 +104,8 @@ Checks that manifest files:
 - keep `name` aligned with the filename
 - keep stack, archetype, and support flags consistent
 
+Assistants usually run this after editing manifests or templates. Humans typically run it when reviewing repo health or investigating generation issues.
+
 ## `validate_context.py`
 
 Runs the broader integrity pass for the base itself:
@@ -94,19 +115,25 @@ Runs the broader integrity pass for the base itself:
 - prompt numbering checks
 - bootstrap verification for Compose naming, port allocation, and environment isolation
 
+This is the main verification entrypoint after documentation, manifest, template, or generator changes. Both assistants and humans use it, but it is especially useful as a direct human sanity check.
+
 ## `preview_context_bundle.py`
 
 Accepts a manifest name or manifest path and prints the ordered context bundle that should be loaded first.
 
-It can also show context weights, assistant anchors, ranked examples, and repo-signal comparisons.
+Assistants use this to keep startup context small and explicit. Humans usually run it only when they want to inspect or challenge the assistant's context-loading choice.
 
 ## `prompt_first_repo_analyzer.py`
 
 Infers likely stacks, archetypes, workflows, and manifests from the target repo's actual file signals.
 
+This is most useful when the assistant is classifying an existing repo or checking whether a generated repo still matches its intended shape.
+
 ## `pattern_diff.py`
 
 Shows a readable diff between two files or two directory trees so a repo surface can be compared against a canonical example or a template.
+
+This is primarily an inspection and troubleshooting tool for either the assistant or the human reviewer.
 
 Examples:
 
