@@ -1,0 +1,13 @@
+name: crystal-kemal-avram-example
+version: 0.1.0
+license: MIT
+
+targets:
+  crystal-kemal-avram-example:
+    main: src/app.cr
+
+dependencies:
+  kemal:
+    github: kemalcr/kemal
+  avram:
+    github: luckyframework/avram
