@@ -24,6 +24,7 @@ DEFAULT_MODULES = [
     "verification.examples.python.test_cli_examples",
     "verification.examples.nim.test_nim_jester_happyx_examples",
     "verification.examples.scala.test_scala_tapir_http4s_zio_examples",
+    "verification.examples.clojure.test_kit_nextjdbc_hiccup_examples",
     "verification.examples.zig.test_zig_zap_jetzig_examples",
     "verification.examples.go.test_echo_examples",
     "verification.examples.rust.test_axum_examples",
@@ -70,6 +71,8 @@ def modules_for_entry(entry: dict[str, object]) -> list[str]:
         return ["verification.examples.nim.test_nim_jester_happyx_examples"]
     if language == "scala":
         return ["verification.examples.scala.test_scala_tapir_http4s_zio_examples"]
+    if language == "clojure":
+        return ["verification.examples.clojure.test_kit_nextjdbc_hiccup_examples"]
     if language == "zig":
         return ["verification.examples.zig.test_zig_zap_jetzig_examples"]
     if language == "go":

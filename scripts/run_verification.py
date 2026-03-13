@@ -33,6 +33,7 @@ MEDIUM_MODULES = FAST_MODULES + [
 
 HEAVY_MODULES = MEDIUM_MODULES + [
     "verification.examples.nim.test_nim_jester_happyx_examples",
+    "verification.examples.clojure.test_kit_nextjdbc_hiccup_examples",
     "verification.examples.go.test_echo_examples",
     "verification.examples.rust.test_axum_examples",
     "verification.examples.elixir.test_phoenix_examples",
