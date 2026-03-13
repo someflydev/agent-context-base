@@ -56,6 +56,8 @@ EXAMPLE_SUPPORT_FILENAMES = {
     "go.mod",
     "Cargo.toml",
     "Cargo.lock",
+    "Gemfile",
+    "config.ru",
 }
 
 

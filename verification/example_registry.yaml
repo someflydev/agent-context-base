@@ -1195,6 +1195,230 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: medium
+  - name: ruby-hanami-api-endpoint-example-doc
+    path: examples/canonical-api/ruby-hanami-api-endpoint-example.md
+    language: markdown
+    stack_tags:
+      - ruby-hanami
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: ruby_hanami_min_app
+    confidence: medium
+  - name: ruby-hanami-api-endpoint-example
+    path: examples/canonical-api/ruby-hanami-api-endpoint-example.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - hanami router action surface
+      - sequel query helper
+    docker_supported: false
+    scenario_harness: ruby_hanami_min_app
+    confidence: medium
+  - name: ruby-hanami-html-fragment-example-doc
+    path: examples/canonical-api/ruby-hanami-html-fragment-example.md
+    language: markdown
+    stack_tags:
+      - ruby-hanami
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: ruby_hanami_min_app
+    confidence: medium
+  - name: ruby-hanami-html-fragment-example
+    path: examples/canonical-api/ruby-hanami-html-fragment-example.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - hanami view rendering
+      - htmx-friendly fragment route
+    docker_supported: false
+    scenario_harness: ruby_hanami_min_app
+    confidence: medium
+  - name: ruby-hanami-data-endpoint-example-doc
+    path: examples/canonical-api/ruby-hanami-data-endpoint-example.md
+    language: markdown
+    stack_tags:
+      - ruby-hanami
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: ruby_hanami_min_app
+    confidence: medium
+  - name: ruby-hanami-data-endpoint-example
+    path: examples/canonical-api/ruby-hanami-data-endpoint-example.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - chart payload shape
+      - sequel data route
+    docker_supported: false
+    scenario_harness: ruby_hanami_min_app
+    confidence: medium
+  - name: ruby-hanami-runtime-example
+    path: examples/canonical-api/ruby-hanami-example/app/router.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - docker build
+      - container boots
+      - health request
+      - json api request
+      - html fragment request
+      - chart dataset request
+    docker_supported: true
+    scenario_harness: ruby_hanami_min_app
+    confidence: medium
+  - name: ruby-hanami-runtime-health-action
+    path: examples/canonical-api/ruby-hanami-example/app/actions/health/show.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - health route action
+      - json response format
+      - deterministic service payload
+    docker_supported: true
+    scenario_harness: ruby_hanami_min_app
+    confidence: medium
+  - name: ruby-hanami-runtime-report-action
+    path: examples/canonical-api/ruby-hanami-example/app/actions/reports/show.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - report route action
+      - json envelope shape
+      - persistence helper integration
+    docker_supported: true
+    scenario_harness: ruby_hanami_min_app
+    confidence: medium
+  - name: ruby-hanami-runtime-fragment-action
+    path: examples/canonical-api/ruby-hanami-example/app/actions/report_cards/show.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - fragment route action
+      - view rendering call
+      - html response format
+    docker_supported: true
+    scenario_harness: ruby_hanami_min_app
+    confidence: medium
+  - name: ruby-hanami-runtime-chart-action
+    path: examples/canonical-api/ruby-hanami-example/app/actions/charts/show.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - chart route action
+      - plotly-style series payload
+      - persistence helper integration
+    docker_supported: true
+    scenario_harness: ruby_hanami_min_app
+    confidence: medium
+  - name: ruby-hanami-runtime-fragment-view
+    path: examples/canonical-api/ruby-hanami-example/app/views/report_cards/show.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - hanami view configuration
+      - template binding
+      - layout-free fragment rendering
+    docker_supported: true
+    scenario_harness: ruby_hanami_min_app
+    confidence: medium
+  - name: ruby-hanami-runtime-fragment-template
+    path: examples/canonical-api/ruby-hanami-example/app/templates/report_cards/show.html.erb
+    language: erb
+    stack_tags:
+      - ruby-hanami
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - htmx out-of-band marker
+      - stable fragment structure
+      - report card template shape
+    docker_supported: true
+    scenario_harness: ruby_hanami_min_app
+    confidence: medium
+  - name: ruby-hanami-runtime-persistence
+    path: examples/canonical-api/ruby-hanami-example/lib/ruby_hanami_example/persistence.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - sqlite seed logic
+      - sequel query helpers
+      - fallback dataset behavior
+    docker_supported: true
+    scenario_harness: ruby_hanami_min_app
+    confidence: medium
   - name: fastapi-db-integration-example
     path: examples/canonical-integration-tests/fastapi-db-integration-test-example.py
     language: python

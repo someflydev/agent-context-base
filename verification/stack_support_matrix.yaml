@@ -140,6 +140,18 @@ stacks:
     missing_verification:
       - controller test example
       - liveview example
+  - stack: ruby-hanami
+    support_level: 3
+    verified_examples:
+      - ruby-hanami-api-endpoint-example
+      - ruby-hanami-html-fragment-example
+      - ruby-hanami-data-endpoint-example
+      - ruby-hanami-runtime-example
+    missing_verification:
+      - native Ruby bundle exec check in default verification tier
+      - ROM-backed persistence example
+      - richer middleware or auth example
+    notes: Docker-backed smoke coverage is present for the runnable bundle; source examples stay structure-verified.
   - stack: typescript-hono-bun
     support_level: 2
     verified_examples:

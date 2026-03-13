@@ -32,6 +32,7 @@ DEFAULT_MODULES = [
     "verification.examples.go.test_echo_examples",
     "verification.examples.rust.test_axum_examples",
     "verification.examples.elixir.test_phoenix_examples",
+    "verification.examples.ruby.test_ruby_hanami_examples",
     "verification.examples.data.test_yaml_json_examples",
 ]
 
@@ -90,6 +91,8 @@ def modules_for_entry(entry: dict[str, object]) -> list[str]:
         return ["verification.examples.rust.test_axum_examples"]
     if language == "elixir":
         return ["verification.examples.elixir.test_phoenix_examples"]
+    if language == "ruby":
+        return ["verification.examples.ruby.test_ruby_hanami_examples"]
     if language in {"yaml", "json"} or "canonical-dokku" in path or "canonical-observability" in path:
         return ["verification.examples.data.test_yaml_json_examples"]
     if "canonical-prompts" in path:
