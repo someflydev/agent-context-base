@@ -1,0 +1,76 @@
+schema_version: 2
+name: backend-api-scala-tapir-http4s-zio
+description: Preferred Scala backend profile using Tapir plus http4s plus ZIO for typed services and interactive data endpoints.
+archetype: backend-api-service
+primary_stack: scala-tapir-http4s-zio
+secondary_stacks:
+  - redis-keydb-mongo
+triggers:
+  - scala api
+  - tapir service
+  - http4s backend
+  - zio service
+aliases:
+  - scala tapir
+  - http4s zio
+required_context:
+  - context/doctrine/core-principles.md
+  - context/doctrine/testing-philosophy.md
+  - context/doctrine/compose-port-and-data-isolation.md
+  - context/workflows/add-api-endpoint.md
+  - context/stacks/scala-tapir-http4s-zio.md
+  - context/archetypes/backend-api-service.md
+optional_context:
+  - context/workflows/add-smoke-tests.md
+  - context/workflows/add-storage-integration.md
+  - context/workflows/post-flight-refinement.md
+  - context/doctrine/canonical-examples.md
+preferred_examples:
+  - examples/canonical-api/scala-tapir-http4s-zio-api-endpoint-example.scala
+  - examples/canonical-api/scala-tapir-http4s-zio-data-endpoint-example.scala
+  - examples/canonical-workflows/post-flight-refinement-checklist.md
+recommended_templates:
+  - templates/readme/README.template.md
+  - templates/agent-md/AGENT.template.md
+  - templates/claude-md/CLAUDE.template.md
+  - templates/compose/docker-compose.template.yaml
+  - templates/compose/docker-compose-test.template.yaml
+  - templates/manifest/profile-summary.template.yaml
+repo_signals:
+  - build.sbt
+  - project/build.properties
+  - src/main/scala/
+  - src/test/scala/
+task_hints:
+  - add-api-endpoint
+  - add-smoke-tests
+  - add-storage-integration
+  - post-flight-refinement
+warnings:
+  - Keep Tapir endpoint contracts explicit and avoid hiding route signatures inside generic helper layers.
+  - Use Docker-backed smoke verification by default when adding runnable Scala backend examples.
+bootstrap_defaults:
+  - include_docker_compose
+  - include_smoke_tests
+  - include_integration_tests
+  - include_generated_profile
+compose_files:
+  - docker-compose.yml
+  - docker-compose.test.yml
+compose_project_name_dev: "{repo_slug}"
+compose_project_name_test: "{repo_slug}-test"
+port_band_app_dev: 14000-14099
+port_band_app_test: 15000-15099
+port_band_data_dev: 24000-24099
+port_band_data_test: 25000-25099
+data_isolation:
+  - docker/volumes/dev
+  - docker/volumes/test
+  - destructive test cleanup must never touch dev data roots
+dokku_relevance: optional
+smoke_test_expectations:
+  - boot health route
+  - one typed Tapir endpoint check
+  - one HTML fragment check
+  - one chart dataset check
+prompt_first_support: supported
