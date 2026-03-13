@@ -1,0 +1,284 @@
+You are extending the repository by adding support for a new language/framework/library stack.
+
+This repository is an "agent-context-base" system used by coding assistants to understand stacks, archetypes, workflows, canonical examples, verification levels, and implementation patterns.
+
+Your task is to add the new stack in a consistent, reusable, verification-aware way without repeating stack-extension logic that should remain standardized across all stacks.
+
+This prompt acts as a stack-extension orchestrator.
+
+It must:
+- add stack documentation
+- add canonical examples
+- add verification metadata
+- add verification tests
+- add Dockerfiles for backend-capable examples when requested
+- update the example registry
+- update the stack support matrix
+- integrate with router/manifests where appropriate
+- do so using the repository’s standard generation contracts rather than ad hoc per-stack reinvention
+
+You will receive input variables from a stack-specific prompt.
+
+Treat those variables as declarative inputs.
+
+Do not ask for clarification unless inputs are missing or contradictory.
+
+---------------------------------------------------------------------
+INPUT VARIABLES
+
+You will receive:
+
+STACK_NAME
+LANGUAGE
+FRAMEWORK
+PRIMARY_LIBS
+ARCHETYPE_COMPATIBILITY
+EXAMPLE_TYPES
+DOCKER_SUPPORT
+
+Optional extra notes may also be supplied by the caller.
+
+---------------------------------------------------------------------
+SECTION 1 — Normalize the stack definition
+
+Before generating files, normalize the input into a standard internal shape.
+
+Derive:
+- stack slug
+- stack doc path
+- example directory roots
+- verification directory targets
+- example registry entry names
+- support matrix key
+- likely harness paths
+
+Use deterministic filenames and paths.
+
+Do not invent alternate naming conventions unless the caller explicitly requires them.
+
+---------------------------------------------------------------------
+SECTION 2 — Apply standard example-type generation contracts
+
+For each requested EXAMPLE_TYPE, generate files according to the repository’s reusable generation contracts.
+
+Example-type contracts:
+
+api_endpoint
+- generate canonical source example
+- generate README
+- generate verification metadata
+- generate example registry entry
+- generate verification test coverage
+- generate Dockerfile if DOCKER_SUPPORT=true
+- integrate with scenario harness if feasible
+- target minimum verification level: smoke-verified if runnable, otherwise syntax-checked
+
+html_fragment_endpoint
+- generate canonical source example or route example
+- generate README
+- generate verification metadata
+- generate registry entry
+- generate verification test coverage
+- reuse service Dockerfile if appropriate
+- target minimum verification level: syntax-checked, or smoke-verified if fragment response can be tested
+
+data_endpoint
+- generate canonical source example
+- generate README
+- generate verification metadata
+- generate registry entry
+- generate verification test coverage
+- reuse service Dockerfile if appropriate
+- target minimum verification level: smoke-verified where feasible
+
+Do not redefine these rules per stack unless required by the language/framework.
+
+---------------------------------------------------------------------
+SECTION 3 — Canonical example generation rules
+
+Canonical examples must:
+- be minimal but realistic
+- reflect preferred backend patterns for the stack
+- align with repo architecture and existing stack doc conventions
+- be clearly named
+- be scoped tightly to the example’s teaching purpose
+
+Each generated example should include:
+- source file(s)
+- README
+- verification metadata or equivalent registry-backed entry
+- explicit note of intended verification level
+
+For backend examples, examples should support:
+- JSON API response patterns
+- HTML fragment response patterns for HTMX-style partial updates
+- JSON dataset patterns for charting / Plotly-style consumers
+
+---------------------------------------------------------------------
+SECTION 4 — Dockerfile generation contract
+
+If DOCKER_SUPPORT=true and the example represents a backend-capable runnable service, generate Dockerfiles using the repository’s standard backend-example Docker contract.
+
+The Dockerfile contract is:
+- use a small official base image for the language
+- install only minimal dependencies needed for the example
+- copy only the example files required to run
+- expose the expected port if needed
+- run the example server deterministically
+- optimize for verification and local reproducibility, not production hardening
+- avoid unnecessary multi-stage complexity unless the language strongly benefits from it
+
+Reuse a single Dockerfile across related examples in the same stack directory when practical.
+
+Do not require the host system to have the language toolchain installed in order to verify backend examples.
+
+---------------------------------------------------------------------
+SECTION 5 — Verification generation contract
+
+Add verification support using the repository’s standard verification model.
+
+You must generate or update:
+- verification/example_registry.yaml
+- verification/stack_support_matrix.yaml
+- language-specific verification tests under verification/examples/{language}/
+- scenario harness integration or scenario-harness notes where feasible
+
+Use these verification principles:
+- syntax/structure validation first
+- Docker-backed smoke verification for backend examples when host tooling may not exist
+- scenario harnesses where practical and worth the maintenance cost
+- prefer minimal deterministic tests over broad fragile tests
+
+If direct host-language verification is impractical, Docker-backed smoke verification is the default for backend API examples.
+
+---------------------------------------------------------------------
+SECTION 6 — Example registry contract
+
+For every canonical example created, add or update an entry in verification/example_registry.yaml.
+
+Use a consistent schema including:
+- name
+- path
+- language
+- stack_tags
+- archetype_tags
+- verification_level
+- verification_targets
+- docker_supported
+- scenario_harness
+
+Set verification_level according to what is actually implemented in this pass.
+Do not exaggerate confidence.
+
+---------------------------------------------------------------------
+SECTION 7 — Stack support matrix contract
+
+Update verification/stack_support_matrix.yaml using the repository’s standard maturity model.
+
+Use support levels like:
+1 = docs only
+2 = examples added
+3 = examples plus verification and Docker-backed smoke checks
+4 = scenario harness present
+5 = broad mature verified support
+
+Assign the initial support level honestly based on what is implemented in this stack pass.
+
+Each stack entry should include:
+- stack
+- support_level
+- verified_examples
+- missing_verification
+- notes
+
+Keep notes concise and factual.
+
+---------------------------------------------------------------------
+SECTION 8 — Verification strategy by language category
+
+Apply the following default verification strategy unless the stack strongly requires deviation.
+
+Python:
+- direct tests plus optional Docker verification
+
+Go / Rust:
+- compile-aware tests if practical
+- Docker-backed smoke verification for backend examples
+- scenario harness if feasible
+
+Nim / Zig / Scala / Clojure / Kotlin / Crystal / OCaml / Dart:
+- Docker-backed backend verification is the default
+- add syntax/structure checks where practical
+- add scenario harnesses only if the maintenance burden is reasonable in this pass
+
+Elixir / Phoenix:
+- use Docker-backed verification or minimal framework harness as appropriate
+
+When deviating from these defaults, explain why.
+
+---------------------------------------------------------------------
+SECTION 9 — Router and manifest integration
+
+Update router docs, stack catalogs, and manifests only where necessary to make the new stack discoverable and usable.
+
+Do not churn unrelated files.
+
+Ensure assistants can discover:
+- the new stack doc
+- its example paths
+- its verification coverage status
+- its archetype compatibility
+
+---------------------------------------------------------------------
+SECTION 10 — Documentation update rules
+
+Update documentation so the new stack appears in:
+- stack listings/catalogs if they exist
+- verification docs if relevant
+- canonical example references if relevant
+
+Keep docs scoped and avoid duplicating large descriptions across multiple files.
+
+---------------------------------------------------------------------
+SECTION 11 — Commit-ready batching
+
+Produce commit-ready batches.
+
+A recommended default batch structure is:
+
+Batch 1
+- stack doc
+- canonical examples
+- example READMEs
+
+Batch 2
+- Dockerfiles
+- verification tests
+- harness integration
+
+Batch 3
+- registry updates
+- support matrix updates
+- router/manifest/docs integration
+
+You may adjust this structure if the stack benefits from a different grouping, but keep the grouping coherent and explain why.
+
+For each batch:
+1. state purpose
+2. list files created/updated
+3. provide full file contents
+4. do not omit anything
+
+---------------------------------------------------------------------
+SECTION 12 — Quality requirements
+
+- Use deterministic paths and names
+- Do not repeat generation logic that belongs to this template
+- Keep examples minimal but correct
+- Prefer reusable verification patterns
+- Use Docker support to avoid requiring host-language toolchains
+- Do not overclaim verification maturity
+- Keep support matrix honest
+- Keep registry schema consistent
+- Align generated examples with backend + HTML fragment + data endpoint use cases
+- Ensure outputs are practical for future CI and local verification
