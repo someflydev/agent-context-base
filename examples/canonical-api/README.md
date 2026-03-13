@@ -10,6 +10,10 @@ Primary files in this category:
 - `nim-happyx-html-fragment-example.nim`
 - `nim-jester-data-endpoint-example.nim`
 - `nim-jester-happyx-example/main.nim`
+- `scala-tapir-http4s-zio-api-endpoint-example.scala`
+- `scala-tapir-http4s-zio-html-fragment-example.scala`
+- `scala-tapir-http4s-zio-data-endpoint-example.scala`
+- `scala-tapir-http4s-zio-example/src/main/scala/Main.scala`
 - `zig-zap-json-endpoint-example.zig`
 - `zig-jetzig-html-fragment-example.zig`
 - `zig-zap-data-endpoint-example.zig`
@@ -48,6 +52,22 @@ Primary files in this category:
   Verification level: smoke-verified
   Harness: nim_jester_happyx_min_app
   Last verified by: verification/examples/nim/test_nim_jester_happyx_examples.py
+- `scala-tapir-http4s-zio-api-endpoint-example.scala`
+  Verification level: syntax-checked
+  Harness: scala_tapir_http4s_zio_min_app
+  Last verified by: verification/examples/scala/test_scala_tapir_http4s_zio_examples.py
+- `scala-tapir-http4s-zio-html-fragment-example.scala`
+  Verification level: syntax-checked
+  Harness: scala_tapir_http4s_zio_min_app
+  Last verified by: verification/examples/scala/test_scala_tapir_http4s_zio_examples.py
+- `scala-tapir-http4s-zio-data-endpoint-example.scala`
+  Verification level: syntax-checked
+  Harness: scala_tapir_http4s_zio_min_app
+  Last verified by: verification/examples/scala/test_scala_tapir_http4s_zio_examples.py
+- `scala-tapir-http4s-zio-example/src/main/scala/Main.scala`
+  Verification level: smoke-verified
+  Harness: scala_tapir_http4s_zio_min_app
+  Last verified by: verification/examples/scala/test_scala_tapir_http4s_zio_examples.py
 - `zig-zap-json-endpoint-example.zig`
   Verification level: syntax-checked
   Harness: zig_zap_jetzig_min_app

@@ -200,6 +200,83 @@
       "stability": "verified-runtime"
     },
     {
+      "path": "examples/canonical-api/scala-tapir-http4s-zio-api-endpoint-example.md",
+      "category": "api",
+      "summary": "Tapir plus http4s notes for a typed Scala JSON endpoint.",
+      "stacks": ["scala-tapir-http4s-zio"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["http-route", "typed-endpoint", "json-response"],
+      "rank": 89,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/scala-tapir-http4s-zio-api-endpoint-example.scala",
+      "category": "api",
+      "summary": "Tapir endpoint example interpreted through http4s with ZIO server logic.",
+      "stacks": ["scala-tapir-http4s-zio"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["http-route", "typed-endpoint", "json-response"],
+      "rank": 98,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/scala-tapir-http4s-zio-html-fragment-example.md",
+      "category": "api",
+      "summary": "http4s fragment endpoint notes for HTMX-style partial updates in Scala services.",
+      "stacks": ["scala-tapir-http4s-zio"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["html-fragment", "partial-update", "http-route"],
+      "rank": 88,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/scala-tapir-http4s-zio-html-fragment-example.scala",
+      "category": "api",
+      "summary": "http4s fragment route returning stable HTMX-friendly HTML markers.",
+      "stacks": ["scala-tapir-http4s-zio"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["html-fragment", "partial-update", "http-route"],
+      "rank": 97,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/scala-tapir-http4s-zio-data-endpoint-example.md",
+      "category": "api",
+      "summary": "Chart-oriented Scala endpoint notes for interactive data services.",
+      "stacks": ["scala-tapir-http4s-zio"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["data-endpoint", "chart-payload", "json-response"],
+      "rank": 88,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/scala-tapir-http4s-zio-data-endpoint-example.scala",
+      "category": "api",
+      "summary": "Tapir data endpoint example returning a Plotly-style series payload.",
+      "stacks": ["scala-tapir-http4s-zio"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["data-endpoint", "chart-payload", "json-response"],
+      "rank": 99,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/scala-tapir-http4s-zio-example/src/main/scala/Main.scala",
+      "category": "api",
+      "summary": "Runnable Scala runtime bundle with JSON, fragment, and chart-data endpoints for Docker-backed verification.",
+      "stacks": ["scala-tapir-http4s-zio"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint", "add-smoke-tests"],
+      "patterns": ["http-route", "runtime-bundle", "docker-smoke"],
+      "rank": 101,
+      "stability": "verified-runtime"
+    },
+    {
       "path": "examples/canonical-api/typescript-hono-handler-example.ts",
       "category": "api",
       "summary": "Hono plus TSX route example for the Bun-first backend path.",

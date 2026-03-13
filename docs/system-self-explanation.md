@@ -25,12 +25,11 @@ The goal is predictability for Codex, Claude, and Gemini over long-lived usage. 
 
 ## Extension Paths
 
-The current first-class stacks remain FastAPI, TypeScript plus Hono plus Bun plus Drizzle plus TSX, Nim plus Jester plus HappyX, Rust plus Axum, Go plus Echo plus templ, and Phoenix.
+The current first-class stacks remain FastAPI, TypeScript plus Hono plus Bun plus Drizzle plus TSX, Nim plus Jester plus HappyX, Scala plus Tapir plus http4s plus ZIO, Rust plus Axum, Go plus Echo plus templ, and Phoenix.
 
 The repo also keeps these legible as extension paths without redesigning the architecture:
 
 - Zig with Zap or Jetzig
-- Scala with Tapir, http4s, or ZIO
 - Clojure with Kit, next.jdbc, or Hiccup
 - Kotlin with http4k or Exposed
 - Crystal with Kemal or Avram

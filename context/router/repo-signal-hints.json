@@ -34,6 +34,16 @@
       "guidance": "Prefer Jester routes for transport and HappyX only where HTML fragments are an explicit contract surface."
     },
     {
+      "name": "scala-tapir-http4s-zio",
+      "patterns": [
+        "build.sbt",
+        "project/build.properties",
+        "src/main/scala/**/*.scala",
+        "src/test/scala/**/*.scala"
+      ],
+      "guidance": "Use Tapir for typed contracts, keep http4s route wiring explicit, and let ZIO define effect boundaries."
+    },
+    {
       "name": "zig-zap-jetzig",
       "patterns": [
         "build.zig",
@@ -264,15 +274,6 @@
         "src/**/*.zig"
       ],
       "guidance": "Favor minimal stack docs extending routing, smoke-test, and Compose isolation conventions."
-    },
-    {
-      "name": "scala-tapir-http4s-zio",
-      "patterns": [
-        "build.sbt",
-        "project/*.scala",
-        "src/main/scala/**/*.scala"
-      ],
-      "guidance": "Map Scala services through the backend-api archetype and explicit example selection."
     },
     {
       "name": "clojure-kit-next-jdbc-hiccup",

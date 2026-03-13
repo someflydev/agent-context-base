@@ -10,6 +10,8 @@ Infer the active stack from repo signals, touched files, and user language.
   - load `context/stacks/typescript-hono-bun.md`
 - `*.nimble`, `src/**/*.nim`, `jester`, `happyx`
   - load `context/stacks/nim-jester-happyx.md`
+- `build.sbt`, `project/*.scala`, `src/main/scala/**/*.scala`, `tapir`, `http4s`, `zio`
+  - load `context/stacks/scala-tapir-http4s-zio.md`
 - `build.zig`, `build.zig.zon`, `src/main.zig`, `zap`, `jetzig`
   - load `context/stacks/zig-zap-jetzig.md`
 - `Cargo.toml`, `src/main.rs`, `axum`
@@ -49,6 +51,8 @@ Infer the active stack from repo signals, touched files, and user language.
   - `context/stacks/typescript-hono-bun.md`
 - "Add an HTMX fragment route to my Nim service"
   - `context/stacks/nim-jester-happyx.md`
+- "Add a typed Tapir route to my Scala service"
+  - `context/stacks/scala-tapir-http4s-zio.md`
 - "Add a JSON or fragment endpoint to my Zig service"
   - `context/stacks/zig-zap-jetzig.md`
 - "Wire Qdrant for retrieval"

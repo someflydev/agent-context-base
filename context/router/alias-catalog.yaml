@@ -57,6 +57,14 @@ stacks:
     target: context/stacks/nim-jester-happyx.md
   - alias: happyx
     target: context/stacks/nim-jester-happyx.md
+  - alias: scala
+    target: context/stacks/scala-tapir-http4s-zio.md
+  - alias: tapir
+    target: context/stacks/scala-tapir-http4s-zio.md
+  - alias: http4s
+    target: context/stacks/scala-tapir-http4s-zio.md
+  - alias: zio
+    target: context/stacks/scala-tapir-http4s-zio.md
   - alias: zig
     target: context/stacks/zig-zap-jetzig.md
   - alias: zap
