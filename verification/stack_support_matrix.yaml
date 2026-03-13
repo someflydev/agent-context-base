@@ -1,14 +1,16 @@
 stacks:
-  - stack: python-fastapi
+  - stack: python-fastapi-uv-ruff-orjson-polars
     support_level: 5
     verified_examples:
       - fastapi-endpoint-example
       - fastapi-runtime-example
       - fastapi-smoke-test-example
       - fastapi-db-integration-example
+      - polars-seed-data-example
     missing_verification:
       - advanced auth example
       - websocket example
+      - background task example
   - stack: duckdb-trino-polars
     support_level: 4
     verified_examples:
@@ -16,12 +18,7 @@ stacks:
       - polars-seed-data-example
     missing_verification:
       - trino federation example
-  - stack: python-cli
-    support_level: 4
-    verified_examples:
-      - python-cli-command-example
-    missing_verification:
-      - multi-command repo example
+      - partitioned parquet example
   - stack: go-echo
     support_level: 3
     verified_examples:
@@ -30,13 +27,15 @@ stacks:
     missing_verification:
       - middleware example
       - templ rendering example
-  - stack: rust-axum
+      - storage-backed handler example
+  - stack: rust-axum-modern
     support_level: 3
     verified_examples:
       - rust-axum-route-example
       - rust-axum-runtime-example
     missing_verification:
       - extractor validation example
+      - storage state example
   - stack: elixir-phoenix
     support_level: 2
     verified_examples:
@@ -44,7 +43,14 @@ stacks:
       - phoenix-router-surface-example
     missing_verification:
       - controller test example
-      - LiveView example
+      - liveview example
+  - stack: typescript-hono-bun
+    support_level: 2
+    verified_examples:
+      - typescript-hono-handler-example
+    missing_verification:
+      - runtime bundle example
+      - drizzle migration example
   - stack: prompt-first-repo
     support_level: 4
     verified_examples:
@@ -54,17 +60,31 @@ stacks:
       - handoff-snapshot-example
     missing_verification:
       - rendered template prompt example
+      - prompt review checklist example
   - stack: qdrant
     support_level: 2
     verified_examples:
       - local-rag-index-config-example
+      - local-rag-metadata-shape-example
     missing_verification:
       - index runner example
       - retrieval smoke example
-  - stack: dokku
+  - stack: redis-keydb-mongo
+    support_level: 2
+    verified_examples:
+      - redis-mongo-shape-example
+    missing_verification:
+      - isolated integration example
+  - stack: dokku-conventions
     support_level: 3
     verified_examples:
       - dokku-procfile-example
       - dokku-app-json-example
     missing_verification:
       - release smoke script example
+  - stack: python-cli
+    support_level: 4
+    verified_examples:
+      - python-cli-command-example
+    missing_verification:
+      - multi-command repo example

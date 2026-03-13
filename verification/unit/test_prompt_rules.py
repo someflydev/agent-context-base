@@ -14,7 +14,11 @@ REFERENCE_PATTERN = re.compile(r"PROMPT_\d{2}(?:_[str]+)?\.txt")
 def validate_prompt_tree(root: Path) -> list[str]:
     prompt_dir = root / ".prompts"
     errors: list[str] = []
-    prompt_files = [path for path in sorted(prompt_dir.glob("*.txt")) if path.is_file() and not path.name.startswith(".")]
+    prompt_files = [
+        path
+        for path in sorted(prompt_dir.glob("*.txt"))
+        if path.is_file() and not path.name.startswith(".")
+    ]
     seen_numbers: dict[int, str] = {}
     executable_numbers: list[int] = []
 
@@ -25,6 +29,7 @@ def validate_prompt_tree(root: Path) -> list[str]:
                 if not (prompt_dir / ref).exists():
                     errors.append(f"{path.name} references missing prompt file {ref}")
             continue
+
         number = int(match.group(1))
         suffix = match.group(2) or ""
         prior = seen_numbers.get(number)
@@ -44,11 +49,10 @@ def validate_prompt_tree(root: Path) -> list[str]:
             if not (prompt_dir / ref).exists():
                 errors.append(f"{path.name} references missing prompt file {ref}")
 
-    expected = list(range(min(executable_numbers), max(executable_numbers) + 1)) if executable_numbers else []
-    if executable_numbers and sorted(executable_numbers) != expected:
-        errors.append(
-            "prompt numbering must be strictly monotonic for executable prompts"
-        )
+    if executable_numbers:
+        expected = list(range(min(executable_numbers), max(executable_numbers) + 1))
+        if sorted(executable_numbers) != expected:
+            errors.append("prompt numbering must be strictly monotonic for executable prompts")
     return errors
 
 
@@ -62,6 +66,7 @@ class PromptRuleTests(unittest.TestCase):
         errors = validate_prompt_tree(fixture_root)
         self.assertTrue(errors)
         self.assertTrue(any("duplicate prompt number" in error for error in errors))
+        self.assertTrue(any("references missing prompt file" in error for error in errors))
 
 
 if __name__ == "__main__":

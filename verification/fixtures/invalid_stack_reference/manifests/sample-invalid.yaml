@@ -1,0 +1,45 @@
+schema_version: 2
+name: sample-invalid
+description: Invalid manifest fixture with a missing stack file.
+archetype: prompt-first-repo
+primary_stack: prompt-first-repo
+secondary_stacks:
+  - prompt-first-repo
+triggers:
+  - prompt first repo
+aliases:
+  - broken fixture repo
+required_context:
+  - context/workflows/bootstrap-repo.md
+  - context/stacks/prompt-first-repo.md
+  - context/archetypes/prompt-first-repo.md
+optional_context:
+  - docs/repo-purpose.md
+preferred_examples:
+  - examples/canonical-prompts/001-bootstrap-repo.txt
+recommended_templates:
+  - templates/readme/README.template.md
+repo_signals:
+  - AGENT.md
+task_hints:
+  - bootstrap-repo
+warnings:
+  - Keep prompt numbering monotonic.
+bootstrap_defaults:
+  - include_prompt_first
+compose_files:
+  - docker-compose.yml
+  - docker-compose.test.yml
+compose_project_name_dev: "{repo_slug}"
+compose_project_name_test: "{repo_slug}-test"
+port_band_app_dev: 14000-14099
+port_band_app_test: 15000-15099
+port_band_data_dev: 24000-24099
+port_band_data_test: 25000-25099
+data_isolation:
+  - docker/volumes/dev
+  - docker/volumes/test
+dokku_relevance: not-applicable
+smoke_test_expectations:
+  - validate prompt layout
+prompt_first_support: first-class

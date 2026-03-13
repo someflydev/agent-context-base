@@ -1,0 +1,1 @@
+Task fixture prompt referencing `PROMPT_00_s.txt`.

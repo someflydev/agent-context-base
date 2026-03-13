@@ -1,12 +1,17 @@
 from __future__ import annotations
 
+import dataclasses as _stdlib_dataclasses
 import importlib.util
 import json
 import os
 import shutil
+import socket
+import subprocess
 import sys
+import time
 import types
-import dataclasses as _stdlib_dataclasses
+import urllib.error
+import urllib.request
 from pathlib import Path
 from typing import Any
 
@@ -20,6 +25,30 @@ VALID_VERIFICATION_LEVELS = {
     "smoke-verified",
     "behavior-verified",
     "golden",
+}
+
+VERIFICATION_LEVEL_SCORES = {
+    "draft": 0,
+    "syntax-checked": 1,
+    "smoke-verified": 2,
+    "behavior-verified": 3,
+    "golden": 4,
+}
+
+CONFIDENCE_SCORES = {
+    "low": 1,
+    "medium": 2,
+    "high": 3,
+}
+
+EXAMPLE_SUPPORT_FILENAMES = {
+    "README.md",
+    "catalog.json",
+    "Dockerfile",
+    "requirements.txt",
+    "go.mod",
+    "Cargo.toml",
+    "Cargo.lock",
 }
 
 
@@ -160,6 +189,22 @@ def registry_by_path() -> dict[str, dict[str, Any]]:
     }
 
 
+def registry_by_name() -> dict[str, dict[str, Any]]:
+    return {
+        str(entry.get("name", "")).strip(): entry
+        for entry in load_registry()
+        if isinstance(entry.get("name"), str)
+    }
+
+
+def verification_score(entry: dict[str, Any]) -> int:
+    return VERIFICATION_LEVEL_SCORES.get(str(entry.get("verification_level", "")).strip(), 0)
+
+
+def confidence_score(entry: dict[str, Any]) -> int:
+    return CONFIDENCE_SCORES.get(str(entry.get("confidence", "")).strip(), 0)
+
+
 def load_python_module(
     path: Path,
     *,
@@ -214,6 +259,213 @@ def docker_enabled() -> bool:
     return flag in {"1", "true", "yes", "on"} and command_available("docker")
 
 
+def run_command(
+    args: list[str],
+    *,
+    cwd: Path | None = None,
+    env: dict[str, str] | None = None,
+    timeout: int = 60,
+) -> subprocess.CompletedProcess[str]:
+    command_env = os.environ.copy()
+    if env:
+        command_env.update(env)
+    return subprocess.run(
+        args,
+        cwd=cwd,
+        env=command_env,
+        text=True,
+        capture_output=True,
+        timeout=timeout,
+        check=False,
+    )
+
+
+def free_tcp_port() -> int:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.bind(("127.0.0.1", 0))
+        sock.listen(1)
+        return int(sock.getsockname()[1])
+
+
+def wait_for_http_json(url: str, *, timeout: float = 20.0) -> tuple[int, Any]:
+    deadline = time.time() + timeout
+    last_error: Exception | None = None
+    while time.time() < deadline:
+        try:
+            with urllib.request.urlopen(url, timeout=2.0) as response:
+                payload = response.read().decode("utf-8")
+                try:
+                    return response.status, json.loads(payload)
+                except json.JSONDecodeError:
+                    return response.status, payload
+        except (urllib.error.URLError, TimeoutError, ConnectionError) as exc:
+            last_error = exc
+            time.sleep(0.25)
+    raise AssertionError(f"timed out waiting for {url}: {last_error}")
+
+
 def to_module_name(path: Path) -> str:
     relative = path.relative_to(REPO_ROOT).with_suffix("")
     return ".".join(relative.parts)
+
+
+class _FakePolarsExpression:
+    def __eq__(self, _other: object) -> "_FakePolarsExpression":
+        return self
+
+    def __truediv__(self, _other: object) -> "_FakePolarsExpression":
+        return self
+
+    def then(self, _value: object) -> "_FakePolarsExpression":
+        return self
+
+    def otherwise(self, _value: object) -> "_FakePolarsExpression":
+        return self
+
+    def alias(self, _name: str) -> "_FakePolarsExpression":
+        return self
+
+
+class FakePolarsFrame:
+    def __init__(self, data: list[dict[str, Any]] | dict[str, list[Any]]) -> None:
+        if isinstance(data, dict):
+            keys = list(data.keys())
+            values = list(data.values())
+            row_count = len(values[0]) if values else 0
+            self._rows = [
+                {key: data[key][index] for key in keys}
+                for index in range(row_count)
+            ]
+        else:
+            self._rows = [dict(row) for row in data]
+
+    def with_columns(self, *_expressions: object) -> "FakePolarsFrame":
+        rows: list[dict[str, Any]] = []
+        for row in self._rows:
+            updated = dict(row)
+            if "total_events" in row and "error_events" in row:
+                total = row["total_events"]
+                updated["error_rate"] = 0.0 if not total else row["error_events"] / total
+            rows.append(updated)
+        return FakePolarsFrame(rows)
+
+    def select(self, *columns: str) -> "FakePolarsFrame":
+        return FakePolarsFrame([{column: row[column] for column in columns} for row in self._rows])
+
+    def sort(self, column: str, *, descending: bool = False) -> "FakePolarsFrame":
+        return FakePolarsFrame(sorted(self._rows, key=lambda row: row[column], reverse=descending))
+
+    def to_dicts(self) -> list[dict[str, Any]]:
+        return [dict(row) for row in self._rows]
+
+    def write_parquet(self, target: Path | str) -> None:
+        Path(target).write_text(json.dumps(self._rows, indent=2), encoding="utf-8")
+
+
+class FakeDuckDBConnection:
+    def __init__(self, database_path: Path | str) -> None:
+        self.database_path = Path(database_path)
+        self.rows: list[dict[str, Any]] = []
+        self.statements: list[str] = []
+
+    def __enter__(self) -> "FakeDuckDBConnection":
+        return self
+
+    def __exit__(self, _exc_type: object, _exc: object, _tb: object) -> None:
+        return None
+
+    def execute(self, statement: str) -> "FakeDuckDBConnection":
+        normalized = " ".join(statement.lower().split())
+        self.statements.append(normalized)
+        if normalized.startswith("insert into report_runs values"):
+            self.rows.extend(
+                [
+                    {"tenant_id": "acme", "report_id": "daily-signups", "total_events": 42},
+                    {"tenant_id": "globex", "report_id": "daily-signups", "total_events": 11},
+                ]
+            )
+        return self
+
+
+def polars_stub_module() -> types.ModuleType:
+    module = types.ModuleType("polars")
+    module.DataFrame = FakePolarsFrame
+    module.when = lambda _value: _FakePolarsExpression()
+    module.col = lambda _name: _FakePolarsExpression()
+    module.read_database = lambda _query, *, connection: FakePolarsFrame(connection.rows)
+    return module
+
+
+def duckdb_stub_module() -> types.ModuleType:
+    module = types.ModuleType("duckdb")
+    module.connect = lambda database_path: FakeDuckDBConnection(database_path)
+    return module
+
+
+def fastapi_stub_module() -> types.ModuleType:
+    module = types.ModuleType("fastapi")
+
+    class APIRouter:
+        def __init__(self, *, prefix: str = "", tags: list[str] | None = None) -> None:
+            self.prefix = prefix
+            self.tags = tags or []
+            self.routes: list[dict[str, Any]] = []
+
+        def get(self, path: str, *, response_model: object | None = None):
+            def decorator(func: Any) -> Any:
+                self.routes.append(
+                    {
+                        "path": f"{self.prefix}{path}",
+                        "endpoint": func,
+                        "response_model": response_model,
+                    }
+                )
+                return func
+
+            return decorator
+
+    class FastAPI:
+        def __init__(self) -> None:
+            self.routes: list[dict[str, Any]] = []
+
+        def include_router(self, router: APIRouter) -> None:
+            self.routes.extend(router.routes)
+
+    module.APIRouter = APIRouter
+    module.FastAPI = FastAPI
+    module.Depends = lambda dependency: dependency
+    module.Query = lambda default=None, **_kwargs: default
+    return module
+
+
+def pydantic_stub_module() -> types.ModuleType:
+    module = types.ModuleType("pydantic")
+
+    class BaseModel:
+        def __init__(self, **kwargs: Any) -> None:
+            for key, value in kwargs.items():
+                setattr(self, key, value)
+
+        def model_dump(self) -> dict[str, Any]:
+            return dict(self.__dict__)
+
+    module.BaseModel = BaseModel
+    module.Field = lambda default=None, **_kwargs: default
+    return module
+
+
+def python_api_stub_modules() -> dict[str, types.ModuleType]:
+    return {
+        "dataclasses": compat_dataclasses_module(),
+        "fastapi": fastapi_stub_module(),
+        "pydantic": pydantic_stub_module(),
+        "polars": polars_stub_module(),
+    }
+
+
+def python_data_stub_modules() -> dict[str, types.ModuleType]:
+    return {
+        "dataclasses": compat_dataclasses_module(),
+        "duckdb": duckdb_stub_module(),
+        "polars": polars_stub_module(),
+    }

@@ -24,6 +24,17 @@
       "stability": "canonical"
     },
     {
+      "path": "examples/canonical-api/fastapi-example/app.py",
+      "category": "api",
+      "summary": "Runnable FastAPI runtime bundle for Docker-backed endpoint verification.",
+      "stacks": ["python-fastapi-uv-ruff-orjson-polars"],
+      "archetypes": ["backend-api-service"],
+      "workflows": ["add-api-endpoint", "add-smoke-tests"],
+      "patterns": ["http-route", "runtime-bundle", "docker-smoke"],
+      "rank": 101,
+      "stability": "verified-runtime"
+    },
+    {
       "path": "examples/canonical-api/typescript-hono-handler-example.ts",
       "category": "api",
       "summary": "Hono plus TSX route example for the Bun-first backend path.",
@@ -46,6 +57,17 @@
       "stability": "canonical"
     },
     {
+      "path": "examples/canonical-api/rust-axum-example/src/main.rs",
+      "category": "api",
+      "summary": "Runnable Axum runtime bundle for Docker-backed endpoint verification.",
+      "stacks": ["rust-axum-modern"],
+      "archetypes": ["backend-api-service"],
+      "workflows": ["add-api-endpoint", "add-smoke-tests"],
+      "patterns": ["http-route", "runtime-bundle", "docker-smoke"],
+      "rank": 97,
+      "stability": "verified-runtime"
+    },
+    {
       "path": "examples/canonical-api/go-echo-handler-example.go",
       "category": "api",
       "summary": "Echo handler example aligned with the Go plus templ stack path.",
@@ -55,6 +77,17 @@
       "patterns": ["http-route", "json-response"],
       "rank": 96,
       "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/go-echo-example/main.go",
+      "category": "api",
+      "summary": "Runnable Echo runtime bundle for Docker-backed endpoint verification.",
+      "stacks": ["go-echo"],
+      "archetypes": ["backend-api-service"],
+      "workflows": ["add-api-endpoint", "add-smoke-tests"],
+      "patterns": ["http-route", "runtime-bundle", "docker-smoke"],
+      "rank": 97,
+      "stability": "verified-runtime"
     },
     {
       "path": "examples/canonical-api/phoenix-route-controller-example.ex",

@@ -4,10 +4,23 @@
 from __future__ import annotations
 
 import json
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 
 from manifest_tools import build_context_bundle, normalize_string_list, parse_manifest
+
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from verification.helpers import (  # noqa: E402
+    EXAMPLE_SUPPORT_FILENAMES,
+    confidence_score,
+    load_registry,
+    verification_score,
+)
 
 
 @dataclass(frozen=True)
@@ -115,6 +128,15 @@ def load_example_catalog(repo_root: Path) -> dict[str, object]:
     return data
 
 
+def _registry_metadata_by_path(repo_root: Path) -> dict[str, dict[str, object]]:
+    registry: dict[str, dict[str, object]] = {}
+    for entry in load_registry():
+        raw_path = entry.get("path")
+        if isinstance(raw_path, str) and raw_path.strip():
+            registry[normalize_repo_path(raw_path)] = entry
+    return registry
+
+
 def _match_score(values: list[str], desired: list[str], multiplier: int) -> int:
     """Return a weighted score for overlapping tags."""
 
@@ -144,11 +166,14 @@ def rank_examples(
     if not isinstance(entries, list):
         raise ValueError("examples/catalog.json: 'entries' must be a list")
 
+    registry = _registry_metadata_by_path(repo_root)
     ranked: list[dict[str, object]] = []
     for entry in entries:
         if not isinstance(entry, dict):
             continue
 
+        normalized_path = normalize_repo_path(str(entry.get("path", "")))
+        registry_entry = registry.get(normalized_path, {})
         stacks = normalize_string_list(entry.get("stacks"))
         archetypes = normalize_string_list(entry.get("archetypes"))
         workflows = normalize_string_list(entry.get("workflows"))
@@ -158,15 +183,26 @@ def rank_examples(
         score += _match_score(archetypes, archetype_names, 20)
         score += _match_score(workflows, workflow_names, 18)
         score += _match_score(patterns, pattern_names, 8)
-        if normalize_repo_path(str(entry.get("path", ""))) in preferred_paths:
+        if normalized_path in preferred_paths:
             score += 40
+        score += verification_score(registry_entry) * 12
+        score += confidence_score(registry_entry) * 4
         if stack_names and not set(stacks) & set(stack_names):
             score -= 5
         if archetype_names and not set(archetypes) & set(archetype_names):
             score -= 3
         if workflow_names and not set(workflows) & set(workflow_names):
             score -= 3
-        ranked.append({**entry, "score": score})
+        ranked.append(
+            {
+                **entry,
+                "score": score,
+                "verification_level": registry_entry.get("verification_level", "untracked"),
+                "confidence": registry_entry.get("confidence", "untracked"),
+                "scenario_harness": registry_entry.get("scenario_harness", ""),
+                "verification_targets": registry_entry.get("verification_targets", []),
+            }
+        )
 
     ranked.sort(key=lambda item: (-int(item["score"]), str(item.get("path", ""))))
     return ranked[:limit]
@@ -305,6 +341,7 @@ def validate_example_catalog(repo_root: Path) -> list[str]:
     if not isinstance(entries, list):
         return [f"{path}: 'entries' must be a list"]
 
+    registry = _registry_metadata_by_path(repo_root)
     seen_paths: set[str] = set()
     cataloged_paths: set[str] = set()
     for index, entry in enumerate(entries, start=1):
@@ -322,6 +359,8 @@ def validate_example_catalog(repo_root: Path) -> list[str]:
         cataloged_paths.add(normalized)
         if not (repo_root / normalized).exists():
             errors.append(f"{path}: referenced example path does not exist: '{normalized}'")
+        if normalized not in registry:
+            errors.append(f"{path}: catalog path missing verification registry entry: '{normalized}'")
         for key in ("category", "summary", "stability"):
             value = entry.get(key)
             if not isinstance(value, str) or not value.strip():
@@ -333,7 +372,7 @@ def validate_example_catalog(repo_root: Path) -> list[str]:
     actual_example_paths = {
         normalize_repo_path(example_path.relative_to(repo_root).as_posix())
         for example_path in (repo_root / "examples").rglob("*")
-        if example_path.is_file() and example_path.name != "README.md" and example_path.name != "catalog.json"
+        if example_path.is_file() and example_path.name not in EXAMPLE_SUPPORT_FILENAMES
     }
     missing = sorted(actual_example_paths - cataloged_paths)
     for missing_path in missing:

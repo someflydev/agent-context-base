@@ -126,7 +126,10 @@ def main(argv: list[str]) -> int:
         print("Ranked examples:")
         for example in ranked_examples:
             print(
-                f"- {example.get('path')} (score={example.get('score')}, category={example.get('category')})"
+                f"- {example.get('path')} "
+                + f"(score={example.get('score')}, "
+                + f"level={example.get('verification_level')}, "
+                + f"confidence={example.get('confidence')})"
             )
 
     if args.show_templates and templates:

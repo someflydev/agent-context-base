@@ -1,54 +1,41 @@
 examples:
+  - name: fastapi-endpoint-example-doc
+    path: examples/canonical-api/fastapi-endpoint-example.md
+    language: markdown
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - backend-api-service
+      - dokku-deployable-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
   - name: fastapi-endpoint-example
     path: examples/canonical-api/fastapi-endpoint-example.py
     language: python
     stack_tags:
-      - python-fastapi
+      - python-fastapi-uv-ruff-orjson-polars
     archetype_tags:
       - backend-api-service
+      - dokku-deployable-service
     verification_level: behavior-verified
     verification_targets:
       - parses
-      - imports
+      - imports with stubs
       - route mounts
-      - response shape verified
+      - response schema verified
     docker_supported: false
     scenario_harness: fastapi_min_app
     confidence: high
-  - name: fastapi-smoke-test-example
-    path: examples/canonical-smoke-tests/fastapi-smoke-test-example.py
-    language: python
-    stack_tags:
-      - python-fastapi
-    archetype_tags:
-      - backend-api-service
-    verification_level: syntax-checked
-    verification_targets:
-      - parses
-      - imports
-    docker_supported: false
-    scenario_harness: fastapi_min_app
-    confidence: medium
-  - name: fastapi-db-integration-example
-    path: examples/canonical-integration-tests/fastapi-db-integration-test-example.py
-    language: python
-    stack_tags:
-      - python-fastapi
-    archetype_tags:
-      - backend-api-service
-    verification_level: syntax-checked
-    verification_targets:
-      - parses
-      - imports
-      - isolated compose references
-    docker_supported: false
-    scenario_harness: fastapi_min_app
-    confidence: medium
   - name: fastapi-runtime-example
     path: examples/canonical-api/fastapi-example/app.py
     language: python
     stack_tags:
-      - python-fastapi
+      - python-fastapi-uv-ruff-orjson-polars
     archetype_tags:
       - backend-api-service
     verification_level: smoke-verified
@@ -59,6 +46,50 @@ examples:
     docker_supported: true
     scenario_harness: fastapi_min_app
     confidence: high
+  - name: typescript-hono-handler-example
+    path: examples/canonical-api/typescript-hono-handler-example.ts
+    language: typescript
+    stack_tags:
+      - typescript-hono-bun
+    archetype_tags:
+      - backend-api-service
+      - dokku-deployable-service
+    verification_level: draft
+    verification_targets:
+      - registry tracked
+      - source structure
+    docker_supported: false
+    scenario_harness: ""
+    confidence: low
+  - name: rust-axum-route-example
+    path: examples/canonical-api/rust-axum-route-example.rs
+    language: rust
+    stack_tags:
+      - rust-axum-modern
+    archetype_tags:
+      - backend-api-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - route registration
+    docker_supported: false
+    scenario_harness: rust_axum_min_app
+    confidence: medium
+  - name: rust-axum-runtime-example
+    path: examples/canonical-api/rust-axum-example/src/main.rs
+    language: rust
+    stack_tags:
+      - rust-axum-modern
+    archetype_tags:
+      - backend-api-service
+    verification_level: smoke-verified
+    verification_targets:
+      - docker build
+      - container boots
+      - health request
+    docker_supported: true
+    scenario_harness: rust_axum_min_app
+    confidence: high
   - name: go-echo-handler-example
     path: examples/canonical-api/go-echo-handler-example.go
     language: go
@@ -66,6 +97,7 @@ examples:
       - go-echo
     archetype_tags:
       - backend-api-service
+      - dokku-deployable-service
     verification_level: syntax-checked
     verification_targets:
       - source structure
@@ -88,35 +120,6 @@ examples:
     docker_supported: true
     scenario_harness: go_echo_min_app
     confidence: high
-  - name: rust-axum-route-example
-    path: examples/canonical-api/rust-axum-route-example.rs
-    language: rust
-    stack_tags:
-      - rust-axum
-    archetype_tags:
-      - backend-api-service
-    verification_level: syntax-checked
-    verification_targets:
-      - source structure
-      - route registration
-    docker_supported: false
-    scenario_harness: rust_axum_min_app
-    confidence: medium
-  - name: rust-axum-runtime-example
-    path: examples/canonical-api/rust-axum-example/src/main.rs
-    language: rust
-    stack_tags:
-      - rust-axum
-    archetype_tags:
-      - backend-api-service
-    verification_level: smoke-verified
-    verification_targets:
-      - docker build
-      - container boots
-      - health request
-    docker_supported: true
-    scenario_harness: rust_axum_min_app
-    confidence: high
   - name: phoenix-route-controller-example
     path: examples/canonical-api/phoenix-route-controller-example.ex
     language: elixir
@@ -124,6 +127,7 @@ examples:
       - elixir-phoenix
     archetype_tags:
       - backend-api-service
+      - dokku-deployable-service
     verification_level: syntax-checked
     verification_targets:
       - source structure
@@ -138,6 +142,7 @@ examples:
       - elixir-phoenix
     archetype_tags:
       - backend-api-service
+      - dokku-deployable-service
     verification_level: syntax-checked
     verification_targets:
       - source structure
@@ -145,24 +150,12 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: medium
-  - name: typescript-hono-handler-example
-    path: examples/canonical-api/typescript-hono-handler-example.ts
-    language: typescript
-    stack_tags:
-      - typescript-hono-bun
-    archetype_tags:
-      - backend-api-service
-    verification_level: draft
-    verification_targets:
-      - registry tracked
-    docker_supported: false
-    scenario_harness: ""
-    confidence: low
   - name: python-cli-command-example
     path: examples/canonical-cli/python-cli-command-example.py
     language: python
     stack_tags:
       - python-cli
+      - python-fastapi-uv-ruff-orjson-polars
     archetype_tags:
       - cli-tool
     verification_level: behavior-verified
@@ -174,37 +167,167 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: high
-  - name: duckdb-polars-example
-    path: examples/canonical-storage/duckdb-polars-example.py
-    language: python
+  - name: dokku-procfile-example
+    path: examples/canonical-dokku/Procfile.example
+    language: text
     stack_tags:
-      - duckdb-trino-polars
+      - dokku-conventions
+      - python-fastapi-uv-ruff-orjson-polars
+      - typescript-hono-bun
+      - go-echo
+      - elixir-phoenix
     archetype_tags:
-      - data-pipeline
-    verification_level: behavior-verified
+      - dokku-deployable-service
+    verification_level: syntax-checked
     verification_targets:
-      - parses
-      - imports with stubs
-      - deterministic row ordering
+      - file exists
+      - release command present
     docker_supported: false
-    scenario_harness: polars_data_pipeline
+    scenario_harness: ""
     confidence: medium
-  - name: polars-seed-data-example
-    path: examples/canonical-seed-data/polars-seed-data-example.py
+  - name: dokku-app-json-example
+    path: examples/canonical-dokku/app-json-example.json
+    language: json
+    stack_tags:
+      - dokku-conventions
+      - python-fastapi-uv-ruff-orjson-polars
+      - typescript-hono-bun
+      - go-echo
+      - elixir-phoenix
+    archetype_tags:
+      - dokku-deployable-service
+    verification_level: syntax-checked
+    verification_targets:
+      - json loads
+      - required keys exist
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: fastapi-db-integration-example
+    path: examples/canonical-integration-tests/fastapi-db-integration-test-example.py
     language: python
     stack_tags:
-      - duckdb-trino-polars
-      - python-fastapi
+      - python-fastapi-uv-ruff-orjson-polars
     archetype_tags:
-      - data-pipeline
       - backend-api-service
-    verification_level: behavior-verified
+      - dokku-deployable-service
+    verification_level: syntax-checked
     verification_targets:
       - parses
-      - imports with stubs
-      - isolated seed output path
+      - imports guarded
+      - isolated compose references
     docker_supported: false
-    scenario_harness: polars_data_pipeline
+    scenario_harness: fastapi_min_app
+    confidence: medium
+  - name: structured-log-example
+    path: examples/canonical-observability/structured-log-example.json
+    language: json
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+      - typescript-hono-bun
+      - rust-axum-modern
+      - go-echo
+      - elixir-phoenix
+    archetype_tags:
+      - backend-api-service
+      - dokku-deployable-service
+    verification_level: syntax-checked
+    verification_targets:
+      - json loads
+      - required keys exist
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: trace-span-example
+    path: examples/canonical-observability/trace-span-example.json
+    language: json
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+      - typescript-hono-bun
+      - rust-axum-modern
+      - go-echo
+      - elixir-phoenix
+    archetype_tags:
+      - backend-api-service
+      - dokku-deployable-service
+    verification_level: syntax-checked
+    verification_targets:
+      - json loads
+      - required keys exist
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: minimal-report-runs-fixture
+    path: examples/fixtures/minimal-report-runs.json
+    language: json
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+      - duckdb-trino-polars
+    archetype_tags:
+      - backend-api-service
+      - data-pipeline
+    verification_level: syntax-checked
+    verification_targets:
+      - json loads
+      - fixture remains small
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: minimal-document-corpus-fixture
+    path: examples/fixtures/minimal-document-corpus.jsonl
+    language: jsonl
+    stack_tags:
+      - qdrant
+    archetype_tags:
+      - local-rag-system
+    verification_level: syntax-checked
+    verification_targets:
+      - jsonl loads
+      - required keys exist
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: prompt-bootstrap-example
+    path: examples/canonical-prompts/001-bootstrap-repo.txt
+    language: text
+    stack_tags:
+      - prompt-first-repo
+    archetype_tags:
+      - prompt-first-repo
+    verification_level: syntax-checked
+    verification_targets:
+      - prompt numbering
+      - filename references resolve
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: prompt-refine-example
+    path: examples/canonical-prompts/002-refine-test-surface.txt
+    language: text
+    stack_tags:
+      - prompt-first-repo
+    archetype_tags:
+      - prompt-first-repo
+    verification_level: syntax-checked
+    verification_targets:
+      - prompt numbering
+      - filename references resolve
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: prompt-layout-example
+    path: examples/canonical-prompts/prompt-first-layout-example.md
+    language: markdown
+    stack_tags:
+      - prompt-first-repo
+    archetype_tags:
+      - prompt-first-repo
+    verification_level: syntax-checked
+    verification_targets:
+      - prompt layout documented
+      - referenced filenames resolve
+    docker_supported: false
+    scenario_harness: ""
     confidence: medium
   - name: local-rag-index-config-example
     path: examples/canonical-rag/local-rag-index-config-example.yaml
@@ -233,31 +356,119 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: low
-  - name: prompt-bootstrap-example
-    path: examples/canonical-prompts/001-bootstrap-repo.txt
-    language: text
+  - name: polars-seed-data-example
+    path: examples/canonical-seed-data/polars-seed-data-example.py
+    language: python
+    stack_tags:
+      - duckdb-trino-polars
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - data-pipeline
+      - backend-api-service
+    verification_level: behavior-verified
+    verification_targets:
+      - parses
+      - imports with stubs
+      - isolated seed output path
+    docker_supported: false
+    scenario_harness: polars_data_pipeline
+    confidence: medium
+  - name: fastapi-smoke-test-example
+    path: examples/canonical-smoke-tests/fastapi-smoke-test-example.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - backend-api-service
+      - dokku-deployable-service
+    verification_level: syntax-checked
+    verification_targets:
+      - parses
+      - import surface checked
+    docker_supported: false
+    scenario_harness: fastapi_min_app
+    confidence: medium
+  - name: duckdb-polars-example
+    path: examples/canonical-storage/duckdb-polars-example.py
+    language: python
+    stack_tags:
+      - duckdb-trino-polars
+    archetype_tags:
+      - data-pipeline
+    verification_level: behavior-verified
+    verification_targets:
+      - parses
+      - imports with stubs
+      - deterministic row ordering
+    docker_supported: false
+    scenario_harness: polars_data_pipeline
+    confidence: medium
+  - name: redis-mongo-shape-example
+    path: examples/canonical-storage/redis-mongo-shape-example.md
+    language: markdown
+    stack_tags:
+      - redis-keydb-mongo
+      - typescript-hono-bun
+    archetype_tags:
+      - multi-storage-experiment
+      - backend-api-service
+    verification_level: draft
+    verification_targets:
+      - registry tracked
+    docker_supported: false
+    scenario_harness: ""
+    confidence: low
+  - name: handoff-snapshot-example
+    path: examples/canonical-workflows/HANDOFF-SNAPSHOT.example.md
+    language: markdown
     stack_tags:
       - prompt-first-repo
     archetype_tags:
       - prompt-first-repo
     verification_level: syntax-checked
     verification_targets:
-      - prompt numbering
-      - filename references resolve
+      - file exists
+      - required headings exist
     docker_supported: false
     scenario_harness: ""
     confidence: medium
-  - name: prompt-refine-example
-    path: examples/canonical-prompts/002-refine-test-surface.txt
-    language: text
+  - name: memory-example
+    path: examples/canonical-workflows/MEMORY.example.md
+    language: markdown
     stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
       - prompt-first-repo
     archetype_tags:
+      - backend-api-service
       - prompt-first-repo
     verification_level: syntax-checked
     verification_targets:
-      - prompt numbering
-      - filename references resolve
+      - file exists
+      - required headings exist
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: post-flight-refinement-checklist
+    path: examples/canonical-workflows/post-flight-refinement-checklist.md
+    language: markdown
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+      - typescript-hono-bun
+      - rust-axum-modern
+      - go-echo
+      - elixir-phoenix
+      - prompt-first-repo
+    archetype_tags:
+      - backend-api-service
+      - dokku-deployable-service
+      - prompt-first-repo
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - checklist headings exist
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
     docker_supported: false
     scenario_harness: ""
     confidence: medium
