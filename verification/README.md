@@ -62,7 +62,7 @@ That structure improves assistant reliability because selection logic can prefer
 - `verification/scripts/`
   Tests for Python maintenance scripts and helper CLIs.
 - `verification/examples/`
-  Stack-specific verification suites for Python, Nim, Scala, Kotlin, Clojure, OCaml, Go, Rust, Elixir, and static data examples.
+  Stack-specific verification suites for Python, Nim, Scala, Kotlin, Dart, Clojure, OCaml, Go, Rust, Elixir, and static data examples.
 - `verification/scenarios/`
   Minimal harness helpers that mount, run, or probe canonical examples.
 - `verification/fixtures/`
