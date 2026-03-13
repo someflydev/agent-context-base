@@ -277,6 +277,83 @@
       "stability": "verified-runtime"
     },
     {
+      "path": "examples/canonical-api/kotlin-http4k-exposed-api-endpoint-example.md",
+      "category": "api",
+      "summary": "http4k plus Exposed notes for a Kotlin JSON endpoint.",
+      "stacks": ["kotlin-http4k-exposed"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["http-route", "service-boundary", "json-response"],
+      "rank": 89,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/kotlin-http4k-exposed-api-endpoint-example.kt",
+      "category": "api",
+      "summary": "http4k route example backed by an Exposed query helper and typed JSON lens.",
+      "stacks": ["kotlin-http4k-exposed"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["http-route", "json-response", "service-boundary"],
+      "rank": 98,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/kotlin-http4k-exposed-html-fragment-example.md",
+      "category": "api",
+      "summary": "http4k fragment endpoint notes for HTMX-style partial updates in Kotlin services.",
+      "stacks": ["kotlin-http4k-exposed"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["html-fragment", "partial-update", "http-route"],
+      "rank": 88,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/kotlin-http4k-exposed-html-fragment-example.kt",
+      "category": "api",
+      "summary": "http4k fragment route returning HTMX-friendly HTML markers.",
+      "stacks": ["kotlin-http4k-exposed"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["html-fragment", "partial-update", "http-route"],
+      "rank": 97,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/kotlin-http4k-exposed-data-endpoint-example.md",
+      "category": "api",
+      "summary": "Chart-oriented Kotlin endpoint notes for interactive data services.",
+      "stacks": ["kotlin-http4k-exposed"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["data-endpoint", "chart-payload", "json-response"],
+      "rank": 88,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/kotlin-http4k-exposed-data-endpoint-example.kt",
+      "category": "api",
+      "summary": "http4k data endpoint example returning an Exposed-backed Plotly-style series payload.",
+      "stacks": ["kotlin-http4k-exposed"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["data-endpoint", "chart-payload", "json-response"],
+      "rank": 99,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/kotlin-http4k-exposed-example/src/main/kotlin/example/Main.kt",
+      "category": "api",
+      "summary": "Runnable Kotlin runtime bundle with JSON, fragment, and chart-data endpoints for Docker-backed verification.",
+      "stacks": ["kotlin-http4k-exposed"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint", "add-smoke-tests"],
+      "patterns": ["http-route", "runtime-bundle", "docker-smoke"],
+      "rank": 101,
+      "stability": "verified-runtime"
+    },
+    {
       "path": "examples/canonical-api/clojure-kit-nextjdbc-hiccup-api-endpoint-example.md",
       "category": "api",
       "summary": "Kit-flavored notes for a Clojure JSON endpoint backed by next.jdbc.",

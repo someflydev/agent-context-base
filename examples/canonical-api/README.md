@@ -14,6 +14,10 @@ Primary files in this category:
 - `scala-tapir-http4s-zio-html-fragment-example.scala`
 - `scala-tapir-http4s-zio-data-endpoint-example.scala`
 - `scala-tapir-http4s-zio-example/src/main/scala/Main.scala`
+- `kotlin-http4k-exposed-api-endpoint-example.kt`
+- `kotlin-http4k-exposed-html-fragment-example.kt`
+- `kotlin-http4k-exposed-data-endpoint-example.kt`
+- `kotlin-http4k-exposed-example/src/main/kotlin/example/Main.kt`
 - `clojure-kit-nextjdbc-hiccup-api-endpoint-example.clj`
 - `clojure-kit-nextjdbc-hiccup-html-fragment-example.clj`
 - `clojure-kit-nextjdbc-hiccup-data-endpoint-example.clj`
@@ -72,6 +76,22 @@ Primary files in this category:
   Verification level: smoke-verified
   Harness: scala_tapir_http4s_zio_min_app
   Last verified by: verification/examples/scala/test_scala_tapir_http4s_zio_examples.py
+- `kotlin-http4k-exposed-api-endpoint-example.kt`
+  Verification level: syntax-checked
+  Harness: kotlin_http4k_exposed_min_app
+  Last verified by: verification/examples/kotlin/test_http4k_exposed_examples.py
+- `kotlin-http4k-exposed-html-fragment-example.kt`
+  Verification level: syntax-checked
+  Harness: kotlin_http4k_exposed_min_app
+  Last verified by: verification/examples/kotlin/test_http4k_exposed_examples.py
+- `kotlin-http4k-exposed-data-endpoint-example.kt`
+  Verification level: syntax-checked
+  Harness: kotlin_http4k_exposed_min_app
+  Last verified by: verification/examples/kotlin/test_http4k_exposed_examples.py
+- `kotlin-http4k-exposed-example/src/main/kotlin/example/Main.kt`
+  Verification level: smoke-verified
+  Harness: kotlin_http4k_exposed_min_app
+  Last verified by: verification/examples/kotlin/test_http4k_exposed_examples.py
 - `clojure-kit-nextjdbc-hiccup-api-endpoint-example.clj`
   Verification level: syntax-checked
   Harness: clojure_kit_nextjdbc_hiccup_min_app
