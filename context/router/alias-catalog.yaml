@@ -115,6 +115,10 @@ stacks:
     target: context/stacks/elixir-phoenix.md
   - alias: liveview
     target: context/stacks/elixir-phoenix.md
+  - alias: ruby
+    target: context/stacks/ruby-hanami.md
+  - alias: hanami
+    target: context/stacks/ruby-hanami.md
   - alias: redis
     target: context/stacks/redis-keydb-mongo.md
   - alias: keydb

@@ -30,6 +30,8 @@ Infer the active stack from repo signals, touched files, and user language.
   - load `context/stacks/go-echo.md`
 - `mix.exs`, `phoenix`, `lib/..._web/router.ex`, `lib/..._web/controllers`
   - load `context/stacks/elixir-phoenix.md`
+- `Gemfile`, `config.ru`, `app/router.rb`, `app/actions/**/*.rb`, `hanami`
+  - load `context/stacks/ruby-hanami.md`
 
 ## Storage And Infra Signals
 
@@ -80,6 +82,8 @@ Infer the active stack from repo signals, touched files, and user language.
 - "Add a Phoenix release path for Dokku"
   - `context/stacks/elixir-phoenix.md`
   - `context/stacks/dokku-conventions.md`
+- "Add a JSON, fragment, or chart endpoint to my Hanami service"
+  - `context/stacks/ruby-hanami.md`
 - "Use Polars to reshape query output in FastAPI"
   - `context/stacks/python-fastapi-uv-ruff-orjson-polars.md`
   - `context/stacks/duckdb-trino-polars.md` if the change also touches analytical storage

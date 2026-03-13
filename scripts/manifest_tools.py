@@ -82,6 +82,7 @@ STACK_PATHS = {
     "rust-axum-modern": "context/stacks/rust-axum-modern.md",
     "go-echo": "context/stacks/go-echo.md",
     "elixir-phoenix": "context/stacks/elixir-phoenix.md",
+    "ruby-hanami": "context/stacks/ruby-hanami.md",
     "redis-keydb-mongo": "context/stacks/redis-keydb-mongo.md",
     "duckdb-trino-polars": "context/stacks/duckdb-trino-polars.md",
     "nats-jetstream": "context/stacks/nats-jetstream.md",

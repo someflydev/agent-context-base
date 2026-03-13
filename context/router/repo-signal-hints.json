@@ -125,6 +125,18 @@
       "guidance": "Router and controller files are the strongest Phoenix implementation signals."
     },
     {
+      "name": "ruby-hanami",
+      "patterns": [
+        "Gemfile",
+        "config.ru",
+        "app/router.rb",
+        "app/actions/**/*.rb",
+        "app/views/**/*.rb",
+        "app/templates/**/*.erb"
+      ],
+      "guidance": "Favor Hanami router and action files, and keep ERB fragment templates explicit when HTMX-style responses are part of the contract."
+    },
+    {
       "name": "duckdb-trino-polars",
       "patterns": [
         "app/pipeline.py",
