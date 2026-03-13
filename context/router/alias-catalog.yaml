@@ -65,6 +65,14 @@ stacks:
     target: context/stacks/scala-tapir-http4s-zio.md
   - alias: zio
     target: context/stacks/scala-tapir-http4s-zio.md
+  - alias: clojure
+    target: context/stacks/clojure-kit-nextjdbc-hiccup.md
+  - alias: kit
+    target: context/stacks/clojure-kit-nextjdbc-hiccup.md
+  - alias: next.jdbc
+    target: context/stacks/clojure-kit-nextjdbc-hiccup.md
+  - alias: hiccup
+    target: context/stacks/clojure-kit-nextjdbc-hiccup.md
   - alias: zig
     target: context/stacks/zig-zap-jetzig.md
   - alias: zap

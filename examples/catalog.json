@@ -277,6 +277,83 @@
       "stability": "verified-runtime"
     },
     {
+      "path": "examples/canonical-api/clojure-kit-nextjdbc-hiccup-api-endpoint-example.md",
+      "category": "api",
+      "summary": "Kit-flavored notes for a Clojure JSON endpoint backed by next.jdbc.",
+      "stacks": ["clojure-kit-nextjdbc-hiccup"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["http-route", "json-response", "service-boundary"],
+      "rank": 89,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/clojure-kit-nextjdbc-hiccup-api-endpoint-example.clj",
+      "category": "api",
+      "summary": "Kit-style route example using next.jdbc to shape a JSON API response.",
+      "stacks": ["clojure-kit-nextjdbc-hiccup"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["http-route", "json-response", "service-boundary"],
+      "rank": 98,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/clojure-kit-nextjdbc-hiccup-html-fragment-example.md",
+      "category": "api",
+      "summary": "Hiccup fragment endpoint notes for HTMX-style partial updates in Kit-flavored services.",
+      "stacks": ["clojure-kit-nextjdbc-hiccup"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["html-fragment", "partial-update", "reactive-html"],
+      "rank": 88,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/clojure-kit-nextjdbc-hiccup-html-fragment-example.clj",
+      "category": "api",
+      "summary": "Hiccup fragment route example returning stable HTMX-friendly HTML markers.",
+      "stacks": ["clojure-kit-nextjdbc-hiccup"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["html-fragment", "partial-update", "reactive-html"],
+      "rank": 97,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/clojure-kit-nextjdbc-hiccup-data-endpoint-example.md",
+      "category": "api",
+      "summary": "Chart-oriented Clojure endpoint notes for interactive data services.",
+      "stacks": ["clojure-kit-nextjdbc-hiccup"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["data-endpoint", "chart-payload", "json-response"],
+      "rank": 88,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/clojure-kit-nextjdbc-hiccup-data-endpoint-example.clj",
+      "category": "api",
+      "summary": "next.jdbc data endpoint example returning a Plotly-style series payload.",
+      "stacks": ["clojure-kit-nextjdbc-hiccup"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["data-endpoint", "chart-payload", "json-response"],
+      "rank": 99,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/clojure-kit-nextjdbc-hiccup-example/src/clojure_kit_nextjdbc_hiccup_example/core.clj",
+      "category": "api",
+      "summary": "Runnable Clojure runtime bundle with JSON, fragment, and chart-data endpoints for Docker-backed verification.",
+      "stacks": ["clojure-kit-nextjdbc-hiccup"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint", "add-smoke-tests"],
+      "patterns": ["http-route", "runtime-bundle", "docker-smoke"],
+      "rank": 101,
+      "stability": "verified-runtime"
+    },
+    {
       "path": "examples/canonical-api/typescript-hono-handler-example.ts",
       "category": "api",
       "summary": "Hono plus TSX route example for the Bun-first backend path.",

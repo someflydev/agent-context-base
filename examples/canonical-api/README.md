@@ -14,6 +14,10 @@ Primary files in this category:
 - `scala-tapir-http4s-zio-html-fragment-example.scala`
 - `scala-tapir-http4s-zio-data-endpoint-example.scala`
 - `scala-tapir-http4s-zio-example/src/main/scala/Main.scala`
+- `clojure-kit-nextjdbc-hiccup-api-endpoint-example.clj`
+- `clojure-kit-nextjdbc-hiccup-html-fragment-example.clj`
+- `clojure-kit-nextjdbc-hiccup-data-endpoint-example.clj`
+- `clojure-kit-nextjdbc-hiccup-example/src/clojure_kit_nextjdbc_hiccup_example/core.clj`
 - `zig-zap-json-endpoint-example.zig`
 - `zig-jetzig-html-fragment-example.zig`
 - `zig-zap-data-endpoint-example.zig`
@@ -68,6 +72,22 @@ Primary files in this category:
   Verification level: smoke-verified
   Harness: scala_tapir_http4s_zio_min_app
   Last verified by: verification/examples/scala/test_scala_tapir_http4s_zio_examples.py
+- `clojure-kit-nextjdbc-hiccup-api-endpoint-example.clj`
+  Verification level: syntax-checked
+  Harness: clojure_kit_nextjdbc_hiccup_min_app
+  Last verified by: verification/examples/clojure/test_kit_nextjdbc_hiccup_examples.py
+- `clojure-kit-nextjdbc-hiccup-html-fragment-example.clj`
+  Verification level: syntax-checked
+  Harness: clojure_kit_nextjdbc_hiccup_min_app
+  Last verified by: verification/examples/clojure/test_kit_nextjdbc_hiccup_examples.py
+- `clojure-kit-nextjdbc-hiccup-data-endpoint-example.clj`
+  Verification level: syntax-checked
+  Harness: clojure_kit_nextjdbc_hiccup_min_app
+  Last verified by: verification/examples/clojure/test_kit_nextjdbc_hiccup_examples.py
+- `clojure-kit-nextjdbc-hiccup-example/src/clojure_kit_nextjdbc_hiccup_example/core.clj`
+  Verification level: smoke-verified
+  Harness: clojure_kit_nextjdbc_hiccup_min_app
+  Last verified by: verification/examples/clojure/test_kit_nextjdbc_hiccup_examples.py
 - `zig-zap-json-endpoint-example.zig`
   Verification level: syntax-checked
   Harness: zig_zap_jetzig_min_app

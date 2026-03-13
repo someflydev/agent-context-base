@@ -398,6 +398,118 @@ examples:
     docker_supported: true
     scenario_harness: scala_tapir_http4s_zio_min_app
     confidence: medium
+  - name: clojure-kit-nextjdbc-hiccup-api-endpoint-example-doc
+    path: examples/canonical-api/clojure-kit-nextjdbc-hiccup-api-endpoint-example.md
+    language: markdown
+    stack_tags:
+      - clojure-kit-nextjdbc-hiccup
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: clojure_kit_nextjdbc_hiccup_min_app
+    confidence: medium
+  - name: clojure-kit-nextjdbc-hiccup-api-endpoint-example
+    path: examples/canonical-api/clojure-kit-nextjdbc-hiccup-api-endpoint-example.clj
+    language: clojure
+    stack_tags:
+      - clojure-kit-nextjdbc-hiccup
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - next.jdbc query surface
+      - kit route shape
+    docker_supported: false
+    scenario_harness: clojure_kit_nextjdbc_hiccup_min_app
+    confidence: medium
+  - name: clojure-kit-nextjdbc-hiccup-html-fragment-example-doc
+    path: examples/canonical-api/clojure-kit-nextjdbc-hiccup-html-fragment-example.md
+    language: markdown
+    stack_tags:
+      - clojure-kit-nextjdbc-hiccup
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: clojure_kit_nextjdbc_hiccup_min_app
+    confidence: medium
+  - name: clojure-kit-nextjdbc-hiccup-html-fragment-example
+    path: examples/canonical-api/clojure-kit-nextjdbc-hiccup-html-fragment-example.clj
+    language: clojure
+    stack_tags:
+      - clojure-kit-nextjdbc-hiccup
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - hiccup fragment markers
+      - htmx-friendly route
+    docker_supported: false
+    scenario_harness: clojure_kit_nextjdbc_hiccup_min_app
+    confidence: medium
+  - name: clojure-kit-nextjdbc-hiccup-data-endpoint-example-doc
+    path: examples/canonical-api/clojure-kit-nextjdbc-hiccup-data-endpoint-example.md
+    language: markdown
+    stack_tags:
+      - clojure-kit-nextjdbc-hiccup
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: clojure_kit_nextjdbc_hiccup_min_app
+    confidence: medium
+  - name: clojure-kit-nextjdbc-hiccup-data-endpoint-example
+    path: examples/canonical-api/clojure-kit-nextjdbc-hiccup-data-endpoint-example.clj
+    language: clojure
+    stack_tags:
+      - clojure-kit-nextjdbc-hiccup
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - chart payload shape
+      - next.jdbc data route
+    docker_supported: false
+    scenario_harness: clojure_kit_nextjdbc_hiccup_min_app
+    confidence: medium
+  - name: clojure-kit-nextjdbc-hiccup-runtime-example
+    path: examples/canonical-api/clojure-kit-nextjdbc-hiccup-example/src/clojure_kit_nextjdbc_hiccup_example/core.clj
+    language: clojure
+    stack_tags:
+      - clojure-kit-nextjdbc-hiccup
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - docker build
+      - container boots
+      - health request
+      - json api request
+      - html fragment request
+      - chart dataset request
+    docker_supported: true
+    scenario_harness: clojure_kit_nextjdbc_hiccup_min_app
+    confidence: medium
   - name: typescript-hono-handler-example
     path: examples/canonical-api/typescript-hono-handler-example.ts
     language: typescript

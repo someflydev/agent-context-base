@@ -44,6 +44,16 @@
       "guidance": "Use Tapir for typed contracts, keep http4s route wiring explicit, and let ZIO define effect boundaries."
     },
     {
+      "name": "clojure-kit-nextjdbc-hiccup",
+      "patterns": [
+        "deps.edn",
+        "src/**/*.clj",
+        "resources/system.edn",
+        "test/**/*.clj"
+      ],
+      "guidance": "Use Kit-style Integrant wiring, keep Reitit routes explicit, and let next.jdbc plus Hiccup define data and fragment boundaries."
+    },
+    {
       "name": "zig-zap-jetzig",
       "patterns": [
         "build.zig",
@@ -131,6 +141,7 @@
         "src/routes/*.ts",
         "src/routes/*.tsx",
         "src/main.nim",
+        "src/**/*.clj",
         "src/main.zig",
         "cmd/server/*.go",
         "lib/*_web/router.ex"

@@ -76,15 +76,16 @@ The base now gives explicit support to:
 - TypeScript with Hono, Bun, Drizzle ORM, and TSX
 - Nim with Jester and HappyX
 - Scala with Tapir, http4s, and ZIO
+- Clojure with Kit, `next.jdbc`, and Hiccup
 - Rust with Axum
 - Go with Echo and templ
 - Elixir with Phoenix
 - Redis or KeyDB, MongoDB, DuckDB, Trino, NATS JetStream, Meilisearch, TimescaleDB, Elasticsearch, and Qdrant
 - prompt-first repo workflows and Dokku deployment conventions
 
-It also leaves clean extension space for additional stacks such as Zig, Clojure, Kotlin, Crystal, OCaml, and Dart without forcing them into the initial file set.
+It also leaves clean extension space for additional stacks such as Zig, Kotlin, Crystal, OCaml, and Dart without forcing them into the initial file set.
 
-Those extension paths remain intentionally legible for framework families such as Zig plus Zap plus Jetzig, Clojure plus Kit plus next.jdbc plus Hiccup, Kotlin plus http4k plus Exposed, Crystal plus Kemal plus Avram, OCaml plus Dream plus Caqti plus TyXML, and Dart plus Dart Frog.
+Those extension paths remain intentionally legible for framework families such as Zig plus Zap plus Jetzig, Kotlin plus http4k plus Exposed, Crystal plus Kemal plus Avram, OCaml plus Dream plus Caqti plus TyXML, and Dart plus Dart Frog.
 
 ## Repository Shape
 

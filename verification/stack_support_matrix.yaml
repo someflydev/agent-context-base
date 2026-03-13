@@ -40,6 +40,18 @@ stacks:
       - storage-backed Scala example
       - richer middleware or auth example
     notes: Docker-backed smoke coverage is present for the runnable bundle; source examples stay structure-verified.
+  - stack: clojure-kit-nextjdbc-hiccup
+    support_level: 3
+    verified_examples:
+      - clojure-kit-nextjdbc-hiccup-api-endpoint-example
+      - clojure-kit-nextjdbc-hiccup-html-fragment-example
+      - clojure-kit-nextjdbc-hiccup-data-endpoint-example
+      - clojure-kit-nextjdbc-hiccup-runtime-example
+    missing_verification:
+      - native Clojure compile-aware check
+      - storage-backed Clojure example beyond in-memory H2
+      - richer Kit middleware or auth example
+    notes: Docker-backed smoke coverage is present for the runnable bundle; source examples stay structure-verified.
   - stack: nim-jester-happyx
     support_level: 3
     verified_examples:
