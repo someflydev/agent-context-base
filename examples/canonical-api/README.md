@@ -10,6 +10,10 @@ Primary files in this category:
 - `nim-happyx-html-fragment-example.nim`
 - `nim-jester-data-endpoint-example.nim`
 - `nim-jester-happyx-example/main.nim`
+- `zig-zap-json-endpoint-example.zig`
+- `zig-jetzig-html-fragment-example.zig`
+- `zig-zap-data-endpoint-example.zig`
+- `zig-zap-jetzig-example/main.zig`
 - `typescript-hono-handler-example.ts`
 - `rust-axum-route-example.rs`
 - `rust-axum-example/src/main.rs`
@@ -44,6 +48,22 @@ Primary files in this category:
   Verification level: smoke-verified
   Harness: nim_jester_happyx_min_app
   Last verified by: verification/examples/nim/test_nim_jester_happyx_examples.py
+- `zig-zap-json-endpoint-example.zig`
+  Verification level: syntax-checked
+  Harness: zig_zap_jetzig_min_app
+  Last verified by: verification/examples/zig/test_zig_zap_jetzig_examples.py
+- `zig-jetzig-html-fragment-example.zig`
+  Verification level: syntax-checked
+  Harness: zig_zap_jetzig_min_app
+  Last verified by: verification/examples/zig/test_zig_zap_jetzig_examples.py
+- `zig-zap-data-endpoint-example.zig`
+  Verification level: syntax-checked
+  Harness: zig_zap_jetzig_min_app
+  Last verified by: verification/examples/zig/test_zig_zap_jetzig_examples.py
+- `zig-zap-jetzig-example/main.zig`
+  Verification level: smoke-verified
+  Harness: zig_zap_jetzig_min_app
+  Last verified by: verification/examples/zig/test_zig_zap_jetzig_examples.py
 - `go-echo-handler-example.go`
   Verification level: syntax-checked
   Harness: go_echo_min_app

@@ -1,0 +1,76 @@
+schema_version: 2
+name: backend-api-zig-zap-jetzig
+description: Preferred Zig backend profile using Zap for transport and Jetzig-style view patterns for explicit HTML fragments.
+archetype: backend-api-service
+primary_stack: zig-zap-jetzig
+secondary_stacks:
+  - redis-keydb-mongo
+triggers:
+  - zig api
+  - zap backend
+  - jetzig fragment
+aliases:
+  - zig service
+  - zap route
+required_context:
+  - context/doctrine/core-principles.md
+  - context/doctrine/testing-philosophy.md
+  - context/doctrine/compose-port-and-data-isolation.md
+  - context/workflows/add-api-endpoint.md
+  - context/stacks/zig-zap-jetzig.md
+  - context/archetypes/backend-api-service.md
+optional_context:
+  - context/workflows/add-smoke-tests.md
+  - context/workflows/add-storage-integration.md
+  - context/workflows/post-flight-refinement.md
+  - context/doctrine/canonical-examples.md
+preferred_examples:
+  - examples/canonical-api/zig-zap-json-endpoint-example.zig
+  - examples/canonical-api/zig-jetzig-html-fragment-example.zig
+  - examples/canonical-api/zig-zap-data-endpoint-example.zig
+  - examples/canonical-api/zig-zap-jetzig-example/main.zig
+recommended_templates:
+  - templates/readme/README.template.md
+  - templates/agent-md/AGENT.template.md
+  - templates/claude-md/CLAUDE.template.md
+  - templates/compose/docker-compose.template.yaml
+  - templates/compose/docker-compose-test.template.yaml
+  - templates/manifest/profile-summary.template.yaml
+repo_signals:
+  - build.zig
+  - build.zig.zon
+  - src/main.zig
+  - src/views/
+task_hints:
+  - add-api-endpoint
+  - add-smoke-tests
+  - add-storage-integration
+  - post-flight-refinement
+warnings:
+  - Keep Zap request handlers narrow and push dataset or fragment shaping into named helpers.
+  - Use Jetzig view files when HTML fragments are a contract surface instead of embedding large HTML strings everywhere.
+  - Prefer Docker-backed smoke checks so verification does not depend on host Zig tooling.
+bootstrap_defaults:
+  - include_docker_compose
+  - include_smoke_tests
+  - include_integration_tests
+  - include_generated_profile
+compose_files:
+  - docker-compose.yml
+  - docker-compose.test.yml
+compose_project_name_dev: "{repo_slug}"
+compose_project_name_test: "{repo_slug}-test"
+port_band_app_dev: 14000-14099
+port_band_app_test: 15000-15099
+port_band_data_dev: 24000-24099
+port_band_data_test: 25000-25099
+data_isolation:
+  - docker/volumes/dev
+  - docker/volumes/test
+  - destructive test cleanup must stay scoped to docker-compose.test.yml resources only
+dokku_relevance: optional
+smoke_test_expectations:
+  - boot health route
+  - representative JSON API check
+  - fragment or chart-data route check
+prompt_first_support: supported

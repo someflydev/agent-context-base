@@ -112,6 +112,94 @@
       "stability": "verified-runtime"
     },
     {
+      "path": "examples/canonical-api/zig-zap-json-endpoint-example.md",
+      "category": "api",
+      "summary": "Zap JSON endpoint notes for the Zig backend stack.",
+      "stacks": ["zig-zap-jetzig"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["http-route", "json-response", "service-boundary"],
+      "rank": 89,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/zig-zap-json-endpoint-example.zig",
+      "category": "api",
+      "summary": "Minimal Zap route example for a JSON health payload.",
+      "stacks": ["zig-zap-jetzig"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["http-route", "json-response"],
+      "rank": 98,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/zig-jetzig-html-fragment-example.md",
+      "category": "api",
+      "summary": "Jetzig fragment endpoint notes for HTMX-style partial updates.",
+      "stacks": ["zig-zap-jetzig"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["html-fragment", "reactive-html", "partial-update"],
+      "rank": 88,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/zig-jetzig-html-fragment-example.zig",
+      "category": "api",
+      "summary": "Jetzig view example rendering an HTMX-friendly fragment template.",
+      "stacks": ["zig-zap-jetzig"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["html-fragment", "reactive-html", "partial-update"],
+      "rank": 97,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/zig-jetzig-html-fragment-template-example.zmpl",
+      "category": "api",
+      "summary": "Jetzig companion template for the HTMX-style fragment example.",
+      "stacks": ["zig-zap-jetzig"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["html-fragment", "template-surface", "partial-update"],
+      "rank": 87,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/zig-zap-data-endpoint-example.md",
+      "category": "api",
+      "summary": "Chart-oriented Zig endpoint notes for interactive data services.",
+      "stacks": ["zig-zap-jetzig"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["data-endpoint", "chart-payload", "json-response"],
+      "rank": 88,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/zig-zap-data-endpoint-example.zig",
+      "category": "api",
+      "summary": "Zap data endpoint example returning a Plotly-style series payload.",
+      "stacks": ["zig-zap-jetzig"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["data-endpoint", "chart-payload", "json-response"],
+      "rank": 99,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/zig-zap-jetzig-example/main.zig",
+      "category": "api",
+      "summary": "Runnable Zig runtime bundle with JSON, fragment, and chart-data endpoints for Docker-backed verification.",
+      "stacks": ["zig-zap-jetzig"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint", "add-smoke-tests"],
+      "patterns": ["http-route", "runtime-bundle", "docker-smoke"],
+      "rank": 101,
+      "stability": "verified-runtime"
+    },
+    {
       "path": "examples/canonical-api/typescript-hono-handler-example.ts",
       "category": "api",
       "summary": "Hono plus TSX route example for the Bun-first backend path.",
