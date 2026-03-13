@@ -1,18 +1,23 @@
 # Context Evolution
 
-This changelog records durable structural changes to the base itself.
+This changelog records durable architectural changes to the base itself.
 
-## 2026-03-12: Third Pass Reliability And Operations
+## 2026-03-13: Documentation Refactor
 
-- added `context/anchors/` for compact assistant memory anchors
-- added stop-condition doctrine and session-start guidance
-- added machine-readable context weighting and repo signal hints
-- added canonical example metadata plus ranking support
-- added prompt-first repo analysis, pattern diff tooling, and full context validation
-- added deployment readiness checklists, failure-mode docs, observability examples, and minimal fixtures
-- tightened manifest and bootstrap checks for Compose `name:`, port allocation, and environment isolation
+- rewrote the root README as the front-facing entrypoint
+- reduced `AGENT.md` and `CLAUDE.md` to fast boot docs
+- compressed overlapping docs into a smaller architecture and usage hierarchy
+- simplified the visual model to a few diagrams that match the actual runtime, generation, verification, and multi-agent patterns
+- aligned the generated-repo templates with the new boot guidance
 
-## Previous State
+## 2026-03-12: Reliability And Operations Pass
 
-- v2 established manifests, canonical example directories, templates, helper scripts, and `scripts/new_repo.py`
-- v1 established the initial routing, doctrine, workflows, and stack or archetype pack split
+- added assistant anchors under `context/anchors/`
+- added context weighting, repo-signal hints, and example ranking metadata
+- added broader context validation and prompt-first repo analysis tooling
+- tightened Compose naming, port allocation, and environment-isolation checks
+
+## Earlier Milestones
+
+- v2 introduced manifests, canonical example files, templates, and `scripts/new_repo.py`
+- v1 established the split between doctrine, workflows, stacks, archetypes, and routers
