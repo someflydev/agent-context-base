@@ -1,0 +1,119 @@
+You are working inside the agent-context-base repository.
+
+Your task is to extend the system by adding support for the Ruby / Hanami backend stack.
+
+This stack should enable backend APIs that can serve:
+
+JSON API endpoints  
+HTML fragment responses suitable for HTMX-style clients  
+structured data endpoints suitable for visualization libraries such as Plotly  
+
+This prompt does not directly implement the stack support.
+
+Instead, it must invoke the standardized stack-extension template defined in:
+
+PROMPT_11_t.txt
+
+You must supply the correct stack parameters so that PROMPT_11_t can generate canonical examples, verification harnesses, Dockerfiles, example registry entries, and stack support matrix updates using the repository’s standardized generation contracts.
+
+---------------------------------------------------------------------
+
+STACK PARAMETERS
+
+Provide the following inputs to PROMPT_11_t.
+
+STACK_NAME:
+ruby-hanami
+
+LANGUAGE:
+Ruby
+
+FRAMEWORK:
+Hanami
+
+PRIMARY_LIBS:
+hanami-router  
+hanami-controller  
+hanami-view  
+sequel or rom-rb for persistence (examples may use sqlite)
+
+ARCHETYPE_COMPATIBILITY:
+
+backend-api  
+htmx-fragment-server  
+data-endpoint-service  
+
+These archetypes should support:
+
+REST-style JSON endpoints  
+HTML fragment endpoints suitable for HTMX partial updates  
+structured data responses usable for charts or dashboards  
+
+---------------------------------------------------------------------
+
+EXAMPLE TYPES
+
+The stack should generate canonical examples for the following categories.
+
+EXAMPLE_TYPES:
+
+api_endpoint  
+html_fragment_endpoint  
+data_endpoint  
+
+Examples should demonstrate typical Hanami patterns including:
+
+routing  
+controller actions  
+view rendering  
+JSON responses  
+partial HTML responses  
+
+---------------------------------------------------------------------
+
+DOCKER SUPPORT
+
+DOCKER_SUPPORT:
+true
+
+Backend examples should include Dockerfiles so verification can occur even if Ruby tooling is not installed on the host system.
+
+Dockerfiles should follow the repository’s backend example Docker contract.
+
+---------------------------------------------------------------------
+
+STACK NOTES
+
+When implementing Ruby / Hanami examples:
+
+Prefer modern Hanami 2 style structure.
+
+Use minimal project scaffolding required to demonstrate routing and controllers.
+
+Avoid unnecessary framework boilerplate.
+
+Examples should remain small and easy for assistants to read and reason about.
+
+Prefer lightweight persistence examples such as sqlite when demonstrating data endpoints.
+
+HTML fragment examples should demonstrate server-rendered partial HTML suitable for HTMX-style interactions.
+
+---------------------------------------------------------------------
+
+IMPLEMENTATION INSTRUCTION
+
+Using the parameters above, execute the stack-extension workflow defined in:
+
+PROMPT_11_t.txt
+
+Follow its generation contracts for:
+
+canonical examples  
+verification harness integration  
+Dockerfile generation  
+example registry updates  
+stack support matrix updates  
+
+Ensure the new stack becomes discoverable via the repository’s stack documentation and routing mechanisms.
+
+The result should add Ruby / Hanami support to the repository in the same structured manner as other stacks already present.
