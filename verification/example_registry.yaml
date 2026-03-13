@@ -158,6 +158,134 @@ examples:
     docker_supported: true
     scenario_harness: nim_jester_happyx_min_app
     confidence: medium
+  - name: zig-zap-json-endpoint-example-doc
+    path: examples/canonical-api/zig-zap-json-endpoint-example.md
+    language: markdown
+    stack_tags:
+      - zig-zap-jetzig
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: zig_zap_jetzig_min_app
+    confidence: medium
+  - name: zig-zap-json-endpoint-example
+    path: examples/canonical-api/zig-zap-json-endpoint-example.zig
+    language: zig
+    stack_tags:
+      - zig-zap-jetzig
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - zap route registration
+      - json response surface
+    docker_supported: false
+    scenario_harness: zig_zap_jetzig_min_app
+    confidence: medium
+  - name: zig-jetzig-html-fragment-example-doc
+    path: examples/canonical-api/zig-jetzig-html-fragment-example.md
+    language: markdown
+    stack_tags:
+      - zig-zap-jetzig
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: zig_zap_jetzig_min_app
+    confidence: medium
+  - name: zig-jetzig-html-fragment-example
+    path: examples/canonical-api/zig-jetzig-html-fragment-example.zig
+    language: zig
+    stack_tags:
+      - zig-zap-jetzig
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - jetzig renderTemplate surface
+      - htmx-friendly fragment template
+    docker_supported: false
+    scenario_harness: zig_zap_jetzig_min_app
+    confidence: medium
+  - name: zig-jetzig-html-fragment-template-example
+    path: examples/canonical-api/zig-jetzig-html-fragment-template-example.zmpl
+    language: text
+    stack_tags:
+      - zig-zap-jetzig
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - htmx fragment markers
+      - fragment class contract
+    docker_supported: false
+    scenario_harness: zig_zap_jetzig_min_app
+    confidence: medium
+  - name: zig-zap-data-endpoint-example-doc
+    path: examples/canonical-api/zig-zap-data-endpoint-example.md
+    language: markdown
+    stack_tags:
+      - zig-zap-jetzig
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: zig_zap_jetzig_min_app
+    confidence: medium
+  - name: zig-zap-data-endpoint-example
+    path: examples/canonical-api/zig-zap-data-endpoint-example.zig
+    language: zig
+    stack_tags:
+      - zig-zap-jetzig
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - chart payload shape
+      - zap data route
+    docker_supported: false
+    scenario_harness: zig_zap_jetzig_min_app
+    confidence: medium
+  - name: zig-zap-jetzig-runtime-example
+    path: examples/canonical-api/zig-zap-jetzig-example/main.zig
+    language: zig
+    stack_tags:
+      - zig-zap-jetzig
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - docker build
+      - container boots
+      - health request
+      - json api request
+      - html fragment request
+      - chart dataset request
+    docker_supported: true
+    scenario_harness: zig_zap_jetzig_min_app
+    confidence: medium
   - name: typescript-hono-handler-example
     path: examples/canonical-api/typescript-hono-handler-example.ts
     language: typescript

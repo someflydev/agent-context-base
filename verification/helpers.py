@@ -45,6 +45,8 @@ EXAMPLE_SUPPORT_FILENAMES = {
     "README.md",
     "catalog.json",
     "Dockerfile",
+    "build.zig",
+    "build.zig.zon",
     "requirements.txt",
     "go.mod",
     "Cargo.toml",

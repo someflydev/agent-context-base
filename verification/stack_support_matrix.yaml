@@ -40,6 +40,18 @@ stacks:
       - storage-backed Nim example
       - richer HappyX component runtime example
     notes: Docker-backed smoke coverage is present for the runnable bundle; source examples stay structure-verified.
+  - stack: zig-zap-jetzig
+    support_level: 3
+    verified_examples:
+      - zig-zap-json-endpoint-example
+      - zig-jetzig-html-fragment-example
+      - zig-zap-data-endpoint-example
+      - zig-zap-jetzig-runtime-example
+    missing_verification:
+      - native Zig compile-aware check
+      - richer Jetzig runtime bundle
+      - storage-backed Zig example
+    notes: Docker-backed smoke coverage is present for the Zap runtime bundle; Jetzig examples stay structure-verified.
   - stack: rust-axum-modern
     support_level: 3
     verified_examples:
