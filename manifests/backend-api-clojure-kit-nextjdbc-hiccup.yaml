@@ -1,0 +1,77 @@
+schema_version: 2
+name: backend-api-clojure-kit-nextjdbc-hiccup
+description: Preferred Clojure backend profile using Kit-style wiring plus next.jdbc and Hiccup for API and fragment services.
+archetype: backend-api-service
+primary_stack: clojure-kit-nextjdbc-hiccup
+secondary_stacks:
+  - redis-keydb-mongo
+triggers:
+  - clojure api
+  - kit service
+  - next.jdbc backend
+  - hiccup fragment
+aliases:
+  - clojure kit
+  - kit hiccup
+required_context:
+  - context/doctrine/core-principles.md
+  - context/doctrine/testing-philosophy.md
+  - context/doctrine/compose-port-and-data-isolation.md
+  - context/workflows/add-api-endpoint.md
+  - context/stacks/clojure-kit-nextjdbc-hiccup.md
+  - context/archetypes/backend-api-service.md
+optional_context:
+  - context/workflows/add-smoke-tests.md
+  - context/workflows/add-storage-integration.md
+  - context/workflows/post-flight-refinement.md
+  - context/doctrine/canonical-examples.md
+preferred_examples:
+  - examples/canonical-api/clojure-kit-nextjdbc-hiccup-api-endpoint-example.clj
+  - examples/canonical-api/clojure-kit-nextjdbc-hiccup-html-fragment-example.clj
+  - examples/canonical-api/clojure-kit-nextjdbc-hiccup-data-endpoint-example.clj
+  - examples/canonical-api/clojure-kit-nextjdbc-hiccup-example/src/clojure_kit_nextjdbc_hiccup_example/core.clj
+recommended_templates:
+  - templates/readme/README.template.md
+  - templates/agent-md/AGENT.template.md
+  - templates/claude-md/CLAUDE.template.md
+  - templates/compose/docker-compose.template.yaml
+  - templates/compose/docker-compose-test.template.yaml
+  - templates/manifest/profile-summary.template.yaml
+repo_signals:
+  - deps.edn
+  - src/
+  - src/**/routes.clj
+  - src/**/db.clj
+task_hints:
+  - add-api-endpoint
+  - add-smoke-tests
+  - add-storage-integration
+  - post-flight-refinement
+warnings:
+  - Keep Kit-style Integrant and route wiring explicit instead of collapsing the service into a single namespace.
+  - Use Docker-backed smoke verification by default so runnable examples do not depend on host Clojure tooling.
+bootstrap_defaults:
+  - include_docker_compose
+  - include_smoke_tests
+  - include_integration_tests
+  - include_generated_profile
+compose_files:
+  - docker-compose.yml
+  - docker-compose.test.yml
+compose_project_name_dev: "{repo_slug}"
+compose_project_name_test: "{repo_slug}-test"
+port_band_app_dev: 14000-14099
+port_band_app_test: 15000-15099
+port_band_data_dev: 24000-24099
+port_band_data_test: 25000-25099
+data_isolation:
+  - docker/volumes/dev
+  - docker/volumes/test
+  - destructive test cleanup must never touch dev data roots
+dokku_relevance: optional
+smoke_test_expectations:
+  - boot health route
+  - one JSON endpoint check backed by next.jdbc
+  - one Hiccup fragment check
+  - one chart dataset check
+prompt_first_support: supported
