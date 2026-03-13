@@ -1,0 +1,135 @@
+# Memory Operating Rules
+
+Use this file as the operational playbook for assistant continuity behavior.
+
+## Core Rules
+
+- read `MEMORY.md` early if it exists, after stable boot anchors and repo signals
+- treat `MEMORY.md` as current-task continuity, not as doctrine
+- prefer code and tests over `MEMORY.md` for implementation reality
+- prefer doctrine over `MEMORY.md` for policy, rules, and operating constraints
+- update `MEMORY.md` at meaningful stop points, not after every small action
+- prune or rewrite stale sections instead of endlessly appending
+- keep memory focused on the current task or current prompt batch
+- use explicit file paths and explicit prompt filenames
+- capture `Explicitly Not Doing` whenever scope control matters
+- capture the active working set whenever practical
+
+## Read Order
+
+Use this runtime order:
+
+1. stable startup files such as `AGENT.md`, `CLAUDE.md`, boot docs, and repo layout
+2. repo signals and routing files
+3. `MEMORY.md` if present
+4. latest relevant handoff snapshot if the task is clearly a resumed transfer
+5. minimal task context from doctrine, workflows, manifests, stacks, archetypes, and examples
+
+This keeps memory useful without letting it bypass routing.
+
+## How To Use `MEMORY.md`
+
+Use `MEMORY.md` to reduce reload cost by capturing:
+
+- current objective
+- current working set
+- already inspected files
+- decisions already made
+- explicitly ruled-out work
+- next concrete steps
+
+Do not use `MEMORY.md` to skip:
+
+- reading the relevant doctrine
+- checking the actual code
+- verifying prompt numbering
+- validating smoke-test or integration-test requirements
+- confirming deployment or Compose constraints
+
+## Working-Set Discipline
+
+When practical, keep `Active Working Set` limited to the files most likely to matter next.
+
+Good working sets:
+
+- 3 to 10 files for a medium task
+- explicit paths
+- changed as the task changes phase
+
+Bad working sets:
+
+- large directory globs
+- every file inspected during the whole task
+- vague labels such as "router files" or "prompt stuff"
+
+## Scope Control
+
+Use `Explicitly Not Doing` when adjacent work could create scope drift.
+
+Common examples:
+
+- not renumbering existing prompt files
+- not redesigning manifest structure
+- not broadening a smoke test into a full integration suite
+- not changing deployment wiring during a local-only fix
+
+Scope notes should be brief and active.
+
+## Freshness And Pruning
+
+Prune aggressively.
+
+Signs the file needs rewriting:
+
+- next steps refer to work that is already complete
+- the working set no longer matches the current phase
+- blockers are resolved but still listed
+- stale findings require rereading to understand what still matters
+- the file reads like a transcript
+
+If the file is getting long, rewrite it into the smallest current-state summary.
+
+## Prompt-First Compatibility
+
+For prompt-first repos, also record:
+
+- highest completed prompt filename
+- next intended prompt filename
+- numbering decisions already made
+- prompts intentionally deferred or skipped
+
+Rules:
+
+- use exact filenames such as `.prompts/005-add-smoke-surface.txt`
+- keep numbering strictly monotonic
+- do not use memory notes to justify renumbering later
+- do not refer to prompts vaguely when filenames are known
+
+## Relationship To The Context Complexity Budget
+
+`MEMORY.md` can act as a compressed checkpoint that reduces unnecessary rescanning in later turns.
+
+That is useful because it lowers reload cost inside the context complexity budget.
+
+But memory does not authorize broader loading by itself.
+
+It should:
+
+- reduce repeated repo scanning
+- reduce duplicate file inspection
+- reduce restatement of already settled scope
+
+It should not:
+
+- bypass doctrine
+- replace manifest selection
+- skip code verification
+- justify loading extra unrelated context
+
+## Handoff Rule
+
+When the pause is meaningful and likely to cross sessions, create a handoff snapshot in addition to refreshing `MEMORY.md`.
+
+Use `MEMORY.md` for live continuity.
+
+Use handoff snapshots for durable transfer.
