@@ -1,0 +1,315 @@
+You are operating inside the agent-context-base repository.
+
+The repository has recently gained many architectural features and documentation files.
+
+Your task is to perform a full documentation audit and refactor so the repository becomes clearer, more concise, and easier for both developers and AI assistants to understand.
+
+This is a documentation restructuring task, not a codebase rewrite.
+
+The goal is to ensure that:
+
+• the root README.md becomes an excellent front-facing document  
+• AGENT.md and CLAUDE.md are optimized for assistant runtime efficiency  
+• documentation inside docs/ is concise, non-redundant, and well-organized  
+• diagrams accurately reflect the system  
+• example READMEs remain accurate  
+
+---------------------------------------------------------------------
+
+SCOPE OF ANALYSIS
+
+First analyze the entire repository.
+
+However:
+
+DO NOT analyze files inside:
+
+.docs/
+.prompts/
+
+during the initial system analysis.
+
+The goal of the initial analysis is to understand the system architecture from the code, examples, and operational artifacts.
+
+Relevant areas may include:
+
+scripts  
+verification  
+examples  
+context layers  
+runtime artifacts  
+generation tools  
+new_repo.py  
+memory systems  
+context routing  
+stack definitions  
+
+This analysis will inform how documentation should be written.
+
+---------------------------------------------------------------------
+
+PHASE 1 — REPOSITORY STRUCTURE ANALYSIS
+
+Analyze the repository structure and identify:
+
+• major architectural subsystems  
+• the runtime architecture  
+• how assistants interact with the system  
+• how new repositories are generated  
+• verification systems  
+• canonical example structure  
+• context architecture  
+
+From this analysis determine:
+
+• what concepts must appear in the root README  
+• what concepts belong in deeper docs  
+
+---------------------------------------------------------------------
+
+PHASE 2 — ROOT README REDESIGN
+
+Rewrite the root README.md from scratch.
+
+The new README should be:
+
+concise  
+compelling  
+clear  
+front-facing  
+
+It should hook:
+
+developers  
+AI-curious engineers  
+people exploring AI-assisted development  
+
+The README should communicate quickly:
+
+what this project is  
+why it matters  
+what problems it solves  
+how it works at a high level  
+how someone can start using it  
+
+Do NOT produce a verbose README.
+
+It should be practical and readable.
+
+---------------------------------------------------------------------
+
+REQUIRED README STRUCTURE
+
+The new README should include:
+
+1. Title + tagline  
+2. Short explanation of the system  
+3. Why this system exists  
+4. Key capabilities of the architecture  
+5. Example workflow (very concise)  
+6. What kinds of projects this supports  
+7. Links to deeper documentation  
+8. “How to understand this repository” section near the end  
+
+The README must link to documents in docs/.
+
+Provide these links using a table:
+
+Column 1: relative doc path  
+Column 2: short description (1–2 sentences)
+
+The rows should be ordered from most fundamental → most advanced.
+
+---------------------------------------------------------------------
+
+PHASE 3 — OPTIMIZE AGENT.md AND CLAUDE.md
+
+Next load:
+
+AGENT.md  
+CLAUDE.md  
+
+These files should be optimized to function as assistant runtime boot documents.
+
+They should be:
+
+minimal  
+clear  
+fast to load  
+free of redundant explanation  
+
+They should primarily:
+
+define the system  
+define assistant behavior expectations  
+define context discipline  
+point to deeper documentation  
+
+Remove unnecessary verbosity.
+
+Ensure the documents remain compatible with both:
+
+Codex  
+Claude  
+Gemini  
+
+They should function as efficient boot context files.
+
+---------------------------------------------------------------------
+
+PHASE 4 — DOCS DIRECTORY AUDIT
+
+Now load all files in:
+
+docs/
+
+Perform a documentation audit.
+
+Your goals:
+
+1. detect redundant explanations  
+2. remove unnecessary verbosity  
+3. ensure concepts appear in the correct documents  
+4. prevent documentation sprawl  
+
+Examples of issues to detect:
+
+• the same concept explained in multiple docs  
+• documents repeating architectural explanations  
+• docs that should instead reference other docs  
+• overly verbose sections  
+
+Refactor where needed.
+
+Prefer:
+
+concise explanations  
+cross-links between docs  
+
+rather than repeating large explanations.
+
+---------------------------------------------------------------------
+
+PHASE 5 — DIAGRAM VALIDATION
+
+Inspect any Mermaid diagrams in the documentation.
+
+Verify that they accurately represent:
+
+• the assistant runtime model  
+• the context system  
+• repository generation workflow  
+• multi-agent coordination patterns  
+
+Update diagrams if they are outdated.
+
+Do not add unnecessary diagrams.
+
+Ensure diagrams remain simple and readable.
+
+---------------------------------------------------------------------
+
+PHASE 6 — EXAMPLES VALIDATION
+
+Next inspect example directories.
+
+Look for README.md files inside example folders.
+
+Verify that:
+
+• the example descriptions still match the code  
+• instructions remain accurate  
+• terminology aligns with updated documentation  
+
+Do NOT rewrite examples unnecessarily.
+
+Only update READMEs if needed for accuracy.
+
+---------------------------------------------------------------------
+
+PHASE 7 — DOCUMENTATION CONSISTENCY
+
+Ensure the documentation uses consistent terminology.
+
+Examples include:
+
+assistant runtime  
+context engineering  
+canonical examples  
+verification harness  
+stack packs  
+archetypes  
+context complexity budgeting  
+
+If inconsistencies exist, normalize terminology.
+
+---------------------------------------------------------------------
+
+PHASE 8 — FINAL DOCUMENT ORGANIZATION
+
+Ensure the documentation hierarchy remains logical.
+
+Typical structure should resemble:
+
+docs/
+  usage/
+  architecture/
+  verification/
+  examples/
+
+Ensure files appear in appropriate directories.
+
+If minor reorganization improves clarity, propose it.
+
+Do not create unnecessary new documents.
+
+---------------------------------------------------------------------
+
+PHASE 9 — COMMIT-READY OUTPUT
+
+Produce commit-ready batches.
+
+Suggested grouping:
+
+Batch 1
+Root README rewrite
+
+Batch 2
+AGENT.md and CLAUDE.md optimization
+
+Batch 3
+Documentation refactor inside docs/
+
+Batch 4
+Mermaid diagram corrections
+
+Batch 5
+Example README validation updates
+
+For each batch:
+
+• state purpose  
+• list modified files  
+• provide full file contents  
+
+Do not omit files.
+
+---------------------------------------------------------------------
+
+QUALITY REQUIREMENTS
+
+Your changes must:
+
+improve clarity  
+reduce redundancy  
+maintain architectural accuracy  
+keep documentation concise  
+avoid marketing fluff  
+
+The final repository documentation should feel like a professional engineering system with clear guidance.
+
+---------------------------------------------------------------------
+
+OUTPUT
+
+Execute the full audit and produce commit-ready batches implementing the improvements.
