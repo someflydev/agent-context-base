@@ -286,6 +286,118 @@ examples:
     docker_supported: true
     scenario_harness: zig_zap_jetzig_min_app
     confidence: medium
+  - name: scala-tapir-http4s-zio-api-endpoint-example-doc
+    path: examples/canonical-api/scala-tapir-http4s-zio-api-endpoint-example.md
+    language: markdown
+    stack_tags:
+      - scala-tapir-http4s-zio
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: scala_tapir_http4s_zio_min_app
+    confidence: medium
+  - name: scala-tapir-http4s-zio-api-endpoint-example
+    path: examples/canonical-api/scala-tapir-http4s-zio-api-endpoint-example.scala
+    language: scala
+    stack_tags:
+      - scala-tapir-http4s-zio
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - tapir endpoint contract
+      - typed http4s interpreter surface
+    docker_supported: false
+    scenario_harness: scala_tapir_http4s_zio_min_app
+    confidence: medium
+  - name: scala-tapir-http4s-zio-html-fragment-example-doc
+    path: examples/canonical-api/scala-tapir-http4s-zio-html-fragment-example.md
+    language: markdown
+    stack_tags:
+      - scala-tapir-http4s-zio
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: scala_tapir_http4s_zio_min_app
+    confidence: medium
+  - name: scala-tapir-http4s-zio-html-fragment-example
+    path: examples/canonical-api/scala-tapir-http4s-zio-html-fragment-example.scala
+    language: scala
+    stack_tags:
+      - scala-tapir-http4s-zio
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - html fragment markers
+      - http4s route surface
+    docker_supported: false
+    scenario_harness: scala_tapir_http4s_zio_min_app
+    confidence: medium
+  - name: scala-tapir-http4s-zio-data-endpoint-example-doc
+    path: examples/canonical-api/scala-tapir-http4s-zio-data-endpoint-example.md
+    language: markdown
+    stack_tags:
+      - scala-tapir-http4s-zio
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: scala_tapir_http4s_zio_min_app
+    confidence: medium
+  - name: scala-tapir-http4s-zio-data-endpoint-example
+    path: examples/canonical-api/scala-tapir-http4s-zio-data-endpoint-example.scala
+    language: scala
+    stack_tags:
+      - scala-tapir-http4s-zio
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - chart payload shape
+      - tapir data route
+    docker_supported: false
+    scenario_harness: scala_tapir_http4s_zio_min_app
+    confidence: medium
+  - name: scala-tapir-http4s-zio-runtime-example
+    path: examples/canonical-api/scala-tapir-http4s-zio-example/src/main/scala/Main.scala
+    language: scala
+    stack_tags:
+      - scala-tapir-http4s-zio
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - docker build
+      - container boots
+      - health request
+      - json api request
+      - html fragment request
+      - chart dataset request
+    docker_supported: true
+    scenario_harness: scala_tapir_http4s_zio_min_app
+    confidence: medium
   - name: typescript-hono-handler-example
     path: examples/canonical-api/typescript-hono-handler-example.ts
     language: typescript

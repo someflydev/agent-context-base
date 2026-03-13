@@ -28,6 +28,18 @@ stacks:
       - middleware example
       - templ rendering example
       - storage-backed handler example
+  - stack: scala-tapir-http4s-zio
+    support_level: 3
+    verified_examples:
+      - scala-tapir-http4s-zio-api-endpoint-example
+      - scala-tapir-http4s-zio-html-fragment-example
+      - scala-tapir-http4s-zio-data-endpoint-example
+      - scala-tapir-http4s-zio-runtime-example
+    missing_verification:
+      - native sbt compile in default verification tier
+      - storage-backed Scala example
+      - richer middleware or auth example
+    notes: Docker-backed smoke coverage is present for the runnable bundle; source examples stay structure-verified.
   - stack: nim-jester-happyx
     support_level: 3
     verified_examples:

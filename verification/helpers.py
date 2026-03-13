@@ -45,6 +45,8 @@ EXAMPLE_SUPPORT_FILENAMES = {
     "README.md",
     "catalog.json",
     "Dockerfile",
+    "build.properties",
+    "build.sbt",
     "build.zig",
     "build.zig.zon",
     "requirements.txt",
