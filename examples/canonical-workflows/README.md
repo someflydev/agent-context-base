@@ -7,4 +7,4 @@ Preferred artifacts here should be:
 - short enough to use during a real session
 - tied to an existing workflow, not a new architecture layer
 - explicit about validation, docs, and commit hygiene
-
+- clearly distinct from reusable starter templates under `templates/`

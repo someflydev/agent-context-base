@@ -9,6 +9,8 @@
 3. Read `docs/repo-layout.md`
 4. Read `manifests/project-profile.yaml`
 
+If `MEMORY.md` exists, read it after the stable startup files and basic repo-signal checks.
+
 ## Repo Profile
 
 - archetype: `{{archetype}}`
@@ -16,6 +18,11 @@
 - selected manifests: `{{selected_manifests}}`
 - Dokku support: `{{dokku_status}}`
 - prompt-first support: `{{prompt_first_status}}`
+
+## Continuity
+
+- use `MEMORY.md` for current-task continuity when work spans sessions
+- use handoff snapshots for durable checkpoints when a later session or another assistant will continue
 
 ## Common Workflows
 
@@ -30,4 +37,3 @@
 {{compose_section}}
 
 {{dokku_section}}
-
