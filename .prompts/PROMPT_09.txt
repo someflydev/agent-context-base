@@ -1,0 +1,472 @@
+You are performing a focused enhancement pass on an existing `agent-context-base` repository.
+
+The repository already contains a substantial assistant-oriented context architecture, including concepts such as:
+- AGENT.md
+- CLAUDE.md
+- doctrine docs
+- workflow docs
+- stack packs
+- archetype packs
+- router docs
+- manifests
+- canonical examples
+- templates
+- context boot sequence concepts
+- operating manual concepts
+- context complexity budget concepts
+- helper scripts
+
+Your task in this pass is to add a rigorous but practical operational continuity layer built around:
+
+1. `MEMORY.md` as a runtime working-state artifact
+2. stop-hook guidance and patterns so assistants preserve state at the right times
+3. handoff snapshot artifacts for longer tasks, interrupted sessions, and derived repos
+
+This is not a greenfield redesign.
+Do not replace the architecture.
+Integrate these concepts cleanly into the existing system so they become a natural extension of the agent-context-base philosophy.
+
+The goal is to reduce mid-task context loss and improve continuity across:
+- long coding sessions
+- fresh assistant sessions
+- multi-step implementation work
+- prompt-first repo work
+- interrupted/refined tasks
+- derived repos created from this base
+- handoffs between human and assistant
+- handoffs between multiple assistants or multiple sessions of the same assistant
+
+The resulting system should help assistants avoid:
+- forgetting current objective
+- forgetting what files were already inspected
+- forgetting decisions already made
+- forgetting what was explicitly ruled out
+- re-scanning large portions of the repo unnecessarily
+- drifting scope after interruption
+- losing current stopping point
+- inventing next steps disconnected from prior work
+
+The design must strongly reflect the spirit of this ecosystem:
+- minimal relevant context loading
+- deterministic routing
+- doctrine constrained behavior
+- canonical examples
+- bounded autonomy
+- prompt-first repo compatibility
+- smoke-test-heavy philosophy
+- practical deployment awareness
+- separate future project repos rather than one giant forever-monorepo
+
+Treat memory as a runtime operational layer, not as a replacement for doctrine, manifests, code, or examples.
+
+Your output must be implementation-oriented and organized into commit-ready batches.
+
+For each batch:
+1. Give the batch number and title.
+2. Explain the purpose of the batch.
+3. List files created or updated.
+4. Provide the full contents of every created or updated file.
+5. End with:
+   - why the files belong together as one commit
+   - a suggested Tim Pope style multi-line commit message beginning with a bracketed prefix such as `[BASE_MEM_XX]`
+
+IMPORTANT CONSTRAINTS
+
+- Be concrete and practical.
+- Do not turn memory into a giant knowledge dump.
+- Do not duplicate AGENT.md, CLAUDE.md, doctrine docs, or canonical examples inside memory files.
+- Keep the memory system small, high-signal, and operational.
+- Make stop-hook guidance realistic for assistant workflows.
+- Make handoff snapshots useful in derived repos without making them mandatory for every tiny task.
+- Respect prompt-first conventions, including strictly monotonic prompt numbering and explicit filename references.
+- Keep cross-references accurate.
+- Ensure all new files fit the existing architecture cleanly.
+- Where scripts are added, use Python standard library unless a dependency is strongly justified.
+- Favor maintainability and clarity over cleverness.
+
+Your work must include the following sections and deliverables.
+
+SECTION 1 — Memory layer philosophy
+
+Briefly explain:
+- why the existing architecture benefits from a runtime memory layer
+- what `MEMORY.md` is for
+- what `MEMORY.md` is not for
+- why stop hooks matter
+- why handoff snapshots matter
+- how memory relates to doctrine, workflows, manifests, examples, code, and the operating manual
+
+Make the distinctions very clear:
+- doctrine = stable rules
+- manifests = structured context selection
+- examples = preferred implementation patterns
+- memory = current operational state
+- handoff snapshot = durable point-in-time transition artifact
+
+SECTION 2 — Recommended repository additions
+
+Design the best clean additions to the repo for this feature set.
+
+Use a structure along these lines unless a small improvement is clearly warranted:
+
+- context/
+  - memory/
+    - MEMORY.contract.md
+    - MEMORY.template.md
+    - stop-hook-guidance.md
+    - handoff-snapshots.md
+    - memory-operating-rules.md
+- examples/
+  - canonical-workflows/
+    - MEMORY.example.md
+    - HANDOFF-SNAPSHOT.example.md
+- templates/
+  - memory/
+    - MEMORY.template.md
+    - HANDOFF-SNAPSHOT.template.md
+- docs/
+  - memory-layer-overview.md
+- scripts/
+  - check_memory_freshness.py
+  - init_memory.py
+  - create_handoff_snapshot.py
+
+If you adjust the exact layout, explain briefly why.
+
+SECTION 3 — Memory contract
+
+Create a strong `context/memory/MEMORY.contract.md`.
+
+It must define:
+- what belongs in `MEMORY.md`
+- what does not belong there
+- how long it should generally stay
+- what sections are recommended
+- when to update it
+- when not to update it
+- how assistants should treat it relative to code and doctrine
+- what “fresh enough” means
+- how to keep it high-signal
+
+It should explicitly address:
+- current objective
+- inferred stack/archetype
+- active working set
+- files already inspected
+- important findings
+- decisions already made
+- explicitly not doing
+- blockers/risks
+- next steps
+- stop condition
+
+SECTION 4 — Memory template
+
+Create a practical `context/memory/MEMORY.template.md` and also a reusable starter version under `templates/memory/MEMORY.template.md`.
+
+The template should be concise, structured, and directly usable in derived repos.
+It should not be bloated.
+It should make it obvious how to capture current operational state.
+
+SECTION 5 — Stop-hook operating guidance
+
+Create `context/memory/stop-hook-guidance.md`.
+
+This file must explain:
+- what a stop hook means in this system
+- when assistants should perform a stop-hook update
+- how much should be written
+- how to summarize work without writing a diary
+- when to update `MEMORY.md`
+- when to create a handoff snapshot instead
+- when both are appropriate
+- how to avoid memory drift and stale summaries
+
+Include practical examples such as:
+- stopping after inspecting architecture but before changing code
+- stopping after making code changes but before tests
+- stopping after tests fail
+- stopping after a major subtask is complete
+- stopping before handing off to a fresh session
+
+SECTION 6 — Handoff snapshot guidance
+
+Create `context/memory/handoff-snapshots.md`.
+
+This must explain:
+- what a handoff snapshot is
+- how it differs from `MEMORY.md`
+- when derived repos should use it
+- when it is overkill
+- suggested path conventions such as:
+  - `artifacts/handoffs/`
+  - `handoffs/`
+- naming conventions
+- minimal required contents
+- how snapshots help across sessions and assistants
+- how snapshots should reference concrete files and current state
+
+Include a recommendation for when a mutable `MEMORY.md` is enough versus when a point-in-time handoff artifact should be written.
+
+SECTION 7 — Memory operating rules
+
+Create `context/memory/memory-operating-rules.md`.
+
+This should act like an operational playbook for assistants.
+It should cover:
+- read `MEMORY.md` early if present
+- treat it as current-task continuity, not as source-of-truth doctrine
+- prefer code over memory for actual implementation reality
+- prefer doctrine over memory for policy/rules
+- update memory at major stop points
+- prune or rewrite stale sections rather than endlessly appending
+- keep memory focused on current task
+- use explicit file paths
+- capture “explicitly not doing” when scope control matters
+- capture active working set whenever practical
+
+SECTION 8 — Canonical workflow examples
+
+Create real example files:
+- `examples/canonical-workflows/MEMORY.example.md`
+- `examples/canonical-workflows/HANDOFF-SNAPSHOT.example.md`
+
+These should be small but realistic and reflect your actual ecosystem, for example:
+- a FastAPI endpoint task
+- a prompt-first repo task
+- a Dokku-relevant service task
+- a smoke-test-related pause point
+
+At least one example should show:
+- current objective
+- active working set
+- decisions already made
+- explicitly not doing
+- next steps
+- stop condition
+
+At least one handoff example should show:
+- state at handoff
+- what was completed
+- what remains
+- blockers/risks
+- exact files to inspect next
+- validation or smoke-test status
+
+SECTION 9 — Templates for derived repos
+
+Create:
+- `templates/memory/MEMORY.template.md`
+- `templates/memory/HANDOFF-SNAPSHOT.template.md`
+
+Explain in `templates/README.md` if needed how these differ from canonical examples.
+
+The templates should be starter scaffolds, not polished examples.
+They should be usable by `new_repo.py` later if desired, but do not turn this into a full repo-factory feature.
+
+SECTION 10 — Integration with AGENT.md and CLAUDE.md
+
+Update `AGENT.md` and `CLAUDE.md` so they appropriately incorporate memory behavior.
+
+Do not bloat them.
+Add concise but meaningful guidance such as:
+- read `MEMORY.md` early if present
+- use memory as continuity aid
+- update memory at major stop points
+- create handoff snapshots when pausing after meaningful progress or when a fresh session/assistant is likely to continue
+
+Keep them as routers, not giant manuals.
+
+SECTION 11 — Integration with boot sequence and operating manual
+
+Update the boot sequence and/or operating manual docs if they already exist in the repo.
+
+Add guidance such as:
+- after boot anchors and repo signals, check `MEMORY.md` if present
+- memory can reduce reload cost by summarizing current task state
+- handoff snapshots are useful for recovering from interrupted long-running work
+- memory does not replace manifest/routing logic
+
+If those files do not yet exist in this repo, create minimal but coherent supporting docs in `docs/` to preserve the design.
+
+SECTION 12 — Interaction with context complexity budget
+
+Add or update documentation so the memory layer integrates cleanly with the context complexity budget philosophy.
+
+Explain:
+- `MEMORY.md` can act as a compressed checkpoint
+- using it well may reduce the amount of reloaded context in later turns
+- memory should reduce unnecessary rescanning
+- memory should not be used to bypass doctrine or skip code verification
+
+This can live in:
+- `docs/memory-layer-overview.md`
+- and/or a memory operating rules file
+- and/or a budget doctrine cross-reference if present
+
+SECTION 13 — Derived repo guidance
+
+Create documentation that clearly explains how derived repos should adopt this operational layer.
+
+Address:
+- whether every derived repo should have a `MEMORY.md`
+- when to initialize it
+- where handoff snapshots should live
+- when lightweight usage is enough
+- when more disciplined usage is appropriate
+- how this helps long prompt-driven sessions and fresh Codex sessions
+
+This guidance should be practical for the way I work:
+- one prompt run in Codex
+- quit Codex
+- start fresh Codex session for the next prompt
+- multi-step repo evolution over many sessions
+
+SECTION 14 — Scripts
+
+Implement practical helper scripts:
+
+1. `scripts/init_memory.py`
+   - creates a `MEMORY.md` from template if missing
+   - optionally initializes handoff directory structure
+   - should be simple and deterministic
+
+2. `scripts/create_handoff_snapshot.py`
+   - creates a timestamped handoff file from template
+   - optionally pulls some content from current `MEMORY.md`
+   - should not overcomplicate
+   - should support helpful CLI flags
+
+3. `scripts/check_memory_freshness.py`
+   - inspects `MEMORY.md`
+   - warns if missing key sections, obviously stale wording, or excessive size
+   - should be lightweight and practical, not magical
+
+If useful, update `scripts/README.md` to explain these.
+
+Use Python standard library only unless a strong reason exists not to.
+
+SECTION 15 — Memory freshness and pruning guidance
+
+Design clear guidance for keeping memory useful over time.
+
+Address:
+- when to rewrite versus append
+- how to recognize stale entries
+- how large `MEMORY.md` should generally remain
+- how assistants should remove no-longer-relevant content
+- how to avoid turning it into a transcript
+
+This can be part of `MEMORY.contract.md`, `memory-operating-rules.md`, or a dedicated short doc.
+
+SECTION 16 — Stop-hook trigger matrix
+
+Create a compact but useful trigger matrix in markdown that explains when to:
+- update `MEMORY.md`
+- create a handoff snapshot
+- do both
+- do neither
+
+Use realistic cases such as:
+- short trivial change
+- medium feature task midstream
+- interrupted debugging
+- failed smoke tests
+- done with one subtask but not the whole task
+- handing off to a fresh assistant session
+- prompt-first repo prompt sequence design mid-batch
+
+Put this in a doc where it is most useful.
+
+SECTION 17 — Prompt-first repo compatibility
+
+Add explicit guidance for how the memory layer should behave in prompt-first repos.
+
+Address:
+- prompt file numbering decisions already made
+- which prompts have been completed
+- next prompt intended
+- references to exact prompt filenames
+- what should be captured in memory between prompt runs
+- when a handoff snapshot is especially helpful in prompt-driven repo evolution
+
+This is especially important because I often run one full prompt in Codex, quit, then resume later in a fresh session.
+
+SECTION 18 — Quality safeguards
+
+Before generating output, internally ensure:
+- all cross-references point to files that exist after this pass
+- memory docs do not duplicate doctrine docs excessively
+- memory remains operational and current-task-oriented
+- templates remain distinct from examples
+- scripts are practical and readable
+- AGENT.md / CLAUDE.md stay concise
+- prompt-first guidance respects strictly monotonic numbering and filename-based references
+- the memory layer integrates cleanly with boot sequence, operating manual, and budget concepts
+- the result is genuinely useful for fresh Codex sessions and long-running derived repo work
+
+SECTION 19 — Commit-ready batching plan
+
+Organize the implementation into sensible batches.
+A recommended order is:
+
+- Batch 1: memory layer docs and contract
+- Batch 2: templates and canonical workflow examples
+- Batch 3: AGENT.md / CLAUDE.md / docs integration
+- Batch 4: scripts and scripts README updates
+- Batch 5: final cleanup and cross-reference consistency updates if needed
+
+You may refine or split this order if quality demands it, but explain why.
+
+SECTION 20 — Actual file generation
+
+Generate the actual full file contents for every created or updated file in each batch.
+
+Suggested file targets include:
+
+CREATED FILES
+- context/memory/MEMORY.contract.md
+- context/memory/MEMORY.template.md
+- context/memory/stop-hook-guidance.md
+- context/memory/handoff-snapshots.md
+- context/memory/memory-operating-rules.md
+- docs/memory-layer-overview.md
+- examples/canonical-workflows/MEMORY.example.md
+- examples/canonical-workflows/HANDOFF-SNAPSHOT.example.md
+- templates/memory/MEMORY.template.md
+- templates/memory/HANDOFF-SNAPSHOT.template.md
+- scripts/init_memory.py
+- scripts/create_handoff_snapshot.py
+- scripts/check_memory_freshness.py
+
+UPDATED FILES
+- AGENT.md
+- CLAUDE.md
+- scripts/README.md
+- templates/README.md
+- any existing operating-manual or boot-sequence docs that should reference memory
+- any existing docs index or README that should mention the memory layer
+
+You may adjust filenames slightly if a clearly better consistent naming choice exists, but preserve clarity and a clean repo structure.
+
+OUTPUT FORMAT REQUIREMENTS
+
+For each batch:
+1. batch heading
+2. purpose
+3. files created/updated
+4. for each file:
+   - file path line
+   - one fenced code block containing the full contents
+5. batch closing note:
+   - why this grouping makes sense as a commit
+   - suggested commit message
+
+At the very end, provide:
+1. a concise summary of what this memory/stop-hook/handoff pass adds
+2. an ordered list of suggested commit titles only
+3. any tiny follow-up suggestions that belong in a later pass, not this one
+
+Do not ask clarifying questions.
+Do not switch back into architecture-only mode.
+Perform the actual implementation pass now in commit-ready batches.
