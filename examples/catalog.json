@@ -486,6 +486,83 @@
       "stability": "verified-runtime"
     },
     {
+      "path": "examples/canonical-api/crystal-kemal-avram-api-endpoint-example.md",
+      "category": "api",
+      "summary": "Kemal plus Avram notes for a Crystal JSON endpoint.",
+      "stacks": ["crystal-kemal-avram"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["http-route", "service-boundary", "json-response"],
+      "rank": 89,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/crystal-kemal-avram-api-endpoint-example.cr",
+      "category": "api",
+      "summary": "Kemal route example with an explicit Avram query boundary and JSON envelope.",
+      "stacks": ["crystal-kemal-avram"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["http-route", "json-response", "service-boundary"],
+      "rank": 98,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/crystal-kemal-avram-html-fragment-example.md",
+      "category": "api",
+      "summary": "Kemal fragment endpoint notes for HTMX-style partial updates in Crystal services.",
+      "stacks": ["crystal-kemal-avram"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["html-fragment", "partial-update", "http-route"],
+      "rank": 88,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/crystal-kemal-avram-html-fragment-example.cr",
+      "category": "api",
+      "summary": "Kemal fragment route returning HTMX-friendly HTML markers with an Avram query surface.",
+      "stacks": ["crystal-kemal-avram"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["html-fragment", "partial-update", "http-route"],
+      "rank": 97,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/crystal-kemal-avram-data-endpoint-example.md",
+      "category": "api",
+      "summary": "Chart-oriented Crystal endpoint notes for interactive data services.",
+      "stacks": ["crystal-kemal-avram"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["data-endpoint", "chart-payload", "json-response"],
+      "rank": 88,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/crystal-kemal-avram-data-endpoint-example.cr",
+      "category": "api",
+      "summary": "Kemal data endpoint example returning an Avram-shaped Plotly-style series payload.",
+      "stacks": ["crystal-kemal-avram"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["data-endpoint", "chart-payload", "json-response"],
+      "rank": 99,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/crystal-kemal-avram-example/src/app.cr",
+      "category": "api",
+      "summary": "Runnable Crystal runtime bundle with JSON, fragment, and chart-data endpoints for Docker-backed verification.",
+      "stacks": ["crystal-kemal-avram"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint", "add-smoke-tests"],
+      "patterns": ["http-route", "runtime-bundle", "docker-smoke"],
+      "rank": 101,
+      "stability": "verified-runtime"
+    },
+    {
       "path": "examples/canonical-api/typescript-hono-handler-example.ts",
       "category": "api",
       "summary": "Hono plus TSX route example for the Bun-first backend path.",

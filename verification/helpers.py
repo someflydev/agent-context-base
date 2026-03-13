@@ -50,6 +50,7 @@ EXAMPLE_SUPPORT_FILENAMES = {
     "build.gradle.kts",
     "build.zig",
     "build.zig.zon",
+    "shard.yml",
     "requirements.txt",
     "settings.gradle.kts",
     "go.mod",

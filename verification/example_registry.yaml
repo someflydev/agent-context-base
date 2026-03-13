@@ -702,6 +702,118 @@ examples:
     docker_supported: true
     scenario_harness: clojure_kit_nextjdbc_hiccup_min_app
     confidence: medium
+  - name: crystal-kemal-avram-api-endpoint-example-doc
+    path: examples/canonical-api/crystal-kemal-avram-api-endpoint-example.md
+    language: markdown
+    stack_tags:
+      - crystal-kemal-avram
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: crystal_kemal_avram_min_app
+    confidence: medium
+  - name: crystal-kemal-avram-api-endpoint-example
+    path: examples/canonical-api/crystal-kemal-avram-api-endpoint-example.cr
+    language: crystal
+    stack_tags:
+      - crystal-kemal-avram
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - Kemal route surface
+      - Avram query helper
+    docker_supported: false
+    scenario_harness: crystal_kemal_avram_min_app
+    confidence: medium
+  - name: crystal-kemal-avram-html-fragment-example-doc
+    path: examples/canonical-api/crystal-kemal-avram-html-fragment-example.md
+    language: markdown
+    stack_tags:
+      - crystal-kemal-avram
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: crystal_kemal_avram_min_app
+    confidence: medium
+  - name: crystal-kemal-avram-html-fragment-example
+    path: examples/canonical-api/crystal-kemal-avram-html-fragment-example.cr
+    language: crystal
+    stack_tags:
+      - crystal-kemal-avram
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - html fragment markers
+      - Kemal fragment route
+    docker_supported: false
+    scenario_harness: crystal_kemal_avram_min_app
+    confidence: medium
+  - name: crystal-kemal-avram-data-endpoint-example-doc
+    path: examples/canonical-api/crystal-kemal-avram-data-endpoint-example.md
+    language: markdown
+    stack_tags:
+      - crystal-kemal-avram
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: crystal_kemal_avram_min_app
+    confidence: medium
+  - name: crystal-kemal-avram-data-endpoint-example
+    path: examples/canonical-api/crystal-kemal-avram-data-endpoint-example.cr
+    language: crystal
+    stack_tags:
+      - crystal-kemal-avram
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - chart payload shape
+      - Avram-backed data route
+    docker_supported: false
+    scenario_harness: crystal_kemal_avram_min_app
+    confidence: medium
+  - name: crystal-kemal-avram-runtime-example
+    path: examples/canonical-api/crystal-kemal-avram-example/src/app.cr
+    language: crystal
+    stack_tags:
+      - crystal-kemal-avram
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - docker build
+      - container boots
+      - health request
+      - json api request
+      - html fragment request
+      - chart dataset request
+    docker_supported: true
+    scenario_harness: crystal_kemal_avram_min_app
+    confidence: medium
   - name: typescript-hono-handler-example
     path: examples/canonical-api/typescript-hono-handler-example.ts
     language: typescript

@@ -64,6 +64,18 @@ stacks:
       - storage-backed Clojure example beyond in-memory H2
       - richer Kit middleware or auth example
     notes: Docker-backed smoke coverage is present for the runnable bundle; source examples stay structure-verified.
+  - stack: crystal-kemal-avram
+    support_level: 3
+    verified_examples:
+      - crystal-kemal-avram-api-endpoint-example
+      - crystal-kemal-avram-html-fragment-example
+      - crystal-kemal-avram-data-endpoint-example
+      - crystal-kemal-avram-runtime-example
+    missing_verification:
+      - native Crystal compile-aware check
+      - Postgres-backed Avram runtime verification
+      - richer Avram operation example
+    notes: Docker-backed smoke coverage is present for the runnable bundle; source examples stay structure-verified.
   - stack: nim-jester-happyx
     support_level: 3
     verified_examples:

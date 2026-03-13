@@ -22,6 +22,10 @@ Primary files in this category:
 - `clojure-kit-nextjdbc-hiccup-html-fragment-example.clj`
 - `clojure-kit-nextjdbc-hiccup-data-endpoint-example.clj`
 - `clojure-kit-nextjdbc-hiccup-example/src/clojure_kit_nextjdbc_hiccup_example/core.clj`
+- `crystal-kemal-avram-api-endpoint-example.cr`
+- `crystal-kemal-avram-html-fragment-example.cr`
+- `crystal-kemal-avram-data-endpoint-example.cr`
+- `crystal-kemal-avram-example/src/app.cr`
 - `zig-zap-json-endpoint-example.zig`
 - `zig-jetzig-html-fragment-example.zig`
 - `zig-zap-data-endpoint-example.zig`
@@ -108,6 +112,22 @@ Primary files in this category:
   Verification level: smoke-verified
   Harness: clojure_kit_nextjdbc_hiccup_min_app
   Last verified by: verification/examples/clojure/test_kit_nextjdbc_hiccup_examples.py
+- `crystal-kemal-avram-api-endpoint-example.cr`
+  Verification level: syntax-checked
+  Harness: crystal_kemal_avram_min_app
+  Last verified by: verification/examples/crystal/test_crystal_kemal_avram_examples.py
+- `crystal-kemal-avram-html-fragment-example.cr`
+  Verification level: syntax-checked
+  Harness: crystal_kemal_avram_min_app
+  Last verified by: verification/examples/crystal/test_crystal_kemal_avram_examples.py
+- `crystal-kemal-avram-data-endpoint-example.cr`
+  Verification level: syntax-checked
+  Harness: crystal_kemal_avram_min_app
+  Last verified by: verification/examples/crystal/test_crystal_kemal_avram_examples.py
+- `crystal-kemal-avram-example/src/app.cr`
+  Verification level: smoke-verified
+  Harness: crystal_kemal_avram_min_app
+  Last verified by: verification/examples/crystal/test_crystal_kemal_avram_examples.py
 - `zig-zap-json-endpoint-example.zig`
   Verification level: syntax-checked
   Harness: zig_zap_jetzig_min_app
