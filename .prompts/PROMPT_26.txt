@@ -24,7 +24,7 @@ However:
 
 DO NOT analyze files inside:
 
-.docs/
+docs/
 .prompts/
 
 during the initial system analysis.
