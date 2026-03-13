@@ -74,6 +74,7 @@ ARCHETYPE_PATHS = {
 STACK_PATHS = {
     "python-fastapi-uv-ruff-orjson-polars": "context/stacks/python-fastapi-uv-ruff-orjson-polars.md",
     "typescript-hono-bun": "context/stacks/typescript-hono-bun.md",
+    "dart-dartfrog": "context/stacks/dart-dartfrog.md",
     "nim-jester-happyx": "context/stacks/nim-jester-happyx.md",
     "scala-tapir-http4s-zio": "context/stacks/scala-tapir-http4s-zio.md",
     "kotlin-http4k-exposed": "context/stacks/kotlin-http4k-exposed.md",
