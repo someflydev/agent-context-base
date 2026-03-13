@@ -18,16 +18,25 @@ AI-assisted development fails in predictable ways: assistants scan too much, mix
 
 ## Example Workflow
 
+Start in `agent-context-base`, launch Codex, Claude, or Gemini there, and give it a short 2-5 sentence project description. Do not try to guess the `scripts/new_repo.py` arguments first. In the normal flow, the assistant reads this repo's routing docs and option surfaces, proposes the right `new_repo.py` command, and you approve or refine it. `docs/usage/STARTING_NEW_PROJECTS.md` includes 50 example initial prompts you can reuse.
+
+The generated repo can be created anywhere convenient, including a clean path such as `/tmp/analytics-api`, so the assistant is not working inside a half-prepared directory from the start.
+
 ```bash
 python scripts/new_repo.py analytics-api \
   --archetype backend-api-service \
   --primary-stack python-fastapi-uv-ruff-orjson-polars \
   --smoke-tests \
   --integration-tests \
-  --seed-data
+  --seed-data \
+  --target-dir /tmp/analytics-api
 ```
 
-Then open the generated repo, read `AGENT.md` or `CLAUDE.md`, load the matching manifest and one canonical example, implement a vertical slice, verify it, and update `MEMORY.md` if the work will continue later.
+After generation, change into the new repo, start a fresh assistant session there, and ask it to inspect the generated bootstrap context and propose the implementation plan before it starts coding. You review that plan, correct constraints or priorities if needed, and then let the assistant execute, verify the changed boundary, and keep you informed.
+
+Strong first prompt inside the generated repo:
+
+> Read the bootstrap context that matters for this repo, propose the implementation plan you intend to execute, wait for my approval, then carry it out with verification checkpoints.
 
 ## Supported Project Shapes
 
@@ -62,13 +71,13 @@ First-class stacks include FastAPI, Hono/Bun, Rust/Axum, Go/Echo, Phoenix, Scala
 
 ## How To Understand This Repository
 
-Start with `AGENT.md` or `CLAUDE.md`, then read the boot sequence and repo map. After that, inspect one manifest under `manifests/`, one preferred example under `examples/`, and the corresponding validation tools under `scripts/` and `verification/`.
+Humans usually only need a small mental model here: this repo contains routing docs, manifests, examples, verification assets, and the generator used to create a new project repo. In normal use, the assistant loads `AGENT.md` or `CLAUDE.md`, picks the right manifests and examples, and runs the relevant utilities when needed. You are not expected to manually read every bootstrap file line by line before work starts.
 
-If you want to see the system in action, these commands are the fastest entrypoints:
+If you want to spot-check what the assistant is doing, these are the most useful orientation commands:
 
 ```bash
+python scripts/new_repo.py --list-archetypes
+python scripts/new_repo.py --list-stacks
 python scripts/preview_context_bundle.py backend-api-fastapi-polars --show-weights --show-anchors
-python scripts/prompt_first_repo_analyzer.py .
 python scripts/validate_context.py
-python scripts/run_verification.py --tier fast
 ```
