@@ -1,0 +1,319 @@
+You are working inside the agent-context-base repository.
+
+This repository defines an architecture for operating coding assistants such as Codex, Claude, Gemini, and other frontier models in a structured, disciplined way.
+
+Your task is to generate the behavioral specification that defines how assistants should behave when operating inside this repository or inside repositories generated from it.
+
+This specification is not a tutorial.
+
+It is a normative document describing expected assistant behavior.
+
+It should function as a runtime contract.
+
+Future assistants may read this document before operating within the system.
+
+The document will be written to:
+
+docs/usage/ASSISTANT_BEHAVIOR_SPEC.md
+
+---------------------------------------------------------------------
+
+OBJECTIVE
+
+Define a clear and deterministic behavioral model for assistants operating within this repository architecture.
+
+The specification must define:
+
+- how assistants should interpret context
+- how assistants should load and prune context
+- how assistants should plan tasks
+- how assistants should modify repositories
+- how assistants should run long-lived sessions
+- how assistants should maintain memory
+- how assistants should coordinate across sessions
+- how assistants should avoid unsafe or chaotic actions
+
+The goal is to make assistant behavior:
+
+predictable  
+disciplined  
+context-aware  
+safe for long-running development  
+
+---------------------------------------------------------------------
+
+STRUCTURE OF THE SPECIFICATION
+
+Produce a structured specification document with the following sections.
+
+---------------------------------------------------------------------
+
+SECTION 1 — Purpose of the Behavioral Specification
+
+Explain why assistant behavior must be standardized.
+
+Discuss problems with unstructured AI coding sessions such as:
+
+context overload  
+loss of architectural intent  
+destructive repository edits  
+hallucinated code patterns  
+inconsistent workflows  
+
+Explain how a behavioral spec allows assistants to operate more like deterministic engineering agents.
+
+---------------------------------------------------------------------
+
+SECTION 2 — Assistant Operating Principles
+
+Define core principles assistants must follow.
+
+Examples:
+
+Context discipline  
+Minimal necessary context loading  
+Plan before action  
+Verification before assumption  
+Repository integrity preservation  
+Iterative development  
+Memory continuity  
+
+Each principle should be described clearly.
+
+---------------------------------------------------------------------
+
+SECTION 3 — Context Loading Rules
+
+Define how assistants should load context when starting work.
+
+Rules should include:
+
+1. Prefer minimal context.
+2. Load only files relevant to the current task.
+3. Use routers and manifests to locate context.
+4. Avoid loading entire directories unless necessary.
+5. Respect context complexity budgeting.
+
+Describe how assistants should reason about:
+
+doctrines  
+stacks  
+archetypes  
+examples  
+verification systems  
+
+---------------------------------------------------------------------
+
+SECTION 4 — Context Pruning Rules
+
+Define when assistants should remove or compress context.
+
+Examples:
+
+after completing major tasks  
+when context exceeds complexity budget  
+when switching domains (backend → infra → docs)  
+
+Explain strategies such as:
+
+summarization  
+memory checkpointing  
+context eviction  
+
+---------------------------------------------------------------------
+
+SECTION 5 — Planning Behavior
+
+Assistants must plan before making large changes.
+
+Define planning expectations.
+
+Examples:
+
+- break large tasks into phases
+- identify relevant stacks
+- confirm architectural alignment
+- check existing examples before generating new patterns
+
+Explain when planning mode should be used.
+
+---------------------------------------------------------------------
+
+SECTION 6 — Repository Modification Rules
+
+Define how assistants should modify repositories.
+
+Rules should include:
+
+never perform large destructive edits without justification  
+prefer incremental modifications  
+maintain consistent directory structure  
+respect stack manifests and archetype boundaries  
+update documentation when architecture changes  
+
+Define expectations around commit batching.
+
+---------------------------------------------------------------------
+
+SECTION 7 — Long Session Behavior
+
+Define how assistants should behave during long-running sessions.
+
+Expectations should include:
+
+periodic plan reevaluation  
+verification checkpoints  
+memory updates  
+task boundary awareness  
+
+Explain when sessions should be paused and restarted.
+
+---------------------------------------------------------------------
+
+SECTION 8 — Memory Management Behavior
+
+Define how assistants should interact with:
+
+MEMORY.md  
+handoff snapshots  
+session checkpoints  
+
+Explain how assistants should:
+
+record architectural decisions  
+store task state  
+compress outdated information  
+
+---------------------------------------------------------------------
+
+SECTION 9 — Verification Discipline
+
+Define expectations around testing and verification.
+
+Assistants should:
+
+prefer verified examples  
+run smoke tests where possible  
+use Docker verification if host tooling is unavailable  
+
+Explain that assistants should not assume code correctness without verification.
+
+---------------------------------------------------------------------
+
+SECTION 10 — Safe Autonomy Rules
+
+Define boundaries for autonomous behavior.
+
+Assistants may:
+
+run build steps  
+execute verification tests  
+generate new modules  
+refactor code  
+
+Assistants should avoid:
+
+large destructive deletions  
+irreversible repository rewrites  
+unsafe system commands  
+
+Explain safe YOLO mode expectations.
+
+---------------------------------------------------------------------
+
+SECTION 11 — Multi-Agent Coordination Rules
+
+Define expectations when multiple assistants work on the same system.
+
+Explain:
+
+branch isolation  
+worktree coordination  
+shared memory usage  
+handoff snapshots  
+
+Explain how assistants should avoid conflicting changes.
+
+---------------------------------------------------------------------
+
+SECTION 12 — Cross-Repository Coordination
+
+Define expectations when assistants operate across multiple repos.
+
+Explain how assistants should maintain:
+
+consistent architecture  
+clear integration points  
+explicit dependency documentation  
+
+---------------------------------------------------------------------
+
+SECTION 13 — Failure Recovery Behavior
+
+Define what assistants should do when encountering unexpected situations.
+
+Examples include:
+
+missing dependencies  
+failing tests  
+unclear architecture  
+
+Assistants should:
+
+pause  
+re-evaluate plan  
+consult repository documentation  
+avoid guessing when uncertainty is high  
+
+---------------------------------------------------------------------
+
+SECTION 14 — Anti-Patterns
+
+List behaviors assistants should avoid.
+
+Examples:
+
+loading entire repositories unnecessarily  
+rewriting architecture without explanation  
+creating duplicate patterns instead of using canonical examples  
+ignoring verification harnesses  
+
+---------------------------------------------------------------------
+
+SECTION 15 — Behavioral Checklist
+
+Provide a concise checklist assistants can follow before starting work.
+
+Example categories:
+
+context loading  
+planning  
+implementation  
+verification  
+memory updates  
+
+---------------------------------------------------------------------
+
+QUALITY REQUIREMENTS
+
+The document must:
+
+be clear and structured  
+avoid vague language  
+read like an engineering specification  
+focus on operational discipline  
+be usable by future assistants  
+
+---------------------------------------------------------------------
+
+OUTPUT
+
+Generate the full contents of:
+
+docs/usage/ASSISTANT_BEHAVIOR_SPEC.md
+
+Write the complete document.
+
+Do not summarize sections.
+
+Ensure the document reads like a formal behavioral specification for assistants operating within the agent-context-base architecture.

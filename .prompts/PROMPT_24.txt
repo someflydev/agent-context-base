@@ -1,0 +1,286 @@
+You are working inside the agent-context-base repository.
+
+This repository defines a structured architecture for operating coding assistants such as Codex, Claude, Gemini, and future frontier models.
+
+Your task is to generate the document that explains how assistants should design, shape, and manage context when operating within this architecture.
+
+This document should teach assistants how to think about context itself as an engineering discipline.
+
+It will be written to:
+
+docs/architecture/CONTEXT_ENGINEERING_GUIDE.md
+
+---------------------------------------------------------------------
+
+OBJECTIVE
+
+Teach assistants how to engineer context effectively so that long-running development workflows remain accurate, stable, and efficient.
+
+The document should explain:
+
+how context is structured  
+how context should be selected  
+how context should be compressed  
+how context should evolve over time  
+
+The guide must help assistants understand that context is not merely input text but an engineered information environment.
+
+---------------------------------------------------------------------
+
+CORE CONCEPT
+
+Explain that context engineering is the practice of designing the information environment within which assistants reason and act.
+
+Explain that effective context engineering determines whether assistants:
+
+produce coherent architectures  
+maintain long-term reasoning  
+avoid hallucinated patterns  
+scale across large systems  
+
+The goal of this guide is to teach assistants how to construct and maintain high-quality context.
+
+---------------------------------------------------------------------
+
+DOCUMENT STRUCTURE
+
+Produce a detailed architecture document with the following sections.
+
+---------------------------------------------------------------------
+
+SECTION 1 — Why Context Engineering Matters
+
+Explain why context quality determines assistant performance.
+
+Discuss typical problems with poorly designed context such as:
+
+context overload  
+missing architectural signals  
+conflicting information  
+irrelevant examples  
+low information density  
+
+Explain how context engineering improves reasoning reliability.
+
+---------------------------------------------------------------------
+
+SECTION 2 — Context as an Information Architecture
+
+Explain that context should be treated as an engineered structure rather than an unstructured conversation history.
+
+Describe how the repository organizes context using artifacts such as:
+
+doctrines  
+stack packs  
+archetype packs  
+canonical examples  
+workflow guides  
+
+Explain why these artifacts exist.
+
+---------------------------------------------------------------------
+
+SECTION 3 — Context Layers
+
+Describe how context can be organized into layers.
+
+Examples may include:
+
+architectural doctrine  
+stack knowledge  
+archetype knowledge  
+project-specific memory  
+task-specific instructions  
+
+Explain how assistants should reason about loading layers incrementally.
+
+---------------------------------------------------------------------
+
+SECTION 4 — Context Density
+
+Explain the concept of information density.
+
+High-density context contains a large amount of useful information with minimal noise.
+
+Explain how assistants should prefer:
+
+structured documentation  
+concise examples  
+clear architectural descriptions  
+
+over verbose or redundant information.
+
+---------------------------------------------------------------------
+
+SECTION 5 — Context Selection
+
+Explain how assistants should decide which context to load.
+
+Describe strategies such as:
+
+starting with minimal context  
+loading context only when required  
+using routers and manifests to locate information  
+
+Explain how context complexity budgeting constrains context selection.
+
+---------------------------------------------------------------------
+
+SECTION 6 — Context Expansion
+
+Explain how assistants should expand context gradually during work.
+
+Examples include:
+
+loading additional stack documentation  
+consulting canonical examples  
+reviewing architecture docs  
+
+Explain that assistants should expand context only when necessary to solve the current task.
+
+---------------------------------------------------------------------
+
+SECTION 7 — Context Compression
+
+Explain how assistants should compress context when it becomes too large.
+
+Strategies include:
+
+summarization  
+memory checkpoints  
+removing obsolete information  
+replacing long reasoning trails with concise conclusions  
+
+Explain how MEMORY.md supports context compression.
+
+---------------------------------------------------------------------
+
+SECTION 8 — Context Evolution Over Time
+
+Explain how context changes throughout a project lifecycle.
+
+Early stages require:
+
+archetype and stack exploration.
+
+Later stages require:
+
+project-specific architectural context.
+
+Explain how assistants should transition between these phases.
+
+---------------------------------------------------------------------
+
+SECTION 9 — Canonical Examples as Context Anchors
+
+Explain why canonical examples are critical.
+
+They provide:
+
+verified patterns  
+reliable implementation references  
+architectural anchors  
+
+Explain how assistants should consult canonical examples before inventing new patterns.
+
+---------------------------------------------------------------------
+
+SECTION 10 — Context Failure Modes
+
+Describe common context engineering failures such as:
+
+loading entire repositories unnecessarily  
+mixing unrelated stacks  
+overloading context with raw code  
+losing architectural intent  
+
+Explain how assistants should detect and correct these failures.
+
+---------------------------------------------------------------------
+
+SECTION 11 — Context Engineering Workflow
+
+Explain how assistants should approach context engineering during development.
+
+Typical workflow:
+
+interpret intent  
+select minimal context  
+plan work  
+execute tasks  
+verify results  
+update memory  
+compress context  
+
+Explain how this workflow repeats throughout long-running sessions.
+
+---------------------------------------------------------------------
+
+SECTION 12 — Context in Autonomous Sessions
+
+Explain how context discipline becomes even more important when assistants operate with higher autonomy.
+
+Explain how assistants should:
+
+respect context complexity budgets  
+avoid loading irrelevant knowledge  
+preserve architectural clarity  
+
+---------------------------------------------------------------------
+
+SECTION 13 — Context in Multi-Agent Systems
+
+Explain how multiple assistants may share context indirectly through repository artifacts.
+
+Explain the role of:
+
+memory files  
+documentation  
+handoff snapshots  
+
+in enabling multi-agent collaboration.
+
+---------------------------------------------------------------------
+
+SECTION 14 — Designing Future Context Systems
+
+Explain how context engineering may evolve.
+
+Examples include:
+
+automated context routers  
+dynamic context summarization  
+knowledge graphs  
+retrieval-based context loading  
+
+Explain that the current architecture is designed to support these future capabilities.
+
+---------------------------------------------------------------------
+
+QUALITY REQUIREMENTS
+
+The document must be:
+
+deeply insightful  
+clear and structured  
+written for both humans and assistants  
+
+Avoid vague descriptions.
+
+Explain reasoning carefully.
+
+Treat context engineering as a serious engineering discipline.
+
+---------------------------------------------------------------------
+
+OUTPUT
+
+Generate the full contents of:
+
+docs/architecture/CONTEXT_ENGINEERING_GUIDE.md
+
+Write the complete document.
+
+Do not summarize.
+
+Ensure the document reads like a foundational guide for designing context systems for AI-assisted development.

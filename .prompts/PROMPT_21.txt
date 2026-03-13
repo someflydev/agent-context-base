@@ -1,0 +1,311 @@
+You are working inside the agent-context-base repository.
+
+This repository defines an architecture for operating coding assistants such as Codex, Claude, Gemini, and future frontier models in a disciplined, context-aware way.
+
+Your task is to generate the advanced operations manual that explains how expert users should run long-lived autonomous assistant workflows using this system.
+
+This document will become:
+
+docs/usage/ADVANCED_ASSISTANT_OPERATIONS.md
+
+The goal of the manual is to teach assistants and human operators how to run complex multi-session development workflows safely, efficiently, and with strong reliability.
+
+This guide must assume the reader already understands the basic workflow described in:
+
+docs/usage/STARTING_NEW_PROJECTS.md
+
+Therefore this guide should focus on expert-level techniques.
+
+---------------------------------------------------------------------
+
+OBJECTIVE
+
+Explain how to run:
+
+long-running autonomous development sessions  
+multi-agent workflows  
+context-aware build cycles  
+repo orchestration patterns  
+advanced memory management  
+safe experimentation with autonomy  
+
+while maintaining correctness and reliability.
+
+The document must reflect how the agent-context-base architecture supports these capabilities.
+
+---------------------------------------------------------------------
+
+STRUCTURE OF THE DOCUMENT
+
+Produce a well-organized engineering playbook with the following sections.
+
+---------------------------------------------------------------------
+
+SECTION 1 — Why Advanced Operations Matter
+
+Explain why large AI-assisted development projects require operational discipline.
+
+Describe common failure modes of naive AI coding sessions such as:
+
+context overload  
+hallucinated architecture  
+drifting implementation plans  
+loss of memory between sessions  
+irreversible repository damage  
+
+Explain how the agent-context-base architecture mitigates these risks.
+
+Introduce the concept of treating coding assistants as semi-autonomous engineering agents rather than simple chat interfaces.
+
+---------------------------------------------------------------------
+
+SECTION 2 — Long-Running Autonomous Build Sessions
+
+Explain how to run long-running sessions where assistants work for extended periods with minimal human interruption.
+
+Cover topics including:
+
+planning phases vs execution phases  
+vertical slice development strategies  
+commit batching discipline  
+verification checkpoints  
+pause-and-review cycles  
+
+Explain how assistants should periodically:
+
+re-evaluate the plan  
+verify system integrity  
+update MEMORY.md  
+
+Discuss when to pause long sessions and restart fresh sessions.
+
+Explain how to maintain high quality even during multi-hour autonomous runs.
+
+---------------------------------------------------------------------
+
+SECTION 3 — Context Pruning Strategies
+
+Explain how context overload degrades assistant performance.
+
+Introduce strategies for maintaining a healthy working context.
+
+Describe techniques such as:
+
+context boot sequences  
+targeted context loading  
+doctrine selection via routers  
+progressive context expansion  
+explicit context eviction  
+
+Explain the concept of a context complexity budget and how assistants should respect it.
+
+Provide practical heuristics for deciding:
+
+what to load  
+what to defer  
+what to summarize  
+what to evict  
+
+---------------------------------------------------------------------
+
+SECTION 4 — Safe YOLO Mode
+
+Define what YOLO mode means in the context of coding assistants.
+
+Explain the difference between:
+
+unsafe autonomy  
+bounded autonomy  
+safe YOLO mode  
+
+Explain how safe YOLO mode should operate inside this repository architecture.
+
+Describe safeguards including:
+
+smoke tests  
+verification harnesses  
+Docker-backed testing  
+commit checkpoints  
+context budgeting  
+
+Explain how assistants should escalate autonomy gradually rather than immediately.
+
+Provide operational rules such as:
+
+never run destructive commands without justification  
+never delete large sections of a repository without verification  
+always validate assumptions with tests when possible  
+
+---------------------------------------------------------------------
+
+SECTION 5 — Multi-Agent Worktrees
+
+Explain how multiple assistants can collaborate safely using Git worktrees.
+
+Describe workflows where separate assistants operate on different concerns such as:
+
+frontend  
+backend  
+data pipelines  
+verification harnesses  
+documentation  
+
+Explain coordination strategies such as:
+
+shared MEMORY.md  
+handoff snapshots  
+branch conventions  
+merge checkpoints  
+
+Explain how worktrees reduce context complexity by isolating workstreams.
+
+Provide a conceptual example of a multi-agent workflow.
+
+---------------------------------------------------------------------
+
+SECTION 6 — Repo-to-Repo Orchestration
+
+Explain how multiple repositories can collaborate in larger systems.
+
+Examples include:
+
+backend service repo  
+data pipeline repo  
+infrastructure repo  
+observability repo  
+prompt orchestration repo  
+
+Explain how agent-context-base enables this by:
+
+providing archetypes  
+stack packs  
+workflow doctrine  
+context discipline  
+
+Explain strategies for orchestrating development across repos without overwhelming the assistant context.
+
+Discuss techniques such as:
+
+repo-specific sessions  
+cross-repo memory references  
+shared architecture documents  
+integration checkpoints  
+
+---------------------------------------------------------------------
+
+SECTION 7 — Advanced Memory Compaction Techniques
+
+Explain why long-running AI projects must compress knowledge over time.
+
+Discuss how MEMORY.md functions as a persistent knowledge anchor.
+
+Explain techniques such as:
+
+summarizing completed milestones  
+compressing historical decisions  
+storing architectural invariants  
+maintaining current task state  
+
+Describe how assistants should periodically:
+
+rewrite memory entries  
+archive obsolete notes  
+preserve critical design rationale  
+
+Explain the difference between:
+
+active working memory  
+archival design history  
+handoff snapshots  
+
+---------------------------------------------------------------------
+
+SECTION 8 — Handoff Snapshots
+
+Explain how to pause and resume work across sessions safely.
+
+Describe how assistants should create handoff snapshots containing:
+
+current architecture state  
+next tasks  
+known risks  
+verification status  
+
+Explain how this allows future sessions to resume work without requiring the full historical context.
+
+---------------------------------------------------------------------
+
+SECTION 9 — Operating Multiple Sessions in Parallel
+
+Explain how expert users may run several assistant sessions simultaneously.
+
+Examples include:
+
+one planning session  
+one implementation session  
+one verification session  
+one documentation session  
+
+Explain how to keep these sessions coordinated without causing repository conflicts.
+
+---------------------------------------------------------------------
+
+SECTION 10 — Operational Checklists
+
+Provide practical checklists for advanced workflows.
+
+Examples include:
+
+starting a long-running session  
+pausing a session safely  
+starting a YOLO-mode experiment  
+coordinating multi-agent worktrees  
+performing cross-repo orchestration  
+
+Each checklist should be concise and actionable.
+
+---------------------------------------------------------------------
+
+SECTION 11 — Case Study Scenarios
+
+Provide several realistic scenarios showing advanced workflows.
+
+Examples might include:
+
+building a distributed SaaS prototype  
+expanding a polyglot backend architecture  
+creating a multi-language canonical example suite  
+developing a data pipeline ecosystem  
+
+Explain how the advanced techniques described earlier would apply.
+
+---------------------------------------------------------------------
+
+QUALITY REQUIREMENTS
+
+The document must be:
+
+clear  
+deeply practical  
+insightful  
+structured like an engineering operations playbook  
+
+Avoid vague generalities.
+
+Explain reasoning and trade-offs.
+
+Write in a tone appropriate for experienced engineers.
+
+---------------------------------------------------------------------
+
+OUTPUT
+
+Generate the complete contents of:
+
+docs/usage/ADVANCED_ASSISTANT_OPERATIONS.md
+
+Write the full document.
+
+Do not summarize or shorten sections.
+
+Ensure the guide is detailed enough to serve as the expert manual for running advanced assistant workflows within this repository architecture.

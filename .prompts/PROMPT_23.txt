@@ -1,0 +1,325 @@
+You are working inside the agent-context-base repository.
+
+This repository defines an architecture for operating coding assistants such as Codex, Claude, Gemini, and future frontier models in a structured, context-aware way.
+
+Your task is to generate the architectural blueprint that explains how this repository functions as a runtime system for AI-assisted development.
+
+This document must describe the system as a layered runtime model that governs how assistants interpret intent, load context, plan actions, execute tasks, verify results, and maintain memory across sessions.
+
+This is not a usage tutorial.
+
+It is a conceptual architecture document.
+
+The document will be written to:
+
+docs/architecture/ASSISTANT_RUNTIME_MODEL.md
+
+---------------------------------------------------------------------
+
+OBJECTIVE
+
+Explain how the agent-context-base architecture operates as an AI development runtime environment.
+
+The document should describe the system in terms of interacting layers that transform human intent into verified code and working systems.
+
+The goal is to help future assistants and human operators understand the underlying architecture so they can reason about how the system behaves.
+
+---------------------------------------------------------------------
+
+CORE MODEL
+
+Describe the system as a layered runtime with the following conceptual layers:
+
+Human Intent Layer  
+Assistant Planning Layer  
+Context Routing Layer  
+Knowledge Layer  
+Execution Layer  
+Verification Layer  
+Memory Layer  
+
+Explain each layer in depth.
+
+Explain how they interact.
+
+Explain how the layers prevent common AI development failures.
+
+---------------------------------------------------------------------
+
+DOCUMENT STRUCTURE
+
+Produce a structured architecture document with the following sections.
+
+---------------------------------------------------------------------
+
+SECTION 1 — Why AI Systems Need Runtime Architecture
+
+Explain why large AI-assisted development workflows require architectural structure.
+
+Discuss typical failure modes of naive AI coding environments:
+
+context explosion  
+loss of architectural coherence  
+unverified outputs  
+unbounded autonomy  
+lack of reproducibility  
+
+Explain how the agent-context-base architecture solves these problems by introducing explicit system layers.
+
+---------------------------------------------------------------------
+
+SECTION 2 — Overview of the Runtime Model
+
+Introduce the layered runtime model.
+
+Explain that the system converts human intent into verified working systems through a sequence of structured transformations.
+
+Present the conceptual pipeline:
+
+Human Intent  
+→ Planning  
+→ Context Selection  
+→ Knowledge Retrieval  
+→ Execution  
+→ Verification  
+→ Memory Persistence  
+
+Explain that each stage corresponds to a layer in the runtime.
+
+---------------------------------------------------------------------
+
+SECTION 3 — Human Intent Layer
+
+Explain the role of the human operator.
+
+Describe how intent enters the system through:
+
+initial prompts  
+refinement prompts  
+planning prompts  
+
+Explain why concise prompts (2–5 sentences) are often optimal.
+
+Describe how intent should express:
+
+problem domain  
+constraints  
+possible stacks  
+deployment goals  
+
+Explain how this layer influences the rest of the system.
+
+---------------------------------------------------------------------
+
+SECTION 4 — Assistant Planning Layer
+
+Explain how assistants transform intent into structured plans.
+
+Describe responsibilities such as:
+
+identifying archetypes  
+identifying stacks  
+scoping initial project architecture  
+breaking work into phases  
+
+Explain how planning prevents chaotic code generation.
+
+Discuss planning mode workflows.
+
+---------------------------------------------------------------------
+
+SECTION 5 — Context Routing Layer
+
+Explain how the system selects the relevant subset of repository context.
+
+Describe the role of:
+
+routers  
+manifests  
+doctrines  
+stack packs  
+archetype packs  
+
+Explain why context must be carefully controlled to maintain high assistant performance.
+
+Discuss the concept of context complexity budgeting.
+
+---------------------------------------------------------------------
+
+SECTION 6 — Knowledge Layer
+
+Explain the role of structured knowledge in the repository.
+
+This includes:
+
+canonical examples  
+stack documentation  
+workflow doctrine  
+architecture notes  
+
+Explain how assistants use these knowledge artifacts to generate correct implementations.
+
+Describe how canonical examples function as verified reference implementations.
+
+---------------------------------------------------------------------
+
+SECTION 7 — Execution Layer
+
+Explain how assistants perform work inside generated project repositories.
+
+Describe common execution activities such as:
+
+writing code  
+editing configuration  
+creating modules  
+generating documentation  
+building services  
+
+Explain the importance of incremental development and vertical slices.
+
+---------------------------------------------------------------------
+
+SECTION 8 — Verification Layer
+
+Explain how the system ensures correctness.
+
+Describe verification mechanisms including:
+
+canonical example validation  
+Docker-backed verification  
+smoke tests  
+scenario harnesses  
+
+Explain why verification is essential for preventing hallucinated implementations.
+
+---------------------------------------------------------------------
+
+SECTION 9 — Memory Layer
+
+Explain how the system maintains continuity across sessions.
+
+Describe artifacts such as:
+
+MEMORY.md  
+handoff snapshots  
+architectural notes  
+
+Explain how assistants should compress and preserve knowledge over time.
+
+Discuss the difference between working memory and archival knowledge.
+
+---------------------------------------------------------------------
+
+SECTION 10 — Cross-Layer Interaction
+
+Explain how the layers interact.
+
+Provide examples showing how:
+
+intent influences planning  
+planning influences context loading  
+context influences execution  
+execution produces artifacts that verification evaluates  
+verification results update memory  
+
+Explain the feedback loops between layers.
+
+---------------------------------------------------------------------
+
+SECTION 11 — Generated Project Repositories
+
+Explain how new_repo.py creates bounded execution environments.
+
+Describe how generated repos contain only the context needed for a specific project.
+
+Explain how this improves assistant performance.
+
+---------------------------------------------------------------------
+
+SECTION 12 — Autonomous Development Cycles
+
+Explain how the runtime supports long-lived development loops.
+
+Describe the iterative cycle:
+
+plan  
+execute  
+verify  
+update memory  
+refine plan  
+
+Explain how assistants should repeat this cycle safely.
+
+---------------------------------------------------------------------
+
+SECTION 13 — Multi-Agent Runtime Behavior
+
+Explain how multiple assistants can operate within the same runtime architecture.
+
+Discuss coordination mechanisms such as:
+
+worktrees  
+branch isolation  
+shared memory artifacts  
+
+Explain how this enables parallel development streams.
+
+---------------------------------------------------------------------
+
+SECTION 14 — System Design Principles
+
+Summarize the key design principles behind the runtime architecture.
+
+Examples include:
+
+context discipline  
+deterministic workflows  
+verification-first engineering  
+memory continuity  
+bounded autonomy  
+
+---------------------------------------------------------------------
+
+SECTION 15 — Future Evolution of the Runtime
+
+Discuss how the architecture may evolve.
+
+Examples might include:
+
+automated context routers  
+agent scheduling systems  
+cross-repo orchestration frameworks  
+improved verification pipelines  
+
+Explain that the architecture is designed to scale as AI capabilities grow.
+
+---------------------------------------------------------------------
+
+QUALITY REQUIREMENTS
+
+The document must:
+
+be deeply insightful  
+clearly structured  
+technically rigorous  
+useful for both humans and assistants  
+
+Avoid shallow descriptions.
+
+Explain the reasoning behind architectural decisions.
+
+Write in a tone appropriate for a technical architecture document.
+
+---------------------------------------------------------------------
+
+OUTPUT
+
+Generate the complete contents of:
+
+docs/architecture/ASSISTANT_RUNTIME_MODEL.md
+
+Write the full document.
+
+Do not summarize.
+
+Ensure the document reads like the architectural blueprint of an AI development runtime environment.

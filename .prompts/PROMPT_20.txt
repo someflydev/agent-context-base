@@ -1,0 +1,335 @@
+You are working inside the agent-context-base repository.
+
+This repository defines an architecture for operating long-running coding assistant sessions across Codex, Claude, Gemini, and similar frontier models.
+
+Your task is to design and generate a complete operational guide explaining how this system should be used to start and build new projects.
+
+The goal is to produce a document that future assistants and human operators can rely on to correctly engage the system when beginning new ideas.
+
+The guide must be thoughtful, extremely practical, and designed for long-term reuse.
+
+This guide will live in the repository as:
+
+docs/usage/STARTING_NEW_PROJECTS.md
+
+Do not modify other files unless they clearly need cross-references.
+
+---------------------------------------------------------------------
+
+OBJECTIVE
+
+Explain how a developer should move from:
+
+vague idea → classified project → generated repo → autonomous build sessions
+
+using the architecture of this repository.
+
+The guide must assume that the repository already contains:
+
+- stack manifests
+- archetype manifests
+- router docs
+- canonical examples
+- verification harnesses
+- context complexity budgeting
+- memory systems
+- stop hooks
+- handoff snapshots
+- new_repo.py
+- prompt systems
+- deployment patterns (Dokku)
+- multi-language stacks
+- Docker-backed verification
+
+Your job is to unify these into a single clear workflow.
+
+---------------------------------------------------------------------
+
+STRUCTURE OF THE GUIDE
+
+Produce a structured document with the following major sections.
+
+---------------------------------------------------------------------
+
+SECTION 1 — Purpose of agent-context-base
+
+Explain:
+
+- why this system exists
+- what problems it solves
+- how it improves coding assistant workflows
+- why naive AI coding sessions often fail
+- why context discipline matters
+
+Describe the idea of:
+
+context layers  
+context routers  
+archetypes  
+stack packs  
+canonical examples  
+verification layers  
+memory checkpoints  
+context complexity budgeting
+
+Explain how these pieces interact.
+
+---------------------------------------------------------------------
+
+SECTION 2 — The Two-Repo Model
+
+Explain the critical separation between:
+
+1. agent-context-base (control tower)
+2. generated project repos (worksites)
+
+Explain why most real implementation work should occur in generated repos rather than inside the base system.
+
+Describe:
+
+planning vs building phases.
+
+---------------------------------------------------------------------
+
+SECTION 3 — The Ideal Workflow
+
+Provide a clear step-by-step lifecycle:
+
+1. Start with vague idea
+2. Start assistant session in agent-context-base
+3. Use planning mode
+4. Classify idea
+5. Determine archetype
+6. Determine stack
+7. Determine minimal context subset
+8. Generate arguments for new_repo.py
+9. Run new_repo.py
+10. Create bounded repo
+11. Start fresh assistant session in generated repo
+12. Boot sequence
+13. Begin vertical slice development
+14. Use memory checkpoints
+15. Use stop hooks
+16. Use context complexity budgeting
+17. Use handoff snapshots
+18. Continue iterative sessions
+
+Explain why multiple bounded sessions outperform giant monolithic sessions.
+
+---------------------------------------------------------------------
+
+SECTION 4 — How Context Complexity Budgeting Works
+
+Explain:
+
+- why assistants degrade when too much context is loaded
+- how the budgeting system prevents overload
+- how context routers select the right files
+- how assistants should reason about loading context
+
+Give conceptual examples.
+
+---------------------------------------------------------------------
+
+SECTION 5 — Role of MEMORY.md and Stop Hooks
+
+Explain how:
+
+MEMORY.md
+handoff snapshots
+stop hooks
+
+allow assistants to maintain continuity across sessions.
+
+Explain:
+
+- when to update memory
+- when to snapshot state
+- when to compact context
+
+---------------------------------------------------------------------
+
+SECTION 6 — Canonical Examples and Verification
+
+Explain why canonical examples exist.
+
+Explain how they:
+
+- accelerate stack onboarding
+- provide verified reference implementations
+- enable reliable code generation
+
+Explain the Docker verification strategy.
+
+---------------------------------------------------------------------
+
+SECTION 7 — The Role of new_repo.py
+
+Explain what new_repo.py does.
+
+Explain:
+
+- how it subsets context
+- how it selects archetypes
+- how it selects stacks
+- how it selects workflows
+- how it prepares scaffolding
+- how it reduces noise in the generated repo
+
+Provide a conceptual explanation of how it should be used after planning sessions.
+
+---------------------------------------------------------------------
+
+SECTION 8 — Recommended Session Pattern
+
+Describe the best interaction rhythm:
+
+Planning Session (base repo)
+
+then
+
+Implementation Session (generated repo)
+
+Include discussion of:
+
+plan mode
+bounded autonomy
+yolo mode
+
+Explain when each is appropriate.
+
+---------------------------------------------------------------------
+
+SECTION 9 — Ideal Initial Prompt Strategy
+
+Explain how the *first prompt* to the assistant should work.
+
+The first prompt should:
+
+- describe the vague idea
+- mention constraints
+- mention potential stacks
+- mention deployment expectations
+- request planning mode classification
+
+Explain why 2–5 sentences is usually ideal.
+
+Explain what information helps assistants reason well.
+
+---------------------------------------------------------------------
+
+SECTION 10 — Example Planning Output
+
+Describe what a good assistant response should produce during the classification phase.
+
+Example components:
+
+- inferred archetype
+- recommended stack
+- alternative stack
+- recommended workflows
+- suggested repo profile
+- new_repo.py arguments
+
+---------------------------------------------------------------------
+
+SECTION 11 — Anti-Patterns
+
+Describe common mistakes:
+
+- starting implementation inside agent-context-base
+- loading excessive context
+- skipping classification
+- not using memory
+- running huge monolithic sessions
+- mixing verification infrastructure into project repos unnecessarily
+
+---------------------------------------------------------------------
+
+SECTION 12 — 50 Example Initial Prompts
+
+Provide **50 excellent example prompts** that a developer could use when starting a new project.
+
+Each prompt must:
+
+- be 2–5 sentences
+- describe a realistic but vague idea
+- encourage classification and planning
+- be diverse across domains
+- cover many archetypes
+
+The prompts must include diverse categories such as:
+
+developer tools  
+backend services  
+data systems  
+LLM tools  
+automation tools  
+CLI tools  
+observability tools  
+job search tools  
+education tools  
+data pipelines  
+multi-storage experiments  
+API platforms  
+internal tooling  
+workflow automation  
+developer dashboards  
+AI assistants  
+data export explorers  
+research tools  
+personal productivity tools  
+finance tools  
+document processing tools  
+small SaaS concepts  
+
+The prompts should vary stack hints such as:
+
+Python / FastAPI  
+Go / Echo  
+Rust / Axum  
+Elixir / Phoenix  
+Scala / Tapir / http4s  
+Clojure / Kit  
+Kotlin / http4k  
+Nim / Jester  
+Zig / Jetzig  
+Crystal / Kemal  
+OCaml / Dream  
+Dart Frog  
+
+Ensure prompts remain concise but interesting.
+
+Each prompt should be clearly separated and numbered.
+
+---------------------------------------------------------------------
+
+QUALITY REQUIREMENTS
+
+The document must be:
+
+clear  
+insightful  
+practical  
+non-repetitive  
+written for long-term use  
+
+Do not produce shallow descriptions.
+
+Explain reasoning.
+
+Write in a tone suitable for an engineering playbook.
+
+---------------------------------------------------------------------
+
+OUTPUT
+
+Generate the full contents of:
+
+docs/usage/STARTING_NEW_PROJECTS.md
+
+in one coherent document.
+
+Do not summarize.
+
+Write the complete guide.
