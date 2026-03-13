@@ -1,0 +1,389 @@
+You are performing a major infrastructure pass on the existing repository.
+
+The repository is an "agent-context-base" system designed to help coding assistants (Codex, Claude, Gemini) understand architectures, stacks, archetypes, workflows, and canonical examples for building software systems.
+
+Canonical examples across many languages and frameworks are becoming increasingly important to this repository.
+
+However, they currently lack a systematic verification layer.
+
+Your task is to implement a complete, structured verification and example-testing framework for the repository.
+
+The goal is to ensure that canonical examples, helper scripts, manifests, prompts, and structural conventions remain correct, runnable, and trustworthy.
+
+This system must:
+
+- verify canonical examples across languages
+- validate repo integrity
+- verify Python maintenance scripts
+- compile or run language examples when possible
+- run minimal harness tests for API examples
+- verify prompt-first repo conventions
+- allow incremental addition of new stacks
+- provide confidence levels for canonical examples
+- integrate well with Docker where appropriate
+- remain maintainable and easy to extend
+
+The system must also help assistants prefer verified canonical examples when generating implementations.
+
+The verification layer must be designed to run:
+
+- locally
+- in CI
+- incrementally
+- selectively by stack
+
+The design should avoid requiring every language toolchain to be installed locally.
+
+Instead, canonical examples that require runtimes should use small Docker environments.
+
+The output must be organized into commit-ready batches.
+
+For each batch:
+
+1. Provide a title
+2. Explain the purpose
+3. List files created or modified
+4. Provide the full contents of each file
+5. Provide a suggested Tim Pope style commit message starting with a prefix like `[VERIFY_XX]`
+
+Do not skip file contents.
+
+---------------------------------------------------------------------
+
+SECTION 1 — Verification Philosophy
+
+Create a document:
+
+verification/README.md
+
+Explain:
+
+- why canonical examples must be verified
+- why untested examples are dangerous
+- the different layers of verification
+- how verification increases assistant reliability
+
+Define a maturity ladder for examples:
+
+draft  
+syntax-checked  
+smoke-verified  
+behavior-verified  
+golden
+
+Explain what each level means.
+
+---------------------------------------------------------------------
+
+SECTION 2 — Verification Directory Structure
+
+Create a structured verification directory.
+
+verification/
+  README.md
+  example_registry.yaml
+  policies/
+    canonical-example-levels.md
+  unit/
+    test_repo_integrity.py
+    test_prompt_rules.py
+    test_manifests.py
+    test_alias_catalog.py
+  scripts/
+    test_repo_scripts.py
+  examples/
+    python/
+      test_fastapi_examples.py
+      test_polars_examples.py
+      test_cli_examples.py
+    go/
+      test_echo_examples.py
+    rust/
+      test_axum_examples.py
+    elixir/
+      test_phoenix_examples.py
+    data/
+      test_yaml_json_examples.py
+  scenarios/
+    fastapi_min_app/
+    go_echo_min_app/
+    rust_axum_min_app/
+    polars_data_pipeline/
+  fixtures/
+    valid_repo/
+    invalid_repo_missing_manifest/
+    broken_prompt_sequence/
+    invalid_stack_reference/
+
+Explain the purpose of each subdirectory.
+
+---------------------------------------------------------------------
+
+SECTION 3 — Example Registry
+
+Create:
+
+verification/example_registry.yaml
+
+This file tracks all canonical examples.
+
+Each entry includes:
+
+name  
+path  
+language  
+stack_tags  
+archetype_tags  
+verification_level  
+verification_targets  
+docker_supported  
+scenario_harness  
+
+Example entry:
+
+name: fastapi-endpoint-example
+path: examples/canonical-api/fastapi-endpoint-example.py
+language: python
+stack_tags:
+  - python-fastapi
+archetype_tags:
+  - backend-api-service
+verification_level: smoke-verified
+verification_targets:
+  - parses
+  - imports
+  - route mounts
+  - response schema verified
+docker_supported: true
+scenario_harness: fastapi_min_app
+
+---------------------------------------------------------------------
+
+SECTION 4 — Repo Integrity Tests
+
+Create tests that validate repository structure.
+
+verification/unit/test_repo_integrity.py
+
+Checks:
+
+- required directories exist
+- manifests reference valid files
+- canonical examples referenced in manifests exist
+- example_registry paths exist
+- templates referenced by docs exist
+
+---------------------------------------------------------------------
+
+SECTION 5 — Prompt Sequence Validation
+
+Create:
+
+verification/unit/test_prompt_rules.py
+
+Checks:
+
+- prompt numbering strictly monotonic
+- no duplicate prompt numbers
+- `_s` and `_t` suffix rules respected
+- references to prompt filenames resolve
+
+---------------------------------------------------------------------
+
+SECTION 6 — Python Script Testing
+
+Create tests for helper scripts in the repo.
+
+verification/scripts/test_repo_scripts.py
+
+These tests should cover scripts such as:
+
+validate_manifests.py  
+new_repo.py  
+memory utilities  
+context preview scripts  
+
+Use fixtures in:
+
+verification/fixtures/
+
+to simulate broken and valid repositories.
+
+---------------------------------------------------------------------
+
+SECTION 7 — Python Example Verification
+
+Create tests that verify Python examples.
+
+verification/examples/python/test_fastapi_examples.py
+
+Tests should:
+
+- parse Python files using AST
+- import modules in isolation
+- mount FastAPI routes inside a minimal harness
+- assert valid response shape
+
+Similarly create:
+
+test_polars_examples.py  
+test_cli_examples.py
+
+---------------------------------------------------------------------
+
+SECTION 8 — Dockerized Example Testing
+
+Some canonical examples represent backend APIs.
+
+For those examples create Dockerfiles.
+
+Example directory layout:
+
+examples/canonical-api/fastapi-example/
+
+  app.py
+  Dockerfile
+  README.md
+
+Dockerfile should:
+
+- use small official base images
+- install minimal dependencies
+- run the example
+
+Verification tests should:
+
+- build the container
+- start container
+- send HTTP request
+- verify response
+
+Create example Dockerfiles for:
+
+FastAPI  
+Go Echo  
+Rust Axum
+
+---------------------------------------------------------------------
+
+SECTION 9 — Scenario Harnesses
+
+Create minimal runnable harness projects.
+
+verification/scenarios/
+
+fastapi_min_app  
+go_echo_min_app  
+rust_axum_min_app  
+polars_data_pipeline
+
+Each harness:
+
+- imports canonical example
+- runs minimal test
+- asserts expected behavior
+
+---------------------------------------------------------------------
+
+SECTION 10 — Static Data Example Tests
+
+Create tests for data artifacts.
+
+verification/examples/data/test_yaml_json_examples.py
+
+Verify:
+
+- JSON loads
+- YAML loads
+- required keys exist
+- no forbidden patterns
+
+---------------------------------------------------------------------
+
+SECTION 11 — CI Strategy
+
+Add documentation:
+
+verification/policies/canonical-example-levels.md
+
+Explain CI tiers:
+
+Fast checks  
+Medium checks  
+Heavy checks
+
+Fast checks include:
+
+repo integrity  
+prompt rules  
+script tests  
+syntax checks
+
+Medium checks include:
+
+Python example harness tests  
+Docker builds
+
+Heavy checks include:
+
+Rust and Go scenario harnesses
+
+---------------------------------------------------------------------
+
+SECTION 12 — Stack Support Matrix
+
+Create:
+
+verification/stack_support_matrix.yaml
+
+Tracks maturity of each stack.
+
+Example:
+
+stack: python-fastapi
+support_level: 4
+verified_examples:
+  - fastapi-endpoint-example
+missing_verification:
+  - advanced auth example
+
+---------------------------------------------------------------------
+
+SECTION 13 — Helper Scripts
+
+Create helper scripts:
+
+scripts/run_verification.py  
+scripts/verify_examples.py
+
+These scripts should:
+
+- run verification layers
+- filter by stack
+- filter by example
+- produce readable reports
+
+---------------------------------------------------------------------
+
+SECTION 14 — Integration with Canonical Examples
+
+Update canonical example READMEs to include verification metadata.
+
+Example:
+
+Verification level: smoke-verified  
+Harness: fastapi_min_app  
+Last verified by: verification/examples/python/test_fastapi_examples.py
+
+---------------------------------------------------------------------
+
+SECTION 15 — Final Summary
+
+Explain how the verification system improves:
+
+assistant correctness  
+canonical example reliability  
+stack expansion safety  
+repo maintenance confidence
+
+End with a list of commit titles.
