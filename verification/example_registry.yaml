@@ -1,0 +1,403 @@
+examples:
+  - name: fastapi-endpoint-example
+    path: examples/canonical-api/fastapi-endpoint-example.py
+    language: python
+    stack_tags:
+      - python-fastapi
+    archetype_tags:
+      - backend-api-service
+    verification_level: behavior-verified
+    verification_targets:
+      - parses
+      - imports
+      - route mounts
+      - response shape verified
+    docker_supported: false
+    scenario_harness: fastapi_min_app
+    confidence: high
+  - name: fastapi-smoke-test-example
+    path: examples/canonical-smoke-tests/fastapi-smoke-test-example.py
+    language: python
+    stack_tags:
+      - python-fastapi
+    archetype_tags:
+      - backend-api-service
+    verification_level: syntax-checked
+    verification_targets:
+      - parses
+      - imports
+    docker_supported: false
+    scenario_harness: fastapi_min_app
+    confidence: medium
+  - name: fastapi-db-integration-example
+    path: examples/canonical-integration-tests/fastapi-db-integration-test-example.py
+    language: python
+    stack_tags:
+      - python-fastapi
+    archetype_tags:
+      - backend-api-service
+    verification_level: syntax-checked
+    verification_targets:
+      - parses
+      - imports
+      - isolated compose references
+    docker_supported: false
+    scenario_harness: fastapi_min_app
+    confidence: medium
+  - name: fastapi-runtime-example
+    path: examples/canonical-api/fastapi-example/app.py
+    language: python
+    stack_tags:
+      - python-fastapi
+    archetype_tags:
+      - backend-api-service
+    verification_level: smoke-verified
+    verification_targets:
+      - docker build
+      - container boots
+      - health request
+    docker_supported: true
+    scenario_harness: fastapi_min_app
+    confidence: high
+  - name: go-echo-handler-example
+    path: examples/canonical-api/go-echo-handler-example.go
+    language: go
+    stack_tags:
+      - go-echo
+    archetype_tags:
+      - backend-api-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - route registration
+    docker_supported: false
+    scenario_harness: go_echo_min_app
+    confidence: medium
+  - name: go-echo-runtime-example
+    path: examples/canonical-api/go-echo-example/main.go
+    language: go
+    stack_tags:
+      - go-echo
+    archetype_tags:
+      - backend-api-service
+    verification_level: smoke-verified
+    verification_targets:
+      - docker build
+      - container boots
+      - health request
+    docker_supported: true
+    scenario_harness: go_echo_min_app
+    confidence: high
+  - name: rust-axum-route-example
+    path: examples/canonical-api/rust-axum-route-example.rs
+    language: rust
+    stack_tags:
+      - rust-axum
+    archetype_tags:
+      - backend-api-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - route registration
+    docker_supported: false
+    scenario_harness: rust_axum_min_app
+    confidence: medium
+  - name: rust-axum-runtime-example
+    path: examples/canonical-api/rust-axum-example/src/main.rs
+    language: rust
+    stack_tags:
+      - rust-axum
+    archetype_tags:
+      - backend-api-service
+    verification_level: smoke-verified
+    verification_targets:
+      - docker build
+      - container boots
+      - health request
+    docker_supported: true
+    scenario_harness: rust_axum_min_app
+    confidence: high
+  - name: phoenix-route-controller-example
+    path: examples/canonical-api/phoenix-route-controller-example.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - backend-api-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - controller render path
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: phoenix-router-surface-example
+    path: examples/canonical-api/phoenix-router-surface-example.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - backend-api-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - pipeline declaration
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: typescript-hono-handler-example
+    path: examples/canonical-api/typescript-hono-handler-example.ts
+    language: typescript
+    stack_tags:
+      - typescript-hono-bun
+    archetype_tags:
+      - backend-api-service
+    verification_level: draft
+    verification_targets:
+      - registry tracked
+    docker_supported: false
+    scenario_harness: ""
+    confidence: low
+  - name: python-cli-command-example
+    path: examples/canonical-cli/python-cli-command-example.py
+    language: python
+    stack_tags:
+      - python-cli
+    archetype_tags:
+      - cli-tool
+    verification_level: behavior-verified
+    verification_targets:
+      - parses
+      - imports
+      - cli json output
+      - cli table output
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: duckdb-polars-example
+    path: examples/canonical-storage/duckdb-polars-example.py
+    language: python
+    stack_tags:
+      - duckdb-trino-polars
+    archetype_tags:
+      - data-pipeline
+    verification_level: behavior-verified
+    verification_targets:
+      - parses
+      - imports with stubs
+      - deterministic row ordering
+    docker_supported: false
+    scenario_harness: polars_data_pipeline
+    confidence: medium
+  - name: polars-seed-data-example
+    path: examples/canonical-seed-data/polars-seed-data-example.py
+    language: python
+    stack_tags:
+      - duckdb-trino-polars
+      - python-fastapi
+    archetype_tags:
+      - data-pipeline
+      - backend-api-service
+    verification_level: behavior-verified
+    verification_targets:
+      - parses
+      - imports with stubs
+      - isolated seed output path
+    docker_supported: false
+    scenario_harness: polars_data_pipeline
+    confidence: medium
+  - name: local-rag-index-config-example
+    path: examples/canonical-rag/local-rag-index-config-example.yaml
+    language: yaml
+    stack_tags:
+      - qdrant
+    archetype_tags:
+      - local-rag-system
+    verification_level: syntax-checked
+    verification_targets:
+      - yaml loads
+      - required keys exist
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: local-rag-metadata-shape-example
+    path: examples/canonical-rag/local-rag-metadata-shape-example.md
+    language: markdown
+    stack_tags:
+      - qdrant
+    archetype_tags:
+      - local-rag-system
+    verification_level: draft
+    verification_targets:
+      - registry tracked
+    docker_supported: false
+    scenario_harness: ""
+    confidence: low
+  - name: prompt-bootstrap-example
+    path: examples/canonical-prompts/001-bootstrap-repo.txt
+    language: text
+    stack_tags:
+      - prompt-first-repo
+    archetype_tags:
+      - prompt-first-repo
+    verification_level: syntax-checked
+    verification_targets:
+      - prompt numbering
+      - filename references resolve
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: prompt-refine-example
+    path: examples/canonical-prompts/002-refine-test-surface.txt
+    language: text
+    stack_tags:
+      - prompt-first-repo
+    archetype_tags:
+      - prompt-first-repo
+    verification_level: syntax-checked
+    verification_targets:
+      - prompt numbering
+      - filename references resolve
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: prompt-layout-example
+    path: examples/canonical-prompts/prompt-first-layout-example.md
+    language: markdown
+    stack_tags:
+      - prompt-first-repo
+    archetype_tags:
+      - prompt-first-repo
+    verification_level: syntax-checked
+    verification_targets:
+      - prompt numbering notes
+      - path references resolve
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: dokku-procfile-example
+    path: examples/canonical-dokku/Procfile.example
+    language: procfile
+    stack_tags:
+      - dokku
+    archetype_tags:
+      - dokku-deployable-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - release process present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: dokku-app-json-example
+    path: examples/canonical-dokku/app-json-example.json
+    language: json
+    stack_tags:
+      - dokku
+    archetype_tags:
+      - dokku-deployable-service
+    verification_level: syntax-checked
+    verification_targets:
+      - json loads
+      - required keys exist
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: structured-log-example
+    path: examples/canonical-observability/structured-log-example.json
+    language: json
+    stack_tags:
+      - observability
+    archetype_tags:
+      - backend-api-service
+    verification_level: syntax-checked
+    verification_targets:
+      - json loads
+      - required keys exist
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: trace-span-example
+    path: examples/canonical-observability/trace-span-example.json
+    language: json
+    stack_tags:
+      - observability
+    archetype_tags:
+      - backend-api-service
+    verification_level: syntax-checked
+    verification_targets:
+      - json loads
+      - required keys exist
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: metrics-example
+    path: examples/canonical-observability/metrics-example.txt
+    language: text
+    stack_tags:
+      - observability
+    archetype_tags:
+      - backend-api-service
+    verification_level: syntax-checked
+    verification_targets:
+      - line format
+    docker_supported: false
+    scenario_harness: ""
+    confidence: low
+  - name: redis-mongo-shape-example
+    path: examples/canonical-storage/redis-mongo-shape-example.md
+    language: markdown
+    stack_tags:
+      - redis-keydb-mongo
+    archetype_tags:
+      - multi-storage-experiment
+    verification_level: draft
+    verification_targets:
+      - registry tracked
+    docker_supported: false
+    scenario_harness: ""
+    confidence: low
+  - name: memory-example
+    path: examples/canonical-workflows/MEMORY.example.md
+    language: markdown
+    stack_tags:
+      - python-fastapi
+    archetype_tags:
+      - backend-api-service
+    verification_level: syntax-checked
+    verification_targets:
+      - required sections
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: handoff-snapshot-example
+    path: examples/canonical-workflows/HANDOFF-SNAPSHOT.example.md
+    language: markdown
+    stack_tags:
+      - prompt-first-repo
+    archetype_tags:
+      - prompt-first-repo
+    verification_level: syntax-checked
+    verification_targets:
+      - required sections
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: post-flight-refinement-checklist
+    path: examples/canonical-workflows/post-flight-refinement-checklist.md
+    language: markdown
+    stack_tags:
+      - prompt-first-repo
+      - python-fastapi
+      - go-echo
+      - rust-axum
+    archetype_tags:
+      - backend-api-service
+      - prompt-first-repo
+    verification_level: syntax-checked
+    verification_targets:
+      - path exists
+      - checklist format
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium

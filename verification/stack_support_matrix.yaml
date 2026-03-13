@@ -1,0 +1,70 @@
+stacks:
+  - stack: python-fastapi
+    support_level: 5
+    verified_examples:
+      - fastapi-endpoint-example
+      - fastapi-runtime-example
+      - fastapi-smoke-test-example
+      - fastapi-db-integration-example
+    missing_verification:
+      - advanced auth example
+      - websocket example
+  - stack: duckdb-trino-polars
+    support_level: 4
+    verified_examples:
+      - duckdb-polars-example
+      - polars-seed-data-example
+    missing_verification:
+      - trino federation example
+  - stack: python-cli
+    support_level: 4
+    verified_examples:
+      - python-cli-command-example
+    missing_verification:
+      - multi-command repo example
+  - stack: go-echo
+    support_level: 3
+    verified_examples:
+      - go-echo-handler-example
+      - go-echo-runtime-example
+    missing_verification:
+      - middleware example
+      - templ rendering example
+  - stack: rust-axum
+    support_level: 3
+    verified_examples:
+      - rust-axum-route-example
+      - rust-axum-runtime-example
+    missing_verification:
+      - extractor validation example
+  - stack: elixir-phoenix
+    support_level: 2
+    verified_examples:
+      - phoenix-route-controller-example
+      - phoenix-router-surface-example
+    missing_verification:
+      - controller test example
+      - LiveView example
+  - stack: prompt-first-repo
+    support_level: 4
+    verified_examples:
+      - prompt-bootstrap-example
+      - prompt-refine-example
+      - prompt-layout-example
+      - handoff-snapshot-example
+    missing_verification:
+      - rendered template prompt example
+  - stack: qdrant
+    support_level: 2
+    verified_examples:
+      - local-rag-index-config-example
+    missing_verification:
+      - index runner example
+      - retrieval smoke example
+  - stack: dokku
+    support_level: 3
+    verified_examples:
+      - dokku-procfile-example
+      - dokku-app-json-example
+    missing_verification:
+      - release smoke script example
