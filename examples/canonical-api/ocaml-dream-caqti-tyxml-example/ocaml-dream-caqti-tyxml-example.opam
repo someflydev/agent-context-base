@@ -1,0 +1,18 @@
+opam-version: "2.0"
+synopsis: "Canonical Dream plus Caqti plus TyXML runtime example"
+maintainer: "agent-context-base"
+authors: "agent-context-base"
+license: "MIT"
+depends: [
+  "ocaml" {>= "5.1"}
+  "dune" {>= "3.11"}
+  "dream"
+  "caqti-lwt"
+  "caqti-driver-sqlite3"
+  "tyxml"
+  "yojson"
+  "lwt"
+]
+build: [
+  ["dune" "build" "-p" name "-j" jobs]
+]

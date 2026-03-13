@@ -22,6 +22,10 @@ Primary files in this category:
 - `clojure-kit-nextjdbc-hiccup-html-fragment-example.clj`
 - `clojure-kit-nextjdbc-hiccup-data-endpoint-example.clj`
 - `clojure-kit-nextjdbc-hiccup-example/src/clojure_kit_nextjdbc_hiccup_example/core.clj`
+- `ocaml-dream-caqti-tyxml-api-endpoint-example.ml`
+- `ocaml-dream-caqti-tyxml-html-fragment-example.ml`
+- `ocaml-dream-caqti-tyxml-data-endpoint-example.ml`
+- `ocaml-dream-caqti-tyxml-example/bin/main.ml`
 - `crystal-kemal-avram-api-endpoint-example.cr`
 - `crystal-kemal-avram-html-fragment-example.cr`
 - `crystal-kemal-avram-data-endpoint-example.cr`
@@ -112,6 +116,22 @@ Primary files in this category:
   Verification level: smoke-verified
   Harness: clojure_kit_nextjdbc_hiccup_min_app
   Last verified by: verification/examples/clojure/test_kit_nextjdbc_hiccup_examples.py
+- `ocaml-dream-caqti-tyxml-api-endpoint-example.ml`
+  Verification level: syntax-checked
+  Harness: ocaml_dream_caqti_tyxml_min_app
+  Last verified by: verification/examples/ocaml/test_ocaml_dream_caqti_tyxml_examples.py
+- `ocaml-dream-caqti-tyxml-html-fragment-example.ml`
+  Verification level: syntax-checked
+  Harness: ocaml_dream_caqti_tyxml_min_app
+  Last verified by: verification/examples/ocaml/test_ocaml_dream_caqti_tyxml_examples.py
+- `ocaml-dream-caqti-tyxml-data-endpoint-example.ml`
+  Verification level: syntax-checked
+  Harness: ocaml_dream_caqti_tyxml_min_app
+  Last verified by: verification/examples/ocaml/test_ocaml_dream_caqti_tyxml_examples.py
+- `ocaml-dream-caqti-tyxml-example/bin/main.ml`
+  Verification level: smoke-verified
+  Harness: ocaml_dream_caqti_tyxml_min_app
+  Last verified by: verification/examples/ocaml/test_ocaml_dream_caqti_tyxml_examples.py
 - `crystal-kemal-avram-api-endpoint-example.cr`
   Verification level: syntax-checked
   Harness: crystal_kemal_avram_min_app

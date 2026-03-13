@@ -1,0 +1,5 @@
+(executable
+ (name main)
+ (public_name ocaml-dream-caqti-tyxml-example)
+ (package ocaml-dream-caqti-tyxml-example)
+ (libraries dream yojson tyxml lwt.unix caqti-lwt caqti-lwt.unix caqti-driver-sqlite3))
