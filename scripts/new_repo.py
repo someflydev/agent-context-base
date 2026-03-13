@@ -129,6 +129,28 @@ STACKS: dict[str, StackProfile] = {
         ),
         stack_gitignore=(),
     ),
+    "kotlin-http4k-exposed": StackProfile(
+        description="Kotlin HTTP service using http4k and Exposed.",
+        display_name="Kotlin + http4k + Exposed",
+        app_image="gradle:8.10.2-jdk21",
+        app_command='sh -lc "gradle run"',
+        test_command='sh -lc "gradle test"',
+        app_container_port=8080,
+        route_path="src/main/kotlin/app/Main.kt",
+        smoke_path="src/test/kotlin/app/HealthSmokeTest.kt",
+        integration_path="src/test/kotlin/app/ReportRunsIntegrationTest.kt",
+        seed_path="scripts/seed_data.sql",
+        directories=(
+            "docs",
+            "docker/volumes/dev",
+            "docker/volumes/test",
+            "manifests",
+            "scripts",
+            "src/main/kotlin/app",
+            "src/test/kotlin/app",
+        ),
+        stack_gitignore=(".gradle/", "build/"),
+    ),
     "zig-zap-jetzig": StackProfile(
         description="Zig backend service using Zap and Jetzig-style view patterns.",
         display_name="Zig + Zap + Jetzig",
@@ -297,6 +319,7 @@ DEFAULT_MANIFESTS = {
     ("backend-api-service", "python-fastapi-uv-ruff-orjson-polars"): ["backend-api-fastapi-polars"],
     ("backend-api-service", "typescript-hono-bun"): ["backend-api-typescript-hono-bun"],
     ("backend-api-service", "rust-axum-modern"): ["backend-api-rust-axum"],
+    ("backend-api-service", "kotlin-http4k-exposed"): ["backend-api-kotlin-http4k-exposed"],
     ("backend-api-service", "zig-zap-jetzig"): ["backend-api-zig-zap-jetzig"],
     ("backend-api-service", "go-echo"): ["backend-api-go-echo"],
     ("backend-api-service", "elixir-phoenix"): ["webapp-elixir-phoenix"],
@@ -561,7 +584,14 @@ def infer_support_services(archetype: str, primary_stack: str, selected_manifest
         return ["qdrant"]
     if primary_stack == "python-fastapi-uv-ruff-orjson-polars":
         return ["postgres", "redis"]
-    if primary_stack in {"typescript-hono-bun", "rust-axum-modern", "zig-zap-jetzig", "go-echo", "elixir-phoenix"}:
+    if primary_stack in {
+        "typescript-hono-bun",
+        "rust-axum-modern",
+        "kotlin-http4k-exposed",
+        "zig-zap-jetzig",
+        "go-echo",
+        "elixir-phoenix",
+    }:
         return ["postgres"]
     if primary_stack == "duckdb-trino-polars":
         return ["trino"]
@@ -1055,6 +1085,19 @@ def render_zig_starters() -> dict[str, str]:
     }
 
 
+def render_kotlin_starters() -> dict[str, str]:
+    """Render Kotlin starter app and tests."""
+
+    return {
+        "build.gradle.kts": """plugins {\n    kotlin(\"jvm\") version \"1.9.24\"\n    application\n}\n\nrepositories {\n    mavenCentral()\n}\n\ndependencies {\n    implementation(\"org.http4k:http4k-core:5.33.0.0\")\n    implementation(\"org.http4k:http4k-server-jetty:5.33.0.0\")\n    implementation(\"org.jetbrains.exposed:exposed-core:0.50.1\")\n    implementation(\"org.jetbrains.exposed:exposed-jdbc:0.50.1\")\n    implementation(\"com.h2database:h2:2.2.224\")\n    implementation(\"ch.qos.logback:logback-classic:1.5.6\")\n    testImplementation(kotlin(\"test\"))\n}\n\napplication {\n    mainClass.set(\"app.MainKt\")\n}\n\nkotlin {\n    jvmToolchain(21)\n}\n""",
+        "settings.gradle.kts": "rootProject.name = \"app\"\n",
+        "src/main/kotlin/app/Main.kt": """package app\n\nimport org.http4k.core.Method.GET\nimport org.http4k.core.Response\nimport org.http4k.core.Status\nimport org.http4k.routing.bind\nimport org.http4k.routing.routes\nimport org.http4k.server.Jetty\nimport org.http4k.server.asServer\n\nfun main() {\n    val app = routes(\n        \"/healthz\" bind GET to { Response(Status.OK).body(\"{\\\"status\\\":\\\"ok\\\"}\").header(\"content-type\", \"application/json\") },\n    )\n    app.asServer(Jetty(8080)).start()\n    Thread.currentThread().join()\n}\n""",
+        "src/test/kotlin/app/HealthSmokeTest.kt": """package app\n\nimport kotlin.test.Test\nimport kotlin.test.assertTrue\n\nclass HealthSmokeTest {\n    @Test\n    fun placeholder() {\n        assertTrue(true)\n    }\n}\n""",
+        "src/test/kotlin/app/ReportRunsIntegrationTest.kt": """package app\n\nimport kotlin.test.Test\nimport kotlin.test.assertTrue\n\nclass ReportRunsIntegrationTest {\n    @Test\n    fun placeholder() {\n        assertTrue(true)\n    }\n}\n""",
+        "scripts/seed_data.sql": "insert into reports (tenant_id, report_id, total_events, status) values ('acme', 'daily-signups', 42, 'ready');\n",
+    }
+
+
 def render_go_starters() -> dict[str, str]:
     """Render Go starter app and tests."""
 
@@ -1091,6 +1134,8 @@ def starter_files_for_stack(primary_stack: str, slug: str) -> dict[str, str]:
         return render_typescript_starters()
     if primary_stack == "rust-axum-modern":
         return render_rust_starters()
+    if primary_stack == "kotlin-http4k-exposed":
+        return render_kotlin_starters()
     if primary_stack == "zig-zap-jetzig":
         return render_zig_starters()
     if primary_stack == "go-echo":
@@ -1322,6 +1367,8 @@ def main(argv: list[str]) -> int:
         route_only_keys.update({"src/index.ts", profile.route_path})
     elif args.primary_stack == "rust-axum-modern":
         route_only_keys.update({"src/main.rs"})
+    elif args.primary_stack == "kotlin-http4k-exposed":
+        route_only_keys.update({"build.gradle.kts", "settings.gradle.kts", "src/main/kotlin/app/Main.kt"})
     elif args.primary_stack == "zig-zap-jetzig":
         route_only_keys.update({"src/main.zig"})
     elif args.primary_stack == "go-echo":
