@@ -1,0 +1,144 @@
+You are working inside the `agent-context-base` repository.
+
+Your task is to tighten the documentation around the real human + coding-assistant workflow for starting a new project from this base.
+
+This is a documentation change. Do not redesign the generator or add new runtime features unless a small supporting doc update is required to keep the docs accurate.
+
+---------------------------------------------------------------------
+
+PRIMARY GOAL
+
+Make the docs describe the actual intended flow:
+
+1. the human starts in `agent-context-base`
+2. the human starts Codex / Claude / Gemini there
+3. the human gives a short 2-5 sentence initial prompt describing the project
+4. the system produces the arguments for `scripts/new_repo.py`
+5. the generated repo may be created anywhere convenient, including under `/tmp`
+6. the human switches into the generated repo and starts a fresh assistant session there
+7. the assistant should read the generated repo’s bootstrap context and propose an execution plan
+8. the human validates that plan, then mostly lets the assistant execute it
+
+The docs should make clear that the human is not expected to manually read `AGENT.md`, `CLAUDE.md`, manifests, or examples line-by-line before work starts. The assistant should do the loading and synthesis. The human’s job is mainly to validate direction, constraints, and priorities.
+
+---------------------------------------------------------------------
+
+FILES TO UPDATE
+
+At minimum, inspect and update:
+
+- `README.md`
+- `scripts/README.md`
+
+Also inspect `docs/usage/STARTING_NEW_PROJECTS.md` and update it if needed so the README does not point at guidance that does not actually exist.
+
+---------------------------------------------------------------------
+
+README REQUIREMENTS
+
+Update the `Example Workflow` section so it explains the full handoff:
+
+- the `new_repo.py` arguments are not meant to be manually guessed first
+- those arguments are typically generated after starting an assistant in `agent-context-base`
+- the human should begin with a short 2-5 sentence initial prompt
+- mention that there are 50 example initial prompts in `docs/usage/STARTING_NEW_PROJECTS.md`
+- mention that the output path for the new repo can be placed somewhere like `/tmp/...` so the assistant can create it cleanly
+
+After the generation step, the README should explain what happens next in the generated repo:
+
+- change into the new repo
+- start a fresh assistant session there
+- ask the assistant to inspect the generated repo context and propose the implementation plan
+- the human should review and approve or refine the plan
+- after that, the assistant should execute the work, verify it, and keep the human informed
+
+Include one concrete example of a strong first prompt to use inside the generated repo. It should follow the spirit of:
+
+"Read the repo bootstrap context that matters for this project, tell me the plan you intend to execute, wait for my approval, then execute it with verification checkpoints."
+
+Refine that wording if you can improve it, but keep it short and operational.
+
+---------------------------------------------------------------------
+
+README "HOW TO UNDERSTAND THIS REPOSITORY" REQUIREMENTS
+
+Review the code block at the end of `README.md` under `How To Understand This Repository`.
+
+It currently risks implying that a human should manually run a loose set of Python utilities as their main orientation path.
+
+Decide whether to:
+
+- remove that code block entirely
+- replace it with a shorter, better-targeted block
+- or keep a smaller version with clearer explanation of who runs those commands and why
+
+Whichever option you choose, the resulting section should better reflect the actual workflow:
+
+- assistants usually inspect the repo and invoke the right utilities when needed
+- humans only need a small mental model of what the repository contains
+- commands shown there should be genuinely useful as orientation commands, not a grab bag
+
+Prefer clarity over quantity.
+
+---------------------------------------------------------------------
+
+SCRIPTS README REQUIREMENTS
+
+At the top of `scripts/README.md`, add a short explanation of how these scripts fit into the assistant workflow.
+
+The opening should clarify:
+
+- which scripts are commonly invoked by a coding assistant during repo classification, generation, validation, or context inspection
+- why the assistant runs them
+- which scripts are primarily human-invoked, if any
+- when a human should run those scripts directly instead of delegating to the assistant
+
+You do not need to add a heavy taxonomy, but readers should come away knowing:
+
+- "assistant usually runs these during generation / verification / inspection"
+- "human usually runs these when they want to inspect options, validate repo health, or troubleshoot"
+
+If the current per-script descriptions are missing that context, tighten them where needed.
+
+---------------------------------------------------------------------
+
+CONSISTENCY REQUIREMENT
+
+If `docs/usage/STARTING_NEW_PROJECTS.md` does not already support the README’s claims about:
+
+- 2-5 sentence initial prompts
+- example initial prompts
+- the generated repo handoff workflow
+
+then update that doc so the cross-reference is accurate.
+
+Do not let the README point to guidance that is absent.
+
+---------------------------------------------------------------------
+
+WRITING STYLE
+
+Keep the docs concise, operational, and aligned with how people actually use this repository.
+
+Avoid telling the human to manually load a long chain of internal context files unless that is truly necessary.
+
+The tone should emphasize:
+
+- assistant-led repo analysis
+- human review of plan and constraints
+- incremental execution with verification
+
+Do not bloat the README.
+
+---------------------------------------------------------------------
+
+DELIVERABLE
+
+Make the documentation edits directly in the repository.
+
+When finished, summarize:
+
+- what changed in `README.md`
+- what changed in `scripts/README.md`
+- whether `docs/usage/STARTING_NEW_PROJECTS.md` also needed changes
+- any ambiguity you had to resolve while aligning the docs with the intended workflow
