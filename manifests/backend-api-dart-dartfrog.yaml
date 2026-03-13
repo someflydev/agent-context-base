@@ -1,0 +1,77 @@
+schema_version: 2
+name: backend-api-dart-dartfrog
+description: Preferred Dart backend profile using Dart Frog for explicit JSON, fragment, and interactive data endpoints.
+archetype: backend-api-service
+primary_stack: dart-dartfrog
+secondary_stacks:
+  - redis-keydb-mongo
+triggers:
+  - dart api
+  - dart frog service
+  - dart frog backend
+aliases:
+  - dart service
+  - dart frog
+required_context:
+  - context/doctrine/core-principles.md
+  - context/doctrine/testing-philosophy.md
+  - context/doctrine/compose-port-and-data-isolation.md
+  - context/workflows/add-api-endpoint.md
+  - context/stacks/dart-dartfrog.md
+  - context/archetypes/backend-api-service.md
+optional_context:
+  - context/workflows/add-smoke-tests.md
+  - context/workflows/add-storage-integration.md
+  - context/workflows/post-flight-refinement.md
+  - context/doctrine/canonical-examples.md
+preferred_examples:
+  - examples/canonical-api/dart-dartfrog-api-endpoint-example.dart
+  - examples/canonical-api/dart-dartfrog-html-fragment-example.dart
+  - examples/canonical-api/dart-dartfrog-data-endpoint-example.dart
+  - examples/canonical-api/dart-dartfrog-example/routes/index.dart
+recommended_templates:
+  - templates/readme/README.template.md
+  - templates/agent-md/AGENT.template.md
+  - templates/claude-md/CLAUDE.template.md
+  - templates/compose/docker-compose.template.yaml
+  - templates/compose/docker-compose-test.template.yaml
+  - templates/manifest/profile-summary.template.yaml
+repo_signals:
+  - pubspec.yaml
+  - routes/
+  - routes/**/*.dart
+  - lib/
+task_hints:
+  - add-api-endpoint
+  - add-smoke-tests
+  - add-storage-integration
+  - post-flight-refinement
+warnings:
+  - Keep Dart Frog route handlers narrow and move payload shaping into named helpers when the response grows.
+  - Treat HTML fragment responses as a contract surface with stable markers instead of throwaway strings.
+  - Prefer Docker-backed smoke checks so verification does not depend on host Dart tooling.
+bootstrap_defaults:
+  - include_docker_compose
+  - include_smoke_tests
+  - include_integration_tests
+  - include_generated_profile
+compose_files:
+  - docker-compose.yml
+  - docker-compose.test.yml
+compose_project_name_dev: "{repo_slug}"
+compose_project_name_test: "{repo_slug}-test"
+port_band_app_dev: 14000-14099
+port_band_app_test: 15000-15099
+port_band_data_dev: 24000-24099
+port_band_data_test: 25000-25099
+data_isolation:
+  - docker/volumes/dev
+  - docker/volumes/test
+  - destructive test cleanup must stay scoped to docker-compose.test.yml resources only
+dokku_relevance: optional
+smoke_test_expectations:
+  - boot health route
+  - representative JSON API check
+  - one HTML fragment check
+  - one chart dataset check
+prompt_first_support: supported

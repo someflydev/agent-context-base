@@ -1,0 +1,9 @@
+name: dart_dartfrog_example
+description: Minimal Dart Frog runtime bundle for canonical backend verification.
+publish_to: none
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  dart_frog: ^1.1.0
