@@ -1,0 +1,41 @@
+This prompt extends the repository with a Kotlin backend stack.
+
+Invoke the stack-extension template:
+
+.prompts/PROMPT_11_t.txt
+
+Use the following variables.
+
+STACK_NAME: kotlin-http4k-exposed
+
+LANGUAGE: kotlin
+
+FRAMEWORK: http4k
+
+PRIMARY_LIBS:
+  - exposed
+
+ARCHETYPE_COMPATIBILITY:
+  - backend-api-service
+  - interactive-data-service
+
+EXAMPLE_TYPES:
+  - api_endpoint
+  - html_fragment_endpoint
+  - data_endpoint
+
+DOCKER_SUPPORT: true
+
+Additional guidance:
+
+The Kotlin stack should demonstrate backend services implemented with http4k and Exposed.
+
+Canonical examples should include:
+
+- a JSON API endpoint
+- an endpoint returning HTML fragments suitable for HTMX-style updates
+- a dataset endpoint returning JSON for charting
+
+Backend examples must include Dockerfiles so they can be compiled and tested within containers.
+
+After defining the variables, execute `.prompts/PROMPT_11_t.txt`.

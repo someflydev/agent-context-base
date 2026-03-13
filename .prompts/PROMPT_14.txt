@@ -1,0 +1,43 @@
+This prompt extends the repository with a Scala backend stack.
+
+Invoke the stack-extension template:
+
+.prompts/PROMPT_11_t.txt
+
+Use the following variables.
+
+STACK_NAME: scala-tapir-http4s-zio
+
+LANGUAGE: scala
+
+FRAMEWORK: http4s
+
+PRIMARY_LIBS:
+  - tapir
+  - http4s
+  - zio
+
+ARCHETYPE_COMPATIBILITY:
+  - backend-api-service
+  - interactive-data-service
+
+EXAMPLE_TYPES:
+  - api_endpoint
+  - html_fragment_endpoint
+  - data_endpoint
+
+DOCKER_SUPPORT: true
+
+Additional guidance:
+
+The Scala stack should demonstrate backend services implemented using http4s for HTTP handling, Tapir for typed endpoints, and ZIO for effect management.
+
+Canonical examples should include:
+
+- a typed API endpoint defined with Tapir
+- an endpoint returning HTML fragments appropriate for HTMX-style updates
+- a dataset endpoint that returns JSON suitable for Plotly-style visualization
+
+Backend examples must include Dockerfiles so verification can build and run them without requiring Scala tooling locally.
+
+After defining the variables, execute `.prompts/PROMPT_11_t.txt`.

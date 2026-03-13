@@ -1,0 +1,42 @@
+This prompt extends the repository with an OCaml backend stack.
+
+Invoke the stack-extension template:
+
+.prompts/PROMPT_11_t.txt
+
+Use the following variables.
+
+STACK_NAME: ocaml-dream-caqti-tyxml
+
+LANGUAGE: ocaml
+
+FRAMEWORK: dream
+
+PRIMARY_LIBS:
+  - caqti
+  - tyxml
+
+ARCHETYPE_COMPATIBILITY:
+  - backend-api-service
+  - interactive-data-service
+
+EXAMPLE_TYPES:
+  - api_endpoint
+  - html_fragment_endpoint
+  - data_endpoint
+
+DOCKER_SUPPORT: true
+
+Additional guidance:
+
+The OCaml stack should demonstrate services built with Dream, using Caqti for database access and TyXML for HTML generation.
+
+Canonical examples should include:
+
+- a JSON API endpoint
+- an endpoint returning HTML fragments generated with TyXML
+- a dataset endpoint returning JSON suitable for chart rendering
+
+Backend examples must include Dockerfiles so verification can run the examples inside containers.
+
+After defining the variables, execute `.prompts/PROMPT_11_t.txt`.

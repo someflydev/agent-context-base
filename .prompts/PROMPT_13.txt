@@ -1,0 +1,42 @@
+This prompt extends the repository with a Zig backend stack.
+
+Invoke the stack-extension template:
+
+.prompts/PROMPT_11_t.txt
+
+Use the following variables.
+
+STACK_NAME: zig-zap-jetzig
+
+LANGUAGE: zig
+
+FRAMEWORK: zap
+
+PRIMARY_LIBS:
+  - zap
+  - jetzig
+
+ARCHETYPE_COMPATIBILITY:
+  - backend-api-service
+  - interactive-data-service
+
+EXAMPLE_TYPES:
+  - api_endpoint
+  - html_fragment_endpoint
+  - data_endpoint
+
+DOCKER_SUPPORT: true
+
+Additional guidance:
+
+The Zig stack should demonstrate backend services built with Zap and Jetzig patterns where appropriate.
+
+Canonical examples should include:
+
+- a minimal JSON API endpoint
+- an endpoint returning HTML fragments suitable for HTMX-style interactions
+- a dataset endpoint appropriate for Plotly-style chart rendering
+
+Backend examples must include Dockerfiles so the examples can be compiled and tested in containers rather than requiring a Zig toolchain on the host machine.
+
+After defining these variables, execute `.prompts/PROMPT_11_t.txt`.

@@ -1,0 +1,41 @@
+This prompt extends the repository with a Dart backend stack.
+
+Invoke the stack-extension template:
+
+.prompts/PROMPT_11_t.txt
+
+Use the following variables.
+
+STACK_NAME: dart-dartfrog
+
+LANGUAGE: dart
+
+FRAMEWORK: dart_frog
+
+PRIMARY_LIBS:
+  - dart_frog
+
+ARCHETYPE_COMPATIBILITY:
+  - backend-api-service
+  - interactive-data-service
+
+EXAMPLE_TYPES:
+  - api_endpoint
+  - html_fragment_endpoint
+  - data_endpoint
+
+DOCKER_SUPPORT: true
+
+Additional guidance:
+
+The Dart stack should demonstrate backend services implemented with Dart Frog.
+
+Canonical examples should include:
+
+- a JSON API endpoint
+- an endpoint returning HTML fragments appropriate for HTMX-style partial updates
+- a dataset endpoint returning JSON suitable for charting
+
+Backend examples must include Dockerfiles so they can be executed in containers for verification without requiring Dart installed on the host system.
+
+After defining the variables, execute `.prompts/PROMPT_11_t.txt`.

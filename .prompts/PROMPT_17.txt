@@ -1,0 +1,41 @@
+This prompt extends the repository with a Crystal backend stack.
+
+Invoke the stack-extension template:
+
+.prompts/PROMPT_11_t.txt
+
+Use the following variables.
+
+STACK_NAME: crystal-kemal-avram
+
+LANGUAGE: crystal
+
+FRAMEWORK: kemal
+
+PRIMARY_LIBS:
+  - avram
+
+ARCHETYPE_COMPATIBILITY:
+  - backend-api-service
+  - interactive-data-service
+
+EXAMPLE_TYPES:
+  - api_endpoint
+  - html_fragment_endpoint
+  - data_endpoint
+
+DOCKER_SUPPORT: true
+
+Additional guidance:
+
+The Crystal stack should demonstrate backend services built using Kemal and Avram.
+
+Canonical examples should include:
+
+- a JSON API endpoint
+- an endpoint returning HTML fragments
+- a dataset endpoint returning JSON suitable for visualization
+
+Backend examples must include Dockerfiles so verification can build and run them without requiring Crystal installed locally.
+
+After defining the variables, execute `.prompts/PROMPT_11_t.txt`.

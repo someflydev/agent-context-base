@@ -1,0 +1,42 @@
+This prompt extends the repository with a Clojure backend stack.
+
+Invoke the stack-extension template:
+
+.prompts/PROMPT_11_t.txt
+
+Use the following variables.
+
+STACK_NAME: clojure-kit-nextjdbc-hiccup
+
+LANGUAGE: clojure
+
+FRAMEWORK: kit
+
+PRIMARY_LIBS:
+  - next.jdbc
+  - hiccup
+
+ARCHETYPE_COMPATIBILITY:
+  - backend-api-service
+  - interactive-data-service
+
+EXAMPLE_TYPES:
+  - api_endpoint
+  - html_fragment_endpoint
+  - data_endpoint
+
+DOCKER_SUPPORT: true
+
+Additional guidance:
+
+The Clojure stack should demonstrate services built using Kit, next.jdbc for database interaction, and Hiccup for HTML generation.
+
+Canonical examples should include:
+
+- a JSON API endpoint
+- an endpoint returning HTML fragments using Hiccup
+- a data endpoint returning JSON datasets appropriate for chart rendering
+
+Backend examples must include Dockerfiles so they can be executed and tested inside containers.
+
+After defining the variables, execute `.prompts/PROMPT_11_t.txt`.

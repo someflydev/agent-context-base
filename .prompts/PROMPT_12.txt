@@ -1,0 +1,42 @@
+This prompt extends the repository with a Nim backend stack.
+
+Invoke the stack-extension template:
+
+.prompts/PROMPT_11_t.txt
+
+Use the following variables.
+
+STACK_NAME: nim-jester-happyx
+
+LANGUAGE: nim
+
+FRAMEWORK: jester
+
+PRIMARY_LIBS:
+  - jester
+  - happyx
+
+ARCHETYPE_COMPATIBILITY:
+  - backend-api-service
+  - interactive-data-service
+
+EXAMPLE_TYPES:
+  - api_endpoint
+  - html_fragment_endpoint
+  - data_endpoint
+
+DOCKER_SUPPORT: true
+
+Additional guidance:
+
+The Nim stack should demonstrate Nim-based backend services using Jester for routing and HappyX where appropriate for reactive HTML endpoints.
+
+Canonical examples should include:
+
+- a minimal JSON API endpoint
+- an HTML fragment endpoint suitable for HTMX-style partial updates
+- a data endpoint appropriate for driving Plotly-style charts
+
+Backend examples must include Dockerfiles so verification can run without requiring Nim tooling on the host system.
+
+After defining these variables, execute the template prompt `.prompts/PROMPT_11_t.txt` exactly.
