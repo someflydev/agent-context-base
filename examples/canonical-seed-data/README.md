@@ -6,6 +6,13 @@ Primary file in this category:
 
 - `polars-seed-data-example.py`
 
+## Verification Metadata
+
+- `polars-seed-data-example.py`
+  Verification level: behavior-verified
+  Harness: polars_data_pipeline
+  Last verified by: verification/examples/python/test_polars_examples.py
+
 ## A Strong Canonical Seed Example Should Show
 
 - clear distinction between dev seed data and test fixture data

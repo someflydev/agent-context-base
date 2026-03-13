@@ -6,6 +6,13 @@ Primary file in this category:
 
 - `python-cli-command-example.py`
 
+## Verification Metadata
+
+- `python-cli-command-example.py`
+  Verification level: behavior-verified
+  Harness: none
+  Last verified by: verification/examples/python/test_cli_examples.py
+
 ## A Strong Canonical CLI Example Should Show
 
 - clear command hierarchy

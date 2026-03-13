@@ -31,3 +31,4 @@ Pick the category closest to the active workflow, archetype, and stack. Prefer o
 When doctrine, manifests, or first-class stack guidance changes, review the affected canonical example quickly. A stale example creates more confusion than no example.
 
 Use `examples/catalog.json` when the matching example is not obvious from memory.
+Use `verification/example_registry.yaml` when trust level, confidence, or harness coverage matters.

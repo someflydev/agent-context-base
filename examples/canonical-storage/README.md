@@ -7,6 +7,17 @@ Primary files in this category:
 - `duckdb-polars-example.py`
 - `redis-mongo-shape-example.md`
 
+## Verification Metadata
+
+- `duckdb-polars-example.py`
+  Verification level: behavior-verified
+  Harness: polars_data_pipeline
+  Last verified by: verification/examples/python/test_polars_examples.py
+- `redis-mongo-shape-example.md`
+  Verification level: draft
+  Harness: none
+  Last verified by: verification/unit/test_repo_integrity.py
+
 ## A Strong Canonical Storage Example Should Show
 
 - storage client or adapter boundary

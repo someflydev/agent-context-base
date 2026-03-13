@@ -126,6 +126,8 @@ python scripts/init_memory.py --help
 python scripts/create_handoff_snapshot.py --help
 python scripts/check_memory_freshness.py
 python scripts/validate_context.py
+python scripts/run_verification.py --tier fast
+python scripts/verify_examples.py --stack python-fastapi-uv-ruff-orjson-polars
 python scripts/preview_context_bundle.py backend-api-fastapi-polars --show-weights --show-anchors
 python scripts/prompt_first_repo_analyzer.py .
 python scripts/pattern_diff.py examples/canonical-api examples/canonical-smoke-tests

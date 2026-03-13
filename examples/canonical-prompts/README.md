@@ -8,6 +8,21 @@ Primary files in this category:
 - `001-bootstrap-repo.txt`
 - `002-refine-test-surface.txt`
 
+## Verification Metadata
+
+- `prompt-first-layout-example.md`
+  Verification level: syntax-checked
+  Harness: none
+  Last verified by: verification/unit/test_prompt_rules.py
+- `001-bootstrap-repo.txt`
+  Verification level: syntax-checked
+  Harness: none
+  Last verified by: verification/unit/test_prompt_rules.py
+- `002-refine-test-surface.txt`
+  Verification level: syntax-checked
+  Harness: none
+  Last verified by: verification/unit/test_prompt_rules.py
+
 ## A Strong Canonical Prompt Example Should Show
 
 - strictly monotonic numbering
