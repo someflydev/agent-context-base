@@ -64,6 +64,18 @@ stacks:
       - storage-backed Clojure example beyond in-memory H2
       - richer Kit middleware or auth example
     notes: Docker-backed smoke coverage is present for the runnable bundle; source examples stay structure-verified.
+  - stack: ocaml-dream-caqti-tyxml
+    support_level: 3
+    verified_examples:
+      - ocaml-dream-caqti-tyxml-api-endpoint-example
+      - ocaml-dream-caqti-tyxml-html-fragment-example
+      - ocaml-dream-caqti-tyxml-data-endpoint-example
+      - ocaml-dream-caqti-tyxml-runtime-example
+    missing_verification:
+      - native dune compile-aware check
+      - Postgres-backed Caqti runtime verification
+      - richer Dream middleware or auth example
+    notes: Docker-backed smoke coverage is present for the runnable bundle; source examples stay structure-verified.
   - stack: crystal-kemal-avram
     support_level: 3
     verified_examples:

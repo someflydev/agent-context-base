@@ -702,6 +702,118 @@ examples:
     docker_supported: true
     scenario_harness: clojure_kit_nextjdbc_hiccup_min_app
     confidence: medium
+  - name: ocaml-dream-caqti-tyxml-api-endpoint-example-doc
+    path: examples/canonical-api/ocaml-dream-caqti-tyxml-api-endpoint-example.md
+    language: markdown
+    stack_tags:
+      - ocaml-dream-caqti-tyxml
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: ocaml_dream_caqti_tyxml_min_app
+    confidence: medium
+  - name: ocaml-dream-caqti-tyxml-api-endpoint-example
+    path: examples/canonical-api/ocaml-dream-caqti-tyxml-api-endpoint-example.ml
+    language: ocaml
+    stack_tags:
+      - ocaml-dream-caqti-tyxml
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - dream route surface
+      - caqti query helper
+    docker_supported: false
+    scenario_harness: ocaml_dream_caqti_tyxml_min_app
+    confidence: medium
+  - name: ocaml-dream-caqti-tyxml-html-fragment-example-doc
+    path: examples/canonical-api/ocaml-dream-caqti-tyxml-html-fragment-example.md
+    language: markdown
+    stack_tags:
+      - ocaml-dream-caqti-tyxml
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: ocaml_dream_caqti_tyxml_min_app
+    confidence: medium
+  - name: ocaml-dream-caqti-tyxml-html-fragment-example
+    path: examples/canonical-api/ocaml-dream-caqti-tyxml-html-fragment-example.ml
+    language: ocaml
+    stack_tags:
+      - ocaml-dream-caqti-tyxml
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - tyxml fragment markers
+      - htmx-friendly route
+    docker_supported: false
+    scenario_harness: ocaml_dream_caqti_tyxml_min_app
+    confidence: medium
+  - name: ocaml-dream-caqti-tyxml-data-endpoint-example-doc
+    path: examples/canonical-api/ocaml-dream-caqti-tyxml-data-endpoint-example.md
+    language: markdown
+    stack_tags:
+      - ocaml-dream-caqti-tyxml
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: ocaml_dream_caqti_tyxml_min_app
+    confidence: medium
+  - name: ocaml-dream-caqti-tyxml-data-endpoint-example
+    path: examples/canonical-api/ocaml-dream-caqti-tyxml-data-endpoint-example.ml
+    language: ocaml
+    stack_tags:
+      - ocaml-dream-caqti-tyxml
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - chart payload shape
+      - caqti data route
+    docker_supported: false
+    scenario_harness: ocaml_dream_caqti_tyxml_min_app
+    confidence: medium
+  - name: ocaml-dream-caqti-tyxml-runtime-example
+    path: examples/canonical-api/ocaml-dream-caqti-tyxml-example/bin/main.ml
+    language: ocaml
+    stack_tags:
+      - ocaml-dream-caqti-tyxml
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - docker build
+      - container boots
+      - health request
+      - json api request
+      - html fragment request
+      - chart dataset request
+    docker_supported: true
+    scenario_harness: ocaml_dream_caqti_tyxml_min_app
+    confidence: medium
   - name: crystal-kemal-avram-api-endpoint-example-doc
     path: examples/canonical-api/crystal-kemal-avram-api-endpoint-example.md
     language: markdown
