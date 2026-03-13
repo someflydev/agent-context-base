@@ -398,6 +398,118 @@ examples:
     docker_supported: true
     scenario_harness: scala_tapir_http4s_zio_min_app
     confidence: medium
+  - name: kotlin-http4k-exposed-api-endpoint-example-doc
+    path: examples/canonical-api/kotlin-http4k-exposed-api-endpoint-example.md
+    language: markdown
+    stack_tags:
+      - kotlin-http4k-exposed
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: kotlin_http4k_exposed_min_app
+    confidence: medium
+  - name: kotlin-http4k-exposed-api-endpoint-example
+    path: examples/canonical-api/kotlin-http4k-exposed-api-endpoint-example.kt
+    language: kotlin
+    stack_tags:
+      - kotlin-http4k-exposed
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - http4k route surface
+      - exposed query helper
+    docker_supported: false
+    scenario_harness: kotlin_http4k_exposed_min_app
+    confidence: medium
+  - name: kotlin-http4k-exposed-html-fragment-example-doc
+    path: examples/canonical-api/kotlin-http4k-exposed-html-fragment-example.md
+    language: markdown
+    stack_tags:
+      - kotlin-http4k-exposed
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: kotlin_http4k_exposed_min_app
+    confidence: medium
+  - name: kotlin-http4k-exposed-html-fragment-example
+    path: examples/canonical-api/kotlin-http4k-exposed-html-fragment-example.kt
+    language: kotlin
+    stack_tags:
+      - kotlin-http4k-exposed
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - html fragment markers
+      - http4k fragment route
+    docker_supported: false
+    scenario_harness: kotlin_http4k_exposed_min_app
+    confidence: medium
+  - name: kotlin-http4k-exposed-data-endpoint-example-doc
+    path: examples/canonical-api/kotlin-http4k-exposed-data-endpoint-example.md
+    language: markdown
+    stack_tags:
+      - kotlin-http4k-exposed
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: kotlin_http4k_exposed_min_app
+    confidence: medium
+  - name: kotlin-http4k-exposed-data-endpoint-example
+    path: examples/canonical-api/kotlin-http4k-exposed-data-endpoint-example.kt
+    language: kotlin
+    stack_tags:
+      - kotlin-http4k-exposed
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - source structure
+      - chart payload shape
+      - exposed data route
+    docker_supported: false
+    scenario_harness: kotlin_http4k_exposed_min_app
+    confidence: medium
+  - name: kotlin-http4k-exposed-runtime-example
+    path: examples/canonical-api/kotlin-http4k-exposed-example/src/main/kotlin/example/Main.kt
+    language: kotlin
+    stack_tags:
+      - kotlin-http4k-exposed
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - docker build
+      - container boots
+      - health request
+      - json api request
+      - html fragment request
+      - chart dataset request
+    docker_supported: true
+    scenario_harness: kotlin_http4k_exposed_min_app
+    confidence: medium
   - name: clojure-kit-nextjdbc-hiccup-api-endpoint-example-doc
     path: examples/canonical-api/clojure-kit-nextjdbc-hiccup-api-endpoint-example.md
     language: markdown

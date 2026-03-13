@@ -40,6 +40,18 @@ stacks:
       - storage-backed Scala example
       - richer middleware or auth example
     notes: Docker-backed smoke coverage is present for the runnable bundle; source examples stay structure-verified.
+  - stack: kotlin-http4k-exposed
+    support_level: 3
+    verified_examples:
+      - kotlin-http4k-exposed-api-endpoint-example
+      - kotlin-http4k-exposed-html-fragment-example
+      - kotlin-http4k-exposed-data-endpoint-example
+      - kotlin-http4k-exposed-runtime-example
+    missing_verification:
+      - native Gradle compile in default verification tier
+      - storage-backed Kotlin example beyond in-memory H2
+      - richer middleware or auth example
+    notes: Docker-backed smoke coverage is present for the runnable bundle; source examples stay structure-verified.
   - stack: clojure-kit-nextjdbc-hiccup
     support_level: 3
     verified_examples:
