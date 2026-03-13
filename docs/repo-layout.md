@@ -1,104 +1,48 @@
 # Repo Layout
 
-The repository is intentionally layered so assistants can load only what they need.
+The repository is organized so assistants can route first, load later, and avoid scanning broad directories by default.
 
-## Top-Level Files
+| Path | Role |
+| --- | --- |
+| `README.md` | Front-facing overview and entrypoint for humans. |
+| `AGENT.md`, `CLAUDE.md` | Minimal assistant boot docs. |
+| `docs/` | Short orientation, architecture, and usage guides. |
+| `context/doctrine/` | Durable rules: loading discipline, testing posture, prompt-first rules, deployment guardrails, and stop conditions. |
+| `context/router/` | Task, stack, archetype, and alias routing logic. |
+| `context/workflows/` | Task playbooks such as adding features, bootstrapping repos, or refining before commit. |
+| `context/stacks/` | Framework and infra guidance for active implementation surfaces. |
+| `context/archetypes/` | Repo-shape guidance such as backend service, CLI, local RAG, or prompt-first repo. |
+| `context/anchors/` | Very small reminder docs for startup, isolation, and integrity work. |
+| `context/memory/` | Rules and templates for `MEMORY.md`, stop hooks, and handoff snapshots. |
+| `manifests/` | Machine-readable context bundles, triggers, repo signals, examples, and bootstrap defaults. |
+| `examples/` | Canonical examples that should shape implementation after routing is narrow. |
+| `templates/` | Generated-repo scaffolds. Useful for bootstrap, but lower authority than canonical examples. |
+| `scripts/` | Bootstrap, preview, validation, repo-signal analysis, and continuity utilities. |
+| `verification/` | Example registry, support matrix, tests, fixtures, and scenario harnesses. |
 
-- `README.md`: top-level overview and loading order
-- `AGENT.md`: concise Codex-style router
-- `CLAUDE.md`: concise Claude-oriented router
-- `MEMORY.md`: optional runtime working-state artifact for the current task
-- `.gitignore`: practical ignore rules across the supported stacks
+## Reading Order
 
-## `docs/`
+1. `README.md`
+2. `docs/context-boot-sequence.md`
+3. `docs/repo-purpose.md`
+4. `docs/repo-layout.md`
+5. `docs/session-start.md`
+6. one router, one workflow, one stack, and one example as needed
 
-Repo-level orientation only. Keep these files short and stable.
+## Practical Rules
 
-- `docs/repo-purpose.md`
-- `docs/repo-layout.md`
-- `docs/session-start.md`
-
-## `context/doctrine/`
-
-Stable rules. Use for decisions that should survive across tasks:
-
-- naming
-- testing
-- smoke-test scope
-- compose naming and data isolation
-- commits
-- prompt-first conventions
-- canonical examples
-- context loading
-- Dokku deployment philosophy
-- stop conditions
-
-## `context/anchors/`
-
-Compact assistant memory anchors for session start, integrity work, Compose isolation, and prompt-first invariants.
-
-## `context/memory/`
-
-Operational continuity guidance for mutable task memory, stop hooks, handoff snapshots, and freshness rules.
-
-## `context/workflows/`
-
-Task playbooks. Each workflow should describe:
-
-- when it applies
-- preconditions
-- sequence
-- outputs
-- required smoke tests
-- when minimal real-infra integration tests are also required
-
-## `context/stacks/`
-
-Concrete implementation guidance for first-class stacks and infra components. Keep these grounded in real file paths, change surfaces, and test implications.
-
-## `context/archetypes/`
-
-Project-shape guidance. Use when the task is about the kind of repo being built, not just one framework.
-
-## `context/router/`
-
-Inference rules and aliases that help assistants map normal language onto the right workflow, archetype, stack, and example bundle.
-
-## `context/skills/`
-
-Short reusable capability docs. These should stay operational and composable instead of repeating doctrine or stack details.
-
-## `manifests/`
-
-Machine-readable context bundles. They describe expected stacks, likely triggers, required context, optional context, preferred examples, and warnings.
-
-## `examples/`
-
-Canonical example surfaces. They document what a strong example of each category should contain. These are not scaffolds.
-
-`examples/catalog.json` adds machine-readable ranking metadata for example selection.
-
-## `templates/`
-
-Starter scaffolds. These are intentionally lighter than examples and should never override doctrine or canonical example guidance.
-
-## Optional `artifacts/handoffs/` Or `handoffs/`
-
-Durable point-in-time handoff snapshots for longer tasks, interrupted sessions, and assistant or human transfers.
-
-## `scripts/`
-
-Small utilities for validating manifests, previewing bundles, analyzing repo signals, and diffing patterns. Keep them dependency-light and readable.
-
-## `smoke-tests/`
-
-Repo-level guidance for future projects. This base repo does not pretend to ship one-size-fits-all smoke tests for every descendant repo.
+- Load doctrine only when the task activates a durable constraint.
+- Load one workflow before mixing several.
+- Load only the stacks on the active change surface.
+- Prefer one canonical example over several near-matches.
+- Treat templates as scaffolding, not proof of a canonical pattern.
 
 ## Extension Rule
 
-When adding new stacks later, extend the same pattern:
+When promoting a new stack or repo shape, keep the same pattern:
 
-1. add a focused stack doc
-2. add aliases
-3. add manifests if the stack becomes first-class
-4. add examples only when there is a stable canonical pattern
+1. add or refine the router signals
+2. add the focused stack or archetype guidance
+3. add or update a manifest
+4. add a canonical example only when the pattern is stable
+5. add verification coverage so the example can stay trusted

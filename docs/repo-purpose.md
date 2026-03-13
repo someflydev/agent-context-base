@@ -1,62 +1,56 @@
 # Repo Purpose
 
-`agent-context-base` exists to help future repositories start with a strong, consistent assistant-facing structure.
+`agent-context-base` is a foundation for repositories that will be built with coding assistants, not a finished application and not a generic starter app.
 
-## What This Repo Provides
+Its job is to make assistant behavior more reliable by separating the repository into a few clear layers:
 
-- routing entrypoints for Codex, Claude, and similar coding assistants
-- doctrine separated from execution playbooks
-- first-class stack packs for the stacks used most often
-- archetype packs for common project shapes
-- manifest files that can drive validation and context preview tooling
-- canonical example strategy surfaces
-- runtime continuity guidance for `MEMORY.md`, stop hooks, and handoff snapshots
-- starter templates for repo bootstrap work
-- lightweight scripts for checking the structure
+- doctrine: durable rules and guardrails
+- workflows: task playbooks
+- stacks: implementation guidance for frameworks and infra
+- archetypes: project-shape guidance
+- manifests: machine-readable context bundles
+- canonical examples: preferred completed patterns
+- templates: starter scaffolds for generated repos
+- continuity artifacts: `MEMORY.md`, stop hooks, and handoff snapshots
 
-## What This Repo Does Not Try To Be
+## What This Repo Optimizes For
 
-- a finished application
-- a giant forever-monorepo
-- a substitute for project-specific manifests and examples
-- a place to dump every possible stack detail into one file
-- a replacement for task-local working memory or handoff artifacts
+- small, high-signal context bundles
+- natural-language routing instead of memorized filenames
+- canonical examples before improvised patterns
+- smoke-test-heavy delivery with minimal real-infra tests where boundaries matter
+- isolated dev and test Compose layouts
+- prompt-first repo generation and long-lived assistant workflows
 
-## Operating Assumptions
+## What It Does Not Try To Be
 
-- work is prompt-first
-- humans should not need to memorize internal routing names
-- canonical examples are preferable to ad hoc pattern mixing
-- smoke tests are required often, but significant boundaries also need minimal real-infra integration tests
-- Docker-backed dev and test environments should be isolated by default
-- Dokku is a practical deployment target for many future service repos
-- the base should stay inspectable through small scripts and machine-readable metadata rather than a repo-factory abstraction layer
+- a product codebase
+- a repo factory with hidden abstractions
+- a replacement for project-specific manifests and examples
+- a place to dump every framework detail into one document
+- a substitute for code inspection, tests, or task-local continuity notes
 
-## First-Class v1 Project Shapes
+## Supported Project Shapes
 
-This base is optimized for:
-
-- prompt-first meta repos
-- backend API services
+- Prompt-first repos
+- Backend API services
 - CLI tools
-- data pipelines
-- local RAG systems
-- multi-storage experiments
+- Data pipelines
+- Local RAG systems
+- Multi-storage experiments
 - Dokku-deployable services
 
-## First-Class v1 Stacks
+## First-Class Stacks
 
-This base intentionally gives better detail to the stacks used most often:
+The most developed stacks in this base are:
 
-- FastAPI plus `uv`, Ruff, `orjson`, and Polars
-- Hono plus Bun, Drizzle ORM, and TSX
-- Nim with Jester and HappyX
-- Tapir plus http4s and ZIO
-- Axum
-- Echo plus templ
-- Phoenix
-- Redis or KeyDB, MongoDB, DuckDB, Trino, NATS JetStream, Meilisearch, TimescaleDB, Elasticsearch, and Qdrant
+- Python / FastAPI / `uv` / Ruff / `orjson` / Polars
+- TypeScript / Hono / Bun / Drizzle
+- Rust / Axum
+- Go / Echo / templ
+- Elixir / Phoenix
+- Scala / Tapir / http4s / ZIO
+- Kotlin / http4k / Exposed
+- Nim / Jester / HappyX
 
-Other backend stacks should extend the same structure instead of forcing their full treatment into v1.
-
-Legible extension paths currently include Zig with Zap or Jetzig, Clojure with Kit or next.jdbc or Hiccup, Kotlin with http4k or Exposed, Crystal with Kemal or Avram, OCaml with Dream or Caqti or TyXML, and Dart with Dart Frog.
+Supporting infra packs cover systems such as Redis, MongoDB, DuckDB, Trino, NATS JetStream, Meilisearch, Elasticsearch, TimescaleDB, and Qdrant. Additional stacks can be added by extending the same router, manifest, example, and verification structure.

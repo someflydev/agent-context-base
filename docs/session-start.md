@@ -1,6 +1,6 @@
 # Session Start
 
-Use this file when beginning a new task or returning to a long-lived repo after context drift.
+Use this checklist when starting a task or resuming after context drift.
 
 ## Read First
 
@@ -10,33 +10,30 @@ Use this file when beginning a new task or returning to a long-lived repo after 
 4. `docs/repo-layout.md`
 5. `context/router/task-router.md`
 
-If `MEMORY.md` is present, read it next after the stable startup files and basic repo-signal checks.
+Then inspect narrow repo signals. Read `MEMORY.md` only after that stable startup pass.
 
-## Fast Checks
+## Quick Actions
 
-- run `python scripts/validate_context.py` if metadata, examples, routing, or bootstrap behavior changed
-- run `python scripts/prompt_first_repo_analyzer.py .` if the active stack or archetype is unclear
-- run `python scripts/preview_context_bundle.py <manifest> --show-weights --show-anchors` when a manifest already looks close
-- run `python scripts/check_memory_freshness.py` when resuming a longer task and `MEMORY.md` already exists
-- run `python scripts/init_memory.py` when a non-trivial task needs a fresh `MEMORY.md`
+- `python scripts/prompt_first_repo_analyzer.py .` when the stack or archetype is unclear
+- `python scripts/preview_context_bundle.py <manifest> --show-weights --show-anchors` when a manifest looks close
+- `python scripts/validate_context.py` when manifests, examples, routing, or templates changed
+- `python scripts/check_memory_freshness.py` when resuming a longer task with an existing `MEMORY.md`
+- `python scripts/init_memory.py` when a non-trivial task needs a new continuity file
 
-## Recommended Anchor Pairings
+## Useful Anchors
 
-- startup identity and repo shape: `context/anchors/repo-identity.md`
-- loading discipline: `context/anchors/context-loading-principles.md`
-- drift prevention: `context/anchors/anti-patterns.md`
-- general routing ambiguity: `context/anchors/session-start.md`
-- integrity or metadata work: `context/anchors/context-integrity.md`
-- Compose or infra work: `context/anchors/compose-isolation.md`
-- prompt files or prompt-first repo work: `context/anchors/prompt-first.md`
+- `context/anchors/repo-identity.md`
+- `context/anchors/context-loading-principles.md`
+- `context/anchors/anti-patterns.md`
+- `context/anchors/context-integrity.md` for metadata work
+- `context/anchors/compose-isolation.md` for infra work
+- `context/anchors/prompt-first.md` for prompt-first repos
 
 ## Stop Early When
 
-- the task still needs more than one primary workflow after routing
-- the repo signals disagree with the current manifest choice
-- storage or deployment behavior changed but no smoke or integration path exists
-- the change would require loading multiple near-match examples
+- more than one workflow still looks primary
+- repo signals and the chosen manifest disagree
+- a storage or deployment change has no verification path
+- the next step would require loading multiple near-match examples
 
-Use `context/doctrine/stop-conditions.md` as the explicit guardrail reference.
-
-At a meaningful stop point, refresh `MEMORY.md`. Add a handoff snapshot when the task is likely to continue in a fresh session or by another person or assistant.
+Use `context/doctrine/stop-conditions.md` as the final guardrail. Update `MEMORY.md` at meaningful pause points.

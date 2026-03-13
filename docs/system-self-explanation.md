@@ -1,39 +1,19 @@
 # System Self-Explanation
 
-`agent-context-base` is a prompt-first context system with light tooling, not a repo factory.
+`agent-context-base` is a context runtime for AI-assisted development.
 
-## How The Layers Work
+It stays understandable because each layer has one job:
 
-- routers map normal language onto a small bundle
-- doctrine holds durable rules
-- workflows describe task sequences
-- archetypes describe repo shape
-- stacks describe concrete implementation details
-- manifests package likely bundles and repo signals
-- examples show preferred finished patterns
-- templates provide starter scaffolds
-- scripts validate integrity and help inspect the system
+- routers classify the task
+- manifests assemble the bundle
+- doctrine sets durable rules
+- workflows sequence the work
+- stacks and archetypes localize technical detail
+- canonical examples shape implementation
+- templates scaffold generated repos
+- verification keeps the whole system honest
+- memory artifacts preserve current task state
 
-## Why This Repo Stays Small
+This repo stays deliberately small. It prefers explicit files, machine-readable metadata, and lightweight scripts over hidden repo-factory abstractions.
 
-The goal is predictability for Codex, Claude, and Gemini over long-lived usage. That means:
-
-- fewer overlapping sources of truth
-- machine-readable metadata where ranking or validation matters
-- no repo-factory abstraction layer hiding simple file generation
-- explicit extension paths instead of premature first-class support for every framework
-
-## Extension Paths
-
-The current first-class stacks remain FastAPI, TypeScript plus Hono plus Bun plus Drizzle plus TSX, Nim plus Jester plus HappyX, Scala plus Tapir plus http4s plus ZIO, Rust plus Axum, Go plus Echo plus templ, and Phoenix.
-
-The repo also keeps these legible as extension paths without redesigning the architecture:
-
-- Zig with Zap or Jetzig
-- Clojure with Kit, next.jdbc, or Hiccup
-- Kotlin with http4k or Exposed
-- Crystal with Kemal or Avram
-- OCaml with Dream, Caqti, or TyXML
-- Dart with Dart Frog
-
-Use the same pattern when promoting a new stack later: focused stack doc, aliases or signals, manifests only when the stack becomes common, and a canonical example only after the pattern stabilizes.
+If you need the full architecture view, start with `docs/architecture/ASSISTANT_RUNTIME_MODEL.md`.
