@@ -10,11 +10,15 @@ Use this file when beginning a new task or returning to a long-lived repo after 
 4. `docs/repo-layout.md`
 5. `context/router/task-router.md`
 
+If `MEMORY.md` is present, read it next after the stable startup files and basic repo-signal checks.
+
 ## Fast Checks
 
 - run `python scripts/validate_context.py` if metadata, examples, routing, or bootstrap behavior changed
 - run `python scripts/prompt_first_repo_analyzer.py .` if the active stack or archetype is unclear
 - run `python scripts/preview_context_bundle.py <manifest> --show-weights --show-anchors` when a manifest already looks close
+- run `python scripts/check_memory_freshness.py` when resuming a longer task and `MEMORY.md` already exists
+- run `python scripts/init_memory.py` when a non-trivial task needs a fresh `MEMORY.md`
 
 ## Recommended Anchor Pairings
 
@@ -34,3 +38,5 @@ Use this file when beginning a new task or returning to a long-lived repo after 
 - the change would require loading multiple near-match examples
 
 Use `context/doctrine/stop-conditions.md` as the explicit guardrail reference.
+
+At a meaningful stop point, refresh `MEMORY.md`. Add a handoff snapshot when the task is likely to continue in a fresh session or by another person or assistant.

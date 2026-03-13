@@ -10,6 +10,7 @@
 - archetype packs for common project shapes
 - manifest files that can drive validation and context preview tooling
 - canonical example strategy surfaces
+- runtime continuity guidance for `MEMORY.md`, stop hooks, and handoff snapshots
 - starter templates for repo bootstrap work
 - lightweight scripts for checking the structure
 
@@ -19,6 +20,7 @@
 - a giant forever-monorepo
 - a substitute for project-specific manifests and examples
 - a place to dump every possible stack detail into one file
+- a replacement for task-local working memory or handoff artifacts
 
 ## Operating Assumptions
 

@@ -16,6 +16,8 @@ Read these first:
 5. `docs/session-start.md`
 6. `context/router/task-router.md`
 
+After those stable reads and basic repo-signal checks, read `MEMORY.md` if it exists.
+
 Only then load `context/router/stack-router.md`, `context/router/archetype-router.md`, or a manifest if the task still needs narrowing.
 
 ## Smallest Relevant Bundle
@@ -55,6 +57,10 @@ Load stacks when implementation details depend on a concrete language, framework
 Load archetypes when the project shape matters more than a single framework choice.
 
 Load examples only after the active workflow and stack are known.
+
+Use `MEMORY.md` as a continuity aid for the current task only. It does not replace doctrine, manifests, code inspection, or verification.
+
+At a meaningful pause point, update `MEMORY.md`. Create a handoff snapshot when pausing after meaningful progress and a fresh session, human, or another assistant is likely to continue.
 
 ## Canonical Example Priority
 

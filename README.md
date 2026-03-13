@@ -32,6 +32,19 @@ Then load only the smallest bundle that matches the task:
 - the needed stack packs
 - one preferred canonical example
 
+If the repo has a `MEMORY.md`, read it after the stable startup files and repo-signal checks. Use it as current-task continuity, not as doctrine.
+
+## What v4 Adds
+
+The fourth pass adds:
+
+- a bounded runtime memory layer under `context/memory/`
+- `MEMORY.md` and handoff snapshot templates for derived repos
+- canonical continuity examples for mutable memory and durable handoffs
+- stop-hook guidance for meaningful pause points
+- helper scripts for memory initialization, handoff creation, and freshness checks
+- operating-manual and boot-sequence integration for cross-session continuity
+
 ## What v3 Adds
 
 The third pass adds:
@@ -79,6 +92,7 @@ Those extension paths remain intentionally legible for framework families such a
 - `context/stacks/`: stack-specific guidance
 - `context/archetypes/`: project-shape guidance
 - `context/router/`: routing rules and alias mapping
+- `context/memory/`: runtime continuity rules for `MEMORY.md`, stop hooks, and handoffs
 - `context/anchors/`: compact assistant memory anchors
 - `context/skills/`: short reusable assistant capabilities
 - `manifests/`: machine-readable context bundles
@@ -108,6 +122,9 @@ That script renders a starter README, `AGENT.md`, `CLAUDE.md`, `.gitignore`, gen
 Useful repo-maintenance commands:
 
 ```bash
+python scripts/init_memory.py --help
+python scripts/create_handoff_snapshot.py --help
+python scripts/check_memory_freshness.py
 python scripts/validate_context.py
 python scripts/preview_context_bundle.py backend-api-fastapi-polars --show-weights --show-anchors
 python scripts/prompt_first_repo_analyzer.py .

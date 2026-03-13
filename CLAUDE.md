@@ -12,6 +12,8 @@ Start with:
 5. `docs/session-start.md`
 6. `context/router/task-router.md`
 
+After those stable reads and basic repo-signal checks, read `MEMORY.md` if it exists.
+
 Then infer the smallest useful bundle instead of loading the whole repo.
 
 ## Routing Discipline
@@ -49,6 +51,10 @@ Prefer this order:
 8. template
 
 Templates are scaffolds. Examples are preferred patterns. Keep them distinct.
+
+`MEMORY.md` is a continuity aid for the live task. It does not replace doctrine, manifests, code inspection, or verification.
+
+Refresh `MEMORY.md` at major stop points. Create a handoff snapshot when meaningful progress needs to survive a fresh session or assistant handoff.
 
 ## When To Pause
 

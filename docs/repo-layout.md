@@ -7,6 +7,7 @@ The repository is intentionally layered so assistants can load only what they ne
 - `README.md`: top-level overview and loading order
 - `AGENT.md`: concise Codex-style router
 - `CLAUDE.md`: concise Claude-oriented router
+- `MEMORY.md`: optional runtime working-state artifact for the current task
 - `.gitignore`: practical ignore rules across the supported stacks
 
 ## `docs/`
@@ -35,6 +36,10 @@ Stable rules. Use for decisions that should survive across tasks:
 ## `context/anchors/`
 
 Compact assistant memory anchors for session start, integrity work, Compose isolation, and prompt-first invariants.
+
+## `context/memory/`
+
+Operational continuity guidance for mutable task memory, stop hooks, handoff snapshots, and freshness rules.
 
 ## `context/workflows/`
 
@@ -76,6 +81,10 @@ Canonical example surfaces. They document what a strong example of each category
 ## `templates/`
 
 Starter scaffolds. These are intentionally lighter than examples and should never override doctrine or canonical example guidance.
+
+## Optional `artifacts/handoffs/` Or `handoffs/`
+
+Durable point-in-time handoff snapshots for longer tasks, interrupted sessions, and assistant or human transfers.
 
 ## `scripts/`
 
