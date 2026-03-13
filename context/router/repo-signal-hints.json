@@ -44,6 +44,16 @@
       "guidance": "Use Tapir for typed contracts, keep http4s route wiring explicit, and let ZIO define effect boundaries."
     },
     {
+      "name": "kotlin-http4k-exposed",
+      "patterns": [
+        "build.gradle.kts",
+        "settings.gradle.kts",
+        "src/main/kotlin/**/*.kt",
+        "src/test/kotlin/**/*.kt"
+      ],
+      "guidance": "Use http4k for explicit route composition and let Exposed define small query and transaction helpers."
+    },
+    {
       "name": "clojure-kit-nextjdbc-hiccup",
       "patterns": [
         "deps.edn",

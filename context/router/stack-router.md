@@ -12,6 +12,8 @@ Infer the active stack from repo signals, touched files, and user language.
   - load `context/stacks/nim-jester-happyx.md`
 - `build.sbt`, `project/*.scala`, `src/main/scala/**/*.scala`, `tapir`, `http4s`, `zio`
   - load `context/stacks/scala-tapir-http4s-zio.md`
+- `build.gradle.kts`, `settings.gradle.kts`, `src/main/kotlin/**/*.kt`, `http4k`, `exposed`
+  - load `context/stacks/kotlin-http4k-exposed.md`
 - `deps.edn`, `src/**/*.clj`, `kit`, `next.jdbc`, `hiccup`
   - load `context/stacks/clojure-kit-nextjdbc-hiccup.md`
 - `build.zig`, `build.zig.zon`, `src/main.zig`, `zap`, `jetzig`
@@ -55,6 +57,8 @@ Infer the active stack from repo signals, touched files, and user language.
   - `context/stacks/nim-jester-happyx.md`
 - "Add a typed Tapir route to my Scala service"
   - `context/stacks/scala-tapir-http4s-zio.md`
+- "Add an Exposed-backed endpoint to my Kotlin service"
+  - `context/stacks/kotlin-http4k-exposed.md`
 - "Add a Kit route or Hiccup fragment to my Clojure service"
   - `context/stacks/clojure-kit-nextjdbc-hiccup.md`
 - "Add a JSON or fragment endpoint to my Zig service"

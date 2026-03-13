@@ -65,6 +65,12 @@ stacks:
     target: context/stacks/scala-tapir-http4s-zio.md
   - alias: zio
     target: context/stacks/scala-tapir-http4s-zio.md
+  - alias: kotlin
+    target: context/stacks/kotlin-http4k-exposed.md
+  - alias: http4k
+    target: context/stacks/kotlin-http4k-exposed.md
+  - alias: exposed
+    target: context/stacks/kotlin-http4k-exposed.md
   - alias: clojure
     target: context/stacks/clojure-kit-nextjdbc-hiccup.md
   - alias: kit

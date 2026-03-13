@@ -76,6 +76,7 @@ STACK_PATHS = {
     "typescript-hono-bun": "context/stacks/typescript-hono-bun.md",
     "nim-jester-happyx": "context/stacks/nim-jester-happyx.md",
     "scala-tapir-http4s-zio": "context/stacks/scala-tapir-http4s-zio.md",
+    "kotlin-http4k-exposed": "context/stacks/kotlin-http4k-exposed.md",
     "clojure-kit-nextjdbc-hiccup": "context/stacks/clojure-kit-nextjdbc-hiccup.md",
     "zig-zap-jetzig": "context/stacks/zig-zap-jetzig.md",
     "rust-axum-modern": "context/stacks/rust-axum-modern.md",
