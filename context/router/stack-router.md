@@ -10,6 +10,8 @@ Infer the active stack from repo signals, touched files, and user language.
   - load `context/stacks/typescript-hono-bun.md`
 - `*.nimble`, `src/**/*.nim`, `jester`, `happyx`
   - load `context/stacks/nim-jester-happyx.md`
+- `build.zig`, `build.zig.zon`, `src/main.zig`, `zap`, `jetzig`
+  - load `context/stacks/zig-zap-jetzig.md`
 - `Cargo.toml`, `src/main.rs`, `axum`
   - load `context/stacks/rust-axum-modern.md`
 - `go.mod`, `cmd/server/main.go`, `echo`, `.templ`
@@ -47,6 +49,8 @@ Infer the active stack from repo signals, touched files, and user language.
   - `context/stacks/typescript-hono-bun.md`
 - "Add an HTMX fragment route to my Nim service"
   - `context/stacks/nim-jester-happyx.md`
+- "Add a JSON or fragment endpoint to my Zig service"
+  - `context/stacks/zig-zap-jetzig.md`
 - "Wire Qdrant for retrieval"
   - `context/stacks/qdrant.md`
 - "Add a Phoenix release path for Dokku"

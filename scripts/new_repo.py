@@ -129,6 +129,31 @@ STACKS: dict[str, StackProfile] = {
         ),
         stack_gitignore=(),
     ),
+    "zig-zap-jetzig": StackProfile(
+        description="Zig backend service using Zap and Jetzig-style view patterns.",
+        display_name="Zig + Zap + Jetzig",
+        app_image="ziglang/zig:0.15.1",
+        app_command='sh -lc "mkdir -p zig-out/bin && zig build-exe src/main.zig -femit-bin=zig-out/bin/app && ./zig-out/bin/app"',
+        test_command='sh -lc "zig test tests/smoke/health_test.zig"',
+        app_container_port=3000,
+        route_path="src/main.zig",
+        smoke_path="tests/smoke/health_test.zig",
+        integration_path="tests/integration/report_runs_test.zig",
+        seed_path="scripts/seed_data.zig",
+        directories=(
+            "docs",
+            "docker/volumes/dev",
+            "docker/volumes/test",
+            "manifests",
+            "scripts",
+            "src",
+            "src/http",
+            "src/views",
+            "tests/smoke",
+            "tests/integration",
+        ),
+        stack_gitignore=("zig-cache/", "zig-out/"),
+    ),
     "go-echo": StackProfile(
         description="Go HTTP service using Echo and templ.",
         display_name="Go + Echo + templ",
@@ -272,6 +297,7 @@ DEFAULT_MANIFESTS = {
     ("backend-api-service", "python-fastapi-uv-ruff-orjson-polars"): ["backend-api-fastapi-polars"],
     ("backend-api-service", "typescript-hono-bun"): ["backend-api-typescript-hono-bun"],
     ("backend-api-service", "rust-axum-modern"): ["backend-api-rust-axum"],
+    ("backend-api-service", "zig-zap-jetzig"): ["backend-api-zig-zap-jetzig"],
     ("backend-api-service", "go-echo"): ["backend-api-go-echo"],
     ("backend-api-service", "elixir-phoenix"): ["webapp-elixir-phoenix"],
     ("cli-tool", "python-fastapi-uv-ruff-orjson-polars"): ["cli-python"],
@@ -535,7 +561,7 @@ def infer_support_services(archetype: str, primary_stack: str, selected_manifest
         return ["qdrant"]
     if primary_stack == "python-fastapi-uv-ruff-orjson-polars":
         return ["postgres", "redis"]
-    if primary_stack in {"typescript-hono-bun", "rust-axum-modern", "go-echo", "elixir-phoenix"}:
+    if primary_stack in {"typescript-hono-bun", "rust-axum-modern", "zig-zap-jetzig", "go-echo", "elixir-phoenix"}:
         return ["postgres"]
     if primary_stack == "duckdb-trino-polars":
         return ["trino"]
@@ -1018,6 +1044,17 @@ def render_rust_starters() -> dict[str, str]:
     }
 
 
+def render_zig_starters() -> dict[str, str]:
+    """Render Zig starter app and tests."""
+
+    return {
+        "src/main.zig": """const std = @import(\"std\");\n\npub fn main() !void {\n    std.debug.print(\"replace with Zap listener or Jetzig app wiring\\n\", .{});\n}\n""",
+        "tests/smoke/health_test.zig": """const std = @import(\"std\");\n\ntest \"health smoke placeholder\" {\n    try std.testing.expect(true);\n}\n""",
+        "tests/integration/report_runs_test.zig": """const std = @import(\"std\");\n\ntest \"report runs integration placeholder\" {\n    try std.testing.expect(true);\n}\n""",
+        "scripts/seed_data.zig": """const std = @import(\"std\");\n\npub fn main() !void {\n    std.debug.print(\"replace with deterministic Zig seed generation\\n\", .{});\n}\n""",
+    }
+
+
 def render_go_starters() -> dict[str, str]:
     """Render Go starter app and tests."""
 
@@ -1054,6 +1091,8 @@ def starter_files_for_stack(primary_stack: str, slug: str) -> dict[str, str]:
         return render_typescript_starters()
     if primary_stack == "rust-axum-modern":
         return render_rust_starters()
+    if primary_stack == "zig-zap-jetzig":
+        return render_zig_starters()
     if primary_stack == "go-echo":
         return render_go_starters()
     if primary_stack == "elixir-phoenix":
@@ -1283,6 +1322,8 @@ def main(argv: list[str]) -> int:
         route_only_keys.update({"src/index.ts", profile.route_path})
     elif args.primary_stack == "rust-axum-modern":
         route_only_keys.update({"src/main.rs"})
+    elif args.primary_stack == "zig-zap-jetzig":
+        route_only_keys.update({"src/main.zig"})
     elif args.primary_stack == "go-echo":
         route_only_keys.update({"cmd/server/main.go"})
     elif args.primary_stack == "elixir-phoenix":

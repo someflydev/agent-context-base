@@ -24,6 +24,7 @@ BOOTSTRAP_CASES = (
     {"archetype": "backend-api-service", "primary_stack": "python-fastapi-uv-ruff-orjson-polars", "dokku": False},
     {"archetype": "backend-api-service", "primary_stack": "typescript-hono-bun", "dokku": False},
     {"archetype": "backend-api-service", "primary_stack": "rust-axum-modern", "dokku": False},
+    {"archetype": "backend-api-service", "primary_stack": "zig-zap-jetzig", "dokku": False},
     {"archetype": "backend-api-service", "primary_stack": "go-echo", "dokku": False},
     {"archetype": "backend-api-service", "primary_stack": "elixir-phoenix", "dokku": False},
     {"archetype": "dokku-deployable-service", "primary_stack": "python-fastapi-uv-ruff-orjson-polars", "dokku": True},

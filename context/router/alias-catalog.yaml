@@ -57,6 +57,12 @@ stacks:
     target: context/stacks/nim-jester-happyx.md
   - alias: happyx
     target: context/stacks/nim-jester-happyx.md
+  - alias: zig
+    target: context/stacks/zig-zap-jetzig.md
+  - alias: zap
+    target: context/stacks/zig-zap-jetzig.md
+  - alias: jetzig
+    target: context/stacks/zig-zap-jetzig.md
   - alias: axum
     target: context/stacks/rust-axum-modern.md
   - alias: echo

@@ -34,6 +34,17 @@
       "guidance": "Prefer Jester routes for transport and HappyX only where HTML fragments are an explicit contract surface."
     },
     {
+      "name": "zig-zap-jetzig",
+      "patterns": [
+        "build.zig",
+        "build.zig.zon",
+        "src/main.zig",
+        "src/views/**/*.zig",
+        "tests/**/*.zig"
+      ],
+      "guidance": "Use Zap for transport and Jetzig view patterns when HTML fragments are part of the response contract."
+    },
+    {
       "name": "rust-axum-modern",
       "patterns": [
         "Cargo.toml",
@@ -110,6 +121,7 @@
         "src/routes/*.ts",
         "src/routes/*.tsx",
         "src/main.nim",
+        "src/main.zig",
         "cmd/server/*.go",
         "lib/*_web/router.ex"
       ],
@@ -182,6 +194,7 @@
         "src/routes/*.ts",
         "src/routes/*.tsx",
         "src/main.nim",
+        "src/main.zig",
         "cmd/server/*.go",
         "lib/*_web/router.ex"
       ],
