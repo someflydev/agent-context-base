@@ -385,5 +385,3 @@ assistant correctness
 canonical example reliability  
 stack expansion safety  
 repo maintenance confidence
-
-End with a list of commit titles.
