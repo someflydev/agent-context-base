@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Use this file as a routing entrypoint.
+Use this file as the assistant boot entrypoint.
 
 Start with:
 
@@ -10,17 +10,16 @@ Start with:
 4. `manifests/project-profile.yaml`
 5. `.generated-profile.yaml`
 
-If `MEMORY.md` exists, read it after the stable startup files and basic repo-signal checks.
+After that stable pass and a narrow repo-signal check, read `MEMORY.md` if it exists.
 
-Then infer the smallest useful context bundle from the task, repo signals, and active change surface.
+Then load the smallest useful bundle from the task, repo signals, and active change surface.
 
 ## Guardrails
 
 - load one workflow first
 - prefer one canonical example over several near-matches
-- use `MEMORY.md` as continuity aid only, not as doctrine
-- refresh `MEMORY.md` at major stop points
-- create a handoff snapshot when meaningful progress must survive a fresh session or assistant handoff
+- use `MEMORY.md` only as continuity state
+- refresh `MEMORY.md` at meaningful stop points
+- create a handoff snapshot when another session is likely
 - keep dev and test infrastructure isolated
 - stop when stack, archetype, or Compose isolation becomes ambiguous
-- keep prompt numbering monotonic when this repo stores prompt files

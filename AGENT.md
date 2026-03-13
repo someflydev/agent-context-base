@@ -1,13 +1,10 @@
 # AGENT.md
 
-Purpose: route the assistant to the smallest relevant context bundle for the current task.
+Purpose: boot the assistant into the smallest useful context bundle for this repo.
 
-This file is a router. Durable doctrine lives under `context/doctrine/`.
-Follow `docs/context-boot-sequence.md` as the deterministic startup contract for this repo.
+Use `docs/context-boot-sequence.md` as the startup contract. Durable rules live under `context/doctrine/`.
 
-## Required First Reads
-
-Read these first:
+## First Reads
 
 1. `README.md`
 2. `docs/context-boot-sequence.md`
@@ -16,72 +13,35 @@ Read these first:
 5. `docs/session-start.md`
 6. `context/router/task-router.md`
 
-After those stable reads and basic repo-signal checks, read `MEMORY.md` if it exists.
+After those reads and a narrow repo-signal check, read `MEMORY.md` if it exists. Load stack and archetype routers only when the task still needs narrowing.
 
-Only then load `context/router/stack-router.md`, `context/router/archetype-router.md`, or a manifest if the task still needs narrowing.
+## Bundle Discipline
 
-## Smallest Relevant Bundle
+Default first-pass bundle:
 
-Default bundle:
-
-1. one task router file
-2. one anchor if a compact reminder helps
-3. only the doctrine files needed for the change
-4. one primary workflow
-5. one archetype if project shape matters
-6. the stack files that match the touched surface
-7. one preferred canonical example
+1. one router
+2. one anchor if helpful
+3. only the doctrine files the task activates
+4. one workflow
+5. one archetype if repo shape matters
+6. only the active stack packs
+7. one canonical example
 
 Do not bulk-load `context/`, `examples/`, `templates/`, or `manifests/`.
 
-## Task Inference
+## Operating Rules
 
-Infer the task from ordinary language. Do not require the user to know internal filenames.
+- Infer intent from normal language, not internal filenames.
+- Prefer manifest-defined bundles over improvised loading.
+- Treat templates as scaffolds and examples as the preferred pattern source.
+- Use `MEMORY.md` only for continuity, never as doctrine.
+- Update `MEMORY.md` at meaningful stop points and create a handoff snapshot when a later session is likely.
 
-- "add an endpoint" -> `context/workflows/add-api-endpoint.md`
-- "bootstrap a repo" -> `context/workflows/bootstrap-repo.md`
-- "fix a bug" -> `context/workflows/fix-bug.md`
-- "add smoke tests" -> `context/workflows/add-smoke-tests.md`
-- "set up local rag" -> `context/workflows/add-local-rag-indexing.md`
+## Stop When
 
-Use repo signals, manifests, and touched files to infer stack and archetype.
+- more than one workflow, stack, or archetype still looks primary
+- storage, queue, search, deployment, or Compose isolation changes lack a minimal verification path
+- prompt numbering or generated-profile references would become ambiguous
+- the next step would require loading broad adjacent context "just in case"
 
-## When To Load More
-
-Load doctrine when the task affects naming, testing, prompt-first rules, commit shape, Docker isolation, deployment, or example selection.
-
-Load workflows when the task is action-oriented.
-
-Load stacks when implementation details depend on a concrete language, framework, storage system, queue, or search engine.
-
-Load archetypes when the project shape matters more than a single framework choice.
-
-Load examples only after the active workflow and stack are known.
-
-Use `MEMORY.md` as a continuity aid for the current task only. It does not replace doctrine, manifests, code inspection, or verification.
-
-At a meaningful pause point, update `MEMORY.md`. Create a handoff snapshot when pausing after meaningful progress and a fresh session, human, or another assistant is likely to continue.
-
-## Canonical Example Priority
-
-Prefer one canonical example over blending several near-matches. If no example fits, state that and follow doctrine plus stack guidance.
-
-## Stop Conditions
-
-Use `context/doctrine/stop-conditions.md` as the explicit pause-point reference.
-
-Stop and surface the gap if:
-
-- the task implies more than one primary archetype and composition is unclear
-- more than one stack is plausible for the touched surface
-- persistence, messaging, search, or deployment behavior changed but no minimal verification path is defined
-- Docker dev and test isolation is unclear
-- prompt numbering or profile references would stop being monotonic or explicit
-- the request would cause context sprawl instead of a focused bundle
-
-## Anti-Sprawl Rules
-
-- Do not turn `AGENT.md` into a doctrine dump.
-- Do not invent new router names when an existing workflow or stack clearly fits.
-- Do not load multiple examples unless comparing and resolving a conflict.
-- Do not promote templates to canonical examples.
+For deeper runtime behavior, see `docs/usage/ASSISTANT_BEHAVIOR_SPEC.md` and `context/doctrine/stop-conditions.md`.
