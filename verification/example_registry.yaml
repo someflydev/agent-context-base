@@ -622,6 +622,86 @@ examples:
     docker_supported: true
     scenario_harness: clojure_kit_nextjdbc_hiccup_min_app
     confidence: medium
+  - name: clojure-kit-nextjdbc-hiccup-runtime-deps
+    path: examples/canonical-api/clojure-kit-nextjdbc-hiccup-example/deps.edn
+    language: edn
+    stack_tags:
+      - clojure-kit-nextjdbc-hiccup
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - dependency manifest tracked
+      - runtime bundle wiring
+      - docker build context
+    docker_supported: true
+    scenario_harness: clojure_kit_nextjdbc_hiccup_min_app
+    confidence: medium
+  - name: clojure-kit-nextjdbc-hiccup-runtime-config
+    path: examples/canonical-api/clojure-kit-nextjdbc-hiccup-example/src/clojure_kit_nextjdbc_hiccup_example/config.clj
+    language: clojure
+    stack_tags:
+      - clojure-kit-nextjdbc-hiccup
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - integrant config shape
+      - environment override support
+      - port and datasource wiring
+    docker_supported: true
+    scenario_harness: clojure_kit_nextjdbc_hiccup_min_app
+    confidence: medium
+  - name: clojure-kit-nextjdbc-hiccup-runtime-db
+    path: examples/canonical-api/clojure-kit-nextjdbc-hiccup-example/src/clojure_kit_nextjdbc_hiccup_example/db.clj
+    language: clojure
+    stack_tags:
+      - clojure-kit-nextjdbc-hiccup
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - schema seed logic
+      - next.jdbc query helpers
+      - fallback dataset behavior
+    docker_supported: true
+    scenario_harness: clojure_kit_nextjdbc_hiccup_min_app
+    confidence: medium
+  - name: clojure-kit-nextjdbc-hiccup-runtime-html
+    path: examples/canonical-api/clojure-kit-nextjdbc-hiccup-example/src/clojure_kit_nextjdbc_hiccup_example/html.clj
+    language: clojure
+    stack_tags:
+      - clojure-kit-nextjdbc-hiccup
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - hiccup fragment markers
+      - htmx out-of-band swap
+      - stable fragment structure
+    docker_supported: true
+    scenario_harness: clojure_kit_nextjdbc_hiccup_min_app
+    confidence: medium
+  - name: clojure-kit-nextjdbc-hiccup-runtime-routes
+    path: examples/canonical-api/clojure-kit-nextjdbc-hiccup-example/src/clojure_kit_nextjdbc_hiccup_example/routes.clj
+    language: clojure
+    stack_tags:
+      - clojure-kit-nextjdbc-hiccup
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - health route
+      - json fragment and chart routes
+      - response encoding
+    docker_supported: true
+    scenario_harness: clojure_kit_nextjdbc_hiccup_min_app
+    confidence: medium
   - name: typescript-hono-handler-example
     path: examples/canonical-api/typescript-hono-handler-example.ts
     language: typescript

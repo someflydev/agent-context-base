@@ -431,6 +431,61 @@
       "stability": "verified-runtime"
     },
     {
+      "path": "examples/canonical-api/clojure-kit-nextjdbc-hiccup-example/deps.edn",
+      "category": "api",
+      "summary": "Dependency manifest for the runnable Kit plus next.jdbc plus Hiccup verification bundle.",
+      "stacks": ["clojure-kit-nextjdbc-hiccup"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint", "add-smoke-tests"],
+      "patterns": ["runtime-bundle", "dependency-manifest", "docker-smoke"],
+      "rank": 84,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-api/clojure-kit-nextjdbc-hiccup-example/src/clojure_kit_nextjdbc_hiccup_example/config.clj",
+      "category": "api",
+      "summary": "Integrant runtime configuration wiring the datasource, routes, and Jetty server from environment defaults.",
+      "stacks": ["clojure-kit-nextjdbc-hiccup"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint", "add-smoke-tests"],
+      "patterns": ["runtime-bundle", "integrant-config", "docker-smoke"],
+      "rank": 85,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-api/clojure-kit-nextjdbc-hiccup-example/src/clojure_kit_nextjdbc_hiccup_example/db.clj",
+      "category": "api",
+      "summary": "next.jdbc helper and seed layer that initializes the in-memory verification dataset for report and chart endpoints.",
+      "stacks": ["clojure-kit-nextjdbc-hiccup"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint", "add-smoke-tests"],
+      "patterns": ["runtime-bundle", "next-jdbc-seed", "docker-smoke"],
+      "rank": 86,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-api/clojure-kit-nextjdbc-hiccup-example/src/clojure_kit_nextjdbc_hiccup_example/html.clj",
+      "category": "api",
+      "summary": "Hiccup fragment helper producing the HTMX-friendly report card markup used by the runtime example.",
+      "stacks": ["clojure-kit-nextjdbc-hiccup"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint", "add-smoke-tests"],
+      "patterns": ["runtime-bundle", "hiccup-fragment", "docker-smoke"],
+      "rank": 87,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-api/clojure-kit-nextjdbc-hiccup-example/src/clojure_kit_nextjdbc_hiccup_example/routes.clj",
+      "category": "api",
+      "summary": "Reitit route bundle exposing health, JSON, HTML fragment, and chart endpoints for the runnable Clojure example.",
+      "stacks": ["clojure-kit-nextjdbc-hiccup"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint", "add-smoke-tests"],
+      "patterns": ["runtime-bundle", "reitit-routes", "docker-smoke"],
+      "rank": 90,
+      "stability": "verified-runtime"
+    },
+    {
       "path": "examples/canonical-api/typescript-hono-handler-example.ts",
       "category": "api",
       "summary": "Hono plus TSX route example for the Bun-first backend path.",
