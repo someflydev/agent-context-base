@@ -9,6 +9,7 @@ Use them when `scripts/new_repo.py` or a focused manual change needs a short, ad
 - templates are not canonical examples
 - templates should stay short and adaptable
 - doctrine and examples still control the recommended pattern
+- front-facing templates such as `templates/readme/README.template.md` are for repos that have earned those docs, not for speculative day-one prose
 
 ## Template Groups
 

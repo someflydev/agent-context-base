@@ -4,12 +4,11 @@ Required changes:
 
 - add `{{starter_route_path}}`
 - add `{{starter_test_path}}`
-- update `README.md`
 - update `AGENT.md`
 
 Constraints:
 
 - keep the first pass small
 - use explicit filenames in the prompt response
+- do not create a substantial root `README.md` or root `docs/` yet unless the implementation already supports honest docs
 - preserve `docker-compose.yml` and `docker-compose.test.yml` isolation
-

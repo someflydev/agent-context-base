@@ -25,9 +25,11 @@ task_hints:
   - add-feature
 warnings:
   - Replace this warning with a repo-specific boundary note.
+  - Defer broad root README/docs content until implementation has enough real structure to describe honestly.
 bootstrap_defaults:
   - include_docker_compose
   - include_smoke_tests
+  - defer_front_docs_until_implemented
 compose_files:
   - docker-compose.yml
   - docker-compose.test.yml

@@ -22,6 +22,8 @@ Start in `agent-context-base`, launch Codex, Claude, or Gemini there, and give i
 
 The generated repo can be created anywhere convenient, including a clean path such as `/tmp/analytics-api`, so the assistant is not working inside a half-prepared directory from the start.
 
+Generated repos now defer a substantial root `README.md` and root `docs/` by default. Early boot guidance lives in `AGENT.md`, `CLAUDE.md`, and the generated profile so front-facing docs can be written later against implemented reality instead of speculation.
+
 ```bash
 python scripts/new_repo.py analytics-api \
   --archetype backend-api-service \

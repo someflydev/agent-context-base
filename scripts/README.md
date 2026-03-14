@@ -29,7 +29,8 @@ Capabilities:
 - select or infer manifests
 - optionally enable Dokku, prompt-first prompts, smoke tests, integration tests, and seed data
 - generate isolated `docker-compose.yml` and `docker-compose.test.yml`
-- generate `AGENT.md`, `CLAUDE.md`, `README.md`, `.gitignore`, and generated profile files
+- generate `AGENT.md`, `CLAUDE.md`, `.gitignore`, and generated profile files
+- defer root `README.md` and broad root `docs/` by default unless you explicitly opt into them
 
 Examples:
 
@@ -113,9 +114,19 @@ Runs the broader integrity pass for the base itself:
 - manifest validation
 - context weighting, repo signal, and example catalog checks
 - prompt numbering checks
+- markdown cross-reference and Mermaid path checks
 - bootstrap verification for Compose naming, port allocation, and environment isolation
 
 This is the main verification entrypoint after documentation, manifest, template, or generator changes. Both assistants and humans use it, but it is especially useful as a direct human sanity check.
+
+## `validate_doc_governance.py`
+
+Runs the focused documentation-timing and freshness checks:
+
+- broken markdown cross-references
+- obviously stale Mermaid path references
+
+Use this after changing docs, diagrams, templates, or generated bootstrap guidance.
 
 ## `preview_context_bundle.py`
 

@@ -4,6 +4,8 @@ repo_slug: {{repo_slug}}
 description: {{description}}
 archetype: {{archetype}}
 primary_stack: {{primary_stack}}
+front_docs_root_readme_generated: {{front_docs_root_readme_generated}}
+front_docs_docs_dir_generated: {{front_docs_docs_dir_generated}}
 selected_manifests:
 {{selected_manifest_lines}}
 dokku_enabled: {{dokku_enabled}}
@@ -17,6 +19,8 @@ compose_project_name_dev: {{compose_project_name_dev}}
 compose_project_name_test: {{compose_project_name_test}}
 context_entrypoints:
 {{context_entrypoint_lines}}
+front_docs_guidance:
+{{front_docs_guidance_lines}}
 validation_commands:
 {{validation_command_lines}}
 compose_invariants:

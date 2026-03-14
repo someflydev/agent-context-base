@@ -56,9 +56,20 @@ python scripts/new_repo.py analytics-api \
 
 - picks the requested archetype and primary stack
 - selects default manifests for that repo shape
-- renders README, `AGENT.md`, `CLAUDE.md`, and generated profile files
+- renders `AGENT.md`, `CLAUDE.md`, `.gitignore`, and generated profile files
+- defers a substantial root `README.md` and root `docs/` by default unless you explicitly ask for them or a narrowly scoped operational need requires them
 - optionally renders prompt files, seed data, smoke tests, integration tests, and Dokku assets
 - generates isolated `docker-compose.yml` and `docker-compose.test.yml` when the profile implies local infra
+
+## Documentation Timing For Derived Repos
+
+In a fresh derived repo, root `README.md` and root `docs/` often become stale faster than the implementation because they are written before the repo has enough real structure. The default posture is therefore:
+
+- let `AGENT.md`, `CLAUDE.md`, and the generated profile carry early boot guidance
+- add front-facing root docs only after the implementation has a meaningful slice to describe honestly
+- allow narrowly scoped operational docs when they are explicitly needed
+
+If you truly want early front docs anyway, use the generator flags that opt into them intentionally instead of treating them as mandatory boilerplate.
 
 ## First Steps In The Generated Repo
 
@@ -82,6 +93,7 @@ The assistant should load `AGENT.md` or `CLAUDE.md`, the generated profile, and 
 - keep examples and templates distinct
 - let manifests and generated profiles narrow the first working set
 - avoid carrying speculative future dependencies into the initial repo
+- avoid eager front-facing README and docs content that describes architecture the repo has not implemented yet
 
 ## 50 Example Initial Prompts
 

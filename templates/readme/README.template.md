@@ -2,13 +2,15 @@
 
 {{description}}
 
+This README should stay factual and small. Expand it only when the repo has enough implemented surface to support honest public-facing documentation.
+
 ## Start Here
 
 1. Read `AGENT.md` or `CLAUDE.md`
-2. Read `docs/repo-purpose.md`
-3. Read `docs/repo-layout.md`
-4. Read `manifests/project-profile.yaml`
-5. Read `.generated-profile.yaml`
+2. Read `manifests/project-profile.yaml`
+3. Read `.generated-profile.yaml`
+4. Read `docs/repo-purpose.md` if it exists
+5. Read `docs/repo-layout.md` if it exists
 
 If `MEMORY.md` exists, read it after the stable startup files and a narrow repo-signal check.
 
@@ -34,6 +36,7 @@ If `MEMORY.md` exists, read it after the stable startup files and a narrow repo-
 
 - use `MEMORY.md` when work will span sessions
 - use handoff snapshots for durable transfer points
+- keep front-facing docs earned by implementation, not speculation
 
 {{compose_section}}
 

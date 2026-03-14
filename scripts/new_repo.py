@@ -8,6 +8,8 @@ Examples:
         --smoke-tests \
         --integration-tests \
         --seed-data \
+        --include-root-readme \
+        --include-docs-dir \
         --dokku
 
     python scripts/new_repo.py prompt-kit \
@@ -231,7 +233,7 @@ STACKS: dict[str, StackProfile] = {
         app_command='sh -lc "python -m http.server 8000"',
         test_command='sh -lc "python scripts/validate_repo.py"',
         app_container_port=8000,
-        route_path="README.md",
+        route_path="PROMPTS.md",
         smoke_path="scripts/check_repo.py",
         integration_path="scripts/check_generated_profile.py",
         seed_path="scripts/seed_data.py",
@@ -461,6 +463,16 @@ def build_parser() -> argparse.ArgumentParser:
         "--docker-layout",
         action="store_true",
         help="Generate docker-compose.yml and docker-compose.test.yml even if not implied.",
+    )
+    parser.add_argument(
+        "--include-root-readme",
+        action="store_true",
+        help="Generate a root README.md now instead of deferring front-facing docs.",
+    )
+    parser.add_argument(
+        "--include-docs-dir",
+        action="store_true",
+        help="Generate a root docs/ directory now instead of deferring it.",
     )
     parser.add_argument(
         "--force",
@@ -723,6 +735,8 @@ def build_docs(repo_name: str, description: str, archetype: str, profile: StackP
 
 `{repo_name}` is a {ARCHETYPES[archetype].lower()}
 
+This doc should describe implemented behavior, not planned architecture. If the repo is still mostly scaffolding, defer or keep this file extremely small.
+
 Primary stack:
 
 - {profile.display_name}
@@ -851,6 +865,9 @@ def render_profile_summary(
     smoke_tests: bool,
     integration_tests: bool,
     seed_data: bool,
+    include_root_readme: bool,
+    include_docs_dir: bool,
+    docs_dir_generated: bool,
     compose_project_name_dev: str,
     compose_project_name_test: str,
     compose_files: list[str],
@@ -866,6 +883,8 @@ def render_profile_summary(
         "description": description,
         "archetype": archetype,
         "primary_stack": primary_stack,
+        "front_docs_root_readme_generated": str(include_root_readme).lower(),
+        "front_docs_docs_dir_generated": str(docs_dir_generated).lower(),
         "selected_manifest_lines": format_yaml_list(manifests),
         "dokku_enabled": str(dokku).lower(),
         "prompt_first_enabled": str(prompt_first).lower(),
@@ -878,7 +897,21 @@ def render_profile_summary(
         "port_lines": format_yaml_mapping({key: str(value) for key, value in port_map.items()}),
         "starter_path_lines": format_yaml_mapping(starter_paths),
         "context_entrypoint_lines": format_yaml_list(
-            ["README.md", "AGENT.md", "CLAUDE.md", "manifests/project-profile.yaml"]
+            [
+                "AGENT.md",
+                "CLAUDE.md",
+                "manifests/project-profile.yaml",
+                ".generated-profile.yaml",
+                *(["README.md"] if include_root_readme else []),
+                *(["docs/repo-purpose.md", "docs/repo-layout.md"] if include_docs_dir else []),
+            ]
+        ),
+        "front_docs_guidance_lines": format_yaml_list(
+            [
+                "delay root README.md until the repo has an implemented slice worth describing honestly",
+                "delay a broad docs/ directory until several stable topics exist",
+                "narrow operational docs are acceptable when explicitly needed",
+            ]
         ),
         "validation_command_lines": format_yaml_list(validation_commands),
         "compose_invariant_lines": format_yaml_list(
@@ -1044,10 +1077,10 @@ def render_prompt_meta_starters() -> dict[str, str]:
     """Render prompt-first validation helper files."""
 
     return {
-        "scripts/check_repo.py": """#!/usr/bin/env python3\n\"\"\"Check the minimal prompt-first repo surface exists.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    required = [Path(\"README.md\"), Path(\"AGENT.md\"), Path(\"CLAUDE.md\")]\n    missing = [path.as_posix() for path in required if not path.exists()]\n    if missing:\n        raise SystemExit(f\"Missing required files: {missing}\")\n    print(\"repo surface looks present\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
+        "scripts/check_repo.py": """#!/usr/bin/env python3\n\"\"\"Check the minimal prompt-first repo surface exists.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    required = [Path(\"AGENT.md\"), Path(\"CLAUDE.md\"), Path(\"PROMPTS.md\")]\n    missing = [path.as_posix() for path in required if not path.exists()]\n    if missing:\n        raise SystemExit(f\"Missing required files: {missing}\")\n    print(\"repo surface looks present\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
         "scripts/check_generated_profile.py": """#!/usr/bin/env python3\n\"\"\"Check the generated profile file exists.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    profile = Path(\".generated-profile.yaml\")\n    if not profile.exists():\n        raise SystemExit(\".generated-profile.yaml is missing\")\n    print(\"generated profile exists\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
-        "scripts/validate_repo.py": """#!/usr/bin/env python3\n\"\"\"Validate the prompt-first starter repo surface.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    required = [\n        Path(\"README.md\"),\n        Path(\"AGENT.md\"),\n        Path(\"CLAUDE.md\"),\n        Path(\"manifests/project-profile.yaml\"),\n    ]\n    missing = [path.as_posix() for path in required if not path.exists()]\n    if missing:\n        raise SystemExit(f\"Missing required files: {missing}\")\n\n    prompt_dir = Path(\".prompts\")\n    prompt_files = sorted(path.name for path in prompt_dir.glob(\"*.txt\"))\n    expected = [f\"{index:03d}-{name.split('-', 1)[1]}\" for index, name in enumerate(prompt_files, start=1)]\n    if prompt_files and prompt_files != expected:\n        raise SystemExit(f\"Prompt files must stay monotonic: {prompt_files}\")\n\n    print(\"repo validation passed\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
-        "scripts/seed_data.py": """#!/usr/bin/env python3\n\"\"\"Write deterministic prompt-first starter notes.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    target = Path(\"docs/generated-notes.txt\")\n    target.parent.mkdir(parents=True, exist_ok=True)\n    target.write_text(\"replace with deterministic repo notes\\n\", encoding=\"utf-8\")\n    print(f\"Wrote {target}\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
+        "scripts/validate_repo.py": """#!/usr/bin/env python3\n\"\"\"Validate the prompt-first starter repo surface.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    required = [\n        Path(\"AGENT.md\"),\n        Path(\"CLAUDE.md\"),\n        Path(\"PROMPTS.md\"),\n        Path(\"manifests/project-profile.yaml\"),\n    ]\n    missing = [path.as_posix() for path in required if not path.exists()]\n    if missing:\n        raise SystemExit(f\"Missing required files: {missing}\")\n\n    prompt_dir = Path(\".prompts\")\n    prompt_files = sorted(path.name for path in prompt_dir.glob(\"*.txt\"))\n    expected = [f\"{index:03d}-{name.split('-', 1)[1]}\" for index, name in enumerate(prompt_files, start=1)]\n    if prompt_files and prompt_files != expected:\n        raise SystemExit(f\"Prompt files must stay monotonic: {prompt_files}\")\n\n    print(\"repo validation passed\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
+        "scripts/seed_data.py": """#!/usr/bin/env python3\n\"\"\"Write deterministic prompt-first starter notes.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    target = Path(\"artifacts/generated-notes.txt\")\n    target.parent.mkdir(parents=True, exist_ok=True)\n    target.write_text(\"replace with deterministic repo notes\\n\", encoding=\"utf-8\")\n    print(f\"Wrote {target}\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
     }
 
 
@@ -1171,7 +1204,7 @@ def resolved_starter_paths(primary_stack: str, slug: str) -> dict[str, str]:
         }
     if primary_stack == "prompt-first-repo":
         return {
-            "route": "README.md",
+            "route": "PROMPTS.md",
             "smoke": "scripts/check_repo.py",
             "integration": "scripts/validate_repo.py",
             "seed": "scripts/seed_data.py",
@@ -1261,6 +1294,9 @@ def main(argv: list[str]) -> int:
     prompt_first = args.prompt_first or args.archetype == "prompt-first-repo"
     profile = STACKS[args.primary_stack]
     description = f"Starter repo for {repo_name} using {profile.display_name}."
+    include_root_readme = args.include_root_readme
+    include_docs_dir = args.include_docs_dir
+    docs_dir_generated = include_docs_dir or args.dokku
 
     selected_manifest_data = [manifests[name] for name in selected_manifests]
     if selected_manifest_data:
@@ -1302,23 +1338,25 @@ def main(argv: list[str]) -> int:
     generated_files.update(
         render_agent_and_claude(args.archetype, args.primary_stack, selected_manifests)
     )
-    generated_files["README.md"] = render_readme(
-        repo_name,
-        description,
-        args.archetype,
-        profile,
-        selected_manifests,
-        args.dokku,
-        prompt_first,
-        docker_enabled,
-        app_port,
-        compose_project_name_dev,
-        compose_project_name_test,
-        dev_support_ports,
-        test_support_ports,
-    )
     generated_files[".gitignore"] = render_gitignore(profile)
-    generated_files.update(build_docs(repo_name, description, args.archetype, profile, selected_manifests))
+    if include_root_readme:
+        generated_files["README.md"] = render_readme(
+            repo_name,
+            description,
+            args.archetype,
+            profile,
+            selected_manifests,
+            args.dokku,
+            prompt_first,
+            docker_enabled,
+            app_port,
+            compose_project_name_dev,
+            compose_project_name_test,
+            dev_support_ports,
+            test_support_ports,
+        )
+    if include_docs_dir:
+        generated_files.update(build_docs(repo_name, description, args.archetype, profile, selected_manifests))
 
     starter_paths = resolved_starter_paths(args.primary_stack, slug)
     port_map = {"app_dev": app_port, "app_test": test_app_port}
@@ -1348,6 +1386,9 @@ def main(argv: list[str]) -> int:
         smoke_tests=args.smoke_tests,
         integration_tests=args.integration_tests,
         seed_data=args.seed_data,
+        include_root_readme=include_root_readme,
+        include_docs_dir=include_docs_dir,
+        docs_dir_generated=docs_dir_generated,
         compose_project_name_dev=compose_project_name_dev,
         compose_project_name_test=compose_project_name_test,
         compose_files=["docker-compose.yml", "docker-compose.test.yml"],
@@ -1419,7 +1460,7 @@ def main(argv: list[str]) -> int:
         )
         generated_files.update(build_env_files(support_services, slug, dev_support_ports, test_support_ports))
 
-    if profile.extra_template:
+    if profile.extra_template and include_docs_dir:
         generated_files["docs/stack-notes.md"] = render_template(
             repo_root() / profile.extra_template,
             {},
@@ -1436,6 +1477,8 @@ def main(argv: list[str]) -> int:
         print("Planned files:")
     else:
         for directory in profile.directories:
+            if directory == "docs" and not docs_dir_generated:
+                continue
             (target_dir / directory).mkdir(parents=True, exist_ok=True)
         if args.dokku:
             (target_dir / "scripts/smoke").mkdir(parents=True, exist_ok=True)
