@@ -1331,6 +1331,28 @@
       "patterns": ["minimal-fixture", "document-corpus"],
       "rank": 84,
       "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-data-acquisition/README.md",
+      "category": "data-acquisition",
+      "summary": "Shared polyglot entry point for language-agnostic acquisition invariants and stack-selection rules.",
+      "stacks": ["python-fastapi-uv-ruff-orjson-polars", "go-echo", "elixir-phoenix", "rust-axum-modern", "typescript-hono-bun", "nim-jester-happyx", "zig-zap-jetzig", "crystal-kemal-avram"],
+      "archetypes": ["data-acquisition-service", "multi-source-sync-platform"],
+      "workflows": ["research-data-sources", "add-api-ingestion-source", "add-scraping-source", "add-raw-download-archive", "add-parser-normalizer", "add-classification-step", "add-recurring-sync", "add-event-driven-sync"],
+      "patterns": ["invariant-layer", "polyglot-index", "selection-contract"],
+      "rank": 96,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-data-acquisition/language-support-matrix.yaml",
+      "category": "data-acquisition",
+      "summary": "Machine-readable stack matrix for current acquisition example coverage and honest fallback posture.",
+      "stacks": ["python-fastapi-uv-ruff-orjson-polars", "go-echo", "elixir-phoenix", "rust-axum-modern", "typescript-hono-bun", "nim-jester-happyx", "zig-zap-jetzig", "crystal-kemal-avram"],
+      "archetypes": ["data-acquisition-service", "multi-source-sync-platform"],
+      "workflows": ["research-data-sources", "add-api-ingestion-source", "add-scraping-source", "add-raw-download-archive", "add-parser-normalizer", "add-classification-step", "add-recurring-sync", "add-event-driven-sync"],
+      "patterns": ["language-matrix", "verification-posture", "fallback-selection"],
+      "rank": 95,
+      "stability": "canonical"
     }
   ]
 }

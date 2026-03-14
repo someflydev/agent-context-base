@@ -13,6 +13,7 @@ from pathlib import Path
 import new_repo
 from context_tools import (
     validate_context_weights,
+    validate_data_acquisition_consistency,
     validate_example_catalog,
     validate_markdown_cross_references,
     validate_mermaid_reference_hints,
@@ -196,6 +197,7 @@ def main() -> int:
         errors.extend(validate_manifest(repo_root, manifest_path))
     errors.extend(validate_context_weights(repo_root))
     errors.extend(validate_example_catalog(repo_root))
+    errors.extend(validate_data_acquisition_consistency(repo_root))
     errors.extend(validate_repo_signal_hints(repo_root))
     errors.extend(validate_prompt_numbering(repo_root))
     errors.extend(validate_markdown_cross_references(repo_root))

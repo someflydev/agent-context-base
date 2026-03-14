@@ -1245,13 +1245,14 @@ examples:
     archetype_tags:
       - backend-api-service
       - dokku-deployable-service
-    verification_level: draft
+    verification_level: syntax-checked
     verification_targets:
-      - registry tracked
       - source structure
+      - hono router surface
+      - route registration
     docker_supported: false
     scenario_harness: ""
-    confidence: low
+    confidence: medium
   - name: rust-axum-route-example
     path: examples/canonical-api/rust-axum-route-example.rs
     language: rust
@@ -2056,6 +2057,52 @@ examples:
     verification_targets:
       - path exists
       - checklist format
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-data-acquisition-index
+    path: examples/canonical-data-acquisition/README.md
+    language: markdown
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+      - go-echo
+      - elixir-phoenix
+      - rust-axum-modern
+      - typescript-hono-bun
+      - nim-jester-happyx
+      - zig-zap-jetzig
+      - crystal-kemal-avram
+    archetype_tags:
+      - data-acquisition-service
+      - multi-source-sync-platform
+    verification_level: syntax-checked
+    verification_targets:
+      - required sections present
+      - language matrix rows match support matrix
+      - selection contract text present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-data-acquisition-language-support-matrix
+    path: examples/canonical-data-acquisition/language-support-matrix.yaml
+    language: yaml
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+      - go-echo
+      - elixir-phoenix
+      - rust-axum-modern
+      - typescript-hono-bun
+      - nim-jester-happyx
+      - zig-zap-jetzig
+      - crystal-kemal-avram
+    archetype_tags:
+      - data-acquisition-service
+      - multi-source-sync-platform
+    verification_level: syntax-checked
+    verification_targets:
+      - yaml loads
+      - language rows cover supported stacks
+      - fallback examples resolve to registry entries
     docker_supported: false
     scenario_harness: ""
     confidence: medium

@@ -8,6 +8,7 @@ from verification.helpers import REPO_ROOT, load_yaml_like
 
 EXPECTED_TASK_ALIASES = {
     "research data sources": "context/workflows/research-data-sources.md",
+    "generic acquisition guidance": "context/doctrine/data-acquisition-invariants.md",
     "add api source": "context/workflows/add-api-ingestion-source.md",
     "save raw downloads": "context/workflows/add-raw-download-archive.md",
     "classify records": "context/workflows/add-classification-step.md",
@@ -19,6 +20,7 @@ EXPECTED_TASK_ALIASES = {
 class DataAcquisitionContextTests(unittest.TestCase):
     def test_required_context_files_exist(self) -> None:
         required = (
+            "context/doctrine/data-acquisition-invariants.md",
             "context/doctrine/data-acquisition-philosophy.md",
             "context/doctrine/raw-data-retention.md",
             "context/doctrine/sync-safety-rate-limits.md",
@@ -39,6 +41,7 @@ class DataAcquisitionContextTests(unittest.TestCase):
             "context/stacks/event-streaming-patterns.md",
             "docs/public-example-data-systems-readiness.md",
             "examples/canonical-data-acquisition/README.md",
+            "examples/canonical-data-acquisition/language-support-matrix.yaml",
             "manifests/data-acquisition-service.yaml",
             "manifests/multi-source-sync-platform.yaml",
         )
@@ -57,6 +60,19 @@ class DataAcquisitionContextTests(unittest.TestCase):
             with self.subTest(alias=alias):
                 self.assertEqual(tasks.get(alias), target)
 
+    def test_manifests_reference_invariant_doc_and_index(self) -> None:
+        for relative in (
+            "manifests/data-acquisition-service.yaml",
+            "manifests/multi-source-sync-platform.yaml",
+        ):
+            data = load_yaml_like(REPO_ROOT / relative)
+            required_context = data.get("required_context", [])
+            preferred_examples = data.get("preferred_examples", [])
+            with self.subTest(manifest=relative):
+                self.assertIn("context/doctrine/data-acquisition-invariants.md", required_context)
+                self.assertIn("examples/canonical-data-acquisition/README.md", preferred_examples)
+                self.assertIn("examples/canonical-data-acquisition/language-support-matrix.yaml", preferred_examples)
+
     def test_repo_signal_hints_cover_new_archetypes_stacks_and_workflows(self) -> None:
         data = json.loads((REPO_ROOT / "context/router/repo-signal-hints.json").read_text(encoding="utf-8"))
         stack_names = {entry["name"] for entry in data["stacks"]}
@@ -71,6 +87,35 @@ class DataAcquisitionContextTests(unittest.TestCase):
         self.assertIn("research-data-sources", workflow_names)
         self.assertIn("add-api-ingestion-source", workflow_names)
         self.assertIn("add-recurring-sync", workflow_names)
+
+    def test_support_matrix_declares_acquisition_capability_layer(self) -> None:
+        data = load_yaml_like(REPO_ROOT / "verification/stack_support_matrix.yaml")
+        capabilities = data.get("capabilities", [])
+        entry = next(
+            item
+            for item in capabilities
+            if isinstance(item, dict) and item.get("capability") == "canonical-data-acquisition"
+        )
+        stacks = {item["stack"] for item in entry["stacks"]}
+        self.assertEqual(
+            stacks,
+            {
+                "python-fastapi-uv-ruff-orjson-polars",
+                "go-echo",
+                "elixir-phoenix",
+                "rust-axum-modern",
+                "typescript-hono-bun",
+                "nim-jester-happyx",
+                "zig-zap-jetzig",
+                "crystal-kemal-avram",
+            },
+        )
+
+    def test_public_readiness_note_mentions_layer_separation(self) -> None:
+        text = (REPO_ROOT / "docs/public-example-data-systems-readiness.md").read_text(encoding="utf-8")
+        self.assertIn("generic data acquisition invariants", text)
+        self.assertIn("stack-specific real examples", text)
+        self.assertIn("verification posture by language", text)
 
 
 if __name__ == "__main__":

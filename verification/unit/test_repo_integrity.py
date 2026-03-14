@@ -8,6 +8,7 @@ from verification.helpers import (
     REPO_ROOT,
     VALID_VERIFICATION_LEVELS,
     load_registry,
+    load_yaml_like,
     load_stack_matrix,
     registry_by_name,
     registry_by_path,
@@ -26,6 +27,7 @@ class RepoIntegrityTests(unittest.TestCase):
             "verification/unit",
             "verification/scripts",
             "verification/examples/python",
+            "verification/examples/typescript",
             "verification/examples/nim",
             "verification/examples/crystal",
             "verification/examples/scala",
@@ -101,6 +103,19 @@ class RepoIntegrityTests(unittest.TestCase):
             for name in verified:
                 with self.subTest(stack=stack, example=name):
                     self.assertIn(name, known)
+
+    def test_capability_support_blocks_reference_known_examples(self) -> None:
+        data = load_yaml_like(REPO_ROOT / "verification/stack_support_matrix.yaml")
+        known = registry_by_name()
+        for capability in data.get("capabilities", []):
+            shared = capability.get("shared_examples", [])
+            for name in shared:
+                with self.subTest(capability=capability.get("capability"), example=name):
+                    self.assertIn(name, known)
+            for entry in capability.get("stacks", []):
+                fallback = str(entry.get("fallback_example", ""))
+                with self.subTest(stack=entry.get("stack"), fallback=fallback):
+                    self.assertIn(fallback, known)
 
     def test_docs_template_references_resolve(self) -> None:
         doc_paths = [

@@ -202,3 +202,57 @@ stacks:
       - python-cli-command-example
     missing_verification:
       - multi-command repo example
+capabilities:
+  - capability: canonical-data-acquisition
+    shared_examples:
+      - canonical-data-acquisition-index
+      - canonical-data-acquisition-language-support-matrix
+    stacks:
+      - stack: python-fastapi-uv-ruff-orjson-polars
+        status: invariant-layer-only
+        stack_specific_examples: []
+        fallback_example: fastapi-endpoint-example
+        fallback_verification_level: behavior-verified
+        follow_on_prompt: PROMPT_34
+      - stack: go-echo
+        status: invariant-layer-only
+        stack_specific_examples: []
+        fallback_example: go-echo-handler-example
+        fallback_verification_level: syntax-checked
+        follow_on_prompt: PROMPT_34
+      - stack: elixir-phoenix
+        status: invariant-layer-only
+        stack_specific_examples: []
+        fallback_example: phoenix-route-controller-example
+        fallback_verification_level: syntax-checked
+        follow_on_prompt: PROMPT_35
+      - stack: rust-axum-modern
+        status: invariant-layer-only
+        stack_specific_examples: []
+        fallback_example: rust-axum-route-example
+        fallback_verification_level: syntax-checked
+        follow_on_prompt: PROMPT_34
+      - stack: typescript-hono-bun
+        status: invariant-layer-only
+        stack_specific_examples: []
+        fallback_example: typescript-hono-handler-example
+        fallback_verification_level: syntax-checked
+        follow_on_prompt: PROMPT_34
+      - stack: nim-jester-happyx
+        status: invariant-layer-only
+        stack_specific_examples: []
+        fallback_example: nim-jester-data-endpoint-example
+        fallback_verification_level: syntax-checked
+        follow_on_prompt: PROMPT_35
+      - stack: zig-zap-jetzig
+        status: invariant-layer-only
+        stack_specific_examples: []
+        fallback_example: zig-zap-data-endpoint-example
+        fallback_verification_level: syntax-checked
+        follow_on_prompt: PROMPT_35
+      - stack: crystal-kemal-avram
+        status: invariant-layer-only
+        stack_specific_examples: []
+        fallback_example: crystal-kemal-avram-data-endpoint-example
+        fallback_verification_level: syntax-checked
+        follow_on_prompt: PROMPT_35

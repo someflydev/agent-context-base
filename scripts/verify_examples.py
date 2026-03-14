@@ -22,6 +22,7 @@ DEFAULT_MODULES = [
     "verification.examples.python.test_fastapi_examples",
     "verification.examples.python.test_polars_examples",
     "verification.examples.python.test_cli_examples",
+    "verification.examples.typescript.test_typescript_examples",
     "verification.examples.nim.test_nim_jester_happyx_examples",
     "verification.examples.scala.test_scala_tapir_http4s_zio_examples",
     "verification.examples.kotlin.test_http4k_exposed_examples",
@@ -66,12 +67,19 @@ def filtered_entries(stacks: list[str], examples: list[str]) -> list[dict[str, o
 def modules_for_entry(entry: dict[str, object]) -> list[str]:
     path = str(entry.get("path", ""))
     language = str(entry.get("language", ""))
+    if "canonical-data-acquisition" in path:
+        modules = ["verification.examples.data.test_data_acquisition_examples"]
+        if language in {"yaml", "json"}:
+            modules.append("verification.examples.data.test_yaml_json_examples")
+        return modules
     if "fastapi" in path:
         return ["verification.examples.python.test_fastapi_examples"]
     if "canonical-cli" in path:
         return ["verification.examples.python.test_cli_examples"]
     if "canonical-storage" in path or "canonical-seed-data" in path:
         return ["verification.examples.python.test_polars_examples"]
+    if language == "typescript":
+        return ["verification.examples.typescript.test_typescript_examples"]
     if language == "nim":
         return ["verification.examples.nim.test_nim_jester_happyx_examples"]
     if language == "scala":
@@ -96,8 +104,6 @@ def modules_for_entry(entry: dict[str, object]) -> list[str]:
         return ["verification.examples.ruby.test_ruby_hanami_examples"]
     if language in {"yaml", "json"} or "canonical-dokku" in path or "canonical-observability" in path:
         return ["verification.examples.data.test_yaml_json_examples"]
-    if "canonical-data-acquisition" in path:
-        return ["verification.examples.data.test_data_acquisition_examples"]
     if "canonical-prompts" in path:
         return ["verification.unit.test_prompt_rules"]
     return []

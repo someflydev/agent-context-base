@@ -19,7 +19,9 @@ if str(REPO_ROOT) not in sys.path:
 from verification.helpers import (  # noqa: E402
     EXAMPLE_SUPPORT_FILENAMES,
     confidence_score,
+    load_yaml_like,
     load_registry,
+    registry_by_name,
     verification_score,
 )
 
@@ -389,6 +391,134 @@ def validate_example_catalog(repo_root: Path) -> list[str]:
     missing = sorted(actual_example_paths - cataloged_paths)
     for missing_path in missing:
         errors.append(f"{path}: example file missing catalog entry: '{missing_path}'")
+    return errors
+
+
+def validate_data_acquisition_consistency(repo_root: Path) -> list[str]:
+    """Validate the polyglot data-acquisition index, matrix, and support posture."""
+
+    errors: list[str] = []
+    readme_path = repo_root / "examples/canonical-data-acquisition/README.md"
+    matrix_path = repo_root / "examples/canonical-data-acquisition/language-support-matrix.yaml"
+    invariant_path = repo_root / "context/doctrine/data-acquisition-invariants.md"
+    if not invariant_path.exists():
+        errors.append(f"{invariant_path}: missing invariant doc")
+    if not readme_path.exists():
+        errors.append(f"{readme_path}: missing canonical data-acquisition README")
+        return errors
+    if not matrix_path.exists():
+        errors.append(f"{matrix_path}: missing language support matrix")
+        return errors
+
+    readme_text = readme_path.read_text(encoding="utf-8")
+    for section in (
+        "## Capability Gap",
+        "## Invariant Layer",
+        "## Language Matrix",
+        "## Selection Contract",
+        "## Verification Posture",
+    ):
+        if section not in readme_text:
+            errors.append(f"{readme_path}: missing required section '{section}'")
+
+    matrix = load_yaml_like(matrix_path)
+    if not isinstance(matrix, dict):
+        return [f"{matrix_path}: top-level value must be an object"]
+    languages = matrix.get("languages", [])
+    shared_examples = matrix.get("shared_examples", [])
+    if not isinstance(languages, list):
+        errors.append(f"{matrix_path}: 'languages' must be a list")
+        languages = []
+    if not isinstance(shared_examples, list):
+        errors.append(f"{matrix_path}: 'shared_examples' must be a list")
+        shared_examples = []
+
+    known_examples = registry_by_name()
+    for entry in shared_examples:
+        if not isinstance(entry, dict):
+            errors.append(f"{matrix_path}: shared_examples entries must be objects")
+            continue
+        name = str(entry.get("name", "")).strip()
+        if name not in known_examples:
+            errors.append(f"{matrix_path}: unknown shared example '{name}'")
+            continue
+        registry_entry = known_examples[name]
+        if str(registry_entry.get("path", "")).strip() != str(entry.get("path", "")).strip():
+            errors.append(f"{matrix_path}: shared example '{name}' path does not match registry")
+        if str(registry_entry.get("verification_level", "")).strip() != str(
+            entry.get("verification_level", "")
+        ).strip():
+            errors.append(f"{matrix_path}: shared example '{name}' verification level does not match registry")
+
+    support_matrix = load_yaml_like(repo_root / "verification/stack_support_matrix.yaml")
+    capabilities = support_matrix.get("capabilities", []) if isinstance(support_matrix, dict) else []
+    capability = next(
+        (
+            entry
+            for entry in capabilities
+            if isinstance(entry, dict) and str(entry.get("capability", "")).strip() == "canonical-data-acquisition"
+        ),
+        None,
+    )
+    if capability is None:
+        errors.append("verification/stack_support_matrix.yaml: missing canonical-data-acquisition capability block")
+        capability_stacks = []
+    else:
+        capability_shared = capability.get("shared_examples", [])
+        if capability_shared != [entry.get("name") for entry in shared_examples if isinstance(entry, dict)]:
+            errors.append("verification/stack_support_matrix.yaml: shared example names do not match acquisition matrix")
+        capability_stacks = capability.get("stacks", [])
+        if not isinstance(capability_stacks, list):
+            errors.append("verification/stack_support_matrix.yaml: capability stacks must be a list")
+            capability_stacks = []
+
+    capability_by_stack = {
+        str(entry.get("stack", "")).strip(): entry
+        for entry in capability_stacks
+        if isinstance(entry, dict) and str(entry.get("stack", "")).strip()
+    }
+
+    for entry in languages:
+        if not isinstance(entry, dict):
+            errors.append(f"{matrix_path}: language rows must be objects")
+            continue
+        language = str(entry.get("language", "")).strip()
+        stack = str(entry.get("stack", "")).strip()
+        posture = str(entry.get("verification_posture", "")).strip()
+        fallback_example = str(entry.get("fallback_example", "")).strip()
+        fallback_path = str(entry.get("fallback_path", "")).strip()
+        fallback_level = str(entry.get("fallback_verification_level", "")).strip()
+        follow_on_prompt = str(entry.get("follow_on_prompt", "")).strip()
+
+        expected_row = (
+            f"| {language} | {stack} | none yet | {posture} | "
+            f"{fallback_path} ({fallback_level}) | {follow_on_prompt} |"
+        )
+        if expected_row not in readme_text:
+            errors.append(f"{readme_path}: missing matrix row '{expected_row}'")
+
+        registry_entry = known_examples.get(fallback_example)
+        if registry_entry is None:
+            errors.append(f"{matrix_path}: fallback example '{fallback_example}' is missing from registry")
+        else:
+            if str(registry_entry.get("path", "")).strip() != fallback_path:
+                errors.append(f"{matrix_path}: fallback path for '{fallback_example}' does not match registry")
+            if str(registry_entry.get("verification_level", "")).strip() != fallback_level:
+                errors.append(f"{matrix_path}: fallback level for '{fallback_example}' does not match registry")
+
+        support_entry = capability_by_stack.get(stack)
+        if support_entry is None:
+            errors.append(f"verification/stack_support_matrix.yaml: missing acquisition capability entry for '{stack}'")
+            continue
+        if str(support_entry.get("status", "")).strip() != posture:
+            errors.append(f"verification/stack_support_matrix.yaml: status mismatch for '{stack}'")
+        if str(support_entry.get("fallback_example", "")).strip() != fallback_example:
+            errors.append(f"verification/stack_support_matrix.yaml: fallback example mismatch for '{stack}'")
+        if str(support_entry.get("fallback_verification_level", "")).strip() != fallback_level:
+            errors.append(f"verification/stack_support_matrix.yaml: fallback level mismatch for '{stack}'")
+        if str(support_entry.get("follow_on_prompt", "")).strip() != follow_on_prompt:
+            errors.append(f"verification/stack_support_matrix.yaml: follow-on prompt mismatch for '{stack}'")
+
     return errors
 
 
