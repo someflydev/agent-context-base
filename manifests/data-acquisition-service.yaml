@@ -1,0 +1,94 @@
+schema_version: 2
+name: data-acquisition-service
+description: Preferred profile for repos that research sources, ingest via API or scraping, retain raw payloads, normalize records, and persist them behind stable service boundaries.
+archetype: data-acquisition-service
+primary_stack: python-fastapi-uv-ruff-orjson-polars
+secondary_stacks:
+  - duckdb-trino-polars
+  - nats-jetstream
+  - redis-keydb-mongo
+triggers:
+  - data acquisition service
+  - add api source
+  - scrape public data
+aliases:
+  - source sync service
+  - ingestion service
+required_context:
+  - context/doctrine/core-principles.md
+  - context/doctrine/data-acquisition-philosophy.md
+  - context/doctrine/raw-data-retention.md
+  - context/doctrine/sync-safety-rate-limits.md
+  - context/doctrine/source-research-discipline.md
+  - context/workflows/research-data-sources.md
+  - context/workflows/add-api-ingestion-source.md
+  - context/workflows/add-scraping-source.md
+  - context/workflows/add-raw-download-archive.md
+  - context/workflows/add-parser-normalizer.md
+  - context/workflows/add-classification-step.md
+  - context/archetypes/data-acquisition-service.md
+  - context/stacks/scraping-and-ingestion-patterns.md
+  - context/stacks/source-research-and-evaluation.md
+optional_context:
+  - context/workflows/add-source-backoff-retry.md
+  - context/workflows/add-recurring-sync.md
+  - context/workflows/add-event-driven-sync.md
+  - context/workflows/add-storage-integration.md
+  - context/stacks/event-streaming-patterns.md
+  - context/stacks/nats-jetstream.md
+  - context/stacks/duckdb-trino-polars.md
+  - context/stacks/python-fastapi-uv-ruff-orjson-polars.md
+preferred_examples:
+  - examples/canonical-api/fastapi-endpoint-example.py
+  - examples/canonical-storage/duckdb-polars-example.py
+  - examples/canonical-integration-tests/fastapi-db-integration-test-example.py
+recommended_templates:
+  - templates/readme/README.template.md
+  - templates/agent-md/AGENT.template.md
+  - templates/claude-md/CLAUDE.template.md
+  - templates/gitignore/.gitignore.template
+  - templates/compose/docker-compose.template.yaml
+  - templates/compose/docker-compose-test.template.yaml
+  - templates/manifest/profile-summary.template.yaml
+  - templates/integration-tests/integration_test.template.py
+  - templates/smoke-tests/smoke_test.template.py
+repo_signals:
+  - app/sources/
+  - app/parsers/
+  - data/raw/
+  - scripts/sync_*.py
+task_hints:
+  - research-data-sources
+  - add-api-ingestion-source
+  - add-scraping-source
+  - add-raw-download-archive
+  - add-parser-normalizer
+  - add-classification-step
+warnings:
+  - Preserve raw payloads before irreversible transforms when the source and storage posture allow it.
+  - Keep fetch, parse, classify, and persistence boundaries explicit so replay and recovery stay practical.
+bootstrap_defaults:
+  - include_docker_compose
+  - include_smoke_tests
+  - include_integration_tests
+  - include_seed_data
+  - include_generated_profile
+compose_files:
+  - docker-compose.yml
+  - docker-compose.test.yml
+compose_project_name_dev: "{repo_slug}"
+compose_project_name_test: "{repo_slug}-test"
+port_band_app_dev: 14000-14099
+port_band_app_test: 15000-15099
+port_band_data_dev: 24000-24099
+port_band_data_test: 25000-25099
+data_isolation:
+  - docker/volumes/dev
+  - docker/volumes/test
+  - raw archive and checkpoints must not share dev and test roots
+dokku_relevance: supported
+smoke_test_expectations:
+  - one representative source sync trigger
+  - one raw archive write path
+  - readable failure when source credentials or upstream access are missing
+prompt_first_support: supported

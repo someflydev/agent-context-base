@@ -1,0 +1,91 @@
+schema_version: 2
+name: multi-source-sync-platform
+description: Preferred profile for repos that coordinate recurring multi-source syncs, event-driven processing, backoff policy, and durable persistence for downstream APIs or UIs.
+archetype: multi-source-sync-platform
+primary_stack: python-fastapi-uv-ruff-orjson-polars
+secondary_stacks:
+  - nats-jetstream
+  - duckdb-trino-polars
+  - redis-keydb-mongo
+triggers:
+  - multi source sync
+  - event driven sync
+  - twice daily pull
+aliases:
+  - sync platform
+  - source orchestration service
+required_context:
+  - context/doctrine/core-principles.md
+  - context/doctrine/data-acquisition-philosophy.md
+  - context/doctrine/raw-data-retention.md
+  - context/doctrine/sync-safety-rate-limits.md
+  - context/doctrine/source-research-discipline.md
+  - context/workflows/research-data-sources.md
+  - context/workflows/add-recurring-sync.md
+  - context/workflows/add-event-driven-sync.md
+  - context/workflows/add-source-backoff-retry.md
+  - context/workflows/add-parser-normalizer.md
+  - context/workflows/add-classification-step.md
+  - context/archetypes/multi-source-sync-platform.md
+  - context/stacks/event-streaming-patterns.md
+  - context/stacks/scraping-and-ingestion-patterns.md
+optional_context:
+  - context/workflows/add-api-ingestion-source.md
+  - context/workflows/add-scraping-source.md
+  - context/workflows/add-raw-download-archive.md
+  - context/workflows/add-storage-integration.md
+  - context/stacks/nats-jetstream.md
+  - context/stacks/source-research-and-evaluation.md
+  - context/stacks/python-fastapi-uv-ruff-orjson-polars.md
+preferred_examples:
+  - examples/canonical-api/fastapi-endpoint-example.py
+  - examples/canonical-observability/structured-log-example.json
+  - examples/canonical-integration-tests/fastapi-db-integration-test-example.py
+recommended_templates:
+  - templates/readme/README.template.md
+  - templates/agent-md/AGENT.template.md
+  - templates/claude-md/CLAUDE.template.md
+  - templates/gitignore/.gitignore.template
+  - templates/compose/docker-compose.template.yaml
+  - templates/compose/docker-compose-test.template.yaml
+  - templates/manifest/profile-summary.template.yaml
+  - templates/integration-tests/integration_test.template.py
+  - templates/smoke-tests/smoke_test.template.py
+repo_signals:
+  - app/sources/
+  - app/events/
+  - app/scheduler/
+  - tests/integration/test_source_sync*.py
+task_hints:
+  - research-data-sources
+  - add-recurring-sync
+  - add-event-driven-sync
+  - add-source-backoff-retry
+warnings:
+  - Schedule sync requests and status updates, not long-running source fetches inline.
+  - Make consumers idempotent before relying on retries or duplicate delivery from the event layer.
+bootstrap_defaults:
+  - include_docker_compose
+  - include_smoke_tests
+  - include_integration_tests
+  - include_seed_data
+  - include_generated_profile
+compose_files:
+  - docker-compose.yml
+  - docker-compose.test.yml
+compose_project_name_dev: "{repo_slug}"
+compose_project_name_test: "{repo_slug}-test"
+port_band_app_dev: 14000-14099
+port_band_app_test: 15000-15099
+port_band_data_dev: 24000-24099
+port_band_data_test: 25000-25099
+data_isolation:
+  - docker/volumes/dev
+  - docker/volumes/test
+  - event brokers, checkpoints, and raw archives must isolate dev and test runs
+dokku_relevance: supported
+smoke_test_expectations:
+  - one scheduled sync request path
+  - one event publish and consume happy path
+  - source health or sync status remains readable when one source fails
+prompt_first_support: supported
