@@ -146,6 +146,36 @@
       "guidance": "Prefer data-pipeline doctrine and deterministic fixture guidance."
     },
     {
+      "name": "scraping-and-ingestion-patterns",
+      "patterns": [
+        "app/sources/*.py",
+        "app/parsers/*.py",
+        "data/raw/*",
+        "scripts/sync_*.py"
+      ],
+      "guidance": "Load acquisition doctrine when source adapters, raw archives, or parser directories are present."
+    },
+    {
+      "name": "source-research-and-evaluation",
+      "patterns": [
+        "docs/source-research*.md",
+        "docs/source-scorecard*.md",
+        "research/sources/*",
+        "notes/sources/*"
+      ],
+      "guidance": "Source comparison notes should load the research and evaluation pack before adapter work."
+    },
+    {
+      "name": "event-streaming-patterns",
+      "patterns": [
+        "app/events/*.py",
+        "app/scheduler/*.py",
+        "tests/integration/test_source_sync*.py",
+        "docs/event-contracts*.md"
+      ],
+      "guidance": "Event-driven sync repos should load coordination, idempotency, and retry-safe messaging guidance."
+    },
+    {
       "name": "qdrant",
       "patterns": [
         "app/index_documents.py",
@@ -209,6 +239,26 @@
         "scripts/seed_data.py"
       ],
       "guidance": "Favor deterministic transforms, fixtures, and repeatable pipeline checks."
+    },
+    {
+      "name": "data-acquisition-service",
+      "patterns": [
+        "app/sources/*.py",
+        "app/parsers/*.py",
+        "data/raw/*",
+        "tests/integration/test_source_sync*.py"
+      ],
+      "guidance": "Source adapters, parser modules, and raw archives imply the acquisition-service archetype."
+    },
+    {
+      "name": "multi-source-sync-platform",
+      "patterns": [
+        "app/events/*.py",
+        "app/scheduler/*.py",
+        "app/sources/*.py",
+        "docs/source-research*.md"
+      ],
+      "guidance": "Recurring source orchestration with events and research notes implies the multi-source sync platform archetype."
     },
     {
       "name": "local-rag-system",
@@ -284,6 +334,89 @@
         "scripts/seed-data.ts"
       ],
       "guidance": "Real boundary changes should load storage integration doctrine and examples."
+    },
+    {
+      "name": "research-data-sources",
+      "patterns": [
+        "docs/source-research*.md",
+        "docs/source-scorecard*.md",
+        "research/sources/*",
+        "notes/sources/*"
+      ],
+      "guidance": "Source scorecards and evaluation notes imply the source-research workflow."
+    },
+    {
+      "name": "add-api-ingestion-source",
+      "patterns": [
+        "app/sources/*.py",
+        "tests/integration/test_source_sync*.py",
+        "data/raw/*"
+      ],
+      "guidance": "Source adapters plus raw archives imply the API-ingestion workflow."
+    },
+    {
+      "name": "add-scraping-source",
+      "patterns": [
+        "app/sources/*.py",
+        "app/parsers/*.py",
+        "data/raw/*",
+        "tests/fixtures/raw_html/*"
+      ],
+      "guidance": "Scrape adapters and raw HTML fixtures imply the scraping workflow."
+    },
+    {
+      "name": "add-raw-download-archive",
+      "patterns": [
+        "data/raw/*",
+        "app/archive/*.py",
+        "tests/integration/test_raw_archive*.py"
+      ],
+      "guidance": "Raw archive roots and archive helpers imply the raw-retention workflow."
+    },
+    {
+      "name": "add-parser-normalizer",
+      "patterns": [
+        "app/parsers/*.py",
+        "app/normalizers/*.py",
+        "tests/integration/test_normalize*.py"
+      ],
+      "guidance": "Parser and normalizer modules imply the raw-to-canonical workflow."
+    },
+    {
+      "name": "add-classification-step",
+      "patterns": [
+        "app/classifiers/*.py",
+        "app/enrichers/*.py",
+        "tests/integration/test_classification*.py"
+      ],
+      "guidance": "Classification helpers and enrichment tests imply the post-parse classification workflow."
+    },
+    {
+      "name": "add-recurring-sync",
+      "patterns": [
+        "app/scheduler/*.py",
+        "config/sync_schedule*.yaml",
+        "tests/integration/test_scheduler*.py"
+      ],
+      "guidance": "Schedule config and scheduler modules imply the recurring-sync workflow."
+    },
+    {
+      "name": "add-event-driven-sync",
+      "patterns": [
+        "app/events/*.py",
+        "app/consumers/*.py",
+        "docs/event-contracts*.md"
+      ],
+      "guidance": "Event contracts and consumers imply the event-driven sync workflow."
+    },
+    {
+      "name": "add-source-backoff-retry",
+      "patterns": [
+        "config/source_retry*.yaml",
+        "app/retries/*.py",
+        "tests/integration/test_backoff*.py"
+      ],
+      "guidance": "Retry config and source-specific backoff helpers imply the backoff workflow."
     },
     {
       "name": "add-deployment-support",

@@ -27,6 +27,34 @@ tasks:
     target: context/workflows/add-deployment-support.md
   - alias: seed data
     target: context/workflows/add-seed-data.md
+  - alias: source research
+    target: context/workflows/research-data-sources.md
+  - alias: research data sources
+    target: context/workflows/research-data-sources.md
+  - alias: add api source
+    target: context/workflows/add-api-ingestion-source.md
+  - alias: api ingestion
+    target: context/workflows/add-api-ingestion-source.md
+  - alias: add scraping source
+    target: context/workflows/add-scraping-source.md
+  - alias: scraper
+    target: context/workflows/add-scraping-source.md
+  - alias: raw downloads
+    target: context/workflows/add-raw-download-archive.md
+  - alias: save raw downloads
+    target: context/workflows/add-raw-download-archive.md
+  - alias: parser normalizer
+    target: context/workflows/add-parser-normalizer.md
+  - alias: classify records
+    target: context/workflows/add-classification-step.md
+  - alias: recurring sync
+    target: context/workflows/add-recurring-sync.md
+  - alias: twice daily sync
+    target: context/workflows/add-recurring-sync.md
+  - alias: event driven sync
+    target: context/workflows/add-event-driven-sync.md
+  - alias: backoff and rate limits
+    target: context/workflows/add-source-backoff-retry.md
   - alias: local rag
     target: context/workflows/add-local-rag-indexing.md
   - alias: storage integration
@@ -141,6 +169,18 @@ stacks:
     target: context/stacks/elasticsearch.md
   - alias: qdrant
     target: context/stacks/qdrant.md
+  - alias: scraping
+    target: context/stacks/scraping-and-ingestion-patterns.md
+  - alias: ingestion patterns
+    target: context/stacks/scraping-and-ingestion-patterns.md
+  - alias: source evaluation
+    target: context/stacks/source-research-and-evaluation.md
+  - alias: source research stack
+    target: context/stacks/source-research-and-evaluation.md
+  - alias: event streaming
+    target: context/stacks/event-streaming-patterns.md
+  - alias: sync events
+    target: context/stacks/event-streaming-patterns.md
   - alias: dokku
     target: context/stacks/dokku-conventions.md
   - alias: procfile
@@ -155,6 +195,10 @@ archetypes:
     target: context/archetypes/cli-tool.md
   - alias: data pipeline
     target: context/archetypes/data-pipeline.md
+  - alias: data acquisition service
+    target: context/archetypes/data-acquisition-service.md
+  - alias: multi source sync platform
+    target: context/archetypes/multi-source-sync-platform.md
   - alias: local rag system
     target: context/archetypes/local-rag-system.md
   - alias: multi storage
@@ -179,3 +223,7 @@ capabilities:
     target: context/skills/repo-signal-detection.md
   - alias: generated profile
     target: context/skills/repo-signal-detection.md
+  - alias: raw retention
+    target: context/doctrine/raw-data-retention.md
+  - alias: source rate limits
+    target: context/doctrine/sync-safety-rate-limits.md

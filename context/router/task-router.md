@@ -29,6 +29,24 @@ Route from what the user is trying to do, not from internal file names.
   - load `context/workflows/add-seed-data.md`
 - "new endpoint", "new route", "new handler"
   - load `context/workflows/add-api-endpoint.md`
+- "research candidate public data sources", "evaluate data sources", "find a usable dataset"
+  - load `context/workflows/research-data-sources.md`
+- "add a new API source", "pull from an API", "ingest an API feed"
+  - load `context/workflows/add-api-ingestion-source.md`
+- "add a scraper", "scrape this site", "ingest by scraping"
+  - load `context/workflows/add-scraping-source.md`
+- "save raw downloads", "retain raw payloads", "archive raw responses"
+  - load `context/workflows/add-raw-download-archive.md`
+- "parse raw payloads", "normalize source data", "build a parser"
+  - load `context/workflows/add-parser-normalizer.md`
+- "classify records", "categorize records", "add enrichment"
+  - load `context/workflows/add-classification-step.md`
+- "build a twice-daily sync", "schedule recurring syncs", "run this every day"
+  - load `context/workflows/add-recurring-sync.md`
+- "use events to coordinate syncs", "event-driven sync", "publish source sync events"
+  - load `context/workflows/add-event-driven-sync.md`
+- "add backoff", "handle rate limits", "retry this source safely"
+  - load `context/workflows/add-source-backoff-retry.md`
 - "new command", "CLI flag", "subcommand"
   - load `context/workflows/extend-cli.md`
 - "local rag", "index docs", "retrieval"
@@ -53,6 +71,15 @@ Examples:
 - "Add a storage-backed route plus a real integration test"
   - start with `context/workflows/add-api-endpoint.md`
   - then load `context/workflows/add-storage-integration.md`
+- "Add a new API source and keep raw payloads for later parsing"
+  - start with `context/workflows/add-api-ingestion-source.md`
+  - then load `context/workflows/add-raw-download-archive.md`
+- "Research candidate public data sources and pick between API versus scraping"
+  - start with `context/workflows/research-data-sources.md`
+  - then load `context/workflows/add-api-ingestion-source.md` or `context/workflows/add-scraping-source.md`
+- "Schedule twice-daily syncs and coordinate them with events"
+  - start with `context/workflows/add-recurring-sync.md`
+  - then load `context/workflows/add-event-driven-sync.md`
 - "Clean up the implementation before commit"
   - start with `context/workflows/post-flight-refinement.md`
 
@@ -68,6 +95,16 @@ Examples:
   - workflow: `context/workflows/add-smoke-tests.md`
 - "Add a local vector index for docs"
   - workflow: `context/workflows/add-local-rag-indexing.md`
+- "Save raw downloads so I can re-parse them later"
+  - workflow: `context/workflows/add-raw-download-archive.md`
+- "Build a twice-daily sync for these sources"
+  - workflow: `context/workflows/add-recurring-sync.md`
+- "Research candidate public data sources before we implement anything"
+  - workflow: `context/workflows/research-data-sources.md`
+- "Classify records after parsing"
+  - workflow: `context/workflows/add-classification-step.md`
+- "Use events to coordinate source syncs"
+  - workflow: `context/workflows/add-event-driven-sync.md`
 - "Make this generated repo less sloppy before I commit"
   - workflow: `context/workflows/post-flight-refinement.md`
 

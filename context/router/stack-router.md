@@ -35,6 +35,12 @@ Infer the active stack from repo signals, touched files, and user language.
 
 ## Storage And Infra Signals
 
+- `sources/`, `parsers/`, `archive/raw/`, `httpx`, `beautifulsoup`, `playwright`, `selectors`
+  - load `context/stacks/scraping-and-ingestion-patterns.md`
+- `source_research`, `source_scorecard`, `licensing`, `robots`, `dataset evaluation`
+  - load `context/stacks/source-research-and-evaluation.md`
+- `events/`, `scheduler/`, `sync.requested`, `sync.failed`, `outbox`
+  - load `context/stacks/event-streaming-patterns.md`
 - `redis`, `keydb`, `mongo`
   - load `context/stacks/redis-keydb-mongo.md`
 - `duckdb`, `trino`, `polars`
@@ -79,6 +85,13 @@ Infer the active stack from repo signals, touched files, and user language.
   - `context/stacks/zig-zap-jetzig.md`
 - "Wire Qdrant for retrieval"
   - `context/stacks/qdrant.md`
+- "Add backoff and rate-limit awareness for source ingestion"
+  - `context/stacks/scraping-and-ingestion-patterns.md`
+- "Research candidate public data sources and compare tradeoffs"
+  - `context/stacks/source-research-and-evaluation.md`
+- "Coordinate source syncs with events"
+  - `context/stacks/event-streaming-patterns.md`
+  - `context/stacks/nats-jetstream.md` if JetStream is the concrete broker
 - "Add a Phoenix release path for Dokku"
   - `context/stacks/elixir-phoenix.md`
   - `context/stacks/dokku-conventions.md`

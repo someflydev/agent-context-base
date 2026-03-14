@@ -12,6 +12,10 @@ Infer project shape from the repo goal, not only from language choice.
   - `context/archetypes/cli-tool.md`
 - ingestion, transforms, analytics outputs
   - `context/archetypes/data-pipeline.md`
+- source adapters, raw archival, parsing, normalization, enrichment, persistence
+  - `context/archetypes/data-acquisition-service.md`
+- multiple sources, recurring syncs, event coordination, source health, replay
+  - `context/archetypes/multi-source-sync-platform.md`
 - retrieval, chunking, indexing, embeddings
   - `context/archetypes/local-rag-system.md`
 - many storage backends compared intentionally
@@ -31,6 +35,10 @@ Infer project shape from the repo goal, not only from language choice.
   - `context/archetypes/cli-tool.md`
 - "Index notes into Qdrant and answer questions locally"
   - `context/archetypes/local-rag-system.md`
+- "Build a service that acquires and normalizes public data"
+  - `context/archetypes/data-acquisition-service.md`
+- "Coordinate recurring syncs across multiple sources"
+  - `context/archetypes/multi-source-sync-platform.md`
 - "Compare MongoDB and Elasticsearch in one experimental repo"
   - `context/archetypes/multi-storage-experiment.md`
 - "Set up a single service repo that will deploy to Dokku"
