@@ -47,6 +47,10 @@ tasks:
     target: context/workflows/research-data-sources.md
   - alias: research data sources
     target: context/workflows/research-data-sources.md
+  - alias: generic acquisition guidance
+    target: context/doctrine/data-acquisition-invariants.md
+  - alias: language agnostic acquisition invariants
+    target: context/doctrine/data-acquisition-invariants.md
   - alias: add api source
     target: context/workflows/add-api-ingestion-source.md
   - alias: api ingestion
@@ -97,9 +101,17 @@ tasks:
 stacks:
   - alias: fastapi
     target: context/stacks/python-fastapi-uv-ruff-orjson-polars.md
+  - alias: python-fastapi-uv-ruff-orjson-polars
+    target: context/stacks/python-fastapi-uv-ruff-orjson-polars.md
   - alias: python api
     target: context/stacks/python-fastapi-uv-ruff-orjson-polars.md
+  - alias: typescript
+    target: context/stacks/typescript-hono-bun.md
   - alias: hono
+    target: context/stacks/typescript-hono-bun.md
+  - alias: typescript-hono-bun
+    target: context/stacks/typescript-hono-bun.md
+  - alias: bun
     target: context/stacks/typescript-hono-bun.md
   - alias: bun service
     target: context/stacks/typescript-hono-bun.md
@@ -109,11 +121,15 @@ stacks:
     target: context/stacks/typescript-hono-bun.md
   - alias: nim
     target: context/stacks/nim-jester-happyx.md
+  - alias: nim-jester-happyx
+    target: context/stacks/nim-jester-happyx.md
   - alias: jester
     target: context/stacks/nim-jester-happyx.md
   - alias: happyx
     target: context/stacks/nim-jester-happyx.md
   - alias: crystal
+    target: context/stacks/crystal-kemal-avram.md
+  - alias: crystal-kemal-avram
     target: context/stacks/crystal-kemal-avram.md
   - alias: kemal
     target: context/stacks/crystal-kemal-avram.md
@@ -157,16 +173,28 @@ stacks:
     target: context/stacks/ocaml-dream-caqti-tyxml.md
   - alias: zig
     target: context/stacks/zig-zap-jetzig.md
+  - alias: zig-zap-jetzig
+    target: context/stacks/zig-zap-jetzig.md
   - alias: zap
     target: context/stacks/zig-zap-jetzig.md
   - alias: jetzig
     target: context/stacks/zig-zap-jetzig.md
+  - alias: rust
+    target: context/stacks/rust-axum-modern.md
   - alias: axum
     target: context/stacks/rust-axum-modern.md
+  - alias: rust-axum-modern
+    target: context/stacks/rust-axum-modern.md
+  - alias: go
+    target: context/stacks/go-echo.md
   - alias: echo
+    target: context/stacks/go-echo.md
+  - alias: go-echo
     target: context/stacks/go-echo.md
   - alias: templ
     target: context/stacks/go-echo.md
+  - alias: elixir-phoenix
+    target: context/stacks/elixir-phoenix.md
   - alias: phoenix
     target: context/stacks/elixir-phoenix.md
   - alias: liveview
@@ -253,6 +281,12 @@ archetypes:
 capabilities:
   - alias: canonical example
     target: context/skills/canonical-example-selection.md
+  - alias: canonical data acquisition
+    target: examples/canonical-data-acquisition/README.md
+  - alias: acquisition support matrix
+    target: examples/canonical-data-acquisition/language-support-matrix.yaml
+  - alias: data acquisition invariants
+    target: context/doctrine/data-acquisition-invariants.md
   - alias: infer task
     target: context/skills/task-inference.md
   - alias: repo signals

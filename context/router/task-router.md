@@ -51,6 +51,9 @@ Route from what the user is trying to do, not from internal file names.
   - load `context/workflows/verify-query-count-correctness.md`
 - "research candidate public data sources", "evaluate data sources", "find a usable dataset"
   - load `context/workflows/research-data-sources.md`
+- "show me the language-agnostic data acquisition invariants", "generic acquisition guidance", "invariants before picking a stack"
+  - load `context/doctrine/data-acquisition-invariants.md`
+  - load `examples/canonical-data-acquisition/README.md`
 - "add a new API source", "pull from an API", "ingest an API feed"
   - load `context/workflows/add-api-ingestion-source.md`
 - "add a scraper", "scrape this site", "ingest by scraping"
@@ -67,6 +70,10 @@ Route from what the user is trying to do, not from internal file names.
   - load `context/workflows/add-event-driven-sync.md`
 - "add backoff", "handle rate limits", "retry this source safely"
   - load `context/workflows/add-source-backoff-retry.md`
+- "don't give me Python-only guidance for this sync pipeline", "show the Go acquisition example", "show the Rust acquisition example"
+  - load `context/doctrine/data-acquisition-invariants.md`
+  - load `context/skills/canonical-example-selection.md`
+  - load `examples/canonical-data-acquisition/README.md`
 - "new command", "CLI flag", "subcommand"
   - load `context/workflows/extend-cli.md`
 - "local rag", "index docs", "retrieval"
@@ -112,6 +119,9 @@ Examples:
 - "Research candidate public data sources and pick between API versus scraping"
   - start with `context/workflows/research-data-sources.md`
   - then load `context/workflows/add-api-ingestion-source.md` or `context/workflows/add-scraping-source.md`
+- "Give me generic acquisition guidance before we pick a stack"
+  - start with `context/doctrine/data-acquisition-invariants.md`
+  - then load `examples/canonical-data-acquisition/README.md`
 - "Schedule twice-daily syncs and coordinate them with events"
   - start with `context/workflows/add-recurring-sync.md`
   - then load `context/workflows/add-event-driven-sync.md`
@@ -154,6 +164,10 @@ Examples:
   - workflow: `context/workflows/add-recurring-sync.md`
 - "Research candidate public data sources before we implement anything"
   - workflow: `context/workflows/research-data-sources.md`
+- "Show me the language-agnostic acquisition rules"
+  - workflow: `context/doctrine/data-acquisition-invariants.md`
+- "Don’t give me Python-only guidance for this sync pipeline"
+  - workflow: `examples/canonical-data-acquisition/README.md`
 - "Classify records after parsing"
   - workflow: `context/workflows/add-classification-step.md`
 - "Use events to coordinate source syncs"

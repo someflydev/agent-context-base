@@ -12,6 +12,7 @@ Use this archetype when the repo coordinates recurring acquisition from multiple
 
 ## Required Context
 
+- `context/doctrine/data-acquisition-invariants.md`
 - `context/doctrine/data-acquisition-philosophy.md`
 - `context/doctrine/sync-safety-rate-limits.md`
 - `context/doctrine/source-research-discipline.md`
@@ -26,6 +27,7 @@ Use this archetype when the repo coordinates recurring acquisition from multiple
 ## Likely Examples
 
 - `examples/canonical-data-acquisition/README.md`
+- `examples/canonical-data-acquisition/language-support-matrix.yaml`
 - `examples/canonical-observability/README.md`
 
 ## Typical Anti-Patterns

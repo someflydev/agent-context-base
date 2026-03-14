@@ -16,6 +16,7 @@ aliases:
   - source orchestration service
 required_context:
   - context/doctrine/core-principles.md
+  - context/doctrine/data-acquisition-invariants.md
   - context/doctrine/data-acquisition-philosophy.md
   - context/doctrine/raw-data-retention.md
   - context/doctrine/sync-safety-rate-limits.md
@@ -38,6 +39,8 @@ optional_context:
   - context/stacks/source-research-and-evaluation.md
   - context/stacks/python-fastapi-uv-ruff-orjson-polars.md
 preferred_examples:
+  - examples/canonical-data-acquisition/README.md
+  - examples/canonical-data-acquisition/language-support-matrix.yaml
   - examples/canonical-api/fastapi-endpoint-example.py
   - examples/canonical-observability/structured-log-example.json
   - examples/canonical-integration-tests/fastapi-db-integration-test-example.py
@@ -62,6 +65,7 @@ task_hints:
   - add-event-driven-sync
   - add-source-backoff-retry
 warnings:
+  - Doctrine and workflows define cross-language invariants; stack-specific canonical examples must be real implementations.
   - Schedule sync requests and status updates, not long-running source fetches inline.
   - Make consumers idempotent before relying on retries or duplicate delivery from the event layer.
 bootstrap_defaults:

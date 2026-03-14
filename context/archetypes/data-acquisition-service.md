@@ -12,6 +12,7 @@ Use this archetype for repos whose primary job is to acquire external data, pres
 
 ## Required Context
 
+- `context/doctrine/data-acquisition-invariants.md`
 - `context/doctrine/data-acquisition-philosophy.md`
 - `context/doctrine/raw-data-retention.md`
 - `context/doctrine/sync-safety-rate-limits.md`
@@ -27,6 +28,7 @@ Use this archetype for repos whose primary job is to acquire external data, pres
 ## Likely Examples
 
 - `examples/canonical-data-acquisition/README.md`
+- `examples/canonical-data-acquisition/language-support-matrix.yaml`
 - `examples/canonical-storage/README.md`
 
 ## Typical Anti-Patterns

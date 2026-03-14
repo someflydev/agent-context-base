@@ -1,0 +1,74 @@
+version: 1
+capability: canonical-data-acquisition
+shared_examples:
+  - name: canonical-data-acquisition-index
+    path: examples/canonical-data-acquisition/README.md
+    verification_level: syntax-checked
+  - name: canonical-data-acquisition-language-support-matrix
+    path: examples/canonical-data-acquisition/language-support-matrix.yaml
+    verification_level: syntax-checked
+languages:
+  - language: Python
+    stack: python-fastapi-uv-ruff-orjson-polars
+    stack_specific_examples: []
+    verification_posture: invariant-layer-only
+    fallback_example: fastapi-endpoint-example
+    fallback_path: examples/canonical-api/fastapi-endpoint-example.py
+    fallback_verification_level: behavior-verified
+    follow_on_prompt: PROMPT_34
+  - language: Go
+    stack: go-echo
+    stack_specific_examples: []
+    verification_posture: invariant-layer-only
+    fallback_example: go-echo-handler-example
+    fallback_path: examples/canonical-api/go-echo-handler-example.go
+    fallback_verification_level: syntax-checked
+    follow_on_prompt: PROMPT_34
+  - language: Elixir
+    stack: elixir-phoenix
+    stack_specific_examples: []
+    verification_posture: invariant-layer-only
+    fallback_example: phoenix-route-controller-example
+    fallback_path: examples/canonical-api/phoenix-route-controller-example.ex
+    fallback_verification_level: syntax-checked
+    follow_on_prompt: PROMPT_35
+  - language: Rust
+    stack: rust-axum-modern
+    stack_specific_examples: []
+    verification_posture: invariant-layer-only
+    fallback_example: rust-axum-route-example
+    fallback_path: examples/canonical-api/rust-axum-route-example.rs
+    fallback_verification_level: syntax-checked
+    follow_on_prompt: PROMPT_34
+  - language: TypeScript
+    stack: typescript-hono-bun
+    stack_specific_examples: []
+    verification_posture: invariant-layer-only
+    fallback_example: typescript-hono-handler-example
+    fallback_path: examples/canonical-api/typescript-hono-handler-example.ts
+    fallback_verification_level: syntax-checked
+    follow_on_prompt: PROMPT_34
+  - language: Nim
+    stack: nim-jester-happyx
+    stack_specific_examples: []
+    verification_posture: invariant-layer-only
+    fallback_example: nim-jester-data-endpoint-example
+    fallback_path: examples/canonical-api/nim-jester-data-endpoint-example.nim
+    fallback_verification_level: syntax-checked
+    follow_on_prompt: PROMPT_35
+  - language: Zig
+    stack: zig-zap-jetzig
+    stack_specific_examples: []
+    verification_posture: invariant-layer-only
+    fallback_example: zig-zap-data-endpoint-example
+    fallback_path: examples/canonical-api/zig-zap-data-endpoint-example.zig
+    fallback_verification_level: syntax-checked
+    follow_on_prompt: PROMPT_35
+  - language: Crystal
+    stack: crystal-kemal-avram
+    stack_specific_examples: []
+    verification_posture: invariant-layer-only
+    fallback_example: crystal-kemal-avram-data-endpoint-example
+    fallback_path: examples/canonical-api/crystal-kemal-avram-data-endpoint-example.cr
+    fallback_verification_level: syntax-checked
+    follow_on_prompt: PROMPT_35

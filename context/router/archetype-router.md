@@ -37,6 +37,8 @@ Infer project shape from the repo goal, not only from language choice.
   - `context/archetypes/local-rag-system.md`
 - "Build a service that acquires and normalizes public data"
   - `context/archetypes/data-acquisition-service.md`
+- "I need generic guidance before picking a stack for data acquisition"
+  - `context/archetypes/data-acquisition-service.md`
 - "Coordinate recurring syncs across multiple sources"
   - `context/archetypes/multi-source-sync-platform.md`
 - "Compare MongoDB and Elasticsearch in one experimental repo"

@@ -89,8 +89,16 @@ Infer the active stack from repo signals, touched files, and user language.
   - `context/stacks/qdrant.md`
 - "Add backoff and rate-limit awareness for source ingestion"
   - `context/stacks/scraping-and-ingestion-patterns.md`
+- "Give me the Go version of the acquisition example"
+  - `context/stacks/go-echo.md`
+  - `examples/canonical-data-acquisition/README.md`
+  - `context/doctrine/data-acquisition-invariants.md`
 - "Research candidate public data sources and compare tradeoffs"
   - `context/stacks/source-research-and-evaluation.md`
+- "What is the Rust canonical example for raw archive plus normalization?"
+  - `context/stacks/rust-axum-modern.md`
+  - `examples/canonical-data-acquisition/README.md`
+  - `context/doctrine/data-acquisition-invariants.md`
 - "Coordinate source syncs with events"
   - `context/stacks/event-streaming-patterns.md`
   - `context/stacks/nats-jetstream.md` if JetStream is the concrete broker
@@ -110,6 +118,10 @@ Infer the active stack from repo signals, touched files, and user language.
   - `context/stacks/duckdb-trino-polars.md` if the change also touches analytical storage
 - "Generate a new repo from this base"
   - `context/stacks/prompt-first-repo.md`
+- "Don’t give me Python-only guidance for this sync pipeline"
+  - dominant app stack
+  - `examples/canonical-data-acquisition/README.md`
+  - `context/doctrine/data-acquisition-invariants.md`
 - "Wire a Qdrant-backed local index"
   - `context/stacks/qdrant.md`
 

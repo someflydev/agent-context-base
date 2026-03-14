@@ -16,6 +16,7 @@ aliases:
   - ingestion service
 required_context:
   - context/doctrine/core-principles.md
+  - context/doctrine/data-acquisition-invariants.md
   - context/doctrine/data-acquisition-philosophy.md
   - context/doctrine/raw-data-retention.md
   - context/doctrine/sync-safety-rate-limits.md
@@ -39,6 +40,8 @@ optional_context:
   - context/stacks/duckdb-trino-polars.md
   - context/stacks/python-fastapi-uv-ruff-orjson-polars.md
 preferred_examples:
+  - examples/canonical-data-acquisition/README.md
+  - examples/canonical-data-acquisition/language-support-matrix.yaml
   - examples/canonical-api/fastapi-endpoint-example.py
   - examples/canonical-storage/duckdb-polars-example.py
   - examples/canonical-integration-tests/fastapi-db-integration-test-example.py
@@ -65,6 +68,7 @@ task_hints:
   - add-parser-normalizer
   - add-classification-step
 warnings:
+  - Doctrine and workflows define cross-language invariants; stack-specific canonical examples must be real implementations.
   - Preserve raw payloads before irreversible transforms when the source and storage posture allow it.
   - Keep fetch, parse, classify, and persistence boundaries explicit so replay and recovery stay practical.
 bootstrap_defaults:

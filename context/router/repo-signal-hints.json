@@ -153,7 +153,7 @@
         "data/raw/*",
         "scripts/sync_*.py"
       ],
-      "guidance": "Load acquisition doctrine when source adapters, raw archives, or parser directories are present."
+      "guidance": "Load acquisition doctrine and the invariant layer when source adapters, raw archives, or parser directories are present; choose stack-specific examples separately."
     },
     {
       "name": "source-research-and-evaluation",
@@ -248,7 +248,7 @@
         "data/raw/*",
         "tests/integration/test_source_sync*.py"
       ],
-      "guidance": "Source adapters, parser modules, and raw archives imply the acquisition-service archetype."
+      "guidance": "Source adapters, parser modules, and raw archives imply the acquisition-service archetype; start with invariants before forcing a Python-shaped example."
     },
     {
       "name": "multi-source-sync-platform",
@@ -258,7 +258,7 @@
         "app/sources/*.py",
         "docs/source-research*.md"
       ],
-      "guidance": "Recurring source orchestration with events and research notes implies the multi-source sync platform archetype."
+      "guidance": "Recurring source orchestration with events and research notes implies the multi-source sync platform archetype; keep sync invariants separate from stack-specific handlers."
     },
     {
       "name": "local-rag-system",
@@ -343,7 +343,7 @@
         "research/sources/*",
         "notes/sources/*"
       ],
-      "guidance": "Source scorecards and evaluation notes imply the source-research workflow."
+      "guidance": "Source scorecards and evaluation notes imply the source-research workflow and often precede stack selection."
     },
     {
       "name": "add-api-ingestion-source",
@@ -352,7 +352,7 @@
         "tests/integration/test_source_sync*.py",
         "data/raw/*"
       ],
-      "guidance": "Source adapters plus raw archives imply the API-ingestion workflow."
+      "guidance": "Source adapters plus raw archives imply the API-ingestion workflow; preserve the invariant layer when the target stack is still undecided."
     },
     {
       "name": "add-scraping-source",
@@ -380,7 +380,7 @@
         "app/normalizers/*.py",
         "tests/integration/test_normalize*.py"
       ],
-      "guidance": "Parser and normalizer modules imply the raw-to-canonical workflow."
+      "guidance": "Parser and normalizer modules imply the raw-to-canonical workflow; avoid leaking one source schema into the shared model."
     },
     {
       "name": "add-classification-step",
@@ -398,7 +398,7 @@
         "config/sync_schedule*.yaml",
         "tests/integration/test_scheduler*.py"
       ],
-      "guidance": "Schedule config and scheduler modules imply the recurring-sync workflow."
+      "guidance": "Schedule config and scheduler modules imply the recurring-sync workflow; treat scheduling and retry policy as operational boundaries."
     },
     {
       "name": "add-event-driven-sync",
