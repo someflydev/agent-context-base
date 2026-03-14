@@ -23,6 +23,7 @@ DEFAULT_MODULES = [
     "verification.examples.python.test_polars_examples",
     "verification.examples.python.test_cli_examples",
     "verification.examples.typescript.test_typescript_examples",
+    "verification.examples.typescript.test_hono_data_acquisition_examples",
     "verification.examples.nim.test_nim_jester_happyx_examples",
     "verification.examples.scala.test_scala_tapir_http4s_zio_examples",
     "verification.examples.kotlin.test_http4k_exposed_examples",
@@ -71,6 +72,14 @@ def modules_for_entry(entry: dict[str, object]) -> list[str]:
         modules = ["verification.examples.data.test_data_acquisition_examples"]
         if language in {"yaml", "json"}:
             modules.append("verification.examples.data.test_yaml_json_examples")
+        elif language == "python":
+            modules.append("verification.examples.python.test_fastapi_examples")
+        elif language == "go":
+            modules.append("verification.examples.go.test_echo_examples")
+        elif language == "rust":
+            modules.append("verification.examples.rust.test_axum_examples")
+        elif language == "typescript":
+            modules.append("verification.examples.typescript.test_hono_data_acquisition_examples")
         return modules
     if "fastapi" in path:
         return ["verification.examples.python.test_fastapi_examples"]
