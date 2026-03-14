@@ -1,13 +1,13 @@
-FROM nimlang/nim:alpine AS build
+FROM nimlang/nim:2.2.0 AS build
 
 WORKDIR /app
 
 RUN nimble install -y jester
 
 COPY main.nim .
-RUN nim c -d:release -o:server main.nim
+RUN nim c --mm:orc -o:server main.nim
 
-FROM alpine:3.21
+FROM nimlang/nim:2.2.0
 
 WORKDIR /app
 

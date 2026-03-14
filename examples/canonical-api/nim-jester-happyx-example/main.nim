@@ -27,6 +27,11 @@ proc chartDataset(metric: string): JsonNode =
     ],
   }
 
+settings:
+  port = Port(5000)
+  bindAddr = "0.0.0.0"
+  numThreads = 1
+
 routes:
   get "/healthz":
     resp %*{
@@ -46,5 +51,3 @@ routes:
 
   get "/data/chart/@metric":
     resp chartDataset(@"metric")
-
-runForever()

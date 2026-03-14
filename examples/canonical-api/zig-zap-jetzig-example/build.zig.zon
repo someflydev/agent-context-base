@@ -1,5 +1,6 @@
 .{
-    .name = "zig_zap_jetzig_example",
+    .fingerprint = 0xe8d0e3e500c8e060,
+    .name = .zig_zap_jetzig_example,
     .version = "0.0.0",
     .minimum_zig_version = "0.15.1",
     .dependencies = .{},
