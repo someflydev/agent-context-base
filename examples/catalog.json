@@ -26,13 +26,57 @@
     {
       "path": "examples/canonical-api/fastapi-example/app.py",
       "category": "api",
-      "summary": "Runnable FastAPI runtime bundle for Docker-backed endpoint verification.",
+      "summary": "Runnable FastAPI runtime bundle for Docker-backed endpoint, fragment, and chart verification.",
       "stacks": ["python-fastapi-uv-ruff-orjson-polars"],
       "archetypes": ["backend-api-service"],
-      "workflows": ["add-api-endpoint", "add-smoke-tests"],
-      "patterns": ["http-route", "runtime-bundle", "docker-smoke"],
+      "workflows": ["add-api-endpoint", "add-faceted-filter-ui", "add-plotly-backed-query-view", "add-smoke-tests"],
+      "patterns": ["http-route", "runtime-bundle", "docker-smoke", "backend-driven-ui"],
       "rank": 101,
       "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-api/fastapi-faceted-filter-fragment-example.py",
+      "category": "api",
+      "summary": "FastAPI fragment example with backend-owned result counts and query-state markers.",
+      "stacks": ["python-fastapi-uv-ruff-orjson-polars"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-faceted-filter-ui", "verify-query-count-correctness"],
+      "patterns": ["html-fragment", "partial-update", "facet-counts", "backend-driven-ui"],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/fastapi-include-exclude-filter-example.py",
+      "category": "api",
+      "summary": "FastAPI endpoint example with explicit include and exclude filter semantics.",
+      "stacks": ["python-fastapi-uv-ruff-orjson-polars"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-include-exclude-filtering", "verify-query-count-correctness"],
+      "patterns": ["http-route", "include-exclude", "query-state"],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/fastapi-dynamic-counts-fragment-example.py",
+      "category": "api",
+      "summary": "FastAPI filter-panel fragment example with exact per-option counts.",
+      "stacks": ["python-fastapi-uv-ruff-orjson-polars"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-dynamic-counts", "verify-query-count-correctness"],
+      "patterns": ["html-fragment", "facet-counts", "partial-update", "backend-driven-ui"],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/fastapi-plotly-query-endpoint-example.py",
+      "category": "api",
+      "summary": "FastAPI chart-data endpoint example that keeps Plotly payloads aligned with query state.",
+      "stacks": ["python-fastapi-uv-ruff-orjson-polars"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-plotly-backed-query-view", "verify-query-count-correctness"],
+      "patterns": ["data-endpoint", "chart-payload", "plotly", "query-state"],
+      "rank": 100,
+      "stability": "canonical"
     },
     {
       "path": "examples/canonical-api/nim-jester-json-endpoint-example.md",
@@ -1077,6 +1121,28 @@
       "workflows": ["add-storage-integration"],
       "patterns": ["real-boundary-test", "docker-compose-test"],
       "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-integration-tests/playwright-backend-filtering-example.spec.ts",
+      "category": "integration-test",
+      "summary": "Playwright example that verifies backend-driven filtering against chart payload semantics.",
+      "stacks": ["python-fastapi-uv-ruff-orjson-polars"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-playwright-ui-verification", "verify-query-count-correctness"],
+      "patterns": ["playwright", "backend-driven-ui", "chart-payload", "facet-counts"],
+      "rank": 97,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-integration-tests/playwright-filter-counts-example.spec.ts",
+      "category": "integration-test",
+      "summary": "Playwright example that verifies counts next to filter options for a backend-driven UI.",
+      "stacks": ["python-fastapi-uv-ruff-orjson-polars"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-playwright-ui-verification", "verify-query-count-correctness"],
+      "patterns": ["playwright", "facet-counts", "backend-driven-ui"],
+      "rank": 97,
       "stability": "canonical"
     },
     {

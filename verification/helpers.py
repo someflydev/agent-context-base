@@ -440,10 +440,38 @@ def fastapi_stub_module() -> types.ModuleType:
         def include_router(self, router: APIRouter) -> None:
             self.routes.extend(router.routes)
 
+        def get(self, path: str, *, response_model: object | None = None):
+            def decorator(func: Any) -> Any:
+                self.routes.append(
+                    {
+                        "path": path,
+                        "endpoint": func,
+                        "response_model": response_model,
+                    }
+                )
+                return func
+
+            return decorator
+
     module.APIRouter = APIRouter
     module.FastAPI = FastAPI
     module.Depends = lambda dependency: dependency
     module.Query = lambda default=None, **_kwargs: default
+    return module
+
+
+def fastapi_responses_stub_module() -> types.ModuleType:
+    module = types.ModuleType("fastapi.responses")
+
+    class HTMLResponse:
+        media_type = "text/html"
+
+        def __init__(self, content: str, status_code: int = 200) -> None:
+            self.content = content
+            self.status_code = status_code
+            self.body = content.encode("utf-8")
+
+    module.HTMLResponse = HTMLResponse
     return module
 
 
@@ -467,6 +495,7 @@ def python_api_stub_modules() -> dict[str, types.ModuleType]:
     return {
         "dataclasses": compat_dataclasses_module(),
         "fastapi": fastapi_stub_module(),
+        "fastapi.responses": fastapi_responses_stub_module(),
         "pydantic": pydantic_stub_module(),
         "polars": polars_stub_module(),
     }

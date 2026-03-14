@@ -3,6 +3,7 @@ from __future__ import annotations
 import ast
 import asyncio
 import unittest
+import urllib.request
 from pathlib import Path
 
 from verification.helpers import REPO_ROOT, docker_enabled, free_tcp_port, run_command, wait_for_http_json
@@ -57,6 +58,22 @@ class FastAPIExampleTests(unittest.TestCase):
             status, payload = wait_for_http_json(f"http://127.0.0.1:{port}/healthz", timeout=25.0)
             self.assertEqual(status, 200)
             self.assertEqual(payload, {"status": "ok", "service": "fastapi-example"})
+
+            chart_status, chart_payload = wait_for_http_json(
+                f"http://127.0.0.1:{port}/api/reports/chart?team_in=growth&status_out=archived",
+                timeout=25.0,
+            )
+            self.assertEqual(chart_status, 200)
+            self.assertEqual(chart_payload["result_count"], 3)
+            self.assertEqual(chart_payload["totals"]["events"], 28)
+
+            with urllib.request.urlopen(
+                f"http://127.0.0.1:{port}/ui/reports/results?team_in=growth&status_out=archived&region_in=us",
+                timeout=5.0,
+            ) as response:
+                fragment_text = response.read().decode("utf-8")
+            self.assertIn('data-result-count="2"', fragment_text)
+            self.assertIn('data-report-id="daily-signups"', fragment_text)
         finally:
             run_command(["docker", "rm", "-f", container_id], timeout=60)
 

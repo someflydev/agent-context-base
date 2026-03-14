@@ -3,7 +3,13 @@ stacks:
     support_level: 5
     verified_examples:
       - fastapi-endpoint-example
+      - fastapi-faceted-filter-fragment-example
+      - fastapi-include-exclude-filter-example
+      - fastapi-dynamic-counts-fragment-example
+      - fastapi-plotly-query-endpoint-example
       - fastapi-runtime-example
+      - playwright-backend-filtering-example
+      - playwright-filter-counts-example
       - fastapi-smoke-test-example
       - fastapi-db-integration-example
       - polars-seed-data-example

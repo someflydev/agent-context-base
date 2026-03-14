@@ -31,6 +31,74 @@ examples:
     docker_supported: false
     scenario_harness: fastapi_min_app
     confidence: high
+  - name: fastapi-faceted-filter-fragment-example
+    path: examples/canonical-api/fastapi-faceted-filter-fragment-example.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: behavior-verified
+    verification_targets:
+      - parses
+      - fragment exposes result count
+      - fragment exposes query fingerprint
+      - filtered rows stay aligned
+    docker_supported: false
+    scenario_harness: fastapi_min_app
+    confidence: high
+  - name: fastapi-include-exclude-filter-example
+    path: examples/canonical-api/fastapi-include-exclude-filter-example.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: behavior-verified
+    verification_targets:
+      - parses
+      - include semantics verified
+      - exclude semantics verified
+      - normalized filter state returned
+    docker_supported: false
+    scenario_harness: fastapi_min_app
+    confidence: high
+  - name: fastapi-dynamic-counts-fragment-example
+    path: examples/canonical-api/fastapi-dynamic-counts-fragment-example.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: behavior-verified
+    verification_targets:
+      - parses
+      - facet count semantics verified
+      - filter-panel fragment markers verified
+      - count discipline banner present
+    docker_supported: false
+    scenario_harness: fastapi_min_app
+    confidence: high
+  - name: fastapi-plotly-query-endpoint-example
+    path: examples/canonical-api/fastapi-plotly-query-endpoint-example.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: behavior-verified
+    verification_targets:
+      - parses
+      - plotly payload shape verified
+      - result count matches filtered rows
+      - total events verified
+    docker_supported: false
+    scenario_harness: fastapi_min_app
+    confidence: high
   - name: fastapi-runtime-example
     path: examples/canonical-api/fastapi-example/app.py
     language: python
@@ -43,6 +111,9 @@ examples:
       - docker build
       - container boots
       - health request
+      - html fragment request
+      - chart payload request
+      - count and chart alignment
     docker_supported: true
     scenario_harness: fastapi_min_app
     confidence: high
@@ -1562,6 +1633,38 @@ examples:
       - isolated compose references
     docker_supported: false
     scenario_harness: fastapi_min_app
+    confidence: medium
+  - name: playwright-backend-filtering-example
+    path: examples/canonical-integration-tests/playwright-backend-filtering-example.spec.ts
+    language: typescript
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - result count assertion present
+      - chart payload assertion present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: playwright-filter-counts-example
+    path: examples/canonical-integration-tests/playwright-filter-counts-example.spec.ts
+    language: typescript
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - facet count assertions present
+      - semantic selectors present
+    docker_supported: false
+    scenario_harness: ""
     confidence: medium
   - name: structured-log-example
     path: examples/canonical-observability/structured-log-example.json
