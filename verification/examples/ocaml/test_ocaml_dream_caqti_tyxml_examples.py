@@ -9,6 +9,8 @@ from verification.scenarios.ocaml_dream_caqti_tyxml_min_app.verify import docker
 API_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-api/ocaml-dream-caqti-tyxml-api-endpoint-example.ml"
 FRAGMENT_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-api/ocaml-dream-caqti-tyxml-html-fragment-example.ml"
 DATA_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-api/ocaml-dream-caqti-tyxml-data-endpoint-example.ml"
+DATA_ACQUISITION_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-data-acquisition/ocaml-dream-source-sync-example.ml"
+DATA_ACQUISITION_README_PATH = REPO_ROOT / "examples/canonical-data-acquisition/README.md"
 RUNTIME_DIR = REPO_ROOT / "examples/canonical-api/ocaml-dream-caqti-tyxml-example"
 
 
@@ -32,6 +34,20 @@ class OcamlDreamCaqtiTyxmlExampleTests(unittest.TestCase):
         self.assertIn("open Caqti_request.Infix", text)
         self.assertIn("->*", text)
         self.assertIn('("metric", `String metric)', text)
+
+    def test_data_acquisition_example_contains_expected_sync_markers(self) -> None:
+        text = DATA_ACQUISITION_EXAMPLE_PATH.read_text(encoding="utf-8")
+        self.assertIn("let select_checkpoint =", text)
+        self.assertIn("archive_raw_capture", text)
+        self.assertIn("let replay_from_archive", text)
+        self.assertIn('Dream.post "/source-sync/:owner/:repo"', text)
+        self.assertIn("let open Tyxml.Html in", text)
+        self.assertIn("checkpoint_token", text)
+
+    def test_data_acquisition_readme_references_ocaml_example_honestly(self) -> None:
+        text = DATA_ACQUISITION_README_PATH.read_text(encoding="utf-8")
+        self.assertIn("ocaml-dream-source-sync-example.ml (structure-verified)", text)
+        self.assertIn("real OCaml example, `structure-verified` only", text)
 
     def test_runtime_bundle_files_exist(self) -> None:
         for relative in ("dune-project", "ocaml-dream-caqti-tyxml-example.opam", "Dockerfile", "README.md", "bin/main.ml", "bin/dune"):

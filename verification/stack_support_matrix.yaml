@@ -101,12 +101,14 @@ stacks:
       - ocaml-dream-caqti-tyxml-api-endpoint-example
       - ocaml-dream-caqti-tyxml-html-fragment-example
       - ocaml-dream-caqti-tyxml-data-endpoint-example
+      - ocaml-dream-caqti-tyxml-source-sync-example
       - ocaml-dream-caqti-tyxml-runtime-example
     missing_verification:
       - native dune compile-aware check
       - Postgres-backed Caqti runtime verification
       - richer Dream middleware or auth example
-    notes: Docker-backed smoke coverage is present for the runnable bundle; source examples stay structure-verified.
+      - runtime or native compile verification for acquisition sync paths
+    notes: Docker-backed smoke coverage is present for the runnable bundle; the acquisition sync example is real code but still structure-verified only.
   - stack: crystal-kemal-avram
     support_level: 3
     verified_examples:
@@ -286,6 +288,13 @@ capabilities:
         stack_specific_examples:
           - ruby-hanami-source-sync-example
         fallback_example: ruby-hanami-data-endpoint-example
+        fallback_verification_level: syntax-checked
+        follow_on_prompt: PROMPT_37
+      - stack: ocaml-dream-caqti-tyxml
+        status: structure-verified
+        stack_specific_examples:
+          - ocaml-dream-caqti-tyxml-source-sync-example
+        fallback_example: ocaml-dream-caqti-tyxml-data-endpoint-example
         fallback_verification_level: syntax-checked
         follow_on_prompt: PROMPT_37
       - stack: elixir-phoenix

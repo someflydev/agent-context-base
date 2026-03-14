@@ -1410,6 +1410,17 @@
       "stability": "canonical"
     },
     {
+      "path": "examples/canonical-data-acquisition/ocaml-dream-source-sync-example.ml",
+      "category": "data-acquisition",
+      "summary": "Dream plus Caqti plus TyXML source sync example with checkpoint persistence, archive-first normalization, and an admin sync fragment.",
+      "stacks": ["ocaml-dream-caqti-tyxml"],
+      "archetypes": ["data-acquisition-service", "multi-source-sync-platform"],
+      "workflows": ["add-api-ingestion-source", "add-raw-download-archive", "add-parser-normalizer", "add-recurring-sync"],
+      "patterns": ["raw-capture", "provenance-aware-normalization", "replayable-sync", "typed-persistence-boundary", "html-sync-fragment"],
+      "rank": 94,
+      "stability": "canonical"
+    },
+    {
       "path": "examples/canonical-data-acquisition/phoenix-source-sync-example.ex",
       "category": "data-acquisition",
       "summary": "Phoenix controller-adjacent source sync example with explicit fetch, raw archival, provenance, replay, and checkpoint boundaries.",

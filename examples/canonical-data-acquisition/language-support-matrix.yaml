@@ -78,6 +78,16 @@ languages:
     fallback_path: examples/canonical-api/ruby-hanami-data-endpoint-example.rb
     fallback_verification_level: syntax-checked
     follow_on_prompt: PROMPT_37
+  - language: OCaml
+    stack: ocaml-dream-caqti-tyxml
+    stack_specific_examples:
+      - ocaml-dream-caqti-tyxml-source-sync-example
+    verification_posture: structure-verified
+    coverage_note: real Dream plus Caqti plus TyXML acquisition code with checkpoint persistence, archive-first normalization, replay from raw payloads, and an admin fragment surface, but no native dune or runtime acquisition verification yet
+    fallback_example: ocaml-dream-caqti-tyxml-data-endpoint-example
+    fallback_path: examples/canonical-api/ocaml-dream-caqti-tyxml-data-endpoint-example.ml
+    fallback_verification_level: syntax-checked
+    follow_on_prompt: PROMPT_37
   - language: Elixir
     stack: elixir-phoenix
     stack_specific_examples:

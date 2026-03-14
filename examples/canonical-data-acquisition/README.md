@@ -11,6 +11,7 @@ Primary files in this category:
 - `scala-tapir-source-sync-example.scala`
 - `kotlin-http4k-source-sync-example.kt`
 - `ruby-hanami-source-sync-example.rb`
+- `ocaml-dream-source-sync-example.ml`
 - `phoenix-source-sync-example.ex`
 - `rust-axum-source-sync-example.rs`
 - `typescript-hono-source-sync-example.ts`
@@ -75,6 +76,7 @@ The machine-readable source for this table is `examples/canonical-data-acquisiti
 | Scala | scala-tapir-http4s-zio | scala-tapir-source-sync-example.scala (structure-verified) | structure-verified | examples/canonical-api/scala-tapir-http4s-zio-data-endpoint-example.scala (syntax-checked) | PROMPT_36 |
 | Kotlin | kotlin-http4k-exposed | kotlin-http4k-source-sync-example.kt (structure-verified) | structure-verified | examples/canonical-api/kotlin-http4k-exposed-data-endpoint-example.kt (syntax-checked) | PROMPT_36 |
 | Ruby | ruby-hanami | ruby-hanami-source-sync-example.rb (structure-verified) | structure-verified | examples/canonical-api/ruby-hanami-data-endpoint-example.rb (syntax-checked) | PROMPT_37 |
+| OCaml | ocaml-dream-caqti-tyxml | ocaml-dream-source-sync-example.ml (structure-verified) | structure-verified | examples/canonical-api/ocaml-dream-caqti-tyxml-data-endpoint-example.ml (syntax-checked) | PROMPT_37 |
 | Elixir | elixir-phoenix | phoenix-source-sync-example.ex (structure-verified) | structure-verified | examples/canonical-api/phoenix-route-controller-example.ex (structure-verified) | PROMPT_35 |
 | Rust | rust-axum-modern | rust-axum-source-sync-example.rs (syntax-checked) | syntax-checked | examples/canonical-api/rust-axum-route-example.rs (syntax-checked) | PROMPT_34 |
 | TypeScript | typescript-hono-bun | typescript-hono-source-sync-example.ts (syntax-checked) | syntax-checked | examples/canonical-api/typescript-hono-handler-example.ts (syntax-checked) | PROMPT_34 |
@@ -91,6 +93,7 @@ Coverage notes:
 - `scala-tapir-source-sync-example.scala` is a real Scala example, `structure-verified` only. The Docker-backed Scala runtime bundle remains an API-surface anchor; a compile-aware or runtime acquisition harness was not added for this sync surface.
 - `kotlin-http4k-source-sync-example.kt` is a real Kotlin example, `structure-verified` only. The Docker-backed Kotlin runtime bundle remains an API-surface anchor; registry confidence stays medium until compile-aware or runtime acquisition checks exist for this sync surface.
 - `ruby-hanami-source-sync-example.rb` is a real Ruby example, `structure-verified` only. Docker-backed runtime was not added for this acquisition surface and the Hanami sync path is not compile- or runtime-verified.
+- `ocaml-dream-source-sync-example.ml` is a real OCaml example, `structure-verified` only. Registry confidence remains medium because this Dream plus Caqti plus TyXML sync surface is not compile- or runtime-verified.
 - `rust-axum-source-sync-example.rs` is real code and `syntax-checked` through `rustfmt --check` plus structure assertions. It does not have a native compile or runtime sync harness yet.
 - `typescript-hono-source-sync-example.ts` is real code and `syntax-checked` through local `tsc` using Hono and Bun ambient shims. That proves parse and compile shape only; it does not prove Bun runtime behavior.
 - `phoenix-source-sync-example.ex` is a real Elixir example, `structure-verified` only. Phoenix acquisition coverage does not yet include native parse, compile, or runtime checks.
@@ -130,6 +133,7 @@ Across the stack-specific examples, the same semantic boundaries stay visible:
 - `scala-tapir-source-sync-example.scala` is `structure-verified` by `verification/examples/scala/test_scala_tapir_http4s_zio_examples.py`
 - `kotlin-http4k-source-sync-example.kt` is `structure-verified` by `verification/examples/kotlin/test_http4k_exposed_examples.py`
 - `ruby-hanami-source-sync-example.rb` is `structure-verified` by `verification/examples/ruby/test_ruby_hanami_examples.py`
+- `ocaml-dream-source-sync-example.ml` is `structure-verified` by `verification/examples/ocaml/test_ocaml_dream_caqti_tyxml_examples.py`
 - `phoenix-source-sync-example.ex` is `structure-verified` by `verification/examples/elixir/test_phoenix_examples.py`
 - `rust-axum-source-sync-example.rs` is `syntax-checked` by `verification/examples/rust/test_axum_examples.py`
 - `typescript-hono-source-sync-example.ts` is `syntax-checked` by `verification/examples/typescript/test_hono_data_acquisition_examples.py`
