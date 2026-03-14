@@ -9,6 +9,8 @@ from verification.scenarios.ruby_hanami_min_app.verify import docker_smoke_check
 API_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-api/ruby-hanami-api-endpoint-example.rb"
 FRAGMENT_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-api/ruby-hanami-html-fragment-example.rb"
 DATA_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-api/ruby-hanami-data-endpoint-example.rb"
+DATA_ACQUISITION_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-data-acquisition/ruby-hanami-source-sync-example.rb"
+DATA_ACQUISITION_README_PATH = REPO_ROOT / "examples/canonical-data-acquisition/README.md"
 RUNTIME_DIR = REPO_ROOT / "examples/canonical-api/ruby-hanami-example"
 
 
@@ -33,6 +35,20 @@ class RubyHanamiExampleTests(unittest.TestCase):
         self.assertIn("DB[:metric_points].where(metric: metric).order(:bucket_day).all", text)
         self.assertIn('metric: metric,', text)
         self.assertIn("points: MetricsRepo.series_for(metric)", text)
+
+    def test_data_acquisition_example_contains_expected_sync_markers(self) -> None:
+        text = DATA_ACQUISITION_EXAMPLE_PATH.read_text(encoding="utf-8")
+        self.assertIn("class SourceCheckpointsRepo", text)
+        self.assertIn("class NormalizeReleasePayload", text)
+        self.assertIn("def archive_raw_capture", text)
+        self.assertIn("def replay_from_archive", text)
+        self.assertIn('post "/source-sync/:owner/:repo", to: SourceSyncAction.new', text)
+        self.assertIn("checkpoint_token:", text)
+
+    def test_data_acquisition_readme_references_ruby_example_honestly(self) -> None:
+        text = DATA_ACQUISITION_README_PATH.read_text(encoding="utf-8")
+        self.assertIn("ruby-hanami-source-sync-example.rb (structure-verified)", text)
+        self.assertIn("real Ruby example, `structure-verified` only", text)
 
     def test_runtime_bundle_files_exist(self) -> None:
         for relative in (

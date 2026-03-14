@@ -6,9 +6,11 @@ Primary files in this category:
 
 - `fastapi-source-sync-example.py`
 - `go-echo-source-sync-example.go`
+- `dart-dartfrog-source-sync-example.dart`
 - `clojure-kit-source-sync-example.clj`
 - `scala-tapir-source-sync-example.scala`
 - `kotlin-http4k-source-sync-example.kt`
+- `ruby-hanami-source-sync-example.rb`
 - `phoenix-source-sync-example.ex`
 - `rust-axum-source-sync-example.rs`
 - `typescript-hono-source-sync-example.ts`
@@ -68,9 +70,11 @@ The machine-readable source for this table is `examples/canonical-data-acquisiti
 | --- | --- | --- | --- | --- | --- |
 | Python | python-fastapi-uv-ruff-orjson-polars | fastapi-source-sync-example.py (behavior-verified) | behavior-verified | examples/canonical-api/fastapi-endpoint-example.py (behavior-verified) | PROMPT_34 |
 | Go | go-echo | go-echo-source-sync-example.go (syntax-checked) | syntax-checked | examples/canonical-api/go-echo-handler-example.go (syntax-checked) | PROMPT_34 |
+| Dart | dart-dartfrog | dart-dartfrog-source-sync-example.dart (structure-verified) | structure-verified | examples/canonical-api/dart-dartfrog-data-endpoint-example.dart (syntax-checked) | PROMPT_37 |
 | Clojure | clojure-kit-nextjdbc-hiccup | clojure-kit-source-sync-example.clj (structure-verified) | structure-verified | examples/canonical-api/clojure-kit-nextjdbc-hiccup-data-endpoint-example.clj (syntax-checked) | PROMPT_36 |
 | Scala | scala-tapir-http4s-zio | scala-tapir-source-sync-example.scala (structure-verified) | structure-verified | examples/canonical-api/scala-tapir-http4s-zio-data-endpoint-example.scala (syntax-checked) | PROMPT_36 |
 | Kotlin | kotlin-http4k-exposed | kotlin-http4k-source-sync-example.kt (structure-verified) | structure-verified | examples/canonical-api/kotlin-http4k-exposed-data-endpoint-example.kt (syntax-checked) | PROMPT_36 |
+| Ruby | ruby-hanami | ruby-hanami-source-sync-example.rb (structure-verified) | structure-verified | examples/canonical-api/ruby-hanami-data-endpoint-example.rb (syntax-checked) | PROMPT_37 |
 | Elixir | elixir-phoenix | phoenix-source-sync-example.ex (structure-verified) | structure-verified | examples/canonical-api/phoenix-route-controller-example.ex (structure-verified) | PROMPT_35 |
 | Rust | rust-axum-modern | rust-axum-source-sync-example.rs (syntax-checked) | syntax-checked | examples/canonical-api/rust-axum-route-example.rs (syntax-checked) | PROMPT_34 |
 | TypeScript | typescript-hono-bun | typescript-hono-source-sync-example.ts (syntax-checked) | syntax-checked | examples/canonical-api/typescript-hono-handler-example.ts (syntax-checked) | PROMPT_34 |
@@ -82,9 +86,11 @@ Coverage notes:
 
 - `fastapi-source-sync-example.py` is real code and `behavior-verified` through direct Python tests that prove raw capture, replay from archived payloads, provenance retention, and retry behavior.
 - `go-echo-source-sync-example.go` is real code and `syntax-checked` through `gofmt` plus structure assertions. It does not have a native compile or runtime sync harness yet.
+- `dart-dartfrog-source-sync-example.dart` is a real Dart example, `structure-verified` only. Dart Frog acquisition coverage does not yet include native analyzer, compile, or runtime checks for this sync surface.
 - `clojure-kit-source-sync-example.clj` is a real Clojure example, `structure-verified` only. Kit plus next.jdbc plus Hiccup acquisition coverage does not yet include native parse, compile, or runtime checks for this surface.
 - `scala-tapir-source-sync-example.scala` is a real Scala example, `structure-verified` only. The Docker-backed Scala runtime bundle remains an API-surface anchor; a compile-aware or runtime acquisition harness was not added for this sync surface.
 - `kotlin-http4k-source-sync-example.kt` is a real Kotlin example, `structure-verified` only. The Docker-backed Kotlin runtime bundle remains an API-surface anchor; registry confidence stays medium until compile-aware or runtime acquisition checks exist for this sync surface.
+- `ruby-hanami-source-sync-example.rb` is a real Ruby example, `structure-verified` only. Docker-backed runtime was not added for this acquisition surface and the Hanami sync path is not compile- or runtime-verified.
 - `rust-axum-source-sync-example.rs` is real code and `syntax-checked` through `rustfmt --check` plus structure assertions. It does not have a native compile or runtime sync harness yet.
 - `typescript-hono-source-sync-example.ts` is real code and `syntax-checked` through local `tsc` using Hono and Bun ambient shims. That proves parse and compile shape only; it does not prove Bun runtime behavior.
 - `phoenix-source-sync-example.ex` is a real Elixir example, `structure-verified` only. Phoenix acquisition coverage does not yet include native parse, compile, or runtime checks.
@@ -119,9 +125,11 @@ Across the stack-specific examples, the same semantic boundaries stay visible:
 - `language-support-matrix.yaml` is `syntax-checked` and cross-checked against the verification registry and support matrix
 - `fastapi-source-sync-example.py` is `behavior-verified` by `verification/examples/python/test_fastapi_examples.py`
 - `go-echo-source-sync-example.go` is `syntax-checked` by `verification/examples/go/test_echo_examples.py`
+- `dart-dartfrog-source-sync-example.dart` is `structure-verified` by `verification/examples/dart/test_dart_dartfrog_examples.py`
 - `clojure-kit-source-sync-example.clj` is `structure-verified` by `verification/examples/clojure/test_kit_nextjdbc_hiccup_examples.py`
 - `scala-tapir-source-sync-example.scala` is `structure-verified` by `verification/examples/scala/test_scala_tapir_http4s_zio_examples.py`
 - `kotlin-http4k-source-sync-example.kt` is `structure-verified` by `verification/examples/kotlin/test_http4k_exposed_examples.py`
+- `ruby-hanami-source-sync-example.rb` is `structure-verified` by `verification/examples/ruby/test_ruby_hanami_examples.py`
 - `phoenix-source-sync-example.ex` is `structure-verified` by `verification/examples/elixir/test_phoenix_examples.py`
 - `rust-axum-source-sync-example.rs` is `syntax-checked` by `verification/examples/rust/test_axum_examples.py`
 - `typescript-hono-source-sync-example.ts` is `syntax-checked` by `verification/examples/typescript/test_hono_data_acquisition_examples.py`

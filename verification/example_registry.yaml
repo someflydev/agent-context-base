@@ -2095,6 +2095,23 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: medium
+  - name: dart-dartfrog-source-sync-example
+    path: examples/canonical-data-acquisition/dart-dartfrog-source-sync-example.dart
+    language: dart
+    stack_tags:
+      - dart-dartfrog
+    archetype_tags:
+      - data-acquisition-service
+      - multi-source-sync-platform
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - explicit Dart Frog sync route surface present
+      - raw archival and replay boundaries present
+      - normalized record keeps provenance and checkpoint semantics
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
   - name: clojure-kit-source-sync-example
     path: examples/canonical-data-acquisition/clojure-kit-source-sync-example.clj
     language: clojure
@@ -2141,6 +2158,23 @@ examples:
     verification_targets:
       - file exists
       - http4k route and Exposed repository boundaries present
+      - raw archival and replay boundaries present
+      - normalized record keeps provenance and checkpoint semantics
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: ruby-hanami-source-sync-example
+    path: examples/canonical-data-acquisition/ruby-hanami-source-sync-example.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami
+    archetype_tags:
+      - data-acquisition-service
+      - multi-source-sync-platform
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - explicit Hanami action and service boundaries present
       - raw archival and replay boundaries present
       - normalized record keeps provenance and checkpoint semantics
     docker_supported: false

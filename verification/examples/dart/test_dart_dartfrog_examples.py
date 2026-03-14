@@ -9,6 +9,8 @@ from verification.scenarios.dart_dartfrog_min_app.verify import docker_smoke_che
 API_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-api/dart-dartfrog-api-endpoint-example.dart"
 FRAGMENT_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-api/dart-dartfrog-html-fragment-example.dart"
 DATA_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-api/dart-dartfrog-data-endpoint-example.dart"
+DATA_ACQUISITION_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-data-acquisition/dart-dartfrog-source-sync-example.dart"
+DATA_ACQUISITION_README_PATH = REPO_ROOT / "examples/canonical-data-acquisition/README.md"
 RUNTIME_DIR = REPO_ROOT / "examples/canonical-api/dart-dartfrog-example"
 
 
@@ -31,6 +33,20 @@ class DartDartFrogExampleTests(unittest.TestCase):
         self.assertIn("'metric': metric", text)
         self.assertIn("{'x': '2026-03-01', 'y': 18}", text)
         self.assertIn("Response.json(body: chartPayload(metric))", text)
+
+    def test_data_acquisition_example_contains_expected_sync_markers(self) -> None:
+        text = DATA_ACQUISITION_EXAMPLE_PATH.read_text(encoding="utf-8")
+        self.assertIn("abstract interface class ReleaseSourceClient", text)
+        self.assertIn("Future<RawCapture> archiveRawCapture", text)
+        self.assertIn("Future<List<NormalizedReleaseRecord>> replayFromArchive", text)
+        self.assertIn("context.request.method != HttpMethod.post", text)
+        self.assertIn("'raw_capture_path': rawPath", text)
+        self.assertIn("checkpointToken", text)
+
+    def test_data_acquisition_readme_references_dart_example_honestly(self) -> None:
+        text = DATA_ACQUISITION_README_PATH.read_text(encoding="utf-8")
+        self.assertIn("dart-dartfrog-source-sync-example.dart (structure-verified)", text)
+        self.assertIn("real Dart example, `structure-verified` only", text)
 
     def test_runtime_bundle_files_exist(self) -> None:
         for relative in (

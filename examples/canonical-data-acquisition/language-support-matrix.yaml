@@ -28,6 +28,16 @@ languages:
     fallback_path: examples/canonical-api/go-echo-handler-example.go
     fallback_verification_level: syntax-checked
     follow_on_prompt: PROMPT_34
+  - language: Dart
+    stack: dart-dartfrog
+    stack_specific_examples:
+      - dart-dartfrog-source-sync-example
+    verification_posture: structure-verified
+    coverage_note: real Dart Frog acquisition code with raw archival, replay, provenance retention, and checkpoint handoff, but no native analyzer, compile, or runtime verification yet
+    fallback_example: dart-dartfrog-data-endpoint-example
+    fallback_path: examples/canonical-api/dart-dartfrog-data-endpoint-example.dart
+    fallback_verification_level: syntax-checked
+    follow_on_prompt: PROMPT_37
   - language: Clojure
     stack: clojure-kit-nextjdbc-hiccup
     stack_specific_examples:
@@ -58,6 +68,16 @@ languages:
     fallback_path: examples/canonical-api/kotlin-http4k-exposed-data-endpoint-example.kt
     fallback_verification_level: syntax-checked
     follow_on_prompt: PROMPT_36
+  - language: Ruby
+    stack: ruby-hanami
+    stack_specific_examples:
+      - ruby-hanami-source-sync-example
+    verification_posture: structure-verified
+    coverage_note: real Hanami acquisition code with explicit service, normalization, persistence, raw archival, and replay boundaries, but no native parse, compile, or runtime verification yet
+    fallback_example: ruby-hanami-data-endpoint-example
+    fallback_path: examples/canonical-api/ruby-hanami-data-endpoint-example.rb
+    fallback_verification_level: syntax-checked
+    follow_on_prompt: PROMPT_37
   - language: Elixir
     stack: elixir-phoenix
     stack_specific_examples:

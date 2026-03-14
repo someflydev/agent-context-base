@@ -1355,6 +1355,17 @@
       "stability": "canonical"
     },
     {
+      "path": "examples/canonical-data-acquisition/dart-dartfrog-source-sync-example.dart",
+      "category": "data-acquisition",
+      "summary": "Dart Frog source sync example with explicit fetch, raw archival, replay from stored payloads, and checkpoint handoff.",
+      "stacks": ["dart-dartfrog"],
+      "archetypes": ["data-acquisition-service", "multi-source-sync-platform"],
+      "workflows": ["add-api-ingestion-source", "add-raw-download-archive", "add-parser-normalizer", "add-recurring-sync"],
+      "patterns": ["raw-capture", "provenance-aware-normalization", "replayable-sync", "checkpoint-cursor", "sync-handler"],
+      "rank": 94,
+      "stability": "canonical"
+    },
+    {
       "path": "examples/canonical-data-acquisition/clojure-kit-source-sync-example.clj",
       "category": "data-acquisition",
       "summary": "Kit plus next.jdbc plus Hiccup source sync example with explicit checkpoint lookup, raw archival, replay, and provenance-aware normalization.",
@@ -1384,6 +1395,17 @@
       "archetypes": ["data-acquisition-service", "multi-source-sync-platform"],
       "workflows": ["add-api-ingestion-source", "add-raw-download-archive", "add-parser-normalizer", "add-recurring-sync"],
       "patterns": ["raw-capture", "provenance-aware-normalization", "replayable-sync", "repository-boundary", "checkpoint-cursor"],
+      "rank": 94,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-data-acquisition/ruby-hanami-source-sync-example.rb",
+      "category": "data-acquisition",
+      "summary": "Hanami source sync example with explicit action, service, normalization, raw archival, replay, and persistence boundaries.",
+      "stacks": ["ruby-hanami"],
+      "archetypes": ["data-acquisition-service", "multi-source-sync-platform"],
+      "workflows": ["add-api-ingestion-source", "add-raw-download-archive", "add-parser-normalizer", "add-recurring-sync"],
+      "patterns": ["raw-capture", "provenance-aware-normalization", "replayable-sync", "service-boundary", "checkpoint-cursor"],
       "rank": 94,
       "stability": "canonical"
     },

@@ -73,12 +73,14 @@ stacks:
       - dart-dartfrog-api-endpoint-example
       - dart-dartfrog-html-fragment-example
       - dart-dartfrog-data-endpoint-example
+      - dart-dartfrog-source-sync-example
       - dart-dartfrog-runtime-example
     missing_verification:
       - native Dart analyzer or compile-aware check
       - storage-backed Dart Frog example
       - richer middleware or auth example
-    notes: Docker-backed smoke coverage is present for the runnable bundle; source examples stay structure-verified.
+      - runtime or native compile verification for acquisition sync paths
+    notes: Docker-backed smoke coverage is present for the runnable bundle; the acquisition sync example is real code but still structure-verified only.
   - stack: clojure-kit-nextjdbc-hiccup
     support_level: 3
     verified_examples:
@@ -176,12 +178,14 @@ stacks:
       - ruby-hanami-api-endpoint-example
       - ruby-hanami-html-fragment-example
       - ruby-hanami-data-endpoint-example
+      - ruby-hanami-source-sync-example
       - ruby-hanami-runtime-example
     missing_verification:
       - native Ruby bundle exec check in default verification tier
       - ROM-backed persistence example
       - richer middleware or auth example
-    notes: Docker-backed smoke coverage is present for the runnable bundle; source examples stay structure-verified.
+      - runtime or native compile verification for acquisition sync paths
+    notes: Docker-backed smoke coverage is present for the runnable bundle; the acquisition sync example is real code but still structure-verified only.
   - stack: typescript-hono-bun
     support_level: 2
     verified_examples:
@@ -249,6 +253,13 @@ capabilities:
         fallback_example: go-echo-handler-example
         fallback_verification_level: syntax-checked
         follow_on_prompt: PROMPT_34
+      - stack: dart-dartfrog
+        status: structure-verified
+        stack_specific_examples:
+          - dart-dartfrog-source-sync-example
+        fallback_example: dart-dartfrog-data-endpoint-example
+        fallback_verification_level: syntax-checked
+        follow_on_prompt: PROMPT_37
       - stack: clojure-kit-nextjdbc-hiccup
         status: structure-verified
         stack_specific_examples:
@@ -270,6 +281,13 @@ capabilities:
         fallback_example: kotlin-http4k-exposed-data-endpoint-example
         fallback_verification_level: syntax-checked
         follow_on_prompt: PROMPT_36
+      - stack: ruby-hanami
+        status: structure-verified
+        stack_specific_examples:
+          - ruby-hanami-source-sync-example
+        fallback_example: ruby-hanami-data-endpoint-example
+        fallback_verification_level: syntax-checked
+        follow_on_prompt: PROMPT_37
       - stack: elixir-phoenix
         status: structure-verified
         stack_specific_examples:

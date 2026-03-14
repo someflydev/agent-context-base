@@ -102,9 +102,11 @@ class DataAcquisitionContextTests(unittest.TestCase):
             {
                 "python-fastapi-uv-ruff-orjson-polars",
                 "go-echo",
+                "dart-dartfrog",
                 "clojure-kit-nextjdbc-hiccup",
                 "scala-tapir-http4s-zio",
                 "kotlin-http4k-exposed",
+                "ruby-hanami",
                 "elixir-phoenix",
                 "rust-axum-modern",
                 "typescript-hono-bun",
@@ -117,9 +119,11 @@ class DataAcquisitionContextTests(unittest.TestCase):
         expected_status = {
             "python-fastapi-uv-ruff-orjson-polars": ("behavior-verified", ["fastapi-source-sync-example"]),
             "go-echo": ("syntax-checked", ["go-echo-source-sync-example"]),
+            "dart-dartfrog": ("structure-verified", ["dart-dartfrog-source-sync-example"]),
             "clojure-kit-nextjdbc-hiccup": ("structure-verified", ["clojure-kit-source-sync-example"]),
             "scala-tapir-http4s-zio": ("structure-verified", ["scala-tapir-source-sync-example"]),
             "kotlin-http4k-exposed": ("structure-verified", ["kotlin-http4k-source-sync-example"]),
+            "ruby-hanami": ("structure-verified", ["ruby-hanami-source-sync-example"]),
             "elixir-phoenix": ("structure-verified", ["phoenix-source-sync-example"]),
             "rust-axum-modern": ("syntax-checked", ["rust-axum-source-sync-example"]),
             "typescript-hono-bun": ("syntax-checked", ["typescript-hono-source-sync-example"]),
