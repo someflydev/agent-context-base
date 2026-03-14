@@ -622,6 +622,86 @@ examples:
     docker_supported: true
     scenario_harness: dart_dartfrog_min_app
     confidence: medium
+  - name: dart-dartfrog-runtime-pubspec
+    path: examples/canonical-api/dart-dartfrog-example/pubspec.yaml
+    language: yaml
+    stack_tags:
+      - dart-dartfrog
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - dependency manifest tracked
+      - runtime bundle wiring
+      - docker build context
+    docker_supported: true
+    scenario_harness: dart_dartfrog_min_app
+    confidence: medium
+  - name: dart-dartfrog-runtime-health-route
+    path: examples/canonical-api/dart-dartfrog-example/routes/healthz.dart
+    language: dart
+    stack_tags:
+      - dart-dartfrog
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - runtime route exists
+      - health payload shape
+      - docker smoke companion
+    docker_supported: true
+    scenario_harness: dart_dartfrog_min_app
+    confidence: medium
+  - name: dart-dartfrog-runtime-report-route
+    path: examples/canonical-api/dart-dartfrog-example/routes/api/reports/[tenant_id].dart
+    language: dart
+    stack_tags:
+      - dart-dartfrog
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - runtime route exists
+      - path param extraction
+      - json response surface
+    docker_supported: true
+    scenario_harness: dart_dartfrog_min_app
+    confidence: medium
+  - name: dart-dartfrog-runtime-fragment-route
+    path: examples/canonical-api/dart-dartfrog-example/routes/fragments/report-card/[tenant_id].dart
+    language: dart
+    stack_tags:
+      - dart-dartfrog
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - runtime route exists
+      - html fragment markers
+      - text/html response surface
+    docker_supported: true
+    scenario_harness: dart_dartfrog_min_app
+    confidence: medium
+  - name: dart-dartfrog-runtime-data-route
+    path: examples/canonical-api/dart-dartfrog-example/routes/data/chart/[metric].dart
+    language: dart
+    stack_tags:
+      - dart-dartfrog
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - runtime route exists
+      - chart payload shape
+      - json response surface
+    docker_supported: true
+    scenario_harness: dart_dartfrog_min_app
+    confidence: medium
   - name: clojure-kit-nextjdbc-hiccup-api-endpoint-example-doc
     path: examples/canonical-api/clojure-kit-nextjdbc-hiccup-api-endpoint-example.md
     language: markdown

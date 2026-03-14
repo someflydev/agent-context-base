@@ -431,6 +431,61 @@
       "stability": "verified-runtime"
     },
     {
+      "path": "examples/canonical-api/dart-dartfrog-example/pubspec.yaml",
+      "category": "api",
+      "summary": "Dependency manifest for the runnable Dart Frog verification bundle.",
+      "stacks": ["dart-dartfrog"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint", "add-smoke-tests"],
+      "patterns": ["runtime-bundle", "dependency-manifest", "docker-smoke"],
+      "rank": 84,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-api/dart-dartfrog-example/routes/healthz.dart",
+      "category": "api",
+      "summary": "Dart Frog health route used by the runnable runtime bundle.",
+      "stacks": ["dart-dartfrog"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint", "add-smoke-tests"],
+      "patterns": ["health-route", "json-response", "runtime-bundle"],
+      "rank": 95,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-api/dart-dartfrog-example/routes/api/reports/[tenant_id].dart",
+      "category": "api",
+      "summary": "Dart Frog report route that combines path params and query defaults in the runnable example.",
+      "stacks": ["dart-dartfrog"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint", "add-smoke-tests"],
+      "patterns": ["http-route", "json-response", "service-boundary"],
+      "rank": 96,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-api/dart-dartfrog-example/routes/fragments/report-card/[tenant_id].dart",
+      "category": "api",
+      "summary": "Dart Frog fragment route returning the HTMX-friendly report card markup for the runtime bundle.",
+      "stacks": ["dart-dartfrog"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint", "add-smoke-tests"],
+      "patterns": ["html-fragment", "partial-update", "http-route"],
+      "rank": 96,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-api/dart-dartfrog-example/routes/data/chart/[metric].dart",
+      "category": "api",
+      "summary": "Dart Frog chart route returning a structured series payload for dashboard consumers.",
+      "stacks": ["dart-dartfrog"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint", "add-smoke-tests"],
+      "patterns": ["data-endpoint", "chart-payload", "json-response"],
+      "rank": 96,
+      "stability": "verified-runtime"
+    },
+    {
       "path": "examples/canonical-api/clojure-kit-nextjdbc-hiccup-api-endpoint-example.md",
       "category": "api",
       "summary": "Kit-flavored notes for a Clojure JSON endpoint backed by next.jdbc.",
