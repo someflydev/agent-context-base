@@ -1,0 +1,172 @@
+You are working inside the agent-context-base repository.
+
+This prompt is the fourth language-specific follow-on to `PROMPT_33`.
+
+Your task is to add real canonical data acquisition examples, metadata, and accurate verification coverage for these stacks:
+
+- `dart-dartfrog`
+- `ruby-hanami`
+- `ocaml-dream-caqti-tyxml`
+
+This prompt should continue extending the polyglot data-acquisition layer into the remaining supported stacks that already have meaningful canonical backend example coverage.
+
+The examples must be real code in each language, not pseudocode.
+
+Organize the work into commit-ready batches.
+
+For each batch:
+1. Give the batch title.
+2. Explain the purpose.
+3. List created or updated files.
+4. Provide the full contents of each file.
+5. End with a suggested commit message with a bracketed prefix such as `[DATA_POLY_D_XX]`.
+
+IMPORTANT CONSTRAINTS
+
+- Build on the invariant layer introduced by `PROMPT_33`.
+- Use the exact stack identifiers listed above.
+- Keep examples small, real, and idiomatic.
+- Make the invariant parallels visible without forcing identical structure.
+- Verification claims must stay strictly honest.
+- Reuse and extend the existing verification surfaces where practical:
+  - `verification/examples/dart/`
+  - `verification/examples/ruby/`
+  - `verification/examples/ocaml/`
+- If an example remains structure-verified only, say so explicitly in the metadata and support matrix.
+
+SECTION 1 — Coverage overview
+
+Briefly explain why these three stacks belong together:
+
+- all three already have strong canonical backend example surfaces in the repo
+- all three benefit from concrete examples showing raw retention, provenance, and parse boundaries
+- this batch should finish broad language coverage for polyglot data acquisition support
+
+SECTION 2 — Deterministic example files
+
+Create real canonical data acquisition example files under `examples/canonical-data-acquisition/`.
+
+Use deterministic names such as:
+
+- `dart-dartfrog-source-sync-example.dart`
+- `ruby-hanami-source-sync-example.rb`
+- `ocaml-dream-source-sync-example.ml`
+
+If companion Markdown explainers are helpful, use matching names:
+
+- `dart-dartfrog-source-sync-example.md`
+- `ruby-hanami-source-sync-example.md`
+- `ocaml-dream-source-sync-example.md`
+
+Each example should present a believable acquisition-oriented mini-surface, such as:
+
+- a source fetch / archive function
+- a normalized record type or shape
+- a parser boundary
+- provenance and raw-path handling
+- a sync handler / service / module boundary
+
+SECTION 3 — Language-specific expectations
+
+For all three languages, preserve these semantics:
+
+- raw captures happen before destructive transforms
+- normalized records keep provenance
+- source-specific field oddities do not become the canonical schema
+- checkpoint / cursor / resume semantics stay visible
+- parse and normalize logic can plausibly run from archived raw payloads
+
+Language-specific guidance:
+
+Dart:
+- keep the example credible for Dart Frog conventions
+- avoid making the acquisition example look like a generic JSON route with renamed variables
+
+Ruby:
+- keep the example credible for Hanami boundaries and persistence conventions
+- make service and normalization boundaries explicit rather than burying them in controller flow
+
+OCaml:
+- keep the example explicit and believable for Dream plus Caqti plus TyXML style code
+- prefer clear data and service boundaries over dense abstraction
+
+SECTION 4 — Verification strategy by language
+
+Handle verification carefully.
+
+Dart, Ruby, OCaml:
+- extend the existing language-specific verification suites so the new examples are actually checked
+- if you only add structural assertions, do not inflate the verification level
+- if you can add optional Docker-backed or native compile-aware checks cleanly, wire them in consistently with the repo’s current style
+- keep the registry targets and support-matrix notes aligned with the true coverage
+
+SECTION 5 — Registry, catalog, and README integration
+
+Update:
+
+- `examples/catalog.json`
+- `verification/example_registry.yaml`
+- `verification/stack_support_matrix.yaml`
+- `examples/canonical-data-acquisition/README.md`
+
+Requirements:
+
+- every new example must appear in the relevant metadata
+- stack tags must be exact
+- verification levels and targets must align with tests
+- the README’s language matrix must stay consistent with the registry and support matrix
+
+SECTION 6 — Verification implementation
+
+Update the language-specific verification suites so the new examples are actually checked.
+
+At minimum cover:
+
+- file existence
+- expected source-shape markers that prove the example is acquisition-oriented rather than a generic API stub
+- README references
+- runtime bundle references if the example docs point to runnable code
+
+Prefer extending the existing per-language suites over adding detached one-off validators unless separation materially improves maintainability.
+
+SECTION 7 — Consistency pass
+
+After adding the examples, perform a consistency pass across the polyglot acquisition layer.
+
+Review and update any files that now need cleanup so the repository tells one coherent story, especially:
+
+- `examples/canonical-data-acquisition/README.md`
+- `examples/README.md`
+- `verification/README.md`
+- `verification/stack_support_matrix.yaml`
+
+SECTION 8 — Commit-ready batching
+
+Recommended batching:
+
+Batch 1
+- Dart and Ruby examples plus metadata
+
+Batch 2
+- OCaml example plus metadata
+
+Batch 3
+- verification updates and cross-language consistency cleanup
+
+You may adjust if needed.
+
+SECTION 9 — Honesty rules
+
+If a language ends this prompt with weaker verification than another, say that plainly.
+
+Examples:
+
+- “real Dart example, structure-verified only”
+- “real Ruby example, Docker-backed runtime not added for this surface”
+- “real OCaml example, registry confidence remains medium”
+
+The purpose is trust, not symmetry.
+
+SECTION 10 — Output
+
+Generate the actual implementation pass in commit-ready batches now.

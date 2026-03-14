@@ -1,0 +1,217 @@
+You are working inside the agent-context-base repository.
+
+This prompt is a follow-on to the data acquisition expansion introduced by `PROMPT_30`.
+
+The current repository has good language-agnostic doctrine and workflow coverage for data acquisition, but the canonical example layer is still too Python-centric. The next step is to make the generic invariants explicit and then make the canonical example system clearly polyglot.
+
+Your job in this prompt is to add the language-agnostic invariant layer and the example-selection / verification contract that will support real canonical data acquisition examples in multiple languages.
+
+Do not try to cram every language implementation into this single prompt if quality would suffer.
+This prompt should establish the shared invariant layer and the repository integration needed for the follow-on language prompts.
+
+The follow-on prompts are expected to be:
+
+- `PROMPT_34` for Python, Go, Rust, and TypeScript
+- `PROMPT_35` for Elixir, Nim, Zig, and Crystal
+- `PROMPT_36` for Clojure, Scala, and Kotlin
+- `PROMPT_37` for Dart, Ruby, and OCaml
+
+If some of that work has already been done in the repo, load the current state and apply only the missing deltas.
+
+Organize all work into commit-ready batches.
+
+For each batch:
+1. Give the batch title.
+2. Explain the purpose.
+3. List created or updated files.
+4. Provide the full contents of each file.
+5. End with a suggested commit message with a bracketed prefix such as `[DATA_INV_XX]`.
+
+IMPORTANT CONSTRAINTS
+
+- Build on the current `PROMPT_30` architecture rather than replacing it.
+- Keep the invariant layer language-agnostic.
+- Keep canonical examples real. Do not introduce pseudocode disguised as canonical examples.
+- Make clear that doctrine/workflows express cross-language invariants, while canonical examples express stack-specific completed patterns.
+- Use the repository’s exact stack identifiers where relevant:
+  - `python-fastapi-uv-ruff-orjson-polars`
+  - `go-echo`
+  - `elixir-phoenix`
+  - `rust-axum-modern`
+  - `typescript-hono-bun`
+  - `nim-jester-happyx`
+  - `zig-zap-jetzig`
+  - `crystal-kemal-avram`
+- Verification claims must be honest. Do not mark an example `syntax-checked`, `smoke-verified`, or `behavior-verified` unless the repository actually gains matching verification.
+- Prefer compact, high-signal docs over broad essays.
+- Do not create fake symmetry if the repo cannot yet verify every language at the same depth.
+
+SECTION 1 — Capability gap
+
+Briefly explain the gap left after `PROMPT_30`:
+
+- the repo now has strong data-acquisition doctrine and workflows
+- the example layer still leans on Python as the de facto canonical surface
+- assistants need explicit guidance about what is invariant across languages versus what is stack-specific
+- contributors need a clear rule that canonical examples must be real code and verification levels must match reality
+
+SECTION 2 — New invariant layer
+
+Add a shared, language-agnostic invariant layer for data acquisition.
+
+At minimum create or update files such as:
+
+context/doctrine/
+- `data-acquisition-invariants.md`
+
+Optionally update related doctrine if needed:
+- `data-acquisition-philosophy.md`
+- `canonical-examples.md`
+
+The invariant doc should define cross-language rules such as:
+
+- separate fetch / archive / parse / normalize / classify / persist boundaries when that separation improves replay and recovery
+- preserve raw source material before irreversible transforms when feasible
+- keep explicit provenance on normalized records
+- preserve enough metadata to re-parse without live upstream access
+- keep source adapters narrow and keep selectors out of orchestration code
+- treat sync triggers, retries, and backoff as operational boundaries rather than UI concerns
+- avoid letting one source schema leak into the global canonical model
+- treat “canonical example” as a real completed implementation, not pseudocode
+
+SECTION 3 — Example-system clarification
+
+Strengthen the repository’s explanation of how language-agnostic guidance and stack-specific examples relate.
+
+Update files such as:
+
+- `examples/README.md`
+- `examples/canonical-data-acquisition/README.md`
+- `context/skills/canonical-example-selection.md`
+- `verification/README.md`
+- `verification/policies/canonical-example-levels.md`
+
+The updated guidance should make all of the following explicit:
+
+- doctrine and workflows are the generic layer
+- canonical examples are the preferred completed implementation layer
+- canonical examples must be real code in the target language
+- examples can have different verification depth by language
+- assistants should prefer the closest stack-matching example with the highest honest verification level
+- if no stack-matching example exists, assistants should say so and fall back to the invariant docs plus the closest verified example
+
+SECTION 4 — Canonical data acquisition index redesign
+
+Redesign `examples/canonical-data-acquisition/README.md` so it becomes the shared entry point for this capability area instead of a Python-only impression.
+
+The README should:
+
+- begin with language-agnostic invariants
+- explain that the existing snippets are not the only canonical surface
+- define a language matrix covering:
+  - Python
+  - Go
+  - Elixir
+  - Rust
+  - TypeScript
+  - Nim
+  - Zig
+  - Crystal
+- state which example files belong to which stack
+- state the current verification posture for each language honestly
+- describe how assistants should choose between the invariant layer and stack-specific example files
+
+You may add a small support-matrix file under `examples/canonical-data-acquisition/` if that keeps the README cleaner, but avoid fragmentation unless it materially improves clarity.
+
+SECTION 5 — Manifests and routing integration
+
+Update the data-acquisition-related manifests and routing layer so the invariant docs and polyglot example intent are discoverable.
+
+At minimum review and update as needed:
+
+- `manifests/data-acquisition-service.yaml`
+- `manifests/multi-source-sync-platform.yaml`
+- `context/router/task-router.md`
+- `context/router/stack-router.md`
+- `context/router/archetype-router.md`
+- `context/router/alias-catalog.yaml`
+- `context/router/repo-signal-hints.json`
+
+The updated routing / manifest layer should help with prompts like:
+
+- “show me the language-agnostic data acquisition invariants”
+- “I need generic guidance before picking a stack”
+- “give me the Go version of the acquisition example”
+- “what is the Rust canonical example for raw archive plus normalization?”
+- “don’t give me Python-only guidance for this sync pipeline”
+
+SECTION 6 — Verification and metadata groundwork
+
+Lay the groundwork that `PROMPT_34`, `PROMPT_35`, `PROMPT_36`, and `PROMPT_37` will build on.
+
+Update metadata and helper surfaces as needed, including:
+
+- `examples/catalog.json`
+- `verification/example_registry.yaml`
+- `verification/stack_support_matrix.yaml`
+- `scripts/verify_examples.py`
+- any unit tests that validate data-acquisition context and manifest coherence
+
+Requirements:
+
+- add or update metadata entries for the shared invariant/index layer if the current catalog / registry structure expects them
+- make sure the verification tooling can route future TypeScript example tests cleanly
+- if you add placeholders for future language example entries, mark them honestly and explain why
+- do not create registry entries that imply verification the repo does not yet have
+
+SECTION 7 — Consistency checks
+
+Update validation tests so the repo stays internally coherent after these changes.
+
+At minimum ensure the repository can detect:
+
+- missing invariant docs referenced by manifests
+- missing language entries referenced by the canonical data acquisition README
+- mismatches between documented verification posture and registry / support-matrix posture
+
+If full automation is unrealistic, add the strongest practical structural checks rather than pretending to do deep semantic validation.
+
+SECTION 8 — Public example repo readiness note
+
+Update or add a concise architecture-facing note explaining that the base repo now separates:
+
+- generic data acquisition invariants
+- stack-specific real examples
+- verification posture by language
+
+Make clear why that matters for future public example repos that may not be Python-first.
+
+SECTION 9 — Commit-ready batching
+
+Recommended batching:
+
+Batch 1
+- invariant doctrine and example-system clarification
+
+Batch 2
+- canonical-data-acquisition index redesign plus manifest/router integration
+
+Batch 3
+- verification metadata groundwork and consistency checks
+
+You may refine the grouping if needed.
+
+SECTION 10 — Scope boundary
+
+This prompt should not try to finish all eight language example implementations if that would overload the change.
+
+It should leave the repo in a clean state for:
+
+- `PROMPT_34` to add Python / Go / Rust / TypeScript real examples and verifications
+- `PROMPT_35` to add Elixir / Nim / Zig / Crystal real examples and verifications
+- `PROMPT_36` to add Clojure / Scala / Kotlin real examples and verifications
+- `PROMPT_37` to add Dart / Ruby / OCaml real examples and verifications
+
+SECTION 11 — Output
+
+Generate the actual implementation pass in commit-ready batches now.

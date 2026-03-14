@@ -1,0 +1,189 @@
+You are working inside the agent-context-base repository.
+
+This prompt is the second language-specific follow-on to `PROMPT_33`.
+
+Your task is to add real canonical data acquisition examples, metadata, and accurate verification coverage for these stacks:
+
+- `elixir-phoenix`
+- `nim-jester-happyx`
+- `zig-zap-jetzig`
+- `crystal-kemal-avram`
+
+This prompt should continue extending the polyglot data-acquisition layer so the repository can point to real examples outside the Python / Go / Rust / TypeScript cluster.
+
+The examples must be real code in each language, not pseudocode.
+
+Organize the work into commit-ready batches.
+
+For each batch:
+1. Give the batch title.
+2. Explain the purpose.
+3. List created or updated files.
+4. Provide the full contents of each file.
+5. End with a suggested commit message with a bracketed prefix such as `[DATA_POLY_B_XX]`.
+
+IMPORTANT CONSTRAINTS
+
+- Build on the invariant layer introduced by `PROMPT_33`.
+- Use the exact stack identifiers listed above.
+- Keep examples small, but real and idiomatic.
+- Make the semantic parallels with the other language examples visible without forcing unnatural syntax.
+- Verification claims must be strictly honest.
+- If a language only gains structure checks, do not pretend it has parse-aware or runtime-aware verification.
+- Reuse the existing language verification suites where practical:
+  - `verification/examples/elixir/`
+  - `verification/examples/nim/`
+  - `verification/examples/zig/`
+  - `verification/examples/crystal/`
+
+SECTION 1 — Coverage overview
+
+Briefly explain why these four stacks matter in the repository:
+
+- Elixir is supported but still light on verification depth
+- Nim, Zig, and Crystal already have runnable backend example infrastructure that can anchor credible polyglot expansion
+- adding data-acquisition examples here proves that the capability is not tied to one ecosystem
+
+SECTION 2 — Deterministic example files
+
+Create real canonical data acquisition example files under `examples/canonical-data-acquisition/`.
+
+Use deterministic names such as:
+
+- `phoenix-source-sync-example.ex`
+- `nim-jester-source-sync-example.nim`
+- `zig-zap-source-sync-example.zig`
+- `crystal-kemal-source-sync-example.cr`
+
+If companion Markdown explainers are helpful, use matching names:
+
+- `phoenix-source-sync-example.md`
+- `nim-jester-source-sync-example.md`
+- `zig-zap-source-sync-example.md`
+- `crystal-kemal-source-sync-example.md`
+
+Each example should present a believable acquisition-oriented mini-surface, such as:
+
+- a source fetch / archive function
+- a normalized record or envelope type
+- a parser boundary
+- provenance and raw-path handling
+- a sync handler / service function / module boundary
+
+SECTION 3 — Language-specific expectations
+
+For all four languages, preserve these semantics:
+
+- raw captures happen before destructive transforms
+- normalized records keep provenance
+- source-specific field oddities do not become the canonical schema
+- archive paths, checkpoint tokens, or resume semantics are visible
+- fetch and parse boundaries remain legible
+
+Language-specific guidance:
+
+Elixir:
+- keep the example credible within Phoenix / Elixir conventions
+- if you stay controller- or context-adjacent, make the acquisition boundary explicit rather than burying it in template concerns
+
+Nim:
+- keep the surface idiomatic to the repo’s Nim conventions
+- make raw capture and response / service boundaries easy to spot
+
+Zig:
+- keep the example explicit and low-magic
+- make ownership / buffer / serialization choices believable rather than schematic
+
+Crystal:
+- use real Crystal syntax and types
+- keep Avram / Kemal or service-boundary assumptions coherent with the existing stack examples
+
+SECTION 4 — Verification strategy by language
+
+Handle verification carefully.
+
+Elixir:
+- if the repo still only has structural assertions for Phoenix examples, keep the verification level honest
+- only increase the level if you add real parse / compile / runtime checks
+
+Nim, Zig, Crystal:
+- you may be able to integrate structural checks only, or you may be able to extend existing runnable-bundle verification if the example naturally fits
+- do not bolt on heavyweight runtime coupling unless it materially improves trust
+- if you keep the examples structure-verified, make that explicit in registry targets and support-matrix notes
+
+Across all four languages:
+
+- update verification targets so they describe the real assertions
+- do not copy Python-level confidence by default
+- explain remaining gaps in the support matrix
+
+SECTION 5 — Registry, catalog, and README integration
+
+Update:
+
+- `examples/catalog.json`
+- `verification/example_registry.yaml`
+- `verification/stack_support_matrix.yaml`
+- `examples/canonical-data-acquisition/README.md`
+
+Requirements:
+
+- every new example must appear in the relevant metadata
+- stack tags must be exact
+- verification levels and targets must align with tests
+- the README’s language matrix must stay consistent with the registry and support matrix
+
+SECTION 6 — Verification implementation
+
+Update the language-specific verification suites so the new examples are actually checked.
+
+At minimum cover:
+
+- file existence
+- expected source-shape markers that prove the example is acquisition-oriented rather than a generic API stub
+- README references
+- runtime bundle references if the example docs point to runnable code
+
+Prefer extending the existing per-language suites over creating unrelated one-off validators unless separation materially improves maintainability.
+
+SECTION 7 — Consistency pass
+
+After adding the examples, perform a consistency pass across the entire polyglot acquisition layer.
+
+Review and update any files that now need cleanup so the repository tells one coherent story, especially:
+
+- `examples/canonical-data-acquisition/README.md`
+- `examples/README.md`
+- `verification/README.md`
+- `verification/stack_support_matrix.yaml`
+
+SECTION 8 — Commit-ready batching
+
+Recommended batching:
+
+Batch 1
+- Elixir and Crystal examples plus metadata
+
+Batch 2
+- Nim and Zig examples plus metadata
+
+Batch 3
+- verification updates and cross-language consistency cleanup
+
+You may adjust if needed.
+
+SECTION 9 — Honesty rules
+
+If a language ends this prompt with weaker verification than another, say that plainly.
+
+Examples:
+
+- “real Elixir example, structure-verified only”
+- “real Zig example, Docker-backed runtime not added for this surface”
+- “real Crystal example, registry confidence remains medium”
+
+The purpose is trust, not symmetry.
+
+SECTION 10 — Output
+
+Generate the actual implementation pass in commit-ready batches now.

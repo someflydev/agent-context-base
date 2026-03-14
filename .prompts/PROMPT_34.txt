@@ -1,0 +1,202 @@
+You are working inside the agent-context-base repository.
+
+This prompt is the first language-specific follow-on to `PROMPT_33`.
+
+Your task is to add real canonical data acquisition examples, metadata, and accurate verification coverage for these stacks:
+
+- `python-fastapi-uv-ruff-orjson-polars`
+- `go-echo`
+- `rust-axum-modern`
+- `typescript-hono-bun`
+
+This prompt should produce real example code, not pseudocode.
+
+The examples should make the language-agnostic data acquisition invariants concrete in these stacks:
+
+- raw capture before irreversible transforms
+- explicit provenance on normalized records
+- fetch / parse / normalize boundaries
+- replayability from archived raw material
+- narrow source adapter shape
+- explicit retry or sync-entry semantics where useful
+
+Organize the work into commit-ready batches.
+
+For each batch:
+1. Give the batch title.
+2. Explain the purpose.
+3. List created or updated files.
+4. Provide the full contents of each file.
+5. End with a suggested commit message with a bracketed prefix such as `[DATA_POLY_A_XX]`.
+
+IMPORTANT CONSTRAINTS
+
+- Build on the invariant and metadata layer introduced by `PROMPT_33`.
+- Use real APIs, imports, structs/types, and idioms for each target language.
+- Keep examples intentionally small, but complete enough to be believable generation anchors.
+- Keep the examples in the `canonical-data-acquisition` category unless there is a strong repo-consistency reason to place a companion file elsewhere.
+- Keep naming deterministic.
+- Do not inflate verification levels.
+- If a TypeScript example is only structure-verified, say so explicitly and keep the registry/support matrix honest.
+- If you create a new verification module for TypeScript, integrate it with `scripts/verify_examples.py`.
+
+SECTION 1 — Coverage overview
+
+Briefly explain why these four stacks are grouped together:
+
+- Python is already the strongest data-acquisition stack and should remain the most verified example
+- Go and Rust are strong systems-language complements for acquisition and sync surfaces
+- TypeScript is a supported stack but currently under-verified for canonical example work, so this prompt should improve that situation honestly
+
+SECTION 2 — Deterministic example files
+
+Create real canonical data acquisition example files under `examples/canonical-data-acquisition/`.
+
+Use deterministic names such as:
+
+- `fastapi-source-sync-example.py`
+- `go-echo-source-sync-example.go`
+- `rust-axum-source-sync-example.rs`
+- `typescript-hono-source-sync-example.ts`
+
+If a companion explanatory Markdown file improves clarity, use matching names such as:
+
+- `fastapi-source-sync-example.md`
+- `go-echo-source-sync-example.md`
+- `rust-axum-source-sync-example.md`
+- `typescript-hono-source-sync-example.md`
+
+The examples should each show a coherent mini-surface, for example:
+
+- a source adapter that fetches and archives raw data
+- a normalized record type
+- a parser / normalizer function
+- provenance fields such as source name, raw path, fetched time, checksum, or checkpoint token
+- a sync entrypoint, handler, or service boundary that keeps fetch and parse responsibilities legible
+
+Single-file examples are acceptable if they stay readable.
+Small multi-file mini-bundles are acceptable only if they materially improve verification or realism.
+
+SECTION 3 — Shared semantic contract across the four languages
+
+Across the four example surfaces, make the shared semantics obviously parallel:
+
+- raw archive paths are explicit
+- normalized records include provenance
+- retry / resume / cursor semantics are visible
+- parsing can operate on archived raw payloads
+- the example does not couple acquisition logic directly to a frontend response shape
+
+Do not force identical syntax or architecture. Keep each example idiomatic for its stack.
+
+SECTION 4 — Python example expectations
+
+The Python example should be the strongest and can reuse the repo’s existing Python strengths.
+
+Preferred characteristics:
+
+- parseable and importable
+- stubbable for behavior-oriented tests
+- uses real Python typing and data structures
+- uses realistic archive / normalize boundaries
+- can reach `behavior-verified` if you add a proper harness
+
+Update Python verification consistently, for example through:
+
+- `verification/examples/python/`
+- `verification/scenarios/` if a harness is warranted
+- `scripts/verify_examples.py`
+
+SECTION 5 — Go and Rust expectations
+
+The Go and Rust examples should be real, idiomatic source files that fit their stack conventions.
+
+Possible surfaces:
+
+- service / handler-adjacent sync function
+- source adapter plus normalized DTOs
+- raw archival helper plus parser boundary
+
+Verification guidance:
+
+- if you only add structure assertions, do not overstate the level
+- if you add optional native compile or Docker-backed checks, wire them into the existing verification style
+- use the existing `verification/examples/go/` and `verification/examples/rust/` suites as the integration point unless a separate data-acquisition test file is cleaner
+
+SECTION 6 — TypeScript expectations
+
+The TypeScript work should close the current gap where the Hono stack has only thin example coverage and no dedicated verification module.
+
+At minimum do the following:
+
+- add one real data-acquisition example in TypeScript
+- add a dedicated TypeScript verification module under `verification/examples/typescript/` or another clearly justified location
+- update `scripts/verify_examples.py` so TypeScript example selection triggers the right tests
+- update the registry and support matrix honestly
+
+Verification rules for TypeScript:
+
+- only claim `syntax-checked` if the repository truly gains a parse / compile / transpile-aware check
+- if the repo only gains structural assertions, keep the level lower and say so explicitly
+- if you add a lightweight Docker- or Bun-backed verification path, document exactly what it proves
+
+SECTION 7 — Example catalog and registry integration
+
+Update:
+
+- `examples/catalog.json`
+- `verification/example_registry.yaml`
+- `verification/stack_support_matrix.yaml`
+- `examples/canonical-data-acquisition/README.md`
+
+Requirements:
+
+- each new example must have catalog / registry metadata consistent with the repo’s conventions
+- stack tags must match the exact identifiers listed above
+- verification targets must describe what is actually tested
+- confidence must be honest
+- support-matrix notes should explain remaining gaps without hand-waving
+
+SECTION 8 — Test coverage and consistency
+
+Update or add tests so the repo can prove the new examples are present and coherent.
+
+At minimum cover:
+
+- file existence
+- expected source shape markers
+- alignment between README references and real files
+- metadata consistency where practical
+
+Use the existing test style rather than inventing a parallel framework.
+
+SECTION 9 — Commit-ready batching
+
+Recommended batching:
+
+Batch 1
+- Python and shared README/catalog groundwork
+
+Batch 2
+- Go and Rust examples plus verification updates
+
+Batch 3
+- TypeScript example, new verification integration, and metadata cleanup
+
+You may adjust if needed.
+
+SECTION 10 — Honesty rules
+
+Be explicit whenever a language receives a weaker verification level than Python.
+
+Examples:
+
+- “real code, structure-verified only”
+- “real code with optional heavy native verification”
+- “real code, draft until compile-aware verification exists”
+
+Do not smooth over those differences.
+
+SECTION 11 — Output
+
+Generate the actual implementation pass in commit-ready batches now.
