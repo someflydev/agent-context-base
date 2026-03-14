@@ -105,36 +105,42 @@ stacks:
       - crystal-kemal-avram-api-endpoint-example
       - crystal-kemal-avram-html-fragment-example
       - crystal-kemal-avram-data-endpoint-example
+      - crystal-kemal-source-sync-example
       - crystal-kemal-avram-runtime-example
     missing_verification:
       - native Crystal compile-aware check
       - Postgres-backed Avram runtime verification
       - richer Avram operation example
-    notes: Docker-backed smoke coverage is present for the runnable bundle; source examples stay structure-verified.
+      - runtime or native compile verification for acquisition sync paths
+    notes: Docker-backed smoke coverage is present for the runnable bundle; the acquisition sync example is real code but still structure-verified only.
   - stack: nim-jester-happyx
     support_level: 3
     verified_examples:
       - nim-jester-json-endpoint-example
       - nim-happyx-html-fragment-example
       - nim-jester-data-endpoint-example
+      - nim-jester-source-sync-example
       - nim-jester-happyx-runtime-example
     missing_verification:
       - native Nim compile-aware check
       - storage-backed Nim example
       - richer HappyX component runtime example
-    notes: Docker-backed smoke coverage is present for the runnable bundle; source examples stay structure-verified.
+      - runtime or native compile verification for acquisition sync paths
+    notes: Docker-backed smoke coverage is present for the runnable bundle; the acquisition sync example is real code but still structure-verified only.
   - stack: zig-zap-jetzig
     support_level: 3
     verified_examples:
       - zig-zap-json-endpoint-example
       - zig-jetzig-html-fragment-example
       - zig-zap-data-endpoint-example
+      - zig-zap-source-sync-example
       - zig-zap-jetzig-runtime-example
     missing_verification:
       - native Zig compile-aware check
       - richer Jetzig runtime bundle
       - storage-backed Zig example
-    notes: Docker-backed smoke coverage is present for the Zap runtime bundle; Jetzig examples stay structure-verified.
+      - runtime or native compile verification for acquisition sync paths
+    notes: Docker-backed smoke coverage is present for the Zap runtime bundle; the acquisition sync example is real code but still structure-verified only.
   - stack: rust-axum-modern
     support_level: 3
     verified_examples:
@@ -151,9 +157,13 @@ stacks:
     verified_examples:
       - phoenix-route-controller-example
       - phoenix-router-surface-example
+      - phoenix-source-sync-example
     missing_verification:
+      - native Elixir parse or compile check
+      - Phoenix runtime bundle example
       - controller test example
       - liveview example
+    notes: Canonical acquisition coverage now includes a real Phoenix source sync example, but the Elixir layer remains structure-verified only.
   - stack: ruby-hanami
     support_level: 3
     verified_examples:
@@ -234,10 +244,11 @@ capabilities:
         fallback_verification_level: syntax-checked
         follow_on_prompt: PROMPT_34
       - stack: elixir-phoenix
-        status: invariant-layer-only
-        stack_specific_examples: []
+        status: structure-verified
+        stack_specific_examples:
+          - phoenix-source-sync-example
         fallback_example: phoenix-route-controller-example
-        fallback_verification_level: syntax-checked
+        fallback_verification_level: structure-verified
         follow_on_prompt: PROMPT_35
       - stack: rust-axum-modern
         status: syntax-checked
@@ -254,20 +265,23 @@ capabilities:
         fallback_verification_level: syntax-checked
         follow_on_prompt: PROMPT_34
       - stack: nim-jester-happyx
-        status: invariant-layer-only
-        stack_specific_examples: []
+        status: structure-verified
+        stack_specific_examples:
+          - nim-jester-source-sync-example
         fallback_example: nim-jester-data-endpoint-example
-        fallback_verification_level: syntax-checked
+        fallback_verification_level: structure-verified
         follow_on_prompt: PROMPT_35
       - stack: zig-zap-jetzig
-        status: invariant-layer-only
-        stack_specific_examples: []
+        status: structure-verified
+        stack_specific_examples:
+          - zig-zap-source-sync-example
         fallback_example: zig-zap-data-endpoint-example
-        fallback_verification_level: syntax-checked
+        fallback_verification_level: structure-verified
         follow_on_prompt: PROMPT_35
       - stack: crystal-kemal-avram
-        status: invariant-layer-only
-        stack_specific_examples: []
+        status: structure-verified
+        stack_specific_examples:
+          - crystal-kemal-source-sync-example
         fallback_example: crystal-kemal-avram-data-endpoint-example
-        fallback_verification_level: syntax-checked
+        fallback_verification_level: structure-verified
         follow_on_prompt: PROMPT_35

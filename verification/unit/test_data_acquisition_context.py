@@ -111,6 +111,21 @@ class DataAcquisitionContextTests(unittest.TestCase):
             },
         )
 
+        expected_status = {
+            "python-fastapi-uv-ruff-orjson-polars": ("behavior-verified", ["fastapi-source-sync-example"]),
+            "go-echo": ("syntax-checked", ["go-echo-source-sync-example"]),
+            "elixir-phoenix": ("structure-verified", ["phoenix-source-sync-example"]),
+            "rust-axum-modern": ("syntax-checked", ["rust-axum-source-sync-example"]),
+            "typescript-hono-bun": ("syntax-checked", ["typescript-hono-source-sync-example"]),
+            "nim-jester-happyx": ("structure-verified", ["nim-jester-source-sync-example"]),
+            "zig-zap-jetzig": ("structure-verified", ["zig-zap-source-sync-example"]),
+            "crystal-kemal-avram": ("structure-verified", ["crystal-kemal-source-sync-example"]),
+        }
+        for item in entry["stacks"]:
+            with self.subTest(stack=item["stack"]):
+                self.assertEqual(item["status"], expected_status[item["stack"]][0])
+                self.assertEqual(item["stack_specific_examples"], expected_status[item["stack"]][1])
+
     def test_public_readiness_note_mentions_layer_separation(self) -> None:
         text = (REPO_ROOT / "docs/public-example-data-systems-readiness.md").read_text(encoding="utf-8")
         self.assertIn("generic data acquisition invariants", text)

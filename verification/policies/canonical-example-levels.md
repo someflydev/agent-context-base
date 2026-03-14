@@ -6,6 +6,8 @@ Verification levels describe how much trust maintainers and assistants should pl
 
 - `draft`
   Tracked and documented, but not yet structurally validated.
+- `structure-verified`
+  Referenced files exist and targeted structure assertions pass, but parse or compile coverage is not claimed.
 - `syntax-checked`
   Parses or loads cleanly and passes static assertions.
 - `smoke-verified`
@@ -53,8 +55,9 @@ Heavy checks should remain selectable by stack so expanding coverage does not ma
 
 ## Policy Rules
 
-- New canonical examples should land with at least `syntax-checked`.
-- Shared invariant or index files may be `syntax-checked`, but that does not justify claiming a stack-specific implementation exists.
+- New canonical examples should land with at least `structure-verified`.
+- Use `syntax-checked` only when a parser, loader, formatter, or compiler actually runs.
+- Shared invariant or index files may be `structure-verified` or `syntax-checked`, but that does not justify claiming a stack-specific implementation exists.
 - Runtime examples should not be marked `smoke-verified` without a harness or Docker probe.
 - `behavior-verified` examples should assert one outcome, not only boot.
 - Registry metadata, README metadata, and test coverage should agree on verification level and harness name.

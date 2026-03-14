@@ -1355,6 +1355,17 @@
       "stability": "canonical"
     },
     {
+      "path": "examples/canonical-data-acquisition/phoenix-source-sync-example.ex",
+      "category": "data-acquisition",
+      "summary": "Phoenix controller-adjacent source sync example with explicit fetch, raw archival, provenance, replay, and checkpoint boundaries.",
+      "stacks": ["elixir-phoenix"],
+      "archetypes": ["data-acquisition-service", "multi-source-sync-platform"],
+      "workflows": ["add-api-ingestion-source", "add-raw-download-archive", "add-parser-normalizer", "add-recurring-sync"],
+      "patterns": ["raw-capture", "provenance-aware-normalization", "replayable-sync", "controller-boundary", "checkpoint-cursor"],
+      "rank": 94,
+      "stability": "canonical"
+    },
+    {
       "path": "examples/canonical-data-acquisition/rust-axum-source-sync-example.rs",
       "category": "data-acquisition",
       "summary": "Axum-oriented GitHub release sync example with explicit source adapter, archival, replay, and checkpoint semantics.",
@@ -1374,6 +1385,39 @@
       "workflows": ["add-api-ingestion-source", "add-raw-download-archive", "add-parser-normalizer", "add-recurring-sync"],
       "patterns": ["raw-capture", "provenance-aware-normalization", "replayable-sync", "compile-aware-typescript", "source-adapter"],
       "rank": 94,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-data-acquisition/nim-jester-source-sync-example.nim",
+      "category": "data-acquisition",
+      "summary": "Jester-oriented source sync example showing raw capture, parser boundaries, provenance, and replay from archived payloads.",
+      "stacks": ["nim-jester-happyx"],
+      "archetypes": ["data-acquisition-service", "multi-source-sync-platform"],
+      "workflows": ["add-api-ingestion-source", "add-raw-download-archive", "add-parser-normalizer", "add-recurring-sync"],
+      "patterns": ["raw-capture", "provenance-aware-normalization", "replayable-sync", "service-boundary", "checkpoint-cursor"],
+      "rank": 93,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-data-acquisition/zig-zap-source-sync-example.zig",
+      "category": "data-acquisition",
+      "summary": "Zap-oriented Zig source sync example with explicit adapter ownership, raw archival, replay, and checkpoint handling.",
+      "stacks": ["zig-zap-jetzig"],
+      "archetypes": ["data-acquisition-service", "multi-source-sync-platform"],
+      "workflows": ["add-api-ingestion-source", "add-raw-download-archive", "add-parser-normalizer", "add-recurring-sync"],
+      "patterns": ["raw-capture", "provenance-aware-normalization", "replayable-sync", "buffer-ownership", "checkpoint-cursor"],
+      "rank": 93,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-data-acquisition/crystal-kemal-source-sync-example.cr",
+      "category": "data-acquisition",
+      "summary": "Kemal plus Avram-adjacent source sync example with explicit checkpoint lookup, raw archival, replay, and provenance retention.",
+      "stacks": ["crystal-kemal-avram"],
+      "archetypes": ["data-acquisition-service", "multi-source-sync-platform"],
+      "workflows": ["add-api-ingestion-source", "add-raw-download-archive", "add-parser-normalizer", "add-recurring-sync"],
+      "patterns": ["raw-capture", "provenance-aware-normalization", "replayable-sync", "checkpoint-cursor", "service-boundary"],
+      "rank": 93,
       "stability": "canonical"
     },
     {

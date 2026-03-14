@@ -12,7 +12,7 @@ This verification layer makes example trust explicit. Each canonical example now
 
 That structure improves assistant reliability because selection logic can prefer verified examples over merely present ones.
 
-For capability areas that are intentionally polyglot, the repo may also carry a shared invariant or index layer before every stack has a real implementation example. That layer can be `syntax-checked`, but it is not a substitute for stack-specific code examples.
+For capability areas that are intentionally polyglot, the repo may also carry a shared invariant or index layer before every stack has a real implementation example. That layer can be `structure-verified` or `syntax-checked`, but it is not a substitute for stack-specific code examples.
 
 ## Why Verification Matters
 
@@ -43,6 +43,8 @@ For capability areas that are intentionally polyglot, the repo may also carry a 
 
 - `draft`
   The example is tracked but only verified for presence and metadata.
+- `structure-verified`
+  The example is covered by explicit structure assertions only; parse, compile, or runtime coverage is not implied.
 - `syntax-checked`
   The example parses or loads successfully and passes structural assertions.
 - `smoke-verified`

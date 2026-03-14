@@ -3,7 +3,7 @@ capability: canonical-data-acquisition
 shared_examples:
   - name: canonical-data-acquisition-index
     path: examples/canonical-data-acquisition/README.md
-    verification_level: syntax-checked
+    verification_level: structure-verified
   - name: canonical-data-acquisition-language-support-matrix
     path: examples/canonical-data-acquisition/language-support-matrix.yaml
     verification_level: syntax-checked
@@ -30,12 +30,13 @@ languages:
     follow_on_prompt: PROMPT_34
   - language: Elixir
     stack: elixir-phoenix
-    stack_specific_examples: []
-    verification_posture: invariant-layer-only
-    coverage_note: no stack-specific acquisition example yet
+    stack_specific_examples:
+      - phoenix-source-sync-example
+    verification_posture: structure-verified
+    coverage_note: real Phoenix-adjacent acquisition code with controller and sync service boundaries, but no native parse, compile, or runtime coverage yet
     fallback_example: phoenix-route-controller-example
     fallback_path: examples/canonical-api/phoenix-route-controller-example.ex
-    fallback_verification_level: syntax-checked
+    fallback_verification_level: structure-verified
     follow_on_prompt: PROMPT_35
   - language: Rust
     stack: rust-axum-modern
@@ -59,28 +60,31 @@ languages:
     follow_on_prompt: PROMPT_34
   - language: Nim
     stack: nim-jester-happyx
-    stack_specific_examples: []
-    verification_posture: invariant-layer-only
-    coverage_note: no stack-specific acquisition example yet
+    stack_specific_examples:
+      - nim-jester-source-sync-example
+    verification_posture: structure-verified
+    coverage_note: real Jester-oriented acquisition code with raw capture and replay boundaries, but verification remains source-structure only
     fallback_example: nim-jester-data-endpoint-example
     fallback_path: examples/canonical-api/nim-jester-data-endpoint-example.nim
-    fallback_verification_level: syntax-checked
+    fallback_verification_level: structure-verified
     follow_on_prompt: PROMPT_35
   - language: Zig
     stack: zig-zap-jetzig
-    stack_specific_examples: []
-    verification_posture: invariant-layer-only
-    coverage_note: no stack-specific acquisition example yet
+    stack_specific_examples:
+      - zig-zap-source-sync-example
+    verification_posture: structure-verified
+    coverage_note: real Zap-oriented acquisition code with explicit ownership and archive boundaries, but no native Zig parse or runtime verification for this surface
     fallback_example: zig-zap-data-endpoint-example
     fallback_path: examples/canonical-api/zig-zap-data-endpoint-example.zig
-    fallback_verification_level: syntax-checked
+    fallback_verification_level: structure-verified
     follow_on_prompt: PROMPT_35
   - language: Crystal
     stack: crystal-kemal-avram
-    stack_specific_examples: []
-    verification_posture: invariant-layer-only
-    coverage_note: no stack-specific acquisition example yet
+    stack_specific_examples:
+      - crystal-kemal-source-sync-example
+    verification_posture: structure-verified
+    coverage_note: real Kemal plus Avram-adjacent acquisition code with checkpoint and provenance boundaries, but verification remains structural only
     fallback_example: crystal-kemal-avram-data-endpoint-example
     fallback_path: examples/canonical-api/crystal-kemal-avram-data-endpoint-example.cr
-    fallback_verification_level: syntax-checked
+    fallback_verification_level: structure-verified
     follow_on_prompt: PROMPT_35
