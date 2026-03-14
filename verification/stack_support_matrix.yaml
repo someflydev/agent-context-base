@@ -3,6 +3,7 @@ stacks:
     support_level: 5
     verified_examples:
       - fastapi-endpoint-example
+      - fastapi-source-sync-example
       - fastapi-faceted-filter-fragment-example
       - fastapi-include-exclude-filter-example
       - fastapi-dynamic-counts-fragment-example
@@ -17,6 +18,7 @@ stacks:
       - advanced auth example
       - websocket example
       - background task example
+    notes: Canonical acquisition coverage now includes a behavior-verified source sync example with raw archival, replay, provenance, and retry assertions.
   - stack: duckdb-trino-polars
     support_level: 4
     verified_examples:
@@ -29,11 +31,14 @@ stacks:
     support_level: 3
     verified_examples:
       - go-echo-handler-example
+      - go-echo-source-sync-example
       - go-echo-runtime-example
     missing_verification:
       - middleware example
       - templ rendering example
       - storage-backed handler example
+      - runtime or native compile verification for acquisition sync paths
+    notes: Canonical acquisition coverage is real code and gofmt-parsed, but still syntax-checked only.
   - stack: scala-tapir-http4s-zio
     support_level: 3
     verified_examples:
@@ -134,10 +139,13 @@ stacks:
     support_level: 3
     verified_examples:
       - rust-axum-route-example
+      - rust-axum-source-sync-example
       - rust-axum-runtime-example
     missing_verification:
       - extractor validation example
       - storage state example
+      - runtime or native compile verification for acquisition sync paths
+    notes: Canonical acquisition coverage is real code and rustfmt-parsed, but still syntax-checked only.
   - stack: elixir-phoenix
     support_level: 2
     verified_examples:
@@ -162,9 +170,12 @@ stacks:
     support_level: 2
     verified_examples:
       - typescript-hono-handler-example
+      - typescript-hono-source-sync-example
     missing_verification:
       - runtime bundle example
+      - Bun runtime verification for Hono acquisition paths
       - drizzle migration example
+    notes: Canonical acquisition coverage is real code and tsc-checked with local Hono and Bun shims only; runtime behavior is still unverified.
   - stack: prompt-first-repo
     support_level: 4
     verified_examples:
@@ -209,14 +220,16 @@ capabilities:
       - canonical-data-acquisition-language-support-matrix
     stacks:
       - stack: python-fastapi-uv-ruff-orjson-polars
-        status: invariant-layer-only
-        stack_specific_examples: []
+        status: behavior-verified
+        stack_specific_examples:
+          - fastapi-source-sync-example
         fallback_example: fastapi-endpoint-example
         fallback_verification_level: behavior-verified
         follow_on_prompt: PROMPT_34
       - stack: go-echo
-        status: invariant-layer-only
-        stack_specific_examples: []
+        status: syntax-checked
+        stack_specific_examples:
+          - go-echo-source-sync-example
         fallback_example: go-echo-handler-example
         fallback_verification_level: syntax-checked
         follow_on_prompt: PROMPT_34
@@ -227,14 +240,16 @@ capabilities:
         fallback_verification_level: syntax-checked
         follow_on_prompt: PROMPT_35
       - stack: rust-axum-modern
-        status: invariant-layer-only
-        stack_specific_examples: []
+        status: syntax-checked
+        stack_specific_examples:
+          - rust-axum-source-sync-example
         fallback_example: rust-axum-route-example
         fallback_verification_level: syntax-checked
         follow_on_prompt: PROMPT_34
       - stack: typescript-hono-bun
-        status: invariant-layer-only
-        stack_specific_examples: []
+        status: syntax-checked
+        stack_specific_examples:
+          - typescript-hono-source-sync-example
         fallback_example: typescript-hono-handler-example
         fallback_verification_level: syntax-checked
         follow_on_prompt: PROMPT_34

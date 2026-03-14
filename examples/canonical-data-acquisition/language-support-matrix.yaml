@@ -1,4 +1,4 @@
-version: 1
+version: 2
 capability: canonical-data-acquisition
 shared_examples:
   - name: canonical-data-acquisition-index
@@ -10,16 +10,20 @@ shared_examples:
 languages:
   - language: Python
     stack: python-fastapi-uv-ruff-orjson-polars
-    stack_specific_examples: []
-    verification_posture: invariant-layer-only
+    stack_specific_examples:
+      - fastapi-source-sync-example
+    verification_posture: behavior-verified
+    coverage_note: real code with raw archival, replay, provenance, and retry behavior verified directly in Python tests
     fallback_example: fastapi-endpoint-example
     fallback_path: examples/canonical-api/fastapi-endpoint-example.py
     fallback_verification_level: behavior-verified
     follow_on_prompt: PROMPT_34
   - language: Go
     stack: go-echo
-    stack_specific_examples: []
-    verification_posture: invariant-layer-only
+    stack_specific_examples:
+      - go-echo-source-sync-example
+    verification_posture: syntax-checked
+    coverage_note: real code, gofmt-parsed and structure-verified only; no runtime acquisition harness yet
     fallback_example: go-echo-handler-example
     fallback_path: examples/canonical-api/go-echo-handler-example.go
     fallback_verification_level: syntax-checked
@@ -28,22 +32,27 @@ languages:
     stack: elixir-phoenix
     stack_specific_examples: []
     verification_posture: invariant-layer-only
+    coverage_note: no stack-specific acquisition example yet
     fallback_example: phoenix-route-controller-example
     fallback_path: examples/canonical-api/phoenix-route-controller-example.ex
     fallback_verification_level: syntax-checked
     follow_on_prompt: PROMPT_35
   - language: Rust
     stack: rust-axum-modern
-    stack_specific_examples: []
-    verification_posture: invariant-layer-only
+    stack_specific_examples:
+      - rust-axum-source-sync-example
+    verification_posture: syntax-checked
+    coverage_note: real code, rustfmt-parsed and structure-verified only; no runtime acquisition harness yet
     fallback_example: rust-axum-route-example
     fallback_path: examples/canonical-api/rust-axum-route-example.rs
     fallback_verification_level: syntax-checked
     follow_on_prompt: PROMPT_34
   - language: TypeScript
     stack: typescript-hono-bun
-    stack_specific_examples: []
-    verification_posture: invariant-layer-only
+    stack_specific_examples:
+      - typescript-hono-source-sync-example
+    verification_posture: syntax-checked
+    coverage_note: real code, tsc-checked with local Hono and Bun shims only; no Bun runtime harness yet
     fallback_example: typescript-hono-handler-example
     fallback_path: examples/canonical-api/typescript-hono-handler-example.ts
     fallback_verification_level: syntax-checked
@@ -52,6 +61,7 @@ languages:
     stack: nim-jester-happyx
     stack_specific_examples: []
     verification_posture: invariant-layer-only
+    coverage_note: no stack-specific acquisition example yet
     fallback_example: nim-jester-data-endpoint-example
     fallback_path: examples/canonical-api/nim-jester-data-endpoint-example.nim
     fallback_verification_level: syntax-checked
@@ -60,6 +70,7 @@ languages:
     stack: zig-zap-jetzig
     stack_specific_examples: []
     verification_posture: invariant-layer-only
+    coverage_note: no stack-specific acquisition example yet
     fallback_example: zig-zap-data-endpoint-example
     fallback_path: examples/canonical-api/zig-zap-data-endpoint-example.zig
     fallback_verification_level: syntax-checked
@@ -68,6 +79,7 @@ languages:
     stack: crystal-kemal-avram
     stack_specific_examples: []
     verification_posture: invariant-layer-only
+    coverage_note: no stack-specific acquisition example yet
     fallback_example: crystal-kemal-avram-data-endpoint-example
     fallback_path: examples/canonical-api/crystal-kemal-avram-data-endpoint-example.cr
     fallback_verification_level: syntax-checked

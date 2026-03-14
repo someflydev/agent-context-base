@@ -2060,6 +2060,75 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: medium
+  - name: fastapi-source-sync-example
+    path: examples/canonical-data-acquisition/fastapi-source-sync-example.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - data-acquisition-service
+      - multi-source-sync-platform
+    verification_level: behavior-verified
+    verification_targets:
+      - parses
+      - archives raw payload before normalization
+      - replays from archived raw payload
+      - keeps provenance on normalized records
+      - retries retryable sync failures
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: go-echo-source-sync-example
+    path: examples/canonical-data-acquisition/go-echo-source-sync-example.go
+    language: go
+    stack_tags:
+      - go-echo
+    archetype_tags:
+      - data-acquisition-service
+      - multi-source-sync-platform
+    verification_level: syntax-checked
+    verification_targets:
+      - gofmt parses source
+      - narrow source adapter shape present
+      - raw archival and replay boundaries present
+      - echo sync route registration present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: rust-axum-source-sync-example
+    path: examples/canonical-data-acquisition/rust-axum-source-sync-example.rs
+    language: rust
+    stack_tags:
+      - rust-axum-modern
+    archetype_tags:
+      - data-acquisition-service
+      - multi-source-sync-platform
+    verification_level: syntax-checked
+    verification_targets:
+      - rustfmt parses source
+      - narrow source adapter trait present
+      - raw archival and replay boundaries present
+      - axum sync route registration present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: typescript-hono-source-sync-example
+    path: examples/canonical-data-acquisition/typescript-hono-source-sync-example.ts
+    language: typescript
+    stack_tags:
+      - typescript-hono-bun
+    archetype_tags:
+      - data-acquisition-service
+      - multi-source-sync-platform
+    verification_level: syntax-checked
+    verification_targets:
+      - tsc checks source with local Hono and Bun shims
+      - narrow source adapter interface present
+      - raw archival and replay boundaries present
+      - hono sync route registration present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
   - name: canonical-data-acquisition-index
     path: examples/canonical-data-acquisition/README.md
     language: markdown
@@ -2079,6 +2148,7 @@ examples:
     verification_targets:
       - required sections present
       - language matrix rows match support matrix
+      - stack-specific acquisition files referenced
       - selection contract text present
     docker_supported: false
     scenario_harness: ""

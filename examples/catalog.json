@@ -1333,13 +1333,57 @@
       "stability": "canonical"
     },
     {
+      "path": "examples/canonical-data-acquisition/fastapi-source-sync-example.py",
+      "category": "data-acquisition",
+      "summary": "FastAPI-oriented GitHub release sync example with explicit raw archival, provenance, replay, and retry boundaries.",
+      "stacks": ["python-fastapi-uv-ruff-orjson-polars"],
+      "archetypes": ["data-acquisition-service", "multi-source-sync-platform"],
+      "workflows": ["add-api-ingestion-source", "add-raw-download-archive", "add-parser-normalizer", "add-recurring-sync"],
+      "patterns": ["raw-capture", "provenance-aware-normalization", "replayable-sync", "retry-boundary", "source-adapter"],
+      "rank": 99,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-data-acquisition/go-echo-source-sync-example.go",
+      "category": "data-acquisition",
+      "summary": "Echo-oriented GitHub release sync example showing raw archival, provenance-aware normalization, and replayable service boundaries.",
+      "stacks": ["go-echo"],
+      "archetypes": ["data-acquisition-service", "multi-source-sync-platform"],
+      "workflows": ["add-api-ingestion-source", "add-raw-download-archive", "add-parser-normalizer", "add-recurring-sync"],
+      "patterns": ["raw-capture", "provenance-aware-normalization", "replayable-sync", "sync-handler", "source-adapter"],
+      "rank": 96,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-data-acquisition/rust-axum-source-sync-example.rs",
+      "category": "data-acquisition",
+      "summary": "Axum-oriented GitHub release sync example with explicit source adapter, archival, replay, and checkpoint semantics.",
+      "stacks": ["rust-axum-modern"],
+      "archetypes": ["data-acquisition-service", "multi-source-sync-platform"],
+      "workflows": ["add-api-ingestion-source", "add-raw-download-archive", "add-parser-normalizer", "add-recurring-sync"],
+      "patterns": ["raw-capture", "provenance-aware-normalization", "replayable-sync", "checkpoint-cursor", "source-adapter"],
+      "rank": 96,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-data-acquisition/typescript-hono-source-sync-example.ts",
+      "category": "data-acquisition",
+      "summary": "Hono and Bun GitHub release sync example with explicit raw archival, replay, and provenance on normalized records.",
+      "stacks": ["typescript-hono-bun"],
+      "archetypes": ["data-acquisition-service", "multi-source-sync-platform"],
+      "workflows": ["add-api-ingestion-source", "add-raw-download-archive", "add-parser-normalizer", "add-recurring-sync"],
+      "patterns": ["raw-capture", "provenance-aware-normalization", "replayable-sync", "compile-aware-typescript", "source-adapter"],
+      "rank": 94,
+      "stability": "canonical"
+    },
+    {
       "path": "examples/canonical-data-acquisition/README.md",
       "category": "data-acquisition",
-      "summary": "Shared polyglot entry point for language-agnostic acquisition invariants and stack-selection rules.",
+      "summary": "Shared polyglot entry point for acquisition invariants, stack-specific coverage notes, and honest selection rules.",
       "stacks": ["python-fastapi-uv-ruff-orjson-polars", "go-echo", "elixir-phoenix", "rust-axum-modern", "typescript-hono-bun", "nim-jester-happyx", "zig-zap-jetzig", "crystal-kemal-avram"],
       "archetypes": ["data-acquisition-service", "multi-source-sync-platform"],
       "workflows": ["research-data-sources", "add-api-ingestion-source", "add-scraping-source", "add-raw-download-archive", "add-parser-normalizer", "add-classification-step", "add-recurring-sync", "add-event-driven-sync"],
-      "patterns": ["invariant-layer", "polyglot-index", "selection-contract"],
+      "patterns": ["invariant-layer", "polyglot-index", "selection-contract", "coverage-matrix"],
       "rank": 96,
       "stability": "canonical"
     },

@@ -413,8 +413,10 @@ def validate_data_acquisition_consistency(repo_root: Path) -> list[str]:
     readme_text = readme_path.read_text(encoding="utf-8")
     for section in (
         "## Capability Gap",
+        "## Coverage Overview",
         "## Invariant Layer",
         "## Language Matrix",
+        "## Shared Semantic Contract",
         "## Selection Contract",
         "## Verification Posture",
     ):
@@ -478,6 +480,22 @@ def validate_data_acquisition_consistency(repo_root: Path) -> list[str]:
         if isinstance(entry, dict) and str(entry.get("stack", "")).strip()
     }
 
+    def render_stack_specific_cell(language_entry: dict[str, object]) -> str:
+        stack_specific_examples = language_entry.get("stack_specific_examples", [])
+        if not isinstance(stack_specific_examples, list) or not stack_specific_examples:
+            return "none yet"
+
+        parts: list[str] = []
+        for example_name in stack_specific_examples:
+            registry_entry = known_examples.get(str(example_name).strip())
+            if registry_entry is None:
+                return "missing example"
+            parts.append(
+                f"{Path(str(registry_entry.get('path', ''))).name} "
+                f"({registry_entry.get('verification_level', '')})"
+            )
+        return ", ".join(parts)
+
     for entry in languages:
         if not isinstance(entry, dict):
             errors.append(f"{matrix_path}: language rows must be objects")
@@ -485,13 +503,38 @@ def validate_data_acquisition_consistency(repo_root: Path) -> list[str]:
         language = str(entry.get("language", "")).strip()
         stack = str(entry.get("stack", "")).strip()
         posture = str(entry.get("verification_posture", "")).strip()
+        coverage_note = str(entry.get("coverage_note", "")).strip()
         fallback_example = str(entry.get("fallback_example", "")).strip()
         fallback_path = str(entry.get("fallback_path", "")).strip()
         fallback_level = str(entry.get("fallback_verification_level", "")).strip()
         follow_on_prompt = str(entry.get("follow_on_prompt", "")).strip()
+        stack_specific_examples = entry.get("stack_specific_examples", [])
+
+        if not coverage_note:
+            errors.append(f"{matrix_path}: stack '{stack}' is missing a coverage_note")
+        if not isinstance(stack_specific_examples, list):
+            errors.append(f"{matrix_path}: stack_specific_examples for '{stack}' must be a list")
+            stack_specific_examples = []
+        if stack_specific_examples:
+            strongest_level = max(
+                (
+                    str(known_examples[str(example_name)].get("verification_level", "")).strip()
+                    for example_name in stack_specific_examples
+                    if str(example_name) in known_examples
+                ),
+                key=lambda level: verification_score({"verification_level": level}),
+                default="",
+            )
+            if posture != strongest_level:
+                errors.append(f"{matrix_path}: verification_posture for '{stack}' does not match strongest example")
+            for example_name in stack_specific_examples:
+                if str(example_name) not in known_examples:
+                    errors.append(f"{matrix_path}: unknown stack-specific example '{example_name}'")
+        elif posture != "invariant-layer-only":
+            errors.append(f"{matrix_path}: '{stack}' must stay invariant-layer-only without stack_specific_examples")
 
         expected_row = (
-            f"| {language} | {stack} | none yet | {posture} | "
+            f"| {language} | {stack} | {render_stack_specific_cell(entry)} | {posture} | "
             f"{fallback_path} ({fallback_level}) | {follow_on_prompt} |"
         )
         if expected_row not in readme_text:
@@ -512,6 +555,8 @@ def validate_data_acquisition_consistency(repo_root: Path) -> list[str]:
             continue
         if str(support_entry.get("status", "")).strip() != posture:
             errors.append(f"verification/stack_support_matrix.yaml: status mismatch for '{stack}'")
+        if support_entry.get("stack_specific_examples", []) != stack_specific_examples:
+            errors.append(f"verification/stack_support_matrix.yaml: stack-specific example mismatch for '{stack}'")
         if str(support_entry.get("fallback_example", "")).strip() != fallback_example:
             errors.append(f"verification/stack_support_matrix.yaml: fallback example mismatch for '{stack}'")
         if str(support_entry.get("fallback_verification_level", "")).strip() != fallback_level:
