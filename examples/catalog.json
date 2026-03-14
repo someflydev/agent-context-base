@@ -618,6 +618,116 @@
       "stability": "verified-runtime"
     },
     {
+      "path": "examples/canonical-api/ocaml-dream-caqti-tyxml-api-endpoint-example.md",
+      "category": "api",
+      "summary": "Dream plus Caqti notes for an OCaml JSON endpoint with an explicit SQL boundary.",
+      "stacks": ["ocaml-dream-caqti-tyxml"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["http-route", "json-response", "service-boundary"],
+      "rank": 89,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/ocaml-dream-caqti-tyxml-api-endpoint-example.ml",
+      "category": "api",
+      "summary": "Dream route example using Caqti requests to shape a JSON API response.",
+      "stacks": ["ocaml-dream-caqti-tyxml"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["http-route", "json-response", "service-boundary"],
+      "rank": 98,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/ocaml-dream-caqti-tyxml-html-fragment-example.md",
+      "category": "api",
+      "summary": "Dream plus TyXML fragment notes for HTMX-style partial updates in OCaml services.",
+      "stacks": ["ocaml-dream-caqti-tyxml"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["html-fragment", "partial-update", "reactive-html"],
+      "rank": 88,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/ocaml-dream-caqti-tyxml-html-fragment-example.ml",
+      "category": "api",
+      "summary": "TyXML fragment route example returning stable HTMX-friendly markup through Dream.",
+      "stacks": ["ocaml-dream-caqti-tyxml"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["html-fragment", "partial-update", "reactive-html"],
+      "rank": 97,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/ocaml-dream-caqti-tyxml-data-endpoint-example.md",
+      "category": "api",
+      "summary": "Chart-oriented OCaml endpoint notes for Dream services backed by Caqti queries.",
+      "stacks": ["ocaml-dream-caqti-tyxml"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["data-endpoint", "chart-payload", "json-response"],
+      "rank": 88,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/ocaml-dream-caqti-tyxml-data-endpoint-example.ml",
+      "category": "api",
+      "summary": "Dream data endpoint example returning a Plotly-style series payload from Caqti-backed rows.",
+      "stacks": ["ocaml-dream-caqti-tyxml"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint"],
+      "patterns": ["data-endpoint", "chart-payload", "json-response"],
+      "rank": 99,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-api/ocaml-dream-caqti-tyxml-example/bin/main.ml",
+      "category": "api",
+      "summary": "Runnable OCaml runtime bundle with JSON, fragment, and chart-data endpoints for Docker-backed verification.",
+      "stacks": ["ocaml-dream-caqti-tyxml"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint", "add-smoke-tests"],
+      "patterns": ["http-route", "runtime-bundle", "docker-smoke"],
+      "rank": 101,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-api/ocaml-dream-caqti-tyxml-example/bin/dune",
+      "category": "api",
+      "summary": "Dune executable definition wiring Dream, TyXML, Caqti, and SQLite support for the runnable OCaml example.",
+      "stacks": ["ocaml-dream-caqti-tyxml"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint", "add-smoke-tests"],
+      "patterns": ["runtime-bundle", "build-config", "docker-smoke"],
+      "rank": 86,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-api/ocaml-dream-caqti-tyxml-example/dune-project",
+      "category": "api",
+      "summary": "Dune project metadata for the runnable Dream plus Caqti plus TyXML verification bundle.",
+      "stacks": ["ocaml-dream-caqti-tyxml"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint", "add-smoke-tests"],
+      "patterns": ["runtime-bundle", "build-config", "docker-smoke"],
+      "rank": 84,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-api/ocaml-dream-caqti-tyxml-example/ocaml-dream-caqti-tyxml-example.opam",
+      "category": "api",
+      "summary": "opam package manifest for the runnable Dream plus Caqti plus TyXML verification bundle.",
+      "stacks": ["ocaml-dream-caqti-tyxml"],
+      "archetypes": ["backend-api-service", "interactive-data-service"],
+      "workflows": ["add-api-endpoint", "add-smoke-tests"],
+      "patterns": ["runtime-bundle", "dependency-manifest", "docker-smoke"],
+      "rank": 85,
+      "stability": "verified-runtime"
+    },
+    {
       "path": "examples/canonical-api/crystal-kemal-avram-api-endpoint-example.md",
       "category": "api",
       "summary": "Kemal plus Avram notes for a Crystal JSON endpoint.",

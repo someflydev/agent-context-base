@@ -1006,6 +1006,54 @@ examples:
     docker_supported: true
     scenario_harness: ocaml_dream_caqti_tyxml_min_app
     confidence: medium
+  - name: ocaml-dream-caqti-tyxml-runtime-dune
+    path: examples/canonical-api/ocaml-dream-caqti-tyxml-example/bin/dune
+    language: text
+    stack_tags:
+      - ocaml-dream-caqti-tyxml
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - dune executable wiring
+      - runtime bundle tracked
+      - docker build context
+    docker_supported: true
+    scenario_harness: ocaml_dream_caqti_tyxml_min_app
+    confidence: medium
+  - name: ocaml-dream-caqti-tyxml-runtime-project
+    path: examples/canonical-api/ocaml-dream-caqti-tyxml-example/dune-project
+    language: text
+    stack_tags:
+      - ocaml-dream-caqti-tyxml
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - dune project tracked
+      - runtime bundle metadata
+      - docker build context
+    docker_supported: true
+    scenario_harness: ocaml_dream_caqti_tyxml_min_app
+    confidence: medium
+  - name: ocaml-dream-caqti-tyxml-runtime-opam
+    path: examples/canonical-api/ocaml-dream-caqti-tyxml-example/ocaml-dream-caqti-tyxml-example.opam
+    language: text
+    stack_tags:
+      - ocaml-dream-caqti-tyxml
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - dependency manifest tracked
+      - runtime bundle wiring
+      - docker build context
+    docker_supported: true
+    scenario_harness: ocaml_dream_caqti_tyxml_min_app
+    confidence: medium
   - name: crystal-kemal-avram-api-endpoint-example-doc
     path: examples/canonical-api/crystal-kemal-avram-api-endpoint-example.md
     language: markdown
