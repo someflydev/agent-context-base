@@ -2305,9 +2305,12 @@ examples:
     stack_tags:
       - python-fastapi-uv-ruff-orjson-polars
       - go-echo
+      - dart-dartfrog
       - clojure-kit-nextjdbc-hiccup
       - scala-tapir-http4s-zio
       - kotlin-http4k-exposed
+      - ruby-hanami
+      - ocaml-dream-caqti-tyxml
       - elixir-phoenix
       - rust-axum-modern
       - typescript-hono-bun
@@ -2332,9 +2335,12 @@ examples:
     stack_tags:
       - python-fastapi-uv-ruff-orjson-polars
       - go-echo
+      - dart-dartfrog
       - clojure-kit-nextjdbc-hiccup
       - scala-tapir-http4s-zio
       - kotlin-http4k-exposed
+      - ruby-hanami
+      - ocaml-dream-caqti-tyxml
       - elixir-phoenix
       - rust-axum-modern
       - typescript-hono-bun

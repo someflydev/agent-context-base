@@ -28,21 +28,21 @@ This category now keeps those layers separate:
 
 - doctrine and workflows remain the cross-language rule layer
 - the files in this directory are the canonical stack-specific acquisition anchors
-- verification depth differs by language, and the repo now records those differences explicitly instead of smoothing them over
+- verification depth differs by language, and the repo records those differences explicitly instead of smoothing them over
 
 ## Coverage Overview
 
-These three JVM-adjacent follow-on stacks belong together because they already have multi-file canonical API support in the repo, they are credible fits for normalization-heavy and persistence-bound service layers, and they prove the acquisition layer generalizes beyond Python and the lighter systems-language examples:
+These three follow-on stacks belong together because they already have strong canonical backend example surfaces in the repo, they all benefit from concrete examples that show raw retention, provenance, parser boundaries, and resume semantics, and they finish broad language coverage for the supported stacks that already had meaningful backend examples:
 
-- Clojure already has Kit, next.jdbc, and Hiccup coverage in `examples/canonical-api/`, so it is a good place to show raw capture, provenance-preserving normalization, checkpoint persistence, and an admin-facing sync fragment without hiding the database boundary.
-- Scala already has Tapir, http4s, and ZIO coverage in `examples/canonical-api/`, so it is a good place to make typed DTOs, effect boundaries, replay from archived payloads, and cursor handoff explicit.
-- Kotlin already has http4k and Exposed coverage in `examples/canonical-api/`, so it is a good place to show repository-backed checkpoint handling, archival before transforms, and replayable normalization in a service-oriented shape.
+- Dart already has a real Dart Frog runtime bundle in `examples/canonical-api/`, so it is a credible place to show source fetch, raw archival, replay from stored payloads, and checkpoint handoff without turning the example into a generic JSON route.
+- Ruby already has a real Hanami runtime bundle in `examples/canonical-api/`, so it is a credible place to show explicit service, normalization, persistence, and action boundaries instead of burying sync logic in controller flow.
+- OCaml already has a real Dream plus Caqti plus TyXML runtime bundle in `examples/canonical-api/`, so it is a credible place to show database-backed checkpoint handling, archive-first normalization, and an admin-facing fragment surface without dense abstraction.
 
-The earlier follow-on stacks still matter because they broaden the acquisition layer without pretending they all have Python-level verification:
+The earlier follow-on stacks still matter because they made the acquisition layer visibly polyglot before this pass closed the remaining supported-stack gap:
 
-- Elixir is supported in the repo, but Phoenix still has light verification depth. A real controller-adjacent sync example makes the acquisition boundary visible without claiming compile or runtime coverage that does not exist.
-- Nim, Zig, and Crystal already have runnable backend example infrastructure in `examples/canonical-api/`, so they are credible anchors for polyglot acquisition expansion even though the new sync surfaces remain source-verified only.
-- Adding acquisition examples in these stacks proves the capability is not tied to the Python, Go, Rust, and TypeScript cluster. The invariant layer now has concrete implementations across JVM-adjacent, BEAM, Nim, Zig, and Crystal surfaces as well.
+- Python, Go, Rust, and TypeScript still provide the strongest parse-aware acquisition anchors.
+- Clojure, Scala, Kotlin, Elixir, Nim, Zig, and Crystal still show that the invariant layer generalizes across very different service shapes even where verification remains structural.
+- With Dart, Ruby, and OCaml added, the acquisition layer now reaches the remaining supported stacks in this repo that already had meaningful canonical backend example coverage.
 
 ## Invariant Layer
 
@@ -140,4 +140,4 @@ Across the stack-specific examples, the same semantic boundaries stay visible:
 - `nim-jester-source-sync-example.nim` is `structure-verified` by `verification/examples/nim/test_nim_jester_happyx_examples.py`
 - `zig-zap-source-sync-example.zig` is `structure-verified` by `verification/examples/zig/test_zig_zap_jetzig_examples.py`
 - `crystal-kemal-source-sync-example.cr` is `structure-verified` by `verification/examples/crystal/test_crystal_kemal_avram_examples.py`
-- verification differences are intentional: Python is still the strongest acquisition example, Go, Rust, and TypeScript have parse-aware checks, and Clojure, Scala, Kotlin, Elixir, Nim, Zig, and Crystal currently stop at honest structure coverage
+- verification differences are intentional: Python is still the strongest acquisition example, Go, Rust, and TypeScript have parse-aware checks, and Dart, Clojure, Scala, Kotlin, Ruby, OCaml, Elixir, Nim, Zig, and Crystal currently stop at honest structure coverage
