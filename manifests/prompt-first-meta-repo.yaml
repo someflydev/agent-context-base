@@ -16,10 +16,15 @@ required_context:
   - context/doctrine/core-principles.md
   - context/doctrine/prompt-first-conventions.md
   - context/doctrine/context-loading-rules.md
+  - context/doctrine/documentation-timing-discipline.md
   - context/workflows/bootstrap-repo.md
   - context/stacks/prompt-first-repo.md
   - context/archetypes/prompt-first-repo.md
 optional_context:
+  - context/doctrine/README-gating-for-derived-repos.md
+  - context/doctrine/mermaid-diagram-freshness.md
+  - context/workflows/decide-when-to-create-root-readme.md
+  - context/workflows/perform-doc-freshness-pass.md
   - context/workflows/generate-prompt-sequence.md
   - context/workflows/post-flight-refinement.md
   - context/skills/task-inference.md
@@ -49,10 +54,12 @@ task_hints:
 warnings:
   - Keep routers concise and keep doctrine, workflows, examples, and templates separate.
   - Prompt files must use strict monotonic numbering and exact filename references.
+  - Defer substantial root README and docs content in derived repos until implementation can support honest public-facing docs.
 bootstrap_defaults:
   - include_prompt_first
   - include_generated_profile
   - include_smoke_tests
+  - defer_front_docs_until_implemented
 compose_files:
   - docker-compose.yml
   - docker-compose.test.yml

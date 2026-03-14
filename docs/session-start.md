@@ -4,11 +4,14 @@ Use this checklist when starting a task or resuming after context drift.
 
 ## Read First
 
-1. `README.md`
-2. `docs/context-boot-sequence.md`
-3. `docs/repo-purpose.md`
-4. `docs/repo-layout.md`
-5. `context/router/task-router.md`
+1. `AGENT.md` or `CLAUDE.md`
+2. `manifests/project-profile.yaml`
+3. `.generated-profile.yaml`
+4. `README.md` if it exists and is current
+5. `docs/context-boot-sequence.md`
+6. `docs/repo-purpose.md` if it exists
+7. `docs/repo-layout.md` if it exists
+8. `context/router/task-router.md`
 
 Then inspect narrow repo signals. Read `MEMORY.md` only after that stable startup pass.
 
@@ -28,6 +31,7 @@ Then inspect narrow repo signals. Read `MEMORY.md` only after that stable startu
 - `context/anchors/context-integrity.md` for metadata work
 - `context/anchors/compose-isolation.md` for infra work
 - `context/anchors/prompt-first.md` for prompt-first repos
+- `context/doctrine/documentation-timing-discipline.md` when deciding whether front-facing docs should exist yet
 
 ## Stop Early When
 

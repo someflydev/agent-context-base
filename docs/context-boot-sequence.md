@@ -5,7 +5,7 @@ This is the deterministic startup contract for assistants working in `agent-cont
 ## Boot Order
 
 1. Read the stable entrypoints:
-   `README.md`, `docs/context-boot-sequence.md`, `docs/repo-purpose.md`, `docs/repo-layout.md`, and `docs/session-start.md`.
+   `AGENT.md`, `CLAUDE.md`, `manifests/project-profile.yaml`, `.generated-profile.yaml`, plus `README.md` and `docs/...` only when they exist and are clearly maintained.
 2. Inspect narrow repo signals:
    lockfiles, root manifests, source entrypoints, Compose files, prompt files, and deployment artifacts.
 3. Recover continuity:
@@ -24,7 +24,7 @@ This is the deterministic startup contract for assistants working in `agent-cont
 
 ```mermaid
 flowchart TD
-    A[Stable entrypoints] --> B[Repo-signal check]
+    A[Stable entrypoints<br/>boot docs plus README/docs when present] --> B[Repo-signal check]
     B --> C[MEMORY.md or handoff if relevant]
     C --> D[Task router]
     D --> E[Stack and archetype routers]
@@ -38,6 +38,7 @@ flowchart TD
 ## Rules
 
 - Do not start by scanning whole directories.
+- In newly derived repos, missing root `README.md` or `docs/` can be intentional when front-facing docs are being deferred until the implementation has substance.
 - Treat `MEMORY.md` as operational state, not doctrine.
 - Stop if more than one workflow, stack, archetype, or manifest still looks primary.
 - Do not merge several near-match manifests.

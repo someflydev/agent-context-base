@@ -21,6 +21,14 @@ Route from what the user is trying to do, not from internal file names.
 - "bootstrap a repo", "new repo from base", "starter repo"
   - load `context/workflows/bootstrap-repo.md`
   - prefer `scripts/new_repo.py` when the task is repo generation instead of a manual copy pass
+- "don't create the README yet", "wait before adding a README", "README can wait"
+  - load `context/workflows/decide-when-to-create-root-readme.md`
+- "wait until the repo has substance before adding docs", "don't add docs yet", "should we create docs now"
+  - load `context/workflows/decide-when-to-create-project-docs-dir.md`
+- "refresh outdated mermaid diagrams", "update the architecture diagram", "diagram looks stale"
+  - load `context/workflows/refresh-mermaid-diagrams.md`
+- "do a doc freshness pass", "check docs for drift", "refresh repo docs after implementation"
+  - load `context/workflows/perform-doc-freshness-pass.md`
 - "make a prompt sequence", "split this into prompts"
   - load `context/workflows/generate-prompt-sequence.md`
 - "deploy", "Dokku", "Procfile", "release phase"
@@ -80,6 +88,12 @@ Examples:
 - "Bootstrap a repo and generate prompt files"
   - start with `context/workflows/bootstrap-repo.md`
   - then load `context/workflows/generate-prompt-sequence.md`
+- "Bootstrap a repo but do not create the README yet"
+  - start with `context/workflows/bootstrap-repo.md`
+  - then load `context/workflows/decide-when-to-create-root-readme.md`
+- "Add docs only after the repo has substance"
+  - start with `context/workflows/decide-when-to-create-project-docs-dir.md`
+  - then load `context/workflows/perform-doc-freshness-pass.md`
 - "Add a storage-backed route plus a real integration test"
   - start with `context/workflows/add-api-endpoint.md`
   - then load `context/workflows/add-storage-integration.md`
@@ -108,6 +122,14 @@ Examples:
 
 - "Set up a FastAPI repo for a small analytics API"
   - workflow: `context/workflows/bootstrap-repo.md`
+- "Don’t create the README yet"
+  - workflow: `context/workflows/decide-when-to-create-root-readme.md`
+- "Wait until the repo has substance before adding docs"
+  - workflow: `context/workflows/decide-when-to-create-project-docs-dir.md`
+- "Refresh outdated Mermaid diagrams"
+  - workflow: `context/workflows/refresh-mermaid-diagrams.md`
+- "Do a doc freshness pass"
+  - workflow: `context/workflows/perform-doc-freshness-pass.md`
 - "Add a Bun route that writes through Drizzle"
   - workflow: `context/workflows/add-api-endpoint.md`
 - "Search results look wrong after indexing"

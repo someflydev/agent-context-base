@@ -15,6 +15,22 @@ tasks:
     target: context/workflows/bootstrap-repo.md
   - alias: bootstrap starter
     target: context/workflows/bootstrap-repo.md
+  - alias: don't create the README yet
+    target: context/workflows/decide-when-to-create-root-readme.md
+  - alias: wait before adding a README
+    target: context/workflows/decide-when-to-create-root-readme.md
+  - alias: wait until the repo has substance before adding docs
+    target: context/workflows/decide-when-to-create-project-docs-dir.md
+  - alias: don't add docs yet
+    target: context/workflows/decide-when-to-create-project-docs-dir.md
+  - alias: refresh outdated mermaid diagrams
+    target: context/workflows/refresh-mermaid-diagrams.md
+  - alias: diagram freshness
+    target: context/workflows/refresh-mermaid-diagrams.md
+  - alias: doc freshness pass
+    target: context/workflows/perform-doc-freshness-pass.md
+  - alias: refresh repo docs
+    target: context/workflows/perform-doc-freshness-pass.md
   - alias: smoke test
     target: context/workflows/add-smoke-tests.md
   - alias: integration test

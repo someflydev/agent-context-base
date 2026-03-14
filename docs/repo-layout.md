@@ -36,6 +36,7 @@ The repository is organized so assistants can route first, load later, and avoid
 - Load only the stacks on the active change surface.
 - Prefer one canonical example over several near-matches.
 - Treat templates as scaffolding, not proof of a canonical pattern.
+- In newly derived repos, missing root `README.md` or `docs/` can be intentional until the implementation earns front-facing docs.
 
 ## Extension Rule
 
