@@ -5,6 +5,10 @@ Use this category for preferred route, handler, validation, and service-boundary
 Primary files in this category:
 
 - `fastapi-endpoint-example.py`
+- `fastapi-faceted-filter-fragment-example.py`
+- `fastapi-include-exclude-filter-example.py`
+- `fastapi-dynamic-counts-fragment-example.py`
+- `fastapi-plotly-query-endpoint-example.py`
 - `fastapi-example/app.py`
 - `nim-jester-json-endpoint-example.nim`
 - `nim-happyx-html-fragment-example.nim`
@@ -56,6 +60,22 @@ Primary files in this category:
   Verification level: behavior-verified
   Harness: fastapi_min_app
   Last verified by: verification/examples/python/test_fastapi_examples.py
+- `fastapi-faceted-filter-fragment-example.py`
+  Verification level: behavior-verified
+  Harness: direct Python example loading with FastAPI stubs
+  Last verified by: verification/examples/python/test_backend_driven_ui_examples.py
+- `fastapi-include-exclude-filter-example.py`
+  Verification level: behavior-verified
+  Harness: direct Python example loading with FastAPI stubs
+  Last verified by: verification/examples/python/test_backend_driven_ui_examples.py
+- `fastapi-dynamic-counts-fragment-example.py`
+  Verification level: behavior-verified
+  Harness: direct Python example loading with FastAPI stubs
+  Last verified by: verification/examples/python/test_backend_driven_ui_examples.py
+- `fastapi-plotly-query-endpoint-example.py`
+  Verification level: behavior-verified
+  Harness: direct Python example loading with FastAPI stubs
+  Last verified by: verification/examples/python/test_backend_driven_ui_examples.py
 - `fastapi-example/app.py`
   Verification level: smoke-verified
   Harness: fastapi_min_app
