@@ -1,0 +1,210 @@
+You are working inside the agent-context-base repository.
+
+Your task is to perform a major capability expansion so this repository can properly support non-trivial public example projects involving:
+
+- pulling data from multiple sources via APIs and/or scraping
+- saving raw downloads locally for future re-parsing
+- parsing and normalizing heterogeneous source data
+- classifying or categorizing records
+- storing parsed data in databases
+- coordinating source syncs via event streaming
+- running recurring syncs such as twice-daily pulls
+- handling rate limits, retries, and backoff behavior
+- researching and evaluating candidate data sources before implementation
+- exposing the resulting data through strong backend APIs and interactive UIs
+
+This is not a greenfield redesign.
+Integrate these capabilities into the existing agent-context-base architecture cleanly.
+
+The repository already contains context layers, stack packs, archetypes, verification systems, runtime docs, and related architecture. Your job is to add the missing context and operational guidance needed for this class of systems.
+
+The work must be implementation-oriented and organized into commit-ready batches.
+
+For each batch:
+1. Give the batch title.
+2. Explain the purpose.
+3. List created or updated files.
+4. Provide the full contents of each file.
+5. End with a suggested Tim Pope style commit message with a bracketed prefix such as `[DATA_CTX_XX]`.
+
+IMPORTANT CONSTRAINTS
+
+- Keep the architecture consistent with the existing repo.
+- Prefer concise, high-density docs over bloated prose.
+- Add context artifacts rather than vague essays.
+- Avoid duplicating concepts that already exist elsewhere in the repo.
+- Add only the docs, examples, manifests, templates, and validation updates needed to support this capability well.
+- Keep terminology consistent with the rest of the repository.
+- Assume public example repos may use Docker-backed local development and may later be deployable to a VPS via Dokku.
+- Do not create a root-level README or root-level docs directory for the future derived example repo in this prompt; this prompt is only for expanding agent-context-base.
+
+SECTION 1 — Capability expansion overview
+
+Briefly explain what is being added and why these capabilities matter for the ecosystem.
+
+The added capability areas must include:
+- researching candidate data sources
+- source reliability and licensing awareness
+- API ingestion
+- scraping ingestion
+- raw payload archival
+- parsing and normalization
+- classification/enrichment
+- recurring sync workflows
+- rate-limit and backoff discipline
+- event-driven sync orchestration
+- database persistence patterns for acquired data
+
+SECTION 2 — New context files to add
+
+Add high-value context files under the existing architecture.
+
+At minimum, create and/or update files in areas such as:
+
+context/doctrine/
+- data-acquisition-philosophy.md
+- raw-data-retention.md
+- sync-safety-rate-limits.md
+- source-research-discipline.md
+
+context/workflows/
+- research-data-sources.md
+- add-api-ingestion-source.md
+- add-scraping-source.md
+- add-raw-download-archive.md
+- add-parser-normalizer.md
+- add-classification-step.md
+- add-recurring-sync.md
+- add-event-driven-sync.md
+- add-source-backoff-retry.md
+
+context/archetypes/
+- data-acquisition-service.md
+- multi-source-sync-platform.md
+
+context/stacks/
+- event-streaming-patterns.md
+- scraping-and-ingestion-patterns.md
+- source-research-and-evaluation.md
+
+If you decide on slightly different names, keep them deterministic and explain why.
+
+SECTION 3 — Doctrine design
+
+The doctrine docs must define clear principles such as:
+- preserve raw source material whenever practical
+- keep parsing separate from fetching where useful
+- prefer re-parseability over irreversible transformations
+- respect source rate limits and robots/terms where relevant
+- make sync behavior idempotent where possible
+- prefer incremental repeatable pulls
+- classify with explicit provenance when feasible
+- keep source adapters narrow and well-bounded
+- avoid coupling source acquisition directly to frontend behavior
+
+Write doctrine docs so assistants can use them during real implementation.
+
+SECTION 4 — Workflow design
+
+Each workflow doc should be a practical playbook with:
+- purpose
+- when to use it
+- inputs
+- sequence
+- outputs
+- related doctrine
+- common pitfalls
+- stop conditions
+
+At minimum ensure the workflows cover:
+- researching candidate data sources online
+- deciding between API vs scraping
+- adding a new source adapter
+- storing raw downloads locally
+- parsing raw payloads into normalized records
+- adding classification/enrichment stages
+- scheduling twice-daily syncs
+- handling rate limits, retries, backoffs, and partial failures
+- emitting and consuming events for source sync coordination
+
+SECTION 5 — Canonical example additions
+
+Add canonical example surfaces relevant to this capability area.
+
+At minimum add README files and minimal realistic examples under appropriate example directories for:
+- API ingestion source example
+- scraping source example
+- raw download archival layout
+- parser/normalizer example
+- classification example
+- recurring sync configuration example
+- backoff/retry configuration example
+- event-streaming sync example
+
+Keep examples small but useful.
+Where possible include metadata or verification references consistent with the repo’s existing example strategy.
+
+SECTION 6 — Manifest and router integration
+
+Update or add manifests and routing support so assistants can discover these new capabilities from normal English prompts.
+
+Examples of user intent that should be routable:
+- “add a new API source”
+- “save raw downloads so they can be re-parsed later”
+- “build a twice-daily sync”
+- “add backoff and rate-limit awareness”
+- “research candidate public data sources”
+- “classify records after parsing”
+- “use events to coordinate source syncs”
+
+Update task-router, stack-router, archetype-router, alias catalog, or manifests only where needed.
+
+SECTION 7 — Verification and validation updates
+
+Extend validation so the repo remains internally coherent after these additions.
+
+Update or add tests/scripts to ensure:
+- new manifests reference real files
+- new context docs are discoverable
+- examples referenced by manifests exist
+- routing aliases resolve
+- any metadata stays consistent
+
+If the repo has validation helpers, integrate with them rather than inventing parallel systems.
+
+SECTION 8 — Public example repo readiness notes
+
+Add a concise architecture-facing doc or section that explains how these new capabilities prepare the base repo for a future public non-trivial example repo that:
+- acquires from multiple sources
+- archives raw downloads
+- parses and classifies records
+- stores data in a DB
+- coordinates syncs with events
+- serves a strong backend/UI
+
+Do not design the actual example repo here; only explain how the base repo now supports it.
+
+SECTION 9 — Commit-ready batching
+
+A recommended batching structure is:
+
+Batch 1
+- doctrine docs
+
+Batch 2
+- workflow docs
+
+Batch 3
+- archetypes / stacks / manifests / routers
+
+Batch 4
+- examples
+
+Batch 5
+- validation updates and consistency cleanup
+
+You may refine the grouping if quality demands it.
+
+SECTION 10 — Output
+
+Generate the actual implementation pass in commit-ready batches now.

@@ -1,0 +1,163 @@
+You are working inside the agent-context-base repository.
+
+Your task is to add a strong capability layer for backend-driven interactive UIs built around HTMX, Tailwind, and Plotly, with special emphasis on correctness and verification for:
+
+- dynamic filtering
+- multi-select include/exclude filters
+- accurate result counts
+- accurate per-filter option counts
+- backend-generated partial UI updates
+- Plotly-driven charts backed by live query results
+- Playwright-based UI verification of backend-driven interfaces
+
+This capability expansion is specifically intended to support future public example repos where backend query correctness matters as much as surface-level UI behavior.
+
+This is not a greenfield redesign.
+Integrate these additions into the existing architecture cleanly.
+
+Organize all work into commit-ready batches.
+
+For each batch:
+1. Give the batch title.
+2. Explain the purpose.
+3. List created or updated files.
+4. Provide the full contents of each file.
+5. End with a suggested commit message with a bracketed prefix such as `[UX_QUERY_XX]`.
+
+IMPORTANT CONSTRAINTS
+
+- Keep docs concise and high-signal.
+- Focus on backend-driven UI patterns, not frontend-framework sprawl.
+- Emphasize correctness of counts and query semantics.
+- Add Playwright guidance as a verification layer, not as a generic “test everything” blob.
+- Keep terminology consistent with the rest of the repo.
+
+SECTION 1 — Capability overview
+
+Briefly explain why this capability area matters.
+
+The capability expansion must cover:
+- HTMX/Tailwind/Plotly backend interaction patterns
+- dynamic count correctness in faceted filtering
+- include/exclude multi-select semantics
+- query-state and count-state correctness
+- Playwright verification of backend-generated UX
+- chart/data synchronization with filters
+
+SECTION 2 — New doctrine docs
+
+At minimum add doctrine docs such as:
+
+context/doctrine/
+- backend-driven-ui-correctness.md
+- faceted-query-count-discipline.md
+- filter-state-and-query-state.md
+- playwright-verification-philosophy.md
+
+These docs should define principles like:
+- counts must reflect the actual database query semantics
+- include/exclude filters must be explicit and testable
+- response fragments should reflect real backend state
+- chart data and result counts must remain aligned
+- UI verification should assert semantics, not just clicks
+
+SECTION 3 — New workflow docs
+
+At minimum add workflows such as:
+
+context/workflows/
+- add-faceted-filter-ui.md
+- add-include-exclude-filtering.md
+- add-dynamic-counts.md
+- add-plotly-backed-query-view.md
+- add-playwright-ui-verification.md
+- verify-query-count-correctness.md
+
+Each workflow must include:
+- purpose
+- when to use it
+- sequence
+- outputs
+- related doctrine
+- common pitfalls
+- stop conditions
+
+SECTION 4 — New stack/context additions
+
+Add or update stack/context docs that support:
+- backend HTMX fragment patterns
+- Plotly data endpoint patterns
+- Playwright testing for backend-driven UIs
+- query/state synchronization patterns
+
+Use deterministic file names.
+
+SECTION 5 — Canonical examples
+
+Add or extend canonical examples for:
+- faceted filter response pattern
+- include/exclude filter endpoint
+- dynamic count endpoint or response fragment
+- Plotly data endpoint tied to query state
+- Playwright test example for backend-driven filtering
+- Playwright test example that verifies counts next to filter options
+
+These examples should be small but realistic.
+Where practical, include or reference Docker-backed runnable examples if consistent with repo patterns.
+
+SECTION 6 — Verification strategy
+
+Add validation or verification guidance and tests that support:
+- dynamic counts matching actual DB result sets
+- counts for filter options reflecting include/exclude semantics
+- filter state reflected correctly in fragments
+- Plotly/chart data staying in sync with query results
+- Playwright assertions that verify semantics rather than just DOM presence
+
+If the repo already has verification harnesses, extend them consistently.
+
+SECTION 7 — Router and manifest integration
+
+Update routing/manifests/aliases so prompts like the following find the right context:
+- “add dynamic counts next to filters”
+- “verify faceted counts are accurate”
+- “add include/exclude filtering”
+- “test HTMX + Plotly behavior with Playwright”
+- “make sure chart data matches filter state”
+
+SECTION 8 — Public example repo readiness
+
+Add a concise architecture-facing note explaining how this capability expansion prepares the base repo for a future public example repo that will:
+- expose backend APIs
+- render HTMX/Tailwind views
+- drive Plotly charts
+- offer multi-faceted filtering
+- require exact count correctness
+- use Playwright to verify behavior
+
+Do not design the example repo itself here.
+
+SECTION 9 — Commit-ready batching
+
+A recommended batching structure is:
+
+Batch 1
+- doctrine docs
+
+Batch 2
+- workflow docs
+
+Batch 3
+- stack/context/router/manifest updates
+
+Batch 4
+- canonical examples
+
+Batch 5
+- verification and consistency updates
+
+You may adjust if needed.
+
+SECTION 10 — Output
+
+Generate the actual implementation pass in commit-ready batches now.

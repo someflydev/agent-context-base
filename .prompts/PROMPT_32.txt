@@ -1,0 +1,139 @@
+You are working inside the agent-context-base repository.
+
+Your task is to add explicit governance and validation support for documentation timing discipline, especially for future derived repos.
+
+The key discipline to add is:
+
+Do not create a root-level README.md or a root-level docs/ directory for a new derived project too early.
+
+Instead, those should be created only after a significant amount of implementation work is complete so they do not become immediately stale, misleading, or diagram-heavy speculation.
+
+This prompt must integrate that discipline into the repository’s doctrines, workflows, templates, manifests, and validations where appropriate.
+
+It must also ensure that existing docs, READMEs, diagrams, and validations inside agent-context-base remain coherent and accurate after these additions.
+
+Organize the work into commit-ready batches.
+
+For each batch:
+1. Give the batch title.
+2. Explain the purpose.
+3. List created or updated files.
+4. Provide the full contents of each file.
+5. End with a suggested commit message with a bracketed prefix such as `[DOC_GOV_XX]`.
+
+IMPORTANT CONSTRAINTS
+
+- This prompt governs documentation timing and quality discipline for future derived repos.
+- Do not remove legitimate existing docs from agent-context-base.
+- Keep the guidance practical, not dogmatic.
+- Make clear that some minimal generated scaffolding may still be okay, but substantial root README/docs content should wait until the implementation earns it.
+- Keep docs concise and consistent with the repo’s architecture.
+
+SECTION 1 — Governance overview
+
+Briefly explain the problem this solves:
+- premature READMEs
+- speculative docs
+- stale mermaid diagrams
+- derived repos that document imagined architecture rather than implemented reality
+
+Explain why delaying certain docs improves trustworthiness.
+
+SECTION 2 — Doctrine additions
+
+Add doctrine files such as:
+
+context/doctrine/
+- documentation-timing-discipline.md
+- README-gating-for-derived-repos.md
+- mermaid-diagram-freshness.md
+
+These docs should define principles like:
+- avoid large root README/docs early in a new project
+- prefer implementation-first, documentation-after-real-structure
+- diagrams should reflect implemented or committed architecture, not vague intention
+- once docs exist, they must be maintained as first-class artifacts
+
+SECTION 3 — Workflow additions
+
+Add workflows such as:
+
+context/workflows/
+- decide-when-to-create-root-readme.md
+- decide-when-to-create-project-docs-dir.md
+- refresh-mermaid-diagrams.md
+- perform-doc-freshness-pass.md
+
+These workflows should help assistants decide:
+- when the repo has enough substance to justify a public-facing README
+- when architecture docs and diagrams become appropriate
+- how to update docs after major implementation milestones
+
+SECTION 4 — Template and generator guidance
+
+Update templates and/or generation guidance so derived repos do not eagerly generate large root-level README/docs content by default unless explicitly requested.
+
+If `new_repo.py` or its surrounding docs/templates imply too much premature documentation, refine them.
+
+Prefer:
+- minimal starter notes or placeholders only where necessary
+- a clear recommendation that substantial front-facing docs be added after meaningful implementation
+
+SECTION 5 — Validation support
+
+Add or update validation logic/scripts/docs so the repo can:
+- check mermaid diagrams for obviously stale references where feasible
+- ensure docs cross-references remain valid
+- ensure no new docs guidance conflicts with existing runtime/usage/architecture docs
+- ensure example READMEs remain accurate after doc governance changes
+
+If full automated stale-diagram detection is unrealistic, be honest and add a practical checklist-driven validator or doc freshness guidance instead of pretending.
+
+SECTION 6 — Existing documentation consistency pass
+
+Load the current docs and governance-related files inside agent-context-base and ensure the new discipline integrates cleanly with them.
+
+Where needed:
+- add cross-links
+- reduce duplication
+- ensure the new doctrine does not conflict with existing usage docs, behavior specs, or contributor playbooks
+
+SECTION 7 — Router and manifest integration
+
+Update routing/manifests/aliases so assistants can understand prompts like:
+- “don’t create the README yet”
+- “wait until the repo has substance before adding docs”
+- “refresh outdated mermaid diagrams”
+- “do a doc freshness pass”
+
+SECTION 8 — Public example repo readiness
+
+Add concise guidance explaining how this new governance discipline should apply to the future public non-trivial example repo that will be created from agent-context-base.
+
+Make clear:
+- the example repo should initially focus on architecture, ingestion, parsing, DB, events, and backend behavior
+- front-facing README/docs/diagrams should be delayed until enough of that is implemented to describe honestly
+
+Do not design the example repo itself here.
+
+SECTION 9 — Commit-ready batching
+
+A recommended structure is:
+
+Batch 1
+- doctrine docs
+
+Batch 2
+- workflow docs
+
+Batch 3
+- template/generator guidance
+
+Batch 4
+- validation/consistency/router updates
+
+You may adjust if needed.
+
+SECTION 10 — Output
+
+Generate the actual implementation pass in commit-ready batches now.
