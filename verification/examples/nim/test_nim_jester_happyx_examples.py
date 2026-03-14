@@ -9,6 +9,8 @@ from verification.scenarios.nim_jester_happyx_min_app.verify import docker_smoke
 JSON_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-api/nim-jester-json-endpoint-example.nim"
 FRAGMENT_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-api/nim-happyx-html-fragment-example.nim"
 DATA_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-api/nim-jester-data-endpoint-example.nim"
+DATA_ACQUISITION_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-data-acquisition/nim-jester-source-sync-example.nim"
+DATA_ACQUISITION_README_PATH = REPO_ROOT / "examples/canonical-data-acquisition/README.md"
 RUNTIME_DIR = REPO_ROOT / "examples/canonical-api/nim-jester-happyx-example"
 
 
@@ -30,6 +32,19 @@ class NimJesterHappyXExampleTests(unittest.TestCase):
         self.assertIn('get "/data/series/@metric"', text)
         self.assertIn('"points": [', text)
         self.assertIn('"metric": metric', text)
+
+    def test_data_acquisition_example_contains_expected_sync_markers(self) -> None:
+        text = DATA_ACQUISITION_EXAMPLE_PATH.read_text(encoding="utf-8")
+        self.assertIn("proc archiveRawCapture*", text)
+        self.assertIn("proc replayFromArchive*", text)
+        self.assertIn("externalSlug*: string", text)
+        self.assertIn('post "/sources/github-releases/@owner/@repo/sync":', text)
+        self.assertIn("checkpointToken*", text)
+
+    def test_data_acquisition_readme_references_nim_example_honestly(self) -> None:
+        text = DATA_ACQUISITION_README_PATH.read_text(encoding="utf-8")
+        self.assertIn("nim-jester-source-sync-example.nim (structure-verified)", text)
+        self.assertIn("real Nim example, `structure-verified` only", text)
 
     def test_runtime_bundle_files_exist(self) -> None:
         for relative in ("main.nim", "Dockerfile", "README.md"):

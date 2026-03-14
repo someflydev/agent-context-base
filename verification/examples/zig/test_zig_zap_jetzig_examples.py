@@ -10,6 +10,8 @@ JSON_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-api/zig-zap-json-endpoint-ex
 FRAGMENT_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-api/zig-jetzig-html-fragment-example.zig"
 FRAGMENT_TEMPLATE_PATH = REPO_ROOT / "examples/canonical-api/zig-jetzig-html-fragment-template-example.zmpl"
 DATA_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-api/zig-zap-data-endpoint-example.zig"
+DATA_ACQUISITION_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-data-acquisition/zig-zap-source-sync-example.zig"
+DATA_ACQUISITION_README_PATH = REPO_ROOT / "examples/canonical-data-acquisition/README.md"
 RUNTIME_DIR = REPO_ROOT / "examples/canonical-api/zig-zap-jetzig-example"
 
 
@@ -32,6 +34,19 @@ class ZigZapJetzigExampleTests(unittest.TestCase):
         self.assertIn('const prefix = "/data/series/";', text)
         self.assertIn('\\"points\\":[', text)
         self.assertIn('buildSeriesPayload(metric, &buf)', text)
+
+    def test_data_acquisition_example_contains_expected_sync_markers(self) -> None:
+        text = DATA_ACQUISITION_EXAMPLE_PATH.read_text(encoding="utf-8")
+        self.assertIn("fn archiveRawCapture", text)
+        self.assertIn("pub fn replayFromArchive", text)
+        self.assertIn("external_slug", text)
+        self.assertIn('const prefix = "/sources/github-releases/";', text)
+        self.assertIn("std.json.parseFromSlice", text)
+
+    def test_data_acquisition_readme_references_zig_example_honestly(self) -> None:
+        text = DATA_ACQUISITION_README_PATH.read_text(encoding="utf-8")
+        self.assertIn("zig-zap-source-sync-example.zig (structure-verified)", text)
+        self.assertIn("real Zig example, `structure-verified` only", text)
 
     def test_runtime_bundle_files_exist(self) -> None:
         for relative in ("main.zig", "build.zig", "build.zig.zon", "Dockerfile", "README.md"):

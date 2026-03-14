@@ -9,6 +9,8 @@ from verification.scenarios.crystal_kemal_avram_min_app.verify import docker_smo
 API_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-api/crystal-kemal-avram-api-endpoint-example.cr"
 FRAGMENT_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-api/crystal-kemal-avram-html-fragment-example.cr"
 DATA_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-api/crystal-kemal-avram-data-endpoint-example.cr"
+DATA_ACQUISITION_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-data-acquisition/crystal-kemal-source-sync-example.cr"
+DATA_ACQUISITION_README_PATH = REPO_ROOT / "examples/canonical-data-acquisition/README.md"
 RUNTIME_DIR = REPO_ROOT / "examples/canonical-api/crystal-kemal-avram-example"
 
 
@@ -33,6 +35,19 @@ class CrystalKemalAvramExampleTests(unittest.TestCase):
         self.assertIn("class MetricPointQuery < MetricPoint::BaseQuery", text)
         self.assertIn('SeriesPoint.new("2026-03-01", 18)', text)
         self.assertIn("MetricSeries.new(metric, points)", text)
+
+    def test_data_acquisition_example_contains_expected_sync_markers(self) -> None:
+        text = DATA_ACQUISITION_EXAMPLE_PATH.read_text(encoding="utf-8")
+        self.assertIn("class SourceCheckpointQuery < SourceCheckpoint::BaseQuery", text)
+        self.assertIn("def archive_raw_capture", text)
+        self.assertIn("def replay_from_archive", text)
+        self.assertIn("getter external_slug : String", text)
+        self.assertIn('post "/sources/github-releases/:owner/:repo/sync" do |env|', text)
+
+    def test_data_acquisition_readme_references_crystal_example_honestly(self) -> None:
+        text = DATA_ACQUISITION_README_PATH.read_text(encoding="utf-8")
+        self.assertIn("crystal-kemal-source-sync-example.cr (structure-verified)", text)
+        self.assertIn("real Crystal example, `structure-verified` only", text)
 
     def test_runtime_bundle_files_exist(self) -> None:
         for relative in ("shard.yml", "Dockerfile", "README.md", "src/app.cr"):
