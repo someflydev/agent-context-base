@@ -1,0 +1,234 @@
+You are working inside the agent-context-base repository.
+
+This prompt is the canonical-examples and verification follow-on to `PROMPT_38`.
+
+`PROMPT_38` should have introduced solo stack packs for:
+
+- `mongo`
+- `redis`
+- `trino`
+- `postgresql`
+
+This prompt makes those stack packs real in the rest of the repository.
+
+Your task is to add credible canonical storage examples, metadata, and honest verification coverage so the new solo database packs are not just routing documents with no supporting examples.
+
+The work must be implementation-oriented and organized into commit-ready batches.
+
+For each batch:
+1. Give the batch title.
+2. Explain the purpose.
+3. List created or updated files.
+4. Provide the full contents of each file.
+5. End with a suggested Tim Pope style commit message with a bracketed prefix such as `[DB_EXAMPLES_XX]`.
+
+IMPORTANT CONSTRAINTS
+
+- Build on the exact stack identifiers introduced in `PROMPT_38`:
+  - `mongo`
+  - `redis`
+  - `trino`
+  - `postgresql`
+- Keep verification claims strictly honest.
+- If an example is documentation-shaped only, mark it accordingly.
+- Prefer small, sharp, reusable examples over one huge “all databases at once” artifact.
+- Keep combined-pack metadata coherent with the new solo stack entries.
+- Do not fake runtime coverage for technologies that only receive structural checks in this pass.
+
+SECTION 1 — Example expansion overview
+
+Briefly explain why the repository needs new examples after the stack-pack split:
+
+- solo packs become materially more useful when they point to concrete examples
+- Redis, MongoDB, Trino, and PostgreSQL have distinct example shapes
+- the current storage example surface is too narrow because it mostly points at:
+  - `duckdb-polars-example.py`
+  - `redis-mongo-shape-example.md`
+
+SECTION 2 — Required canonical example files
+
+Add new examples under `examples/canonical-storage/`.
+
+Use deterministic names such as:
+
+- `mongo-weekly-reporting-example.md`
+- `redis-structures-example.md`
+- `trino-federated-analytics-example.sql`
+- `trino-federated-analytics-example.md`
+- `postgresql-query-shape-example.sql`
+- `postgresql-query-shape-example.md`
+
+You may adjust filenames slightly if needed, but keep them explicit and stable.
+
+At minimum, the examples must cover:
+
+Mongo example requirements:
+
+- weekly request/response log collections
+- cleaned document shape rather than raw unbounded payload dumps
+- a retention approach where old weekly collections can be dropped whole
+- one or more representative aggregation pipeline patterns for reporting
+- at least one index example that uses `partialFilterExpression` where the document shape makes that appropriate
+
+Redis example requirements:
+
+- demonstrate choosing the right Redis structure for the job
+- include at least a few concrete surfaces such as:
+  - leaderboard via sorted set
+  - expiring session or cache key
+  - hash-backed small state record
+  - stream or queue-adjacent append path
+- explain why those structures fit better than a single blob strategy
+
+Trino example requirements:
+
+- show a federated analytics query shape, ideally with cross-catalog joins or aggregated rollups
+- pair SQL with a Markdown explainer unless the SQL file is already fully self-explanatory
+- explicitly distinguish Trino analytics workloads from OLTP PostgreSQL usage
+- make compatible-catalog assumptions visible and realistic
+
+PostgreSQL example requirements:
+
+- include a representative SQL query surface for transactional/reporting use
+- make indexing, migrations, and query semantics feel like real PostgreSQL work rather than generic ANSI SQL filler
+- show at least one believable reporting or materialized-view-adjacent pattern if useful
+- keep `jsonb` usage pragmatic and bounded
+
+SECTION 3 — Example README integration
+
+Update:
+
+- `examples/canonical-storage/README.md`
+- `examples/README.md` if needed
+
+Requirements:
+
+- list the new example files
+- keep verification levels truthful
+- make it easy to choose between solo examples and combined examples
+- explain when `redis-mongo-shape-example.md` is still the right example versus when a solo example is better
+
+SECTION 4 — Catalog and registry integration
+
+Update metadata surfaces so the new examples are discoverable and internally consistent.
+
+At minimum review and update:
+
+- `examples/catalog.json`
+- `verification/example_registry.yaml`
+- `verification/stack_support_matrix.yaml`
+
+Requirements:
+
+- each new example must be associated with the correct solo stack
+- combined packs may also reference relevant examples when appropriate, but the solo stacks must not depend entirely on combined metadata
+- support levels should improve only when the examples and checks genuinely justify that improvement
+- if `trino` or `postgresql` gains an example but not strong runtime verification, keep the support note honest
+
+SECTION 5 — Verification implementation
+
+Extend the repository’s existing verification surfaces so the new examples are actually checked.
+
+At minimum cover:
+
+- file existence
+- key markers that prove the example is shaped correctly for the intended database
+- README references
+- registry consistency
+
+Possible markers to assert:
+
+Mongo:
+- weekly collection naming or bucketing language
+- aggregation pipeline stages such as `$match`, `$group`, `$facet`, or similar
+- `partialFilterExpression`
+
+Redis:
+- terms like `ZADD`, sorted set, stream, hash, expiry, or equivalent explanatory markers
+
+Trino:
+- catalog-qualified table names
+- federated join or aggregation markers
+
+PostgreSQL:
+- `CREATE INDEX`, `jsonb`, `materialized view`, `WITH` query, or similarly PostgreSQL-shaped constructs
+
+Prefer extending current integrity or example tests over inventing a disconnected validator unless separation materially improves maintainability.
+
+SECTION 6 — Stack support matrix expectations
+
+Update `verification/stack_support_matrix.yaml` so it tells a more truthful story after the database split.
+
+The matrix should distinguish:
+
+- `mongo`
+- `redis`
+- `trino`
+- `postgresql`
+- existing combo packs such as:
+  - `redis-keydb-mongo`
+  - `duckdb-trino-polars`
+  - `timescaledb`
+
+Do not silently remove the combo packs from the matrix if they still exist in the repository.
+Instead, make their role clearer.
+
+SECTION 7 — Optional but high-value follow-through
+
+If the repo already has a good place for small storage-specific verification snippets, consider adding one or two lightweight examples beyond Markdown-only assets, such as:
+
+- a tiny PostgreSQL SQL example file
+- a tiny Trino SQL example file
+
+Do this only if it improves trust without creating a heavyweight runtime burden.
+
+SECTION 8 — Consistency pass
+
+After adding examples and metadata, do a consistency pass across:
+
+- `context/stacks/`
+- `examples/canonical-storage/`
+- `examples/catalog.json`
+- `verification/example_registry.yaml`
+- `verification/stack_support_matrix.yaml`
+
+The repository should tell one coherent story:
+
+- solo database packs exist
+- combo packs still exist for multi-storage designs
+- examples support both layers
+- verification truthfully describes what is and is not checked
+
+SECTION 9 — Commit-ready batching
+
+A recommended batching structure is:
+
+Batch 1
+- Mongo and Redis examples plus storage README updates
+
+Batch 2
+- Trino and PostgreSQL examples plus storage README updates
+
+Batch 3
+- catalog, registry, and support-matrix integration
+
+Batch 4
+- verification updates and consistency cleanup
+
+You may refine the grouping if quality demands it.
+
+SECTION 10 — Honesty rules
+
+The point of this prompt is trust, not symmetry.
+
+If the final state is something like:
+
+- “Mongo and Redis gained strong documentation examples, structure-verified only”
+- “Trino gained a good SQL example, but no runtime federation harness”
+- “PostgreSQL is now first-class in examples, but integration depth remains limited”
+
+then say that plainly in the output.
+
+SECTION 11 — Output
+
+Generate the actual implementation pass in commit-ready batches now.

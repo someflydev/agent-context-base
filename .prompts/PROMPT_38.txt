@@ -1,0 +1,289 @@
+You are working inside the agent-context-base repository.
+
+This prompt is a database-stack expansion and routing cleanup pass.
+
+The repository currently has useful combined storage packs, but several important databases only exist as part of a bundle:
+
+- `redis-keydb-mongo`
+- `duckdb-trino-polars`
+- `timescaledb` without a baseline `postgresql` stack
+
+That is no longer sufficient.
+
+Your task is to add thoughtful solo stack packs for:
+
+- `mongo`
+- `redis`
+- `trino`
+- `postgresql`
+
+and then reposition the existing combined packs so they remain useful without being the only way those technologies are represented.
+
+This is not a greenfield rewrite.
+Integrate the new solo stack packs cleanly with the existing router, alias, manifest, and bootstrap surfaces.
+
+The work must be implementation-oriented and organized into commit-ready batches.
+
+For each batch:
+1. Give the batch title.
+2. Explain the purpose.
+3. List created or updated files.
+4. Provide the full contents of each file.
+5. End with a suggested Tim Pope style commit message with a bracketed prefix such as `[DB_STACKS_XX]`.
+
+IMPORTANT CONSTRAINTS
+
+- Use these exact new stack identifiers:
+  - `mongo`
+  - `redis`
+  - `trino`
+  - `postgresql`
+- Do not delete the existing combined packs unless a replacement is clearly superior and the repository remains coherent.
+- Prefer keeping `redis-keydb-mongo.md` and `duckdb-trino-polars.md`, but narrow their job:
+  - they should become combination/comparison packs
+  - they should no longer be the only canonical entry for those databases
+- Treat `timescaledb.md` as an extension-specific pack, not a substitute for `postgresql.md`.
+- Keep the docs dense, practical, and selection-oriented.
+- Do not write vendor-marketing prose.
+- Keep routing behavior minimal and inferable from normal user language.
+- Where a technology is a poor fit for a given request, say so in the doc rather than pretending every tool fits every job.
+
+SECTION 1 — Coverage expansion overview
+
+Briefly explain why the repository needs this expansion:
+
+- solo database packs are necessary because “Redis”, “MongoDB”, “Trino”, and “PostgreSQL” each imply distinct implementation and testing decisions
+- combined packs are still useful for mixed-storage designs, but they are too coarse for direct task routing
+- PostgreSQL is a foundational omission because many backend stacks in the repo implicitly assume a transactional SQL database even though no solo PostgreSQL pack exists
+- Trino should be discoverable as a federated analytics layer, not only as an aside inside a DuckDB/Polars pack
+
+SECTION 2 — Required stack files
+
+Create these new files:
+
+- `context/stacks/mongo.md`
+- `context/stacks/redis.md`
+- `context/stacks/trino.md`
+- `context/stacks/postgresql.md`
+
+Update these existing files:
+
+- `context/stacks/redis-keydb-mongo.md`
+- `context/stacks/duckdb-trino-polars.md`
+- `context/stacks/timescaledb.md`
+- `context/router/stack-router.md`
+- `context/router/alias-catalog.yaml`
+- `context/router/repo-signal-hints.json`
+- `context/router/task-router.md` if it still routes database requests too coarsely
+- any manifest or script registry files that enumerate stack identifiers, such as:
+  - `scripts/manifest_tools.py`
+  - `scripts/validate_context.py`
+  - `scripts/new_repo.py`
+  - manifest files that should now reference the solo database packs
+
+Only update additional files when they materially improve coherence.
+
+SECTION 3 — Solo stack-pack expectations
+
+Each new stack pack should follow the existing house style:
+
+- short title
+- one-paragraph “Use this pack when...” framing
+- `Typical Repo Surface`
+- `Change Surfaces To Watch`
+- `Testing Expectations`
+- `Common Assistant Mistakes`
+
+But the content must be more specific than the current combined packs.
+
+Mongo requirements:
+
+- present MongoDB as a document-store and reporting-friendly operational datastore, not just “simple persistence”
+- explicitly cover aggregation pipeline usage for reporting and operational analytics
+- include the request/response log use case:
+  - cleaned request/response logs dumped to MongoDB
+  - weekly collections such as date-bucketed log collections
+  - old collections can be dropped whole when retention expires
+- explain when `partialFilterExpression` is useful:
+  - sparse or shape-known documents
+  - indexes targeted to the subset of documents that actually need a query path
+- call out collection naming, compound indexes, document-shape drift, and retention strategy as primary change surfaces
+- discourage lazy “just store arbitrary JSON forever” guidance
+
+Redis requirements:
+
+- treat Redis as a first-class solo pack, not a footnote to MongoDB
+- make data-structure selection central:
+  - strings with expiry
+  - hashes
+  - sets
+  - sorted sets
+  - lists
+  - streams
+- explicitly mention credible use cases such as:
+  - leaderboards
+  - expiring keys
+  - counters / rate limits
+  - coordination primitives
+  - append-like event or job-adjacent streams
+- mention Redis modules as optional capability expansion, but do not assume they are always present
+- warn against flattening everything into opaque serialized blobs when native structures would be better
+
+Trino requirements:
+
+- present Trino as a federated analytics query layer, not as a general transactional database
+- explain that when a repo uses multiple databases, Trino should often be considered as an analytical overlay
+- instruct that compatible allowed databases may be added as catalogs when that materially improves cross-source analytics
+- make the “compatible” constraint explicit:
+  - do not imply every storage system automatically belongs behind Trino
+  - stay connector-aware and realistic
+- describe analytics queries that are meaningfully Trino-shaped compared with ordinary PostgreSQL/MySQL usage:
+  - cross-catalog joins
+  - analytical rollups across multiple sources
+  - larger scan-style aggregations
+  - warehouse-style read paths that do not belong on OLTP traffic
+- call out catalog config, type mismatches, pushdown assumptions, and query cost as primary risks
+
+PostgreSQL requirements:
+
+- create a real baseline PostgreSQL stack pack
+- present it as the default transactional SQL foundation for many backend repos in this ecosystem
+- cover schema and migration discipline, indexing, transactional behavior, and representative reporting queries
+- mention `jsonb` pragmatically without turning the doc into “Mongo in Postgres”
+- include guidance for connection setup, migration files, query modules, seed/reset surfaces, and integration tests against real isolated PostgreSQL
+- explain the relationship to `timescaledb.md`:
+  - `postgresql.md` is the base pack
+  - `timescaledb.md` adds extension-specific time-series concerns
+  - when a repo uses TimescaleDB, assistants should usually load both
+
+SECTION 4 — Combined-pack redesign expectations
+
+Update the existing combined packs so their purpose is explicit.
+
+`context/stacks/redis-keydb-mongo.md` should become a mixed-storage pack for cases such as:
+
+- Redis plus Mongo in one service
+- cache + document-store combinations
+- queue-adjacent or state-shaping combinations
+- migration or comparison decisions between similar storage layers
+
+It should no longer read like the canonical entry for Redis or Mongo individually.
+
+`context/stacks/duckdb-trino-polars.md` should become a pack for:
+
+- local analytical workflows plus federation
+- DuckDB + Polars local transforms
+- Trino as cross-source query fabric
+- repos that genuinely use these together
+
+It should no longer be the only stack that makes Trino discoverable.
+
+`context/stacks/timescaledb.md` should be updated so it clearly assumes PostgreSQL fundamentals are already relevant and should normally pair with `postgresql.md`.
+
+SECTION 5 — Routing and alias integration
+
+Update discovery so user phrasing maps to the right pack.
+
+Requirements:
+
+- explicit `redis` requests should route to `context/stacks/redis.md`
+- explicit `mongo`, `mongodb`, `aggregation pipeline`, or `partialFilterExpression` requests should route to `context/stacks/mongo.md`
+- explicit `trino`, `catalog`, `federated analytics`, or cross-database query requests should route to `context/stacks/trino.md`
+- explicit `postgres`, `postgresql`, `jsonb`, `materialized view`, or migration-heavy SQL requests should route to `context/stacks/postgresql.md`
+- combo terms should still load the combo packs when appropriate:
+  - `redis` plus `mongo`
+  - `duckdb` plus `trino` plus `polars`
+  - `timescaledb` plus `postgresql`
+
+Make the routing examples better for storage requests, for example:
+
+- “Build a Redis leaderboard”
+- “Add weekly MongoDB request log reporting”
+- “Query Postgres and Mongo together with Trino”
+- “Add a materialized-view-backed reporting path in PostgreSQL”
+- “Use TimescaleDB rollups on top of PostgreSQL”
+
+SECTION 6 — Manifest, bootstrap, and validation alignment
+
+The new solo stack identifiers must become first-class citizens in repository metadata.
+
+Review and update the relevant registries so they can discover and validate the new files.
+
+At minimum ensure:
+
+- stack identifier maps know about `mongo`, `redis`, `trino`, and `postgresql`
+- validation scripts do not reject the new stack names
+- any stack profile or new-repo helper that already knows about service images for these databases is not left semantically out of sync with the context layer
+- existing manifests that currently depend on combined packs are only changed when doing so improves accuracy
+- compatibility is preserved for existing combined-pack references
+
+Be conservative with manifest churn.
+Do not mechanically add every new solo stack to every manifest.
+Prefer targeted updates where the manifest’s story becomes more truthful.
+
+SECTION 7 — Quality bar for the docs
+
+The new stack packs should answer practical questions such as:
+
+- when should this database be chosen?
+- what file surfaces and query surfaces usually change?
+- what tests are mandatory?
+- what are the common incorrect assumptions assistants make?
+
+The packs should be concrete enough that a future assistant can safely implement:
+
+- a Redis leaderboard or expiring-key cache
+- a Mongo reporting collection with aggregation pipelines and partial indexes
+- a PostgreSQL migration plus representative integration test
+- a Trino catalog and federated analytics query
+
+without needing a second explanatory essay.
+
+SECTION 8 — Commit-ready batching
+
+A recommended batching structure is:
+
+Batch 1
+- add solo stack packs:
+  - `mongo.md`
+  - `redis.md`
+  - `trino.md`
+  - `postgresql.md`
+
+Batch 2
+- narrow and improve existing combined packs:
+  - `redis-keydb-mongo.md`
+  - `duckdb-trino-polars.md`
+  - `timescaledb.md`
+
+Batch 3
+- routing and alias updates:
+  - `stack-router.md`
+  - `alias-catalog.yaml`
+  - `repo-signal-hints.json`
+  - `task-router.md` if needed
+
+Batch 4
+- manifest / script / bootstrap alignment:
+  - registry files
+  - validator updates
+  - targeted manifest updates
+
+You may refine the grouping if quality demands it.
+
+SECTION 9 — Honesty rules
+
+Do not overstate what this pass accomplishes.
+
+If the implementation only improves routing and docs, say so.
+If examples or verification are still weak after this pass, say so plainly and leave that work for a follow-on prompt.
+
+Examples of acceptable honesty:
+
+- “solo stack coverage added; canonical examples still limited”
+- “routing now resolves Redis and Mongo independently; storage verification depth unchanged”
+- “PostgreSQL is now first-class in context, but example coverage remains partial”
+
+SECTION 10 — Output
+
+Generate the actual implementation pass in commit-ready batches now.
