@@ -6,8 +6,9 @@ Use this skill to choose the best example surface without mixing conflicting pat
 
 1. confirm the active workflow
 2. confirm the active stack and archetype
-3. choose one example category that matches the task
-4. prefer the example closest to the implementation surface
+3. load doctrine or workflow invariants first when the task is still stack-neutral
+4. choose one example category that matches the task
+5. prefer the example closest to the implementation surface
 
 ## Priority
 
@@ -17,9 +18,17 @@ Use this skill to choose the best example surface without mixing conflicting pat
 - exact task match with neutral stack assumptions
 - nearest archetype match
 
+If no stack-matching canonical example exists:
+
+- say that explicitly
+- fall back to the relevant invariant docs
+- use the closest honestly verified example in the same stack only as a fallback, not as a mislabeled canonical match
+
 ## Avoid
 
 - combining two examples with different structural assumptions
 - treating templates as if they were canonical examples
+- treating language-agnostic doctrine as if it were a stack-specific implementation
+- treating a Python example as the default answer for a Go, Rust, TypeScript, Elixir, Nim, Zig, or Crystal request
 - creating a new example when the pattern is still unstable
 - preferring a lower-verified example when a higher-verified nearby option exists

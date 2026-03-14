@@ -21,6 +21,14 @@ The repo now has explicit guidance for:
 
 Public example projects become materially more realistic when they show acquisition boundaries instead of only final API routes or storage tables. Without these context layers, assistants tend to collapse source research, fetching, parsing, retry policy, and serving into one fragile implementation pass.
 
+The base repo now separates three things that used to blur together:
+
+- generic data acquisition invariants
+- stack-specific real examples
+- verification posture by language
+
+That matters because future public example repos should not have to inherit a Python-first teaching surface when the target stack is Go, Rust, TypeScript, Elixir, Nim, Zig, or Crystal.
+
 ## Future Repo Readiness
 
 A future public example repo can now inherit:
@@ -29,6 +37,7 @@ A future public example repo can now inherit:
 - workflows for adding sources, raw retention, parsers, classifiers, schedules, and event coordination
 - archetype guidance for acquisition-first services and multi-source sync platforms
 - compact canonical examples for adapter, archive, parser, schedule, backoff, and event contract patterns
+- a polyglot example-selection contract that can admit uneven verification depth honestly
 
 This prepares the base repo for a derived example that acquires from multiple sources, archives raw downloads, parses and classifies records, stores them in a database, coordinates syncs with events, and exposes the results through strong backend and UI layers without redesigning the architecture here.
 

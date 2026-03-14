@@ -12,12 +12,15 @@ This verification layer makes example trust explicit. Each canonical example now
 
 That structure improves assistant reliability because selection logic can prefer verified examples over merely present ones.
 
+For capability areas that are intentionally polyglot, the repo may also carry a shared invariant or index layer before every stack has a real implementation example. That layer can be `syntax-checked`, but it is not a substitute for stack-specific code examples.
+
 ## Why Verification Matters
 
 - Canonical examples become generation inputs. If they drift, assistants reproduce that drift.
 - Untested prompts and manifests create false confidence because the repository still looks coherent on casual inspection.
 - Maintenance scripts can silently regress even when prose docs remain accurate.
 - Stack expansion becomes risky when there is no repeatable way to prove a new example still parses, boots, or responds.
+- Polyglot capability areas drift quickly when README claims, registry metadata, and per-stack support posture stop matching each other.
 
 ## Verification Layers
 
@@ -66,7 +69,7 @@ That structure improves assistant reliability because selection logic can prefer
 - `verification/scripts/`
   Tests for Python maintenance scripts and helper CLIs.
 - `verification/examples/`
-  Stack-specific verification suites for Python, Nim, Scala, Kotlin, Dart, Clojure, OCaml, Go, Rust, Elixir, Ruby, and static data examples.
+  Stack-specific verification suites for Python, TypeScript, Nim, Scala, Kotlin, Dart, Clojure, OCaml, Go, Rust, Elixir, Ruby, and static data examples.
 - `verification/scenarios/`
   Minimal harness helpers that mount, run, or probe canonical examples.
 - `verification/fixtures/`
@@ -90,4 +93,5 @@ That structure improves assistant reliability because selection logic can prefer
 - Local runs should not require every language toolchain.
 - Docker-backed examples should use small official base images and minimal dependencies.
 - Adding a new stack should mainly require a registry entry, a harness or parser test, a support-matrix update, and optional Docker metadata.
+- Shared invariant or index files may be verified structurally, but assistants should still prefer real stack-specific examples when they exist.
 - Assistant-facing ranking should prefer higher verification levels and higher confidence when task relevance is otherwise similar.

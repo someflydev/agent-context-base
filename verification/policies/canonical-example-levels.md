@@ -54,7 +54,9 @@ Heavy checks should remain selectable by stack so expanding coverage does not ma
 ## Policy Rules
 
 - New canonical examples should land with at least `syntax-checked`.
+- Shared invariant or index files may be `syntax-checked`, but that does not justify claiming a stack-specific implementation exists.
 - Runtime examples should not be marked `smoke-verified` without a harness or Docker probe.
 - `behavior-verified` examples should assert one outcome, not only boot.
 - Registry metadata, README metadata, and test coverage should agree on verification level and harness name.
+- Capability README matrices, registry metadata, and stack support posture should agree on whether a stack has a real example or only the invariant layer.
 - When assistants choose between multiple relevant examples, they should prefer the higher verification level and higher confidence entry.

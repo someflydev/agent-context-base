@@ -2,16 +2,19 @@
 
 This directory contains the canonical implementation patterns for future repos derived from this base.
 
+Doctrine and workflows are the generic layer. Examples are the preferred completed implementation layer.
+
 Examples are intentionally different from templates:
 
 - examples show a preferred completed pattern
+- examples should be real code or real runnable assets when they claim a stack-specific implementation
 - templates provide a starter scaffold to specialize later
 
 ## Example Categories
 
 - `canonical-api/`: route, handler, controller, and service-boundary examples
 - `canonical-cli/`: command, flag, and output-shape examples
-- `canonical-data-acquisition/`: source research, ingestion, raw archival, parser, classification, sync, and event examples
+- `canonical-data-acquisition/`: source research, acquisition invariants, stack-selection guidance, raw archival, parser, classification, sync, and event examples
 - `canonical-dokku/`: Dokku deployment wiring and release posture
 - `canonical-integration-tests/`: real-infra tests against isolated `docker-compose.test.yml`, including Playwright guidance for backend-driven UI verification
 - `canonical-observability/`: logs, metrics, and trace-shape examples
@@ -26,6 +29,8 @@ Examples are intentionally different from templates:
 ## Selection Rule
 
 Pick the category closest to the active workflow, archetype, and stack. Prefer one direct example over a blended hybrid.
+When several examples are relevant, prefer the closest stack match with the highest honest verification level.
+If a stack-specific canonical example does not exist yet, say so and fall back to the invariant docs plus the nearest verified example.
 
 ## Maintenance Rule
 

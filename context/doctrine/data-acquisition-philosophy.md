@@ -2,6 +2,8 @@
 
 Use these rules when a repo acquires public or partner data as a first-class capability.
 
+Use `context/doctrine/data-acquisition-invariants.md` for the explicit language-agnostic contract. Use stack-specific canonical examples only when they are real completed implementations in the target language.
+
 ## Preserve Re-Parseability
 
 - keep fetched payloads or documents before irreversible transforms when practical
