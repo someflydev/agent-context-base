@@ -1,0 +1,263 @@
+You are working inside the agent-context-base repository.
+
+This repository provides a structured architecture for operating AI coding assistants such as Codex, Claude, Gemini, and other frontier models.
+
+Your task is to generate a Contributor Playbook that teaches both humans and assistants how to safely extend the system.
+
+The document must provide clear guidance on how to add new capabilities without breaking the architecture.
+
+The playbook will be written to:
+
+docs/CONTRIBUTOR_PLAYBOOK.md
+
+---------------------------------------------------------------------
+
+OBJECTIVE
+
+Explain how contributors can extend the system safely and consistently.
+
+Extensions may include:
+
+adding new language/framework stacks  
+adding canonical examples  
+expanding verification harnesses  
+designing new archetypes  
+expanding the context system  
+
+The playbook should ensure that contributors maintain:
+
+architectural consistency  
+verification discipline  
+context integrity  
+assistant runtime compatibility  
+
+---------------------------------------------------------------------
+
+STRUCTURE OF THE DOCUMENT
+
+Produce a structured engineering playbook with the following sections.
+
+---------------------------------------------------------------------
+
+SECTION 1 — Purpose of the Contributor Playbook
+
+Explain why large AI-assisted systems require strict extension guidelines.
+
+Discuss risks such as:
+
+inconsistent stack definitions  
+unverified example implementations  
+duplicate architectural patterns  
+documentation sprawl  
+
+Explain how the playbook protects the integrity of the system.
+
+---------------------------------------------------------------------
+
+SECTION 2 — Architectural Principles Contributors Must Respect
+
+Explain the core principles of the system.
+
+Examples may include:
+
+context discipline  
+verification-first engineering  
+canonical examples as architectural anchors  
+bounded assistant autonomy  
+incremental system evolution  
+
+Explain that contributors should always respect these principles.
+
+---------------------------------------------------------------------
+
+SECTION 3 — Adding New Stacks
+
+Explain the process for adding support for a new language/framework stack.
+
+Describe how stacks should be defined using the repository’s stack expansion system.
+
+Explain the role of:
+
+PROMPT_11_t.txt
+
+and stack expansion prompts.
+
+Provide guidance on defining:
+
+stack name  
+language  
+framework  
+primary libraries  
+archetype compatibility  
+example types  
+
+Explain how canonical examples should demonstrate:
+
+API endpoints  
+HTML fragment responses  
+data endpoints  
+
+Explain why Docker verification is recommended for backend stacks.
+
+---------------------------------------------------------------------
+
+SECTION 4 — Designing Canonical Examples
+
+Explain how canonical examples should be written.
+
+Examples should be:
+
+minimal  
+clear  
+representative of real-world patterns  
+
+Explain how canonical examples function as verified implementation anchors for assistants.
+
+Provide guidelines for:
+
+API examples  
+HTML fragment examples  
+data endpoint examples  
+
+Explain how example READMEs should document each example.
+
+---------------------------------------------------------------------
+
+SECTION 5 — Expanding the Verification System
+
+Explain how verification harnesses work.
+
+Discuss components such as:
+
+example registry  
+stack support matrix  
+Docker-backed verification  
+smoke tests  
+
+Explain how contributors should extend verification when adding new stacks or examples.
+
+Explain how to determine appropriate verification levels.
+
+---------------------------------------------------------------------
+
+SECTION 6 — Designing New Archetypes
+
+Explain what archetypes represent.
+
+Examples may include:
+
+backend API services  
+data pipeline systems  
+CLI tools  
+RAG systems  
+automation tools  
+
+Explain how archetypes help assistants reason about project structure.
+
+Provide guidelines for creating new archetypes.
+
+Explain when a new archetype is appropriate.
+
+---------------------------------------------------------------------
+
+SECTION 7 — Expanding the Context System
+
+Explain how context artifacts such as:
+
+doctrines  
+stack packs  
+archetype packs  
+workflow guides  
+
+form the knowledge base assistants rely on.
+
+Explain how contributors should add new context artifacts without creating redundancy.
+
+Encourage concise, high-density documentation.
+
+---------------------------------------------------------------------
+
+SECTION 8 — Documentation Discipline
+
+Explain how documentation should evolve alongside the system.
+
+Explain how contributors should avoid:
+
+duplicate explanations  
+overly verbose docs  
+conflicting architectural descriptions  
+
+Encourage linking to existing docs instead of repeating content.
+
+---------------------------------------------------------------------
+
+SECTION 9 — Maintaining Assistant Compatibility
+
+Explain how contributors should ensure that system extensions remain compatible with AI assistants.
+
+Discuss considerations such as:
+
+context size  
+information density  
+predictable directory structure  
+clear documentation  
+
+Explain how assistant runtime expectations should influence repository design.
+
+---------------------------------------------------------------------
+
+SECTION 10 — Extension Checklists
+
+Provide practical checklists contributors can follow when extending the system.
+
+Examples include:
+
+adding a new stack  
+adding canonical examples  
+expanding verification harnesses  
+introducing a new archetype  
+
+Each checklist should include clear steps.
+
+---------------------------------------------------------------------
+
+SECTION 11 — Example Extension Scenarios
+
+Provide several realistic scenarios illustrating how contributors might extend the system.
+
+Examples may include:
+
+adding a new backend language stack  
+expanding canonical examples for an existing stack  
+introducing a new archetype for a different class of project  
+
+Explain how the playbook guidelines apply.
+
+---------------------------------------------------------------------
+
+QUALITY REQUIREMENTS
+
+The playbook must be:
+
+clear  
+concise  
+practical  
+architecturally consistent  
+
+Avoid unnecessary verbosity.
+
+Write the document as an engineering playbook for extending the system safely.
+
+---------------------------------------------------------------------
+
+OUTPUT
+
+Generate the complete contents of:
+
+docs/CONTRIBUTOR_PLAYBOOK.md
+
+Write the full document.
+
+Do not summarize.
+
+Ensure the playbook provides clear guidance for extending the agent-context-base architecture without breaking system integrity.
