@@ -1,0 +1,242 @@
+You are working inside the agent-context-base repository.
+
+The repository already contains extensive architecture and operational documentation.
+
+Your task is to generate a high-level architecture map that helps developers and assistants quickly understand how the system is organized.
+
+This document should function as a visual and conceptual guide to the repository.
+
+It will be written to:
+
+docs/ARCHITECTURE_MAP.md
+
+This document should help readers answer the question:
+
+"What are the major systems in this repository and how do they interact?"
+
+---------------------------------------------------------------------
+
+OBJECTIVE
+
+Create a concise architecture overview that explains the structure of the repository and the relationships between its subsystems.
+
+The document must prioritize clarity over completeness.
+
+It should allow someone unfamiliar with the repository to understand its structure within a few minutes.
+
+The architecture map should complement — not duplicate — deeper architecture documentation.
+
+Where detailed explanations already exist, link to them instead of repeating them.
+
+---------------------------------------------------------------------
+
+PHASE 1 — REPOSITORY DISCOVERY
+
+Analyze the repository structure and identify the major subsystems.
+
+Examples may include:
+
+context system  
+stack definitions  
+archetype definitions  
+verification system  
+canonical examples  
+assistant runtime artifacts  
+memory system  
+repo generation tools (new_repo.py)  
+documentation system  
+
+From this analysis determine the key architectural components.
+
+---------------------------------------------------------------------
+
+PHASE 2 — SYSTEM OVERVIEW DIAGRAM
+
+Create a Mermaid diagram showing the high-level architecture.
+
+This diagram should illustrate how the major subsystems interact.
+
+Example conceptual components:
+
+Human Intent  
+Assistant Planning  
+Context Routing  
+Knowledge Sources  
+Execution Environment  
+Verification System  
+Memory System  
+
+The diagram should reflect the architecture described in:
+
+docs/architecture/ASSISTANT_RUNTIME_MODEL.md
+
+But present it in a simplified visual format.
+
+---------------------------------------------------------------------
+
+PHASE 3 — REPOSITORY STRUCTURE MAP
+
+Create a Mermaid diagram showing the logical structure of the repository.
+
+The diagram should illustrate the roles of key directories such as:
+
+docs/  
+examples/  
+verification/  
+scripts/  
+generation tools  
+context artifacts  
+
+The goal is to help readers understand what each part of the repository is responsible for.
+
+---------------------------------------------------------------------
+
+PHASE 4 — NEW PROJECT GENERATION FLOW
+
+Create a diagram illustrating how new projects are generated using the system.
+
+The diagram should show the flow from:
+
+vague idea  
+assistant planning session  
+context selection  
+new_repo.py execution  
+generated repository  
+implementation sessions  
+
+This diagram should match the workflow described in:
+
+docs/usage/STARTING_NEW_PROJECTS.md
+
+---------------------------------------------------------------------
+
+PHASE 5 — CONTEXT SYSTEM MAP
+
+Create a diagram explaining how context is structured.
+
+Illustrate relationships between:
+
+doctrines  
+stack packs  
+archetypes  
+canonical examples  
+verification artifacts  
+memory files  
+
+This diagram should reflect the concepts described in:
+
+docs/architecture/CONTEXT_ENGINEERING_GUIDE.md
+
+---------------------------------------------------------------------
+
+PHASE 6 — VERIFICATION SYSTEM MAP
+
+Create a diagram explaining how verification works.
+
+Include components such as:
+
+canonical example validation  
+Docker-based verification  
+smoke tests  
+example registry  
+stack support matrix  
+
+Explain how these systems ensure generated code remains correct.
+
+---------------------------------------------------------------------
+
+PHASE 7 — MULTI-AGENT WORKFLOW MAP
+
+Create a diagram illustrating how multiple assistants may interact with the system.
+
+Include elements such as:
+
+planning session  
+implementation session  
+verification session  
+documentation session  
+
+Explain how these sessions coordinate through repository artifacts.
+
+---------------------------------------------------------------------
+
+PHASE 8 — SYSTEM COMPONENT INDEX
+
+Provide a concise table that lists the major architectural components.
+
+Each row should include:
+
+component name  
+directory or file location  
+short description  
+link to deeper documentation  
+
+Example components may include:
+
+context system  
+stack definitions  
+verification harness  
+example registry  
+repo generation system  
+
+---------------------------------------------------------------------
+
+PHASE 9 — DOCUMENTATION MAP
+
+Provide a table listing the most important documentation files.
+
+Columns should include:
+
+document path  
+purpose  
+recommended reading order  
+
+This section should guide readers toward deeper documentation without duplicating it.
+
+---------------------------------------------------------------------
+
+PHASE 10 — DESIGN PRINCIPLES SUMMARY
+
+End the document with a short summary of the design philosophy behind the system.
+
+Examples may include principles such as:
+
+context discipline  
+verification-first development  
+bounded autonomy for assistants  
+incremental architecture evolution  
+
+This section should reinforce the ideas presented in other architecture documents.
+
+---------------------------------------------------------------------
+
+QUALITY REQUIREMENTS
+
+The architecture map must be:
+
+concise  
+visual  
+easy to navigate  
+accurate  
+
+Avoid verbose explanations.
+
+Prefer diagrams and short explanations.
+
+Link to deeper documents when necessary.
+
+The document should feel like a visual guide to the entire repository.
+
+---------------------------------------------------------------------
+
+OUTPUT
+
+Generate the complete contents of:
+
+docs/ARCHITECTURE_MAP.md
+
+Write the full document.
+
+Include all diagrams and tables.
+
+Do not summarize sections.
