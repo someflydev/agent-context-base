@@ -34,6 +34,7 @@ DEFAULT_MODULES = [
     "verification.examples.elixir.test_phoenix_examples",
     "verification.examples.ruby.test_ruby_hanami_examples",
     "verification.examples.data.test_yaml_json_examples",
+    "verification.examples.data.test_data_acquisition_examples",
 ]
 
 
@@ -95,6 +96,8 @@ def modules_for_entry(entry: dict[str, object]) -> list[str]:
         return ["verification.examples.ruby.test_ruby_hanami_examples"]
     if language in {"yaml", "json"} or "canonical-dokku" in path or "canonical-observability" in path:
         return ["verification.examples.data.test_yaml_json_examples"]
+    if "canonical-data-acquisition" in path:
+        return ["verification.examples.data.test_data_acquisition_examples"]
     if "canonical-prompts" in path:
         return ["verification.unit.test_prompt_rules"]
     return []
@@ -108,6 +111,9 @@ def collect_modules(entries: list[dict[str, object]]) -> list[str]:
         for module in modules_for_entry(entry):
             if module not in modules:
                 modules.append(module)
+    for module in DEFAULT_MODULES:
+        if module.startswith("verification.examples.data.test_data_acquisition") and module not in modules:
+            modules.append(module)
     return modules
 
 

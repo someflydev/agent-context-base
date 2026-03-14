@@ -11,6 +11,7 @@ Examples are intentionally different from templates:
 
 - `canonical-api/`: route, handler, controller, and service-boundary examples
 - `canonical-cli/`: command, flag, and output-shape examples
+- `canonical-data-acquisition/`: source research, ingestion, raw archival, parser, classification, sync, and event examples
 - `canonical-dokku/`: Dokku deployment wiring and release posture
 - `canonical-integration-tests/`: real-infra tests against isolated `docker-compose.test.yml`
 - `canonical-observability/`: logs, metrics, and trace-shape examples
