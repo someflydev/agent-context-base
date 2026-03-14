@@ -45,3 +45,6 @@ Those changes usually need minimal real-infra integration tests against isolated
 
 This repo is a base, not a permanent meta-platform. Future projects should copy the relevant parts and then specialize locally.
 
+## Let Front-Facing Docs Follow Implementation
+
+In new derived repos, defer substantial root `README.md`, `docs/`, and Mermaid architecture docs until the implementation has enough real structure to describe honestly.

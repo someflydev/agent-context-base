@@ -13,9 +13,10 @@ Use this workflow when creating a new project repo from this base.
 1. choose the manifest closest to the target repo
 2. copy only the relevant router, doctrine, workflow, stack, example, and template files
 3. create project-local manifests and examples
-4. wire `AGENT.md`, `CLAUDE.md`, README, and stack basics
-5. define Docker-backed dev and test isolation
-6. add smoke tests and any minimal real-infra integration tests required by the first significant feature
+4. wire `AGENT.md`, `CLAUDE.md`, the generated profile, and stack basics
+5. defer a substantial root `README.md` and root `docs/` until implementation has real structure
+6. define Docker-backed dev and test isolation
+7. add smoke tests and any minimal real-infra integration tests required by the first significant feature
 
 ## Outputs
 
@@ -28,10 +29,11 @@ Use this workflow when creating a new project repo from this base.
 - `context/archetypes/prompt-first-repo.md`
 - `context/doctrine/compose-port-and-data-isolation.md`
 - `context/doctrine/deployment-philosophy-dokku.md`
+- `context/doctrine/documentation-timing-discipline.md`
 
 ## Common Pitfalls
 
 - copying every file from the base without pruning
 - leaving examples and templates indistinguishable
+- creating front-facing docs before the repo has real implementation to describe
 - delaying dev versus test isolation until later
-
