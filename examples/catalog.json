@@ -1355,6 +1355,39 @@
       "stability": "canonical"
     },
     {
+      "path": "examples/canonical-data-acquisition/clojure-kit-source-sync-example.clj",
+      "category": "data-acquisition",
+      "summary": "Kit plus next.jdbc plus Hiccup source sync example with explicit checkpoint lookup, raw archival, replay, and provenance-aware normalization.",
+      "stacks": ["clojure-kit-nextjdbc-hiccup"],
+      "archetypes": ["data-acquisition-service", "multi-source-sync-platform"],
+      "workflows": ["add-api-ingestion-source", "add-raw-download-archive", "add-parser-normalizer", "add-recurring-sync"],
+      "patterns": ["raw-capture", "provenance-aware-normalization", "replayable-sync", "checkpoint-cursor", "html-sync-fragment"],
+      "rank": 94,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-data-acquisition/scala-tapir-source-sync-example.scala",
+      "category": "data-acquisition",
+      "summary": "Tapir plus http4s plus ZIO source sync example with typed DTOs, replayable archival flow, and explicit cursor handoff.",
+      "stacks": ["scala-tapir-http4s-zio"],
+      "archetypes": ["data-acquisition-service", "multi-source-sync-platform"],
+      "workflows": ["add-api-ingestion-source", "add-raw-download-archive", "add-parser-normalizer", "add-recurring-sync"],
+      "patterns": ["raw-capture", "provenance-aware-normalization", "replayable-sync", "typed-endpoint", "effect-boundary"],
+      "rank": 94,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-data-acquisition/kotlin-http4k-source-sync-example.kt",
+      "category": "data-acquisition",
+      "summary": "http4k plus Exposed source sync example with checkpoint repositories, raw archival, replay, and provenance on normalized records.",
+      "stacks": ["kotlin-http4k-exposed"],
+      "archetypes": ["data-acquisition-service", "multi-source-sync-platform"],
+      "workflows": ["add-api-ingestion-source", "add-raw-download-archive", "add-parser-normalizer", "add-recurring-sync"],
+      "patterns": ["raw-capture", "provenance-aware-normalization", "replayable-sync", "repository-boundary", "checkpoint-cursor"],
+      "rank": 94,
+      "stability": "canonical"
+    },
+    {
       "path": "examples/canonical-data-acquisition/phoenix-source-sync-example.ex",
       "category": "data-acquisition",
       "summary": "Phoenix controller-adjacent source sync example with explicit fetch, raw archival, provenance, replay, and checkpoint boundaries.",
@@ -1424,7 +1457,7 @@
       "path": "examples/canonical-data-acquisition/README.md",
       "category": "data-acquisition",
       "summary": "Shared polyglot entry point for acquisition invariants, stack-specific coverage notes, and honest selection rules.",
-      "stacks": ["python-fastapi-uv-ruff-orjson-polars", "go-echo", "elixir-phoenix", "rust-axum-modern", "typescript-hono-bun", "nim-jester-happyx", "zig-zap-jetzig", "crystal-kemal-avram"],
+      "stacks": ["python-fastapi-uv-ruff-orjson-polars", "go-echo", "clojure-kit-nextjdbc-hiccup", "scala-tapir-http4s-zio", "kotlin-http4k-exposed", "elixir-phoenix", "rust-axum-modern", "typescript-hono-bun", "nim-jester-happyx", "zig-zap-jetzig", "crystal-kemal-avram"],
       "archetypes": ["data-acquisition-service", "multi-source-sync-platform"],
       "workflows": ["research-data-sources", "add-api-ingestion-source", "add-scraping-source", "add-raw-download-archive", "add-parser-normalizer", "add-classification-step", "add-recurring-sync", "add-event-driven-sync"],
       "patterns": ["invariant-layer", "polyglot-index", "selection-contract", "coverage-matrix"],
@@ -1435,7 +1468,7 @@
       "path": "examples/canonical-data-acquisition/language-support-matrix.yaml",
       "category": "data-acquisition",
       "summary": "Machine-readable stack matrix for current acquisition example coverage and honest fallback posture.",
-      "stacks": ["python-fastapi-uv-ruff-orjson-polars", "go-echo", "elixir-phoenix", "rust-axum-modern", "typescript-hono-bun", "nim-jester-happyx", "zig-zap-jetzig", "crystal-kemal-avram"],
+      "stacks": ["python-fastapi-uv-ruff-orjson-polars", "go-echo", "clojure-kit-nextjdbc-hiccup", "scala-tapir-http4s-zio", "kotlin-http4k-exposed", "elixir-phoenix", "rust-axum-modern", "typescript-hono-bun", "nim-jester-happyx", "zig-zap-jetzig", "crystal-kemal-avram"],
       "archetypes": ["data-acquisition-service", "multi-source-sync-platform"],
       "workflows": ["research-data-sources", "add-api-ingestion-source", "add-scraping-source", "add-raw-download-archive", "add-parser-normalizer", "add-classification-step", "add-recurring-sync", "add-event-driven-sync"],
       "patterns": ["language-matrix", "verification-posture", "fallback-selection"],

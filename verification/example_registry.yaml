@@ -2095,6 +2095,57 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: medium
+  - name: clojure-kit-source-sync-example
+    path: examples/canonical-data-acquisition/clojure-kit-source-sync-example.clj
+    language: clojure
+    stack_tags:
+      - clojure-kit-nextjdbc-hiccup
+    archetype_tags:
+      - data-acquisition-service
+      - multi-source-sync-platform
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - next.jdbc checkpoint query and raw archival boundaries present
+      - replay path and provenance-aware normalized record present
+      - Kit route and Hiccup sync fragment surface present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: scala-tapir-source-sync-example
+    path: examples/canonical-data-acquisition/scala-tapir-source-sync-example.scala
+    language: scala
+    stack_tags:
+      - scala-tapir-http4s-zio
+    archetype_tags:
+      - data-acquisition-service
+      - multi-source-sync-platform
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - typed Tapir endpoint and ZIO service boundaries present
+      - raw archival and replay boundaries present
+      - normalized record keeps provenance and cursor handoff
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: kotlin-http4k-source-sync-example
+    path: examples/canonical-data-acquisition/kotlin-http4k-source-sync-example.kt
+    language: kotlin
+    stack_tags:
+      - kotlin-http4k-exposed
+    archetype_tags:
+      - data-acquisition-service
+      - multi-source-sync-platform
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - http4k route and Exposed repository boundaries present
+      - raw archival and replay boundaries present
+      - normalized record keeps provenance and checkpoint semantics
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
   - name: phoenix-source-sync-example
     path: examples/canonical-data-acquisition/phoenix-source-sync-example.ex
     language: elixir
@@ -2203,6 +2254,9 @@ examples:
     stack_tags:
       - python-fastapi-uv-ruff-orjson-polars
       - go-echo
+      - clojure-kit-nextjdbc-hiccup
+      - scala-tapir-http4s-zio
+      - kotlin-http4k-exposed
       - elixir-phoenix
       - rust-axum-modern
       - typescript-hono-bun
@@ -2227,6 +2281,9 @@ examples:
     stack_tags:
       - python-fastapi-uv-ruff-orjson-polars
       - go-echo
+      - clojure-kit-nextjdbc-hiccup
+      - scala-tapir-http4s-zio
+      - kotlin-http4k-exposed
       - elixir-phoenix
       - rust-axum-modern
       - typescript-hono-bun

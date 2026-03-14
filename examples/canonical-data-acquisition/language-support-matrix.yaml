@@ -28,6 +28,36 @@ languages:
     fallback_path: examples/canonical-api/go-echo-handler-example.go
     fallback_verification_level: syntax-checked
     follow_on_prompt: PROMPT_34
+  - language: Clojure
+    stack: clojure-kit-nextjdbc-hiccup
+    stack_specific_examples:
+      - clojure-kit-source-sync-example
+    verification_posture: structure-verified
+    coverage_note: real Kit plus next.jdbc plus Hiccup acquisition code with checkpoint persistence, raw archival, replay, and provenance boundaries, but no native parse, compile, or runtime verification yet
+    fallback_example: clojure-kit-nextjdbc-hiccup-data-endpoint-example
+    fallback_path: examples/canonical-api/clojure-kit-nextjdbc-hiccup-data-endpoint-example.clj
+    fallback_verification_level: syntax-checked
+    follow_on_prompt: PROMPT_36
+  - language: Scala
+    stack: scala-tapir-http4s-zio
+    stack_specific_examples:
+      - scala-tapir-source-sync-example
+    verification_posture: structure-verified
+    coverage_note: real Tapir plus http4s plus ZIO acquisition code with typed DTOs, replayable archival flow, and explicit cursor handoff, but no compile-aware or runtime acquisition harness yet
+    fallback_example: scala-tapir-http4s-zio-data-endpoint-example
+    fallback_path: examples/canonical-api/scala-tapir-http4s-zio-data-endpoint-example.scala
+    fallback_verification_level: syntax-checked
+    follow_on_prompt: PROMPT_36
+  - language: Kotlin
+    stack: kotlin-http4k-exposed
+    stack_specific_examples:
+      - kotlin-http4k-source-sync-example
+    verification_posture: structure-verified
+    coverage_note: real http4k plus Exposed acquisition code with checkpoint repositories, raw archival, replayable normalization, and service boundaries, but verification remains source-structure only
+    fallback_example: kotlin-http4k-exposed-data-endpoint-example
+    fallback_path: examples/canonical-api/kotlin-http4k-exposed-data-endpoint-example.kt
+    fallback_verification_level: syntax-checked
+    follow_on_prompt: PROMPT_36
   - language: Elixir
     stack: elixir-phoenix
     stack_specific_examples:

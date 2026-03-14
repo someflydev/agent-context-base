@@ -13,6 +13,7 @@ This verification layer makes example trust explicit. Each canonical example now
 That structure improves assistant reliability because selection logic can prefer verified examples over merely present ones.
 
 For capability areas that are intentionally polyglot, the repo may also carry a shared invariant or index layer before every stack has a real implementation example. That layer can be `structure-verified` or `syntax-checked`, but it is not a substitute for stack-specific code examples.
+The acquisition layer now also includes real JVM-adjacent examples for Clojure, Scala, and Kotlin, but those sync surfaces remain `structure-verified` until compile-aware or runtime acquisition harnesses exist.
 
 ## Why Verification Matters
 

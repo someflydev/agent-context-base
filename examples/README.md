@@ -39,4 +39,4 @@ When doctrine, manifests, or first-class stack guidance changes, review the affe
 Use `examples/catalog.json` when the matching example is not obvious from memory.
 Use `verification/example_registry.yaml` when trust level, confidence, or harness coverage matters.
 
-The data-acquisition category now includes real source-sync examples for Elixir, Nim, Zig, and Crystal in addition to the earlier Python, Go, Rust, and TypeScript anchors. Verification depth still varies by stack and should be read from the registry, not inferred from file presence.
+The data-acquisition category now includes real source-sync examples for Clojure, Scala, Kotlin, Elixir, Nim, Zig, and Crystal in addition to the earlier Python, Go, Rust, and TypeScript anchors. Verification depth still varies by stack and should be read from the registry, not inferred from file presence.
