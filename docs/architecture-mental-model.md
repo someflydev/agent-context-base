@@ -27,10 +27,10 @@ flowchart LR
     B --> D[Templates]
     C --> E[Generated profiles and defaults]
     D --> E
-    E --> F[Derived repo with README, AGENT.md, CLAUDE.md, Compose, and optional test assets]
+    E --> F[Derived repo with AGENT.md, CLAUDE.md,<br/>generated profiles, code, Compose,<br/>optional tests, and later-earned front docs]
 ```
 
-This matches the code in `scripts/new_repo.py`: manifests supply defaults and operational metadata, while templates supply the initial file content.
+This matches the code in `scripts/new_repo.py`: manifests supply defaults and operational metadata, while templates supply the initial file content. Front-facing README and docs content are now intentionally deferred by default.
 
 ## Verification Loop
 

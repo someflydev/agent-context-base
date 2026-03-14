@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -20,6 +21,17 @@ from verification.helpers import (  # noqa: E402
     confidence_score,
     load_registry,
     verification_score,
+)
+
+
+MARKDOWN_LINK_PATTERN = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
+MERMAID_BLOCK_PATTERN = re.compile(r"```mermaid\s*\n(.*?)```", flags=re.DOTALL)
+MERMAID_PATH_PATTERN = re.compile(
+    r"(?P<path>"
+    r"README\.md|AGENT\.md|CLAUDE\.md|PROMPTS\.md|Procfile|app\.json|\.generated-profile\.yaml|"
+    r"docker-compose(?:\.test)?\.yml|"
+    r"(?:docs|context|manifests|examples|templates|scripts|verification|smoke-tests)/[A-Za-z0-9_./-]+"
+    r")"
 )
 
 
@@ -427,6 +439,72 @@ def validate_prompt_numbering(repo_root: Path) -> list[str]:
             errors.append(
                 f"{directory.relative_to(repo_root).as_posix()}: prompt numbering must be monotonic starting at 001"
             )
+    return errors
+
+
+def _markdown_paths(repo_root: Path) -> list[Path]:
+    paths: list[Path] = []
+    root_readme = repo_root / "README.md"
+    if root_readme.exists():
+        paths.append(root_readme)
+
+    for root_name in ("docs", "context", "examples", "templates", "scripts", "verification"):
+        root = repo_root / root_name
+        if not root.exists():
+            continue
+        for path in root.rglob("*.md"):
+            if "verification/fixtures" in path.relative_to(repo_root).as_posix():
+                continue
+            paths.append(path)
+    return sorted(set(paths))
+
+
+def _resolve_markdown_target(repo_root: Path, doc_path: Path, target: str) -> Path | None:
+    cleaned = target.split("#", 1)[0].split("?", 1)[0].strip()
+    if not cleaned or cleaned.startswith(("http://", "https://", "mailto:")):
+        return None
+    return (doc_path.parent / cleaned).resolve()
+
+
+def validate_markdown_cross_references(repo_root: Path) -> list[str]:
+    """Validate relative markdown links used across docs."""
+
+    errors: list[str] = []
+    repo_root_resolved = repo_root.resolve()
+    for doc_path in _markdown_paths(repo_root):
+        text = doc_path.read_text(encoding="utf-8")
+        for match in MARKDOWN_LINK_PATTERN.finditer(text):
+            target = match.group(1).strip()
+            resolved = _resolve_markdown_target(repo_root, doc_path, target)
+            if resolved is None:
+                continue
+            if repo_root_resolved not in resolved.parents and resolved != repo_root_resolved:
+                errors.append(f"{doc_path.relative_to(repo_root).as_posix()}: link escapes repo: '{target}'")
+                continue
+            if not resolved.exists():
+                errors.append(
+                    f"{doc_path.relative_to(repo_root).as_posix()}: broken markdown link '{target}'"
+                )
+    return errors
+
+
+def validate_mermaid_reference_hints(repo_root: Path) -> list[str]:
+    """Validate obvious repo-path references inside Mermaid blocks."""
+
+    errors: list[str] = []
+    for doc_path in _markdown_paths(repo_root):
+        text = doc_path.read_text(encoding="utf-8")
+        relative_doc = doc_path.relative_to(repo_root).as_posix()
+        for block in MERMAID_BLOCK_PATTERN.findall(text):
+            seen: set[str] = set()
+            for match in MERMAID_PATH_PATTERN.finditer(block):
+                raw = match.group("path")
+                if raw in seen:
+                    continue
+                seen.add(raw)
+                candidate = repo_root / raw
+                if not candidate.exists():
+                    errors.append(f"{relative_doc}: Mermaid reference points to missing path '{raw}'")
     return errors
 
 

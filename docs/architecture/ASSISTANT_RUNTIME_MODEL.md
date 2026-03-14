@@ -18,7 +18,7 @@
 
 | Subsystem | Role |
 | --- | --- |
-| Entry surface | `README.md`, `AGENT.md`, `CLAUDE.md`, and the boot docs define how assistants should start. |
+| Entry surface | `AGENT.md`, `CLAUDE.md`, generated profiles, and any maintained front docs define how assistants should start. |
 | Router layer | `context/router/` maps natural language and repo signals onto workflows, stacks, archetypes, and aliases. |
 | Context layer | `context/doctrine/`, `context/workflows/`, `context/stacks/`, and `context/archetypes/` hold durable guidance with clear authority boundaries. |
 | Manifest layer | `manifests/` binds routing signals to required context, optional context, preferred examples, templates, warnings, and bootstrap defaults. |
@@ -53,6 +53,7 @@ New repositories are generated from the same runtime model:
 - choose an archetype and primary stack
 - select manifests and optional repo features
 - render templates and generated profiles
+- defer substantial root README/docs content by default until implementation has real structure
 - preserve Compose names, port bands, and data-isolation defaults from the chosen manifests
 - start work in the generated repo with the same boot sequence and continuity rules
 

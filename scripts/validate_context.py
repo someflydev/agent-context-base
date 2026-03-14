@@ -14,6 +14,8 @@ import new_repo
 from context_tools import (
     validate_context_weights,
     validate_example_catalog,
+    validate_markdown_cross_references,
+    validate_mermaid_reference_hints,
     validate_prompt_numbering,
     validate_repo_signal_hints,
 )
@@ -22,6 +24,13 @@ from manifest_tools import validate_manifest
 
 BOOTSTRAP_CASES = (
     {"archetype": "backend-api-service", "primary_stack": "python-fastapi-uv-ruff-orjson-polars", "dokku": False},
+    {
+        "archetype": "backend-api-service",
+        "primary_stack": "python-fastapi-uv-ruff-orjson-polars",
+        "dokku": False,
+        "include_root_readme": True,
+        "include_docs_dir": True,
+    },
     {"archetype": "backend-api-service", "primary_stack": "typescript-hono-bun", "dokku": False},
     {"archetype": "backend-api-service", "primary_stack": "rust-axum-modern", "dokku": False},
     {"archetype": "backend-api-service", "primary_stack": "zig-zap-jetzig", "dokku": False},
@@ -63,6 +72,8 @@ def _check_bootstrap_output(repo_root: Path) -> list[str]:
         archetype = str(case["archetype"])
         primary_stack = str(case["primary_stack"])
         dokku = bool(case["dokku"])
+        include_root_readme = bool(case.get("include_root_readme", False))
+        include_docs_dir = bool(case.get("include_docs_dir", False))
         slug = f"check-{primary_stack}"
         with tempfile.TemporaryDirectory() as temp_dir:
             target_dir = Path(temp_dir) / slug
@@ -82,6 +93,10 @@ def _check_bootstrap_output(repo_root: Path) -> list[str]:
                 ]
                 if dokku:
                     argv.append("--dokku")
+                if include_root_readme:
+                    argv.append("--include-root-readme")
+                if include_docs_dir:
+                    argv.append("--include-docs-dir")
                 exit_code = new_repo.main(
                     argv
                 )
@@ -102,6 +117,28 @@ def _check_bootstrap_output(repo_root: Path) -> list[str]:
                 for required in ("Procfile", "app.json", "docs/deployment.md", "scripts/smoke/deploy_smoke.sh"):
                     if not (target_dir / required).exists():
                         errors.append(f"{primary_stack}: missing Dokku starter file '{required}'")
+                if (target_dir / "README.md").exists() and not include_root_readme:
+                    errors.append(f"{primary_stack}: Dokku support must not force a root README by default")
+
+            docs_dir_generated = include_docs_dir or dokku
+            readme_path = target_dir / "README.md"
+            docs_dir = target_dir / "docs"
+            if include_root_readme and not readme_path.exists():
+                errors.append(f"{primary_stack}: --include-root-readme must generate README.md")
+            if not include_root_readme and readme_path.exists():
+                errors.append(f"{primary_stack}: root README.md must stay deferred by default")
+            if docs_dir_generated and not docs_dir.exists():
+                errors.append(f"{primary_stack}: docs directory must exist when explicitly requested or Dokku is enabled")
+            if not docs_dir_generated and docs_dir.exists():
+                errors.append(f"{primary_stack}: root docs directory must stay deferred by default")
+            if include_docs_dir:
+                for required in ("docs/repo-purpose.md", "docs/repo-layout.md"):
+                    if not (target_dir / required).exists():
+                        errors.append(f"{primary_stack}: missing opted-in repo docs file '{required}'")
+            elif dokku:
+                for unexpected in ("docs/repo-purpose.md", "docs/repo-layout.md"):
+                    if (target_dir / unexpected).exists():
+                        errors.append(f"{primary_stack}: Dokku support must not generate broad repo docs without --include-docs-dir")
 
             dev_compose = target_dir / "docker-compose.yml"
             test_compose = target_dir / "docker-compose.test.yml"
@@ -161,6 +198,8 @@ def main() -> int:
     errors.extend(validate_example_catalog(repo_root))
     errors.extend(validate_repo_signal_hints(repo_root))
     errors.extend(validate_prompt_numbering(repo_root))
+    errors.extend(validate_markdown_cross_references(repo_root))
+    errors.extend(validate_mermaid_reference_hints(repo_root))
     errors.extend(_check_bootstrap_output(repo_root))
 
     if errors:

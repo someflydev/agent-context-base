@@ -31,3 +31,5 @@ A future public example repo can now inherit:
 - compact canonical examples for adapter, archive, parser, schedule, backoff, and event contract patterns
 
 This prepares the base repo for a derived example that acquires from multiple sources, archives raw downloads, parses and classifies records, stores them in a database, coordinates syncs with events, and exposes the results through strong backend and UI layers without redesigning the architecture here.
+
+That future repo should still delay broad root README, docs, and diagrams until those ingestion, parsing, storage, and event slices are implemented enough to describe honestly.

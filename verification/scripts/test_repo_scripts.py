@@ -25,6 +25,11 @@ class RepoScriptTests(unittest.TestCase):
         self.assertEqual(code, 0, stderr)
         self.assertIn("Validated", stdout)
 
+    def test_validate_doc_governance_script_passes(self) -> None:
+        code, stdout, stderr = run_script(str(SCRIPTS_DIR / "validate_doc_governance.py"))
+        self.assertEqual(code, 0, stderr)
+        self.assertIn("Validated markdown links", stdout)
+
     def test_new_repo_bootstraps_prompt_first_repo(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             target = Path(temp_dir) / "prompt-kit"
@@ -43,6 +48,30 @@ class RepoScriptTests(unittest.TestCase):
             self.assertIn("Generated starter repo", stdout)
             self.assertTrue((target / ".prompts/001-bootstrap-repo.txt").exists())
             self.assertTrue((target / "AGENT.md").exists())
+            self.assertTrue((target / "PROMPTS.md").exists())
+            self.assertFalse((target / "README.md").exists())
+            self.assertFalse((target / "docs").exists())
+
+    def test_new_repo_can_opt_into_front_docs(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            target = Path(temp_dir) / "analytics-api"
+            code, stdout, stderr = run_script(
+                str(SCRIPTS_DIR / "new_repo.py"),
+                "analytics-api",
+                "--target-dir",
+                str(target),
+                "--archetype",
+                "backend-api-service",
+                "--primary-stack",
+                "python-fastapi-uv-ruff-orjson-polars",
+                "--include-root-readme",
+                "--include-docs-dir",
+            )
+            self.assertEqual(code, 0, stderr)
+            self.assertIn("Generated starter repo", stdout)
+            self.assertTrue((target / "README.md").exists())
+            self.assertTrue((target / "docs/repo-purpose.md").exists())
+            self.assertTrue((target / "docs/repo-layout.md").exists())
 
     def test_memory_utilities_cover_init_check_and_handoff(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

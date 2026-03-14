@@ -27,3 +27,5 @@ A future public example repo can now inherit:
 - canonical FastAPI and Playwright examples that demonstrate the expected correctness posture
 
 This prepares the base repo for a future public example that exposes backend APIs, renders HTMX and Tailwind views, drives Plotly charts, supports multi-faceted filtering, requires exact counts, and verifies behavior with Playwright without designing that repo here.
+
+That future repo should still defer broad front-facing README, docs, and diagrams until the backend behavior, query semantics, and verification paths are real enough to document truthfully.

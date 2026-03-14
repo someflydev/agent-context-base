@@ -23,6 +23,8 @@ That structure improves assistant reliability because selection logic can prefer
 
 - Repo integrity
   Required directories, manifests, templates, examples, registry entries, and documented references stay aligned.
+- Doc governance
+  Markdown cross-references resolve, obvious Mermaid path references stay real, and documentation timing discipline does not drift silently.
 - Prompt rules
   Prompt-first repositories keep monotonic numbering, suffix discipline, and valid cross-file references.
 - Script verification
@@ -51,6 +53,8 @@ That structure improves assistant reliability because selection logic can prefer
 
 - `verification/README.md`
   Verification philosophy, trust model, and maturity ladder.
+- `scripts/validate_doc_governance.py`
+  Focused validation for markdown links and obvious Mermaid path references.
 - `verification/example_registry.yaml`
   The authoritative list of canonical examples, verification levels, targets, confidence, Docker posture, and scenario harnesses.
 - `verification/stack_support_matrix.yaml`
@@ -72,6 +76,8 @@ That structure improves assistant reliability because selection logic can prefer
 
 - Local
   `scripts/run_verification.py --tier fast` gives a no-runtime baseline.
+- Documentation
+  `scripts/validate_doc_governance.py` gives the focused doc freshness baseline.
 - Selective
   `scripts/verify_examples.py --stack python-fastapi-uv-ruff-orjson-polars` narrows to one stack.
 - Incremental
