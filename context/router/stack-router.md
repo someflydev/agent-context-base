@@ -62,6 +62,8 @@ Infer the active stack from repo signals, touched files, and user language.
   - load `context/stacks/dokku-conventions.md`
 - task is about routing, prompts, manifests, templates, generated profiles, or repo bootstrap
   - load `context/stacks/prompt-first-repo.md`
+- task is about HTMX fragments, Tailwind server-rendered filters, Plotly query endpoints, faceted counts, or Playwright verification of backend-generated UI
+  - load `context/stacks/backend-driven-ui-htmx-tailwind-plotly.md`
 
 ## Routing Examples
 
@@ -97,6 +99,12 @@ Infer the active stack from repo signals, touched files, and user language.
   - `context/stacks/dokku-conventions.md`
 - "Add a JSON, fragment, or chart endpoint to my Hanami service"
   - `context/stacks/ruby-hanami.md`
+- "Add HTMX filters with exact counts to my backend"
+  - dominant app stack
+  - `context/stacks/backend-driven-ui-htmx-tailwind-plotly.md`
+- "Verify a backend-generated filter UI with Playwright"
+  - dominant app stack
+  - `context/stacks/backend-driven-ui-htmx-tailwind-plotly.md`
 - "Use Polars to reshape query output in FastAPI"
   - `context/stacks/python-fastapi-uv-ruff-orjson-polars.md`
   - `context/stacks/duckdb-trino-polars.md` if the change also touches analytical storage

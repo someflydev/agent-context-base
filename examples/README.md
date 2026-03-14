@@ -13,7 +13,7 @@ Examples are intentionally different from templates:
 - `canonical-cli/`: command, flag, and output-shape examples
 - `canonical-data-acquisition/`: source research, ingestion, raw archival, parser, classification, sync, and event examples
 - `canonical-dokku/`: Dokku deployment wiring and release posture
-- `canonical-integration-tests/`: real-infra tests against isolated `docker-compose.test.yml`
+- `canonical-integration-tests/`: real-infra tests against isolated `docker-compose.test.yml`, including Playwright guidance for backend-driven UI verification
 - `canonical-observability/`: logs, metrics, and trace-shape examples
 - `canonical-prompts/`: monotonic prompt-file layout and prompt text
 - `canonical-rag/`: local indexing config and metadata shape

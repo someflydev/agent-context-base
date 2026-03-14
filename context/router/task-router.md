@@ -29,6 +29,18 @@ Route from what the user is trying to do, not from internal file names.
   - load `context/workflows/add-seed-data.md`
 - "new endpoint", "new route", "new handler"
   - load `context/workflows/add-api-endpoint.md`
+- "faceted filters", "dynamic filtering", "add a filter sidebar"
+  - load `context/workflows/add-faceted-filter-ui.md`
+- "include/exclude filters", "negative filters", "multi-select exclude"
+  - load `context/workflows/add-include-exclude-filtering.md`
+- "dynamic counts", "counts next to filters", "facet counts"
+  - load `context/workflows/add-dynamic-counts.md`
+- "plotly chart tied to filters", "chart data from query state", "plotly-backed query view"
+  - load `context/workflows/add-plotly-backed-query-view.md`
+- "playwright ui verification", "verify backend-driven ui", "test htmx behavior"
+  - load `context/workflows/add-playwright-ui-verification.md`
+- "verify query counts", "verify faceted counts", "make sure chart data matches filter state"
+  - load `context/workflows/verify-query-count-correctness.md`
 - "research candidate public data sources", "evaluate data sources", "find a usable dataset"
   - load `context/workflows/research-data-sources.md`
 - "add a new API source", "pull from an API", "ingest an API feed"
@@ -71,6 +83,15 @@ Examples:
 - "Add a storage-backed route plus a real integration test"
   - start with `context/workflows/add-api-endpoint.md`
   - then load `context/workflows/add-storage-integration.md`
+- "Add HTMX filters with accurate counts"
+  - start with `context/workflows/add-faceted-filter-ui.md`
+  - then load `context/workflows/add-dynamic-counts.md`
+- "Add include/exclude filters and verify the counts"
+  - start with `context/workflows/add-include-exclude-filtering.md`
+  - then load `context/workflows/verify-query-count-correctness.md`
+- "Add a Plotly dashboard view and verify it with Playwright"
+  - start with `context/workflows/add-plotly-backed-query-view.md`
+  - then load `context/workflows/add-playwright-ui-verification.md`
 - "Add a new API source and keep raw payloads for later parsing"
   - start with `context/workflows/add-api-ingestion-source.md`
   - then load `context/workflows/add-raw-download-archive.md`
@@ -91,6 +112,16 @@ Examples:
   - workflow: `context/workflows/add-api-endpoint.md`
 - "Search results look wrong after indexing"
   - workflow: `context/workflows/fix-bug.md`
+- "Add dynamic counts next to filters"
+  - workflow: `context/workflows/add-dynamic-counts.md`
+- "Verify faceted counts are accurate"
+  - workflow: `context/workflows/verify-query-count-correctness.md`
+- "Add include/exclude filtering"
+  - workflow: `context/workflows/add-include-exclude-filtering.md`
+- "Test HTMX + Plotly behavior with Playwright"
+  - workflow: `context/workflows/add-playwright-ui-verification.md`
+- "Make sure chart data matches filter state"
+  - workflow: `context/workflows/verify-query-count-correctness.md`
 - "Give me a quick boot check before I deploy"
   - workflow: `context/workflows/add-smoke-tests.md`
 - "Add a local vector index for docs"

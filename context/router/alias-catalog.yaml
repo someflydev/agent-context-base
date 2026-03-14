@@ -61,6 +61,18 @@ tasks:
     target: context/workflows/add-storage-integration.md
   - alias: prompt sequence
     target: context/workflows/generate-prompt-sequence.md
+  - alias: faceted filters
+    target: context/workflows/add-faceted-filter-ui.md
+  - alias: add dynamic counts next to filters
+    target: context/workflows/add-dynamic-counts.md
+  - alias: verify faceted counts are accurate
+    target: context/workflows/verify-query-count-correctness.md
+  - alias: add include/exclude filtering
+    target: context/workflows/add-include-exclude-filtering.md
+  - alias: test htmx + plotly behavior with playwright
+    target: context/workflows/add-playwright-ui-verification.md
+  - alias: make sure chart data matches filter state
+    target: context/workflows/verify-query-count-correctness.md
   - alias: post flight
     target: context/workflows/post-flight-refinement.md
   - alias: refinement
@@ -187,6 +199,14 @@ stacks:
     target: context/stacks/dokku-conventions.md
   - alias: prompt first
     target: context/stacks/prompt-first-repo.md
+  - alias: htmx
+    target: context/stacks/backend-driven-ui-htmx-tailwind-plotly.md
+  - alias: tailwind
+    target: context/stacks/backend-driven-ui-htmx-tailwind-plotly.md
+  - alias: plotly
+    target: context/stacks/backend-driven-ui-htmx-tailwind-plotly.md
+  - alias: playwright ui
+    target: context/stacks/backend-driven-ui-htmx-tailwind-plotly.md
 
 archetypes:
   - alias: backend api
@@ -227,3 +247,11 @@ capabilities:
     target: context/doctrine/raw-data-retention.md
   - alias: source rate limits
     target: context/doctrine/sync-safety-rate-limits.md
+  - alias: backend driven ui
+    target: context/doctrine/backend-driven-ui-correctness.md
+  - alias: faceted counts
+    target: context/doctrine/faceted-query-count-discipline.md
+  - alias: query state
+    target: context/doctrine/filter-state-and-query-state.md
+  - alias: playwright semantics
+    target: context/doctrine/playwright-verification-philosophy.md

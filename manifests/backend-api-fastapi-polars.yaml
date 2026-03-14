@@ -10,9 +10,12 @@ triggers:
   - fastapi api
   - python backend
   - polars service
+  - htmx filters
+  - plotly dashboard
 aliases:
   - fastapi service
   - analytics api
+  - backend-driven ui
 required_context:
   - context/doctrine/core-principles.md
   - context/doctrine/testing-philosophy.md
@@ -21,16 +24,33 @@ required_context:
   - context/stacks/python-fastapi-uv-ruff-orjson-polars.md
   - context/archetypes/backend-api-service.md
 optional_context:
+  - context/doctrine/backend-driven-ui-correctness.md
+  - context/doctrine/faceted-query-count-discipline.md
+  - context/doctrine/filter-state-and-query-state.md
+  - context/doctrine/playwright-verification-philosophy.md
   - context/workflows/add-smoke-tests.md
+  - context/workflows/add-faceted-filter-ui.md
+  - context/workflows/add-include-exclude-filtering.md
+  - context/workflows/add-dynamic-counts.md
+  - context/workflows/add-plotly-backed-query-view.md
+  - context/workflows/add-playwright-ui-verification.md
+  - context/workflows/verify-query-count-correctness.md
   - context/workflows/add-seed-data.md
   - context/workflows/add-storage-integration.md
   - context/workflows/post-flight-refinement.md
+  - context/stacks/backend-driven-ui-htmx-tailwind-plotly.md
   - context/stacks/duckdb-trino-polars.md
   - context/stacks/redis-keydb-mongo.md
 preferred_examples:
   - examples/canonical-api/fastapi-endpoint-example.py
+  - examples/canonical-api/fastapi-faceted-filter-fragment-example.py
+  - examples/canonical-api/fastapi-include-exclude-filter-example.py
+  - examples/canonical-api/fastapi-dynamic-counts-fragment-example.py
+  - examples/canonical-api/fastapi-plotly-query-endpoint-example.py
   - examples/canonical-smoke-tests/fastapi-smoke-test-example.py
   - examples/canonical-integration-tests/fastapi-db-integration-test-example.py
+  - examples/canonical-integration-tests/playwright-backend-filtering-example.spec.ts
+  - examples/canonical-integration-tests/playwright-filter-counts-example.spec.ts
   - examples/canonical-seed-data/polars-seed-data-example.py
 recommended_templates:
   - templates/readme/README.template.md
@@ -50,12 +70,19 @@ repo_signals:
   - tests/smoke/
 task_hints:
   - add-api-endpoint
+  - add-faceted-filter-ui
+  - add-include-exclude-filtering
+  - add-dynamic-counts
+  - add-plotly-backed-query-view
+  - add-playwright-ui-verification
+  - verify-query-count-correctness
   - add-smoke-tests
   - add-storage-integration
   - add-seed-data
 warnings:
   - Add minimal real-infra integration tests when endpoints touch databases, caches, queues, or search.
   - Keep Polars shaping explicit inside a service boundary instead of leaking frame logic into routes.
+  - Keep HTMX fragments, result counts, facet counts, and Plotly payloads on one normalized query-state contract.
 bootstrap_defaults:
   - include_docker_compose
   - include_smoke_tests
@@ -79,5 +106,6 @@ dokku_relevance: supported
 smoke_test_expectations:
   - boot health route
   - representative API happy path
+  - representative backend-driven fragment or chart-data path when interactive filtering is present
   - readable failure output when storage prerequisites are missing
 prompt_first_support: supported

@@ -8,5 +8,6 @@ Strong examples in this category should show:
 - explicit boot and teardown of the test stack
 - a real write and a real read or query assertion
 - small deterministic fixture data
+- Playwright assertions that prove backend-driven UI semantics when the interface depends on HTMX fragments or chart payloads
 
 Choose this category after the route or command shape is already clear from a stack-specific example.

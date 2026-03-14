@@ -2,6 +2,13 @@
 
 This changelog records durable architectural changes to the base itself.
 
+## 2026-03-14: Backend-Driven UI Correctness Expansion
+
+- added doctrine for backend-driven HTMX, Tailwind, and Plotly correctness
+- added workflows for faceted filters, include/exclude state, dynamic counts, Plotly-backed query views, and Playwright verification
+- added router, alias, and manifest hooks for backend-driven UI queries
+- added canonical examples and verification for filter-count and chart-state alignment
+
 ## 2026-03-13: Documentation Refactor
 
 - rewrote the root README as the front-facing entrypoint

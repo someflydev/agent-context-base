@@ -12,6 +12,7 @@ triggers:
 aliases:
   - phoenix web
   - elixir controller
+  - backend-driven ui
 required_context:
   - context/doctrine/core-principles.md
   - context/doctrine/testing-philosophy.md
@@ -20,9 +21,20 @@ required_context:
   - context/stacks/elixir-phoenix.md
   - context/archetypes/backend-api-service.md
 optional_context:
+  - context/doctrine/backend-driven-ui-correctness.md
+  - context/doctrine/faceted-query-count-discipline.md
+  - context/doctrine/filter-state-and-query-state.md
+  - context/doctrine/playwright-verification-philosophy.md
   - context/workflows/add-smoke-tests.md
+  - context/workflows/add-faceted-filter-ui.md
+  - context/workflows/add-include-exclude-filtering.md
+  - context/workflows/add-dynamic-counts.md
+  - context/workflows/add-plotly-backed-query-view.md
+  - context/workflows/add-playwright-ui-verification.md
+  - context/workflows/verify-query-count-correctness.md
   - context/workflows/add-deployment-support.md
   - context/workflows/post-flight-refinement.md
+  - context/stacks/backend-driven-ui-htmx-tailwind-plotly.md
   - context/doctrine/canonical-examples.md
 preferred_examples:
   - examples/canonical-api/phoenix-route-controller-example.ex
@@ -43,12 +55,18 @@ repo_signals:
   - test/
 task_hints:
   - add-feature
+  - add-faceted-filter-ui
+  - add-dynamic-counts
+  - add-plotly-backed-query-view
+  - add-playwright-ui-verification
+  - verify-query-count-correctness
   - add-smoke-tests
   - add-deployment-support
   - post-flight-refinement
 warnings:
   - Controller or LiveView additions that change persistence behavior should include real database integration coverage.
   - Keep release and migration behavior explicit when the service is deployable.
+  - Keep filter state, fragment state, result counts, and chart payloads aligned when the UI is backend-driven.
 bootstrap_defaults:
   - include_docker_compose
   - include_smoke_tests
