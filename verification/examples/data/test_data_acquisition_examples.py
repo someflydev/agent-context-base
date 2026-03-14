@@ -52,7 +52,7 @@ class DataAcquisitionExampleTests(unittest.TestCase):
         data = load_yaml_like(path)
         self.assertEqual(data.get("capability"), "canonical-data-acquisition")
         languages = data.get("languages", [])
-        self.assertEqual(len(languages), 8)
+        self.assertEqual(len(languages), 11)
         registry = registry_by_name()
         for entry in languages:
             with self.subTest(stack=entry.get("stack")):
@@ -96,8 +96,15 @@ class DataAcquisitionExampleTests(unittest.TestCase):
         for name in (
             "fastapi-source-sync-example",
             "go-echo-source-sync-example",
+            "clojure-kit-source-sync-example",
+            "scala-tapir-source-sync-example",
+            "kotlin-http4k-source-sync-example",
+            "phoenix-source-sync-example",
             "rust-axum-source-sync-example",
             "typescript-hono-source-sync-example",
+            "nim-jester-source-sync-example",
+            "zig-zap-source-sync-example",
+            "crystal-kemal-source-sync-example",
         ):
             with self.subTest(name=name):
                 path = Path(str(registry[name]["path"]))

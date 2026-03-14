@@ -13,6 +13,8 @@ from verification.scenarios.scala_tapir_http4s_zio_min_app.verify import (
 API_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-api/scala-tapir-http4s-zio-api-endpoint-example.scala"
 FRAGMENT_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-api/scala-tapir-http4s-zio-html-fragment-example.scala"
 DATA_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-api/scala-tapir-http4s-zio-data-endpoint-example.scala"
+DATA_ACQUISITION_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-data-acquisition/scala-tapir-source-sync-example.scala"
+DATA_ACQUISITION_README_PATH = REPO_ROOT / "examples/canonical-data-acquisition/README.md"
 RUNTIME_DIR = REPO_ROOT / "examples/canonical-api/scala-tapir-http4s-zio-example"
 
 
@@ -34,6 +36,20 @@ class ScalaTapirHttp4sZioExampleTests(unittest.TestCase):
         self.assertIn('in("data" / "chart" / path[String]("metric"))', text)
         self.assertIn("ChartPayload(", text)
         self.assertIn('SeriesPoint("2026-03-01", 18)', text)
+
+    def test_data_acquisition_example_contains_expected_sync_markers(self) -> None:
+        text = DATA_ACQUISITION_EXAMPLE_PATH.read_text(encoding="utf-8")
+        self.assertIn("final case class SyncCursor(", text)
+        self.assertIn("trait ReleaseSourceClient:", text)
+        self.assertIn("def archiveRawCapture", text)
+        self.assertIn("def replayFromArchive", text)
+        self.assertIn('.in("source-sync")', text)
+        self.assertIn("repository.save(records, nextCursor)", text)
+
+    def test_data_acquisition_readme_references_scala_example_honestly(self) -> None:
+        text = DATA_ACQUISITION_README_PATH.read_text(encoding="utf-8")
+        self.assertIn("scala-tapir-source-sync-example.scala (structure-verified)", text)
+        self.assertIn("real Scala example, `structure-verified` only", text)
 
     def test_runtime_bundle_files_exist(self) -> None:
         for relative in (
