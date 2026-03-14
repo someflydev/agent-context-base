@@ -2,15 +2,28 @@ from __future__ import annotations
 
 import ast
 import asyncio
+import tempfile
 import unittest
 import urllib.request
 from pathlib import Path
 
-from verification.helpers import REPO_ROOT, docker_enabled, free_tcp_port, run_command, wait_for_http_json
+from verification.helpers import (
+    REPO_ROOT,
+    compat_dataclasses_module,
+    docker_enabled,
+    fastapi_stub_module,
+    free_tcp_port,
+    load_python_module,
+    orjson_stub_module,
+    polars_stub_module,
+    run_command,
+    wait_for_http_json,
+)
 from verification.scenarios.fastapi_min_app.harness import load_example_module, run_fastapi_summary_scenario
 
 
 EXAMPLE_PATH = REPO_ROOT / "examples/canonical-api/fastapi-endpoint-example.py"
+DATA_ACQUISITION_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-data-acquisition/fastapi-source-sync-example.py"
 SMOKE_TEST_PATH = REPO_ROOT / "examples/canonical-smoke-tests/fastapi-smoke-test-example.py"
 INTEGRATION_TEST_PATH = REPO_ROOT / "examples/canonical-integration-tests/fastapi-db-integration-test-example.py"
 RUNTIME_DIR = REPO_ROOT / "examples/canonical-api/fastapi-example"
@@ -37,6 +50,92 @@ class FastAPIExampleTests(unittest.TestCase):
         for path in (SMOKE_TEST_PATH, INTEGRATION_TEST_PATH):
             with self.subTest(path=path.name):
                 ast.parse(path.read_text(encoding="utf-8"))
+
+    def test_fastapi_data_acquisition_example_parses(self) -> None:
+        ast.parse(DATA_ACQUISITION_EXAMPLE_PATH.read_text(encoding="utf-8"))
+
+    def test_fastapi_data_acquisition_archives_replays_and_retries(self) -> None:
+        module = load_python_module(
+            DATA_ACQUISITION_EXAMPLE_PATH,
+            module_name="canonical_fastapi_source_sync_example",
+            stub_modules={
+                "dataclasses": compat_dataclasses_module(),
+                "fastapi": fastapi_stub_module(),
+                "orjson": orjson_stub_module(),
+                "polars": polars_stub_module(),
+            },
+        )
+
+        payload = [
+            {
+                "id": 102,
+                "tag_name": "v1.1.0",
+                "name": "January cut",
+                "html_url": "https://github.com/octocat/hello-world/releases/tag/v1.1.0",
+                "published_at": "2025-01-15T09:30:00Z",
+                "draft": False,
+            },
+            {
+                "id": 99,
+                "tag_name": "v1.0.0",
+                "name": "Initial release",
+                "html_url": "https://github.com/octocat/hello-world/releases/tag/v1.0.0",
+                "published_at": "2024-12-01T12:00:00Z",
+                "draft": False,
+            },
+        ]
+
+        class StubAdapter:
+            def __init__(self) -> None:
+                self.calls = 0
+
+            def fetch_release_page(self, _cursor: object) -> object:
+                self.calls += 1
+                if self.calls == 1:
+                    raise module.RetryableFetchError("retry once before archiving")
+                return module.FetchResult(
+                    body=module.orjson.dumps(payload),
+                    fetched_at=module.datetime(2025, 2, 1, 10, 30, tzinfo=module.timezone.utc),
+                    status_code=200,
+                    content_type="application/json",
+                    request_url=(
+                        "https://api.github.com/repos/octocat/hello-world/releases?"
+                        "per_page=50&page=3"
+                    ),
+                    checkpoint_token='W/"etag-3"',
+                    next_page=4,
+                )
+
+        adapter = StubAdapter()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            service = module.GitHubReleaseSyncService(adapter=adapter, archive_root=Path(temp_dir))
+            result = service.sync_release_page(
+                module.SyncCursor(
+                    owner="octocat",
+                    repo="hello-world",
+                    page=3,
+                    etag='W/"etag-2"',
+                    max_attempts=2,
+                )
+            )
+
+            self.assertEqual(adapter.calls, 2)
+            self.assertTrue(result.raw_capture.raw_path.endswith("page-3.json"))
+            self.assertTrue(Path(result.raw_capture.raw_path).exists())
+            self.assertTrue(Path(result.raw_capture.metadata_path).exists())
+            self.assertEqual(result.records[0].canonical_id, "github-releases:octocat/hello-world:102")
+            self.assertEqual(result.records[0].provenance.raw_path, result.raw_capture.raw_path)
+            self.assertEqual(result.records[0].provenance.checkpoint_token, 'W/"etag-3"')
+            self.assertEqual(result.next_cursor.page, 4)
+
+            replayed = service.replay_from_archive(result.raw_capture)
+            self.assertEqual(
+                [record.canonical_id for record in replayed],
+                [record.canonical_id for record in result.records],
+            )
+
+            route_paths = [route["path"] for route in module.router.routes]
+            self.assertIn("/source-sync/github-releases", route_paths)
 
     def test_fastapi_runtime_container(self) -> None:
         if not docker_enabled():

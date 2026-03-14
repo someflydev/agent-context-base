@@ -65,6 +65,10 @@ def parse_scalar(raw: str) -> Any:
     value = raw.strip()
     if value.startswith(("'", '"')) and value.endswith(("'", '"')) and len(value) >= 2:
         return value[1:-1]
+    if value == "[]":
+        return []
+    if value == "{}":
+        return {}
     lowered = value.lower()
     if lowered == "true":
         return True
@@ -414,6 +418,12 @@ def duckdb_stub_module() -> types.ModuleType:
 def fastapi_stub_module() -> types.ModuleType:
     module = types.ModuleType("fastapi")
 
+    class HTTPException(Exception):
+        def __init__(self, status_code: int, detail: str) -> None:
+            super().__init__(detail)
+            self.status_code = status_code
+            self.detail = detail
+
     class APIRouter:
         def __init__(self, *, prefix: str = "", tags: list[str] | None = None) -> None:
             self.prefix = prefix
@@ -421,6 +431,19 @@ def fastapi_stub_module() -> types.ModuleType:
             self.routes: list[dict[str, Any]] = []
 
         def get(self, path: str, *, response_model: object | None = None):
+            def decorator(func: Any) -> Any:
+                self.routes.append(
+                    {
+                        "path": f"{self.prefix}{path}",
+                        "endpoint": func,
+                        "response_model": response_model,
+                    }
+                )
+                return func
+
+            return decorator
+
+        def post(self, path: str, *, response_model: object | None = None):
             def decorator(func: Any) -> Any:
                 self.routes.append(
                     {
@@ -455,8 +478,16 @@ def fastapi_stub_module() -> types.ModuleType:
 
     module.APIRouter = APIRouter
     module.FastAPI = FastAPI
+    module.HTTPException = HTTPException
     module.Depends = lambda dependency: dependency
     module.Query = lambda default=None, **_kwargs: default
+    return module
+
+
+def orjson_stub_module() -> types.ModuleType:
+    module = types.ModuleType("orjson")
+    module.dumps = lambda value: json.dumps(value, separators=(",", ":"), sort_keys=True).encode("utf-8")
+    module.loads = lambda value: json.loads(value.decode("utf-8") if isinstance(value, (bytes, bytearray)) else value)
     return module
 
 
