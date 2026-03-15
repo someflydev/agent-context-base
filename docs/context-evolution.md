@@ -2,6 +2,20 @@
 
 This changelog records durable architectural changes to the base itself.
 
+## 2026-03-14: Database Stack Coverage Expansion
+
+- added solo stack packs for `mongo`, `redis`, `trino`, and `postgresql`
+- `postgresql.md` is now the baseline transactional SQL pack that many backend repos implicitly assumed without a dedicated context file
+- `redis.md` covers data-structure selection, TTL discipline, key naming, and credible use cases independently of MongoDB
+- `mongo.md` covers aggregation pipelines, partial indexes, request/response log retention patterns, and document-shape discipline
+- `trino.md` covers federated analytics routing, compatible catalog constraints, pushdown risks, and cross-catalog query patterns
+- narrowed `redis-keydb-mongo.md` to mixed-storage and comparison decisions; solo requests now route to dedicated solo packs
+- narrowed `duckdb-trino-polars.md` to repos that genuinely use all three tools together; Trino is now independently discoverable
+- updated `timescaledb.md` to explicitly pair with `postgresql.md` as its foundational layer
+- updated stack router, alias catalog, repo-signal hints, and task router to resolve solo database requests to solo packs
+- registered `mongo`, `redis`, `trino`, `postgresql` as valid stack identifiers in `manifest_tools.py`
+- updated `multi-storage-zoo.yaml` to surface `postgresql` as a secondary stack and the new solo packs as optional context
+
 ## 2026-03-14: Backend-Driven UI Correctness Expansion
 
 - added doctrine for backend-driven HTMX, Tailwind, and Plotly correctness
