@@ -27,7 +27,7 @@ Use this category for preferred patterns around databases, caches, queues, searc
   Harness: none (follow-on: docker-compose with nats-server + mongo:7)
   Last verified by: verification/examples/data/test_storage_examples.py
 
-- `duckdb-polars-example.py` — DuckDB + Polars storage pipeline. Use when both tools are in the same repo.
+- `duckdb-polars-example.md` + `duckdb-polars-example.py` — Local, embedded DuckDB used as a query engine with Polars as the output layer. Use when the data lives in a local DuckDB file under `docker/volumes/dev/` and the query result needs to be a Polars DataFrame. See the companion `.md` for the local-file vs S3 read-path distinction.
 
 - `redis-mongo-shape-example.md` — Key-prefix and collection-naming conventions for repos that use Redis
   and MongoDB together. Use when the design question is how to isolate dev and test data across both
@@ -81,6 +81,11 @@ weekly-bucketed MongoDB collection.
 - `nats-jetstream-mongo-pipeline-example.md`
   Verification level: structure-verified
   Harness: none (follow-on: docker-compose with nats-server + mongo:7)
+  Last verified by: verification/examples/data/test_storage_examples.py
+
+- `duckdb-polars-example.md`
+  Verification level: structure-verified
+  Harness: none
   Last verified by: verification/examples/data/test_storage_examples.py
 
 - `duckdb-polars-example.py`
