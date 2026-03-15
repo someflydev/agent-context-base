@@ -1245,6 +1245,72 @@
       "stability": "canonical"
     },
     {
+      "path": "examples/canonical-storage/mongo-weekly-reporting-example.md",
+      "category": "storage",
+      "summary": "MongoDB weekly-bucketed collections, aggregation pipelines, partial indexes, and retention.",
+      "stacks": ["mongo"],
+      "archetypes": ["backend-api-service", "data-pipeline"],
+      "workflows": ["add-storage-integration"],
+      "patterns": ["storage-boundary", "weekly-collection-bucketing", "aggregation-pipeline", "partial-index"],
+      "rank": 85,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-storage/redis-structures-example.md",
+      "category": "storage",
+      "summary": "Redis native structures: sorted set, string-with-TTL, hash, and stream with rationale.",
+      "stacks": ["redis"],
+      "archetypes": ["backend-api-service"],
+      "workflows": ["add-storage-integration"],
+      "patterns": ["storage-boundary", "sorted-set", "cache-key", "stream-append"],
+      "rank": 85,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-storage/trino-federated-analytics-example.sql",
+      "category": "storage",
+      "summary": "Trino cross-catalog join between PostgreSQL and MongoDB connectors.",
+      "stacks": ["trino", "duckdb-trino-polars"],
+      "archetypes": ["data-pipeline"],
+      "workflows": ["add-storage-integration"],
+      "patterns": ["federated-query", "cross-catalog-join", "analytics-rollup"],
+      "rank": 84,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-storage/trino-federated-analytics-example.md",
+      "category": "storage",
+      "summary": "Trino federated analytics explainer: catalog config, pushdown caveats, Trino vs PostgreSQL.",
+      "stacks": ["trino", "duckdb-trino-polars"],
+      "archetypes": ["data-pipeline"],
+      "workflows": ["add-storage-integration"],
+      "patterns": ["federated-query", "catalog-configuration", "analytics-rollup"],
+      "rank": 83,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-storage/postgresql-query-shape-example.sql",
+      "category": "storage",
+      "summary": "PostgreSQL DDL, partial indexes, bounded jsonb, reporting CTE, and materialized view.",
+      "stacks": ["postgresql"],
+      "archetypes": ["backend-api-service", "data-pipeline"],
+      "workflows": ["add-storage-integration"],
+      "patterns": ["storage-boundary", "partial-index", "jsonb", "materialized-view", "cte-reporting"],
+      "rank": 85,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-storage/postgresql-query-shape-example.md",
+      "category": "storage",
+      "summary": "PostgreSQL query shape explainer: partial indexes, jsonb discipline, materialized view pattern.",
+      "stacks": ["postgresql"],
+      "archetypes": ["backend-api-service", "data-pipeline"],
+      "workflows": ["add-storage-integration"],
+      "patterns": ["storage-boundary", "partial-index", "jsonb", "materialized-view"],
+      "rank": 84,
+      "stability": "canonical"
+    },
+    {
       "path": "examples/canonical-workflows/MEMORY.example.md",
       "category": "workflow",
       "summary": "Mutable MEMORY.md example showing concise current-task continuity for a FastAPI endpoint task.",

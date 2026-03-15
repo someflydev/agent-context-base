@@ -24,9 +24,12 @@ stacks:
     verified_examples:
       - duckdb-polars-example
       - polars-seed-data-example
+      - trino-federated-analytics-example-sql
+      - trino-federated-analytics-example-doc
     missing_verification:
-      - trino federation example
+      - live trino federation harness
       - partitioned parquet example
+    notes: Combo pack for repos using DuckDB, Trino, and Polars together. The Trino federation SQL example is shared with the solo trino pack and is smoke-verified via the trino_federation_min_app harness.
   - stack: go-echo
     support_level: 3
     verified_examples:
@@ -216,12 +219,48 @@ stacks:
     missing_verification:
       - index runner example
       - retrieval smoke example
+  - stack: mongo
+    support_level: 2
+    verified_examples:
+      - mongo-weekly-reporting-example
+    missing_verification:
+      - live aggregation pipeline integration example
+      - index creation and partial filter runtime check
+    notes: Solo MongoDB pack. Examples are structure-verified only; no live MongoDB instance is wired in the default verification tier.
+  - stack: redis
+    support_level: 2
+    verified_examples:
+      - redis-structures-example
+    missing_verification:
+      - live sorted-set and stream integration example
+      - TTL and expiry behaviour runtime check
+    notes: Solo Redis pack. Examples are structure-verified only; no live Redis instance is wired in the default verification tier.
+  - stack: trino
+    support_level: 3
+    verified_examples:
+      - trino-federated-analytics-example-sql
+      - trino-federated-analytics-example-doc
+    missing_verification:
+      - pushdown verification
+      - DATE_TRUNC weekly aggregation live check
+    notes: Solo Trino pack. SQL example is smoke-verified via a docker-compose harness (postgres + mongo + trino) that seeds both sources and asserts the federated join result shape. Requires VERIFY_DOCKER=1. Pushdown behaviour and weekly aggregation are not yet live-checked.
+  - stack: postgresql
+    support_level: 2
+    verified_examples:
+      - postgresql-query-shape-example-sql
+      - postgresql-query-shape-example-doc
+    missing_verification:
+      - live DDL execution and index creation check
+      - materialized view refresh runtime check
+      - integration test against isolated docker-compose instance
+    notes: Solo PostgreSQL pack. SQL example is structure-verified only; no live PostgreSQL instance is wired in the default verification tier.
   - stack: redis-keydb-mongo
     support_level: 2
     verified_examples:
       - redis-mongo-shape-example
     missing_verification:
       - isolated integration example
+    notes: Combo pack for repos that use Redis and MongoDB together. Narrowed in PROMPT_38 to cover only mixed Redis+MongoDB designs. Solo workloads should use the redis or mongo pack instead.
   - stack: dokku-conventions
     support_level: 3
     verified_examples:
