@@ -1,0 +1,25 @@
+services:
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: testdb
+      POSTGRES_USER: trino_read
+      POSTGRES_PASSWORD: testpass
+    tmpfs:
+      - /var/lib/postgresql/data
+
+  mongo:
+    image: mongo:7
+    tmpfs:
+      - /data/db
+
+  trino:
+    image: trinodb/trino:451
+    ports:
+      - "${TRINO_PORT:-18080}:8080"
+    volumes:
+      - ./etc/catalog:/etc/trino/catalog:ro
+    depends_on:
+      - postgres
+      - mongo
