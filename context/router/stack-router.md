@@ -55,8 +55,20 @@ Infer the active stack from repo signals, touched files, and user language.
   - load primary application stack; load `context/stacks/duckdb-trino-polars.md` only if trino is also present
 - `postgresql`, `postgres`, `jsonb`, `materialized view`, migration-heavy SQL, transactional SQL baseline
   - load `context/stacks/postgresql.md`
-- `nats`, `jetstream`
+- `parquet`, `arrow schema`, `row group`, `snappy`, `zstandard`, `pyarrow schema`
+  - load `context/stacks/parquet.md`
+- `minio`, `s3-compatible`, `object store`, `bucket` without AWS context
+  - load `context/stacks/minio.md`
+- `parquet` plus `minio`, `data lake write path`, `write parquet to object store`
+  - load `context/stacks/parquet-minio.md`
+  - load `context/stacks/parquet.md`
+  - load `context/stacks/minio.md`
+- `nats`, `nats jetstream`, `jetstream`, `nats subject`, `durable consumer`
   - load `context/stacks/nats-jetstream.md`
+- `nats` plus `mongo`, `capture-enrich-persist`, `publish to nats then insert to mongo`
+  - load `context/stacks/nats-jetstream-mongo.md`
+  - load `context/stacks/nats-jetstream.md`
+  - load `context/stacks/mongo.md`
 - `meilisearch`
   - load `context/stacks/meilisearch.md`
 - `timescaledb`
@@ -142,6 +154,24 @@ Infer the active stack from repo signals, touched files, and user language.
   - `context/stacks/postgresql.md`
 - "Wire Redis as a cache layer in front of MongoDB"
   - `context/stacks/redis-keydb-mongo.md`
+- "Write partitioned Parquet to MinIO"
+  - `context/stacks/parquet-minio.md`
+  - `context/stacks/parquet.md`
+  - `context/stacks/minio.md`
+- "Read Parquet from MinIO with DuckDB"
+  - `context/stacks/parquet-minio.md`
+  - `context/stacks/duckdb-trino-polars.md`
+- "Add MinIO bucket to the dev docker-compose"
+  - `context/stacks/minio.md`
+- "Set up NATS JetStream for request capture"
+  - `context/stacks/nats-jetstream.md`
+- "Publish request/response events to NATS then enrich and insert to MongoDB"
+  - `context/stacks/nats-jetstream-mongo.md`
+- "Add dead letter handling to the NATS consumer"
+  - `context/stacks/nats-jetstream.md`
+- "Write the enriched documents to a weekly MongoDB collection"
+  - `context/stacks/nats-jetstream-mongo.md`
+  - `context/stacks/mongo.md`
 - "Use Polars to reshape query output in FastAPI"
   - `context/stacks/python-fastapi-uv-ruff-orjson-polars.md`
   - `context/stacks/duckdb-trino-polars.md` if the change also touches analytical storage

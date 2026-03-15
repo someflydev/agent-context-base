@@ -90,6 +90,27 @@ Route from what the user is trying to do, not from internal file names.
 - "trino catalog", "federated query", "cross-database analytics", "query postgres and mongo together with trino"
   - load `context/stacks/trino.md`
   - load `context/workflows/add-storage-integration.md`
+- "write partitioned parquet to minio", "data lake write path", "write parquet to object store", "partition by tenant and date"
+  - load `context/stacks/parquet-minio.md`
+  - load `context/stacks/parquet.md`
+  - load `context/stacks/minio.md`
+  - load `context/workflows/add-storage-integration.md`
+- "read parquet from minio with duckdb", "query minio parquet with duckdb"
+  - load `context/stacks/parquet-minio.md`
+  - load `context/stacks/duckdb-trino-polars.md`
+- "add minio bucket", "set up minio for local dev", "add minio to docker-compose"
+  - load `context/stacks/minio.md`
+- "set up nats jetstream", "nats subject routing", "durable nats consumer", "nats request capture"
+  - load `context/stacks/nats-jetstream.md`
+  - load `context/workflows/add-storage-integration.md`
+- "publish to nats then insert to mongo", "capture-enrich-persist pipeline", "nats consumer writes to mongodb", "add dead letter handling to nats consumer"
+  - load `context/stacks/nats-jetstream-mongo.md`
+  - load `context/stacks/nats-jetstream.md`
+  - load `context/stacks/mongo.md`
+  - load `context/workflows/add-storage-integration.md`
+- "write enriched documents to a weekly mongodb collection from nats"
+  - load `context/stacks/nats-jetstream-mongo.md`
+  - load `context/stacks/mongo.md`
 - "timescaledb rollups", "hypertable", "time-series on postgres"
   - load `context/stacks/timescaledb.md`
   - load `context/stacks/postgresql.md`
@@ -189,6 +210,20 @@ Examples:
   - workflow: `context/workflows/add-classification-step.md`
 - "Use events to coordinate source syncs"
   - workflow: `context/workflows/add-event-driven-sync.md`
+- "Write partitioned Parquet to MinIO"
+  - stacks: `context/stacks/parquet-minio.md`, `context/stacks/parquet.md`, `context/stacks/minio.md`
+- "Read Parquet from MinIO with DuckDB"
+  - stacks: `context/stacks/parquet-minio.md`, `context/stacks/duckdb-trino-polars.md`
+- "Add MinIO bucket to the dev docker-compose"
+  - stacks: `context/stacks/minio.md`
+- "Set up NATS JetStream for request capture"
+  - stacks: `context/stacks/nats-jetstream.md`
+- "Publish request/response events to NATS then enrich and insert to MongoDB"
+  - stacks: `context/stacks/nats-jetstream-mongo.md`
+- "Add dead letter handling to the NATS consumer"
+  - stacks: `context/stacks/nats-jetstream.md`
+- "Write the enriched documents to a weekly MongoDB collection"
+  - stacks: `context/stacks/nats-jetstream-mongo.md`, `context/stacks/mongo.md`
 - "Make this generated repo less sloppy before I commit"
   - workflow: `context/workflows/post-flight-refinement.md`
 

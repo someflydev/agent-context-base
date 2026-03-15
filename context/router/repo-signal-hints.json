@@ -233,6 +233,45 @@
       "guidance": "Multi-storage repos need isolation and real boundary tests before adding more context."
     },
     {
+      "name": "parquet",
+      "patterns": [
+        "**/*.parquet",
+        "app/parquet/*.py",
+        "scripts/write_parquet.py",
+        "tests/integration/test_parquet_*.py"
+      ],
+      "guidance": "Load the parquet pack for file-format discipline: schema pinning, partition layout, codec selection, and row group sizing."
+    },
+    {
+      "name": "minio",
+      "patterns": [
+        "app/storage/minio.py",
+        "scripts/create_buckets.py",
+        "tests/integration/test_minio_*.py"
+      ],
+      "guidance": "Load the minio pack for bucket naming, credential env vars, path-style addressing, and Docker dev setup."
+    },
+    {
+      "name": "nats-jetstream",
+      "patterns": [
+        "app/messaging/nats*.py",
+        "etc/nats/jetstream.conf",
+        "tests/integration/test_nats*.py",
+        "app/consumers/*.py"
+      ],
+      "guidance": "Load the nats-jetstream pack for stream configuration, subject naming, consumer ack semantics, and DLQ setup."
+    },
+    {
+      "name": "nats-jetstream-mongo",
+      "patterns": [
+        "app/messaging/producer.py",
+        "app/messaging/consumer.py",
+        "app/enrichment/*.py",
+        "tests/integration/test_pipeline.py"
+      ],
+      "guidance": "Load nats-jetstream-mongo when both NATS producer and MongoDB insert signals are present. Covers the full capture-enrich-persist pipeline."
+    },
+    {
       "name": "prompt-first-repo",
       "patterns": [
         "PROMPTS.md",

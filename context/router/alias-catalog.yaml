@@ -233,10 +233,42 @@ stacks:
     target: context/stacks/postgresql.md
   - alias: duckdb
     target: context/stacks/duckdb-trino-polars.md
+  - alias: parquet
+    target: context/stacks/parquet.md
+  - alias: arrow schema
+    target: context/stacks/parquet.md
+  - alias: row group
+    target: context/stacks/parquet.md
+  - alias: snappy codec
+    target: context/stacks/parquet.md
+  - alias: zstandard codec
+    target: context/stacks/parquet.md
+  - alias: minio
+    target: context/stacks/minio.md
+  - alias: s3-compatible
+    target: context/stacks/minio.md
+  - alias: object store
+    target: context/stacks/minio.md
+  - alias: parquet-minio
+    target: context/stacks/parquet-minio.md
+  - alias: data lake write path
+    target: context/stacks/parquet-minio.md
+  - alias: write parquet to object store
+    target: context/stacks/parquet-minio.md
   - alias: nats
+    target: context/stacks/nats-jetstream.md
+  - alias: nats jetstream
     target: context/stacks/nats-jetstream.md
   - alias: jetstream
     target: context/stacks/nats-jetstream.md
+  - alias: nats subject
+    target: context/stacks/nats-jetstream.md
+  - alias: durable consumer
+    target: context/stacks/nats-jetstream.md
+  - alias: nats-jetstream-mongo
+    target: context/stacks/nats-jetstream-mongo.md
+  - alias: capture-enrich-persist
+    target: context/stacks/nats-jetstream-mongo.md
   - alias: meilisearch
     target: context/stacks/meilisearch.md
   - alias: timescaledb
