@@ -1223,6 +1223,17 @@
       "stability": "canonical"
     },
     {
+      "path": "examples/canonical-storage/duckdb-polars-example.md",
+      "category": "storage",
+      "summary": "Companion document for the DuckDB + Polars local-file example. Resolves the local-file vs S3 read-path distinction and documents verification level and harness.",
+      "stacks": ["duckdb-trino-polars"],
+      "archetypes": ["data-pipeline"],
+      "workflows": ["add-storage-integration"],
+      "patterns": ["storage-boundary", "deterministic-query"],
+      "rank": 94,
+      "stability": "canonical"
+    },
+    {
       "path": "examples/canonical-storage/duckdb-polars-example.py",
       "category": "storage",
       "summary": "Minimal DuckDB plus Polars storage example.",

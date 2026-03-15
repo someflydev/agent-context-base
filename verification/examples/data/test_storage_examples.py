@@ -222,6 +222,32 @@ class ParquetMinioExampleTests(unittest.TestCase):
         self.assertIn("parquet-minio-example.py", readme)
 
 
+class DuckDbPolarsExampleTests(unittest.TestCase):
+    PATH = "examples/canonical-storage/duckdb-polars-example.md"
+
+    def setUp(self) -> None:
+        self.text = _read(self.PATH)
+
+    def test_file_exists(self) -> None:
+        self.assertTrue((REPO_ROOT / self.PATH).exists())
+
+    def test_database_path_convention(self) -> None:
+        self.assertIn("docker/volumes/", self.text)
+
+    def test_verification_level_line(self) -> None:
+        self.assertIn("behavior-verified", self.text)
+
+    def test_polars_data_pipeline_harness_referenced(self) -> None:
+        self.assertIn("polars_data_pipeline", self.text)
+
+    def test_parquet_minio_example_referenced(self) -> None:
+        self.assertIn("parquet-minio-example.py", self.text)
+
+    def test_readme_references_md(self) -> None:
+        readme = _read("examples/canonical-storage/README.md")
+        self.assertIn("duckdb-polars-example.md", readme)
+
+
 class NatsJetstreamMongoPipelineExampleTests(unittest.TestCase):
     PATH = "examples/canonical-storage/nats-jetstream-mongo-pipeline-example.md"
 

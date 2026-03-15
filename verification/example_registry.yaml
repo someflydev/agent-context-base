@@ -1836,6 +1836,23 @@ examples:
     docker_supported: false
     scenario_harness: fastapi_min_app
     confidence: medium
+  - name: duckdb-polars-example-doc
+    path: examples/canonical-storage/duckdb-polars-example.md
+    language: markdown
+    stack_tags:
+      - duckdb-trino-polars
+    archetype_tags:
+      - data-pipeline
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - contains DATABASE_PATH convention
+      - references polars_data_pipeline harness
+      - references parquet-minio-example.py
+    docker_supported: false
+    scenario_harness: none
+    last_verified_by: verification/examples/data/test_storage_examples.py
+    confidence: medium
   - name: duckdb-polars-example
     path: examples/canonical-storage/duckdb-polars-example.py
     language: python
