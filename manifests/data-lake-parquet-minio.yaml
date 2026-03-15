@@ -1,0 +1,87 @@
+schema_version: 2
+name: data-lake-parquet-minio
+description: Data-lake write path using PyArrow + MinIO (S3-compatible) with DuckDB/Polars as the read layer. Use when Parquet files are the canonical storage format and an S3-compatible object store is the durable store.
+archetype: data-pipeline
+primary_stack: parquet-minio
+# duckdb-trino-polars is the read layer that consumes what parquet-minio writes;
+# python-fastapi-uv-ruff-orjson-polars is the typical service wrapper around the pipeline.
+secondary_stacks:
+  - duckdb-trino-polars
+  - python-fastapi-uv-ruff-orjson-polars
+triggers:
+  - data lake write path
+  - write parquet to minio
+  - parquet pipeline
+  - s3-compatible data store
+  - object store write path
+aliases:
+  - parquet lake
+  - minio write path
+  - datalake pipeline
+required_context:
+  - context/doctrine/core-principles.md
+  - context/doctrine/compose-port-and-data-isolation.md
+  - context/workflows/add-feature.md
+  - context/archetypes/data-pipeline.md
+  - context/stacks/parquet-minio.md
+  - context/stacks/parquet.md
+  - context/stacks/minio.md
+optional_context:
+  - context/stacks/duckdb-trino-polars.md
+  - context/stacks/python-fastapi-uv-ruff-orjson-polars.md
+  - context/workflows/add-storage-integration.md
+  - context/workflows/post-flight-refinement.md
+  - context/doctrine/canonical-examples.md
+preferred_examples:
+  - examples/canonical-storage/parquet-minio-example.md
+  - examples/canonical-storage/parquet-minio-example.py
+  - examples/canonical-storage/duckdb-polars-example.py
+recommended_templates:
+  - templates/readme/README.template.md
+  - templates/agent-md/AGENT.template.md
+  - templates/claude-md/CLAUDE.template.md
+  - templates/gitignore/.gitignore.template
+  - templates/compose/docker-compose.template.yaml
+  - templates/compose/docker-compose-test.template.yaml
+  - templates/manifest/profile-summary.template.yaml
+repo_signals:
+  - app/storage/parquet_writer.py
+  - app/parquet/*.py
+  - app/storage/minio.py
+  - app/minio*.py
+  - docker-compose*.yml contains minio/minio
+  - requirements.txt or pyproject.toml contains pyarrow
+  - '**/*.parquet files checked in for fixtures or tests'
+task_hints:
+  - add-feature
+  - add-storage-integration
+  - post-flight-refinement
+warnings:
+  - Write to _staging/ first; copy to final key; delete staging on success. Never write directly to the final key path.
+  - Partition by tenant_id first, then by date. Avoid high-cardinality partition keys. Use Hive-style directory names.
+  - Define the Arrow schema explicitly at module level. Never infer from the first batch.
+bootstrap_defaults:
+  - include_docker_compose
+  - include_smoke_tests
+  - include_integration_tests
+  - include_generated_profile
+compose_files:
+  - docker-compose.yml
+  - docker-compose.test.yml
+compose_project_name_dev: "{repo_slug}"
+compose_project_name_test: "{repo_slug}-test"
+# Port band offset +200 from the base 14000/15000/24000/25000 bands to avoid collisions.
+port_band_app_dev: 14200-14299
+port_band_app_test: 15200-15299
+port_band_data_dev: 24200-24299
+port_band_data_test: 25200-25299
+data_isolation:
+  - docker/volumes/dev
+  - docker/volumes/test
+  - test MinIO bucket must use test-prefixed credentials and a separate named volume
+dokku_relevance: optional
+smoke_test_expectations:
+  - start MinIO test container
+  - write one partitioned Parquet file via the staging prefix pattern
+  - read back with DuckDB and assert row count
+prompt_first_support: supported

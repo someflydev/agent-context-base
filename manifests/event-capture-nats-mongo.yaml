@@ -1,0 +1,85 @@
+schema_version: 2
+name: event-capture-nats-mongo
+description: Capture-enrich-persist pipeline: a producer publishes bounded request/response events to NATS JetStream; a separate consumer validates, enriches, and inserts documents into a weekly-bucketed MongoDB collection. Use when lightweight durable event streaming into a document store is the central design question.
+archetype: data-pipeline
+primary_stack: nats-jetstream-mongo
+# nats-jetstream and mongo are component stacks loaded for broker and collection-level detail.
+secondary_stacks:
+  - nats-jetstream
+  - mongo
+triggers:
+  - event capture pipeline
+  - capture enrich persist
+  - publish to nats then insert to mongo
+  - nats jetstream mongo pipeline
+  - durable event streaming to document store
+aliases:
+  - nats mongo pipeline
+  - event ingestion pipeline
+  - jetstream reporting pipeline
+required_context:
+  - context/doctrine/core-principles.md
+  - context/doctrine/compose-port-and-data-isolation.md
+  - context/workflows/add-feature.md
+  - context/archetypes/data-pipeline.md
+  - context/stacks/nats-jetstream-mongo.md
+  - context/stacks/nats-jetstream.md
+  - context/stacks/mongo.md
+optional_context:
+  - context/workflows/add-storage-integration.md
+  - context/workflows/post-flight-refinement.md
+  - context/doctrine/canonical-examples.md
+preferred_examples:
+  - examples/canonical-storage/nats-jetstream-mongo-pipeline-example.md
+  - examples/canonical-storage/mongo-weekly-reporting-example.md
+recommended_templates:
+  - templates/readme/README.template.md
+  - templates/agent-md/AGENT.template.md
+  - templates/claude-md/CLAUDE.template.md
+  - templates/gitignore/.gitignore.template
+  - templates/compose/docker-compose.template.yaml
+  - templates/compose/docker-compose-test.template.yaml
+  - templates/manifest/profile-summary.template.yaml
+repo_signals:
+  - app/messaging/nats*.py
+  - app/producer*.py
+  - app/consumer*.py
+  - app/enricher*.py
+  - tests/integration/test_nats*.py
+  - docker-compose*.yml contains nats:latest
+  - requirements.txt or pyproject.toml contains nats
+task_hints:
+  - add-feature
+  - add-storage-integration
+  - post-flight-refinement
+warnings:
+  - Ack the NATS message only after the MongoDB insert confirms. Acking before the write creates data loss on crash.
+  - The producer and consumer are separate processes. Do not merge them.
+  - Set max_deliver on the consumer. Without it, a failed message loops forever.
+  - Cap the NATS payload. Do not store raw HTTP bodies, unbounded arrays, or PII.
+bootstrap_defaults:
+  - include_docker_compose
+  - include_smoke_tests
+  - include_integration_tests
+  - include_generated_profile
+compose_files:
+  - docker-compose.yml
+  - docker-compose.test.yml
+compose_project_name_dev: "{repo_slug}"
+compose_project_name_test: "{repo_slug}-test"
+# Port band offset +300 from the base 14000/15000/24000/25000 bands to avoid collisions.
+port_band_app_dev: 14300-14399
+port_band_app_test: 15300-15399
+port_band_data_dev: 24300-24399
+port_band_data_test: 25300-25399
+data_isolation:
+  - docker/volumes/dev
+  - docker/volumes/test
+  - test NATS stream and test MongoDB collection must be purged in teardown
+dokku_relevance: optional
+smoke_test_expectations:
+  - start NATS JetStream and MongoDB test containers
+  - publish one well-formed message through the producer
+  - assert the consumer inserts a document into MongoDB with correct enrichment fields
+  - verify DLQ path: publish a message that fails enrichment and assert the advisory appears
+prompt_first_support: supported
