@@ -23,6 +23,7 @@ FAST_MODULES = [
     "verification.unit.test_alias_catalog",
     "verification.scripts.test_repo_scripts",
     "verification.examples.data.test_yaml_json_examples",
+    "verification.examples.data.test_storage_examples",
 ]
 
 MEDIUM_MODULES = FAST_MODULES + [
