@@ -125,10 +125,10 @@ class NormalizedReleaseRecord {
     required this.sourceId,
     required this.owner,
     required this.repo,
-    required this.tagName,
+    required this.externalSlug,
     required this.title,
     required this.publishedAt,
-    required this.releaseUrl,
+    required this.canonicalUrl,
     required this.provenance,
   });
 
@@ -136,10 +136,10 @@ class NormalizedReleaseRecord {
   final int sourceId;
   final String owner;
   final String repo;
-  final String tagName;
+  final String externalSlug;
   final String title;
   final String publishedAt;
-  final String releaseUrl;
+  final String canonicalUrl;
   final ReleaseProvenance provenance;
 
   Map<String, Object?> toJson() {
@@ -148,10 +148,10 @@ class NormalizedReleaseRecord {
       'source_id': sourceId,
       'owner': owner,
       'repo': repo,
-      'tag_name': tagName,
+      'external_slug': externalSlug,
       'title': title,
       'published_at': publishedAt,
-      'release_url': releaseUrl,
+      'canonical_url': canonicalUrl,
       'provenance': provenance.toJson(),
     };
   }
@@ -388,10 +388,10 @@ class GitHubReleaseSyncService {
           sourceId: (item['id'] as num).toInt(),
           owner: rawCapture.owner,
           repo: rawCapture.repo,
-          tagName: '${item['tag_name'] ?? ''}',
+          externalSlug: '${item['tag_name'] ?? ''}',
           title: '${item['name'] ?? item['tag_name'] ?? 'untitled-release'}',
           publishedAt: '${item['published_at'] ?? ''}',
-          releaseUrl: '${item['html_url'] ?? ''}',
+          canonicalUrl: '${item['html_url'] ?? ''}',
           provenance: provenance,
         ),
       );

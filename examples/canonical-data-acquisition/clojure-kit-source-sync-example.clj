@@ -70,10 +70,10 @@
              :source-id (:id release)
              :owner (:owner raw-capture)
              :repo (:repo raw-capture)
-             :tag-name (or (:tag_name release) "")
+             :external-slug (or (:tag_name release) "")
              :title external-slug
              :published-at (or (:published_at release) "")
-             :html-url (or (:html_url release) "")
+             :canonical-url (or (:html_url release) "")
              :provenance {:source-name (:source-name raw-capture)
                           :raw-path (:raw-path raw-capture)
                           :fetched-at (:fetched-at raw-capture)
@@ -97,7 +97,7 @@
     (jdbc/execute!
      datasource
      ["insert into normalized_releases
-        (canonical_id, source_id, owner, repo, tag_name, title, published_at, html_url, provenance_json)
+        (canonical_id, source_id, owner, repo, external_slug, title, published_at, canonical_url, provenance_json)
        values (?, ?, ?, ?, ?, ?, ?, ?, ?)
        on conflict (canonical_id)
        do update set title = excluded.title, published_at = excluded.published_at, provenance_json = excluded.provenance_json"
@@ -105,10 +105,10 @@
       (:source-id record)
       (:owner record)
       (:repo record)
-      (:tag-name record)
+      (:external-slug record)
       (:title record)
       (:published-at record)
-      (:html-url record)
+      (:canonical-url record)
       (json/write-str (:provenance record))])))
 
 (defn replay-from-archive [raw-capture]
