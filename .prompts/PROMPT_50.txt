@@ -1,0 +1,488 @@
+You are working inside the agent-context-base repository.
+
+PROMPT_31 established the core capability layer for backend-driven HTMX/Tailwind/Plotly UIs,
+including faceted filtering, include/exclude semantics, dynamic counts, and Playwright
+verification. Read the following before proceeding:
+
+  context/doctrine/faceted-query-count-discipline.md
+  context/doctrine/filter-state-and-query-state.md
+  context/doctrine/backend-driven-ui-correctness.md
+  context/workflows/add-include-exclude-filtering.md
+  examples/canonical-api/fastapi-include-exclude-filter-example.py
+  examples/canonical-api/fastapi-dynamic-counts-fragment-example.py
+  examples/canonical-api/fastapi-example/app.py
+  examples/canonical-integration-tests/playwright-filter-counts-example.spec.ts
+
+This prompt closes three specific UX correctness gaps that PROMPT_31 left unspecified:
+
+  GAP 1 — Include option visual state when a value is excluded
+  GAP 2 — Exclude option count semantics (rows removed, not zero)
+  GAP 3 — Quick excludes strip: contract, rendering, and main-section synchronization
+
+These gaps are about correctness of the filter panel rendering, not about backend query
+logic (which PROMPT_31 already covered well). A filter panel that renders incorrect
+counts or misleading visual states is a trust failure, not a cosmetic one.
+
+Organize all work into commit-ready batches. For each batch:
+1. Give the batch title.
+2. Explain the purpose.
+3. List created or updated files.
+4. Provide the full contents of each file.
+5. End with a suggested commit message with prefix [PROMPT_50].
+
+---
+
+BEHAVIORAL SPECIFICATION
+
+Before reading the sections below, internalize these three rules. Every deliverable
+must enforce them.
+
+
+RULE 1 — INCLUDE OPTION FOR AN EXCLUDED VALUE
+
+When a value V is present in dimension D's exclude set (i.e., V is in `D_out`):
+
+  - The INCLUDE option for V in the filter panel MUST render with count 0.
+    Do not compute a non-zero include count for an excluded value. The user
+    cannot add V to the include set while it is being excluded; showing a
+    non-zero count implies they could. It is misleading.
+
+  - The INCLUDE option MUST be visually greyed out and functionally disabled.
+    Apply `opacity-50 cursor-not-allowed` (Tailwind) or equivalent CSS.
+    The include checkbox MUST carry the `disabled` attribute.
+    Add `data-excluded="true"` to the include option element.
+
+  - Do NOT grey out or zero-out the EXCLUDE option for V.
+    The exclude option is the active filter. It tells the user something useful.
+    It should remain visually normal and show a non-zero count (see RULE 2).
+
+  - Do NOT hide the include option. The user should see it exists and understand
+    why it is unavailable.
+
+
+RULE 2 — EXCLUDE OPTION COUNT SEMANTICS
+
+The count shown next to an exclude option for value V in dimension D must answer:
+"How many rows does this exclusion remove from the current result set?"
+
+Computation:
+  - Apply all active filters for all OTHER dimensions fully (both their _in and _out).
+  - Apply all active excludes for dimension D EXCEPT the specific value V being counted.
+  - Do NOT apply any includes for dimension D.
+  - Count rows where row[D] == V.
+
+This is a new computation distinct from the existing include-count/facet-count logic.
+Name it clearly in code: `exclude_impact_counts(state, dimension)` or equivalent.
+
+When no excludes are active for D, exclude_impact_counts still gives a meaningful
+preview count (how many results this option would remove if you were to exclude it),
+which is useful for the quick excludes strip (see RULE 3).
+
+For a value V that is both in _in and _out for the same dimension, resolve it as
+PROMPT_31 doctrine specifies (explicit and deterministic). The exclude wins.
+The include option for V must be greyed out and zeroed. The exclude option count
+uses the RULE 2 computation.
+
+
+RULE 3 — QUICK EXCLUDES STRIP
+
+The filter panel may optionally include a quick-excludes strip at the top. When
+present, the following rules are absolute:
+
+  a) Every quick exclude value MUST also exist as an explicit exclude option inside
+     the corresponding dimension's group in the main filter panel below. The quick
+     excludes strip is a convenience layer on top of the main filters, not a
+     replacement for them.
+
+  b) When a quick exclude is ACTIVE (its value is in the active `D_out`):
+     - The quick exclude toggle must visually indicate it is active (checked,
+       highlighted, or clearly marked as "on").
+     - The corresponding exclude option in the main filter section MUST render
+       with a checked checkbox (or equivalent active state marker).
+     - Both the quick exclude toggle and the main-section exclude option must
+       reflect the same filter state. They are not two separate controls; they
+       are two renderings of the same state. Use shared form inputs, shared
+       `data-*` attributes, or OOB swaps to keep them in sync.
+
+  c) When a quick exclude is INACTIVE:
+     - The quick exclude toggle is unchecked / visually off.
+     - The main-section exclude option is unchecked.
+     - The exclude impact count (RULE 2) may still be shown as a preview.
+
+  d) The quick excludes strip MUST be declared explicitly in the backend.
+     It is NOT auto-derived from the data at query time.
+     Define a constant or config like `QUICK_EXCLUDES = [("status", "archived"), ...]`.
+
+  e) The quick exclude toggle element must carry:
+       data-role="quick-exclude"
+       data-quick-exclude-dimension="<dimension>"
+       data-quick-exclude-value="<value>"
+     and a visual indicator of active state (e.g., data-active="true/false").
+
+  f) The main-section exclude option element must carry:
+       data-filter-option="<value>"
+       data-filter-mode="exclude"
+       data-filter-dimension="<dimension>"
+       data-option-count="<N>"
+       data-active="true/false"
+     A checked checkbox inside this element (or an equivalent input) reflects
+     whether the value is in the active `D_out`.
+
+
+DATA-* ATTRIBUTE CONTRACT
+
+All filter panel option elements MUST carry the following attributes to allow
+Playwright assertions and backend verification:
+
+  Include option:
+    data-filter-dimension="<dimension>"
+    data-filter-option="<value>"
+    data-filter-mode="include"
+    data-option-count="<N>"        -- must be 0 when value is excluded (RULE 1)
+    data-excluded="true"           -- present only when the value is in D_out
+
+  Exclude option:
+    data-filter-dimension="<dimension>"
+    data-filter-option="<value>"
+    data-filter-mode="exclude"
+    data-option-count="<N>"        -- rows this exclude removes (RULE 2)
+    data-active="true"             -- present when value is in D_out
+
+  Quick exclude toggle:
+    data-role="quick-exclude"
+    data-quick-exclude-dimension="<dimension>"
+    data-quick-exclude-value="<value>"
+    data-active="true/false"
+
+These attributes are the verification contract. Do not omit them. Do not vary
+the naming by language or template system. Playwright tests rely on them.
+
+
+LANGUAGE SCOPE
+
+This capability applies to any stack the repo supports: Python/FastAPI, Elixir/Phoenix,
+and any future stacks. The rendering rules and data-* attribute contract are
+stack-agnostic. The canonical examples use Python/FastAPI (consistent with PROMPT_31),
+but all doctrine and workflow language must be explicitly neutral so future Phoenix
+or other examples can follow the same spec.
+
+
+---
+
+SECTION 1 — Updated doctrine docs
+
+Update and extend the following existing doctrine docs:
+
+  context/doctrine/faceted-query-count-discipline.md
+    - Add a section "Include/Exclude Visual State Rules" covering RULE 1.
+    - Add a section "Exclude Impact Count" covering RULE 2.
+    - Keep all existing content intact.
+
+  context/doctrine/filter-state-and-query-state.md
+    - Add a note under "Fragment Rule" that filter panel fragments must expose
+      data-excluded markers and data-active state for every include/exclude option.
+    - Keep all existing content intact.
+
+Add a new doctrine doc:
+
+  context/doctrine/filter-panel-rendering-rules.md
+    Define the authoritative rendering contract for include/exclude filter panels:
+    - Split include and exclude options within each dimension group
+    - Include greying rules (RULE 1) with explicit rationale
+    - Exclude impact count definition and computation (RULE 2)
+    - Quick excludes contract (RULE 3)
+    - The data-* attribute contract (as above)
+    - Failure modes:
+        * showing non-zero include count for an excluded value
+        * greying the exclude option instead of (or in addition to) the include option
+        * quick exclude strip not mirroring main section state
+        * exclude count computed as 0 instead of rows removed
+        * omitting data-* attributes that break Playwright verification
+
+
+SECTION 2 — New and updated workflow docs
+
+Update the existing workflow:
+
+  context/workflows/add-include-exclude-filtering.md
+    Add a step after the existing "verify representative include, exclude, and
+    mixed cases" step:
+    - Render split include/exclude options per dimension group
+    - Apply RULE 1 to grey out and zero include options for excluded values
+    - Apply RULE 2 to compute and render exclude impact counts
+    - Reference filter-panel-rendering-rules.md
+
+Add a new workflow:
+
+  context/workflows/render-filter-panel-include-exclude-ui.md
+    Purpose: Render a correct filter panel with split include/exclude options
+             per dimension, proper visual states, and optional quick excludes.
+
+    When to use it:
+    - building any HTMX-served filter panel with include/exclude semantics
+    - adding quick excludes to an existing filter panel
+    - verifying that a filter panel's visual state matches backend query state
+
+    Sequence:
+    1. Render the quick-excludes strip (if configured) at the top of the panel.
+       For each configured quick exclude: render a toggle with data-* attrs.
+       Show exclude impact count as a preview badge.
+    2. For each facet dimension, render a group with a heading and two sub-sections:
+       - Include sub-section: one labeled checkbox per option with include count.
+         Apply RULE 1: if the value is in D_out, show count=0, add disabled/greyed state.
+       - Exclude sub-section: one labeled checkbox per option with exclude impact count.
+         Apply RULE 3b: if the value is in D_out, render as checked.
+         If this value is also a configured quick exclude, the visual state here
+         must mirror the quick exclude toggle.
+    3. Ensure all elements carry the required data-* attributes.
+    4. Include the filter panel in the same HTMX form as the result list,
+       or use hx-swap-oob if the panel updates independently.
+    5. Write Playwright assertions verifying at least:
+       - an excluded value's include option has data-option-count="0" and data-excluded="true"
+       - an excluded value's exclude option has data-active="true" and a non-zero count
+       - an active quick exclude's toggle has data-active="true"
+       - the corresponding main-section exclude option also has data-active="true"
+
+    Outputs:
+    - A backend function that renders a complete include/exclude filter panel fragment.
+    - A QUICK_EXCLUDES config constant if quick excludes are used.
+    - Playwright tests covering RULE 1, RULE 2, and RULE 3 assertions.
+
+    Related doctrine:
+    - context/doctrine/filter-panel-rendering-rules.md
+    - context/doctrine/faceted-query-count-discipline.md
+    - context/doctrine/filter-state-and-query-state.md
+
+    Common pitfalls:
+    - Computing include counts for excluded values using the normal facet_counts path,
+      which returns non-zero. Must short-circuit to 0 when value is in D_out.
+    - Greying the exclude option in addition to or instead of the include option.
+    - Quick exclude toggles using separate hidden inputs that can desync from
+      main section checkboxes. Prefer shared inputs or OOB sync.
+    - Rendering the quick excludes strip without corresponding entries in the
+      main exclude section.
+    - Omitting data-excluded or data-active attributes that break assertions.
+
+    Stop conditions:
+    - A Playwright test confirms RULE 1 for at least one excluded value.
+    - A Playwright test confirms RULE 2: exclude option count is non-zero.
+    - A Playwright test confirms RULE 3: quick exclude and main section are in sync.
+
+
+SECTION 3 — New canonical examples
+
+Add the following new canonical example files.
+
+FILE: examples/canonical-api/fastapi-split-filter-panel-example.py
+
+  Demonstrates the full split include/exclude filter panel rendering pattern.
+  Must cover:
+
+  - A `QUICK_EXCLUDES` constant: a list of (dimension, value) pairs for the
+    preconfigured quick exclude strip.
+
+  - A `exclude_impact_counts(state, dimension)` function that implements RULE 2.
+    It must apply all other dimensions' filters fully, remove ALL of the current
+    dimension's excludes from the query scope, and count rows per value in
+    the current dimension.
+
+  - A `render_split_filter_panel(state)` function that produces an HTML fragment:
+      - A quick-excludes strip at the top using QUICK_EXCLUDES.
+        Each toggle: button or checkbox with data-role="quick-exclude",
+        data-quick-exclude-dimension, data-quick-exclude-value, data-active,
+        and a visible exclude impact count badge.
+      - Per dimension: a group with heading, include sub-section, exclude sub-section.
+        Include sub-section: each option rendered as a labeled checkbox.
+          If value is in D_out: count=0, checkbox disabled, data-excluded="true",
+          opacity-50 cursor-not-allowed on the label.
+          Otherwise: normal include count, normal checkbox.
+        Exclude sub-section: each option rendered as a labeled checkbox.
+          Checked if value is in D_out (data-active="true").
+          Count badge shows exclude_impact_counts result.
+          If this option is also a configured quick exclude, same data-* attrs
+          as the quick exclude toggle above (for Playwright cross-referencing).
+
+  - A `/ui/reports/split-filter-panel` endpoint returning the fragment.
+
+  Use the same REPORT_ROWS and FACET_OPTIONS dataset as the existing examples
+  for consistency. Do not introduce a new dataset.
+
+  The QUICK_EXCLUDES for the example: [("status", "archived"), ("status", "paused")].
+  This demonstrates two quick excludes in the same dimension group.
+
+
+FILE: examples/canonical-integration-tests/playwright-split-filter-panel-example.spec.ts
+
+  Playwright test file covering the following scenarios. Each scenario must
+  assert both data-* attributes and visible text/state.
+
+  Test 1: "include option for excluded value shows count 0 and is greyed out"
+    - Load /ui/reports?status_out=archived
+    - Find [data-filter-dimension="status"] [data-filter-option="archived"][data-filter-mode="include"]
+    - Assert data-option-count="0"
+    - Assert data-excluded="true" is present
+    - Assert the checkbox within is disabled
+    - Assert the label has class containing "opacity-50"
+    - Assert the visible count text is "0"
+
+  Test 2: "exclude option for excluded value shows non-zero impact count"
+    - Load /ui/reports?status_out=archived
+    - Find [data-filter-dimension="status"] [data-filter-option="archived"][data-filter-mode="exclude"]
+    - Assert data-active="true"
+    - Assert data-option-count != "0" (archived has 1 row in the dataset)
+    - Assert the checkbox within is checked
+    - Assert the count badge text is "1"
+
+  Test 3: "non-excluded values are not greyed out"
+    - Load /ui/reports?status_out=archived
+    - For [data-filter-option="active"][data-filter-mode="include"]:
+      - Assert data-excluded is absent or not "true"
+      - Assert checkbox is not disabled
+      - Assert data-option-count is not "0" (should be 4)
+
+  Test 4: "active quick exclude reflects in main section as checked"
+    - Load /ui/reports?status_out=archived
+    - Find [data-role="quick-exclude"][data-quick-exclude-value="archived"]
+    - Assert data-active="true"
+    - Find [data-filter-dimension="status"] [data-filter-option="archived"][data-filter-mode="exclude"]
+    - Assert data-active="true" and checkbox is checked
+
+  Test 5: "inactive quick exclude is unchecked in both strip and main section"
+    - Load /ui/reports (no excludes)
+    - Find [data-role="quick-exclude"][data-quick-exclude-value="archived"]
+    - Assert data-active="false" or absence of data-active="true"
+    - Find [data-filter-dimension="status"] [data-filter-option="archived"][data-filter-mode="exclude"]
+    - Assert data-active is absent or "false" and checkbox is not checked
+    - Assert the include option for "archived" is NOT greyed out (no data-excluded="true")
+
+  Test 6: "exclude impact count for paused is correct with partial filters active"
+    - Load /ui/reports?team_in=platform (2 platform rows: api-latency, queue-depth, legacy-import)
+    - Find [data-filter-dimension="status"] [data-filter-option="paused"][data-filter-mode="exclude"]
+    - Assert data-option-count="1" (api-latency is platform+paused)
+
+  Test 7: "multiple quick excludes active simultaneously"
+    - Load /ui/reports?status_out=archived&status_out=paused
+    - Find [data-role="quick-exclude"][data-quick-exclude-value="archived"] — data-active="true"
+    - Find [data-role="quick-exclude"][data-quick-exclude-value="paused"] — data-active="true"
+    - Find exclude option for "archived" in status — data-active="true"
+    - Find exclude option for "paused" in status — data-active="true"
+    - Find include option for "archived" — data-excluded="true", count 0
+    - Find include option for "paused" — data-excluded="true", count 0
+    - Find include option for "active" — NOT greyed out, count > 0
+
+
+SECTION 4 — Update existing fastapi-example/app.py
+
+Update examples/canonical-api/fastapi-example/app.py to incorporate the full
+split include/exclude rendering into its `render_filter_panel_html` function.
+
+The updated `render_filter_panel_html` must:
+
+  a) Add a QUICK_EXCLUDES constant: [("status", "archived"), ("status", "paused")]
+
+  b) Implement `exclude_impact_counts(state, dimension)` using RULE 2.
+
+  c) Replace the current single-loop option rendering with split sections:
+     - Quick excludes strip at the top (using QUICK_EXCLUDES)
+     - Per dimension: include sub-section + exclude sub-section
+     - Include options: apply RULE 1 (zero + grey if in D_out)
+     - Exclude options: apply RULE 2 (exclude impact count), RULE 3b (checked if active)
+
+  d) Carry all required data-* attributes on each option element.
+
+  e) Keep the rest of app.py (endpoints, filter_rows, facet_counts, build_chart_payload,
+     all routes) functionally identical. Do not change query logic or endpoint signatures.
+
+The update must not break the existing Playwright tests in:
+  examples/canonical-integration-tests/playwright-backend-filtering-example.spec.ts
+  examples/canonical-integration-tests/playwright-filter-counts-example.spec.ts
+
+If any existing test selectors need updating due to the structural changes (e.g.,
+a test previously found the only option element by role and now needs to specify
+data-filter-mode="include"), update those tests in the same batch.
+
+
+SECTION 5 — Stack context and router updates
+
+Update context/stacks/backend-driven-ui-htmx-tailwind-plotly.md:
+  - Add a sub-section "Split Include/Exclude Filter Panel" describing the
+    split-panel pattern, data-* contract, quick excludes concept, and
+    references to filter-panel-rendering-rules.md.
+
+Update context/router/alias-catalog.yaml (or the equivalent alias/routing file):
+  Add routing entries for prompts like:
+  - "grey out include option when excluded"
+  - "include filter shows 0 when excluded"
+  - "exclude count shows how many rows removed"
+  - "quick excludes strip"
+  - "quick exclude and main filter in sync"
+  - "split include exclude filter panel"
+  - "filter panel rendering rules"
+  - "why is my include count wrong for an excluded value"
+  Point them to:
+    context/doctrine/filter-panel-rendering-rules.md
+    context/workflows/render-filter-panel-include-exclude-ui.md
+    examples/canonical-api/fastapi-split-filter-panel-example.py
+
+
+SECTION 6 — Verification
+
+Add or extend the verification test file for backend-driven UI examples:
+  verification/examples/python/test_backend_driven_ui_examples.py
+
+Add test cases:
+  - `test_include_count_zero_when_value_excluded`: call render_split_filter_panel
+    with status_out=["archived"] and assert the include option for "archived" in
+    the returned HTML has data-option-count="0" and data-excluded="true".
+  - `test_exclude_impact_count_correct`: with status_out=["archived"] and no other
+    filters, exclude_impact_counts for status["archived"] should equal 1.
+  - `test_exclude_impact_count_with_team_filter`: with status_out=["paused"] and
+    team_in=["platform"], exclude_impact_counts for status["paused"] should equal 1
+    (only api-latency is platform+paused).
+  - `test_quick_exclude_active_in_main_section`: with status_out=["archived"],
+    the rendered HTML should have the "archived" exclude option with data-active="true"
+    and a checked checkbox, and the quick exclude toggle with data-active="true".
+  - `test_quick_exclude_inactive_when_not_excluded`: with no excludes active,
+    the rendered HTML should NOT have data-active="true" on the archived quick exclude,
+    and the archived include option should NOT have data-excluded="true".
+
+These tests should import and call the render and compute functions directly
+from the canonical example module. Keep them as unittest-based tests consistent
+with the repo's verification harness.
+
+
+SECTION 7 — Commit-ready batching
+
+Suggested batch structure:
+
+  Batch 1: Doctrine updates
+    - Update faceted-query-count-discipline.md
+    - Update filter-state-and-query-state.md
+    - Add filter-panel-rendering-rules.md
+
+  Batch 2: Workflow updates
+    - Update add-include-exclude-filtering.md
+    - Add render-filter-panel-include-exclude-ui.md
+
+  Batch 3: New canonical example (split panel)
+    - Add fastapi-split-filter-panel-example.py
+    - Add playwright-split-filter-panel-example.spec.ts
+
+  Batch 4: Update fastapi-example/app.py and any affected existing tests
+    - Update app.py render_filter_panel_html
+    - Update affected playwright tests if selector changes are needed
+
+  Batch 5: Stack/router/verification updates
+    - Update backend-driven-ui-htmx-tailwind-plotly.md
+    - Update alias-catalog.yaml (or equivalent)
+    - Update test_backend_driven_ui_examples.py
+
+You may adjust if batches have natural overlaps, but do not combine doctrine and
+example code in the same batch.
+
+
+SECTION 8 — Output
+
+Generate the actual implementation pass in commit-ready batches now.
+
+Do not summarize or propose. Produce the complete file contents.

@@ -1,0 +1,782 @@
+You are working inside the agent-context-base repository.
+
+Before proceeding, read:
+
+  context/doctrine/faceted-query-count-discipline.md
+  context/doctrine/filter-state-and-query-state.md
+  context/doctrine/filter-panel-rendering-rules.md         (added in PROMPT_50)
+  context/workflows/render-filter-panel-include-exclude-ui.md  (added in PROMPT_50)
+  examples/canonical-api/fastapi-example/app.py
+  examples/canonical-api/fastapi-split-filter-panel-example.py  (added in PROMPT_50)
+  examples/canonical-api/fastapi-dynamic-counts-fragment-example.py
+
+If PROMPT_50 has not yet been applied, read:
+  examples/canonical-api/fastapi-faceted-filter-fragment-example.py
+  examples/canonical-api/fastapi-include-exclude-filter-example.py
+
+This prompt extends the backend-driven faceted filter UI capability — established in
+Python/FastAPI by PROMPT_31 and PROMPT_50 — to every other supported language stack
+in this repository. The goal is a consistent set of canonical examples demonstrating
+the split include/exclude filter panel pattern across all supported web frameworks,
+each implemented in that language's idiomatic style while honoring the shared data-*
+attribute contract.
+
+Organize all work into commit-ready batches. For each batch:
+1. Give the batch title.
+2. Explain the purpose.
+3. List created or updated files.
+4. Provide the full contents of each file.
+5. End with a suggested commit message with prefix [PROMPT_51].
+
+---
+
+SHARED SPECIFICATION
+
+Every language example must implement the following shared contract. Do not deviate
+from the names, values, or attribute strings. The Playwright test suite is
+language-agnostic; it tests against the HTML contract, not the language.
+
+
+DATASET (identical in every language)
+
+Six rows, inline as a constant:
+
+  daily-signups     | team: growth    | status: active   | region: us   | events: 12
+  trial-conversions | team: growth    | status: active   | region: us   | events: 7
+  api-latency       | team: platform  | status: paused   | region: eu   | events: 5
+  checkout-failures | team: growth    | status: active   | region: eu   | events: 9
+  queue-depth       | team: platform  | status: active   | region: apac | events: 11
+  legacy-import     | team: platform  | status: archived | region: us   | events: 4
+
+FACET_OPTIONS (three dimensions, same values in every language):
+  team:   ["growth", "platform"]
+  status: ["active", "paused", "archived"]
+  region: ["us", "eu", "apac"]
+
+QUICK_EXCLUDES (preconfigured, not derived from data):
+  [("status", "archived"), ("status", "paused")]
+
+
+QUERY STATE MODEL
+
+Each implementation must define an explicit typed structure with six fields:
+
+  team_in    team_out
+  status_in  status_out
+  region_in  region_out
+
+Each field holds a sorted, deduplicated list/array/sequence of lowercase trimmed strings.
+Incoming parameter values must be normalized to this form before any query logic runs.
+Multi-value query parameters (e.g., ?status_out=archived&status_out=paused) must be
+parsed as lists, not as comma-separated strings.
+
+
+REQUIRED FUNCTIONS (named idiomatically per language, behavior identical)
+
+  filter_rows(state)
+    Returns rows passing all dimension filters.
+    For each dimension: if _in is non-empty, value must be in _in.
+    If _out is non-empty, value must not be in _out.
+
+  facet_counts(state, dimension)
+    Returns a count per option for the include sub-section.
+    Applies all other dimensions' filters fully.
+    Relaxes same-dimension INCLUDES (does not apply _in for this dimension).
+    Still applies same-dimension EXCLUDES.
+    Result: map/dict of option → int.
+
+  exclude_impact_counts(state, dimension)
+    Returns a count per option for the exclude sub-section.
+    Applies all other dimensions' filters fully.
+    Does NOT apply any of this dimension's excludes or includes.
+    Result: map/dict of option → int (counts rows that each exclude would remove).
+
+  render_filter_panel(state)
+    Returns an HTML string (or rendered template / typed HTML value).
+    Must produce the complete filter panel fragment with all data-* attributes.
+    See RENDERING CONTRACT below.
+
+  render_results_fragment(state)
+    Returns an HTML string containing:
+    - An OOB result-count badge: id="result-count", hx-swap-oob="true",
+      data-role="result-count", data-result-count="{N}"
+    - A results section: id="report-results", data-query-fingerprint="...",
+      data-result-count="{N}"
+
+  fingerprint(state)
+    Returns a deterministic string representation of the full filter state
+    for use in data-query-fingerprint attributes. Example format:
+    "team_in=growth|team_out=|status_in=|status_out=archived|region_in=|region_out="
+
+
+ENDPOINTS (identical paths and behavior in every language)
+
+  GET /ui/reports
+    Full dashboard page. Accepts all filter params. Returns full HTML page
+    containing the filter panel and results section. HTMX form target.
+
+  GET /ui/reports/results
+    HTMX partial. Returns render_results_fragment(state) as HTML.
+    Triggered by form change/submit in the filter panel.
+
+  GET /ui/reports/filter-panel
+    HTMX partial. Returns render_filter_panel(state) as HTML.
+
+  GET /healthz
+    Returns a minimal health check response (JSON or text).
+
+
+QUERY PARAMETER NAMES (identical in every language)
+
+  team_in, team_out, status_in, status_out, region_in, region_out
+
+Multi-value: ?status_out=archived&status_out=paused produces status_out = ["archived","paused"].
+
+
+RENDERING CONTRACT (identical HTML structure in every language)
+
+The filter panel HTML must contain the following structure. Any language-specific
+formatting of attributes is acceptable as long as the attribute names and values
+match exactly.
+
+Quick excludes strip (at the top of the panel):
+  For each (dimension, value) in QUICK_EXCLUDES:
+    <button
+      data-role="quick-exclude"
+      data-quick-exclude-dimension="{dimension}"
+      data-quick-exclude-value="{value}"
+      data-active="{true|false}"
+      ...
+    >
+      {value} <span data-role="quick-exclude-count">{exclude_impact_counts[value]}</span>
+    </button>
+  Wrap in: <div data-role="quick-exclude-group">...</div>
+
+Per dimension group (one per facet dimension):
+  <section data-filter-dimension="{dimension}">
+    <h3>{dimension heading}</h3>
+
+    Include sub-section:
+      <div data-role="include-options">
+        For each option in FACET_OPTIONS[dimension]:
+          <label
+            data-filter-dimension="{dimension}"
+            data-filter-option="{option}"
+            data-filter-mode="include"
+            data-option-count="{count}"
+            [data-excluded="true" if option is in D_out]
+            class="... [opacity-50 cursor-not-allowed if excluded] ..."
+          >
+            <input type="checkbox" name="{dimension}_in" value="{option}"
+              [checked if option is in D_in]
+              [disabled if option is in D_out] />
+            {option label}
+            <span data-role="option-count">{count}</span>
+          </label>
+          Where count = 0 if option is in D_out, else facet_counts[option].
+      </div>
+
+    Exclude sub-section:
+      <div data-role="exclude-options">
+        For each option in FACET_OPTIONS[dimension]:
+          <label
+            data-filter-dimension="{dimension}"
+            data-filter-option="{option}"
+            data-filter-mode="exclude"
+            data-option-count="{exclude_impact_counts[option]}"
+            [data-active="true" if option is in D_out]
+          >
+            <input type="checkbox" name="{dimension}_out" value="{option}"
+              [checked if option is in D_out] />
+            {option label}
+            <span data-role="option-count">{exclude_impact_counts[option]}</span>
+          </label>
+      </div>
+  </section>
+
+HTMX form wrapper (on the full page):
+  <form id="report-filters"
+    hx-get="/ui/reports/results"
+    hx-target="#report-results"
+    hx-trigger="change, submit">
+    ...filter panel...
+    ...results section...
+  </form>
+
+Result count badge (OOB in partials, inline on full page):
+  <div id="result-count"
+    [hx-swap-oob="true" in partials only]
+    data-role="result-count"
+    data-result-count="{N}">
+    {N} results
+  </div>
+
+Results section:
+  <section id="report-results"
+    data-query-fingerprint="{fingerprint}"
+    data-result-count="{N}">
+    <div data-role="active-filters">...</div>
+    ...result cards...
+  </section>
+
+
+FILE NAMING CONVENTION
+
+Each language produces one primary example file named:
+
+  {stack}-faceted-filter-example.{ext}
+
+For languages where a separate template/view file is required by the framework
+(Go templ, Elixir HEEx), also produce:
+
+  {stack}-faceted-filter-panel-template.{ext}
+
+Follow existing conventions in examples/canonical-api/:
+  go-echo-faceted-filter-example.go
+  go-echo-faceted-filter-panel-template.templ
+  phoenix-faceted-filter-example.ex
+  phoenix-faceted-filter-panel-template.html.heex
+  typescript-hono-faceted-filter-example.ts
+  rust-axum-faceted-filter-example.rs
+  ruby-hanami-faceted-filter-example.rb
+  clojure-kit-nextjdbc-hiccup-faceted-filter-example.clj
+  kotlin-http4k-exposed-faceted-filter-example.kt
+  scala-tapir-http4s-zio-faceted-filter-example.scala
+  crystal-kemal-avram-faceted-filter-example.cr
+  dart-dartfrog-faceted-filter-example.dart
+  ocaml-dream-caqti-tyxml-faceted-filter-example.ml
+  nim-jester-happyx-faceted-filter-example.nim
+  zig-zap-jetzig-faceted-filter-example.zig
+  zig-zap-jetzig-faceted-filter-panel-template.zmpl
+
+
+---
+
+LANGUAGE-SPECIFIC IMPLEMENTATION NOTES
+
+For each language, use the existing html-fragment-example as a style and import
+reference. Apply each language's idiomatic HTML generation approach. Preserve the
+shared contract above; adapt only the implementation idiom.
+
+
+ELIXIR PHOENIX
+
+Template idiom: Phoenix controller + HEEx template file.
+Use `Phoenix.Controller.render/3` or embed via `~H` sigil in a function component.
+The example file (.ex) should contain:
+  - The module definition, router scope, controller, and a function component or
+    embedded HEEx template with the `~H` sigil showing the filter panel structure.
+  - QueryState as a plain map or a struct with explicit keys.
+  - filter_rows, facet_counts, exclude_impact_counts as private functions.
+  - All three endpoints wired in the example.
+The separate template file (.html.heex) should contain a self-contained HEEx
+template that iterates over the facets and renders include/exclude sub-sections.
+Multi-value params: Phoenix parses ?status_out[]=archived&status_out[]=paused as a
+list automatically. Use Map.get(params, "status_out", []).
+For the filter panel HEEx template, use <%= ... %> or { } syntax for expressions.
+Tailwind classes are used directly as class attributes.
+
+
+GO ECHO + TEMPL
+
+Template idiom: templ component file (.templ) + Go handler file (.go).
+The .templ file must define:
+  - A `FilterPanel(state QueryState, facetOptions ...)` component that renders
+    the full split filter panel with quick excludes strip.
+  - Use typed templ attributes for data-* (use templ.Attributes or raw strings for
+    custom data attributes as needed by the templ version in use).
+  - Use templ's `@if`, `@for`, `templ.Classes()` idioms.
+The .go handler file must define:
+  - QueryState struct with all six fields ([]string each).
+  - normalize(), buildQueryState(), filterRows(), facetCounts(), excludeImpactCounts().
+  - filterPanel() and renderResultsFragment() helpers that call templ rendering.
+  - Echo route registrations for all three endpoints.
+Multi-value params: echo.Context.QueryParams() returns url.Values; use
+c.QueryParams()["status_out"] to get []string.
+For the fingerprint function, use fmt.Sprintf or strings.Join.
+Note: since templ generates Go code from .templ files, the example should include
+a comment indicating `templ generate` must be run before compilation.
+
+
+TYPESCRIPT HONO + BUN
+
+Template idiom: JSX/TSX inline in the handler file.
+The single .ts (or .tsx) file contains:
+  - Type definitions for QueryState, FacetCounts, etc.
+  - All filter logic functions.
+  - JSX helper components: FilterPanel, ResultsSection, QuickExcludesStrip,
+    DimensionGroup, IncludeOption, ExcludeOption.
+  - Hono router with all three endpoints.
+Multi-value params: c.req.queries("status_out") returns string[] | undefined.
+Use context.html(<jsx>) to return HTML responses.
+For data-* attributes in JSX, use camelCase equivalents that Hono/JSX supports
+or use string-keyed attribute spread objects if needed.
+Use class (not className) for Tailwind classes since this is server-side JSX.
+The fingerprint function: build a deterministic string by joining all state fields.
+
+
+RUST AXUM
+
+Template idiom: String building via a dedicated `render_filter_panel` function.
+Use format!(), String::new(), and push_str() for HTML construction.
+Do not introduce external template crates unless maud is already a dependency.
+For the purposes of this example, build HTML as strings. Add a comment noting
+that a real app would use maud or askama.
+The .rs file must define:
+  - A `QueryState` struct derived from `serde::Deserialize` (for query extraction).
+    Use `Vec<String>` for each field with `#[serde(default)]`.
+  - normalize(), filter_rows(), facet_counts(), exclude_impact_counts() functions.
+  - render_filter_panel(), render_results_fragment() returning String.
+  - An `AppState` struct and Axum Router with all three endpoints.
+  - A `FilterQuery` struct for extracting multi-value params via axum::extract::Query.
+Multi-value params: Define FilterQuery with `Vec<String>` fields and the
+`#[serde(default)]` attribute. Axum's Query extractor supports this natively.
+For Html responses, use axum::response::Html<String>.
+Add the `axum`, `serde`, and `tokio` imports at the top.
+
+
+RUBY HANAMI
+
+Template idiom: Hanami action class + ERB template rendered inline as a string.
+The .rb file must contain:
+  - A module wrapping all classes to keep the example self-contained.
+  - A `QueryState` Struct or plain class with six array attributes.
+  - normalize(), filter_rows(), facet_counts(), exclude_impact_counts() as module
+    functions (or private methods on a FilterService class).
+  - A `render_filter_panel(state)` method returning an HTML string.
+    Use Ruby heredoc strings with interpolation. This avoids requiring a template file.
+  - Three Hanami::Action subclasses (one per endpoint).
+  - A Hanami::Router declaration at the bottom wiring all three routes.
+Multi-value params: Hanami params parse ?status_out[]=archived&status_out[]=paused
+into params[:status_out] as an array. Use Array(params[:status_out]).
+The render_filter_panel method uses `<<~HTML ... HTML` heredoc blocks with interpolation.
+
+
+CLOJURE KIT + NEXT.JDBC + HICCUP
+
+Template idiom: Hiccup data structures → HTML via hiccup2.core/html.
+The .clj file must contain:
+  - The `ns` declaration with `:require [hiccup2.core :as h]`.
+  - The dataset as a `def` vector of maps.
+  - A `normalize` function.
+  - A `build-query-state` function returning a map with all six keys.
+  - `filter-rows`, `facet-counts`, `exclude-impact-counts` functions.
+  - `render-filter-panel` returning a Hiccup vector that h/html converts to string.
+    Use nested vectors: [:section {:data-filter-dimension dim} [...options...]].
+    For data-* attributes in Hiccup, use keyword keys with hyphens:
+    {:data-filter-option value :data-filter-mode "include"}.
+  - `render-results-fragment` function.
+  - Route definitions as Reitit-compatible maps (consistent with existing fragment example).
+Multi-value params: In a Kit/Reitit ring handler, use (get-in request [:params :status_out])
+which returns a vector if multiple values are present.
+Hiccup normalizes boolean attributes — use nil for absent and true for present,
+or pass the attribute string explicitly.
+For `disabled` on inputs: {:disabled true} or {:disabled "disabled"}.
+
+
+KOTLIN HTTP4K + EXPOSED
+
+Template idiom: Kotlin string interpolation and `buildString { }` blocks.
+The .kt file must contain:
+  - A `QueryState` data class with six List<String> fields.
+  - Companion object constants for REPORT_ROWS (List<Map<String,Any>>),
+    FACET_OPTIONS (Map<String,List<String>>), QUICK_EXCLUDES.
+  - normalize(), buildQueryState(), filterRows(), facetCounts(),
+    excludeImpactCounts() as top-level functions.
+  - renderFilterPanel(state: QueryState): String using buildString { append(...) }.
+  - renderResultsFragment(state: QueryState): String.
+  - Http4k route bindings for all three endpoints using the existing fragment example style.
+Multi-value params: http4k Request.query("status_out") returns a single string
+(last value). To get all values: request.queries("status_out") returns List<String?>.
+Use request.queries("status_out").filterNotNull() to collect all values.
+Use triple-quoted Kotlin strings for multi-line HTML within buildString blocks.
+
+
+SCALA TAPIR + HTTP4S + ZIO
+
+Template idiom: String interpolation with `s"""..."""` multiline strings.
+The .scala file must contain:
+  - Case class QueryState with six List[String] fields.
+  - REPORT_ROWS as a List[Map[String, Any]] val, FACET_OPTIONS and QUICK_EXCLUDES.
+  - normalize(), filterRows(), facetCounts(), excludeImpactCounts() functions.
+  - renderFilterPanel(state: QueryState): String using string interpolation.
+  - renderResultsFragment(state: QueryState): String.
+  - Http4s routes using the existing fragment example style (HttpRoutes.of / GET).
+  - For ZIO Task integration, wrap route responses in ZIO.succeed(...).
+Multi-value params: In http4s, use Request[Task].params to get Map[String,String]
+(last value wins). For multi-value, use Request[Task].multiParams which returns
+Map[String, List[String]]. Extract with req.multiParams.getOrElse("status_out", Nil).
+Fingerprint using state fields joined with `|` separators.
+Follow the existing scala-tapir-http4s-zio-html-fragment-example.scala style.
+
+
+CRYSTAL KEMAL + AVRAM
+
+Template idiom: String interpolation with heredocs or ECR-style embedded strings.
+The .cr file must contain:
+  - A `QueryState` record or struct with six `Array(String)` fields.
+  - REPORT_ROWS as a constant array of named tuples or hashes.
+  - normalize(), build_query_state(), filter_rows(), facet_counts(),
+    exclude_impact_counts() as module-level methods.
+  - render_filter_panel(state : QueryState) : String using String.build { |io| ... }.
+  - render_results_fragment(state : QueryState) : String.
+  - Kemal route blocks for all three endpoints.
+Multi-value params: Kemal env.params.body["status_out"] gets a single value.
+For multi-value GET params, use env.request.query_params.fetch_all("status_out")
+which returns Array(String).
+Use String.build for efficient string assembly. Use io << for appending.
+
+
+DART DARTFROG
+
+Template idiom: String interpolation with multiline strings.
+The .dart file must contain:
+  - A `QueryState` class with six `List<String>` fields.
+  - REPORT_ROWS as a const List<Map<String, dynamic>>.
+  - normalize(), buildQueryState(), filterRows(), facetCounts(),
+    excludeImpactCounts() as top-level functions.
+  - renderFilterPanel(QueryState state) → String using StringBuffer and writeAll.
+  - renderResultsFragment(QueryState state) → String.
+  - Dart Frog route handlers for all three endpoints (index, results, filter-panel).
+Multi-value params: Dart Frog's RequestContext provides context.request.uri.queryParametersAll
+which returns Map<String, List<String>>. Use queryParametersAll["status_out"] ?? [].
+Follow the existing dart-dartfrog-html-fragment-example.dart style for handler structure.
+
+
+OCAML DREAM + CAQTI + TYXML
+
+Template idiom: TyXML typed HTML combinators (consistent with existing fragment example).
+The .ml file must contain:
+  - open statements: Lwt.Syntax, Tyxml.Html.
+  - A `query_state` record type with six `string list` fields.
+  - REPORT_ROWS as a list of records or association lists.
+  - normalize, build_query_state, filter_rows, facet_counts, exclude_impact_counts
+    as pure functions.
+  - render_filter_panel : query_state -> string using TyXML combinators.
+    For data-* attributes, use Tyxml.Html.Unsafe.string_attrib as in the existing example.
+  - render_results_fragment : query_state -> string.
+  - Dream routes list for all three endpoints.
+Multi-value params: Dream parses query params via Dream.queries request "status_out"
+which returns string list. Use this to collect multi-value params.
+For the fingerprint, use String.concat "|" [...] style.
+TyXML attribute names use underscores; data-* attributes require Unsafe.string_attrib.
+Follow the existing ocaml-dream-caqti-tyxml-html-fragment-example.ml style closely.
+
+
+NIM JESTER + HAPPYX
+
+Template idiom: String formatting with fmt/strformat (consistent with existing example).
+The .nim file must contain:
+  - import statements: jester, strformat, sequtils, tables, algorithm.
+  - A `QueryState` object type with six `seq[string]` fields.
+  - REPORT_ROWS as a const seq of tuples or a Table approach.
+  - normalize, buildQueryState, filterRows, facetCounts, excludeImpactCounts
+    as procedures.
+  - renderFilterPanel(state: QueryState): string using & concatenation and fmt.
+  - renderResultsFragment(state: QueryState): string.
+  - Jester routes block with all three endpoints.
+Multi-value params: In Jester, request.params.getOrDefault("status_out", "") gives
+a single string. For multi-value params, use @"status_out" which in Jester returns
+the last value. Alternatively parse from request.query string directly using
+request.url.search. Use sequtils.filterIt for list operations.
+For HTML output, use fmt"""...""" multiline format strings.
+Follow the existing nim-happyx-html-fragment-example.nim style.
+
+
+ZIG JETZIG + ZAP
+
+Template idiom: Two files — a .zig handler file and a .zmpl template file.
+The .zig file must contain:
+  - A `QueryState` struct with six fields of type []const u8 or ArrayList([]const u8).
+    Given Zig's memory model, use a simple approach: each field holds a single string
+    for this example, with a note that a real app would parse multiple values.
+  - filter_rows, facet_counts, exclude_impact_counts as functions operating on
+    comptime-known data (use arrays of structs for REPORT_ROWS).
+  - A handler function that builds a FilterData structure and passes it to the template.
+  - Route declarations for all three endpoints using the existing zig example style.
+The .zmpl file must contain the HTML template using Zmpl syntax:
+  - Use `{variable}` for Zmpl interpolation.
+  - Use `{% for ... %}` / `{% endfor %}` for iteration (or Zmpl's actual loop syntax).
+  - Render the quick excludes strip and per-dimension include/exclude sub-sections.
+  - All data-* attributes must be present.
+Multi-value params: Jetzig/Zap request handling for multi-value params is limited
+in early versions. Parse from query string directly if needed. Add a comment noting
+this limitation and how a production implementation would handle it.
+Note: Zig's comptime constraints mean the filter logic should work on
+comptime-known data for the example; add a note about runtime allocation patterns.
+Follow the existing zig-jetzig-html-fragment-example.zig and
+zig-jetzig-html-fragment-template-example.zmpl style.
+
+
+---
+
+SECTION 1 — Tier 1 languages (highest HTMX affinity, most commonly used)
+
+Implement fully for: Elixir Phoenix, Go Echo + templ, TypeScript Hono + Bun.
+
+These three stacks have:
+- Strong HTMX community and tooling alignment
+- Idiomatic typed HTML rendering (HEEx, templ, JSX)
+- Full manifests in this repo
+
+For each, produce:
+- The primary example file
+- The template file (where required by the framework)
+- A companion .md file explaining the implementation pattern
+  (following the existing *-html-fragment-example.md convention)
+
+
+SECTION 2 — Tier 2 languages (mature web frameworks with HTML fragment precedent)
+
+Implement fully for:
+  Rust Axum, Ruby Hanami, Clojure Kit/next.jdbc/Hiccup
+
+Each has an existing html-fragment-example in this repo. The filter example
+follows the same structure but is substantially richer.
+
+For each, produce:
+- The primary example file
+- A companion .md file
+
+
+SECTION 3 — Tier 3 languages (full coverage, all remaining supported stacks)
+
+Implement fully for:
+  Kotlin http4k + Exposed
+  Scala Tapir + Http4s + ZIO
+  Crystal Kemal + Avram
+  Dart Dartfrog
+  OCaml Dream + Caqti + TyXML
+  Nim Jester + HappyX
+  Zig Jetzig + Zap
+
+For each, produce:
+- The primary example file
+- The template file (Zig only)
+- A companion .md file
+
+
+---
+
+SECTION 4 — Companion .md files
+
+Each example must have a companion .md file following the pattern of
+existing *-html-fragment-example.md files. It must include:
+
+  ## Purpose
+  One paragraph explaining what this example demonstrates and why it is
+  useful as a canonical reference for the split include/exclude filter pattern.
+
+  ## Language and rendering idiom
+  How HTML generation works in this language/framework.
+
+  ## Filter logic
+  Brief description of QueryState, filter_rows, facet_counts, exclude_impact_counts.
+
+  ## Multi-value parameter parsing
+  Exactly how ?status_out=archived&status_out=paused is parsed in this framework.
+
+  ## Endpoints
+  The three endpoints with their paths and return types.
+
+  ## Data contract
+  Note that the HTML data-* attribute contract is identical to the Python example,
+  and the existing Playwright tests in canonical-integration-tests/ will pass
+  against any language implementation that produces the correct HTML.
+
+  ## Related
+  - context/doctrine/filter-panel-rendering-rules.md
+  - context/doctrine/faceted-query-count-discipline.md
+  - examples/canonical-api/fastapi-split-filter-panel-example.py
+
+
+---
+
+SECTION 5 — Cross-language correctness notes
+
+Add a new doc:
+
+  examples/canonical-api/README-faceted-filter-examples.md
+
+This document must:
+- List all language implementations of the faceted filter example.
+- State the shared dataset and expected counts (so implementors can self-check):
+    With no filters active:
+      result_count = 6
+      facet_counts[team][growth] = 3, facet_counts[team][platform] = 3
+      facet_counts[status][active] = 4, facet_counts[status][paused] = 1,
+      facet_counts[status][archived] = 1
+    With status_out=archived:
+      result_count = 5
+      facet_counts[status][active] = 4, facet_counts[status][paused] = 1
+      exclude_impact_counts[status][archived] = 1
+      include option for "archived" → count = 0, greyed out
+    With team_in=growth AND status_out=archived:
+      result_count = 3
+      exclude_impact_counts[status][archived] = 0
+        (no archived rows survive the team_in=growth filter, so archived removes nothing)
+      facet_counts[team][growth] = 3, facet_counts[team][platform] = 0
+        (platform is filtered out by team_in=growth on other dimensions)
+      Wait — recalculate:
+        team_in=growth means facet_counts[status] is computed with team_in=growth applied.
+        So facet_counts[status][active] = 3 (growth+active), paused = 0, archived = 0.
+        exclude_impact_counts[status] is computed WITHOUT any status filters.
+        With team_in=growth applied: growth has active(3), archived(0), paused(0).
+        So exclude_impact_counts[status][archived] = 0 (no growth+archived rows).
+        The archived include option is greyed with count=0 (archived is in status_out).
+        The archived exclude option shows count=0 (removing archived removes 0 rows
+        from the growth-filtered set, since no growth rows are archived in this dataset).
+        This edge case should be documented: exclude impact count CAN be 0 when the
+        excluded value doesn't appear in the filtered result set. This is correct.
+        The exclude option for archived should still NOT be greyed out — it shows count 0
+        but remains functional (the user applied the exclude; it just has no effect here).
+- Explain the Playwright test portability: the existing test suite at
+  examples/canonical-integration-tests/ tests the HTML contract, not the language.
+  Any implementation that exposes the same endpoints on the same port with the same
+  HTML structure will pass the same tests.
+- Note which languages use typed HTML (OCaml TyXML, Go templ) vs string building.
+
+
+---
+
+SECTION 6 — Verification and registry updates
+
+Update examples/catalog.json:
+  Add an entry for each new example file. Follow the existing entry format.
+  Group under a "faceted-filter" tag or category consistent with existing tags.
+
+Update verification/example_registry.yaml:
+  Add entries for each new example consistent with existing format.
+  Include language, framework, file path, and a brief description.
+
+Update context/stacks/backend-driven-ui-htmx-tailwind-plotly.md:
+  Add a "Multi-Language Support" section listing all language implementations
+  and their HTML rendering idioms. Reference README-faceted-filter-examples.md.
+
+Update context/router/alias-catalog.yaml:
+  Add aliases for:
+  - "faceted filter panel in Elixir" / "Phoenix include exclude filter"
+  - "faceted filter panel in Go" / "Echo templ filter UI"
+  - "faceted filter panel in TypeScript" / "Hono filter UI"
+  - "faceted filter panel in Rust" / "Axum filter UI"
+  - "faceted filter panel in Ruby" / "Hanami filter UI"
+  - "faceted filter panel in Clojure" / "Hiccup filter panel"
+  - "faceted filter panel in Kotlin" / "http4k filter UI"
+  - "faceted filter panel in Scala" / "Http4s filter UI"
+  - "faceted filter panel in Crystal" / "Kemal filter UI"
+  - "faceted filter panel in Dart" / "Dartfrog filter UI"
+  - "faceted filter panel in OCaml" / "Dream TyXML filter UI"
+  - "faceted filter panel in Nim" / "HappyX Jester filter UI"
+  - "faceted filter panel in Zig" / "Jetzig filter UI"
+  Point all of the above to the relevant example file and
+  context/doctrine/filter-panel-rendering-rules.md.
+
+Update verification/stack_support_matrix.yaml:
+  Mark the faceted-filter-ui capability as supported for each language that
+  now has a canonical example. Follow the existing matrix format.
+
+
+---
+
+SECTION 7 — Important constraints
+
+- Do NOT re-invent the filter logic. Every language implements the same algorithm.
+  The only difference is syntax and rendering idioms. If two languages use the
+  same algorithmic approach (e.g., both use sorted list comparison), the code
+  can look similar — that is expected and correct.
+
+- Do NOT add pagination, search, or Plotly chart integration to these examples.
+  Keep each example focused exclusively on the split include/exclude filter panel.
+  The Python example includes Plotly; the non-Python examples do not need it.
+
+- Do NOT use external template files unless the framework requires them (Go templ,
+  Zig Jetzig/Zap). For all other languages, build HTML strings inline.
+
+- Do NOT introduce new dependencies beyond what each stack already uses.
+  Each stack context doc specifies the canonical dependency set.
+
+- Keep the dataset constant. Do not generate it dynamically. Inline the six rows
+  as a literal constant in every language.
+
+- The companion .md file is required for every language. Do not skip it.
+
+- All HTML output must contain valid data-* attributes as specified in the
+  RENDERING CONTRACT above. These are the test hooks. Missing attributes will
+  cause Playwright assertions to fail.
+
+- When in doubt about a language-specific idiom (e.g., how to add a custom
+  data attribute in TyXML, or how to iterate in a templ component), consult
+  the existing html-fragment-example for that language and follow its style.
+
+
+---
+
+SECTION 8 — Commit-ready batching
+
+Suggested batch structure:
+
+  Batch 1: Tier 1 — Elixir Phoenix
+    phoenix-faceted-filter-example.ex
+    phoenix-faceted-filter-panel-template.html.heex
+    phoenix-faceted-filter-example.md
+
+  Batch 2: Tier 1 — Go Echo + templ
+    go-echo-faceted-filter-example.go
+    go-echo-faceted-filter-panel-template.templ
+    go-echo-faceted-filter-example.md
+
+  Batch 3: Tier 1 — TypeScript Hono + Bun
+    typescript-hono-faceted-filter-example.ts
+    typescript-hono-faceted-filter-example.md
+
+  Batch 4: Tier 2 — Rust Axum
+    rust-axum-faceted-filter-example.rs
+    rust-axum-faceted-filter-example.md
+
+  Batch 5: Tier 2 — Ruby Hanami
+    ruby-hanami-faceted-filter-example.rb
+    ruby-hanami-faceted-filter-example.md
+
+  Batch 6: Tier 2 — Clojure Kit/next.jdbc/Hiccup
+    clojure-kit-nextjdbc-hiccup-faceted-filter-example.clj
+    clojure-kit-nextjdbc-hiccup-faceted-filter-example.md
+
+  Batch 7: Tier 3 — Kotlin, Scala
+    kotlin-http4k-exposed-faceted-filter-example.kt
+    kotlin-http4k-exposed-faceted-filter-example.md
+    scala-tapir-http4s-zio-faceted-filter-example.scala
+    scala-tapir-http4s-zio-faceted-filter-example.md
+
+  Batch 8: Tier 3 — Crystal, Dart
+    crystal-kemal-avram-faceted-filter-example.cr
+    crystal-kemal-avram-faceted-filter-example.md
+    dart-dartfrog-faceted-filter-example.dart
+    dart-dartfrog-faceted-filter-example.md
+
+  Batch 9: Tier 3 — OCaml, Nim, Zig
+    ocaml-dream-caqti-tyxml-faceted-filter-example.ml
+    ocaml-dream-caqti-tyxml-faceted-filter-example.md
+    nim-jester-happyx-faceted-filter-example.nim
+    nim-jester-happyx-faceted-filter-example.md
+    zig-zap-jetzig-faceted-filter-example.zig
+    zig-zap-jetzig-faceted-filter-panel-template.zmpl
+    zig-zap-jetzig-faceted-filter-example.md
+
+  Batch 10: Cross-cutting — README, registry, catalog, router, stack matrix
+    examples/canonical-api/README-faceted-filter-examples.md
+    examples/catalog.json (updated)
+    verification/example_registry.yaml (updated)
+    verification/stack_support_matrix.yaml (updated)
+    context/stacks/backend-driven-ui-htmx-tailwind-plotly.md (updated)
+    context/router/alias-catalog.yaml (updated)
+
+You may combine batches if the output is manageable. Do not combine language
+implementation batches with registry/router update batches.
+
+
+---
+
+SECTION 9 — Output
+
+Generate the actual implementation pass in commit-ready batches now.
+Do not propose or summarize. Produce the complete file contents for each file.
