@@ -49,8 +49,8 @@ docker/fixtures/
 
 # Search and local indexes
 data/
+!verification/examples/data/
 tmp/
 logs/
 .qdrant/
 .meili/
-
