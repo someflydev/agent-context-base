@@ -24,6 +24,10 @@ FACET_OPTIONS = {
     "region": ["us", "eu", "apac"],
 }
 
+# Preconfigured quick excludes for the strip at the top of the filter panel.
+# Declared as a constant — not auto-derived from data.
+QUICK_EXCLUDES: list[tuple[str, str]] = [("status", "archived"), ("status", "paused")]
+
 
 def normalize(values: list[str] | None) -> list[str]:
     return sorted({value.strip().lower() for value in (values or []) if value and value.strip()})
@@ -138,6 +142,32 @@ def facet_counts(state: QueryState, dimension: str) -> dict[str, int]:
     return counts
 
 
+def exclude_impact_counts(state: QueryState, dimension: str) -> dict[str, int]:
+    """RULE 2: For each value in dimension, count rows this exclusion removes.
+
+    Apply all other dimensions' filters fully. Apply current dimension's excludes
+    except the value being counted. Do not apply current dimension's includes.
+    """
+    dim_out = getattr(state, f"{dimension}_out")
+    counts: dict[str, int] = {}
+    for option in FACET_OPTIONS[dimension]:
+        other_excludes = [v for v in dim_out if v != option]
+        n = 0
+        for row in REPORT_ROWS:
+            if dimension != "team" and not matches(row, "team", state.team_in, state.team_out):
+                continue
+            if dimension != "status" and not matches(row, "status", state.status_in, state.status_out):
+                continue
+            if dimension != "region" and not matches(row, "region", state.region_in, state.region_out):
+                continue
+            if other_excludes and str(row[dimension]).lower() in other_excludes:
+                continue
+            if str(row[dimension]).lower() == option:
+                n += 1
+        counts[option] = n
+    return counts
+
+
 def build_chart_payload(state: QueryState) -> dict[str, object]:
     rows = filter_rows(state)
     buckets: dict[str, int] = defaultdict(int)
@@ -197,33 +227,123 @@ def render_results_fragment_html(state: QueryState) -> str:
 
 
 def render_filter_panel_html(state: QueryState) -> str:
-    sections: list[str] = []
-    for dimension in ("team", "status", "region"):
-        options = []
-        counts = facet_counts(state, dimension)
-        for option in FACET_OPTIONS[dimension]:
-            checked = option in getattr(state, f"{dimension}_in")
-            options.append(
-                f'<label data-filter-option="{option}" data-filter-mode="include" class="flex items-center justify-between rounded border border-slate-200 px-3 py-2 text-sm">'
-                f'<span class="flex items-center gap-2">'
-                f'<input type="checkbox" name="{dimension}_in" value="{option}" {"checked" if checked else ""} />'
-                f'<span class="font-medium text-slate-800">{option.title()}</span>'
-                "</span>"
-                f'<span data-role="option-count" class="rounded bg-slate-100 px-2 py-1 text-slate-600">{counts[option]}</span>'
-                "</label>"
+    parts: list[str] = []
+    parts.append('<div id="filter-panel" class="space-y-4">')
+    parts.append(
+        '<div class="rounded bg-slate-50 px-3 py-2 text-xs text-slate-600" data-role="count-discipline">'
+        "Counts reflect the active backend query semantics."
+        "</div>"
+    )
+
+    # Quick excludes strip
+    quick_parts: list[str] = []
+    for dim, val in QUICK_EXCLUDES:
+        impact = exclude_impact_counts(state, dim)
+        is_active = val in getattr(state, f"{dim}_out")
+        active_val = "true" if is_active else "false"
+        if is_active:
+            label_cls = (
+                "flex items-center gap-1 rounded border border-red-300 bg-red-50 "
+                "px-2 py-1 text-xs font-medium text-red-700 cursor-pointer"
             )
-        sections.append(
-            f'<section data-filter-dimension="{dimension}" class="space-y-2">'
-            f'<h3 class="text-xs font-semibold uppercase tracking-wide text-slate-500">{dimension}</h3>'
-            + "".join(options)
-            + "</section>"
+            badge_cls = "rounded bg-red-100 px-1 ml-1"
+            prefix = "\u2715 "
+        else:
+            label_cls = (
+                "flex items-center gap-1 rounded border border-slate-200 "
+                "px-2 py-1 text-xs text-slate-600 hover:border-slate-400 cursor-pointer"
+            )
+            badge_cls = "rounded bg-slate-100 px-1 ml-1"
+            prefix = ""
+        checked_attr = " checked" if is_active else ""
+        quick_parts.append(
+            f'<label data-role="quick-exclude" data-quick-exclude-dimension="{dim}" '
+            f'data-quick-exclude-value="{val}" data-active="{active_val}" '
+            f'class="{label_cls}">'
+            f'<input type="checkbox" name="{dim}_out" value="{val}"{checked_attr} class="sr-only" />'
+            f"{prefix}{val.title()}"
+            f'<span class="{badge_cls}">{impact[val]}</span>'
+            f"</label>"
         )
-    return (
-        '<div id="filter-panel" class="space-y-4">'
-        '<div class="rounded bg-slate-50 px-3 py-2 text-xs text-slate-600" data-role="count-discipline">Counts reflect the active backend query semantics.</div>'
-        + "".join(sections)
+    parts.append(
+        '<div class="flex flex-wrap items-center gap-2 border-b border-slate-100 pb-3" '
+        'data-role="quick-excludes-strip">'
+        '<span class="text-xs font-semibold uppercase tracking-wide text-slate-400 self-center">'
+        "Quick excludes</span>"
+        + "".join(quick_parts)
         + "</div>"
     )
+
+    # Per-dimension groups with split include/exclude sub-sections
+    for dimension in ("team", "status", "region"):
+        inc_counts = facet_counts(state, dimension)
+        exc_counts = exclude_impact_counts(state, dimension)
+        dim_out: list[str] = getattr(state, f"{dimension}_out")
+        dim_in: list[str] = getattr(state, f"{dimension}_in")
+
+        # Include sub-section
+        inc_options: list[str] = []
+        for option in FACET_OPTIONS[dimension]:
+            is_excluded = option in dim_out
+            is_checked = option in dim_in
+            # RULE 1: force count to 0 when value is excluded
+            opt_count = 0 if is_excluded else inc_counts[option]
+            excluded_attr = ' data-excluded="true"' if is_excluded else ""
+            disabled_attr = " disabled" if is_excluded else ""
+            checked_attr = " checked" if is_checked else ""
+            label_extra = " opacity-50 cursor-not-allowed" if is_excluded else ""
+            inc_options.append(
+                f'<label data-filter-dimension="{dimension}" data-filter-option="{option}" '
+                f'data-filter-mode="include" data-option-count="{opt_count}"{excluded_attr} '
+                f'class="flex items-center justify-between rounded border border-slate-200 '
+                f'px-3 py-2 text-sm{label_extra}">'
+                f'<span class="flex items-center gap-2">'
+                f'<input type="checkbox" name="{dimension}_in" value="{option}"{checked_attr}{disabled_attr} />'
+                f'<span class="font-medium text-slate-800">{option.title()}</span>'
+                f"</span>"
+                f'<span data-role="option-count" class="rounded bg-slate-100 px-2 py-1 text-slate-600">'
+                f"{opt_count}</span>"
+                f"</label>"
+            )
+
+        # Exclude sub-section
+        exc_options: list[str] = []
+        for option in FACET_OPTIONS[dimension]:
+            is_active = option in dim_out
+            opt_count = exc_counts[option]
+            active_attr = ' data-active="true"' if is_active else ""
+            checked_attr = " checked" if is_active else ""
+            border_cls = "border-red-200 bg-red-50" if is_active else "border-slate-200"
+            exc_options.append(
+                f'<label data-filter-dimension="{dimension}" data-filter-option="{option}" '
+                f'data-filter-mode="exclude" data-option-count="{opt_count}"{active_attr} '
+                f'class="flex items-center justify-between rounded border {border_cls} '
+                f'px-3 py-2 text-sm">'
+                f'<span class="flex items-center gap-2">'
+                f'<input type="checkbox" name="{dimension}_out" value="{option}"{checked_attr} />'
+                f'<span class="font-medium text-slate-800">{option.title()}</span>'
+                f"</span>"
+                f'<span data-role="option-count" class="rounded bg-slate-100 px-2 py-1 text-slate-600">'
+                f"{opt_count}</span>"
+                f"</label>"
+            )
+
+        parts.append(
+            f'<section data-filter-dimension="{dimension}" class="space-y-2">'
+            f'<h3 class="text-xs font-semibold uppercase tracking-wide text-slate-500">{dimension}</h3>'
+            f'<div class="space-y-1">'
+            f'<p class="text-xs text-slate-400 uppercase tracking-wide">Include</p>'
+            + "".join(inc_options)
+            + "</div>"
+            f'<div class="mt-2 space-y-1">'
+            f'<p class="text-xs text-slate-400 uppercase tracking-wide">Exclude</p>'
+            + "".join(exc_options)
+            + "</div>"
+            + "</section>"
+        )
+
+    parts.append("</div>")
+    return "".join(parts)
 
 
 def render_dashboard_page(state: QueryState) -> str:

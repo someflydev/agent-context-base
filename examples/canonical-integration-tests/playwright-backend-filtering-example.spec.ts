@@ -3,7 +3,9 @@ import { expect, test } from "@playwright/test";
 test("backend-driven filtering keeps rows, count, and chart payload aligned", async ({ page, request }) => {
   await page.goto("/ui/reports?status_out=archived");
 
-  await page.getByRole("checkbox", { name: "Growth" }).check();
+  await page
+    .locator('[data-filter-dimension="team"] [data-filter-option="growth"][data-filter-mode="include"] input[type="checkbox"]')
+    .check();
 
   await expect(page.locator('[data-role="result-count"]')).toHaveText("3 results");
   await expect(page.locator('[data-report-id]')).toHaveCount(3);
