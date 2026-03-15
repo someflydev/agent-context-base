@@ -1,0 +1,412 @@
+You are working inside the agent-context-base repository.
+
+This prompt adds a runnable Python companion to the NATS JetStream + MongoDB
+pipeline example.
+
+Currently, `nats-jetstream-mongo-pipeline-example.md` is a detailed documentation
+example with inline code snippets, but no standalone `.py` file. Compare:
+
+- `parquet-minio-example.md` has a companion `parquet-minio-example.py` — a 261-line
+  module with an explicit schema, real write and read functions, and a `main()` that
+  writes a dataset and asserts the row count on read-back.
+
+- `duckdb-polars-example.py` is a 42-line runnable module.
+
+- `nats-jetstream-mongo-pipeline-example.md` has no `.py` counterpart.
+
+The `.md` also imports from an application path:
+  `from app.db.mongo_helpers import weekly_collection_name`
+
+This is an application-level import, not a self-contained helper. A reader trying
+to understand or adapt the example must locate that function in an application they
+may not have. The `.py` companion should include a self-contained version of the
+helper so the example file is intelligible on its own.
+
+Your task is to create `examples/canonical-storage/nats-jetstream-mongo-pipeline-example.py`
+following the same module structure and quality bar as `parquet-minio-example.py`,
+and to update the surrounding metadata.
+
+The work must be implementation-oriented and organized into commit-ready batches.
+
+For each batch:
+1. Give the batch title.
+2. Explain the purpose.
+3. List created or updated files.
+4. Provide the full contents of each file.
+5. End with a suggested Tim Pope style commit message prefixed with [PROMPT_45].
+
+Commit messages must not include a co-author line.
+
+
+IMPORTANT CONSTRAINTS
+
+- Do not change `nats-jetstream-mongo-pipeline-example.md`. The `.py` companion
+  makes the documented patterns concrete; it does not replace or contradict the `.md`.
+- The `.py` must be runnable against a real NATS JetStream server and MongoDB instance
+  with no code changes — only environment variable configuration.
+- Mark the `.py` as `structure-verified`. A live NATS+Mongo harness would raise it
+  to `smoke-verified`, but that harness is not in scope for this pass.
+- The `weekly_collection_name()` helper must be self-contained within the `.py` file.
+  Do not import it from an application path. Include a brief comment explaining that
+  the authoritative version of this helper lives in `mongo-weekly-reporting-example.md`
+  and that this is a standalone copy for use without an application.
+- Keep the code style consistent with `parquet-minio-example.py`: module-level
+  constants, function-per-responsibility, docstrings on public functions, `main()`
+  at the end, `if __name__ == "__main__"` guard.
+- Do not write mocks or test doubles. The module is meant to run against real
+  infrastructure. Keep the code simple and direct.
+
+
+SECTION 1 — Context reads
+
+Before implementing, read and internalize:
+
+- `examples/canonical-storage/parquet-minio-example.py` — the style and structure
+  model. Note: module-level schema/config constants, private helper functions
+  prefixed with `_`, public functions with docstrings, `main()` as the entrypoint,
+  sample data defined at module level.
+
+- `examples/canonical-storage/nats-jetstream-mongo-pipeline-example.md` in full.
+  This is the authoritative specification. Every design decision in the `.py` must
+  be traceable to the `.md`. The producer subject naming, payload fields, consumer
+  configuration, enrichment logic, MongoDB collection naming, and DLQ configuration
+  must all match exactly.
+
+- `examples/canonical-storage/mongo-weekly-reporting-example.md` — specifically
+  the `weekly_collection_name()` helper. The `.py` companion will include a
+  standalone copy of this function. Note the exact signature and behavior so the
+  copy is faithful.
+
+- `verification/examples/data/test_storage_examples.py` — specifically
+  `NatsJetstreamMongoPipelineExampleTests`. After writing the `.py`, new test
+  methods for the `.py` file must be added to this class.
+
+
+SECTION 2 — Module structure
+
+The module should have the following top-level structure. Implement each section
+fully.
+
+**Header docstring**
+
+```python
+"""
+NATS JetStream + MongoDB pipeline example.
+
+Verification level: structure-verified
+No live NATS or MongoDB dependency is required to import this module.
+The produce(), consume_once(), and run_consumer_loop() functions can be run
+against a real NATS JetStream server and MongoDB instance by setting the
+required environment variables.
+
+Follow-on: add a docker-compose harness under
+verification/scenarios/nats_mongo_min_app/ to raise this to smoke-verified.
+
+Required environment variables:
+    NATS_URL              — e.g. nats://localhost:4222
+    MONGO_URI             — e.g. mongodb://localhost:27017
+    MONGO_DB              — database name, e.g. test-reporting
+"""
+```
+
+**Module-level constants**
+
+```python
+STREAM_NAME = "REPORT_REQUESTS"
+SUBJECT_PREFIX = "reports.requests"
+CONSUMER_NAME = "report-enricher"
+ACK_WAIT_SECONDS = 30
+MAX_DELIVER = 5
+DLQ_STREAM = "REPORT_REQUESTS_DLQ"
+SUPPORTED_PAYLOAD_VERSIONS = {1}
+PII_FIELDS = frozenset({"raw_ip", "email", "user_name"})
+```
+
+**Sample payload**
+
+Define a module-level `SAMPLE_PAYLOAD` dict representing one well-formed message
+from the `acme` tenant. Include all fields shown in the `.md`:
+`payload_version`, `tenant_id`, `report_id`, `correlation_id`, `published_at`,
+`request_method`, `request_path`, `response_status`, `response_time_ms`,
+`source_ip_hash`. Use realistic values from the domain (acme, daily-signups, etc.).
+
+**`weekly_collection_name()`** (standalone copy)
+
+```python
+from datetime import date, datetime, timezone
+
+
+def weekly_collection_name(published_at: str, prefix: str = "request_logs") -> str:
+    """Return the weekly-bucketed MongoDB collection name for a published_at timestamp.
+
+    Standalone copy for use without an application context. The authoritative
+    version lives in examples/canonical-storage/mongo-weekly-reporting-example.md.
+
+    Args:
+        published_at: ISO 8601 UTC timestamp string (from the enriched document).
+        prefix: collection name prefix. Defaults to 'request_logs'.
+
+    Returns:
+        Collection name in the form '<prefix>_<year>_w<week>', e.g.
+        'request_logs_2026_w12'.
+    """
+    dt = datetime.fromisoformat(published_at.replace("Z", "+00:00"))
+    d = dt.date()
+    year, week, _ = d.isocalendar()
+    return f"{prefix}_{year}_w{week:02d}"
+```
+
+**`validate(payload)`**
+
+Check `payload_version` against `SUPPORTED_PAYLOAD_VERSIONS`. Raise `ValueError`
+with a descriptive message on unknown version.
+
+**`clean(payload)`**
+
+Return a copy of `payload` with all keys in `PII_FIELDS` removed.
+
+**`enrich(payload)`**
+
+Compute `response_time_class`, `error_category`, and `enriched_at` from the
+payload fields as defined in the `.md`. Return the enriched dict (original fields
+plus new fields, not a mutation of the original).
+
+Use these exact thresholds and categories (matching the `.md`):
+- `response_time_class`: `"fast"` (< 200ms), `"slow"` (200–2000ms), `"timeout"` (> 2000ms)
+- `error_category`: `"none"`, `"client_error"` (400–499), `"server_error"` (500+)
+- `enriched_at`: ISO 8601 UTC string via `datetime.now(timezone.utc).isoformat()`
+
+**`_make_subject(payload)`** (private helper)
+
+Return the full NATS subject string:
+`f"{SUBJECT_PREFIX}.{payload['tenant_id']}.{payload['report_id']}"`
+
+**`async produce(nc, payload)`**
+
+Publish one message to JetStream. Docstring must note:
+- the producer does not wait for consumer confirmation
+- the stream provides durability once the broker acks the publish
+
+```python
+async def produce(nc, payload: dict) -> None:
+    """Publish one bounded payload to the REPORT_REQUESTS JetStream stream.
+
+    Args:
+        nc: connected nats.aio.client.Client
+        payload: validated, bounded payload dict (no PII, no raw bodies)
+
+    The producer does not wait for consumer confirmation. Durability is
+    provided by JetStream: once the broker acks the publish, the message
+    is retained regardless of consumer availability.
+    """
+```
+
+**`async _ensure_stream(js)`** (private helper)
+
+Create the `REPORT_REQUESTS` stream with `subjects=["reports.requests.>"]` and
+`retention="workqueue"` if it does not already exist. Use a try/except around the
+`add_stream` call to handle the case where the stream already exists.
+
+**`async consume_once(js, mongo_db)`**
+
+Fetch and process one batch of messages (batch size: 10, timeout: 5 seconds) from
+a durable pull consumer on `REPORT_REQUESTS`. For each message:
+1. Parse the JSON payload.
+2. Call `validate()`, `clean()`, `enrich()`.
+3. Insert the enriched document into MongoDB using `weekly_collection_name()`.
+4. Call `await msg.ack()` only after successful insertion.
+5. On any exception: call `await msg.nak(delay=5)` and log the error.
+
+Docstring must state the ack discipline:
+"Ack only after the MongoDB insert confirms. Acking before the write creates
+data loss on crash."
+
+**`async run_consumer_loop(js, mongo_db, max_iterations)`**
+
+A long-running loop that calls `consume_once()` in a loop. Accept a
+`max_iterations` parameter (default `None` for infinite, an integer for bounded
+runs during testing). Catch `nats.errors.TimeoutError` and continue; log other
+exceptions and continue.
+
+**`async main()`**
+
+Async entrypoint that:
+1. Reads `NATS_URL`, `MONGO_URI`, `MONGO_DB` from environment variables.
+2. Connects to NATS.
+3. Ensures the stream exists.
+4. Publishes `SAMPLE_PAYLOAD` via `produce()`.
+5. Connects to MongoDB.
+6. Calls `consume_once()` once to process the published message.
+7. Queries MongoDB for the inserted document by `correlation_id` from `SAMPLE_PAYLOAD`.
+8. Asserts the document exists and has `response_time_class` and `error_category` fields.
+9. Prints success confirmation with the collection name and inserted `_id`.
+10. Disconnects from NATS.
+
+If the assertion fails, raise `AssertionError` with a descriptive message.
+
+**`if __name__ == "__main__"` guard**
+
+```python
+if __name__ == "__main__":
+    import asyncio
+    asyncio.run(main())
+```
+
+
+SECTION 3 — Import discipline
+
+Use these imports and nothing else:
+```python
+from __future__ import annotations
+
+import asyncio
+import json
+import logging
+import os
+from datetime import date, datetime, timezone
+
+import nats
+import nats.errors
+from pymongo import MongoClient
+from pymongo.errors import PyMongoError
+```
+
+Do not use `motor` (async MongoDB). Use the synchronous `pymongo` client called
+from the async `main()` function. This keeps the example approachable — the NATS
+async calls are required by the library; the MongoDB calls do not need to be async
+for a standalone example. Add a comment noting that production use of both in the
+same service would typically use `motor` for the async path.
+
+Add a basic logger at module level:
+```python
+logger = logging.getLogger(__name__)
+```
+
+
+SECTION 4 — Verification test additions
+
+After writing the `.py`, add new test methods to
+`NatsJetstreamMongoPipelineExampleTests` in
+`verification/examples/data/test_storage_examples.py`.
+
+Add a class attribute for the `.py` path:
+```python
+PY_PATH = "examples/canonical-storage/nats-jetstream-mongo-pipeline-example.py"
+```
+
+Update `setUp` to also read the `.py`:
+```python
+def setUp(self) -> None:
+    self.text = _read(self.PATH)
+    self.py = _read(self.PY_PATH)
+```
+
+New `.py` test methods:
+
+**`test_py_file_exists`**
+Assert the `.py` file exists.
+
+**`test_py_stream_name_constant`**
+Assert `STREAM_NAME` appears in the `.py` (the module-level constant).
+
+**`test_py_consumer_name_constant`**
+Assert `CONSUMER_NAME` appears in the `.py`.
+
+**`test_py_pii_fields_constant`**
+Assert `PII_FIELDS` appears in the `.py`.
+
+**`test_py_validate_function`**
+Assert `def validate` appears in the `.py`.
+
+**`test_py_enrich_function`**
+Assert `def enrich` appears in the `.py`.
+
+**`test_py_response_time_class_in_enrich`**
+Assert `response_time_class` appears in the `.py` (the enrichment field).
+
+**`test_py_ack_after_insert_in_code`**
+Assert `await msg.ack()` appears in the `.py` AND that `insert_one` or `insert`
+appears before it in the file (or within the same function). The simplest approach:
+assert `insert` appears in the `.py` and `msg.ack()` appears in the `.py`.
+For the ordering constraint: find the line number of the last `insert` reference
+and the line number of the `msg.ack()` call; assert insert comes before ack.
+
+**`test_py_weekly_collection_name_standalone`**
+Assert `weekly_collection_name` is defined in the `.py` (i.e., `def weekly_collection_name`
+appears), confirming it is a standalone copy, not an import from an application path.
+
+**`test_py_env_var_usage`**
+Assert that `NATS_URL` and `MONGO_URI` appear in the `.py` — the environment
+variable names that configure the live targets.
+
+**`test_readme_references_py`**
+Assert that `examples/canonical-storage/README.md` contains
+`nats-jetstream-mongo-pipeline-example.py`.
+
+
+SECTION 5 — Metadata updates
+
+**`examples/canonical-storage/README.md`**
+
+Add `nats-jetstream-mongo-pipeline-example.py` to:
+- The "Combined-stack examples" list entry for `nats-jetstream-mongo`
+- The verification metadata section (verification_level: structure-verified,
+  harness: none, follow-on: nats_mongo_min_app scenario)
+- The "When To Use" guidance for the NATS+Mongo example: add a note that the
+  `.py` companion provides a runnable reference for the full pipeline
+
+**`examples/catalog.json`**
+
+Add an entry for `nats-jetstream-mongo-pipeline-example.py` following the schema
+of the `parquet-minio-example.py` entry.
+
+**`verification/example_registry.yaml`**
+
+Add an entry for `nats-jetstream-mongo-pipeline-example.py`:
+- `verification_level: structure-verified`
+- `harness: none`
+- `last_verified_by: verification/examples/data/test_storage_examples.py`
+
+**`verification/stack_support_matrix.yaml`**
+
+If `nats-jetstream-mongo` or `nats-jetstream` has a `support_level` entry that
+does not yet reflect the presence of a runnable `.py` example, update the `notes`
+field to mention that a structure-verified `.py` companion is now present.
+
+
+SECTION 6 — Commit-ready batching
+
+Batch 1
+- `examples/canonical-storage/nats-jetstream-mongo-pipeline-example.py` (new)
+- `examples/canonical-storage/README.md` (update)
+
+Batch 2
+- `verification/examples/data/test_storage_examples.py`
+  (add `.py` tests to NatsJetstreamMongoPipelineExampleTests)
+
+Batch 3
+- `examples/catalog.json` (add .py entry)
+- `verification/example_registry.yaml` (add .py entry)
+- `verification/stack_support_matrix.yaml` (update notes if warranted)
+
+
+SECTION 7 — Honesty rules
+
+The acceptable end state for this prompt is:
+
+"The NATS+Mongo pipeline now has a runnable `.py` companion that provides a
+self-contained reference for the producer, consumer/enricher, and MongoDB insert
+path. The weekly_collection_name helper is included as a standalone copy. The
+module is structure-verified: it requires a live NATS server and MongoDB instance
+to run, but can be imported, inspected, and statically verified without them.
+Verification tests for the `.py` are added to the existing test class."
+
+Do not claim smoke-verified. No live NATS or MongoDB harness is wired in this pass.
+Do not change the `.md` document.
+If the `.py` is long (250–350 lines), that is appropriate — the pipeline has
+multiple distinct phases and each should be clearly represented.
+
+
+SECTION 8 — Output
+
+Generate the actual implementation pass in commit-ready batches now.

@@ -1,0 +1,326 @@
+You are working inside the agent-context-base repository.
+
+This prompt closes a specific parity gap: `fastapi-endpoint-example.md` is the only
+backend API companion `.md` that carries real design content. The FastAPI companion
+explains service/transport separation, the Polars shaping boundary, protocol-based
+dependency wiring, and the response model contract. Every other backend's companion
+`.md` — twelve languages, three variants each, thirty-six files total — contains
+a 3-4 line stub that lists framework links and related files.
+
+When an assistant loads `kotlin-http4k-exposed-api-endpoint-example.md`, it learns
+nothing about why the example is shaped the way it is, which language idioms are
+deliberately leveraged, what the error handling posture is, or what to preserve vs.
+override when deriving a real repo. The companions exist but do not do their job.
+
+Your task is to enhance the companion `.md` files for all twelve non-FastAPI backends
+across all three endpoint variants (api-endpoint, html-fragment, data-endpoint)
+so they carry the same quality of design context as the FastAPI companion.
+
+Do not change any source example files. The `.md` files explain existing examples —
+they do not change them.
+
+The work must be implementation-oriented and organized into commit-ready batches.
+
+For each batch:
+1. Give the batch title.
+2. Explain the purpose.
+3. List created or updated files.
+4. Provide the full contents of each file.
+5. End with a suggested Tim Pope style commit message prefixed with [PROMPT_46].
+
+Commit messages must not include a co-author line.
+
+
+IMPORTANT CONSTRAINTS
+
+- Read each source example file before writing its companion. The companion explains
+  the example as it exists — do not describe code that is not there.
+- Do not pad. Prefer 15-25 lines of dense, accurate design commentary over a 60-line
+  document that restates what the code says.
+- Preserve the existing "Use it with" and "Related files" sections. Expand the
+  content above them.
+- Each companion must be specific to the language and variant. A companion for
+  `clojure-kit-nextjdbc-hiccup-api-endpoint-example.md` should not be
+  interchangeable with one for `ocaml-dream-caqti-tyxml-api-endpoint-example.md`.
+  If the companions could be swapped with minimal edits, they are not specific enough.
+- The tone should be advisory and direct, not tutorial. The reader is an assistant
+  implementing a derived repo, not a student learning the language.
+
+
+SECTION 1 — Context reads
+
+Before implementing, read every source example file for every language. You need the
+actual code to write accurate companions. Read in this order:
+
+API endpoint examples (route, request parsing, service delegation, response):
+- `examples/canonical-api/go-echo-handler-example.go`
+- `examples/canonical-api/rust-axum-route-example.rs`
+- `examples/canonical-api/typescript-hono-handler-example.ts`
+- `examples/canonical-api/phoenix-route-controller-example.ex`
+- `examples/canonical-api/scala-tapir-http4s-zio-api-endpoint-example.scala`
+- `examples/canonical-api/kotlin-http4k-exposed-api-endpoint-example.kt`
+- `examples/canonical-api/clojure-kit-nextjdbc-hiccup-api-endpoint-example.clj`
+- `examples/canonical-api/ocaml-dream-caqti-tyxml-api-endpoint-example.ml`
+- `examples/canonical-api/crystal-kemal-avram-api-endpoint-example.cr`
+- `examples/canonical-api/nim-jester-json-endpoint-example.nim`
+- `examples/canonical-api/dart-dartfrog-api-endpoint-example.dart`
+- `examples/canonical-api/ruby-hanami-api-endpoint-example.rb`
+
+HTML fragment examples:
+- All twelve `*-html-fragment-example.*` files
+
+Data endpoint examples:
+- All twelve `*-data-endpoint-example.*` files
+
+Also read `examples/canonical-api/fastapi-endpoint-example.md` to calibrate the depth
+and tone target.
+
+
+SECTION 2 — What each companion type must cover
+
+There are three variant types. Each requires different content.
+
+--- api-endpoint companions ---
+
+Each `*-api-endpoint-example.md` must cover:
+
+1. **Route registration shape** — what the route registration looks like in this
+   framework and why (is it a handler struct, a router builder, a macro, a function?).
+
+2. **Request parsing approach** — how path params and query params are extracted
+   (typed deserialization, manual extraction, binding). Note whether the framework
+   validates or coerces automatically, or whether that responsibility falls to the handler.
+
+3. **Service/transport separation** — describe what the example shows for service
+   separation. Is there a service struct/class/protocol? Is the DB query inline?
+   Is this a deliberate simplification for the example or is this how the framework
+   is typically structured? Be explicit.
+
+4. **Error handling posture** — what does the example show? If the example has no
+   error handling, say "error handling is not shown; add `404`/`502` returns when
+   deriving." If there is a placeholder comment (as in Rust), quote it and explain
+   what to replace it with. Do not pretend error handling is present if it is not.
+
+5. **Response shape** — what is returned and how is it encoded? Typed JSON, a lens,
+   a view struct, manual serialization?
+
+--- html-fragment companions ---
+
+Each `*-html-fragment-example.md` must cover:
+
+1. **HTMX fragment contract** — the `hx-swap-oob="true"` attribute, the stable
+   element `id`, and why the `id` must match the target in the surrounding page.
+   Every language should show this; if it is missing in a language's example, say so.
+
+2. **Content-type discipline** — how `text/html; charset=utf-8` is set in this
+   framework. Some set it on the response object, some via a helper, some
+   implicitly through the view layer.
+
+3. **Server-side rendering approach** — what mechanism is used to generate the
+   HTML? Multiline string interpolation? A dedicated HTML builder (Hiccup,
+   TyXML)? A template? Name the mechanism and note whether it escapes by default.
+
+4. **Escaping and XSS posture** — is the value interpolated safely (escaped by
+   the HTML library) or raw? If raw string interpolation is used, flag it.
+
+--- data-endpoint companions ---
+
+Each `*-data-endpoint-example.md` must cover:
+
+1. **Chart payload contract** — the `{metric, series: [{name, points: [{x, y}]}]}`
+   shape. Note whether it is enforced by a typed struct, derived from a builder
+   function, or assembled manually.
+
+2. **Typed response encoding** — how is the JSON produced? Derive codecs, JSON
+   lenses, manual struct-to-JSON, `%*{}` macro, `std.fmt.bufPrint`? Note the
+   tradeoff each approach creates for schema evolution.
+
+3. **Storage query integration** — if the example queries a database, describe
+   the query boundary (Exposed DSL, Avram query class, Caqti request, raw SQL,
+   Sequel). If the example uses stub data, say "the DB query is stubbed; replace
+   with a real query boundary for production."
+
+4. **Metric parameter safety** — is the `metric` path param validated before use?
+   If it is passed directly to a SQL query or embedded in a response without
+   sanitization, call that out explicitly.
+
+
+SECTION 3 — Per-language specific content requirements
+
+Each language has specific design choices that the companion must name. This section
+gives the key points for each language. You must read the actual code to confirm
+these before writing the companion; if the code has changed from what is listed
+here, trust the code.
+
+**Go (Echo)**
+- `api-endpoint`: Handler struct with `Register()` and `ListRecent()` methods.
+  Echo error handling via `echo.NewHTTPError`. `strconv.Atoi` for limit with
+  integer fallback. Delegates to `services.ReportService`. Returns an HTML view
+  via `views.ReportSummaryList`.
+- `html-fragment`: Returning HTML content from Go — note the `echo.MIMETextHTMLCharsetUTF8`
+  constant usage.
+- `data-endpoint`: If the Go data endpoint is not in the canonical-api directory,
+  note the absence and reference the closest available example.
+
+**Rust (Axum)**
+- `api-endpoint`: Extractor-based handler — `State`, `Path`, `Query` as function
+  arguments. `#[derive(Deserialize, Serialize)]` for request/response types.
+  `.unwrap_or(20).min(100)` for limit clamping. The `expect()` on the service call
+  is a deliberate placeholder — quote it and explain what the real error return type
+  should be.
+- `html-fragment`: Note how Axum handles HTML responses (IntoResponse impl or
+  Html wrapper).
+- `data-endpoint`: Note the `ReportService` stub and `Json(reports)` return pattern.
+
+**TypeScript (Hono)**
+- `api-endpoint`: Hono router, inline Drizzle query directly in handler (no service
+  layer). Note this is the TypeScript pattern — Hono handlers with ORM access inline
+  is idiomatic for small Bun services. `Math.min(limit, 50)` for clamping.
+- `html-fragment`: `context.html()` with JSX. Note that Hono's JSX is compile-time,
+  not runtime.
+- `data-endpoint`: Chart data with inline construction. No storage shown.
+
+**Elixir (Phoenix)**
+- `api-endpoint`: Two files — controller and router. The controller delegates to an
+  `Example.Reporting` context module. This is the canonical Phoenix pattern:
+  controllers do not contain business logic; they call context functions. Note the
+  `String.to_integer() |> min(100)` limit clamping.
+- `html-fragment`: Phoenix renders via templates. Note the `render(conn, :index, ...)`
+  pattern and that HTML escaping is automatic via HEEx.
+- `data-endpoint`: Note if a data endpoint exists or if Phoenix only has the two
+  source files. If the data endpoint is absent, say so directly.
+
+**Scala (Tapir + http4s + ZIO)**
+- `api-endpoint`: Tapir endpoint definition is separate from the logic. Types
+  flow through the endpoint description. `serverLogicSuccess` is used — this means
+  the handler is expected to always succeed (no error path in the example).
+  Note that real endpoints should use `serverLogic` for error cases.
+- `html-fragment`: `Http4sDsl` pattern matching for routing, manual content-type
+  setting. String interpolation for HTML.
+- `data-endpoint`: `JsonCodec` derived via ZIO JSON macros. The endpoint contract
+  (`chartEndpoint`) is defined separately from the server logic.
+
+**Kotlin (http4k + Exposed)**
+- `api-endpoint`: `Body.auto<ReportEnvelope>().toLens()` for typed JSON response.
+  Exposed `transaction { }` block inline in the route handler. The fallback stub
+  when no row is found means this returns 200 with stub data instead of 404 —
+  call this out explicitly as a simplification.
+- `html-fragment`: Template string with `trimIndent()`. Note that Kotlin string
+  templates do not escape HTML — XSS risk if `tenantId` came from user input.
+- `data-endpoint`: Describe the lens pattern and JSON response.
+
+**Clojure (Kit + next.jdbc + Hiccup)**
+- `api-endpoint`: Route defined as a data structure (Ring router map). Handler is
+  a plain function. `jdbc/execute!` inline in the handler. Explain that in Kit
+  the inline query is appropriate for small routes but larger services extract a
+  repository namespace.
+- `html-fragment`: Hiccup is a Clojure DSL for HTML — data structures become HTML.
+  `h/html` produces escaped HTML by default. Note this.
+- `data-endpoint`: JSON assembled with `clojure.data.json/write-str`. The data
+  structure mirrors the chart payload contract.
+
+**OCaml (Dream + Caqti + TyXML)**
+- `api-endpoint`: Caqti's typed SQL layer — `Caqti_request.Infix.(->*)` for a
+  query that returns a list. `Db.collect_list` runs the query and `>>=
+  Caqti_lwt.or_fail` raises on DB error — note this means a DB failure is a
+  fatal unhandled exception in the example, not a 500 response.
+- `html-fragment`: TyXML for type-safe HTML generation. Note that TyXML validates
+  the HTML structure at compile time.
+- `data-endpoint`: Manual `Yojson` assembly. Note the verbosity compared to
+  languages with derive macros — this is intentional in OCaml's value-layer JSON
+  approach.
+
+**Crystal (Kemal + Avram)**
+- `api-endpoint`: Avram model + query class separation (model describes the table,
+  query class provides the query DSL). This is Crystal's ORM idiom — name it.
+- `html-fragment`: ECR template or string interpolation. Note whether HTML is
+  escaped.
+- `data-endpoint`: Struct with `JSON::Serializable` — Crystal's compile-time JSON
+  codec via mixin. The fallback to hardcoded data when the query is empty is a
+  deliberate in-example simplification.
+
+**Nim (Jester)**
+- `api-endpoint`: Route macro `routes:` / `get "/path": resp`. Handler is
+  effectively inline. No service separation in Nim Jester examples.
+- `html-fragment`: Karax or string interpolation — note what the example actually uses.
+- `data-endpoint`: `%*{}` JSON literal macro for typed JSON construction.
+  `proc buildSeriesPayload` separates the payload logic from the route.
+
+**Dart (Dart Frog)**
+- `api-endpoint`: Dart Frog route is a file-per-route pattern — `onRequest()` is
+  the handler function. No router configuration shown; routing is by file system.
+- `html-fragment`: Note what HTML generation Dart uses (string interpolation or
+  package).
+- `data-endpoint`: `Map<String, Object>` for JSON payload. `Response.json()` for
+  the response. Note that Dart Frog auto-serializes Maps to JSON.
+
+**Ruby (Hanami)**
+- `api-endpoint`: `Hanami::Action` for request handling, `Hanami::Router` for
+  routing. `MetricsRepo` provides the storage boundary. Sequel for DB access.
+- `html-fragment`: Haml, ERB, or Phlex — note what the example uses.
+- `data-endpoint`: `JSON.generate()` with a plain Ruby hash. `MetricsRepo.series_for`
+  hides the Sequel query.
+
+
+SECTION 4 — What to NOT include
+
+The companion `.md` files should not:
+- Reproduce the code. Use code excerpts only when they illustrate a specific
+  design decision.
+- Explain the framework in general terms. The reader already knows what Scala is.
+- List all the fields in the response struct.
+- Make promises about what a "production" version would look like — only note
+  simplifications that are explicitly present in the example and likely to be
+  replicated incorrectly in a derived repo.
+
+
+SECTION 5 — Commit-ready batching
+
+Batch 1
+- Go Echo companion `.md` files (all three variants)
+- Rust Axum companion `.md` files (all three variants)
+- TypeScript Hono companion `.md` files (all three variants)
+
+Batch 2
+- Elixir Phoenix companion `.md` files (all three variants)
+- Scala Tapir companion `.md` files (all three variants)
+- Kotlin http4k companion `.md` files (all three variants)
+
+Batch 3
+- Clojure Kit companion `.md` files (all three variants)
+- OCaml Dream companion `.md` files (all three variants)
+- Crystal Kemal companion `.md` files (all three variants)
+
+Batch 4
+- Nim Jester companion `.md` files (all three variants)
+- Dart Dartfrog companion `.md` files (all three variants)
+- Ruby Hanami companion `.md` files (all three variants)
+
+Batch 5
+- Update `examples/canonical-api/README.md`:
+  - Add a "Companion Design Notes" subsection explaining that each companion `.md`
+    covers design decisions, error posture, and idiom choices for the specific language
+  - This helps future assistants understand that loading the companion is not just
+    for context links but for design guidance
+
+
+SECTION 6 — Honesty rules
+
+The acceptable end state is:
+
+"All 36 backend API companion `.md` files now carry language-specific design
+context: what idioms are used, how errors are handled (or deferred), what
+validation is shown, and what an implementing assistant needs to know before
+deriving a real service from this example."
+
+The companions should not pretend the examples are complete. Where the example
+simplifies (no error handling, inline DB, stub data), the companion should say
+so plainly and indicate what to add when deriving.
+
+Do not change any source example files.
+Do not create new source examples.
+
+
+SECTION 7 — Output
+
+Generate the actual implementation pass in commit-ready batches now.

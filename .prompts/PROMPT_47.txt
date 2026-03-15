@@ -1,0 +1,346 @@
+You are working inside the agent-context-base repository.
+
+This prompt closes a structural parity gap: Phoenix is the only backend in the
+canonical API examples that has `harness: none` and no `<lang>-<framework>-example/`
+subdirectory. Every other backend — Go, Rust, TypeScript, Scala, Kotlin, Clojure,
+OCaml, Crystal, Nim, Zig, Dart, Ruby — has a smoke-verified mini-app under
+`examples/canonical-api/`. Phoenix has only two standalone `.ex` files
+(`phoenix-route-controller-example.ex`, `phoenix-router-surface-example.ex`),
+both syntax-checked with no harness.
+
+Your task is to add:
+
+- `examples/canonical-api/phoenix-example/` — a minimal Phoenix Mix project
+  with the standard four-endpoint surface
+- `verification/scenarios/phoenix_min_app/` — a verify.py and README for the harness
+
+and to wire them into the existing verification surfaces.
+
+The work must be implementation-oriented and organized into commit-ready batches.
+
+For each batch:
+1. Give the batch title.
+2. Explain the purpose.
+3. List created or updated files.
+4. Provide the full contents of each file.
+5. End with a suggested Tim Pope style commit message prefixed with [PROMPT_47].
+
+Commit messages must not include a co-author line.
+
+
+IMPORTANT CONSTRAINTS
+
+- The mini-app must expose the same four endpoints as every other mini-app:
+    GET /healthz                           → JSON health snapshot
+    GET /api/reports/:tenant_id            → JSON report envelope
+    GET /fragments/report-card/:tenant_id  → HTML fragment (HTMX OOB)
+    GET /data/chart/:metric                → JSON chart payload
+- The Phoenix mini-app must use the canonical Phoenix idioms visible in the
+  existing `.ex` files: controller that delegates to a context module, router
+  with a pipeline, `json/2` for JSON responses. Do not diverge from Phoenix
+  conventions just to be compact.
+- No Ecto. The mini-app uses in-memory seed data. The stub data values must
+  match those used in the Crystal, Nim, and Ruby mini-apps (acme/globex tenants,
+  signups metric, dates 2026-03-01 through 2026-03-03).
+- The HTML fragment must include `hx-swap-oob="true"` on the `<section>` and
+  the `id` must be `report-card-<tenant_id>`.
+- Content-type for the fragment endpoint must be `text/html; charset=utf-8`.
+  Phoenix's `html/2` sets this. Do not set it manually on conn if `html/2` can
+  be used.
+- Use Bandit as the HTTP adapter (Phoenix 1.7+ default). No Cowboy.
+- Use Jason for JSON encoding.
+- The Phoenix app name is `example`, OTP app `:example`, web module prefix
+  `ExampleWeb`.
+- The Dockerfile must expose port 4000 and start with `mix phx.server`.
+- verify.py must follow the same structure as `verification/scenarios/rust_axum_min_app/verify.py`:
+  one `native_smoke_check()` function and one `docker_smoke_check()` function,
+  each called as independent smoke checks.
+- Do not change `phoenix-route-controller-example.ex` or
+  `phoenix-router-surface-example.ex`.
+
+
+SECTION 1 — Context reads
+
+Before implementing, read:
+
+- `examples/canonical-api/phoenix-route-controller-example.ex` — the existing
+  controller idiom to replicate in the mini-app controller
+- `examples/canonical-api/phoenix-router-surface-example.ex` — the existing
+  router idiom
+- `examples/canonical-api/crystal-kemal-avram-example/src/app.cr` — the best
+  reference for seed data values (tenants, metric names, dates, response shapes)
+- `examples/canonical-api/ruby-hanami-example/app/router.rb` and
+  `examples/canonical-api/ruby-hanami-example/app/actions/reports/show.rb` —
+  a multi-file mini-app reference for how to split concerns
+- `verification/scenarios/rust_axum_min_app/verify.py` — the verify.py pattern
+  to follow
+- `verification/examples/elixir/test_phoenix_examples.py` — existing tests to
+  understand what is already verified and where to add structural tests for the
+  new mini-app directory
+
+
+SECTION 2 — Phoenix mini-app file structure
+
+Create `examples/canonical-api/phoenix-example/` with the following files.
+Implement each file fully.
+
+**`mix.exs`**
+
+Standard Mix project. App: `:example`, version `0.1.0`, elixir `~> 1.16`.
+Application mod: `{Example.Application, []}`.
+Dependencies:
+- `{:phoenix, "~> 1.7"}`
+- `{:bandit, "~> 1.2"}`
+- `{:jason, "~> 1.4"}`
+
+**`config/config.exs`**
+
+Configure `ExampleWeb.Endpoint` for the `:example` app:
+- `adapter: Bandit.PhoenixAdapter`
+- `http: [ip: {0, 0, 0, 0}, port: 4000]`
+- `server: true`
+Also set `config :phoenix, :json_library, Jason`.
+
+**`config/runtime.exs`**
+
+Read `PORT` from the environment (default `"4000"`) and override the endpoint port:
+```elixir
+port = String.to_integer(System.get_env("PORT", "4000"))
+config :example, ExampleWeb.Endpoint, http: [ip: {0, 0, 0, 0}, port: port]
+```
+
+**`lib/example/application.ex`**
+
+OTP Application that starts `ExampleWeb.Endpoint` as the only supervised child.
+
+**`lib/example_web.ex`**
+
+The `ExampleWeb` macro helper module. Define a `controller/0` function that
+quotes `use Phoenix.Controller, formats: [:html, :json]` and `import Plug.Conn`.
+Define `__using__(which)` to dispatch to the function.
+
+**`lib/example_web/endpoint.ex`**
+
+Minimal `Phoenix.Endpoint` for `:example`. Plug chain:
+1. `Plug.RequestId`
+2. `Plug.Logger, log: :debug`
+3. `ExampleWeb.Router`
+
+**`lib/example_web/router.ex`**
+
+Two scopes:
+- `scope "/", ExampleWeb` piped through `:api` (`plug :accepts, ["json"]`):
+  - `GET /healthz → HealthController, :show`
+  - `GET /api/reports/:tenant_id → ReportController, :index`
+  - `GET /data/chart/:metric → ChartController, :show`
+- `scope "/fragments", ExampleWeb` piped through `:html` (`plug :accepts, ["html"]`):
+  - `GET /report-card/:tenant_id → FragmentController, :show`
+
+**`lib/example/reporting.ex`**
+
+The context module `Example.Reporting`. Define:
+- `list_recent_reports(tenant_id, opts \\ [])` — returns a list of maps with
+  `%{report_id: ..., total_events: ..., status: ...}`. Seed data: acme has
+  `daily-signups` (42 events, `"ready"`), globex has `ops-latency` (17 events,
+  `"warming"`). Unknown tenants get the acme row as a fallback.
+- `series_for(metric)` — returns a list of `%{x: ..., y: ...}` points.
+  Seed data: `signups` metric has three points: `{"2026-03-01", 18}`,
+  `{"2026-03-02", 24}`, `{"2026-03-03", 31}`. Unknown metrics get these same
+  points as fallback.
+
+The `opts` keyword list supports `limit:` (default 20). Apply `Enum.take/2`.
+
+**`lib/example_web/controllers/health_controller.ex`**
+
+```elixir
+defmodule ExampleWeb.HealthController do
+  use ExampleWeb, :controller
+
+  def show(conn, _params) do
+    json(conn, %{status: "ok", service: "phoenix-example"})
+  end
+end
+```
+
+**`lib/example_web/controllers/report_controller.ex`**
+
+`use ExampleWeb, :controller`. `index/2` extracts `tenant_id` from params,
+reads `limit` with `Map.get(params, "limit", "20") |> String.to_integer() |> min(100)`,
+delegates to `Example.Reporting.list_recent_reports/2`, returns JSON:
+```json
+{"service": "phoenix-example", "tenant_id": "...", "reports": [...]}
+```
+
+**`lib/example_web/controllers/fragment_controller.ex`**
+
+`use ExampleWeb, :controller`. `show/2` extracts `tenant_id`, calls
+`Example.Reporting.list_recent_reports(tenant_id, limit: 1)`, takes the first
+report (or a fallback), and returns HTML via `html/2`:
+
+```html
+<section id="report-card-{tenant_id}" class="report-card" hx-swap-oob="true">
+  <strong>Tenant {tenant_id}</strong>
+  <span>{total_events} events in the last hour</span>
+  <small>Status: {status}</small>
+</section>
+```
+
+Use a private helper `render_fragment/3` that builds this string.
+
+**`lib/example_web/controllers/chart_controller.ex`**
+
+`use ExampleWeb, :controller`. `show/2` extracts `metric`, calls
+`Example.Reporting.series_for/1`, returns JSON:
+```json
+{"metric": "...", "series": [{"name": "...", "points": [{"x": "...", "y": 0}]}]}
+```
+
+**`Dockerfile`**
+
+```dockerfile
+FROM elixir:1.17-alpine
+
+ENV MIX_ENV=dev
+ENV PORT=4000
+
+WORKDIR /app
+
+RUN mix local.hex --force && mix local.rebar --force
+
+COPY mix.exs .
+RUN mix deps.get
+
+COPY config ./config
+COPY lib ./lib
+
+EXPOSE 4000
+CMD ["mix", "phx.server"]
+```
+
+**`README.md`**
+
+Two-sentence summary: mini-app, four endpoints, smoke-verified.
+List the four endpoints.
+```
+Verification level: smoke-verified
+Harness: phoenix_min_app
+Last verified by: verification/examples/elixir/test_phoenix_examples.py
+```
+
+
+SECTION 3 — Verification harness
+
+**`verification/scenarios/phoenix_min_app/README.md`**
+
+One paragraph. States that `phoenix_min_app` is the smoke harness for
+`examples/canonical-api/phoenix-example/`. Describes native check (mix compile)
+and Docker check (build + run + GET /healthz).
+
+**`verification/scenarios/phoenix_min_app/verify.py`**
+
+Follow the pattern of `verification/scenarios/rust_axum_min_app/verify.py` exactly:
+
+- `RUNTIME_DIR = REPO_ROOT / "examples/canonical-api/phoenix-example"`
+
+- `native_smoke_check()`:
+  - Skip if `mix` is not available (use `command_available("mix")`)
+  - Run `["mix", "deps.get"]` with timeout 120 seconds
+  - Run `["mix", "compile"]` with timeout 180 seconds
+  - Assert both returncode == 0
+
+- `docker_smoke_check()`:
+  - Skip if `VERIFY_DOCKER != "1"` or docker is not available
+  - Build image with `["docker", "build", "-t", tag, "."]`, timeout 600 seconds
+  - Run container: `["docker", "run", "--rm", "-d", "-p", f"{port}:4000", tag]`
+  - Call `wait_for_http_json(f"http://127.0.0.1:{port}/healthz", timeout=35.0)`
+  - Assert status 200 and `payload["status"] == "ok"`
+  - Clean up container in `finally`
+
+
+SECTION 4 — Verification file updates
+
+**`verification/examples/elixir/test_phoenix_examples.py`**
+
+Add a new test class `PhoenixMiniAppTests` (separate from the existing
+`PhoenixExampleTests`). Add these test methods:
+
+- `test_mini_app_directory_exists`: assert `examples/canonical-api/phoenix-example/` exists
+- `test_mix_exs_present`: assert `mix.exs` exists in that directory
+- `test_dockerfile_present`: assert `Dockerfile` exists
+- `test_router_has_healthz_route`: read `lib/example_web/router.ex`, assert `"/healthz"` is present
+- `test_router_has_api_reports_route`: assert `"/api/reports/:tenant_id"` is present
+- `test_router_has_fragment_route`: assert `"/fragments"` and `"report-card"` appear
+- `test_fragment_controller_has_hx_swap_oob`: read `lib/example_web/controllers/fragment_controller.ex`,
+  assert `hx-swap-oob="true"` is present
+- `test_reporting_context_module_present`: assert `lib/example/reporting.ex` exists
+
+All checks are file-read only with no live dependency.
+
+
+SECTION 5 — Metadata updates
+
+**`examples/canonical-api/README.md`**
+
+1. Add `phoenix-example/lib/example_web/router.ex` to the primary files list,
+   grouped with the other Phoenix files.
+2. Add a new verification metadata entry:
+   ```
+   - `phoenix-example/lib/example_web/router.ex`
+     Verification level: smoke-verified
+     Harness: phoenix_min_app
+     Last verified by: verification/examples/elixir/test_phoenix_examples.py
+   ```
+3. Update the existing `phoenix-route-controller-example.ex` and
+   `phoenix-router-surface-example.ex` metadata entries: change
+   `Harness: none` to `Harness: phoenix_min_app`.
+
+**`verification/example_registry.yaml`**
+
+Add a new entry for `phoenix-example/lib/example_web/router.ex`:
+- `verification_level: smoke-verified`
+- `harness: phoenix_min_app`
+- `last_verified_by: verification/examples/elixir/test_phoenix_examples.py`
+- `language: elixir`
+- `stacks: [elixir-phoenix]`
+
+
+SECTION 6 — Honesty rules
+
+The acceptable end state is:
+
+"Phoenix now has a smoke-verified mini-app under `examples/canonical-api/phoenix-example/`
+that exposes the same four-endpoint surface as every other backend. The
+existing standalone `.ex` files are unchanged. The harness is defined and the
+verification tests cover the structural markers. Phoenix's verification gap
+is closed."
+
+Do not create Phoenix HTML templates. The fragment controller renders inline
+string HTML. This is intentional — the mini-app demonstrates Phoenix controller
+behavior without the template rendering pipeline.
+
+Do not add `phoenix_live_view` or `phoenix_html` as dependencies. The app is
+JSON + plain HTML string responses only.
+
+If `mix deps.get` pulls a `mix.lock` file, include it in the example only if
+it is needed for the Dockerfile `COPY`. Otherwise note that `mix.lock` is
+intentionally excluded from the example (it's generated by running mix).
+
+
+SECTION 7 — Commit-ready batching
+
+Batch 1
+- `examples/canonical-api/phoenix-example/` (all files: mix.exs, config, lib, Dockerfile, README)
+
+Batch 2
+- `verification/scenarios/phoenix_min_app/README.md` (new)
+- `verification/scenarios/phoenix_min_app/verify.py` (new)
+
+Batch 3
+- `verification/examples/elixir/test_phoenix_examples.py` (add PhoenixMiniAppTests)
+- `examples/canonical-api/README.md` (add phoenix-example, update Phoenix harness entries)
+- `verification/example_registry.yaml` (add phoenix-example entry)
+
+
+SECTION 8 — Output
+
+Generate the actual implementation pass in commit-ready batches now.

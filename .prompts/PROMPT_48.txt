@@ -1,0 +1,345 @@
+You are working inside the agent-context-base repository.
+
+This prompt closes a polyglot interoperability gap: `NormalizedReleaseRecord`
+uses different field names across the 14 source sync examples.
+
+Four languages already use the source-agnostic names `external_slug` and
+`canonical_url` (Nim, Crystal, Zig, Elixir). Nine languages use GitHub-specific
+names that leak the upstream API contract into the normalized model:
+
+| Language | Current field names in NormalizedReleaseRecord |
+|---|---|
+| Python (FastAPI) | `tag_name`, `html_url` |
+| Go (Echo) | `TagName`/`json:"tag_name"`, `HTMLURL`/`json:"html_url"` |
+| Rust (Axum) | `tag_name`, `html_url` |
+| TypeScript (Hono) | `tagName`, `htmlUrl` |
+| OCaml (Dream) | `tag_name`, `release_url` |
+| Kotlin (http4k) | `tagName`, `htmlUrl` (DB columns: `tag_name`, `html_url`) |
+| Ruby (Hanami) | `:tag_name`, `:release_url` |
+| Clojure (Kit) | `:tag-name`, `:html-url` (DB columns: `tag_name`, `html_url`) |
+| Dart (Dart Frog) | `tagName`, `releaseUrl` |
+
+The `data-acquisition-invariants.md` doctrine says: "source adapters stay narrow
+and source-specific instead of leaking upstream field oddities into canonical
+models." `tag_name` and `html_url` are GitHub-specific. `external_slug` and
+`canonical_url` are source-agnostic. The four-language group has the right names;
+the nine-language group has alignment debt.
+
+In a polyglot system where records from multiple language services feed a
+shared downstream consumer (search index, aggregation service, report store),
+Nim produces `{"external_slug": "v1.2.0"}` while Go produces
+`{"tag_name": "v1.2.0"}` for the same semantic concept. The consumer must handle
+two schemas for one concept.
+
+Your task is to align the nine Group A languages so that `NormalizedReleaseRecord`
+uses `external_slug` and `canonical_url` (with language-idiomatic casing where
+required) consistently across all 14 examples.
+
+The work must be implementation-oriented and organized into commit-ready batches.
+
+For each batch:
+1. Give the batch title.
+2. Explain the purpose.
+3. List created or updated files.
+4. Provide the full contents of each file.
+5. End with a suggested Tim Pope style commit message prefixed with [PROMPT_48].
+
+Commit messages must not include a co-author line.
+
+
+IMPORTANT CONSTRAINTS
+
+- The raw GitHub API access (reading `item.get("tag_name")`, `item["html_url"]`
+  from the upstream JSON response) must NOT change. GitHub returns `tag_name`
+  and `html_url`. The source adapter reads those field names from the raw payload
+  and maps them into the canonical model. The mapping line stays correct — only
+  the canonical model field name changes.
+- Language-idiomatic casing rules apply to the field names:
+  - Python, Go, Rust, OCaml, Crystal: snake_case → `external_slug`, `canonical_url`
+  - Go struct fields: PascalCase → `ExternalSlug`, `CanonicalURL`; JSON tag: `external_slug`, `canonical_url`
+  - TypeScript, Kotlin, Dart: camelCase → `externalSlug`, `canonicalUrl`
+  - Ruby symbols: `:external_slug`, `:canonical_url`
+  - Clojure keywords: `:external-slug`, `:canonical-url` (Clojure idiomatic kebab-case)
+  - SQL column names (Kotlin Exposed, Clojure next.jdbc, Ruby Sequel): `external_slug`, `canonical_url`
+- Do not change any other field in `NormalizedReleaseRecord`. Only rename the
+  two fields specified: the tag/slug field and the URL field.
+- `canonical_url` is the right replacement for all of: `html_url`, `htmlUrl`,
+  `:html-url`, `release_url`, `releaseUrl`, `canonicalUrl`. The downstream
+  semantic is "the canonical external URL for this release."
+- Do not change any verification test that checks for `tag_name` or `html_url`
+  as *input* data (GitHub API response mock keys). Those are correct — GitHub
+  returns those field names. Only update tests that assert `tag_name` or
+  `html_url` as *output* field names on `NormalizedReleaseRecord`.
+- After reading each source file, check whether there are verification tests
+  for that language that assert field names on `NormalizedReleaseRecord`. Update
+  those tests to assert the new names.
+
+
+SECTION 1 — Context reads
+
+Read each source file fully before writing changes. The field renaming touches
+every location where the field is referenced: struct definition, constructor call,
+intermediate dict/map key, DB insert column name, HTTP response serialization.
+Missing any location leaves the file inconsistent.
+
+Read in this order:
+
+Group A — files to change:
+- `examples/canonical-data-acquisition/fastapi-source-sync-example.py`
+- `examples/canonical-data-acquisition/go-echo-source-sync-example.go`
+- `examples/canonical-data-acquisition/rust-axum-source-sync-example.rs`
+- `examples/canonical-data-acquisition/typescript-hono-source-sync-example.ts`
+- `examples/canonical-data-acquisition/ocaml-dream-source-sync-example.ml`
+- `examples/canonical-data-acquisition/kotlin-http4k-source-sync-example.kt`
+- `examples/canonical-data-acquisition/ruby-hanami-source-sync-example.rb`
+- `examples/canonical-data-acquisition/clojure-kit-source-sync-example.clj`
+- `examples/canonical-data-acquisition/dart-dartfrog-source-sync-example.dart`
+
+Group B — reference only (do not change, but use to confirm target naming):
+- `examples/canonical-data-acquisition/nim-jester-source-sync-example.nim`
+- `examples/canonical-data-acquisition/crystal-kemal-source-sync-example.cr`
+- `examples/canonical-data-acquisition/zig-zap-source-sync-example.zig`
+- `examples/canonical-data-acquisition/phoenix-source-sync-example.ex`
+
+Verification tests — read before writing to check for field-name assertions:
+- `verification/examples/python/test_fastapi_examples.py`
+- `verification/examples/go/test_echo_examples.py`
+- `verification/examples/rust/test_axum_examples.py`
+- `verification/examples/typescript/test_hono_data_acquisition_examples.py`
+- `verification/examples/ocaml/test_ocaml_dream_caqti_tyxml_examples.py`
+- `verification/examples/kotlin/test_http4k_exposed_examples.py`
+- `verification/examples/ruby/test_ruby_hanami_examples.py`
+- `verification/examples/clojure/test_kit_nextjdbc_hiccup_examples.py`
+- `verification/examples/dart/test_dart_dartfrog_examples.py`
+
+Also read:
+- `examples/canonical-data-acquisition/README.md` — specifically the "Shared
+  Semantic Contract" section to ensure the update matches stated invariants
+- `examples/canonical-data-acquisition/language-support-matrix.yaml` — check
+  whether field names appear and need updating
+
+
+SECTION 2 — Per-language change specifications
+
+For each language, the mechanical changes are:
+
+**Python (`fastapi-source-sync-example.py`)**
+
+In `NormalizedReleaseRecord`:
+- `tag_name: str` → `external_slug: str`
+- `html_url: str` → `canonical_url: str`
+
+In `_normalize_records()` (the intermediate dict and the constructor call):
+- Dict key `"tag_name"` → `"external_slug"`; value stays `item.get("tag_name")` (raw API)
+- Dict key `"html_url"` → `"canonical_url"`; value stays `item.get("html_url")` (raw API)
+- Constructor: `tag_name=row["tag_name"]` → `external_slug=row["external_slug"]`
+- Constructor: `html_url=row["html_url"]` → `canonical_url=row["canonical_url"]`
+
+In `replay_from_archive()` and any other method that reads these fields by name
+from the model: update references to `record.tag_name` → `record.external_slug`,
+`record.html_url` → `record.canonical_url`.
+
+In the database insert (if the file shows a Postgres `INSERT` with column names):
+- Column `tag_name` → `external_slug`
+- Column `html_url` → `canonical_url`
+
+**Go (`go-echo-source-sync-example.go`)**
+
+In `NormalizedReleaseRecord` struct:
+- `TagName string \`json:"tag_name"\`` → `ExternalSlug string \`json:"external_slug"\``
+- `HTMLURL string \`json:"html_url"\`` → `CanonicalURL string \`json:"canonical_url"\``
+
+In `normalizeReleaseRecords()`:
+- `TagName: item.TagName` → `ExternalSlug: item.TagName` (the raw GitHub release
+  struct still has `TagName`; only the normalized model's field name changes)
+- `HTMLURL: item.HTMLURL` → `CanonicalURL: item.HTMLURL`
+
+The raw `GitHubRelease` DTO struct (with `json:"tag_name"` and `json:"html_url"`
+tags) must NOT change — that's the upstream API shape.
+
+**Rust (`rust-axum-source-sync-example.rs`)**
+
+In `NormalizedRecord` struct (or equivalent):
+- `tag_name: String` → `external_slug: String`
+- `html_url: String` → `canonical_url: String`
+
+In `normalize_records()` or equivalent:
+- Assignment `tag_name: item.tag_name.clone()` → `external_slug: item.tag_name.clone()`
+- Assignment `html_url: item.html_url` → `canonical_url: item.html_url`
+
+The raw `GitHubRelease` DTO struct with `tag_name` and `html_url` fields and
+their serde deserialize annotations must NOT change.
+
+**TypeScript (`typescript-hono-source-sync-example.ts`)**
+
+In `NormalizedReleaseRecord` interface or type:
+- `tagName: string` → `externalSlug: string`
+- `htmlUrl: string` → `canonicalUrl: string`
+
+In `normalizeReleaseRecords()` or equivalent:
+- Object literal key `tagName: item.tag_name` → `externalSlug: item.tag_name`
+- Object literal key `htmlUrl: item.html_url` → `canonicalUrl: item.html_url`
+
+The raw GitHub API type with `tag_name` and `html_url` must NOT change.
+
+**OCaml (`ocaml-dream-source-sync-example.ml`)**
+
+In the `normalized_release_record` record type:
+- `tag_name : string` → `external_slug : string`
+- The URL field (currently `tag_name`-adjacent, may be `release_url` or another
+  name) → `canonical_url : string`
+
+In the normalization function: update all record construction and field accesses.
+
+In the Yojson serialization of the normalized record: update the JSON key strings
+from `"tag_name"` → `"external_slug"` and the URL field key → `"canonical_url"`.
+
+In any database insert statement that uses these as column names: update them.
+
+**Kotlin (`kotlin-http4k-source-sync-example.kt`)**
+
+In `NormalizedRecord` data class:
+- `tagName: String` → `externalSlug: String`
+- `htmlUrl: String` → `canonicalUrl: String`
+
+In the Exposed table object:
+- `val tagName = varchar("tag_name", 128)` → `val externalSlug = varchar("external_slug", 128)`
+- `val htmlUrl = varchar("html_url", 512)` → `val canonicalUrl = varchar("canonical_url", 512)`
+
+In the normalization function:
+- `tagName = dto.tag_name` → `externalSlug = dto.tag_name`
+- `htmlUrl = dto.html_url` → `canonicalUrl = dto.html_url`
+
+The raw GitHub DTO with `tag_name` and `html_url` fields must NOT change.
+
+**Ruby (`ruby-hanami-source-sync-example.rb`)**
+
+In `NormalizedReleaseRecord` struct or value object:
+- `:tag_name` → `:external_slug`
+- `:release_url` (or `:html_url`) → `:canonical_url`
+
+In the normalization method:
+- `tag_name: item.fetch("tag_name", "")` → `external_slug: item.fetch("tag_name", "")`
+- `release_url: item.fetch("html_url", "")` → `canonical_url: item.fetch("html_url", "")`
+
+In the Sequel migration or schema block:
+- `String :tag_name, null: false` → `String :external_slug, null: false`
+- The URL column → `String :canonical_url, null: false`
+
+In any `insert` or `select` that names these columns: update them.
+
+**Clojure (`clojure-kit-source-sync-example.clj`)**
+
+In the normalized record map key names:
+- `:tag-name` → `:external-slug`
+- `:html-url` → `:canonical-url`
+
+In the next.jdbc insert SQL column names:
+- `tag_name` → `external_slug`
+- `html_url` → `canonical_url`
+
+In any SQL select or result destructuring that references these column names:
+update them.
+
+**Dart (`dart-dartfrog-source-sync-example.dart`)**
+
+In `NormalizedReleaseRecord` class:
+- `final String tagName` → `final String externalSlug`
+- `final String releaseUrl` (or `htmlUrl`) → `final String canonicalUrl`
+
+In the constructor parameter list and body: update accordingly.
+
+In the normalization function:
+- `tagName: '${item['tag_name'] ?? ''}'` → `externalSlug: '${item['tag_name'] ?? ''}'`
+- `releaseUrl: '${item['html_url'] ?? ''}'` → `canonicalUrl: '${item['html_url'] ?? ''}'`
+
+In `toJson()` or any `Map<String, dynamic>` serialization: update key strings
+to `"external_slug"` and `"canonical_url"`.
+
+
+SECTION 3 — Verification test updates
+
+After changing each source file, check its corresponding test file for any
+assertion that checks for `tag_name` or `html_url` as output field names on
+`NormalizedReleaseRecord`. Update only those assertions.
+
+Specifically:
+- Do NOT change test lines that use `"tag_name": "v1.0.0"` as mock GitHub
+  API response input data — those represent the upstream API shape and are correct.
+- DO update test lines that assert `record.tag_name`, `assertIn("tag_name", ...)`,
+  `assertIn(":tag-name", ...)`, `assertIn("TagName", ...)`, or any equivalent
+  that is checking the normalized model output field name.
+
+If no tests in a given file assert the output field names by name, note that
+and make no change to that test file.
+
+
+SECTION 4 — Documentation updates
+
+**`examples/canonical-data-acquisition/README.md`**
+
+In the "Shared Semantic Contract" section, add an explicit bullet:
+- "normalized records use `external_slug` (the source-agnostic release
+  identifier) and `canonical_url` (the source-agnostic external URL); the
+  raw upstream field names (`tag_name`, `html_url`) appear only in source
+  adapters and raw payload parsing"
+
+**`examples/canonical-data-acquisition/language-support-matrix.yaml`**
+
+If the matrix contains field name references, update them. If it does not
+reference field names, no change is needed — note this.
+
+
+SECTION 5 — Commit-ready batching
+
+Batch 1
+- `examples/canonical-data-acquisition/fastapi-source-sync-example.py`
+- `examples/canonical-data-acquisition/go-echo-source-sync-example.go`
+- `examples/canonical-data-acquisition/rust-axum-source-sync-example.rs`
+- `examples/canonical-data-acquisition/typescript-hono-source-sync-example.ts`
+
+Batch 2
+- `examples/canonical-data-acquisition/ocaml-dream-source-sync-example.ml`
+- `examples/canonical-data-acquisition/kotlin-http4k-source-sync-example.kt`
+- `examples/canonical-data-acquisition/ruby-hanami-source-sync-example.rb`
+
+Batch 3
+- `examples/canonical-data-acquisition/clojure-kit-source-sync-example.clj`
+- `examples/canonical-data-acquisition/dart-dartfrog-source-sync-example.dart`
+
+Batch 4
+- All verification test files that require updates (only tests that assert
+  output field names; if none require changes in a given file, skip it)
+- `examples/canonical-data-acquisition/README.md`
+- `examples/canonical-data-acquisition/language-support-matrix.yaml`
+  (only if field names are referenced there)
+
+
+SECTION 6 — Honesty rules
+
+The acceptable end state is:
+
+"All 14 source sync examples now use `external_slug` and `canonical_url` (or
+their language-idiomatic equivalents) in `NormalizedReleaseRecord`. Raw GitHub
+API field names (`tag_name`, `html_url`) remain correct in source adapters and
+raw payload parsing. A downstream consumer reading normalized records from any
+of the 14 language services will see consistent field names."
+
+Do not rename any field other than `tag_name`→`external_slug` and
+`html_url`/`release_url`/`releaseUrl`/`htmlUrl`→`canonical_url` in
+`NormalizedReleaseRecord`.
+
+Do not change the raw GitHub DTO/struct field names. GitHub returns `tag_name`
+and `html_url` and those names must remain in the raw layer.
+
+Do not change the verification level of any example as part of this prompt.
+The field renaming is a correctness fix, not a verification upgrade.
+
+If after reading a source file you find that the field is referenced in more
+places than listed in Section 2 (e.g., in an HTTP response body JSON key or
+a logging statement), update all occurrences consistently.
+
+
+SECTION 7 — Output
+
+Generate the actual implementation pass in commit-ready batches now.

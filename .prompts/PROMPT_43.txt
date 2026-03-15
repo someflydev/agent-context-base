@@ -1,0 +1,239 @@
+You are working inside the agent-context-base repository.
+
+This prompt tightens the structural verification coverage for the two most recently
+added canonical storage examples:
+
+1. `nats-jetstream-mongo-pipeline-example.md` — the test class
+   `NatsJetstreamMongoPipelineExampleTests` checks 8 markers but several are too
+   loose to catch real regressions. The most critical test (`test_ack_after_insert_pattern`)
+   only checks that "ack" and "insert" appear anywhere in the file. This would pass
+   even if the ack-before-insert antipattern were accidentally introduced.
+
+2. `parquet-minio-example.md` — `ParquetMinioExampleTests` has solid `.py` coverage
+   but thinner `.md` coverage. The Docker compose test isolation snippet (separate
+   named volumes, separate test credentials) is present in the `.md` but not verified
+   by any test assertion.
+
+Both examples are at `structure-verified` level. The tests should be strong enough
+to catch meaningful drift in the structural invariants they are protecting.
+
+Your task is to tighten the existing test classes without changing the examples
+themselves and without adding live infrastructure.
+
+The work must be implementation-oriented and organized into commit-ready batches.
+
+For each batch:
+1. Give the batch title.
+2. Explain the purpose.
+3. List created or updated files.
+4. Provide the full contents of each file.
+5. End with a suggested Tim Pope style commit message prefixed with [PROMPT_43].
+
+Commit messages must not include a co-author line.
+
+
+IMPORTANT CONSTRAINTS
+
+- Do not change `nats-jetstream-mongo-pipeline-example.md` or
+  `parquet-minio-example.md`. The tests should verify those files as they are.
+- All checks are file-read only with no live dependency.
+- Add new test methods to the existing classes; do not replace or rename them.
+- Do not weaken any existing test assertion, even if a new one makes it redundant.
+  Keep the existing assertions in place.
+- Keep each test focused on a single structural invariant. Prefer several targeted
+  tests over one omnibus assertion.
+
+
+SECTION 1 — Context reads
+
+Before implementing, read and internalize:
+
+- `verification/examples/data/test_storage_examples.py` in full.
+  Understand the existing assertions for both `NatsJetstreamMongoPipelineExampleTests`
+  and `ParquetMinioExampleTests`. Note which methods already exist so you do not
+  add duplicates.
+
+- `examples/canonical-storage/nats-jetstream-mongo-pipeline-example.md` in full.
+  Map the document structure to the tests you plan to add. Verify that each
+  proposed assertion can actually be satisfied by the current file contents before
+  writing the test. A test that fails against the current file is a bug in the test,
+  not a signal to change the example.
+
+- `examples/canonical-storage/parquet-minio-example.md` in full.
+  Same mapping exercise for the parquet-minio tests.
+
+- `examples/canonical-storage/parquet-minio-example.py`
+  Note any structural markers in the `.py` that are not yet covered by the existing
+  `ParquetMinioExampleTests` methods.
+
+
+SECTION 2 — Tightened tests for NatsJetstreamMongoPipelineExampleTests
+
+The following new test methods should be added. Each one targets a structural
+invariant that is critical to the correctness of the NATS+Mongo pipeline pattern.
+
+**`test_work_queue_policy_present`**
+
+Assert that `WorkQueuePolicy` appears in the document.
+
+Why: the stream retention policy is a load-bearing design decision. A stream
+configured with the wrong retention policy (e.g. `LimitsPolicy`) would allow
+messages to be read multiple times by different consumers, breaking the work-queue
+semantics. This must be verified.
+
+**`test_max_deliver_configured`**
+
+Assert that `max_deliver` and `5` both appear in the document (or that
+`max_deliver=5` or the equivalent table row is present).
+
+Why: without `max_deliver`, a failed message loops forever. The value `5` is the
+specific configuration shown in the example. If it were accidentally removed or
+replaced with a different value or omitted entirely, this test catches the drift.
+
+**`test_ack_explicit_policy_present`**
+
+Assert that `AckExplicit` appears in the document.
+
+Why: `AckExplicit` is what makes at-least-once delivery safe. If the example
+accidentally showed `AckAll` or omitted the ack policy, messages could be dropped
+without acknowledgement.
+
+**`test_ack_wait_configured`**
+
+Assert that `ack_wait` appears in the document.
+
+Why: `ack_wait` is the window in which a consumer must ack before NATS redelivers.
+Without it, a slow consumer silently loses messages that were redelivered to
+another consumer. Its presence in the example verifies the timeout discipline.
+
+**`test_ack_only_after_insert_language`**
+
+Tighten the existing `test_ack_after_insert_pattern`. The current test checks that
+"ack" and "insert" appear anywhere in the document. This is too loose.
+
+Replace with a stronger assertion: check that the document contains the phrase
+`ack` within a few hundred characters of a phrase that makes the ordering explicit.
+The most robust approach is to search for specific language that the document is
+known to contain. Based on the current document content, verify that:
+
+```python
+"ACK only after" in self.text.upper()
+or "ack only after" in self.text
+or "Ack only after" in self.text
+or "only after" in self.text  # fallback — at least "only after" must appear
+```
+
+Additionally assert that `await msg.ack()` appears in the document (the concrete
+code form of the rule), confirming the rule is demonstrated in code, not only prose.
+
+**`test_producer_consumer_separation_language`**
+
+Assert that the document contains language explicitly separating producer and consumer
+responsibilities. Check for `separate process` or `separately` (case-insensitive) in
+the document. The producer/consumer separation is a named invariant of this pipeline;
+its absence from the document would be a meaningful regression.
+
+**`test_dlq_stream_name_present`**
+
+Assert that `REPORT_REQUESTS_DLQ` (the DLQ stream name) appears in the document.
+
+Why: the DLQ stream name is a concrete operational artifact. Verifying it is present
+ensures the DLQ section is not just described generically but names the specific
+stream that engineers would monitor.
+
+**`test_correlation_id_in_payload_schema`**
+
+Assert that `correlation_id` appears in the document.
+
+Why: `correlation_id` is the field that enables deduplication and dead letter
+triage. Its absence from the payload schema would make the pipeline harder to
+operate. This test verifies the bounded payload shape is complete.
+
+**`test_pii_exclusion_language`**
+
+Assert that `PII` or `pii` appears in the document.
+
+Why: the bounded payload rule includes explicit PII exclusion. This is a security
+invariant. If the document lost the PII section, this test catches it.
+
+
+SECTION 3 — Tightened tests for ParquetMinioExampleTests
+
+The following new test methods should be added to `ParquetMinioExampleTests`.
+
+**`test_md_separate_test_volume_present`**
+
+Assert that the `.md` contains `minio-test-data` or equivalent language showing
+that the test object store uses a separate named volume from the dev store.
+
+Why: the test isolation promise for MinIO is "never share test and dev object store
+data." Verifying the named volume appears in the `.md` confirms the isolation
+discipline is shown concretely.
+
+**`test_md_test_credentials_separate`**
+
+Assert that the `.md` contains `test-access-key` or `test-secret-key` — the separate
+test credential pair that is required to be distinct from dev credentials.
+
+Why: if the `.md` accidentally showed the dev credentials in the test compose
+snippet, the isolation promise would be silently broken. This check catches that.
+
+**`test_md_success_marker_or_staging_cleanup_language`**
+
+Assert that the `.md` contains `_SUCCESS` or `orphaned` or `cleanup` — language
+that addresses what happens to staging objects when a write crashes partway through.
+
+Why: the staging prefix pattern is only valuable if the cleanup path is documented.
+The crash-recovery case is a production correctness concern that distinguishes this
+pattern from a naive direct write.
+
+**`test_py_staging_copy_delete_sequence`**
+
+Assert that the `.py` contains `copy_object` (or `copy`) and `delete_object`
+(or `delete`) — the two-step staging-to-final move.
+
+Why: the `.py` already has `test_py_partition_write`, but that test does not verify
+the staging/copy/delete sequence specifically. A future edit that dropped the staging
+step and wrote directly to the final key would pass the existing test but fail this one.
+
+
+SECTION 4 — Test ordering and placement
+
+Within each class, add new methods in logical grouping order:
+- stream/consumer configuration tests together
+- payload schema tests together
+- isolation/credentials tests together
+- sequence/ordering tests together
+
+Place new methods after the existing methods in each class unless a logical grouping
+requires otherwise. Do not reorder or rename existing methods.
+
+
+SECTION 5 — Commit-ready batching
+
+This prompt only touches one file.
+
+Batch 1
+- `verification/examples/data/test_storage_examples.py`
+  Add new methods to `NatsJetstreamMongoPipelineExampleTests` and
+  `ParquetMinioExampleTests` as described above.
+
+
+SECTION 6 — Honesty rules
+
+The acceptable end state for this prompt is:
+
+"Structural verification for the NATS+Mongo pipeline example now checks stream
+configuration, consumer policy, ack ordering, PII exclusion, and DLQ naming.
+The ack-after-insert test is tightened from a loose keyword presence check to
+one that verifies the explicit ordering rule. Parquet+MinIO test coverage adds
+test volume isolation, credential separation, and staging cleanup checks."
+
+Do not add live infrastructure tests. Do not change the example files.
+If a proposed test assertion would fail against the current example content,
+do not add it. Fix the assertion logic, not the example.
+
+
+SECTION 7 — Output
+
+Generate the actual implementation pass in commit-ready batches now.

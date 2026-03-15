@@ -1,0 +1,221 @@
+You are working inside the agent-context-base repository.
+
+This prompt closes a specific gap identified in an example-coverage analysis:
+`duckdb-polars-example.py` is the only behavior-verified storage example in the
+repository with no companion `.md` document. Every other substantial storage example
+(parquet-minio, mongo-weekly-reporting, redis-structures, postgresql-query-shape,
+trino-federated-analytics) has a companion `.md` that explains the design rationale,
+the boundary conditions, and when to choose this example versus a peer.
+
+The absence of a companion is now more consequential because `parquet-minio-example.py`
+also contains DuckDB read logic (`read_back()`), which operates over S3. Without a
+companion `.md` for the local-file example, assistants have no clear signal about which
+path to use, and `examples/canonical-storage/README.md` is forced to carry that
+disambiguation alone.
+
+Your task is to write `examples/canonical-storage/duckdb-polars-example.md` and
+update the surrounding metadata so the gap is cleanly closed.
+
+The work must be implementation-oriented and organized into commit-ready batches.
+
+For each batch:
+1. Give the batch title.
+2. Explain the purpose.
+3. List created or updated files.
+4. Provide the full contents of each file.
+5. End with a suggested Tim Pope style commit message prefixed with [PROMPT_41].
+
+Commit messages must not include a co-author line.
+
+
+IMPORTANT CONSTRAINTS
+
+- Do not change `duckdb-polars-example.py`. It is behavior-verified and should
+  not be touched in this pass.
+- The companion `.md` should explain the existing example, not extend or rewrite it.
+- Do not add a harness. The `polars_data_pipeline` harness already provides
+  behavior-verified coverage. The `.md` only needs to document that fact.
+- Keep verification claims honest. The `.py` is behavior-verified; the new `.md`
+  should be structure-verified or better, but do not claim a verification level
+  it has not earned.
+- The S3 vs local distinction is the central design decision this document must
+  resolve clearly.
+
+
+SECTION 1 — Context reads
+
+Before implementing, read and internalize:
+
+- `examples/canonical-storage/duckdb-polars-example.py`
+  The existing 42-line example. Note that `DATABASE_PATH` is a local file under
+  `docker/volumes/dev/warehouse/analytics.duckdb`. The example creates a table,
+  inserts two rows, and returns a Polars DataFrame from a DuckDB query. It is the
+  reference for local, embedded DuckDB as a query engine.
+
+- `examples/canonical-storage/parquet-minio-example.py` (specifically the `read_back()`
+  function at the bottom)
+  The `read_back()` function configures DuckDB's httpfs extension and reads from
+  `s3://bucket/reports/**/*.parquet`. This is the S3/MinIO read path — the counterpart
+  to the local file path shown in `duckdb-polars-example.py`.
+
+- `examples/canonical-storage/parquet-minio-example.md` — house style and depth target
+  for what a companion `.md` should cover.
+
+- `examples/canonical-storage/README.md` — the paragraph that says "load alongside
+  duckdb-polars-example.py when both the write path and the analytical query layer
+  matter." This exists because the boundary was unclear; the new `.md` should resolve
+  that from within the example itself, reducing the load on the README.
+
+- `verification/scenarios/` — locate the `polars_data_pipeline` scenario to confirm
+  the harness exists and to reference it accurately in the verification level line.
+
+
+SECTION 2 — What the companion document must cover
+
+The companion `duckdb-polars-example.md` must answer these questions concretely:
+
+**When is this the right example?**
+
+This is the right example when:
+- the analytical data lives in a local DuckDB file under `docker/volumes/dev/`
+- the output of the query needs to be a Polars DataFrame for downstream transformation
+- the workload is development, testing, or local analytical pipelines — not a deployed
+  service reading from an object store
+- there is no MinIO or S3 bucket involved in the read path
+
+Do not use this example when:
+- the data lives in MinIO or S3; use `parquet-minio-example.py read_back()` for that
+- the workload is a production ETL pipeline reading from object storage
+- the goal is to show Trino federation; use `trino-federated-analytics-example.sql`
+
+**Database path convention**
+
+The `DATABASE_PATH` constant follows the repository's volume layout:
+```
+docker/volumes/dev/warehouse/analytics.duckdb
+```
+Test workloads should use a separate path under `docker/volumes/test/` and never share
+the dev DuckDB file. The path should be passed as a parameter or resolved from an
+environment variable in repos where the distinction matters.
+
+**What `pl.read_database()` returns and why**
+
+Explain that `pl.read_database()` converts the DuckDB result directly to a Polars
+DataFrame, making it composable with the Polars transformation layer that typically
+follows. Contrast this with `conn.execute().fetchall()`, which returns raw Python
+tuples and loses schema information.
+
+**Relationship to `parquet-minio-example.py`**
+
+These two examples cover the two canonical DuckDB read paths in this repository:
+
+| Example | Data lives | DuckDB access mode | Output |
+|---|---|---|---|
+| `duckdb-polars-example.py` | Local file (`docker/volumes/dev/`) | Embedded, file path | Polars DataFrame |
+| `parquet-minio-example.py read_back()` | MinIO/S3 bucket | S3 extension via httpfs | Row count scalar |
+
+When a repo uses the parquet-minio write path AND needs to transform the result into
+a Polars DataFrame, compose both: run `read_back()` for the S3 read, then pass the
+result to Polars if needed. Do not use `duckdb-polars-example.py` as the S3 read path.
+
+**Verification level**
+
+State clearly:
+```
+Verification level: behavior-verified
+Harness: verification/scenarios/polars_data_pipeline/
+Last verified by: verification/examples/python/test_polars_examples.py
+```
+
+The `duckdb-polars-example.md` companion document itself should be declared
+structure-verified (file existence and marker checks). The `.py` it documents is
+behavior-verified.
+
+
+SECTION 3 — Document structure requirements
+
+The companion `.md` should follow the same header pattern used in
+`parquet-minio-example.md`:
+
+1. Verification block at the top (level, harness, last verified by)
+2. Short framing paragraph (when to use this example)
+3. "When NOT to use this example" section
+4. "Database path convention" section with the path and the test isolation rule
+5. "Polars output shape" section explaining `pl.read_database()` vs raw fetch
+6. "Relationship to `parquet-minio-example.py`" section with the comparison table
+7. "Composition pattern" section — how to load the write path alongside the read path
+   when both are needed in the same repo
+
+Do not include redundant sections just to match line count. If a section is genuinely
+not needed, omit it. Prefer a focused 80-line document over a padded 200-line one.
+
+
+SECTION 4 — Metadata updates
+
+After writing the companion `.md`, update the following metadata surfaces:
+
+**`examples/canonical-storage/README.md`**
+
+- The entry for `duckdb-polars-example.py` currently does not reference a companion
+  `.md`. Add a reference to the new file.
+- Tighten the "Use parquet-minio-example.md when..." vs "Use duckdb-polars-example.py
+  when..." disambiguation. The README no longer needs to carry the full explanation
+  now that the `.md` carries it.
+
+**`examples/catalog.json`**
+
+Add an entry for `duckdb-polars-example.md` following the same schema used by
+existing entries. Tag it with the `duckdb-trino-polars` stack.
+
+**`verification/example_registry.yaml`**
+
+Add an entry for `duckdb-polars-example.md` with:
+- `verification_level: structure-verified`
+- `harness: none` (the harness covers the `.py`, not the `.md`)
+- `last_verified_by: verification/examples/data/test_storage_examples.py`
+
+Note: `duckdb-polars-example.py` already has an entry. Do not modify it.
+
+**`verification/examples/data/test_storage_examples.py`**
+
+Add a `DuckDbPolarsExampleTests` test class. Markers to assert:
+
+- File exists at `examples/canonical-storage/duckdb-polars-example.md`
+- Contains the DATABASE_PATH path string (`docker/volumes/`)
+- Contains the verification level line (behavior-verified)
+- Contains a reference to the polars_data_pipeline harness
+- Contains the comparison table between local and S3 paths (check for
+  `parquet-minio-example.py` being referenced within the text)
+- README references the new `.md` file
+
+All checks are file-read only with no live dependency.
+
+
+SECTION 5 — Commit-ready batching
+
+Batch 1
+- `examples/canonical-storage/duckdb-polars-example.md` (new)
+- `examples/canonical-storage/README.md` (update)
+
+Batch 2
+- `examples/catalog.json` (add entry)
+- `verification/example_registry.yaml` (add entry)
+- `verification/examples/data/test_storage_examples.py` (add DuckDbPolarsExampleTests)
+
+
+SECTION 6 — Honesty rules
+
+The acceptable end state for this prompt is:
+
+"The only behavior-verified storage example now has a companion `.md` that explains
+the local-file vs S3 read-path distinction, documents the verification level and
+harness accurately, and reduces the disambiguation burden on the storage README."
+
+Do not claim behavior-verified for the new `.md` document. It is structure-verified.
+Do not add a new harness in this pass. The existing `polars_data_pipeline` harness
+already covers the `.py`.
+
+
+SECTION 7 — Output
+
+Generate the actual implementation pass in commit-ready batches now.

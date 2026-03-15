@@ -1,0 +1,303 @@
+You are working inside the agent-context-base repository.
+
+This prompt closes a structural gap: the two pipeline shapes introduced in PROMPT_40
+(parquet+minio data-lake write path; NATS JetStream + MongoDB event capture pipeline)
+have routing signals and stack packs but no manifests. Without manifests, an assistant
+routing to either pipeline has no pre-assembled context bundle, no preferred examples
+listed, and no smoke-test expectations. It must reconstruct the bundle from the stack
+router on every session.
+
+Compare the existing data-pipeline-polars.yaml manifest — a single file that pins
+the primary stack, secondary stacks, required context, optional context, preferred
+examples, repo signals, task hints, and port band conventions. That single file
+makes the `data-pipeline-polars` profile reusable and self-describing. The two new
+pipeline shapes need the same.
+
+Your task is to add:
+
+- `manifests/data-lake-parquet-minio.yaml`
+- `manifests/event-capture-nats-mongo.yaml`
+
+and to wire them into the validation and routing surfaces so they are discoverable.
+
+The work must be implementation-oriented and organized into commit-ready batches.
+
+For each batch:
+1. Give the batch title.
+2. Explain the purpose.
+3. List created or updated files.
+4. Provide the full contents of each file.
+5. End with a suggested Tim Pope style commit message prefixed with [PROMPT_44].
+
+Commit messages must not include a co-author line.
+
+
+IMPORTANT CONSTRAINTS
+
+- Follow the schema and field ordering of the existing manifests exactly. Read
+  `manifests/data-pipeline-polars.yaml` and use it as the template.
+- Do not add these new pipeline stacks to every existing manifest. Only the
+  manifests whose purpose genuinely extends to the new pipeline shapes should
+  be updated. The `multi-storage-zoo.yaml` manifest currently focuses on
+  comparing backing stores, not pipeline shapes; do not add the new stacks there.
+- Keep `schema_version: 2` for both new manifests.
+- Do not create a manifest for `parquet` or `minio` alone. Those are component
+  stacks. The manifest should represent a coherent pipeline shape that a whole
+  repo would be built around.
+- Port band assignments must not overlap with existing manifest port bands. Check
+  the existing manifests and pick an unused range.
+- Be conservative with `prompt_first_support`. Only mark `supported` if the pipeline
+  shape is genuinely well-represented by the prompt-first archetype.
+
+
+SECTION 1 — Context reads
+
+Before implementing, read and internalize:
+
+- `manifests/data-pipeline-polars.yaml` — the primary reference shape
+- `manifests/multi-storage-zoo.yaml` — understand its scope so you know where
+  the boundary is between "data lake pipeline" and "storage experiment"
+- `manifests/data-acquisition-service.yaml` — a second reference shape for
+  service-oriented manifests
+- `context/stacks/parquet-minio.md` — the primary stack for the data-lake manifest
+- `context/stacks/nats-jetstream-mongo.md` — the primary stack for the event-capture manifest
+- `context/stacks/duckdb-trino-polars.md` — a secondary stack for the data-lake
+  manifest (the read layer that consumes what parquet-minio writes)
+- `context/router/stack-router.md` — verify that the routing signals for both
+  new pipeline shapes are already present; this prompt does not need to add new
+  routing signals, only register the manifests
+- `scripts/validate_context.py` or `scripts/manifest_tools.py` — whichever file
+  maintains the list of valid stack identifiers, to confirm `parquet-minio` and
+  `nats-jetstream-mongo` are already registered; if they are not, add them here
+
+
+SECTION 2 — data-lake-parquet-minio.yaml
+
+Populate the manifest with these values. Add brief inline comments where the
+field choice needs explanation.
+
+**Identity fields**
+- `schema_version: 2`
+- `name: data-lake-parquet-minio`
+- `description`: "Data-lake write path using PyArrow + MinIO (S3-compatible) with
+  DuckDB/Polars as the read layer. Use when Parquet files are the canonical storage
+  format and an S3-compatible object store is the durable store."
+- `archetype: data-pipeline`
+
+**Stack fields**
+- `primary_stack: parquet-minio`
+- `secondary_stacks`: `[duckdb-trino-polars, python-fastapi-uv-ruff-orjson-polars]`
+
+**Triggers** (the phrases that should route to this manifest):
+- `data lake write path`
+- `write parquet to minio`
+- `parquet pipeline`
+- `s3-compatible data store`
+- `object store write path`
+
+**Aliases**:
+- `parquet lake`
+- `minio write path`
+- `datalake pipeline`
+
+**Required context** (load these on every session):
+- `context/doctrine/core-principles.md`
+- `context/doctrine/compose-port-and-data-isolation.md`
+- `context/workflows/add-feature.md`
+- `context/archetypes/data-pipeline.md`
+- `context/stacks/parquet-minio.md`
+- `context/stacks/parquet.md`
+- `context/stacks/minio.md`
+
+**Optional context** (load only when activated by the task):
+- `context/stacks/duckdb-trino-polars.md`
+- `context/stacks/python-fastapi-uv-ruff-orjson-polars.md`
+- `context/workflows/add-storage-integration.md`
+- `context/workflows/post-flight-refinement.md`
+- `context/doctrine/canonical-examples.md`
+
+**Preferred examples**:
+- `examples/canonical-storage/parquet-minio-example.md`
+- `examples/canonical-storage/parquet-minio-example.py`
+- `examples/canonical-storage/duckdb-polars-example.py`
+
+**Recommended templates**: same set as `data-pipeline-polars.yaml`
+(readme, agent-md, claude-md, gitignore, compose, compose-test, manifest/profile-summary)
+
+**Repo signals** (file patterns that indicate this manifest is in scope):
+- `app/storage/parquet_writer.py` or `app/parquet/*.py`
+- `app/storage/minio.py` or `app/minio*.py`
+- `docker-compose*.yml` containing `minio/minio`
+- `requirements.txt` or `pyproject.toml` containing `pyarrow`
+- `**/*.parquet` files checked in for fixtures or tests
+
+**Task hints**: `add-feature`, `add-storage-integration`, `post-flight-refinement`
+
+**Warnings**:
+- "Write to `_staging/` first; copy to final key; delete staging on success.
+  Never write directly to the final key path."
+- "Partition by `tenant_id` first, then by `date`. Avoid high-cardinality
+  partition keys. Use Hive-style directory names."
+- "Define the Arrow schema explicitly at module level. Never infer from the first batch."
+
+**Port bands**: pick a band not already used. Use:
+- `port_band_app_dev: 14200-14299`
+- `port_band_app_test: 15200-15299`
+- `port_band_data_dev: 24200-24299`
+- `port_band_data_test: 25200-25299`
+
+Verify these do not conflict with existing manifests before finalising.
+
+**Data isolation**:
+- `docker/volumes/dev`
+- `docker/volumes/test`
+- `test MinIO bucket must use test-prefixed credentials and a separate named volume`
+
+**`dokku_relevance: optional`**
+
+**Smoke test expectations**:
+- `start MinIO test container`
+- `write one partitioned Parquet file via the staging prefix pattern`
+- `read back with DuckDB and assert row count`
+
+**`prompt_first_support: supported`**
+
+
+SECTION 3 — event-capture-nats-mongo.yaml
+
+Populate the manifest with these values.
+
+**Identity fields**
+- `schema_version: 2`
+- `name: event-capture-nats-mongo`
+- `description`: "Capture-enrich-persist pipeline: a producer publishes bounded
+  request/response events to NATS JetStream; a separate consumer validates, enriches,
+  and inserts documents into a weekly-bucketed MongoDB collection. Use when lightweight
+  durable event streaming into a document store is the central design question."
+- `archetype: data-pipeline`
+
+**Stack fields**
+- `primary_stack: nats-jetstream-mongo`
+- `secondary_stacks`: `[nats-jetstream, mongo]`
+
+**Triggers**:
+- `event capture pipeline`
+- `capture enrich persist`
+- `publish to nats then insert to mongo`
+- `nats jetstream mongo pipeline`
+- `durable event streaming to document store`
+
+**Aliases**:
+- `nats mongo pipeline`
+- `event ingestion pipeline`
+- `jetstream reporting pipeline`
+
+**Required context**:
+- `context/doctrine/core-principles.md`
+- `context/doctrine/compose-port-and-data-isolation.md`
+- `context/workflows/add-feature.md`
+- `context/archetypes/data-pipeline.md`
+- `context/stacks/nats-jetstream-mongo.md`
+- `context/stacks/nats-jetstream.md`
+- `context/stacks/mongo.md`
+
+**Optional context**:
+- `context/workflows/add-storage-integration.md`
+- `context/workflows/post-flight-refinement.md`
+- `context/doctrine/canonical-examples.md`
+
+**Preferred examples**:
+- `examples/canonical-storage/nats-jetstream-mongo-pipeline-example.md`
+- `examples/canonical-storage/mongo-weekly-reporting-example.md`
+
+**Recommended templates**: same core set (readme, agent-md, claude-md, gitignore,
+compose, compose-test, manifest/profile-summary)
+
+**Repo signals**:
+- `app/messaging/nats*.py` or `app/producer*.py`
+- `app/consumer*.py` or `app/enricher*.py`
+- `tests/integration/test_nats*.py`
+- `docker-compose*.yml` containing `nats:latest`
+- `requirements.txt` or `pyproject.toml` containing `nats`
+
+**Task hints**: `add-feature`, `add-storage-integration`, `post-flight-refinement`
+
+**Warnings**:
+- "Ack the NATS message only after the MongoDB insert confirms. Acking before the
+  write creates data loss on crash."
+- "The producer and consumer are separate processes. Do not merge them."
+- "Set max_deliver on the consumer. Without it, a failed message loops forever."
+- "Cap the NATS payload. Do not store raw HTTP bodies, unbounded arrays, or PII."
+
+**Port bands**:
+- `port_band_app_dev: 14300-14399`
+- `port_band_app_test: 15300-15399`
+- `port_band_data_dev: 24300-24399`
+- `port_band_data_test: 25300-25399`
+
+Verify these do not conflict with existing manifests before finalising.
+
+**Data isolation**:
+- `docker/volumes/dev`
+- `docker/volumes/test`
+- `test NATS stream and test MongoDB collection must be purged in teardown`
+
+**`dokku_relevance: optional`**
+
+**Smoke test expectations**:
+- `start NATS JetStream and MongoDB test containers`
+- `publish one well-formed message through the producer`
+- `assert the consumer inserts a document into MongoDB with correct enrichment fields`
+- `verify DLQ path: publish a message that fails enrichment and assert the advisory appears`
+
+**`prompt_first_support: supported`**
+
+
+SECTION 4 — Validation and routing alignment
+
+After writing the two manifest files, check whether any validation or tooling
+scripts enumerate valid manifest names or stack identifiers that would need updating.
+
+Review:
+- `scripts/validate_context.py` — if it validates manifests by name or enumerates
+  allowed stack identifiers, add `data-lake-parquet-minio`, `event-capture-nats-mongo`,
+  `parquet-minio`, and `nats-jetstream-mongo` to the relevant lists if not already present.
+- `scripts/manifest_tools.py` — if it maintains a registry of manifest names, add
+  the two new manifests.
+
+Do not update `context/router/stack-router.md`. The routing signals for both
+pipeline shapes were added in PROMPT_40 and are already present. This prompt only
+adds the manifests that the router could resolve to.
+
+
+SECTION 5 — Commit-ready batching
+
+Batch 1
+- `manifests/data-lake-parquet-minio.yaml` (new)
+- `manifests/event-capture-nats-mongo.yaml` (new)
+
+Batch 2
+- `scripts/validate_context.py` and/or `scripts/manifest_tools.py`
+  (add new manifest names and stack identifiers if not already present)
+
+
+SECTION 6 — Honesty rules
+
+The acceptable end state for this prompt is:
+
+"Both pipeline shapes now have manifests that pin their primary and secondary
+stacks, required and optional context, preferred examples, repo signals, and smoke
+test expectations. An assistant routing to either pipeline gets a pre-assembled
+context bundle without reconstructing it from the stack router."
+
+Do not create manifests for `parquet`, `minio`, `nats-jetstream`, or `mongo`
+individually. Those are component stacks. Manifests represent coherent repo shapes.
+
+If after reading the validation scripts you find that the new identifiers were
+already registered in PROMPT_40, note that and skip the registry update. Do not
+add duplicate entries.
+
+
+SECTION 7 — Output
+
+Generate the actual implementation pass in commit-ready batches now.

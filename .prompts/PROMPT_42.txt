@@ -1,0 +1,257 @@
+You are working inside the agent-context-base repository.
+
+This prompt closes a specific gap: `redis-mongo-shape-example.md` is the only
+canonical storage example at `draft` verification level. Every other example in
+the storage tier is at `structure-verified` or better. The file is also the
+thinnest example — approximately 35 lines — and has no test class in
+`verification/examples/data/test_storage_examples.py`, making it the only storage
+example with zero verification test coverage.
+
+The example serves a distinct purpose: it defines the combined key-prefix and
+collection-naming conventions for repos that use Redis AND MongoDB together. That
+purpose is real and different from the solo examples (`redis-structures-example.md`,
+`mongo-weekly-reporting-example.md`). It should not be deleted or merged, but it
+needs to be strengthened and verified.
+
+Your task is to expand `redis-mongo-shape-example.md` to a credible structure-verified
+state and add a corresponding test class.
+
+The work must be implementation-oriented and organized into commit-ready batches.
+
+For each batch:
+1. Give the batch title.
+2. Explain the purpose.
+3. List created or updated files.
+4. Provide the full contents of each file.
+5. End with a suggested Tim Pope style commit message prefixed with [PROMPT_42].
+
+Commit messages must not include a co-author line.
+
+
+IMPORTANT CONSTRAINTS
+
+- The central purpose of this example — combined dev/test isolation for Redis + Mongo
+  together — must remain intact. Do not turn it into a second solo Redis example or
+  a second solo Mongo example.
+- Do not duplicate content from `redis-structures-example.md` or
+  `mongo-weekly-reporting-example.md`. Cross-reference them instead.
+- Keep verification claims honest. Structure-verified means file-existence and
+  key-marker checks only. Do not claim smoke-verified or behavior-verified.
+- The test class must check structural markers only — no live Redis or Mongo instance.
+- Do not pad with content. Every added section should exist because it directly
+  serves the "combined isolation" purpose of the example.
+
+
+SECTION 1 — Context reads
+
+Before implementing, read and internalize:
+
+- `examples/canonical-storage/redis-mongo-shape-example.md`
+  Current state: ~35 lines. Shows Redis key shapes with `dev:` and `test:` prefixes,
+  a suggested payload, a Mongo collection shape, and a reset rule. This is the right
+  structure — it just needs to be made concrete enough to be trusted.
+
+- `examples/canonical-storage/redis-structures-example.md`
+  The solo Redis example. Do not duplicate its content. Reference it for the "when
+  to use this vs the solo example" disambiguation.
+
+- `examples/canonical-storage/mongo-weekly-reporting-example.md`
+  The solo Mongo example. Same rule: cross-reference, do not duplicate.
+
+- `verification/examples/data/test_storage_examples.py`
+  Review the existing test classes to understand the structural pattern. The new
+  class should follow the same pattern as `MongoWeeklyReportingExampleTests` or
+  `RedisStructuresExampleTests`.
+
+- `examples/canonical-storage/README.md`
+  Note the "When To Use" section that distinguishes this example from the solo
+  examples. The expanded file should make this distinction self-evident from within
+  the example itself.
+
+
+SECTION 2 — What the expanded example must cover
+
+The goal is not to turn this into a comprehensive Redis+Mongo reference. The goal
+is to make the combined isolation conventions concrete enough that an assistant
+can implement them without guessing.
+
+**Required additions:**
+
+1. **Actual Redis commands** (not just key shapes)
+
+   The current file shows key naming but no commands. Add a minimal set of
+   representative Redis commands using the established key shapes:
+
+   ```
+   SET dev:report-runs:acme:daily-signups '{"status":"ready",...}' EX 3600
+   SET test:report-runs:acme:daily-signups '{"status":"ready",...}' EX 3600
+   KEYS test:report-runs:*
+   DEL test:report-runs:acme:daily-signups
+   ```
+
+   These should illustrate the isolation discipline (test keys start with `test:`)
+   and the reset rule (only `test:*` keys may be deleted in test teardown).
+
+   Do not expand into a full Redis structure tutorial. Reference
+   `redis-structures-example.md` for that.
+
+2. **Mongo test isolation snippet**
+
+   The current file mentions `report_runs` as the collection and lists indexed
+   fields. Add a brief note showing that test Mongo data uses a separate database
+   name or a clearly named fixture collection, not the same collection as dev.
+   Show how test teardown removes only test documents (by fixture marker or by
+   dropping the test collection), never dev data.
+
+   Do not expand into index or aggregation details. Reference
+   `mongo-weekly-reporting-example.md` for that.
+
+3. **Combined `docker-compose.test.yml` snippet**
+
+   Show a minimal test compose block with both Redis and Mongo, using port offsets
+   that do not collide with the dev compose. This is the concrete representation of
+   the isolation promise:
+
+   - `redis-test` on port `16379` (dev Redis typically on `6379`)
+   - `mongo-test` on port `27018` (dev Mongo typically on `27017`)
+   - separate named volumes: `redis-test-data`, `mongo-test-data`
+
+   Keep the snippet short — just the two services and the volumes block.
+
+4. **Reset rule made explicit**
+
+   The current file has a reset rule but it is informal. Make it a numbered list:
+
+   1. In test teardown, delete all Redis keys matching `test:*`.
+   2. In test teardown, drop or clear the test Mongo collection/database.
+   3. Never touch keys or collections under the `dev:` namespace from a test script.
+   4. CI pipelines must run test teardown even when tests fail.
+
+5. **"When to use this vs the solo examples" section**
+
+   Add a brief disambiguation section consistent with what `README.md` already says.
+   The rule is simple:
+   - Use this example when the repo uses Redis AND MongoDB together and the design
+     question is how to isolate dev and test data across both simultaneously.
+   - Use `redis-structures-example.md` when the workload is Redis-only.
+   - Use `mongo-weekly-reporting-example.md` when the workload is MongoDB-only.
+
+6. **Verification level line at the top**
+
+   Add a header block matching the pattern in `parquet-minio-example.md`:
+
+   ```
+   Verification level: structure-verified
+   Harness: none
+   Last verified by: verification/examples/data/test_storage_examples.py
+   ```
+
+
+SECTION 3 — Test class requirements
+
+Add `RedisMongoShapeExampleTests` to
+`verification/examples/data/test_storage_examples.py`.
+
+Place it after the `RedisStructuresExampleTests` class and before the
+`TrinoFederatedAnalyticsExampleTests` class to maintain alphabetical-ish ordering.
+
+Tests to add:
+
+```
+test_file_exists
+```
+Assert the file exists at `examples/canonical-storage/redis-mongo-shape-example.md`.
+
+```
+test_dev_and_test_key_prefixes
+```
+Assert both `dev:report-runs` and `test:report-runs` appear in the text (or
+equivalent `dev:` and `test:` prefixes). The dual-prefix pattern is the core
+invariant of this example.
+
+```
+test_redis_commands_present
+```
+Assert that at least one Redis command is present. Check for presence of `SET ` or
+`DEL ` or `KEYS ` in the text. This verifies the example is not just shapes but
+also shows operations.
+
+```
+test_test_isolation_reset_rule
+```
+Assert that the file contains reset language — check for "teardown" or "reset" in
+the text (case-insensitive). This verifies the isolation discipline is documented.
+
+```
+test_mongo_collection_name_present
+```
+Assert `report_runs` (or any `_` -delimited collection name pattern) appears in
+the text. The collection naming convention must be visible.
+
+```
+test_docker_compose_snippet_present
+```
+Assert that `redis-test` or `mongo-test` appears in the text, confirming the
+`docker-compose.test.yml` snippet was added.
+
+```
+test_readme_references_example
+```
+Assert that `examples/canonical-storage/README.md` contains
+`redis-mongo-shape-example.md`.
+
+```
+test_solo_example_disambiguation_present
+```
+Assert that the text references `redis-structures-example.md` or
+`mongo-weekly-reporting-example.md` (the solo counterparts). The example should
+tell readers when to use a solo example instead.
+
+All checks are file-read only with no live dependency.
+
+
+SECTION 4 — Metadata updates
+
+**`examples/canonical-storage/README.md`**
+
+Update the verification metadata entry for `redis-mongo-shape-example.md` from
+`draft` to `structure-verified`. If the file has a separate "Verification Metadata"
+section listing each example, update it there as well.
+
+**`verification/example_registry.yaml`**
+
+Update the entry for `redis-mongo-shape-example.md`:
+- Change `verification_level` from `draft` to `structure-verified`
+- Update `last_verified_by` to `verification/examples/data/test_storage_examples.py`
+  if it is not already set to that.
+
+
+SECTION 5 — Commit-ready batching
+
+Batch 1
+- `examples/canonical-storage/redis-mongo-shape-example.md` (expand and elevate)
+- `examples/canonical-storage/README.md` (update verification level)
+
+Batch 2
+- `verification/examples/data/test_storage_examples.py` (add RedisMongoShapeExampleTests)
+- `verification/example_registry.yaml` (update verification level)
+
+
+SECTION 6 — Honesty rules
+
+The acceptable end state for this prompt is:
+
+"The combined Redis+Mongo isolation example is now structure-verified with a real
+test class. It covers isolation commands, the test compose setup, and the reset
+discipline. It remains distinct from the solo examples and clearly explains when
+to use each."
+
+Do not inflate to smoke-verified. No live Redis or Mongo instance is wired.
+Do not duplicate content from the solo examples.
+If after expansion the file is still short (under 100 lines), that is fine — its
+scope is narrow by design.
+
+
+SECTION 7 — Output
+
+Generate the actual implementation pass in commit-ready batches now.
