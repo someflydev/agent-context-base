@@ -98,9 +98,9 @@ weekly-bucketed MongoDB collection.
   Last verified by: verification/examples/python/test_polars_examples.py
 
 - `redis-mongo-shape-example.md`
-  Verification level: draft
+  Verification level: structure-verified
   Harness: none
-  Last verified by: verification/unit/test_repo_integrity.py
+  Last verified by: verification/examples/data/test_storage_examples.py
 
 - `mongo-weekly-reporting-example.md`
   Verification level: structure-verified
