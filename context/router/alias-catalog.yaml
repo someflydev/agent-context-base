@@ -89,6 +89,24 @@ tasks:
     target: context/workflows/verify-query-count-correctness.md
   - alias: add include/exclude filtering
     target: context/workflows/add-include-exclude-filtering.md
+  - alias: split include exclude filter panel
+    target: context/workflows/render-filter-panel-include-exclude-ui.md
+  - alias: render filter panel include exclude
+    target: context/workflows/render-filter-panel-include-exclude-ui.md
+  - alias: grey out include option when excluded
+    target: context/doctrine/filter-panel-rendering-rules.md
+  - alias: include filter shows 0 when excluded
+    target: context/doctrine/filter-panel-rendering-rules.md
+  - alias: why is my include count wrong for an excluded value
+    target: context/doctrine/filter-panel-rendering-rules.md
+  - alias: exclude count shows how many rows removed
+    target: context/doctrine/filter-panel-rendering-rules.md
+  - alias: filter panel rendering rules
+    target: context/doctrine/filter-panel-rendering-rules.md
+  - alias: quick excludes strip
+    target: context/doctrine/filter-panel-rendering-rules.md
+  - alias: quick exclude and main filter in sync
+    target: context/doctrine/filter-panel-rendering-rules.md
   - alias: test htmx + plotly behavior with playwright
     target: context/workflows/add-playwright-ui-verification.md
   - alias: make sure chart data matches filter state

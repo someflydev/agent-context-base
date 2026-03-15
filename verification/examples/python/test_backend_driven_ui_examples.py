@@ -11,8 +11,10 @@ COUNTS_PATH = REPO_ROOT / "examples/canonical-api/fastapi-dynamic-counts-fragmen
 FRAGMENT_PATH = REPO_ROOT / "examples/canonical-api/fastapi-faceted-filter-fragment-example.py"
 PLOTLY_PATH = REPO_ROOT / "examples/canonical-api/fastapi-plotly-query-endpoint-example.py"
 RUNTIME_PATH = REPO_ROOT / "examples/canonical-api/fastapi-example/app.py"
+SPLIT_PANEL_PATH = REPO_ROOT / "examples/canonical-api/fastapi-split-filter-panel-example.py"
 PLAYWRIGHT_FILTERING_PATH = REPO_ROOT / "examples/canonical-integration-tests/playwright-backend-filtering-example.spec.ts"
 PLAYWRIGHT_COUNTS_PATH = REPO_ROOT / "examples/canonical-integration-tests/playwright-filter-counts-example.spec.ts"
+PLAYWRIGHT_SPLIT_PANEL_PATH = REPO_ROOT / "examples/canonical-integration-tests/playwright-split-filter-panel-example.spec.ts"
 
 
 def load_example(path, module_name: str):
@@ -21,7 +23,7 @@ def load_example(path, module_name: str):
 
 class BackendDrivenUIExampleTests(unittest.TestCase):
     def test_example_files_parse(self) -> None:
-        for path in (INCLUDE_EXCLUDE_PATH, COUNTS_PATH, FRAGMENT_PATH, PLOTLY_PATH, RUNTIME_PATH):
+        for path in (INCLUDE_EXCLUDE_PATH, COUNTS_PATH, FRAGMENT_PATH, PLOTLY_PATH, RUNTIME_PATH, SPLIT_PANEL_PATH):
             with self.subTest(path=path.name):
                 ast.parse(path.read_text(encoding="utf-8"))
 
@@ -82,6 +84,78 @@ class BackendDrivenUIExampleTests(unittest.TestCase):
         self.assertIn("toHaveText(\"3 results\")", filtering)
         self.assertIn("toHaveText(\"2\")", counts)
         self.assertIn('data-role="count-discipline"', counts)
+
+
+class SplitFilterPanelExampleTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.module = load_example(SPLIT_PANEL_PATH, "verification.examples.python.split_filter_panel")
+
+    def test_include_count_zero_when_value_excluded(self) -> None:
+        state = self.module.build_query_state(status_out=["archived"])
+        html = self.module.render_split_filter_panel(state)
+        # Include option for archived must have count 0 and data-excluded="true"
+        self.assertIn(
+            'data-filter-option="archived" data-filter-mode="include" data-option-count="0" data-excluded="true"',
+            html,
+        )
+
+    def test_exclude_impact_count_correct(self) -> None:
+        state = self.module.build_query_state(status_out=["archived"])
+        counts = self.module.exclude_impact_counts(state, "status")
+        # archived has 1 row (legacy-import)
+        self.assertEqual(counts["archived"], 1)
+
+    def test_exclude_impact_count_with_team_filter(self) -> None:
+        state = self.module.build_query_state(status_out=["paused"], team_in=["platform"])
+        counts = self.module.exclude_impact_counts(state, "status")
+        # platform+paused = api-latency only → 1
+        self.assertEqual(counts["paused"], 1)
+
+    def test_quick_exclude_active_in_main_section(self) -> None:
+        state = self.module.build_query_state(status_out=["archived"])
+        html = self.module.render_split_filter_panel(state)
+        # Quick exclude toggle must be active
+        self.assertIn(
+            'data-role="quick-exclude" data-quick-exclude-dimension="status" '
+            'data-quick-exclude-value="archived" data-active="true"',
+            html,
+        )
+        # Main section exclude option must be active and checked
+        self.assertIn(
+            'data-filter-option="archived" data-filter-mode="exclude" '
+            'data-option-count="1" data-active="true"',
+            html,
+        )
+        self.assertIn(
+            'name="status_out" value="archived" checked',
+            html,
+        )
+
+    def test_quick_exclude_inactive_when_not_excluded(self) -> None:
+        state = self.module.build_query_state()
+        html = self.module.render_split_filter_panel(state)
+        # Quick exclude for archived must not be active
+        self.assertNotIn(
+            'data-quick-exclude-value="archived" data-active="true"',
+            html,
+        )
+        # Include option for archived must not carry data-excluded
+        self.assertNotIn(
+            'data-filter-option="archived" data-filter-mode="include" data-option-count="0" data-excluded="true"',
+            html,
+        )
+
+    def test_playwright_split_panel_spec_covers_all_rules(self) -> None:
+        spec = PLAYWRIGHT_SPLIT_PANEL_PATH.read_text(encoding="utf-8")
+        # RULE 1
+        self.assertIn('data-excluded', spec)
+        self.assertIn('toBeDisabled', spec)
+        # RULE 2
+        self.assertIn('data-active', spec)
+        self.assertIn('toBeChecked', spec)
+        # RULE 3
+        self.assertIn('data-role="quick-exclude"', spec)
+        self.assertIn('data-quick-exclude-value', spec)
 
 
 if __name__ == "__main__":
