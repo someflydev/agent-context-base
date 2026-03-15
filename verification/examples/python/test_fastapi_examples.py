@@ -27,6 +27,8 @@ DATA_ACQUISITION_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-data-acquisition
 SMOKE_TEST_PATH = REPO_ROOT / "examples/canonical-smoke-tests/fastapi-smoke-test-example.py"
 INTEGRATION_TEST_PATH = REPO_ROOT / "examples/canonical-integration-tests/fastapi-db-integration-test-example.py"
 RUNTIME_DIR = REPO_ROOT / "examples/canonical-api/fastapi-example"
+SIMPLE_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-api/fastapi-simple-endpoint-example.py"
+UV_RUNTIME_DIR = REPO_ROOT / "examples/canonical-api/fastapi-uv-example"
 
 
 class FastAPIExampleTests(unittest.TestCase):
@@ -173,6 +175,91 @@ class FastAPIExampleTests(unittest.TestCase):
                 fragment_text = response.read().decode("utf-8")
             self.assertIn('data-result-count="2"', fragment_text)
             self.assertIn('data-report-id="daily-signups"', fragment_text)
+        finally:
+            run_command(["docker", "rm", "-f", container_id], timeout=60)
+
+
+class FastAPIUvExampleTests(unittest.TestCase):
+    def test_simple_example_parses(self) -> None:
+        ast.parse(SIMPLE_EXAMPLE_PATH.read_text(encoding="utf-8"))
+
+    def test_simple_example_has_no_polars_import(self) -> None:
+        source = SIMPLE_EXAMPLE_PATH.read_text(encoding="utf-8")
+        self.assertNotIn("import polars", source)
+        self.assertNotIn("from polars", source)
+
+    def test_simple_example_has_no_orjson_import(self) -> None:
+        source = SIMPLE_EXAMPLE_PATH.read_text(encoding="utf-8")
+        self.assertNotIn("import orjson", source)
+        self.assertNotIn("from orjson", source)
+
+    def test_simple_example_router_prefix(self) -> None:
+        source = SIMPLE_EXAMPLE_PATH.read_text(encoding="utf-8")
+        self.assertIn('prefix="/reports"', source)
+
+    def test_simple_example_service_returns_list(self) -> None:
+        source = SIMPLE_EXAMPLE_PATH.read_text(encoding="utf-8")
+        self.assertIn("list[dict", source)
+
+    def test_uv_bundle_has_pyproject_toml(self) -> None:
+        self.assertTrue((UV_RUNTIME_DIR / "pyproject.toml").exists())
+
+    def test_uv_bundle_has_ruff_config(self) -> None:
+        text = (UV_RUNTIME_DIR / "pyproject.toml").read_text(encoding="utf-8")
+        self.assertIn("[tool.ruff]", text)
+
+    def test_uv_bundle_has_requirements_txt(self) -> None:
+        self.assertTrue((UV_RUNTIME_DIR / "requirements.txt").exists())
+
+    def test_uv_bundle_dockerfile_uses_uv(self) -> None:
+        text = (UV_RUNTIME_DIR / "Dockerfile").read_text(encoding="utf-8")
+        self.assertIn("uv", text)
+
+    def test_uv_bundle_app_has_four_endpoints(self) -> None:
+        source = (UV_RUNTIME_DIR / "app.py").read_text(encoding="utf-8")
+        self.assertIn("/healthz", source)
+        self.assertIn("/api/reports/", source)
+        self.assertIn("/fragments/report-card/", source)
+        self.assertIn("/data/chart/", source)
+
+    def test_uv_bundle_fragment_has_hx_swap_oob(self) -> None:
+        source = (UV_RUNTIME_DIR / "app.py").read_text(encoding="utf-8")
+        self.assertIn('hx-swap-oob="true"', source)
+
+    def test_uv_runtime_container(self) -> None:
+        if not docker_enabled():
+            self.skipTest("Docker smoke checks require VERIFY_DOCKER=1 and docker")
+
+        tag = f"agent-context-fastapi-uv:{free_tcp_port()}"
+        build = run_command(["docker", "build", "-t", tag, "."], cwd=UV_RUNTIME_DIR, timeout=300)
+        self.assertEqual(build.returncode, 0, build.stderr or build.stdout)
+
+        port = free_tcp_port()
+        run = run_command(
+            ["docker", "run", "--rm", "-d", "-p", f"{port}:8000", tag],
+            cwd=UV_RUNTIME_DIR,
+            timeout=120,
+        )
+        self.assertEqual(run.returncode, 0, run.stderr or run.stdout)
+        container_id = run.stdout.strip()
+        try:
+            status, payload = wait_for_http_json(f"http://127.0.0.1:{port}/healthz", timeout=25.0)
+            self.assertEqual(status, 200)
+            self.assertEqual(payload, {"status": "ok", "service": "fastapi-uv-example"})
+
+            reports_status, reports_payload = wait_for_http_json(
+                f"http://127.0.0.1:{port}/api/reports/acme",
+                timeout=25.0,
+            )
+            self.assertEqual(reports_status, 200)
+            self.assertEqual(reports_payload["tenant_id"], "acme")
+
+            with urllib.request.urlopen(
+                f"http://127.0.0.1:{port}/fragments/report-card/acme",
+                timeout=5.0,
+            ) as response:
+                fragment_text = response.read().decode("utf-8")
+            self.assertIn('hx-swap-oob="true"', fragment_text)
         finally:
             run_command(["docker", "rm", "-f", container_id], timeout=60)
 

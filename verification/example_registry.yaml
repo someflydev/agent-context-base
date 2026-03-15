@@ -117,6 +117,41 @@ examples:
     docker_supported: true
     scenario_harness: fastapi_min_app
     confidence: high
+  - name: fastapi-simple-endpoint-example
+    path: examples/canonical-api/fastapi-simple-endpoint-example.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff
+    archetype_tags:
+      - backend-api-service
+    verification_level: behavior-verified
+    verification_targets:
+      - parses
+      - no polars import
+      - no orjson import
+      - router prefix verified
+      - service returns list[dict]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: fastapi-uv-runtime-example
+    path: examples/canonical-api/fastapi-uv-example/app.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff
+    archetype_tags:
+      - backend-api-service
+    verification_level: smoke-verified
+    verification_targets:
+      - docker build
+      - container boots
+      - health request
+      - html fragment request
+      - hx-swap-oob present
+      - api reports shape
+    docker_supported: true
+    scenario_harness: fastapi_uv_min_app
+    confidence: high
   - name: nim-jester-json-endpoint-example-doc
     path: examples/canonical-api/nim-jester-json-endpoint-example.md
     language: markdown
