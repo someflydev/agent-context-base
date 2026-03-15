@@ -1,0 +1,568 @@
+You are working inside the agent-context-base repository.
+
+This prompt adds two new storage technology clusters to the repository:
+
+1. Parquet + MinIO — a file-format discipline pack and an S3-compatible object store pack,
+   combined as a data-lake storage layer, with integration notes for the existing
+   DuckDB/Trino/Polars stack.
+
+2. NATS JetStream + MongoDB — a capture-enrich-persist pipeline where a producer writes
+   bounded request/response payloads to a NATS JetStream stream, a separate consumer
+   process reads, cleans, and enhances those messages, then inserts the enriched
+   documents into MongoDB for reporting.
+
+Both clusters require stack packs, routing integration, manifest registration, canonical
+examples, and honest verification coverage.
+
+The work must be implementation-oriented and organized into commit-ready batches.
+
+For each batch:
+1. Give the batch title.
+2. Explain the purpose.
+3. List created or updated files.
+4. Provide the full contents of each file.
+5. End with a suggested Tim Pope style commit message prefixed with [PROMPT_40].
+
+Commit messages must not include a co-author line.
+
+IMPORTANT CONSTRAINTS
+
+- Use these exact new stack identifiers:
+  - `parquet`
+  - `minio`
+  - `parquet-minio`
+  - `nats-jetstream`
+  - `nats-jetstream-mongo`
+- Build on existing stack identifiers introduced in earlier prompts. Do not rename or
+  remove `mongo`, `redis`, `postgresql`, `trino`, `duckdb-trino-polars`, or
+  `redis-keydb-mongo`.
+- The NATS JetStream + MongoDB pipeline must treat the two processes (producer and
+  consumer) as explicitly separate responsibilities. Do not merge them into one blob.
+- Keep verification claims strictly honest. If an example is documentation-shaped only,
+  mark it accordingly. Do not fake runtime coverage for technologies that only receive
+  structural checks in this pass.
+- Prefer small, sharp, reusable examples over one large multi-technology artifact.
+- Keep docs dense, practical, and selection-oriented. No vendor-marketing prose.
+
+
+SECTION 1 — Overview
+
+Explain briefly why the repository needs these two clusters:
+
+Parquet + MinIO:
+- The existing `duckdb-trino-polars` stack implicitly assumes analytical reads from
+  somewhere, but the repository has no guidance on how data gets written to a storage
+  layer that Trino or DuckDB reads from.
+- Parquet is the dominant file format for that workload but has non-obvious
+  correctness concerns: schema evolution, partition layout, codec choice.
+- MinIO provides S3-compatible local-dev and CI-friendly object storage without
+  requiring AWS credentials. Repos that use it need guidance on bucket naming, path
+  conventions, and credential handling.
+- A `parquet-minio` combo pack completes the data-lake write path that
+  `duckdb-trino-polars` currently assumes without naming.
+
+NATS JetStream + MongoDB:
+- The repository has a strong MongoDB reporting pattern (weekly-bucketed collections,
+  aggregation pipelines) but no capture layer — no guidance on how enriched documents
+  arrive in MongoDB from upstream processes.
+- NATS JetStream provides durable, subject-routed message streams with consumer groups
+  and ack semantics. It is the right tool when a lightweight message bus is needed
+  without the operational weight of Kafka.
+- The pipeline described — producer writes bounded payload to NATS, consumer reads,
+  enriches, inserts to MongoDB — is a recurring real-world pattern that deserves a
+  canonical representation in the repository.
+- A `nats-jetstream-mongo` combo pack makes the full pipeline legible and gives future
+  assistants a concrete reference when this pattern is requested.
+
+
+SECTION 2 — Required stack files
+
+Create these new context stack packs:
+
+- `context/stacks/parquet.md`
+- `context/stacks/minio.md`
+- `context/stacks/parquet-minio.md`
+- `context/stacks/nats-jetstream.md`
+- `context/stacks/nats-jetstream-mongo.md`
+
+Each pack must follow the house style established in earlier packs:
+- short title
+- one-paragraph "Use this pack when..." framing
+- `Typical Repo Surface`
+- `Change Surfaces To Watch`
+- `Testing Expectations`
+- `Common Assistant Mistakes`
+
+
+SECTION 3 — Stack pack content requirements
+
+--- parquet.md ---
+
+Frame Parquet as a file-format discipline document, not a database.
+
+Cover:
+- When to choose Parquet over JSONL, CSV, or Avro:
+  - Parquet when the reader is columnar (DuckDB, Polars, Spark, Trino)
+  - JSONL when the consumer is a log processor or document store
+  - Avro when schema evolution with a schema registry is required
+- Schema definition and evolution:
+  - pin the Arrow/PyArrow schema explicitly; do not infer from the first batch
+  - add fields with nullable defaults; never remove or reorder existing fields
+  - increment a `schema_version` column when the shape changes materially
+- Partitioning strategy:
+  - partition by the most common filter dimension first (e.g. tenant_id, then date)
+  - avoid high-cardinality partition keys (e.g. do not partition by UUID or timestamp directly)
+  - name partition directories using the Hive convention: `tenant_id=acme/date=2026-03-10/`
+- Compression codec selection:
+  - prefer Snappy for latency-sensitive reads (fast decode, moderate ratio)
+  - prefer Zstandard for cold storage (better ratio, acceptable decode speed)
+  - avoid uncompressed Parquet for anything that will be stored longer than a day
+- Row group sizing:
+  - target 128 MB to 512 MB per row group for large analytical files
+  - smaller row groups for streaming or incremental writes
+- Common mistakes:
+  - writing one file per row or one file per minute (creates a small-files problem)
+  - re-inferring schema on every write (causes silent type coercion)
+  - mixing compressed and uncompressed parts in the same dataset
+
+--- minio.md ---
+
+Frame MinIO as an S3-compatible object store for local dev, CI, and self-hosted workloads.
+Do not present it as a managed AWS S3 replacement for production; that is a deployment
+decision outside this repository's scope.
+
+Cover:
+- When MinIO is the right choice:
+  - local dev and CI where S3 credentials are unavailable or undesirable
+  - self-hosted environments where data must not leave a network boundary
+  - integration tests that need a real object store without mocking
+- Bucket naming discipline:
+  - use a consistent prefix per environment: `dev-`, `test-`, `prod-`
+  - keep bucket names lowercase, hyphen-separated, no underscores
+  - one bucket per major data domain, not one bucket per tenant
+- Object key (path) conventions:
+  - use a deterministic, hierarchical key schema:
+    `<domain>/<partition-key>/<date>/<uuid-or-sequence>.parquet`
+  - avoid keys that sort into a hot partition (e.g. timestamp prefix without sharding)
+- Credentials and access:
+  - use environment variables: `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`, `MINIO_ENDPOINT`
+  - never hardcode credentials in application code
+  - for integration tests, use a fixed test credential pair defined in docker-compose.test.yml
+- Docker dev setup:
+  - the standard MinIO image is `minio/minio`
+  - the console port is 9001; the API port is 9000
+  - for CI use: `command: server /data --console-address ":9001"`
+  - bucket creation on startup: use the `minio/mc` (MinIO Client) image or a startup script
+- Presigned URLs:
+  - generate presigned GET URLs for short-lived file access
+  - do not expose bucket credentials to frontend clients
+- Common mistakes:
+  - treating MinIO as an append-log (it is an object store; keys overwrite silently)
+  - not creating buckets before writing (the SDK will fail with a bucket-not-found error)
+  - using path-style vs virtual-hosted-style incorrectly; default to path-style for MinIO
+
+--- parquet-minio.md ---
+
+Frame this as the canonical data-lake write path for repos that use DuckDB, Polars, or
+Trino as the read layer.
+
+Cover:
+- When to load this combo pack:
+  - the repo writes Parquet files and stores them in an S3-compatible bucket
+  - the read layer is DuckDB, Polars, or Trino (load the relevant read-layer pack alongside)
+  - the design question is how to partition, compress, and name files so the reader performs well
+- Write path discipline:
+  - buffer writes into row groups of target size before flushing to MinIO
+  - use a staging prefix (`_staging/`) during multi-part writes; rename to final path on commit
+  - write a `_SUCCESS` marker or equivalent after completing a partition write if downstream
+    consumers poll for completeness
+- Read path expectations:
+  - DuckDB reads MinIO Parquet via the S3 extension with httpfs: `SET s3_endpoint='...'`
+  - Polars reads via `pl.scan_parquet("s3://bucket/prefix/**/*.parquet")` with S3 credentials
+  - Trino reads via the Hive or Iceberg connector pointed at the MinIO catalog
+- Retention and deletion:
+  - delete old partition prefixes rather than individual files
+  - use a lifecycle policy on the bucket if the deployment supports it
+- Interaction with existing stacks:
+  - `parquet-minio` is the write side; `duckdb-trino-polars` is the read side
+  - when both are present, load both packs
+  - `parquet-minio` does not replace `duckdb-trino-polars`; it extends it
+
+--- nats-jetstream.md ---
+
+Frame NATS JetStream as a durable, subject-routed message streaming layer for
+lightweight event pipelines. Distinguish it clearly from Kafka.
+
+Cover:
+- When NATS JetStream is the right choice:
+  - lightweight durable message bus without the operational overhead of Kafka
+  - subject-based routing where consumers filter by subject pattern
+  - pipelines where at-least-once delivery with consumer ack is sufficient
+  - small-to-medium message volumes where horizontal Kafka partitioning is unnecessary
+- When NATS JetStream is NOT the right choice:
+  - very high throughput requiring horizontal partition scaling (use Kafka)
+  - when a schema registry is needed for consumer compatibility (use Kafka + Avro/Protobuf)
+  - when ordering guarantees must span multiple subjects simultaneously
+- Core concepts to cover:
+  - Streams: durable storage for messages matching a subject pattern
+  - Subjects: dot-separated routing keys, e.g. `reports.requests.acme.daily-signups`
+  - Consumers: durable pull consumers with ack policies (explicit ack, ack wait, max deliver)
+  - Subject naming convention: `<domain>.<event_type>.<tenant_id>.<entity_id>`
+    - use dots as separators, not slashes or underscores
+    - keep the prefix stable; the terminal segments can be wildcarded with `*` or `>`
+  - Publish: fire and forget with optional reply subject
+  - Pull consumer: fetch N messages, process, ack or nack individually
+  - Dead letter: nacked messages that exceed max_deliver go to an advisory subject;
+    route those to a DLQ stream for inspection and replay
+- Message payload shape:
+  - always include a `payload_version` field so consumers can reject or adapt to schema changes
+  - always include `published_at` as an ISO 8601 UTC timestamp set by the producer
+  - cap message size; do not put raw HTTP bodies or unbounded arrays in the payload
+  - include `tenant_id` and a correlation identifier so the consumer can deduplicate
+- Testing expectations:
+  - use the official `nats-server` Docker image for integration tests
+  - enable JetStream in the test server: `command: "-js"`
+  - use a dedicated test stream with a short retention (e.g. 1 hour or 1000 messages)
+  - always purge or delete the test stream in teardown
+- Common mistakes:
+  - treating NATS subjects like REST routes (they are routing keys, not URLs)
+  - not setting `max_deliver` on the consumer (messages can loop forever on failure)
+  - storing raw large payloads in NATS instead of storing a reference key and retrieving
+    the payload from object storage
+
+--- nats-jetstream-mongo.md ---
+
+Frame this as the canonical capture-enrich-persist pipeline:
+
+  Producer → NATS JetStream → Consumer/Enricher → MongoDB
+
+This pack is for repos where:
+- one process (the producer) captures request/response events and publishes them as
+  bounded, versioned messages to a NATS JetStream stream
+- a separate process (the consumer/enricher) reads from NATS, validates, cleans, and
+  enhances each message, then inserts the enriched document into MongoDB
+- MongoDB holds the enriched documents for reporting queries
+
+Cover:
+
+Producer responsibilities:
+- construct a bounded payload from the raw request/response (never store raw bodies)
+- set `payload_version`, `tenant_id`, `correlation_id`, `published_at`
+- publish to subject: `reports.requests.<tenant_id>.<report_id>`
+- do not wait for consumer confirmation; the stream provides durability
+
+Consumer/enricher responsibilities:
+- read from a durable pull consumer on the stream
+- validate: reject messages where `payload_version` is unrecognised
+- clean: strip any residual PII fields that should not be in the reporting layer
+- enhance: compute derived fields that the producer cannot know:
+  - `response_time_class`: `fast` (< 200ms), `slow` (200–2000ms), `timeout` (> 2000ms)
+  - `error_category`: `none`, `client_error` (4xx), `server_error` (5xx)
+  - `enriched_at`: ISO 8601 UTC timestamp of enrichment
+- insert the enriched document into the target MongoDB collection using the weekly
+  bucketing pattern from `context/stacks/mongo.md`
+- ack the NATS message only after successful MongoDB insertion
+- on MongoDB insertion failure: nack with no immediate redelivery; let `max_deliver`
+  handle retries before the message routes to the DLQ stream
+- on DLQ: log the failed message with the error reason for manual inspection
+
+MongoDB target document shape:
+- collection naming: weekly-bucketed as per `mongo.md` (e.g. `request_logs_2026_w12`)
+- document must include all producer fields plus all enrichment fields
+- `payload_version` must be preserved in the stored document
+- do not store the raw NATS message metadata; extract only the payload fields
+
+Stream and consumer configuration:
+- stream name: `REPORT_REQUESTS`
+- subject filter: `reports.requests.>`
+- retention: `WorkQueuePolicy` (messages deleted after ack) or `LimitsPolicy` with a
+  retention window appropriate to the expected consumer lag
+- consumer: durable pull consumer named `report-enricher`
+- ack policy: `AckExplicit`
+- ack wait: 30 seconds
+- max deliver: 5 (after 5 failures the message routes to the advisory DLQ)
+- DLQ stream: `REPORT_REQUESTS_DLQ` on subject `$JS.EVENT.ADVISORY.CONSUMER.MAX_DELIVERIES.>`
+
+Testing expectations:
+- run `nats-server -js` and `mongo:7` in `docker-compose.test.yml` for integration tests
+- use a short-lived test stream (purge in teardown)
+- verify the full pipeline: publish one message → consumer processes it → assert MongoDB
+  document exists with expected enrichment fields
+- verify the DLQ path: publish a message that will fail enrichment → assert it lands in
+  the DLQ stream after max_deliver attempts
+
+Common mistakes:
+- acking before the MongoDB write confirms (creates data loss on crash)
+- putting the producer and consumer in the same function (breaks independent scaling)
+- not capping message payload size (NATS has a default max payload of 1 MB)
+- using publish-subscribe (core NATS) instead of JetStream (no durability guarantee)
+
+
+SECTION 4 — Routing and alias integration
+
+Update these routing surfaces so the new stack identifiers are discoverable:
+
+- `context/router/stack-router.md`
+- `context/router/alias-catalog.yaml`
+- `context/router/repo-signal-hints.json`
+- `context/router/task-router.md`
+
+Requirements:
+
+- `parquet`, `arrow schema`, `row group`, `snappy`, `zstandard` → load `context/stacks/parquet.md`
+- `minio`, `s3-compatible`, `object store`, `bucket` without AWS context → load `context/stacks/minio.md`
+- `parquet` plus `minio`, `data lake write path`, `write parquet to object store` → load `context/stacks/parquet-minio.md`
+- `nats`, `nats jetstream`, `jetstream`, `nats subject`, `durable consumer` → load `context/stacks/nats-jetstream.md`
+- `nats` plus `mongo`, `capture-enrich-persist`, `publish to nats then insert to mongo` → load `context/stacks/nats-jetstream-mongo.md`
+
+Task routing examples to add:
+
+- "Write partitioned Parquet to MinIO" → parquet-minio
+- "Read Parquet from MinIO with DuckDB" → parquet-minio + duckdb-trino-polars
+- "Add MinIO bucket to the dev docker-compose" → minio
+- "Set up NATS JetStream for request capture" → nats-jetstream
+- "Publish request/response events to NATS then enrich and insert to MongoDB" → nats-jetstream-mongo
+- "Add dead letter handling to the NATS consumer" → nats-jetstream or nats-jetstream-mongo
+- "Write the enriched documents to a weekly MongoDB collection" → nats-jetstream-mongo + mongo
+
+Repo signal hints:
+- file patterns that suggest `parquet`:
+  - `**/*.parquet`, `app/parquet/*.py`, `scripts/write_parquet.py`
+- file patterns that suggest `minio`:
+  - `docker-compose*.yml` containing `minio/minio`, `app/storage/minio.py`
+- file patterns that suggest `nats-jetstream`:
+  - `app/messaging/nats*.py`, `etc/nats/jetstream.conf`, `tests/integration/test_nats*.py`
+- file patterns that suggest `nats-jetstream-mongo`:
+  - both NATS and Mongo signals present in the same repo
+
+
+SECTION 5 — Manifest and registry integration
+
+Update:
+- `scripts/manifest_tools.py` or the relevant stack identifier registry so `parquet`,
+  `minio`, `parquet-minio`, `nats-jetstream`, and `nats-jetstream-mongo` are valid
+  stack identifiers
+- `scripts/validate_context.py` or the equivalent validator so it does not reject the
+  new stack names
+- Update the `manifests/multi-storage-zoo.yaml` manifest if it should reference the
+  new stacks; be conservative — only add them if the manifest's purpose genuinely
+  extends to these technologies
+
+Be conservative. Do not add every new stack to every manifest.
+
+
+SECTION 6 — Canonical example files
+
+Add new examples under `examples/canonical-storage/`.
+
+Use these deterministic filenames:
+
+- `parquet-minio-example.md`
+- `parquet-minio-example.py`
+- `nats-jetstream-mongo-pipeline-example.md`
+
+--- parquet-minio-example.md ---
+
+Cover:
+- writing a partitioned Parquet dataset to MinIO using PyArrow
+- reading it back with DuckDB via the S3 extension
+- the exact bucket/key structure used
+- schema pinning: how to define and enforce the Arrow schema explicitly
+- partition naming: Hive-style `tenant_id=acme/date=2026-03-10/part-0001.parquet`
+- staging prefix pattern: write to `_staging/`, rename to final path on success
+
+--- parquet-minio-example.py ---
+
+A runnable Python example using PyArrow + boto3 (or the s3fs/fsspec interface).
+Requirements:
+- define the Arrow schema explicitly at module top
+- write a small deterministic dataset (two tenants, two dates, ~10 rows total)
+- use environment variables for MinIO credentials and endpoint
+- write to a staging prefix, then copy/rename to the final key
+- include a read-back function that opens the written file with DuckDB and asserts
+  the row count is correct
+- mark it as behavior-verified if it can be run with stubs or a live MinIO container;
+  mark it as documentation-shaped if it cannot be run in the default verification tier
+
+If a docker-compose-backed harness for MinIO would meaningfully raise the trust level
+without creating a heavyweight runtime burden, include one under
+`verification/scenarios/minio_parquet_min_app/`. If that is not feasible in this pass,
+mark the example structure-verified and note the harness as a follow-on task.
+
+--- nats-jetstream-mongo-pipeline-example.md ---
+
+Cover the full pipeline in one coherent document:
+
+Producer section:
+- the bounded payload published to NATS
+- subject naming: `reports.requests.<tenant_id>.<report_id>`
+- a representative Python publish snippet using the `nats` library
+- what NOT to put in the payload (raw HTTP bodies, PII, unbounded arrays)
+
+Consumer/enricher section:
+- how to set up a durable pull consumer on the `REPORT_REQUESTS` stream
+- the fetch-process-ack loop in Python
+- the exact enrichment steps: `response_time_class`, `error_category`, `enriched_at`
+- how to handle MongoDB write failure: nack and let the retry/DLQ mechanism engage
+- a representative enrichment function
+
+MongoDB insertion section:
+- the enriched document shape (must be compatible with the weekly-bucketed collection
+  pattern from `mongo-weekly-reporting-example.md`)
+- the `weekly_collection_name()` helper reference (do not duplicate it; reference it)
+- the insert call and confirmation check
+
+DLQ section:
+- what the DLQ stream looks like
+- how to inspect failed messages
+- how to replay a message after the underlying issue is fixed
+
+Mark this example as structure-verified. Note explicitly that a live docker-compose
+harness (nats-server + mongo:7) would provide smoke-verified coverage and is the
+recommended follow-on.
+
+
+SECTION 7 — Example README and catalog integration
+
+Update:
+- `examples/canonical-storage/README.md` to list the new examples with honest
+  verification levels and selection guidance
+- `examples/catalog.json` to add entries for all new files, each tagged with the
+  correct solo or combo stack identifier
+- `verification/example_registry.yaml` to add registry entries for all new files
+- `verification/stack_support_matrix.yaml` to add entries for `parquet`, `minio`,
+  `parquet-minio`, `nats-jetstream`, and `nats-jetstream-mongo`
+
+Support matrix guidance:
+- `parquet`: support_level 2 initially (examples present, no runtime harness)
+- `minio`: support_level 2 initially
+- `parquet-minio`: support_level 2 or 3 depending on whether a docker harness is included
+- `nats-jetstream`: support_level 2 (documentation examples, no live harness)
+- `nats-jetstream-mongo`: support_level 2 (documentation examples, no live harness)
+
+Do not inflate support levels beyond what the examples and verification genuinely justify.
+
+
+SECTION 8 — Verification implementation
+
+Extend `verification/examples/data/test_storage_examples.py` with marker-based
+structure checks for the new examples.
+
+Markers to assert:
+
+parquet-minio-example.md:
+- Hive-style partition path present (`tenant_id=` naming)
+- staging prefix pattern present (`_staging/`)
+- schema pinning language present
+- MinIO endpoint or credential environment variable reference
+
+parquet-minio-example.py:
+- pyarrow schema definition present (`pa.schema`)
+- partition write present
+- environment variable usage for credentials
+- read-back assertion present
+
+nats-jetstream-mongo-pipeline-example.md:
+- subject naming pattern present (`reports.requests.`)
+- `payload_version` field present
+- enrichment fields present (`response_time_class`, `error_category`, `enriched_at`)
+- ack-after-insert pattern described
+- DLQ section present
+
+All checks are file-read only with no live dependency.
+
+Add the test to FAST_MODULES in `scripts/run_verification.py` if it is not already
+listed. The live federation tests already in that file self-skip without VERIFY_DOCKER=1;
+follow the same pattern for any new docker-backed checks.
+
+
+SECTION 9 — Commit-ready batching
+
+Recommended batching:
+
+Batch 1
+- `context/stacks/parquet.md`
+- `context/stacks/minio.md`
+- `context/stacks/parquet-minio.md`
+
+Batch 2
+- `context/stacks/nats-jetstream.md`
+- `context/stacks/nats-jetstream-mongo.md`
+
+Batch 3
+- Routing and alias updates:
+  - `context/router/stack-router.md`
+  - `context/router/alias-catalog.yaml`
+  - `context/router/repo-signal-hints.json`
+  - `context/router/task-router.md`
+
+Batch 4
+- Manifest and registry alignment:
+  - `scripts/manifest_tools.py` or equivalent
+  - `scripts/validate_context.py` or equivalent
+  - `manifests/multi-storage-zoo.yaml` if warranted
+
+Batch 5
+- Canonical examples:
+  - `examples/canonical-storage/parquet-minio-example.md`
+  - `examples/canonical-storage/parquet-minio-example.py`
+  - `examples/canonical-storage/nats-jetstream-mongo-pipeline-example.md`
+  - `examples/canonical-storage/README.md` (update)
+
+Batch 6
+- Catalog, registry, and support matrix:
+  - `examples/catalog.json`
+  - `verification/example_registry.yaml`
+  - `verification/stack_support_matrix.yaml`
+
+Batch 7
+- Verification checks:
+  - `verification/examples/data/test_storage_examples.py` (extend)
+  - `scripts/run_verification.py` (extend FAST_MODULES if needed)
+  - `verification/scenarios/minio_parquet_min_app/` (optional harness; include only if
+    it raises trust without creating an unreasonable runtime burden)
+
+You may refine the grouping if quality demands it.
+
+
+SECTION 10 — Honesty rules
+
+The point of this prompt is trust, not completeness.
+
+Acceptable honest end states:
+
+- "Parquet and MinIO gained documentation-quality stack packs and a structure-verified
+  Python example; no live MinIO harness in this pass"
+- "NATS JetStream + MongoDB pipeline has a detailed canonical example covering the full
+  producer-consumer-enricher shape; no live docker harness yet"
+- "All five new stack identifiers are registered in routing, manifests, catalog, and
+  registry; runtime verification depth is limited to structural checks"
+
+Unacceptable:
+- claiming behavior-verified for examples that have no execution path
+- claiming a live harness exists when only file-read checks run
+- inflating support_level beyond what the examples and checks genuinely justify
+
+
+SECTION 11 — Context notes for the implementing assistant
+
+The implementing assistant should read these files before beginning:
+
+- `context/stacks/mongo.md` — the weekly-bucketing collection pattern is assumed by
+  the NATS consumer; do not duplicate it, reference it
+- `examples/canonical-storage/mongo-weekly-reporting-example.md` — the MongoDB
+  document shape that the enricher must target
+- `examples/canonical-storage/redis-structures-example.md` — house style for storage
+  example files
+- `verification/examples/data/test_storage_examples.py` — the existing structure check
+  pattern that new checks must extend, not duplicate
+- `verification/stack_support_matrix.yaml` — the existing format for adding new stack
+  entries; use single-line `notes:` values (the custom YAML parser does not support
+  block scalars)
+- `scripts/run_verification.py` — the tier structure; new storage structure checks
+  belong in FAST_MODULES
+
+
+SECTION 12 — Output
+
+Generate the actual implementation pass in commit-ready batches now.
