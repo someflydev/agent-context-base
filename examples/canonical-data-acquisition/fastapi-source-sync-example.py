@@ -71,10 +71,10 @@ class NormalizedReleaseRecord:
     source_id: int
     owner: str
     repo: str
-    tag_name: str
+    external_slug: str
     title: str
     published_at: str
-    html_url: str
+    canonical_url: str
     provenance: ReleaseProvenance
 
 
@@ -188,10 +188,10 @@ def normalize_release_records(
                 "source_id": int(item["id"]),
                 "owner": raw_capture.owner,
                 "repo": raw_capture.repo,
-                "tag_name": str(item.get("tag_name") or ""),
+                "external_slug": str(item.get("tag_name") or ""),
                 "title": title,
                 "published_at": str(item.get("published_at") or ""),
-                "html_url": str(item.get("html_url") or ""),
+                "canonical_url": str(item.get("html_url") or ""),
             }
         )
 
@@ -213,10 +213,10 @@ def normalize_release_records(
             source_id=row["source_id"],
             owner=row["owner"],
             repo=row["repo"],
-            tag_name=row["tag_name"],
+            external_slug=row["external_slug"],
             title=row["title"],
             published_at=row["published_at"],
-            html_url=row["html_url"],
+            canonical_url=row["canonical_url"],
             provenance=provenance,
         )
         for row in frame.to_dicts()

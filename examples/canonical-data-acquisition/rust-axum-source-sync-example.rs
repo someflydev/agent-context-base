@@ -78,10 +78,10 @@ pub struct NormalizedReleaseRecord {
     pub source_id: i64,
     pub owner: String,
     pub repo: String,
-    pub tag_name: String,
+    pub external_slug: String,
     pub title: String,
     pub published_at: String,
-    pub html_url: String,
+    pub canonical_url: String,
     pub provenance: ReleaseProvenance,
 }
 
@@ -262,10 +262,10 @@ pub fn normalize_release_records(
             source_id: item.id,
             owner: raw_capture.owner.clone(),
             repo: raw_capture.repo.clone(),
-            tag_name: item.tag_name.clone(),
+            external_slug: item.tag_name.clone(),
             title: item.name.unwrap_or_else(|| item.tag_name.clone()),
             published_at: item.published_at.unwrap_or_default(),
-            html_url: item.html_url,
+            canonical_url: item.html_url,
             provenance: provenance.clone(),
         })
         .collect()

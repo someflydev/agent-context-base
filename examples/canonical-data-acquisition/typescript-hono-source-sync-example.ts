@@ -47,10 +47,10 @@ export type NormalizedReleaseRecord = {
   sourceId: number;
   owner: string;
   repo: string;
-  tagName: string;
+  externalSlug: string;
   title: string;
   publishedAt: string;
-  htmlUrl: string;
+  canonicalUrl: string;
   provenance: ReleaseProvenance;
 };
 
@@ -171,10 +171,10 @@ export function normalizeReleaseRecords(
       sourceId: item.id,
       owner: rawCapture.owner,
       repo: rawCapture.repo,
-      tagName: item.tag_name,
+      externalSlug: item.tag_name,
       title: item.name ?? item.tag_name,
       publishedAt: item.published_at ?? "",
-      htmlUrl: item.html_url,
+      canonicalUrl: item.html_url,
       provenance,
     }));
 }

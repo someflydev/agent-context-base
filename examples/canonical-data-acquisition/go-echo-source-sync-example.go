@@ -69,15 +69,15 @@ type ReleaseProvenance struct {
 }
 
 type NormalizedRelease struct {
-	CanonicalID string            `json:"canonicalId"`
-	SourceID    int64             `json:"sourceId"`
-	Owner       string            `json:"owner"`
-	Repo        string            `json:"repo"`
-	TagName     string            `json:"tagName"`
-	Title       string            `json:"title"`
-	PublishedAt string            `json:"publishedAt"`
-	HTMLURL     string            `json:"htmlUrl"`
-	Provenance  ReleaseProvenance `json:"provenance"`
+	CanonicalID  string            `json:"canonicalId"`
+	SourceID     int64             `json:"sourceId"`
+	Owner        string            `json:"owner"`
+	Repo         string            `json:"repo"`
+	ExternalSlug string            `json:"external_slug"`
+	Title        string            `json:"title"`
+	PublishedAt  string            `json:"publishedAt"`
+	CanonicalURL string            `json:"canonical_url"`
+	Provenance   ReleaseProvenance `json:"provenance"`
 }
 
 type SyncResult struct {
@@ -257,15 +257,15 @@ func normalizeReleaseRecords(rawCapture RawCapture, payload []githubReleasePaylo
 			title = item.TagName
 		}
 		records = append(records, NormalizedRelease{
-			CanonicalID: fmt.Sprintf("%s:%s/%s:%d", SourceName, rawCapture.Owner, rawCapture.Repo, item.ID),
-			SourceID:    item.ID,
-			Owner:       rawCapture.Owner,
-			Repo:        rawCapture.Repo,
-			TagName:     item.TagName,
-			Title:       title,
-			PublishedAt: item.PublishedAt,
-			HTMLURL:     item.HTMLURL,
-			Provenance:  provenance,
+			CanonicalID:  fmt.Sprintf("%s:%s/%s:%d", SourceName, rawCapture.Owner, rawCapture.Repo, item.ID),
+			SourceID:     item.ID,
+			Owner:        rawCapture.Owner,
+			Repo:         rawCapture.Repo,
+			ExternalSlug: item.TagName,
+			Title:        title,
+			PublishedAt:  item.PublishedAt,
+			CanonicalURL: item.HTMLURL,
+			Provenance:   provenance,
 		})
 	}
 	return records
