@@ -41,10 +41,20 @@ Infer the active stack from repo signals, touched files, and user language.
   - load `context/stacks/source-research-and-evaluation.md`
 - `events/`, `scheduler/`, `sync.requested`, `sync.failed`, `outbox`
   - load `context/stacks/event-streaming-patterns.md`
-- `redis`, `keydb`, `mongo`
+- `redis` or `keydb` alone
+  - load `context/stacks/redis.md`
+- `mongo`, `mongodb`, `aggregation pipeline`, `partialFilterExpression`
+  - load `context/stacks/mongo.md`
+- `redis` plus `mongo`, `keydb`, or mixed cache-plus-document-store patterns
   - load `context/stacks/redis-keydb-mongo.md`
-- `duckdb`, `trino`, `polars`
+- `trino`, `federated analytics`, cross-catalog query, cross-database query
+  - load `context/stacks/trino.md`
+- `duckdb` plus `trino` plus `polars`, local analytical pipeline with cross-source federation
   - load `context/stacks/duckdb-trino-polars.md`
+- `duckdb` or `polars` without trino
+  - load primary application stack; load `context/stacks/duckdb-trino-polars.md` only if trino is also present
+- `postgresql`, `postgres`, `jsonb`, `materialized view`, migration-heavy SQL, transactional SQL baseline
+  - load `context/stacks/postgresql.md`
 - `nats`, `jetstream`
   - load `context/stacks/nats-jetstream.md`
 - `meilisearch`
@@ -113,6 +123,25 @@ Infer the active stack from repo signals, touched files, and user language.
 - "Verify a backend-generated filter UI with Playwright"
   - dominant app stack
   - `context/stacks/backend-driven-ui-htmx-tailwind-plotly.md`
+- "Build a Redis leaderboard"
+  - `context/stacks/redis.md`
+- "Add expiring cache keys for session tokens"
+  - `context/stacks/redis.md`
+- "Add weekly MongoDB request log reporting"
+  - `context/stacks/mongo.md`
+- "Add a MongoDB aggregation pipeline for weekly summaries"
+  - `context/stacks/mongo.md`
+- "Query Postgres and Mongo together with Trino"
+  - `context/stacks/trino.md`
+  - `context/stacks/postgresql.md`
+  - `context/stacks/mongo.md`
+- "Add a materialized-view-backed reporting path in PostgreSQL"
+  - `context/stacks/postgresql.md`
+- "Use TimescaleDB rollups on top of PostgreSQL"
+  - `context/stacks/timescaledb.md`
+  - `context/stacks/postgresql.md`
+- "Wire Redis as a cache layer in front of MongoDB"
+  - `context/stacks/redis-keydb-mongo.md`
 - "Use Polars to reshape query output in FastAPI"
   - `context/stacks/python-fastapi-uv-ruff-orjson-polars.md`
   - `context/stacks/duckdb-trino-polars.md` if the change also touches analytical storage

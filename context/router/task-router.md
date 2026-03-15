@@ -78,7 +78,23 @@ Route from what the user is trying to do, not from internal file names.
   - load `context/workflows/extend-cli.md`
 - "local rag", "index docs", "retrieval"
   - load `context/workflows/add-local-rag-indexing.md`
-- "add redis", "connect postgres", "wire search", "storage integration"
+- "add redis", "build a redis leaderboard", "expiring cache", "rate limit with redis"
+  - load `context/stacks/redis.md`
+  - load `context/workflows/add-storage-integration.md`
+- "add mongodb", "mongo collection", "aggregation pipeline", "add weekly request log reporting"
+  - load `context/stacks/mongo.md`
+  - load `context/workflows/add-storage-integration.md`
+- "connect postgres", "postgresql migration", "add a materialized view", "transactional sql baseline"
+  - load `context/stacks/postgresql.md`
+  - load `context/workflows/add-storage-integration.md`
+- "trino catalog", "federated query", "cross-database analytics", "query postgres and mongo together with trino"
+  - load `context/stacks/trino.md`
+  - load `context/workflows/add-storage-integration.md`
+- "timescaledb rollups", "hypertable", "time-series on postgres"
+  - load `context/stacks/timescaledb.md`
+  - load `context/stacks/postgresql.md`
+  - load `context/workflows/add-storage-integration.md`
+- "wire search", "storage integration"
   - load `context/workflows/add-storage-integration.md`
 - "post-flight", "cleanup this pass", "refine before commit"
   - load `context/workflows/post-flight-refinement.md`
@@ -91,6 +107,7 @@ Examples:
 
 - "Add an endpoint backed by Redis"
   - start with `context/workflows/add-api-endpoint.md`
+  - then load `context/stacks/redis.md`
   - then load `context/workflows/add-storage-integration.md`
 - "Bootstrap a repo and generate prompt files"
   - start with `context/workflows/bootstrap-repo.md`

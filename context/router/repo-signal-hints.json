@@ -185,6 +185,44 @@
       "guidance": "Local RAG signals should load indexing, retrieval, and metadata guidance."
     },
     {
+      "name": "redis",
+      "patterns": [
+        "app/cache/*.py",
+        "app/redis/*.py",
+        "tests/integration/test_redis_*.py"
+      ],
+      "guidance": "Redis-only repos should load the solo redis pack; choose data structures explicitly rather than serializing everything into strings."
+    },
+    {
+      "name": "mongo",
+      "patterns": [
+        "app/repositories/*.py",
+        "app/db/mongo.py",
+        "tests/integration/test_mongo_*.py",
+        "scripts/reset_collections.py"
+      ],
+      "guidance": "MongoDB repos should define collection naming, indexes, and document shape explicitly; aggregation pipelines must be tested against fixture data."
+    },
+    {
+      "name": "postgresql",
+      "patterns": [
+        "db/migrations/*.sql",
+        "app/db/*.py",
+        "tests/integration/test_db_*.py",
+        "scripts/reset_db.py"
+      ],
+      "guidance": "PostgreSQL repos should load the solo postgresql pack; confirm migration discipline, index strategy, and test isolation before layering TimescaleDB concerns."
+    },
+    {
+      "name": "trino",
+      "patterns": [
+        "etc/catalog/*.properties",
+        "app/queries/*.sql",
+        "tests/integration/test_trino_*.py"
+      ],
+      "guidance": "Trino repos should load the solo trino pack; confirm catalog config and that queries are analytical reads, not OLTP traffic."
+    },
+    {
       "name": "redis-keydb-mongo",
       "patterns": [
         "docker-compose.yml",

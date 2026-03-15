@@ -204,14 +204,34 @@ stacks:
   - alias: hanami
     target: context/stacks/ruby-hanami.md
   - alias: redis
-    target: context/stacks/redis-keydb-mongo.md
+    target: context/stacks/redis.md
+  - alias: mongo
+    target: context/stacks/mongo.md
+  - alias: mongodb
+    target: context/stacks/mongo.md
+  - alias: aggregation pipeline
+    target: context/stacks/mongo.md
+  - alias: partialFilterExpression
+    target: context/stacks/mongo.md
   - alias: keydb
     target: context/stacks/redis-keydb-mongo.md
-  - alias: mongodb
+  - alias: redis-keydb-mongo
     target: context/stacks/redis-keydb-mongo.md
-  - alias: duckdb
-    target: context/stacks/duckdb-trino-polars.md
   - alias: trino
+    target: context/stacks/trino.md
+  - alias: federated analytics
+    target: context/stacks/trino.md
+  - alias: cross-catalog query
+    target: context/stacks/trino.md
+  - alias: postgresql
+    target: context/stacks/postgresql.md
+  - alias: postgres
+    target: context/stacks/postgresql.md
+  - alias: jsonb
+    target: context/stacks/postgresql.md
+  - alias: materialized view
+    target: context/stacks/postgresql.md
+  - alias: duckdb
     target: context/stacks/duckdb-trino-polars.md
   - alias: nats
     target: context/stacks/nats-jetstream.md
