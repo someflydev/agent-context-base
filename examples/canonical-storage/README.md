@@ -59,8 +59,12 @@ Use the Trino example when the query spans multiple catalogs. Use the PostgreSQL
 is local to a single PostgreSQL instance.
 
 Use `parquet-minio-example.md` when the question is how to write Parquet files to an S3-compatible
-store and make them readable by DuckDB or Polars. Load alongside `duckdb-polars-example.py` when both
-the write path and the analytical query layer matter.
+store and make them readable by DuckDB or Polars.
+
+Use `duckdb-polars-example.md` when the data lives in a local DuckDB file and the result needs to be
+a Polars DataFrame. Do not use it as the S3 read path — for that, use `parquet-minio-example.py
+read_back()`. When both the write path and the local analytical query layer are needed, load both
+examples together; see the composition pattern in `duckdb-polars-example.md`.
 
 Use `nats-jetstream-mongo-pipeline-example.md` when the question is how to capture events via NATS
 JetStream, enrich them in a separate consumer process, and persist the enriched documents to a
