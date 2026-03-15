@@ -1325,7 +1325,7 @@ examples:
       - source structure
       - controller render path
     docker_supported: false
-    scenario_harness: ""
+    scenario_harness: phoenix_min_app
     confidence: medium
   - name: phoenix-router-surface-example
     path: examples/canonical-api/phoenix-router-surface-example.ex
@@ -1340,7 +1340,26 @@ examples:
       - source structure
       - pipeline declaration
     docker_supported: false
-    scenario_harness: ""
+    scenario_harness: phoenix_min_app
+    confidence: medium
+  - name: phoenix-runtime-example
+    path: examples/canonical-api/phoenix-example/lib/example_web/router.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: smoke-verified
+    verification_targets:
+      - docker build
+      - container boots
+      - health request
+      - json api request
+      - html fragment request
+      - chart dataset request
+    docker_supported: true
+    scenario_harness: phoenix_min_app
     confidence: medium
   - name: python-cli-command-example
     path: examples/canonical-cli/python-cli-command-example.py

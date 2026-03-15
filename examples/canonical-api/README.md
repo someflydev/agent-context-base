@@ -49,6 +49,7 @@ Primary files in this category:
 - `go-echo-example/main.go`
 - `phoenix-route-controller-example.ex`
 - `phoenix-router-surface-example.ex`
+- `phoenix-example/lib/example_web/router.ex`
 - `ruby-hanami-api-endpoint-example.rb`
 - `ruby-hanami-html-fragment-example.rb`
 - `ruby-hanami-data-endpoint-example.rb`
@@ -226,11 +227,15 @@ Primary files in this category:
   Last verified by: verification/examples/rust/test_axum_examples.py
 - `phoenix-route-controller-example.ex`
   Verification level: syntax-checked
-  Harness: none
+  Harness: phoenix_min_app
   Last verified by: verification/examples/elixir/test_phoenix_examples.py
 - `phoenix-router-surface-example.ex`
   Verification level: syntax-checked
-  Harness: none
+  Harness: phoenix_min_app
+  Last verified by: verification/examples/elixir/test_phoenix_examples.py
+- `phoenix-example/lib/example_web/router.ex`
+  Verification level: smoke-verified
+  Harness: phoenix_min_app
   Last verified by: verification/examples/elixir/test_phoenix_examples.py
 - `ruby-hanami-api-endpoint-example.rb`
   Verification level: syntax-checked
