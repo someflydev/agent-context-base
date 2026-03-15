@@ -249,6 +249,33 @@ Primary files in this category:
   Harness: ruby_hanami_min_app
   Last verified by: verification/examples/ruby/test_ruby_hanami_examples.py
 
+## Companion Design Notes
+
+Each source example file has a companion `.md` file with the same base name. These
+companions do more than list related files — they carry language-specific design context
+that an assistant needs before deriving a real service from the example.
+
+Loading the companion is the right first step when:
+
+- You are about to scaffold a new endpoint in a language you have not used in this session.
+- You need to know the error handling posture before adding a 404 or 502 path.
+- You need to understand whether the example's service separation is intentional or a
+  deliberate simplification.
+- You need to know whether HTML values in a fragment are escaped or raw.
+
+Each api-endpoint companion covers: route registration shape, request parsing approach,
+service/transport separation, error handling posture, and response encoding.
+
+Each html-fragment companion covers: HTMX fragment contract (`id`, `hx-swap-oob`),
+content-type discipline, server-side rendering mechanism, and escaping/XSS posture.
+
+Each data-endpoint companion covers: chart payload contract shape, typed response
+encoding tradeoffs, storage query integration, and metric parameter safety.
+
+Go, Rust, TypeScript, and Elixir/Phoenix have only an api-endpoint source file in this
+directory — no html-fragment or data-endpoint source files exist for those languages.
+Their companions are scoped accordingly.
+
 ## A Strong Canonical API Example Should Show
 
 - route registration shape
