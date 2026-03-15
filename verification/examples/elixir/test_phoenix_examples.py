@@ -3,6 +3,7 @@ from __future__ import annotations
 import unittest
 
 from verification.helpers import REPO_ROOT
+from verification.scenarios.phoenix_min_app.verify import docker_smoke_check, native_smoke_check
 
 
 ROUTER_PATH = REPO_ROOT / "examples/canonical-api/phoenix-router-surface-example.ex"
@@ -40,6 +41,50 @@ class PhoenixExampleTests(unittest.TestCase):
         text = DATA_ACQUISITION_README_PATH.read_text(encoding="utf-8")
         self.assertIn("phoenix-source-sync-example.ex (structure-verified)", text)
         self.assertIn("real Elixir example, `structure-verified` only", text)
+
+
+MINI_APP_DIR = REPO_ROOT / "examples/canonical-api/phoenix-example"
+
+
+class PhoenixMiniAppTests(unittest.TestCase):
+    def test_mini_app_directory_exists(self) -> None:
+        self.assertTrue(MINI_APP_DIR.is_dir())
+
+    def test_mix_exs_present(self) -> None:
+        self.assertTrue((MINI_APP_DIR / "mix.exs").is_file())
+
+    def test_dockerfile_present(self) -> None:
+        self.assertTrue((MINI_APP_DIR / "Dockerfile").is_file())
+
+    def test_router_has_healthz_route(self) -> None:
+        text = (MINI_APP_DIR / "lib/example_web/router.ex").read_text(encoding="utf-8")
+        self.assertIn("/healthz", text)
+
+    def test_router_has_api_reports_route(self) -> None:
+        text = (MINI_APP_DIR / "lib/example_web/router.ex").read_text(encoding="utf-8")
+        self.assertIn("/api/reports/:tenant_id", text)
+
+    def test_router_has_fragment_route(self) -> None:
+        text = (MINI_APP_DIR / "lib/example_web/router.ex").read_text(encoding="utf-8")
+        self.assertIn("/fragments", text)
+        self.assertIn("report-card", text)
+
+    def test_fragment_controller_has_hx_swap_oob(self) -> None:
+        text = (MINI_APP_DIR / "lib/example_web/controllers/fragment_controller.ex").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn('hx-swap-oob="true"', text)
+
+    def test_reporting_context_module_present(self) -> None:
+        self.assertTrue((MINI_APP_DIR / "lib/example/reporting.ex").is_file())
+
+    def test_optional_native_mix_build(self) -> None:
+        native_smoke_check()
+
+    def test_optional_docker_phoenix_runtime(self) -> None:
+        payload = docker_smoke_check()
+        self.assertEqual(payload["status"], 200)
+        self.assertEqual(payload["payload"]["status"], "ok")
 
 
 if __name__ == "__main__":
