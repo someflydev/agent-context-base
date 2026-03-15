@@ -56,6 +56,7 @@ EXAMPLE_SUPPORT_FILENAMES = {
     "requirements.txt",
     "settings.gradle.kts",
     "go.mod",
+    "go.sum",
     "Cargo.toml",
     "Cargo.lock",
     "Gemfile",
