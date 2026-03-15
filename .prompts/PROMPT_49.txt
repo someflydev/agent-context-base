@@ -1,0 +1,489 @@
+You are working inside the agent-context-base repository.
+
+This prompt closes a stack coverage gap: every Python FastAPI example and runtime
+bundle in the repo is tagged `python-fastapi-uv-ruff-orjson-polars`. That tag
+implies polars (a heavy C extension for columnar data) and orjson (a Rust-backed
+JSON library). Many API services do not need columnar transforms. They need a
+clean project setup — uv for dependency management, ruff for linting — without
+the overhead of polars.
+
+There is no `python-fastapi-uv-ruff` stack document, no standalone example in
+this lighter stack, and no runtime bundle that shows a uv-managed pyproject.toml
+with ruff config and a uv-based Dockerfile.
+
+Your task is to add:
+
+- `context/stacks/python-fastapi-uv-ruff.md` — stack context document
+- `examples/canonical-api/fastapi-simple-endpoint-example.py` — standalone
+  example showing the router/service pattern without polars
+- `examples/canonical-api/fastapi-uv-example/` — runtime bundle with
+  pyproject.toml, pinned requirements.txt, uv-based Dockerfile, and app.py
+- New test class in `verification/examples/python/test_fastapi_examples.py`
+- New entries in `verification/example_registry.yaml`
+
+The work must be implementation-oriented and organized into commit-ready batches.
+
+For each batch:
+1. Give the batch title.
+2. Explain the purpose.
+3. List created or updated files.
+4. Provide the full contents of each file.
+5. End with a suggested Tim Pope style commit message prefixed with [PROMPT_49].
+
+Commit messages must not include a co-author line.
+
+
+IMPORTANT CONSTRAINTS
+
+- No polars. No orjson. The new stack uses only FastAPI, uvicorn, and pydantic
+  (pydantic is a FastAPI transitive dependency, not a direct one). Data transforms
+  use plain Python: list comprehensions, sorted(), dict operations.
+- uv is used for dependency management. The runtime bundle has a pyproject.toml
+  as the canonical source of truth for dependencies. It also includes a pinned
+  requirements.txt generated from pyproject.toml via `uv pip compile pyproject.toml
+  --output-file requirements.txt`. The Dockerfile uses uv + requirements.txt.
+- ruff is configured in pyproject.toml under [tool.ruff]. It must include
+  `line-length`, `target-version`, and `[tool.ruff.lint]` with `select`.
+  Do not add a separate ruff.toml file.
+- The Dockerfile copies uv from the official image (ghcr.io/astral-sh/uv:latest)
+  and uses `uv pip install --system -r requirements.txt`. It must not use plain
+  pip install for the application dependencies.
+- The standalone example (`fastapi-simple-endpoint-example.py`) must use the
+  same router/service/warehouse Protocol structure as `fastapi-endpoint-example.py`,
+  but with the warehouse Protocol returning `list[dict[str, object]]` instead of
+  `pl.DataFrame`, and the service layer using list comprehensions instead of
+  polars transforms.
+- The runtime app (`fastapi-uv-example/app.py`) must expose the four canonical
+  mini-app endpoints:
+    GET /healthz                           → JSON health snapshot
+    GET /api/reports/:tenant_id            → JSON report envelope
+    GET /fragments/report-card/:tenant_id  → HTML fragment (HTMX OOB)
+    GET /data/chart/:metric                → JSON chart payload
+- Seed data must match the other mini-apps: acme/globex tenants, signups metric,
+  dates 2026-03-01 through 2026-03-03.
+- The HTML fragment must include `hx-swap-oob="true"` on the element and use
+  `id="report-card-{tenant_id}"`.
+- The health response must be `{"status": "ok", "service": "fastapi-uv-example"}`.
+- The runtime app listens on port 8000. The Dockerfile exposes 8000.
+- The standalone example must start with `from __future__ import annotations`
+  and use `from dataclasses import dataclass` and `from typing import Protocol`.
+- Do not modify any existing example. Do not change the `fastapi-endpoint-example.py`
+  or the `fastapi-example/` runtime bundle.
+- Do not change the existing `FastAPIExampleTests` test class. Add a new class.
+
+
+SECTION 1 — Context reads
+
+Before implementing, read:
+
+- `context/stacks/python-fastapi-uv-ruff-orjson-polars.md` — the existing stack
+  doc to understand structure and tone; the new stack doc follows the same format
+- `examples/canonical-api/fastapi-endpoint-example.py` — the polars-based
+  standalone example to replicate in structure (but not in data layer)
+- `examples/canonical-api/fastapi-example/app.py` — existing runtime app;
+  use its seed data shape and HTML fragment pattern as reference, but note that
+  the new app.py uses a different route surface (canonical four endpoints)
+- `examples/canonical-api/fastapi-example/requirements.txt` — note version pins;
+  carry the same fastapi and uvicorn versions into the new pyproject.toml
+- `examples/canonical-api/fastapi-example/Dockerfile` — the pip-based Dockerfile
+  to compare against; the new one replaces pip with uv
+- `verification/examples/python/test_fastapi_examples.py` — understand the
+  existing test class before adding the new one
+- `verification/example_registry.yaml` — understand the schema for new entries
+- `examples/canonical-api/fastapi-example/README.md` — follow its format for
+  the new bundle README
+
+
+SECTION 2 — Stack document
+
+**`context/stacks/python-fastapi-uv-ruff.md`**
+
+Title: `# Python: FastAPI + uv + Ruff`
+
+The document must cover:
+
+- Use case: lightweight API services that do not need columnar data processing.
+  FastAPI for routing, pydantic for response models, uvicorn for serving.
+  Dependency management with uv. Linting with ruff. No heavy C extensions.
+
+- Typical Repo Surface: same layout as the polars stack
+  (`pyproject.toml`, `uv.lock`, `src/<app_name>/main.py`,
+  `src/<app_name>/api/`, `src/<app_name>/services/`, `tests/smoke/`,
+  `tests/integration/`) but without a `storage/` or data-transform layer.
+
+- Common Change Surfaces:
+  - router definitions
+  - request and response models (pydantic)
+  - service-layer logic (plain Python, no polars)
+  - settings and environment parsing
+
+- Testing Expectations:
+  - smoke test: app boot plus one representative route
+  - integration tests against Docker-backed infra when routes touch PostgreSQL,
+    Redis, or other external systems
+  - service logic covered by focused unit tests; no polars stub needed
+
+- Common Assistant Mistakes:
+  - reaching for polars for simple list filtering that plain Python handles fine
+  - importing orjson when FastAPI's built-in JSON serialization is sufficient
+  - defaulting to requirements.txt instead of pyproject.toml when the project
+    already uses uv
+  - skipping ruff config in pyproject.toml
+
+
+SECTION 3 — Standalone example
+
+**`examples/canonical-api/fastapi-simple-endpoint-example.py`**
+
+Structure mirrors `fastapi-endpoint-example.py` exactly, except:
+
+- No `import polars as pl`; no polars types anywhere
+- `ReportWarehouse` Protocol's `fetch_report_rows` method returns
+  `list[dict[str, object]]` instead of `pl.DataFrame`
+- `ReportService.list_summaries` sorts and transforms using plain Python:
+  - sort `rows` by `total_events` descending with `sorted(..., key=..., reverse=True)`
+  - compute `error_rate` with an inline ternary:
+    `int(row["error_events"]) / int(row["total_events"]) if int(row["total_events"]) > 0 else 0.0`
+  - construct `ReportSummary` objects inside a list comprehension
+
+Keep these identical to the polars example:
+- `from __future__ import annotations`
+- `from dataclasses import dataclass` and `from typing import Protocol`
+- `from fastapi import APIRouter, Depends, Query`
+- `from pydantic import BaseModel, Field`
+- `router = APIRouter(prefix="/reports", tags=["reports"])`
+- `ReportSummary(BaseModel)` with `report_id: str`, `total_events: int`,
+  `error_rate: float` fields and the same Field validators
+- `get_report_service()` stub that raises `NotImplementedError`
+- `@router.get("/summary", response_model=list[ReportSummary])` route signature
+  with the same Query validators
+
+The only behavioral difference is in the warehouse Protocol and service layer.
+The route signature, response model, and router setup are identical.
+
+
+SECTION 4 — Runtime bundle
+
+**`examples/canonical-api/fastapi-uv-example/pyproject.toml`**
+
+```toml
+[project]
+name = "fastapi-uv-example"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi==0.116.1",
+    "uvicorn==0.35.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+```
+
+Note: pin the same versions used in `examples/canonical-api/fastapi-example/requirements.txt`.
+Do not add a `[build-system]` table — this is an application project, not a
+distributed package. uv does not require a build backend to install from this file.
+
+**`examples/canonical-api/fastapi-uv-example/requirements.txt`**
+
+A pinned requirements file generated from pyproject.toml via:
+  `uv pip compile pyproject.toml --output-file requirements.txt`
+
+Include the comment header that uv pip compile adds:
+```
+# This file was autogenerated by uv via:
+#    uv pip compile pyproject.toml --output-file requirements.txt
+```
+
+Then list pinned versions for fastapi, uvicorn, and their transitive dependencies
+(anyio, h11, httptools, python-dotenv, sniffio, starlette, typing_extensions,
+uvloop, watchfiles, websockets). Use the versions that resolve correctly against
+fastapi==0.116.1 and uvicorn==0.35.0 on Python 3.12. If you are not certain of
+exact transitive pins, list only the direct dependencies with their pinned
+versions and add a comment:
+```
+# Run `uv pip compile pyproject.toml --output-file requirements.txt` to regenerate
+# with full transitive pins.
+```
+This is preferable to guessing transitive versions.
+
+**`examples/canonical-api/fastapi-uv-example/Dockerfile`**
+
+```dockerfile
+FROM python:3.12-slim
+
+WORKDIR /app
+
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
+
+COPY requirements.txt .
+RUN uv pip install --system -r requirements.txt
+
+COPY app.py .
+
+EXPOSE 8000
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+```
+
+**`examples/canonical-api/fastapi-uv-example/app.py`**
+
+Implement the four canonical endpoints. Use `from __future__ import annotations`
+and `from fastapi import FastAPI, Query` and `from fastapi.responses import HTMLResponse`.
+
+In-memory seed data:
+
+```python
+TENANT_REPORTS = {
+    "acme": [
+        {"report_id": "daily-signups", "total_events": 42, "status": "ready"},
+    ],
+    "globex": [
+        {"report_id": "ops-latency", "total_events": 17, "status": "warming"},
+    ],
+}
+
+CHART_SERIES = {
+    "signups": [
+        {"x": "2026-03-01", "y": 18},
+        {"x": "2026-03-02", "y": 24},
+        {"x": "2026-03-03", "y": 31},
+    ],
+}
+```
+
+Helper functions:
+
+- `get_reports(tenant_id: str, limit: int) -> list[dict[str, object]]`:
+  returns `TENANT_REPORTS.get(tenant_id, TENANT_REPORTS["acme"])[:limit]`
+
+- `get_series(metric: str) -> list[dict[str, object]]`:
+  returns `CHART_SERIES.get(metric, CHART_SERIES["signups"])`
+
+- `render_report_card(tenant_id: str, report: dict[str, object]) -> str`:
+  returns the HTML fragment string:
+  ```html
+  <section id="report-card-{tenant_id}" class="report-card" hx-swap-oob="true">
+    <strong>Tenant {tenant_id}</strong>
+    <span>{total_events} events</span>
+    <small>Status: {status}</small>
+  </section>
+  ```
+
+Endpoint implementations:
+
+```python
+@app.get("/healthz")
+async def healthz() -> dict[str, str]:
+    return {"status": "ok", "service": "fastapi-uv-example"}
+
+
+@app.get("/api/reports/{tenant_id}")
+async def api_reports(
+    tenant_id: str,
+    limit: int = Query(default=20, ge=1, le=100),
+) -> dict[str, object]:
+    reports = get_reports(tenant_id, limit)
+    return {"service": "fastapi-uv-example", "tenant_id": tenant_id, "reports": reports}
+
+
+@app.get("/fragments/report-card/{tenant_id}")
+async def fragment_report_card(tenant_id: str) -> HTMLResponse:
+    reports = get_reports(tenant_id, limit=1)
+    report = reports[0] if reports else {"report_id": "none", "total_events": 0, "status": "unknown"}
+    return HTMLResponse(render_report_card(tenant_id, report))
+
+
+@app.get("/data/chart/{metric}")
+async def data_chart(metric: str) -> dict[str, object]:
+    points = get_series(metric)
+    return {"metric": metric, "series": [{"name": metric, "points": points}]}
+```
+
+**`examples/canonical-api/fastapi-uv-example/README.md`**
+
+```
+# FastAPI + uv Runtime Example
+
+Minimal runtime bundle for the `python-fastapi-uv-ruff` stack. Managed with uv,
+linted with ruff. No polars, no orjson.
+
+Routes:
+
+- `GET /healthz`
+- `GET /api/reports/{tenant_id}`
+- `GET /fragments/report-card/{tenant_id}`
+- `GET /data/chart/{metric}`
+
+Verification level: smoke-verified
+Harness: fastapi_uv_min_app
+Last verified by: verification/examples/python/test_fastapi_examples.py
+
+Local dev:
+
+    uv sync
+    uvicorn app:app --reload
+```
+
+
+SECTION 5 — Verification test class
+
+**`verification/examples/python/test_fastapi_examples.py`**
+
+Add a new class `FastAPIUvExampleTests` below the existing `FastAPIExampleTests`.
+Do not change `FastAPIExampleTests`.
+
+```python
+SIMPLE_EXAMPLE_PATH = REPO_ROOT / "examples/canonical-api/fastapi-simple-endpoint-example.py"
+UV_RUNTIME_DIR = REPO_ROOT / "examples/canonical-api/fastapi-uv-example"
+```
+
+Add these two constants after the existing constants at the top of the file.
+
+Test methods in `FastAPIUvExampleTests`:
+
+- `test_simple_example_parses`: `ast.parse(SIMPLE_EXAMPLE_PATH.read_text(encoding="utf-8"))`
+
+- `test_simple_example_has_no_polars_import`: read the source text, assert
+  `"import polars"` is NOT in the text and `"from polars"` is NOT in the text
+
+- `test_simple_example_has_no_orjson_import`: assert `"import orjson"` is NOT
+  in the source text and `"from orjson"` is NOT in the source text
+
+- `test_simple_example_router_prefix`: read source text, assert
+  `'prefix="/reports"'` is present
+
+- `test_simple_example_service_returns_list`: assert `"list[dict" in source` to
+  confirm the warehouse Protocol returns a list rather than a DataFrame
+
+- `test_uv_bundle_has_pyproject_toml`: assert `(UV_RUNTIME_DIR / "pyproject.toml").exists()`
+
+- `test_uv_bundle_has_ruff_config`: read pyproject.toml text, assert
+  `"[tool.ruff]"` is present
+
+- `test_uv_bundle_has_requirements_txt`: assert `(UV_RUNTIME_DIR / "requirements.txt").exists()`
+
+- `test_uv_bundle_dockerfile_uses_uv`: read Dockerfile text, assert
+  `"uv"` appears (confirms uv is used, not plain pip for app deps)
+
+- `test_uv_bundle_app_has_four_endpoints`: read app.py text and assert each
+  of the four route strings is present:
+  `"/healthz"`, `"/api/reports/"`, `"/fragments/report-card/"`, `"/data/chart/"`
+
+- `test_uv_bundle_fragment_has_hx_swap_oob`: read app.py text, assert
+  `'hx-swap-oob="true"'` is present
+
+- `test_uv_runtime_container` (Docker smoke test, guard with `docker_enabled()`):
+  - Build image tag from `UV_RUNTIME_DIR`, timeout 300
+  - Run container on port 8000
+  - `wait_for_http_json(f"http://127.0.0.1:{port}/healthz", timeout=25.0)`
+  - Assert status 200 and `payload == {"status": "ok", "service": "fastapi-uv-example"}`
+  - Assert `/api/reports/acme` returns 200 and `payload["tenant_id"] == "acme"`
+  - GET `/fragments/report-card/acme` via `urllib.request.urlopen` and assert
+    `'hx-swap-oob="true"'` in the response text
+  - Clean up container in `finally`
+
+
+SECTION 6 — Registry entries
+
+**`verification/example_registry.yaml`**
+
+Add two new entries after the existing `fastapi-runtime-example` entry:
+
+Entry 1 — standalone example:
+```yaml
+  - name: fastapi-simple-endpoint-example
+    path: examples/canonical-api/fastapi-simple-endpoint-example.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff
+    archetype_tags:
+      - backend-api-service
+    verification_level: behavior-verified
+    verification_targets:
+      - parses
+      - no polars import
+      - no orjson import
+      - router prefix verified
+      - service returns list[dict]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+```
+
+Entry 2 — runtime bundle:
+```yaml
+  - name: fastapi-uv-runtime-example
+    path: examples/canonical-api/fastapi-uv-example/app.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff
+    archetype_tags:
+      - backend-api-service
+    verification_level: smoke-verified
+    verification_targets:
+      - docker build
+      - container boots
+      - health request
+      - html fragment request
+      - hx-swap-oob present
+      - api reports shape
+    docker_supported: true
+    scenario_harness: fastapi_uv_min_app
+    confidence: high
+```
+
+
+SECTION 7 — Honesty rules
+
+The acceptable end state is:
+
+"A `python-fastapi-uv-ruff` stack is now represented in the repo: stack doc,
+standalone example, and a smoke-verified runtime bundle. The bundle uses
+pyproject.toml managed by uv and ruff configured in pyproject.toml. It has no
+polars and no orjson. A downstream reader learning FastAPI patterns without
+polars has a concrete, verified starting point."
+
+Do not change any existing example file.
+
+Do not add polars or orjson to the new stack.
+
+Do not create a separate `ruff.toml` file; ruff config belongs in pyproject.toml.
+
+Do not create a `verification/scenarios/fastapi_uv_min_app/` directory or a
+new harness.py — the Docker smoke test lives in the test class as shown in
+Section 5. The `scenario_harness: fastapi_uv_min_app` in the registry is a
+label, not a required file path.
+
+If the `fastapi-simple-endpoint-example.py` file happens to be parseable with
+the existing `load_python_module` helper plus `fastapi_stub_module()`, add an
+import-with-stubs test. If it is not (e.g., the Protocol return type annotation
+cannot be resolved without stubs), skip the stub test and note why.
+
+
+SECTION 8 — Commit-ready batching
+
+Batch 1
+- `context/stacks/python-fastapi-uv-ruff.md` (new)
+
+Batch 2
+- `examples/canonical-api/fastapi-simple-endpoint-example.py` (new)
+
+Batch 3
+- `examples/canonical-api/fastapi-uv-example/pyproject.toml` (new)
+- `examples/canonical-api/fastapi-uv-example/requirements.txt` (new)
+- `examples/canonical-api/fastapi-uv-example/Dockerfile` (new)
+- `examples/canonical-api/fastapi-uv-example/app.py` (new)
+- `examples/canonical-api/fastapi-uv-example/README.md` (new)
+
+Batch 4
+- `verification/examples/python/test_fastapi_examples.py` (add FastAPIUvExampleTests)
+- `verification/example_registry.yaml` (add two new entries)
+
+
+SECTION 9 — Output
+
+Generate the actual implementation pass in commit-ready batches now.
