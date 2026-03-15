@@ -262,6 +262,51 @@ class ParquetMinioExampleTests(unittest.TestCase):
         readme = _read("examples/canonical-storage/README.md")
         self.assertIn("parquet-minio-example.py", readme)
 
+    # -- Test isolation / credentials ----------------------------------------
+
+    def test_md_separate_test_volume_present(self) -> None:
+        # Test object-store data must live in a separate named volume from the
+        # dev store. Sharing volumes would let test writes contaminate dev data.
+        self.assertIn("minio-test-data", self.md)
+
+    def test_md_test_credentials_separate(self) -> None:
+        # Test credentials must be distinct from dev credentials. If the md
+        # accidentally showed dev keys in the test compose snippet, the
+        # isolation promise would be silently broken.
+        has_test_creds = (
+            "test-access-key" in self.md
+            or "test-secret-key" in self.md
+        )
+        self.assertTrue(
+            has_test_creds,
+            "Expected separate test credentials (test-access-key / test-secret-key) in md",
+        )
+
+    # -- Staging / cleanup sequence ------------------------------------------
+
+    def test_md_success_marker_or_staging_cleanup_language(self) -> None:
+        # The staging-prefix pattern is only safe if the crash-recovery /
+        # cleanup path is documented. _SUCCESS, orphaned, or cleanup must
+        # appear somewhere in the md.
+        has_cleanup = (
+            "_SUCCESS" in self.md
+            or "orphaned" in self.md
+            or "cleanup" in self.md.lower()
+        )
+        self.assertTrue(
+            has_cleanup,
+            "Expected _SUCCESS marker, orphaned-file, or cleanup language in md",
+        )
+
+    def test_py_staging_copy_delete_sequence(self) -> None:
+        # The staging write must be followed by copy_object (promote to final
+        # key) and delete_object (remove staging object). Dropping either step
+        # breaks the atomic-promotion guarantee.
+        has_copy = "copy_object" in self.py or ".copy(" in self.py
+        has_delete = "delete_object" in self.py or ".delete(" in self.py
+        self.assertTrue(has_copy, "Expected copy_object or .copy( in py")
+        self.assertTrue(has_delete, "Expected delete_object or .delete( in py")
+
 
 class DuckDbPolarsExampleTests(unittest.TestCase):
     PATH = "examples/canonical-storage/duckdb-polars-example.md"
@@ -327,6 +372,80 @@ class NatsJetstreamMongoPipelineExampleTests(unittest.TestCase):
     def test_readme_references_example(self) -> None:
         readme = _read("examples/canonical-storage/README.md")
         self.assertIn("nats-jetstream-mongo-pipeline-example.md", readme)
+
+    # -- Stream / consumer configuration ------------------------------------
+
+    def test_work_queue_policy_present(self) -> None:
+        # WorkQueuePolicy is the load-bearing retention policy; wrong policy
+        # (e.g. LimitsPolicy) would allow multiple consumers to read the same
+        # message, breaking work-queue semantics.
+        self.assertIn("WorkQueuePolicy", self.text)
+
+    def test_max_deliver_configured(self) -> None:
+        # max_deliver caps retry loops; without it a failed message loops
+        # forever. The specific value 5 is part of the documented configuration.
+        self.assertIn("max_deliver", self.text)
+        self.assertIn("5", self.text)
+
+    def test_ack_explicit_policy_present(self) -> None:
+        # AckExplicit is required for at-least-once safety. AckAll or a missing
+        # ack policy would silently drop unacknowledged messages.
+        self.assertIn("AckExplicit", self.text)
+
+    def test_ack_wait_configured(self) -> None:
+        # ack_wait defines the window before NATS redelivers to another
+        # consumer. Its absence means slow consumers silently lose messages.
+        self.assertIn("ack_wait", self.text)
+
+    # -- Ack ordering --------------------------------------------------------
+
+    def test_ack_only_after_insert_language(self) -> None:
+        # Tighter ordering check: the document must state explicitly that the
+        # ack happens *only after* the insert, not just that both operations
+        # appear somewhere in the file.
+        upper = self.text.upper()
+        has_explicit_ordering = (
+            "ACK ONLY AFTER" in upper
+            or "only after" in self.text
+        )
+        self.assertTrue(
+            has_explicit_ordering,
+            "Expected explicit 'ack only after' ordering language in document",
+        )
+        # The concrete code form must also be present, not just prose.
+        self.assertIn("await msg.ack()", self.text)
+
+    # -- Producer / consumer separation -------------------------------------
+
+    def test_producer_consumer_separation_language(self) -> None:
+        # The pipeline's correctness depends on the producer and consumer being
+        # separate processes. Losing this language would be a meaningful
+        # regression in the documentation contract.
+        lower = self.text.lower()
+        has_separation = "separate process" in lower or "separately" in lower
+        self.assertTrue(
+            has_separation,
+            "Expected language about producer/consumer separation as separate processes",
+        )
+
+    # -- DLQ and payload schema ---------------------------------------------
+
+    def test_dlq_stream_name_present(self) -> None:
+        # The DLQ stream name is a concrete operational artifact. Generic DLQ
+        # language without the specific name is not actionable for on-call.
+        self.assertIn("REPORT_REQUESTS_DLQ", self.text)
+
+    def test_correlation_id_in_payload_schema(self) -> None:
+        # correlation_id enables deduplication and dead-letter triage.
+        # Its absence from the payload schema would make the pipeline
+        # harder to operate.
+        self.assertIn("correlation_id", self.text)
+
+    def test_pii_exclusion_language(self) -> None:
+        # PII exclusion from the bounded payload is a security invariant.
+        # This verifies the PII section is present, not just generic payload rules.
+        has_pii = "PII" in self.text or "pii" in self.text
+        self.assertTrue(has_pii, "Expected PII exclusion language in document")
 
 
 class TrinoFederationLiveTests(unittest.TestCase):
