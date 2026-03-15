@@ -44,10 +44,10 @@ type normalized_release_record = {
   source_id : int;
   owner : string;
   repo : string;
-  tag_name : string;
+  external_slug : string;
   title : string;
   published_at : string;
-  release_url : string;
+  canonical_url : string;
   provenance : release_provenance;
 }
 
@@ -99,10 +99,10 @@ let normalized_release_to_yojson record =
       ("source_id", `Int record.source_id);
       ("owner", `String record.owner);
       ("repo", `String record.repo);
-      ("tag_name", `String record.tag_name);
+      ("external_slug", `String record.external_slug);
       ("title", `String record.title);
       ("published_at", `String record.published_at);
-      ("release_url", `String record.release_url);
+      ("canonical_url", `String record.canonical_url);
       ("provenance", provenance_to_yojson record.provenance);
     ]
 
@@ -159,12 +159,12 @@ let upsert_release =
   Caqti_type.(t9 string int string string string string string string string ->. unit)
     {|
       INSERT INTO normalized_releases
-        (canonical_id, source_id, owner, repo, tag_name, title, published_at, release_url, provenance_json)
+        (canonical_id, source_id, owner, repo, external_slug, title, published_at, canonical_url, provenance_json)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT (canonical_id) DO UPDATE SET
         title = excluded.title,
         published_at = excluded.published_at,
-        release_url = excluded.release_url,
+        canonical_url = excluded.canonical_url,
         provenance_json = excluded.provenance_json
     |}
 
@@ -205,10 +205,10 @@ let release_repository_of_db (db : db) : release_repository =
                 record.source_id,
                 record.owner,
                 record.repo,
-                record.tag_name,
+                record.external_slug,
                 record.title,
                 record.published_at,
-                record.release_url,
+                record.canonical_url,
                 Yojson.Safe.to_string (provenance_to_yojson record.provenance) )
             >>= Caqti_lwt.or_fail)
           records);
@@ -283,14 +283,14 @@ let normalize_release_payload raw_capture payload =
          if draft then None
          else
            let source_id = item |> member "id" |> to_int in
-           let tag_name = item |> member "tag_name" |> to_string_option |> Option.value ~default:"" in
+           let external_slug = item |> member "tag_name" |> to_string_option |> Option.value ~default:"" in
            let title =
-             item |> member "name" |> to_string_option |> Option.value ~default:tag_name
+             item |> member "name" |> to_string_option |> Option.value ~default:external_slug
            in
            let published_at =
              item |> member "published_at" |> to_string_option |> Option.value ~default:""
            in
-           let release_url =
+           let canonical_url =
              item |> member "html_url" |> to_string_option |> Option.value ~default:""
            in
            Some
@@ -300,10 +300,10 @@ let normalize_release_payload raw_capture payload =
                source_id;
                owner = raw_capture.owner;
                repo = raw_capture.repo;
-               tag_name;
+               external_slug;
                title;
                published_at;
-               release_url;
+               canonical_url;
                provenance;
              })
   |> List.sort (fun left right -> String.compare right.published_at left.published_at)

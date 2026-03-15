@@ -84,10 +84,10 @@ module RubyHanamiSourceSyncExample
     :source_id,
     :owner,
     :repo,
-    :tag_name,
+    :external_slug,
     :title,
     :published_at,
-    :release_url,
+    :canonical_url,
     :provenance,
     keyword_init: true,
   ) do
@@ -97,10 +97,10 @@ module RubyHanamiSourceSyncExample
         source_id: source_id,
         owner: owner,
         repo: repo,
-        tag_name: tag_name,
+        external_slug: external_slug,
         title: title,
         published_at: published_at,
-        release_url: release_url,
+        canonical_url: canonical_url,
         provenance: provenance.to_h,
       }
     end
@@ -193,10 +193,10 @@ module RubyHanamiSourceSyncExample
             source_id: record.source_id,
             owner: record.owner,
             repo: record.repo,
-            tag_name: record.tag_name,
+            external_slug: record.external_slug,
             title: record.title,
             published_at: record.published_at,
-            release_url: record.release_url,
+            canonical_url: record.canonical_url,
             provenance_json: JSON.generate(record.provenance.to_h),
           }
 
@@ -219,10 +219,10 @@ module RubyHanamiSourceSyncExample
           Integer :source_id, null: false
           String :owner, null: false
           String :repo, null: false
-          String :tag_name, null: false
+          String :external_slug, null: false
           String :title, null: false
           String :published_at, null: false
-          String :release_url, null: false
+          String :canonical_url, null: false
           String :provenance_json, text: true, null: false
           index :canonical_id, unique: true
         end
@@ -312,10 +312,10 @@ module RubyHanamiSourceSyncExample
             source_id: Integer(item.fetch("id")),
             owner: raw_capture.owner,
             repo: raw_capture.repo,
-            tag_name: item.fetch("tag_name", ""),
+            external_slug: item.fetch("tag_name", ""),
             title: item["name"].to_s.empty? ? item.fetch("tag_name", "untitled-release") : item["name"],
             published_at: item.fetch("published_at", ""),
-            release_url: item.fetch("html_url", ""),
+            canonical_url: item.fetch("html_url", ""),
             provenance: provenance,
           )
         end

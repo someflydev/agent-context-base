@@ -74,10 +74,10 @@ data class NormalizedReleaseRecord(
     val sourceId: Long,
     val owner: String,
     val repo: String,
-    val tagName: String,
+    val externalSlug: String,
     val title: String,
     val publishedAt: String,
-    val htmlUrl: String,
+    val canonicalUrl: String,
     val provenance: ReleaseProvenance,
 )
 
@@ -104,10 +104,10 @@ object NormalizedReleases : Table("normalized_releases") {
     val sourceId = long("source_id")
     val owner = varchar("owner", 128)
     val repo = varchar("repo", 128)
-    val tagName = varchar("tag_name", 128)
+    val externalSlug = varchar("external_slug", 128)
     val title = varchar("title", 256)
     val publishedAt = varchar("published_at", 64)
-    val htmlUrl = varchar("html_url", 512)
+    val canonicalUrl = varchar("canonical_url", 512)
     val provenanceJson = text("provenance_json")
 
     override val primaryKey = PrimaryKey(canonicalId)
@@ -160,10 +160,10 @@ class ReleaseRepository {
                     it[sourceId] = record.sourceId
                     it[owner] = record.owner
                     it[repo] = record.repo
-                    it[tagName] = record.tagName
+                    it[externalSlug] = record.externalSlug
                     it[title] = record.title
                     it[publishedAt] = record.publishedAt
-                    it[htmlUrl] = record.htmlUrl
+                    it[canonicalUrl] = record.canonicalUrl
                     it[provenanceJson] = mapper.writeValueAsString(record.provenance)
                 }
             }
@@ -253,10 +253,10 @@ class GitHubReleaseSyncService(
                     sourceId = dto.id,
                     owner = rawCapture.owner,
                     repo = rawCapture.repo,
-                    tagName = dto.tag_name,
+                    externalSlug = dto.tag_name,
                     title = dto.name ?: dto.tag_name,
                     publishedAt = dto.published_at,
-                    htmlUrl = dto.html_url,
+                    canonicalUrl = dto.html_url,
                     provenance = provenance,
                 )
             }
