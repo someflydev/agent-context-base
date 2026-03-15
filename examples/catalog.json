@@ -1617,6 +1617,17 @@
       "patterns": ["capture-enrich-persist", "durable-messaging", "ack-after-insert", "weekly-collection", "dead-letter-queue"],
       "rank": 87,
       "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-storage/nats-jetstream-mongo-pipeline-example.py",
+      "category": "storage",
+      "summary": "Runnable NATS JetStream + MongoDB pipeline: produce(), consume_once(), validate/clean/enrich, ack-after-insert, and weekly-bucketed MongoDB insertion. Self-contained weekly_collection_name() helper included.",
+      "stacks": ["nats-jetstream-mongo", "nats-jetstream", "mongo"],
+      "archetypes": ["data-pipeline", "multi-source-sync-platform"],
+      "workflows": ["add-storage-integration", "add-event-driven-sync"],
+      "patterns": ["capture-enrich-persist", "durable-messaging", "ack-after-insert", "weekly-collection", "dead-letter-queue"],
+      "rank": 88,
+      "stability": "canonical"
     }
   ]
 }

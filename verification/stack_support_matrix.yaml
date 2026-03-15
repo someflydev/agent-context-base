@@ -305,19 +305,21 @@ stacks:
     support_level: 2
     verified_examples:
       - nats-jetstream-mongo-pipeline-example-doc
+      - nats-jetstream-mongo-pipeline-example
     missing_verification:
       - live NATS JetStream publish and consume integration test
       - DLQ advisory round-trip check
-    notes: Durable messaging pack. Examples are structure-verified only; no live nats-server instance is wired in the default verification tier.
+    notes: Durable messaging pack. A structure-verified runnable .py companion (nats-jetstream-mongo-pipeline-example.py) is now present. No live nats-server instance is wired in the default verification tier.
   - stack: nats-jetstream-mongo
     support_level: 2
     verified_examples:
       - nats-jetstream-mongo-pipeline-example-doc
+      - nats-jetstream-mongo-pipeline-example
     missing_verification:
       - live docker-compose harness (nats-server + mongo:7)
       - full pipeline integration test: publish -> consume -> assert MongoDB document
       - DLQ path integration test
-    notes: Capture-enrich-persist combo pack. Examples are structure-verified only. A live docker-compose harness would raise this to support_level 3.
+    notes: Capture-enrich-persist combo pack. A structure-verified runnable .py companion (nats-jetstream-mongo-pipeline-example.py) is now present. A live docker-compose harness (nats_mongo_min_app scenario) would raise this to support_level 3.
 capabilities:
   - capability: canonical-data-acquisition
     shared_examples:

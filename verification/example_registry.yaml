@@ -2553,3 +2553,29 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: medium
+  - name: nats-jetstream-mongo-pipeline-example
+    path: examples/canonical-storage/nats-jetstream-mongo-pipeline-example.py
+    language: python
+    stack_tags:
+      - nats-jetstream-mongo
+      - nats-jetstream
+      - mongo
+    archetype_tags:
+      - data-pipeline
+      - multi-source-sync-platform
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - STREAM_NAME constant present
+      - CONSUMER_NAME constant present
+      - PII_FIELDS constant present
+      - validate function present
+      - enrich function present
+      - response_time_class field present
+      - insert before ack ordering
+      - weekly_collection_name defined as standalone copy
+      - environment variable usage for NATS_URL and MONGO_URI
+    docker_supported: false
+    scenario_harness: ""
+    last_verified_by: verification/examples/data/test_storage_examples.py
+    confidence: medium
