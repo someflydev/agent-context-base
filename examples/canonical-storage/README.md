@@ -22,7 +22,7 @@ Use this category for preferred patterns around databases, caches, queues, searc
   is transactional SQL or local analytical queries.
 
 ### Combined-stack examples
-- `nats-jetstream-mongo-pipeline-example.md`
+- `nats-jetstream-mongo-pipeline-example.md` + `nats-jetstream-mongo-pipeline-example.py`
   Verification level: structure-verified
   Harness: none (follow-on: docker-compose with nats-server + mongo:7)
   Last verified by: verification/examples/data/test_storage_examples.py
@@ -38,10 +38,13 @@ Use this category for preferred patterns around databases, caches, queues, searc
   staging-prefix write pattern, and MinIO credential configuration. Use when the data-lake write path is
   the question.
 
-- `nats-jetstream-mongo-pipeline-example.md` — Full capture-enrich-persist pipeline: producer publishes
-  bounded request/response payloads to NATS JetStream; a separate consumer validates, cleans, enriches,
-  and inserts to MongoDB. Covers ack-after-insert discipline, DLQ handling, enrichment field derivation,
-  and weekly MongoDB collection bucketing. Use when the pipeline from event capture to reporting storage
+- `nats-jetstream-mongo-pipeline-example.md` + `nats-jetstream-mongo-pipeline-example.py` — Full
+  capture-enrich-persist pipeline: producer publishes bounded request/response payloads to NATS
+  JetStream; a separate consumer validates, cleans, enriches, and inserts to MongoDB. Covers
+  ack-after-insert discipline, DLQ handling, enrichment field derivation, and weekly MongoDB
+  collection bucketing. The `.py` companion provides a runnable reference for the full pipeline
+  (producer, consumer/enricher, and MongoDB insert path) with a self-contained
+  `weekly_collection_name()` helper. Use when the pipeline from event capture to reporting storage
   is the question.
 
 ## When To Use a Solo Example vs. the Combined Example
@@ -68,7 +71,8 @@ examples together; see the composition pattern in `duckdb-polars-example.md`.
 
 Use `nats-jetstream-mongo-pipeline-example.md` when the question is how to capture events via NATS
 JetStream, enrich them in a separate consumer process, and persist the enriched documents to a
-weekly-bucketed MongoDB collection.
+weekly-bucketed MongoDB collection. Load `nats-jetstream-mongo-pipeline-example.py` alongside it
+when a runnable reference for the full pipeline is needed.
 
 ## Verification Metadata
 
@@ -85,6 +89,11 @@ weekly-bucketed MongoDB collection.
 - `nats-jetstream-mongo-pipeline-example.md`
   Verification level: structure-verified
   Harness: none (follow-on: docker-compose with nats-server + mongo:7)
+  Last verified by: verification/examples/data/test_storage_examples.py
+
+- `nats-jetstream-mongo-pipeline-example.py`
+  Verification level: structure-verified
+  Harness: none (follow-on: nats_mongo_min_app scenario)
   Last verified by: verification/examples/data/test_storage_examples.py
 
 - `duckdb-polars-example.md`
