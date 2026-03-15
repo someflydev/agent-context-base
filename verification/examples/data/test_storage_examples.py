@@ -73,6 +73,47 @@ class RedisStructuresExampleTests(unittest.TestCase):
         self.assertIn("redis-structures-example.md", readme)
 
 
+class RedisMongoShapeExampleTests(unittest.TestCase):
+    PATH = "examples/canonical-storage/redis-mongo-shape-example.md"
+
+    def setUp(self) -> None:
+        self.text = _read(self.PATH)
+
+    def test_file_exists(self) -> None:
+        self.assertTrue((REPO_ROOT / self.PATH).exists())
+
+    def test_dev_and_test_key_prefixes(self) -> None:
+        self.assertIn("dev:report-runs", self.text)
+        self.assertIn("test:report-runs", self.text)
+
+    def test_redis_commands_present(self) -> None:
+        has_command = "SET " in self.text or "DEL " in self.text or "KEYS " in self.text
+        self.assertTrue(has_command)
+
+    def test_test_isolation_reset_rule(self) -> None:
+        lower = self.text.lower()
+        has_isolation = "teardown" in lower or "reset" in lower
+        self.assertTrue(has_isolation)
+
+    def test_mongo_collection_name_present(self) -> None:
+        self.assertIn("report_runs", self.text)
+
+    def test_docker_compose_snippet_present(self) -> None:
+        has_snippet = "redis-test" in self.text or "mongo-test" in self.text
+        self.assertTrue(has_snippet)
+
+    def test_readme_references_example(self) -> None:
+        readme = _read("examples/canonical-storage/README.md")
+        self.assertIn("redis-mongo-shape-example.md", readme)
+
+    def test_solo_example_disambiguation_present(self) -> None:
+        has_ref = (
+            "redis-structures-example.md" in self.text
+            or "mongo-weekly-reporting-example.md" in self.text
+        )
+        self.assertTrue(has_ref)
+
+
 class TrinoFederatedAnalyticsExampleTests(unittest.TestCase):
     SQL_PATH = "examples/canonical-storage/trino-federated-analytics-example.sql"
     MD_PATH = "examples/canonical-storage/trino-federated-analytics-example.md"

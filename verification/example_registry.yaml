@@ -1877,12 +1877,18 @@ examples:
     archetype_tags:
       - multi-storage-experiment
       - backend-api-service
-    verification_level: draft
+    verification_level: structure-verified
     verification_targets:
-      - registry tracked
+      - file existence
+      - key-prefix markers (dev: and test:)
+      - Redis commands present
+      - reset rule language
+      - mongo collection name
+      - docker-compose snippet
+    last_verified_by: verification/examples/data/test_storage_examples.py
     docker_supported: false
     scenario_harness: ""
-    confidence: low
+    confidence: medium
   - name: handoff-snapshot-example
     path: examples/canonical-workflows/HANDOFF-SNAPSHOT.example.md
     language: markdown
@@ -2027,12 +2033,18 @@ examples:
       - redis-keydb-mongo
     archetype_tags:
       - multi-storage-experiment
-    verification_level: draft
+    verification_level: structure-verified
     verification_targets:
-      - registry tracked
+      - file existence
+      - key-prefix markers (dev: and test:)
+      - Redis commands present
+      - reset rule language
+      - mongo collection name
+      - docker-compose snippet
+    last_verified_by: verification/examples/data/test_storage_examples.py
     docker_supported: false
     scenario_harness: ""
-    confidence: low
+    confidence: medium
   - name: memory-example
     path: examples/canonical-workflows/MEMORY.example.md
     language: markdown
