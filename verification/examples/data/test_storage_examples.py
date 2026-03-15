@@ -336,9 +336,11 @@ class DuckDbPolarsExampleTests(unittest.TestCase):
 
 class NatsJetstreamMongoPipelineExampleTests(unittest.TestCase):
     PATH = "examples/canonical-storage/nats-jetstream-mongo-pipeline-example.md"
+    PY_PATH = "examples/canonical-storage/nats-jetstream-mongo-pipeline-example.py"
 
     def setUp(self) -> None:
         self.text = _read(self.PATH)
+        self.py = _read(self.PY_PATH)
 
     def test_file_exists(self) -> None:
         self.assertTrue((REPO_ROOT / self.PATH).exists())
@@ -446,6 +448,61 @@ class NatsJetstreamMongoPipelineExampleTests(unittest.TestCase):
         # This verifies the PII section is present, not just generic payload rules.
         has_pii = "PII" in self.text or "pii" in self.text
         self.assertTrue(has_pii, "Expected PII exclusion language in document")
+
+    # -- .py companion tests ------------------------------------------------
+
+    def test_py_file_exists(self) -> None:
+        self.assertTrue((REPO_ROOT / self.PY_PATH).exists())
+
+    def test_py_stream_name_constant(self) -> None:
+        self.assertIn("STREAM_NAME", self.py)
+
+    def test_py_consumer_name_constant(self) -> None:
+        self.assertIn("CONSUMER_NAME", self.py)
+
+    def test_py_pii_fields_constant(self) -> None:
+        self.assertIn("PII_FIELDS", self.py)
+
+    def test_py_validate_function(self) -> None:
+        self.assertIn("def validate", self.py)
+
+    def test_py_enrich_function(self) -> None:
+        self.assertIn("def enrich", self.py)
+
+    def test_py_response_time_class_in_enrich(self) -> None:
+        self.assertIn("response_time_class", self.py)
+
+    def test_py_ack_after_insert_in_code(self) -> None:
+        # Both insert_one and await msg.ack() must be present, with
+        # insert_one coming before the ack in the actual code.
+        self.assertIn("insert_one", self.py)
+        self.assertIn("await msg.ack()", self.py)
+        lines = self.py.splitlines()
+        # Find the last insert_one() call (code, not prose).
+        last_insert_line = max(
+            i for i, line in enumerate(lines) if "insert_one(" in line
+        )
+        # Find the last await msg.ack() call (the real ack, not a docstring reference).
+        last_ack_line = max(
+            i for i, line in enumerate(lines) if "await msg.ack()" in line
+        )
+        self.assertLess(
+            last_insert_line,
+            last_ack_line,
+            "Expected insert_one() to appear before await msg.ack() in the .py file",
+        )
+
+    def test_py_weekly_collection_name_standalone(self) -> None:
+        # Must define the helper locally, not import it from an application path.
+        self.assertIn("def weekly_collection_name", self.py)
+
+    def test_py_env_var_usage(self) -> None:
+        self.assertIn("NATS_URL", self.py)
+        self.assertIn("MONGO_URI", self.py)
+
+    def test_readme_references_py(self) -> None:
+        readme = _read("examples/canonical-storage/README.md")
+        self.assertIn("nats-jetstream-mongo-pipeline-example.py", readme)
 
 
 class TrinoFederationLiveTests(unittest.TestCase):
