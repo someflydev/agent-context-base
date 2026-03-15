@@ -110,6 +110,7 @@ Across the stack-specific examples, the same semantic boundaries stay visible:
 - fetch, archive, parse, normalize, and sync entrypoint responsibilities stay legible
 - replay runs can normalize from archived raw material without calling the upstream again
 - source adapters stay narrow and source-specific instead of leaking upstream field oddities into canonical models
+- normalized records use `external_slug` (the source-agnostic release identifier) and `canonical_url` (the source-agnostic external URL); the raw upstream field names (`tag_name`, `html_url`) appear only in source adapters and raw payload parsing
 - retry or resume semantics stay attached to sync cursors and acquisition services rather than UI-facing response code
 
 ## Selection Contract
