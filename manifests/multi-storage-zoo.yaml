@@ -4,6 +4,7 @@ description: Preferred multi-storage experiment profile for intentionally compar
 archetype: multi-storage-experiment
 primary_stack: redis-keydb-mongo
 secondary_stacks:
+  - postgresql
   - meilisearch
   - timescaledb
   - elasticsearch
@@ -24,6 +25,9 @@ required_context:
 optional_context:
   - context/workflows/add-smoke-tests.md
   - context/workflows/post-flight-refinement.md
+  - context/stacks/mongo.md
+  - context/stacks/redis.md
+  - context/stacks/postgresql.md
   - context/stacks/meilisearch.md
   - context/stacks/timescaledb.md
   - context/stacks/elasticsearch.md
