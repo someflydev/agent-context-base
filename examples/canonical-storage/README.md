@@ -22,6 +22,10 @@ Use this category for preferred patterns around databases, caches, queues, searc
   is transactional SQL or local analytical queries.
 
 ### Combined-stack examples
+- `nats-jetstream-mongo-pipeline-example.md`
+  Verification level: structure-verified
+  Harness: none (follow-on: docker-compose with nats-server + mongo:7)
+  Last verified by: verification/examples/data/test_storage_examples.py
 
 - `duckdb-polars-example.py` — DuckDB + Polars storage pipeline. Use when both tools are in the same repo.
 
@@ -34,6 +38,11 @@ Use this category for preferred patterns around databases, caches, queues, searc
   staging-prefix write pattern, and MinIO credential configuration. Use when the data-lake write path is
   the question.
 
+- `nats-jetstream-mongo-pipeline-example.md` — Full capture-enrich-persist pipeline: producer publishes
+  bounded request/response payloads to NATS JetStream; a separate consumer validates, cleans, enriches,
+  and inserts to MongoDB. Covers ack-after-insert discipline, DLQ handling, enrichment field derivation,
+  and weekly MongoDB collection bucketing. Use when the pipeline from event capture to reporting storage
+  is the question.
 
 ## When To Use a Solo Example vs. the Combined Example
 
@@ -53,6 +62,9 @@ Use `parquet-minio-example.md` when the question is how to write Parquet files t
 store and make them readable by DuckDB or Polars. Load alongside `duckdb-polars-example.py` when both
 the write path and the analytical query layer matter.
 
+Use `nats-jetstream-mongo-pipeline-example.md` when the question is how to capture events via NATS
+JetStream, enrich them in a separate consumer process, and persist the enriched documents to a
+weekly-bucketed MongoDB collection.
 
 ## Verification Metadata
 
@@ -66,6 +78,10 @@ the write path and the analytical query layer matter.
   Harness: none (follow-on: minio_parquet_min_app scenario)
   Last verified by: verification/examples/data/test_storage_examples.py
 
+- `nats-jetstream-mongo-pipeline-example.md`
+  Verification level: structure-verified
+  Harness: none (follow-on: docker-compose with nats-server + mongo:7)
+  Last verified by: verification/examples/data/test_storage_examples.py
 
 - `duckdb-polars-example.py`
   Verification level: behavior-verified

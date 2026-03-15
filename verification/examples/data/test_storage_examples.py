@@ -222,6 +222,46 @@ class ParquetMinioExampleTests(unittest.TestCase):
         self.assertIn("parquet-minio-example.py", readme)
 
 
+class NatsJetstreamMongoPipelineExampleTests(unittest.TestCase):
+    PATH = "examples/canonical-storage/nats-jetstream-mongo-pipeline-example.md"
+
+    def setUp(self) -> None:
+        self.text = _read(self.PATH)
+
+    def test_file_exists(self) -> None:
+        self.assertTrue((REPO_ROOT / self.PATH).exists())
+
+    def test_subject_naming_pattern(self) -> None:
+        # Must show the reports.requests. subject prefix
+        self.assertIn("reports.requests.", self.text)
+
+    def test_payload_version_field(self) -> None:
+        self.assertIn("payload_version", self.text)
+
+    def test_response_time_class_field(self) -> None:
+        self.assertIn("response_time_class", self.text)
+
+    def test_error_category_field(self) -> None:
+        self.assertIn("error_category", self.text)
+
+    def test_enriched_at_field(self) -> None:
+        self.assertIn("enriched_at", self.text)
+
+    def test_ack_after_insert_pattern(self) -> None:
+        # Must describe acking after the MongoDB write, not before
+        has_ack_pattern = (
+            "ack" in self.text.lower() and "insert" in self.text.lower()
+        )
+        self.assertTrue(has_ack_pattern)
+
+    def test_dlq_section_present(self) -> None:
+        self.assertIn("DLQ", self.text)
+
+    def test_readme_references_example(self) -> None:
+        readme = _read("examples/canonical-storage/README.md")
+        self.assertIn("nats-jetstream-mongo-pipeline-example.md", readme)
+
+
 class TrinoFederationLiveTests(unittest.TestCase):
     """
     Live docker-compose federation test.

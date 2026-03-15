@@ -1595,6 +1595,17 @@
       "patterns": ["parquet-write", "hive-partitioning", "staging-prefix", "schema-pinning", "object-store"],
       "rank": 88,
       "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-storage/nats-jetstream-mongo-pipeline-example.md",
+      "category": "storage",
+      "summary": "Capture-enrich-persist pipeline: NATS JetStream producer, separate consumer/enricher, MongoDB weekly-bucketed insertion, and DLQ handling.",
+      "stacks": ["nats-jetstream-mongo", "nats-jetstream", "mongo"],
+      "archetypes": ["data-pipeline", "multi-source-sync-platform"],
+      "workflows": ["add-storage-integration", "add-event-driven-sync"],
+      "patterns": ["capture-enrich-persist", "durable-messaging", "ack-after-insert", "weekly-collection", "dead-letter-queue"],
+      "rank": 87,
+      "stability": "canonical"
     }
   ]
 }

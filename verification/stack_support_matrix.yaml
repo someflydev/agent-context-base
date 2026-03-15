@@ -301,6 +301,23 @@ stacks:
       - live docker-compose harness (minio_parquet_min_app scenario)
       - DuckDB read-back against real MinIO container
     notes: Data-lake write path combo pack. Examples are structure-verified only. A minio_parquet_min_app scenario would raise this to support_level 3.
+  - stack: nats-jetstream
+    support_level: 2
+    verified_examples:
+      - nats-jetstream-mongo-pipeline-example-doc
+    missing_verification:
+      - live NATS JetStream publish and consume integration test
+      - DLQ advisory round-trip check
+    notes: Durable messaging pack. Examples are structure-verified only; no live nats-server instance is wired in the default verification tier.
+  - stack: nats-jetstream-mongo
+    support_level: 2
+    verified_examples:
+      - nats-jetstream-mongo-pipeline-example-doc
+    missing_verification:
+      - live docker-compose harness (nats-server + mongo:7)
+      - full pipeline integration test: publish -> consume -> assert MongoDB document
+      - DLQ path integration test
+    notes: Capture-enrich-persist combo pack. Examples are structure-verified only. A live docker-compose harness would raise this to support_level 3.
 capabilities:
   - capability: canonical-data-acquisition
     shared_examples:
