@@ -274,6 +274,33 @@ stacks:
       - python-cli-command-example
     missing_verification:
       - multi-command repo example
+  - stack: parquet
+    support_level: 2
+    verified_examples:
+      - parquet-minio-example-doc
+      - parquet-minio-example
+    missing_verification:
+      - live write-and-read-back test against real PyArrow + MinIO
+      - schema evolution round-trip check
+    notes: File-format discipline pack. Examples are structure-verified only; no live write path is exercised in the default verification tier.
+  - stack: minio
+    support_level: 2
+    verified_examples:
+      - parquet-minio-example-doc
+      - parquet-minio-example
+    missing_verification:
+      - live MinIO bucket create and object write check
+      - presigned URL generation test
+    notes: S3-compatible object store pack for local dev and CI. Examples are structure-verified only; no live MinIO instance is wired in the default verification tier.
+  - stack: parquet-minio
+    support_level: 2
+    verified_examples:
+      - parquet-minio-example-doc
+      - parquet-minio-example
+    missing_verification:
+      - live docker-compose harness (minio_parquet_min_app scenario)
+      - DuckDB read-back against real MinIO container
+    notes: Data-lake write path combo pack. Examples are structure-verified only. A minio_parquet_min_app scenario would raise this to support_level 3.
 capabilities:
   - capability: canonical-data-acquisition
     shared_examples:

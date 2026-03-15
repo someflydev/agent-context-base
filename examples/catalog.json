@@ -1573,6 +1573,28 @@
       "patterns": ["language-matrix", "verification-posture", "fallback-selection"],
       "rank": 95,
       "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-storage/parquet-minio-example.md",
+      "category": "storage",
+      "summary": "Parquet + MinIO write path: schema pinning, Hive-style partitioning, staging-prefix pattern, and DuckDB read-back.",
+      "stacks": ["parquet-minio", "parquet", "minio", "duckdb-trino-polars"],
+      "archetypes": ["data-pipeline", "multi-storage-experiment"],
+      "workflows": ["add-storage-integration"],
+      "patterns": ["parquet-write", "hive-partitioning", "staging-prefix", "object-store"],
+      "rank": 85,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-storage/parquet-minio-example.py",
+      "category": "storage",
+      "summary": "Runnable PyArrow + boto3 example: write a partitioned Parquet dataset to MinIO using the staging-prefix pattern, then read back with DuckDB.",
+      "stacks": ["parquet-minio", "parquet", "minio", "duckdb-trino-polars"],
+      "archetypes": ["data-pipeline", "multi-storage-experiment"],
+      "workflows": ["add-storage-integration"],
+      "patterns": ["parquet-write", "hive-partitioning", "staging-prefix", "schema-pinning", "object-store"],
+      "rank": 88,
+      "stability": "canonical"
     }
   ]
 }

@@ -160,6 +160,68 @@ class PostgreSQLQueryShapeExampleTests(unittest.TestCase):
         self.assertIn("postgresql-query-shape-example.sql", readme)
 
 
+class ParquetMinioExampleTests(unittest.TestCase):
+    MD_PATH = "examples/canonical-storage/parquet-minio-example.md"
+    PY_PATH = "examples/canonical-storage/parquet-minio-example.py"
+
+    def setUp(self) -> None:
+        self.md = _read(self.MD_PATH)
+        self.py = _read(self.PY_PATH)
+
+    def test_md_file_exists(self) -> None:
+        self.assertTrue((REPO_ROOT / self.MD_PATH).exists())
+
+    def test_py_file_exists(self) -> None:
+        self.assertTrue((REPO_ROOT / self.PY_PATH).exists())
+
+    def test_md_hive_partition_path(self) -> None:
+        # Hive-style tenant_id= partition directory must be present
+        self.assertRegex(self.md, r"tenant_id=")
+
+    def test_md_staging_prefix_pattern(self) -> None:
+        self.assertIn("_staging/", self.md)
+
+    def test_md_schema_pinning_language(self) -> None:
+        # Must reference explicit schema definition, not inference
+        self.assertTrue(
+            "schema pinning" in self.md.lower() or "pin" in self.md.lower()
+            or "explicitly" in self.md.lower()
+        )
+
+    def test_md_credential_env_var_reference(self) -> None:
+        # Must reference MINIO_ACCESS_KEY, MINIO_SECRET_KEY, or MINIO_ENDPOINT
+        has_cred = (
+            "MINIO_ACCESS_KEY" in self.md
+            or "MINIO_SECRET_KEY" in self.md
+            or "MINIO_ENDPOINT" in self.md
+        )
+        self.assertTrue(has_cred)
+
+    def test_py_pyarrow_schema_definition(self) -> None:
+        self.assertIn("pa.schema", self.py)
+
+    def test_py_partition_write(self) -> None:
+        # Must reference a tenant_id= partition key in object key construction
+        self.assertIn("tenant_id=", self.py)
+
+    def test_py_env_var_credential_usage(self) -> None:
+        self.assertIn("MINIO_ACCESS_KEY", self.py)
+        self.assertIn("MINIO_SECRET_KEY", self.py)
+        self.assertIn("MINIO_ENDPOINT", self.py)
+
+    def test_py_readback_assertion(self) -> None:
+        # Must contain an assert for row count correctness
+        self.assertIn("assert", self.py)
+
+    def test_readme_references_md_example(self) -> None:
+        readme = _read("examples/canonical-storage/README.md")
+        self.assertIn("parquet-minio-example.md", readme)
+
+    def test_readme_references_py_example(self) -> None:
+        readme = _read("examples/canonical-storage/README.md")
+        self.assertIn("parquet-minio-example.py", readme)
+
+
 class TrinoFederationLiveTests(unittest.TestCase):
     """
     Live docker-compose federation test.

@@ -2461,3 +2461,45 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: medium
+  - name: parquet-minio-example-doc
+    path: examples/canonical-storage/parquet-minio-example.md
+    language: markdown
+    stack_tags:
+      - parquet-minio
+      - parquet
+      - minio
+      - duckdb-trino-polars
+    archetype_tags:
+      - data-pipeline
+      - multi-storage-experiment
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - Hive-style partition path present
+      - staging prefix pattern present
+      - schema pinning language present
+      - MinIO endpoint or credential env var reference present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: parquet-minio-example
+    path: examples/canonical-storage/parquet-minio-example.py
+    language: python
+    stack_tags:
+      - parquet-minio
+      - parquet
+      - minio
+      - duckdb-trino-polars
+    archetype_tags:
+      - data-pipeline
+      - multi-storage-experiment
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - pyarrow schema definition present
+      - partition write present
+      - environment variable usage for credentials
+      - read-back assertion present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium

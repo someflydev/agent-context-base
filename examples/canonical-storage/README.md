@@ -29,6 +29,12 @@ Use this category for preferred patterns around databases, caches, queues, searc
   and MongoDB together. Use when the design question is how to isolate dev and test data across both
   systems simultaneously.
 
+- `parquet-minio-example.md` + `parquet-minio-example.py` — Write a partitioned Parquet dataset to MinIO
+  using PyArrow, then read it back with DuckDB. Covers schema pinning, Hive-style partition naming, the
+  staging-prefix write pattern, and MinIO credential configuration. Use when the data-lake write path is
+  the question.
+
+
 ## When To Use a Solo Example vs. the Combined Example
 
 Use `redis-mongo-shape-example.md` when the repo uses Redis and MongoDB together and you need combined
@@ -43,7 +49,23 @@ shape, index strategy, or aggregation pipelines.
 Use the Trino example when the query spans multiple catalogs. Use the PostgreSQL example when the query
 is local to a single PostgreSQL instance.
 
+Use `parquet-minio-example.md` when the question is how to write Parquet files to an S3-compatible
+store and make them readable by DuckDB or Polars. Load alongside `duckdb-polars-example.py` when both
+the write path and the analytical query layer matter.
+
+
 ## Verification Metadata
+
+- `parquet-minio-example.md`
+  Verification level: structure-verified
+  Harness: none (follow-on: minio_parquet_min_app scenario)
+  Last verified by: verification/examples/data/test_storage_examples.py
+
+- `parquet-minio-example.py`
+  Verification level: structure-verified
+  Harness: none (follow-on: minio_parquet_min_app scenario)
+  Last verified by: verification/examples/data/test_storage_examples.py
+
 
 - `duckdb-polars-example.py`
   Verification level: behavior-verified
