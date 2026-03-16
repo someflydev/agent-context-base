@@ -1,0 +1,114 @@
+<%# phoenix-faceted-filter-panel-template.html.heex
+    HEEx template showing the split include/exclude filter panel rendering idiom.
+    Assigns: @state (map with :team_in, :team_out, etc.), @facet_options, @quick_excludes
+%>
+
+<div id="filter-panel" class="space-y-4">
+  <div class="rounded bg-slate-50 px-3 py-2 text-xs text-slate-600" data-role="count-discipline">
+    Counts reflect the active backend query semantics.
+  </div>
+
+  <%# Quick excludes strip %>
+  <div class="flex flex-wrap items-center gap-2 border-b border-slate-100 pb-3"
+       data-role="quick-excludes-strip">
+    <span class="text-xs font-semibold uppercase tracking-wide text-slate-400 self-center">
+      Quick excludes
+    </span>
+
+    <%= for {dim, val} <- @quick_excludes do %>
+      <% dim_out   = Map.get(@state, String.to_atom("#{dim}_out"), []) %>
+      <% is_active = val in dim_out %>
+      <% active_str = if is_active, do: "true", else: "false" %>
+      <% impact = @exclude_impact_counts[dim][val] || 0 %>
+      <% cls = if is_active,
+           do: "flex items-center gap-1 rounded border border-red-300 bg-red-50 px-2 py-1 text-xs font-medium text-red-700 cursor-pointer",
+           else: "flex items-center gap-1 rounded border border-slate-200 px-2 py-1 text-xs text-slate-600 cursor-pointer" %>
+
+      <label data-role="quick-exclude"
+             data-quick-exclude-dimension={dim}
+             data-quick-exclude-value={val}
+             data-active={active_str}
+             class={cls}>
+        <input type="checkbox" name={"#{dim}_out"} value={val}
+               checked={is_active} class="sr-only" />
+        {String.capitalize(val)}
+        <span class="rounded bg-slate-100 px-1 ml-1">{impact}</span>
+      </label>
+    <% end %>
+  </div>
+
+  <%# Per-dimension groups %>
+  <%= for dim <- ["team", "status", "region"] do %>
+    <% dim_out    = Map.get(@state, String.to_atom("#{dim}_out"), []) %>
+    <% dim_in     = Map.get(@state, String.to_atom("#{dim}_in"),  []) %>
+    <% options    = @facet_options[dim] || [] %>
+    <% inc_counts = @facet_counts[dim] || %{} %>
+    <% exc_counts = @exclude_impact_counts[dim] || %{} %>
+
+    <section data-filter-dimension={dim} class="space-y-2">
+      <h3 class="text-xs font-semibold uppercase tracking-wide text-slate-500">
+        {String.capitalize(dim)}
+      </h3>
+
+      <%# Include sub-section %>
+      <div data-role="include-options" class="space-y-1">
+        <p class="text-xs text-slate-400 uppercase tracking-wide">Include</p>
+
+        <%= for option <- options do %>
+          <% is_excluded  = option in dim_out %>
+          <% is_checked   = option in dim_in %>
+          <% opt_count    = if is_excluded, do: 0, else: inc_counts[option] || 0 %>
+          <% label_extra  = if is_excluded, do: " opacity-50 cursor-not-allowed", else: "" %>
+
+          <label data-filter-dimension={dim}
+                 data-filter-option={option}
+                 data-filter-mode="include"
+                 data-option-count={opt_count}
+                 {if is_excluded, do: [{"data-excluded", "true"}], else: []}
+                 class={"flex items-center justify-between rounded border border-slate-200 px-3 py-2 text-sm#{label_extra}"}>
+            <span class="flex items-center gap-2">
+              <input type="checkbox"
+                     name={"#{dim}_in"}
+                     value={option}
+                     checked={is_checked}
+                     disabled={is_excluded} />
+              <span class="font-medium text-slate-800">{String.capitalize(option)}</span>
+            </span>
+            <span data-role="option-count" class="rounded bg-slate-100 px-2 py-1 text-slate-600">
+              {opt_count}
+            </span>
+          </label>
+        <% end %>
+      </div>
+
+      <%# Exclude sub-section %>
+      <div data-role="exclude-options" class="mt-2 space-y-1">
+        <p class="text-xs text-slate-400 uppercase tracking-wide">Exclude</p>
+
+        <%= for option <- options do %>
+          <% is_active   = option in dim_out %>
+          <% impact      = exc_counts[option] || 0 %>
+          <% border_cls  = if is_active, do: "border-red-200 bg-red-50", else: "border-slate-200" %>
+
+          <label data-filter-dimension={dim}
+                 data-filter-option={option}
+                 data-filter-mode="exclude"
+                 data-option-count={impact}
+                 {if is_active, do: [{"data-active", "true"}], else: []}
+                 class={"flex items-center justify-between rounded border #{border_cls} px-3 py-2 text-sm"}>
+            <span class="flex items-center gap-2">
+              <input type="checkbox"
+                     name={"#{dim}_out"}
+                     value={option}
+                     checked={is_active} />
+              <span class="font-medium text-slate-800">{String.capitalize(option)}</span>
+            </span>
+            <span data-role="option-count" class="rounded bg-slate-100 px-2 py-1 text-slate-600">
+              {impact}
+            </span>
+          </label>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+</div>

@@ -1,0 +1,182 @@
+// go-echo-faceted-filter-panel-template.templ
+//
+// Typed templ component for the split include/exclude filter panel.
+// NOTE: Run "templ generate" to compile this file to Go before building.
+// This file is the typed templ equivalent of the string-building approach in
+// go-echo-faceted-filter-example.go.
+
+package main
+
+import "fmt"
+
+// FilterPanel renders the complete split include/exclude filter panel.
+templ FilterPanel(state QueryState, facetOpts map[string][]string, quickExcludes [][2]string) {
+	<div id="filter-panel" class="space-y-4">
+		<div class="rounded bg-slate-50 px-3 py-2 text-xs text-slate-600" data-role="count-discipline">
+			Counts reflect the active backend query semantics.
+		</div>
+		@QuickExcludesStrip(state, quickExcludes)
+		for _, dim := range []string{"team", "status", "region"} {
+			@DimensionGroup(state, dim, facetOpts[dim])
+		}
+	</div>
+}
+
+// QuickExcludesStrip renders the preconfigured quick-exclude toggles at the top of the panel.
+templ QuickExcludesStrip(state QueryState, quickExcludes [][2]string) {
+	<div class="flex flex-wrap items-center gap-2 border-b border-slate-100 pb-3" data-role="quick-excludes-strip">
+		<span class="text-xs font-semibold uppercase tracking-wide text-slate-400 self-center">Quick excludes</span>
+		for _, qe := range quickExcludes {
+			@QuickExcludeToggle(state, qe[0], qe[1])
+		}
+	</div>
+}
+
+// QuickExcludeToggle renders a single quick-exclude toggle button.
+templ QuickExcludeToggle(state QueryState, dim string, val string) {
+	{{
+		impact   := excludeImpactCounts(state, dim)
+		var dimOut []string
+		switch dim {
+		case "team":   dimOut = state.TeamOut
+		case "status": dimOut = state.StatusOut
+		case "region": dimOut = state.RegionOut
+		}
+		isActive  := contains(dimOut, val)
+		activeStr := "false"
+		checked   := false
+		cls := "flex items-center gap-1 rounded border border-slate-200 px-2 py-1 text-xs text-slate-600 cursor-pointer"
+		if isActive {
+			activeStr = "true"
+			checked   = true
+			cls = "flex items-center gap-1 rounded border border-red-300 bg-red-50 px-2 py-1 text-xs font-medium text-red-700 cursor-pointer"
+		}
+	}}
+	<label
+		data-role="quick-exclude"
+		data-quick-exclude-dimension={ dim }
+		data-quick-exclude-value={ val }
+		data-active={ activeStr }
+		class={ cls }
+	>
+		<input type="checkbox" name={ fmt.Sprintf("%s_out", dim) } value={ val } checked?={ checked } class="sr-only"/>
+		{ val }
+		<span class="rounded bg-slate-100 px-1 ml-1">{ fmt.Sprintf("%d", impact[val]) }</span>
+	</label>
+}
+
+// DimensionGroup renders one facet dimension with include and exclude sub-sections.
+templ DimensionGroup(state QueryState, dim string, options []string) {
+	{{
+		incCounts := facetCounts(state, dim)
+		excCounts := excludeImpactCounts(state, dim)
+		var dimOut, dimIn []string
+		switch dim {
+		case "team":   dimOut = state.TeamOut; dimIn = state.TeamIn
+		case "status": dimOut = state.StatusOut; dimIn = state.StatusIn
+		case "region": dimOut = state.RegionOut; dimIn = state.RegionIn
+		}
+	}}
+	<section data-filter-dimension={ dim } class="space-y-2">
+		<h3 class="text-xs font-semibold uppercase tracking-wide text-slate-500">{ dim }</h3>
+		<div data-role="include-options" class="space-y-1">
+			<p class="text-xs text-slate-400 uppercase tracking-wide">Include</p>
+			for _, option := range options {
+				@IncludeOption(dim, option, dimIn, dimOut, incCounts[option])
+			}
+		</div>
+		<div data-role="exclude-options" class="mt-2 space-y-1">
+			<p class="text-xs text-slate-400 uppercase tracking-wide">Exclude</p>
+			for _, option := range options {
+				@ExcludeOption(dim, option, dimOut, excCounts[option])
+			}
+		</div>
+	</section>
+}
+
+// IncludeOption renders a single include option label with all required data-* attributes.
+templ IncludeOption(dim string, option string, dimIn []string, dimOut []string, rawCount int) {
+	{{
+		isExcluded := contains(dimOut, option)
+		isChecked  := contains(dimIn, option)
+		optCount   := rawCount
+		if isExcluded {
+			optCount = 0
+		}
+		labelExtra := ""
+		if isExcluded {
+			labelExtra = " opacity-50 cursor-not-allowed"
+		}
+	}}
+	if isExcluded {
+		<label
+			data-filter-dimension={ dim }
+			data-filter-option={ option }
+			data-filter-mode="include"
+			data-option-count={ fmt.Sprintf("%d", optCount) }
+			data-excluded="true"
+			class={ "flex items-center justify-between rounded border border-slate-200 px-3 py-2 text-sm" + labelExtra }
+		>
+			<span class="flex items-center gap-2">
+				<input type="checkbox" name={ fmt.Sprintf("%s_in", dim) } value={ option } checked?={ isChecked } disabled/>
+				<span class="font-medium text-slate-800">{ option }</span>
+			</span>
+			<span data-role="option-count" class="rounded bg-slate-100 px-2 py-1 text-slate-600">{ fmt.Sprintf("%d", optCount) }</span>
+		</label>
+	} else {
+		<label
+			data-filter-dimension={ dim }
+			data-filter-option={ option }
+			data-filter-mode="include"
+			data-option-count={ fmt.Sprintf("%d", optCount) }
+			class="flex items-center justify-between rounded border border-slate-200 px-3 py-2 text-sm"
+		>
+			<span class="flex items-center gap-2">
+				<input type="checkbox" name={ fmt.Sprintf("%s_in", dim) } value={ option } checked?={ isChecked }/>
+				<span class="font-medium text-slate-800">{ option }</span>
+			</span>
+			<span data-role="option-count" class="rounded bg-slate-100 px-2 py-1 text-slate-600">{ fmt.Sprintf("%d", optCount) }</span>
+		</label>
+	}
+}
+
+// ExcludeOption renders a single exclude option label with all required data-* attributes.
+templ ExcludeOption(dim string, option string, dimOut []string, impact int) {
+	{{
+		isActive  := contains(dimOut, option)
+		borderCls := "border-slate-200"
+		if isActive {
+			borderCls = "border-red-200 bg-red-50"
+		}
+	}}
+	if isActive {
+		<label
+			data-filter-dimension={ dim }
+			data-filter-option={ option }
+			data-filter-mode="exclude"
+			data-option-count={ fmt.Sprintf("%d", impact) }
+			data-active="true"
+			class={ "flex items-center justify-between rounded border " + borderCls + " px-3 py-2 text-sm" }
+		>
+			<span class="flex items-center gap-2">
+				<input type="checkbox" name={ fmt.Sprintf("%s_out", dim) } value={ option } checked/>
+				<span class="font-medium text-slate-800">{ option }</span>
+			</span>
+			<span data-role="option-count" class="rounded bg-slate-100 px-2 py-1 text-slate-600">{ fmt.Sprintf("%d", impact) }</span>
+		</label>
+	} else {
+		<label
+			data-filter-dimension={ dim }
+			data-filter-option={ option }
+			data-filter-mode="exclude"
+			data-option-count={ fmt.Sprintf("%d", impact) }
+			class={ "flex items-center justify-between rounded border " + borderCls + " px-3 py-2 text-sm" }
+		>
+			<span class="flex items-center gap-2">
+				<input type="checkbox" name={ fmt.Sprintf("%s_out", dim) } value={ option }/>
+				<span class="font-medium text-slate-800">{ option }</span>
+			</span>
+			<span data-role="option-count" class="rounded bg-slate-100 px-2 py-1 text-slate-600">{ fmt.Sprintf("%d", impact) }</span>
+		</label>
+	}
+}
