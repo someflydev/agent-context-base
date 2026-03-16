@@ -14,6 +14,7 @@ stacks:
       - fastapi-smoke-test-example
       - fastapi-db-integration-example
       - polars-seed-data-example
+      - fastapi-split-filter-panel-example
     missing_verification:
       - advanced auth example
       - websocket example
@@ -36,6 +37,7 @@ stacks:
       - go-echo-handler-example
       - go-echo-source-sync-example
       - go-echo-runtime-example
+      - go-echo-faceted-filter-example
     missing_verification:
       - middleware example
       - templ rendering example
@@ -50,6 +52,7 @@ stacks:
       - scala-tapir-http4s-zio-data-endpoint-example
       - scala-tapir-source-sync-example
       - scala-tapir-http4s-zio-runtime-example
+      - scala-tapir-http4s-zio-faceted-filter-example
     missing_verification:
       - native sbt compile in default verification tier
       - storage-backed Scala example
@@ -64,6 +67,7 @@ stacks:
       - kotlin-http4k-exposed-data-endpoint-example
       - kotlin-http4k-source-sync-example
       - kotlin-http4k-exposed-runtime-example
+      - kotlin-http4k-exposed-faceted-filter-example
     missing_verification:
       - native Gradle compile in default verification tier
       - storage-backed Kotlin example beyond in-memory H2
@@ -78,6 +82,7 @@ stacks:
       - dart-dartfrog-data-endpoint-example
       - dart-dartfrog-source-sync-example
       - dart-dartfrog-runtime-example
+      - dart-dartfrog-faceted-filter-example
     missing_verification:
       - native Dart analyzer or compile-aware check
       - storage-backed Dart Frog example
@@ -92,6 +97,7 @@ stacks:
       - clojure-kit-nextjdbc-hiccup-data-endpoint-example
       - clojure-kit-source-sync-example
       - clojure-kit-nextjdbc-hiccup-runtime-example
+      - clojure-kit-nextjdbc-hiccup-faceted-filter-example
     missing_verification:
       - native Clojure compile-aware check
       - storage-backed Clojure example beyond in-memory H2
@@ -106,6 +112,7 @@ stacks:
       - ocaml-dream-caqti-tyxml-data-endpoint-example
       - ocaml-dream-caqti-tyxml-source-sync-example
       - ocaml-dream-caqti-tyxml-runtime-example
+      - ocaml-dream-caqti-tyxml-faceted-filter-example
     missing_verification:
       - native dune compile-aware check
       - Postgres-backed Caqti runtime verification
@@ -120,6 +127,7 @@ stacks:
       - crystal-kemal-avram-data-endpoint-example
       - crystal-kemal-source-sync-example
       - crystal-kemal-avram-runtime-example
+      - crystal-kemal-avram-faceted-filter-example
     missing_verification:
       - native Crystal compile-aware check
       - Postgres-backed Avram runtime verification
@@ -134,6 +142,7 @@ stacks:
       - nim-jester-data-endpoint-example
       - nim-jester-source-sync-example
       - nim-jester-happyx-runtime-example
+      - nim-jester-happyx-faceted-filter-example
     missing_verification:
       - native Nim compile-aware check
       - storage-backed Nim example
@@ -148,6 +157,7 @@ stacks:
       - zig-zap-data-endpoint-example
       - zig-zap-source-sync-example
       - zig-zap-jetzig-runtime-example
+      - zig-zap-jetzig-faceted-filter-example
     missing_verification:
       - native Zig compile-aware check
       - richer Jetzig runtime bundle
@@ -160,6 +170,7 @@ stacks:
       - rust-axum-route-example
       - rust-axum-source-sync-example
       - rust-axum-runtime-example
+      - rust-axum-faceted-filter-example
     missing_verification:
       - extractor validation example
       - storage state example
@@ -171,6 +182,7 @@ stacks:
       - phoenix-route-controller-example
       - phoenix-router-surface-example
       - phoenix-source-sync-example
+      - phoenix-faceted-filter-example
     missing_verification:
       - native Elixir parse or compile check
       - Phoenix runtime bundle example
@@ -185,6 +197,7 @@ stacks:
       - ruby-hanami-data-endpoint-example
       - ruby-hanami-source-sync-example
       - ruby-hanami-runtime-example
+      - ruby-hanami-faceted-filter-example
     missing_verification:
       - native Ruby bundle exec check in default verification tier
       - ROM-backed persistence example
@@ -196,6 +209,7 @@ stacks:
     verified_examples:
       - typescript-hono-handler-example
       - typescript-hono-source-sync-example
+      - typescript-hono-faceted-filter-example
     missing_verification:
       - runtime bundle example
       - Bun runtime verification for Hono acquisition paths
@@ -321,6 +335,80 @@ stacks:
       - DLQ path integration test
     notes: Capture-enrich-persist combo pack. A structure-verified runnable .py companion (nats-jetstream-mongo-pipeline-example.py) is now present. A live docker-compose harness (nats_mongo_min_app scenario) would raise this to support_level 3.
 capabilities:
+  - capability: faceted-filter-ui
+    shared_examples:
+      - README-faceted-filter-examples
+    stacks:
+      - stack: python-fastapi-uv-ruff-orjson-polars
+        status: behavior-verified
+        stack_specific_examples:
+          - fastapi-split-filter-panel-example
+        follow_on_prompt: PROMPT_51
+      - stack: elixir-phoenix
+        status: structure-verified
+        stack_specific_examples:
+          - phoenix-faceted-filter-example
+        follow_on_prompt: PROMPT_51
+      - stack: go-echo
+        status: structure-verified
+        stack_specific_examples:
+          - go-echo-faceted-filter-example
+        follow_on_prompt: PROMPT_51
+      - stack: typescript-hono-bun
+        status: structure-verified
+        stack_specific_examples:
+          - typescript-hono-faceted-filter-example
+        follow_on_prompt: PROMPT_51
+      - stack: rust-axum-modern
+        status: structure-verified
+        stack_specific_examples:
+          - rust-axum-faceted-filter-example
+        follow_on_prompt: PROMPT_51
+      - stack: ruby-hanami
+        status: structure-verified
+        stack_specific_examples:
+          - ruby-hanami-faceted-filter-example
+        follow_on_prompt: PROMPT_51
+      - stack: clojure-kit-nextjdbc-hiccup
+        status: structure-verified
+        stack_specific_examples:
+          - clojure-kit-nextjdbc-hiccup-faceted-filter-example
+        follow_on_prompt: PROMPT_51
+      - stack: kotlin-http4k-exposed
+        status: structure-verified
+        stack_specific_examples:
+          - kotlin-http4k-exposed-faceted-filter-example
+        follow_on_prompt: PROMPT_51
+      - stack: scala-tapir-http4s-zio
+        status: structure-verified
+        stack_specific_examples:
+          - scala-tapir-http4s-zio-faceted-filter-example
+        follow_on_prompt: PROMPT_51
+      - stack: crystal-kemal-avram
+        status: structure-verified
+        stack_specific_examples:
+          - crystal-kemal-avram-faceted-filter-example
+        follow_on_prompt: PROMPT_51
+      - stack: dart-dartfrog
+        status: structure-verified
+        stack_specific_examples:
+          - dart-dartfrog-faceted-filter-example
+        follow_on_prompt: PROMPT_51
+      - stack: ocaml-dream-caqti-tyxml
+        status: structure-verified
+        stack_specific_examples:
+          - ocaml-dream-caqti-tyxml-faceted-filter-example
+        follow_on_prompt: PROMPT_51
+      - stack: nim-jester-happyx
+        status: structure-verified
+        stack_specific_examples:
+          - nim-jester-happyx-faceted-filter-example
+        follow_on_prompt: PROMPT_51
+      - stack: zig-zap-jetzig
+        status: structure-verified
+        stack_specific_examples:
+          - zig-zap-jetzig-faceted-filter-example
+        follow_on_prompt: PROMPT_51
   - capability: canonical-data-acquisition
     shared_examples:
       - canonical-data-acquisition-index

@@ -375,3 +375,61 @@ capabilities:
     target: context/doctrine/filter-state-and-query-state.md
   - alias: playwright semantics
     target: context/doctrine/playwright-verification-philosophy.md
+  - alias: faceted filter examples
+    target: examples/canonical-api/README-faceted-filter-examples.md
+  - alias: filter panel examples
+    target: examples/canonical-api/README-faceted-filter-examples.md
+  - alias: split filter panel
+    target: examples/canonical-api/README-faceted-filter-examples.md
+  - alias: faceted filter elixir
+    target: examples/canonical-api/phoenix-faceted-filter-example.ex
+  - alias: filter panel elixir
+    target: examples/canonical-api/phoenix-faceted-filter-example.ex
+  - alias: faceted filter go
+    target: examples/canonical-api/go-echo-faceted-filter-example.go
+  - alias: filter panel go
+    target: examples/canonical-api/go-echo-faceted-filter-example.go
+  - alias: faceted filter typescript
+    target: examples/canonical-api/typescript-hono-faceted-filter-example.ts
+  - alias: filter panel typescript
+    target: examples/canonical-api/typescript-hono-faceted-filter-example.ts
+  - alias: faceted filter rust
+    target: examples/canonical-api/rust-axum-faceted-filter-example.rs
+  - alias: filter panel rust
+    target: examples/canonical-api/rust-axum-faceted-filter-example.rs
+  - alias: faceted filter ruby
+    target: examples/canonical-api/ruby-hanami-faceted-filter-example.rb
+  - alias: filter panel ruby
+    target: examples/canonical-api/ruby-hanami-faceted-filter-example.rb
+  - alias: faceted filter clojure
+    target: examples/canonical-api/clojure-kit-nextjdbc-hiccup-faceted-filter-example.clj
+  - alias: filter panel clojure
+    target: examples/canonical-api/clojure-kit-nextjdbc-hiccup-faceted-filter-example.clj
+  - alias: faceted filter kotlin
+    target: examples/canonical-api/kotlin-http4k-exposed-faceted-filter-example.kt
+  - alias: filter panel kotlin
+    target: examples/canonical-api/kotlin-http4k-exposed-faceted-filter-example.kt
+  - alias: faceted filter scala
+    target: examples/canonical-api/scala-tapir-http4s-zio-faceted-filter-example.scala
+  - alias: filter panel scala
+    target: examples/canonical-api/scala-tapir-http4s-zio-faceted-filter-example.scala
+  - alias: faceted filter crystal
+    target: examples/canonical-api/crystal-kemal-avram-faceted-filter-example.cr
+  - alias: filter panel crystal
+    target: examples/canonical-api/crystal-kemal-avram-faceted-filter-example.cr
+  - alias: faceted filter dart
+    target: examples/canonical-api/dart-dartfrog-faceted-filter-example.dart
+  - alias: filter panel dart
+    target: examples/canonical-api/dart-dartfrog-faceted-filter-example.dart
+  - alias: faceted filter ocaml
+    target: examples/canonical-api/ocaml-dream-caqti-tyxml-faceted-filter-example.ml
+  - alias: filter panel ocaml
+    target: examples/canonical-api/ocaml-dream-caqti-tyxml-faceted-filter-example.ml
+  - alias: faceted filter nim
+    target: examples/canonical-api/nim-jester-happyx-faceted-filter-example.nim
+  - alias: filter panel nim
+    target: examples/canonical-api/nim-jester-happyx-faceted-filter-example.nim
+  - alias: faceted filter zig
+    target: examples/canonical-api/zig-zap-jetzig-faceted-filter-example.zig
+  - alias: filter panel zig
+    target: examples/canonical-api/zig-zap-jetzig-faceted-filter-example.zig

@@ -2633,3 +2633,445 @@ examples:
     scenario_harness: ""
     last_verified_by: verification/examples/data/test_storage_examples.py
     confidence: medium
+  - name: phoenix-faceted-filter-example
+    path: examples/canonical-api/phoenix-faceted-filter-example.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - normalize function present
+      - filter_rows function present
+      - facet_counts function present
+      - exclude_impact_counts function present
+      - render_filter_panel function present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: phoenix-faceted-filter-example-doc
+    path: examples/canonical-api/phoenix-faceted-filter-example.md
+    language: markdown
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: go-echo-faceted-filter-example
+    path: examples/canonical-api/go-echo-faceted-filter-example.go
+    language: go
+    stack_tags:
+      - go-echo
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - normalize function present
+      - filterRows function present
+      - facetCounts function present
+      - excludeImpactCounts function present
+      - renderFilterPanel function present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: go-echo-faceted-filter-example-doc
+    path: examples/canonical-api/go-echo-faceted-filter-example.md
+    language: markdown
+    stack_tags:
+      - go-echo
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: typescript-hono-faceted-filter-example
+    path: examples/canonical-api/typescript-hono-faceted-filter-example.ts
+    language: typescript
+    stack_tags:
+      - typescript-hono-bun
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - normalize function present
+      - filterRows function present
+      - facetCounts function present
+      - excludeImpactCounts function present
+      - renderFilterPanel function present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: typescript-hono-faceted-filter-example-doc
+    path: examples/canonical-api/typescript-hono-faceted-filter-example.md
+    language: markdown
+    stack_tags:
+      - typescript-hono-bun
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: rust-axum-faceted-filter-example
+    path: examples/canonical-api/rust-axum-faceted-filter-example.rs
+    language: rust
+    stack_tags:
+      - rust-axum-modern
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - normalize function present
+      - filter_rows function present
+      - facet_counts function present
+      - exclude_impact_counts function present
+      - render_filter_panel function present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: rust-axum-faceted-filter-example-doc
+    path: examples/canonical-api/rust-axum-faceted-filter-example.md
+    language: markdown
+    stack_tags:
+      - rust-axum-modern
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: ruby-hanami-faceted-filter-example
+    path: examples/canonical-api/ruby-hanami-faceted-filter-example.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - normalize function present
+      - filter_rows function present
+      - facet_counts function present
+      - exclude_impact_counts function present
+      - render_filter_panel function present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: ruby-hanami-faceted-filter-example-doc
+    path: examples/canonical-api/ruby-hanami-faceted-filter-example.md
+    language: markdown
+    stack_tags:
+      - ruby-hanami
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: clojure-kit-nextjdbc-hiccup-faceted-filter-example
+    path: examples/canonical-api/clojure-kit-nextjdbc-hiccup-faceted-filter-example.clj
+    language: clojure
+    stack_tags:
+      - clojure-kit-nextjdbc-hiccup
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - normalize function present
+      - filter-rows function present
+      - facet-counts function present
+      - exclude-impact-counts function present
+      - render-filter-panel function present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: clojure-kit-nextjdbc-hiccup-faceted-filter-example-doc
+    path: examples/canonical-api/clojure-kit-nextjdbc-hiccup-faceted-filter-example.md
+    language: markdown
+    stack_tags:
+      - clojure-kit-nextjdbc-hiccup
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: kotlin-http4k-exposed-faceted-filter-example
+    path: examples/canonical-api/kotlin-http4k-exposed-faceted-filter-example.kt
+    language: kotlin
+    stack_tags:
+      - kotlin-http4k-exposed
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - normalize function present
+      - filterRows function present
+      - facetCounts function present
+      - excludeImpactCounts function present
+      - renderFilterPanel function present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: kotlin-http4k-exposed-faceted-filter-example-doc
+    path: examples/canonical-api/kotlin-http4k-exposed-faceted-filter-example.md
+    language: markdown
+    stack_tags:
+      - kotlin-http4k-exposed
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: scala-tapir-http4s-zio-faceted-filter-example
+    path: examples/canonical-api/scala-tapir-http4s-zio-faceted-filter-example.scala
+    language: scala
+    stack_tags:
+      - scala-tapir-http4s-zio
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - normalize function present
+      - filterRows function present
+      - facetCounts function present
+      - excludeImpactCounts function present
+      - renderFilterPanel function present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: scala-tapir-http4s-zio-faceted-filter-example-doc
+    path: examples/canonical-api/scala-tapir-http4s-zio-faceted-filter-example.md
+    language: markdown
+    stack_tags:
+      - scala-tapir-http4s-zio
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: crystal-kemal-avram-faceted-filter-example
+    path: examples/canonical-api/crystal-kemal-avram-faceted-filter-example.cr
+    language: crystal
+    stack_tags:
+      - crystal-kemal-avram
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - normalize function present
+      - filter_rows function present
+      - facet_counts function present
+      - exclude_impact_counts function present
+      - render_filter_panel function present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: crystal-kemal-avram-faceted-filter-example-doc
+    path: examples/canonical-api/crystal-kemal-avram-faceted-filter-example.md
+    language: markdown
+    stack_tags:
+      - crystal-kemal-avram
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: dart-dartfrog-faceted-filter-example
+    path: examples/canonical-api/dart-dartfrog-faceted-filter-example.dart
+    language: dart
+    stack_tags:
+      - dart-dartfrog
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - normalize function present
+      - filterRows function present
+      - facetCounts function present
+      - excludeImpactCounts function present
+      - renderFilterPanel function present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: dart-dartfrog-faceted-filter-example-doc
+    path: examples/canonical-api/dart-dartfrog-faceted-filter-example.md
+    language: markdown
+    stack_tags:
+      - dart-dartfrog
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: ocaml-dream-caqti-tyxml-faceted-filter-example
+    path: examples/canonical-api/ocaml-dream-caqti-tyxml-faceted-filter-example.ml
+    language: ocaml
+    stack_tags:
+      - ocaml-dream-caqti-tyxml
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - normalize function present
+      - filter_rows function present
+      - facet_counts function present
+      - exclude_impact_counts function present
+      - render_filter_panel function present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: ocaml-dream-caqti-tyxml-faceted-filter-example-doc
+    path: examples/canonical-api/ocaml-dream-caqti-tyxml-faceted-filter-example.md
+    language: markdown
+    stack_tags:
+      - ocaml-dream-caqti-tyxml
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: nim-jester-happyx-faceted-filter-example
+    path: examples/canonical-api/nim-jester-happyx-faceted-filter-example.nim
+    language: nim
+    stack_tags:
+      - nim-jester-happyx
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - normalize function present
+      - filterRows function present
+      - facetCounts function present
+      - excludeImpactCounts function present
+      - renderFilterPanel function present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: nim-jester-happyx-faceted-filter-example-doc
+    path: examples/canonical-api/nim-jester-happyx-faceted-filter-example.md
+    language: markdown
+    stack_tags:
+      - nim-jester-happyx
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: zig-zap-jetzig-faceted-filter-example
+    path: examples/canonical-api/zig-zap-jetzig-faceted-filter-example.zig
+    language: zig
+    stack_tags:
+      - zig-zap-jetzig
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - countFilteredRows function present
+      - countFacet function present
+      - countExcludeImpact function present
+      - index handler present
+      - filterPanel handler present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: zig-zap-jetzig-faceted-filter-example-doc
+    path: examples/canonical-api/zig-zap-jetzig-faceted-filter-example.md
+    language: markdown
+    stack_tags:
+      - zig-zap-jetzig
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium

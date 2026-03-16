@@ -66,6 +66,35 @@ See `context/doctrine/filter-panel-rendering-rules.md` for the full specificatio
 failure mode table. See `examples/canonical-api/fastapi-split-filter-panel-example.py`
 for a complete working implementation.
 
+## Multi-Language Support
+
+The split include/exclude filter panel pattern is implemented identically across 14 language
+stacks. All implementations share the same in-memory dataset, QueryState model, filter
+algorithm, HTML data-* attribute contract, and endpoint structure.
+
+**Language implementations (all in `examples/canonical-api/`):**
+
+| Language | Framework | Example file |
+|----------|-----------|-------------|
+| Python | FastAPI | `fastapi-split-filter-panel-example.py` |
+| Elixir | Phoenix | `phoenix-faceted-filter-example.ex` |
+| Go | Echo + templ | `go-echo-faceted-filter-example.go` |
+| TypeScript | Hono + Bun | `typescript-hono-faceted-filter-example.ts` |
+| Rust | Axum | `rust-axum-faceted-filter-example.rs` |
+| Ruby | Hanami | `ruby-hanami-faceted-filter-example.rb` |
+| Clojure | Kit + Hiccup | `clojure-kit-nextjdbc-hiccup-faceted-filter-example.clj` |
+| Kotlin | http4k | `kotlin-http4k-exposed-faceted-filter-example.kt` |
+| Scala | http4s + ZIO | `scala-tapir-http4s-zio-faceted-filter-example.scala` |
+| Crystal | Kemal | `crystal-kemal-avram-faceted-filter-example.cr` |
+| Dart | Dart Frog | `dart-dartfrog-faceted-filter-example.dart` |
+| OCaml | Dream + TyXML | `ocaml-dream-caqti-tyxml-faceted-filter-example.ml` |
+| Nim | Jester | `nim-jester-happyx-faceted-filter-example.nim` |
+| Zig | Jetzig + Zap | `zig-zap-jetzig-faceted-filter-example.zig` |
+
+See `examples/canonical-api/README-faceted-filter-examples.md` for the cross-language
+correctness reference including shared dataset, algorithm contract, and multi-value param
+parsing idioms per language.
+
 ## Common Assistant Mistakes
 
 - treating HTMX responses as lightweight text instead of a contract surface
