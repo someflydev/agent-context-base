@@ -1,0 +1,585 @@
+You are working inside the agent-context-base repository.
+
+Before proceeding, read:
+
+  context/stacks/nats-jetstream.md
+  context/stacks/kafka.md                         (added in PROMPT_55)
+  context/stacks/redis.md
+  context/stacks/event-streaming-patterns.md
+  context/doctrine/multi-backend-coordination.md  (references broker selection)
+  context/router/alias-catalog.yaml              (read before updating)
+  verification/stack_support_matrix.yaml         (read before updating)
+
+Also read if PROMPT_55 has been applied:
+  context/stacks/kafka-trino.md
+
+If PROMPT_55 has NOT been applied, note which Kafka references are still stubs
+and proceed without blocking. The broker-selection doctrine can reference
+context/stacks/kafka.md as a planned file.
+
+This prompt adds two things the repo currently lacks:
+  1. A doctrine doc for choosing between NATS JetStream, Kafka, and Redis Streams
+  2. Full depth on Redis Streams (the redis.md doc has only a one-line table entry)
+
+It also updates three existing docs that need to reference the new doctrine:
+  nats-jetstream.md, kafka.md (if present), and event-streaming-patterns.md.
+
+Produce:
+  1. context/doctrine/broker-selection.md — three-way broker decision guide
+  2. Update context/stacks/redis.md — add full Redis Streams section
+  3. Update context/stacks/nats-jetstream.md — add cross-reference to broker-selection
+  4. Update context/stacks/kafka.md — add cross-reference to broker-selection
+     (only if kafka.md exists; if it does not, skip this update)
+  5. Update context/stacks/event-streaming-patterns.md — expand to reference all three
+     brokers and broker-selection.md
+  6. Registry updates:
+       context/router/alias-catalog.yaml
+       verification/stack_support_matrix.yaml (add redis-streams capability row)
+
+Organize into commit-ready batches. For each batch:
+1. Title and purpose.
+2. Files created or updated (full paths).
+3. Full content of every file.
+4. Suggested commit message with prefix [PROMPT_56].
+
+
+---
+
+SECTION 1 — broker-selection.md SPECIFICATION
+
+File: context/doctrine/broker-selection.md
+
+This is the authoritative three-way decision guide for choosing a message broker.
+It covers NATS JetStream, Kafka, and Redis Streams. It is the first place an
+assistant should look when a user asks "which broker should I use?" or when
+designing a new event-driven system.
+
+Tone: concrete and opinionated. Each option should have a clear recommended use
+case, not a list of abstract pros and cons. Users come here for a decision, not
+a survey.
+
+Sections:
+
+  ## Quick Decision Table
+
+  A 3-column table (NATS JetStream / Kafka / Redis Streams) with rows for:
+    - Operational complexity (1 binary vs. broker+ZK/KRaft vs. Redis instance)
+    - Throughput target (small-medium vs. high vs. low-medium)
+    - Schema enforcement (none built-in vs. schema registry available vs. none)
+    - Ordering guarantee (per-subject vs. per-partition vs. per-stream)
+    - Consumer model (push or pull / consumer groups / consumer groups)
+    - Retention model (configurable age/size / configurable age/size / MAXLEN trim or XDEL)
+    - At-least-once delivery (yes, with ack / yes, with offset commit / yes, with ACK)
+    - Cross-team schema contracts (JSON convention / Avro or Protobuf + registry / JSON convention)
+    - Replay capability (stream replay from sequence / offset reset / XRANGE from ID)
+    - When to reach for it (summary phrase per option)
+
+  ## NATS JetStream
+
+  Recommended when:
+  - Single-team or intra-service event bus with moderate volume (< 1M messages/day)
+  - Simple subject-based routing is sufficient; no schema registry needed
+  - Local dev must be fast to spin up — single binary, no ZooKeeper, no external deps
+  - The repo already uses NATS for its pub-sub layer and needs persistence added
+  - Fan-out to multiple consumers on different subjects with wildcard routing
+  - At-least-once delivery with durable pull consumers is the requirement
+
+  NOT recommended when:
+  - Multiple teams need strict schema compatibility guarantees (use Kafka + schema registry)
+  - Kafka client libraries are already in use by consuming services
+  - Partition-level throughput scaling is required (NATS scales vertically, not via partitions)
+  - Long-term (days/weeks) log retention for audit or replay at scale
+
+  Key operational notes:
+  - Single binary deployment (nats-server -js)
+  - Subject namespace is flat; streams bind to subject patterns
+  - Consumer types: push (server delivers) or pull (client fetches in batches)
+  - Preferred consumer type in this repo: durable pull consumers (see nats-jetstream.md)
+  - docker-compose: `nats:2.10-alpine` with `-js` flag; healthcheck via HTTP monitoring port 8222
+
+  ## Kafka
+
+  Recommended when:
+  - Multiple independent consumer groups need to read the same topic at different offsets
+  - Cross-team schema contracts require Avro or Protobuf with a schema registry
+  - Message volume benefits from horizontal partition scaling (> 1M messages/day)
+  - Long-term retention (days to weeks) needed for replay, audit, or compliance
+  - The primary producer is Clojure (jackdaw/Kafka Streams), Scala (Akka Streams/Spark),
+    or a JVM-native pipeline
+
+  NOT recommended when:
+  - Small-to-medium volume single-team service — NATS is simpler to operate
+  - In-process or intra-service event bus — consider Redis Streams or NATS
+  - Schema registry adds friction the team isn't ready to maintain
+  - Local dev speed matters more than production fidelity (ZooKeeper/KRaft adds startup time)
+
+  Key operational notes:
+  - Modern local dev: bitnami/kafka:3.7 with KRaft (no ZooKeeper)
+  - Production: KRaft mode is stable in Kafka 3.3+; ZooKeeper mode is deprecated
+  - Consumer group semantics: partitions are distributed among members; one partition
+    per consumer at a time; scale consumers up to the partition count
+  - Offset commit: always use manual commit (enable.auto.commit=false) for at-least-once
+  - docker-compose: bitnami/kafka with KRaft config; healthcheck via kafka-topics.sh
+
+  ## Redis Streams
+
+  Recommended when:
+  - The repo already uses Redis for caching, rate limiting, or other state
+  - Lightweight append log with consumer groups without a separate broker service
+  - Volume is modest (hundreds of thousands per day, not millions)
+  - Messages can be trimmed after processing (no long-term retention needed)
+  - Fan-out to multiple consumer groups from a single stream is required
+  - Task queue or job dispatch where Redis is the natural home
+
+  NOT recommended when:
+  - Durable long-term retention is required — Redis Streams trim via MAXLEN or XDEL;
+    data is not backed by a log file
+  - Multiple independent teams or services need a strict schema contract
+  - Volume requires horizontal partition scaling — Redis Streams do not partition
+  - The broker concern is large enough to warrant a dedicated message broker deployment
+
+  Key operational notes:
+  - Redis Streams commands: XADD, XREAD, XREADGROUP, XACK, XPENDING, XRANGE
+  - Consumer groups: created with XGROUP CREATE; each group tracks its own last-delivered ID
+  - ACK semantics: after processing, XACK marks the message as acknowledged within the group
+  - Pending entries: unacknowledged messages tracked in the Pending Entries List (PEL);
+    use XPENDING to inspect; XCLAIM to reassign stale messages
+  - Trimming: use MAXLEN ~ N (approximate) on XADD or standalone XTRIM to bound stream size
+  - docker-compose: redis:7-alpine; healthcheck via redis-cli ping
+
+  ## Migration Paths
+
+  If you outgrow NATS JetStream → Kafka:
+  - The event schema doesn't need to change (keep payload_version, correlation_id, etc.)
+  - Replace the NATS connection/publish call with a Kafka producer
+  - Replace the Gnat subscription with a Kafka consumer group
+  - Add a schema registry step if cross-team contracts are now needed
+  - Run both in parallel during migration: new consumers read from Kafka, old from NATS,
+    until all consumers are migrated
+
+  If you outgrow Redis Streams → NATS JetStream:
+  - Redis Streams consumer group semantics map directly to NATS durable pull consumers
+  - The main migration cost is deploying NATS alongside Redis
+  - Keep Redis for its other uses (cache, rate limiting); replace only the Streams usage
+
+  If you outgrow NATS → Redis Streams (downsizing):
+  - Rare — Redis Streams are typically chosen to avoid adding NATS, not to replace it
+  - Valid when a repo already runs Redis-heavy and wants to eliminate the NATS service
+
+  ## Seam Type Interaction
+
+  From context/doctrine/multi-backend-coordination.md — the broker seam type applies
+  to all three options. The choice of broker does not change the seam contract pattern:
+
+  | Broker | Best for (seam context) |
+  |---|---|
+  | NATS JetStream | Lightweight intra-cluster fan-out; Go↔Elixir, Go↔Go |
+  | Kafka | Cross-team domain event pipelines; Clojure↔Go, Scala↔Python |
+  | Redis Streams | Job queues; Elixir↔Go, Python↔Python on existing Redis |
+
+  ## Related
+
+  - context/stacks/nats-jetstream.md
+  - context/stacks/kafka.md
+  - context/stacks/redis.md (Redis Streams section)
+  - context/stacks/coordination-seam-patterns.md
+  - context/doctrine/multi-backend-coordination.md
+
+
+---
+
+SECTION 2 — redis.md UPDATE — REDIS STREAMS SECTION
+
+Add a full "## Redis Streams" section to context/stacks/redis.md.
+Insert it after the existing "## Testing Expectations" section.
+
+The new section must cover:
+
+  ### When to Use Redis Streams
+  Use Redis Streams (not a List or Pub/Sub) when:
+  - You need durable consumer groups — multiple named groups tracking independent offsets
+  - You need at-least-once delivery — each message must be ACKed or it stays in PEL
+  - You need ordered delivery within the stream
+  - Volume is within Redis's capacity (hundreds of thousands per day) and you do not
+    need partition scaling
+  - You already run Redis and don't want to introduce a separate broker service
+
+  Do NOT use Redis Streams as a replacement for Kafka when:
+  - Volume requires horizontal partitioning beyond what a single Redis instance handles
+  - Long-term message retention (days/weeks) is required — MAXLEN trims messages
+  - Cross-team schema contracts need a registry
+
+  ### Key Commands
+
+  XADD — append a message:
+  ```python
+  # redis-py: pip install redis
+  import redis
+  r = redis.Redis.from_url(os.getenv("REDIS_URL"))
+
+  msg_id = r.xadd(
+      "domain:orders:events",
+      {
+          "payload_version": "1",
+          "correlation_id": "req-001",
+          "event_type": "order.created",
+          "entity_id": "ord-9182",
+          "tenant_id": "acme",
+      },
+      maxlen=10000,    # approximate trim — keeps stream bounded
+      approximate=True,
+  )
+  # msg_id: b'1710000000000-0' (millisecond timestamp + sequence)
+  ```
+
+  XREADGROUP — consume with a consumer group:
+  ```python
+  # Create consumer group (idempotent with mkstream=True):
+  try:
+      r.xgroup_create("domain:orders:events", "order-processors", id="0", mkstream=True)
+  except redis.exceptions.ResponseError as e:
+      if "BUSYGROUP" not in str(e):
+          raise  # group already exists is OK
+
+  # Read new messages (> means "after my last-delivered ID"):
+  messages = r.xreadgroup(
+      groupname="order-processors",
+      consumername="worker-1",
+      streams={"domain:orders:events": ">"},
+      count=10,
+      block=2000,   # block up to 2 seconds if no messages
+  )
+  for stream_name, entries in (messages or []):
+      for msg_id, fields in entries:
+          try:
+              process_event(fields)
+              r.xack("domain:orders:events", "order-processors", msg_id)
+          except Exception as e:
+              log.error(f"processing failed for {msg_id}: {e}")
+              # Do NOT ack — message stays in PEL for retry or DLQ handling
+  ```
+
+  XPENDING — inspect unacknowledged messages:
+  ```python
+  # Summary: how many pending messages per consumer
+  pending_summary = r.xpending("domain:orders:events", "order-processors")
+
+  # Detail: list specific pending messages
+  pending_detail = r.xpending_range(
+      "domain:orders:events", "order-processors",
+      min="-", max="+", count=100
+  )
+  # Each entry: {message_id, consumer, time_since_delivered_ms, delivery_count}
+  ```
+
+  XCLAIM — reassign stale messages from a crashed consumer:
+  ```python
+  # Reassign messages idle for more than 30 seconds to "worker-2"
+  claimed = r.xclaim(
+      "domain:orders:events",
+      "order-processors",
+      "worker-2",
+      min_idle_time=30000,   # milliseconds
+      message_ids=[stale_msg_id],
+  )
+  ```
+
+  XRANGE — replay from a given ID:
+  ```python
+  # Read all messages from a specific ID onwards:
+  messages = r.xrange("domain:orders:events", min="1710000000000-0", max="+")
+  ```
+
+  ### Stream Naming Convention
+  - Pattern: {domain}:{entity}:{event_type} (colon-separated, following Redis key convention)
+  - Example: domain:orders:events, notifications:emails:queued
+  - Keep the stream name short — it appears in every XADD/XREADGROUP call
+
+  ### Trimming Strategy
+  - Use MAXLEN ~ N (approximate) on every XADD to bound stream size automatically
+  - Approximate trimming (maxlen=True) is significantly cheaper than exact trimming
+  - Set MAXLEN based on retention window: if messages are typically consumed within 1 hour
+    and throughput is 100/sec, MAXLEN=360000 keeps a 1-hour window with margin
+  - For audit or replay needs beyond the trim window, archive to a persistent store before trim
+
+  ### Local Dev docker-compose Note
+  No changes to the docker-compose pattern — Redis Streams use the same redis:7-alpine
+  service as other Redis features. Ensure the service uses a named volume or
+  `--save ""` based on whether stream persistence between restarts is needed in dev.
+
+  ### Testing Expectations for Streams
+  - Prove a produce + consume round-trip with XACK
+  - Prove that an unacknowledged message (no XACK) reappears in XPENDING
+  - Prove XCLAIM correctly reassigns a stale message
+  - Use a short maxlen in tests to verify trimming behavior
+  - Run against a real Redis instance — do not mock XREADGROUP semantics
+
+  ### Related
+  - context/doctrine/broker-selection.md (when Redis Streams vs NATS vs Kafka)
+  - context/stacks/nats-jetstream.md
+  - context/stacks/kafka.md
+
+
+---
+
+SECTION 3 — UPDATE nats-jetstream.md
+
+Add to the end of context/stacks/nats-jetstream.md:
+
+  ## Related
+
+  (If a Related section already exists, add to it. If not, add it at the end.)
+
+  - context/doctrine/broker-selection.md — three-way NATS vs Kafka vs Redis Streams decision guide
+  - context/stacks/kafka.md — when to use Kafka instead
+  - context/stacks/redis.md — Redis Streams section
+  - context/stacks/coordination-seam-patterns.md
+
+
+---
+
+SECTION 4 — UPDATE kafka.md
+
+If context/stacks/kafka.md exists (added in PROMPT_55):
+
+Add to the Related section:
+  - context/doctrine/broker-selection.md — three-way NATS vs Kafka vs Redis Streams decision guide
+  - context/stacks/nats-jetstream.md — when to use NATS instead
+  - context/stacks/redis.md — Redis Streams section
+
+If kafka.md does not exist, skip this update.
+
+
+---
+
+SECTION 5 — UPDATE event-streaming-patterns.md
+
+Replace the entire content of context/stacks/event-streaming-patterns.md.
+
+The current file is only ~30 lines and is not connected to any of the broker stack docs
+added since PROMPT_52. Replace it with a proper broker-aware event streaming patterns doc.
+
+The new version must:
+  - Reference all three broker options (NATS, Kafka, Redis Streams)
+  - Point to broker-selection.md for the choice decision
+  - Cover the common patterns that apply regardless of broker choice:
+    scheduler/trigger publisher, happy-path verification, DLQ handling,
+    idempotency and duplicate delivery, checkpoint movement after consumer success
+  - Keep the existing "Typical Repo Surface", "Change Surfaces To Watch", and
+    "Testing Expectations" structure but expand each section significantly
+  - NOT duplicate content from broker-specific stack docs — reference them instead
+
+New content structure:
+
+  # Event Streaming Patterns
+
+  One paragraph: what this doc covers — patterns for coordinating repo stages
+  through durable events, subjects, or queues, regardless of which broker is in use.
+  For broker selection, see context/doctrine/broker-selection.md.
+
+  ## Broker Options
+
+  Brief table:
+    | Broker | When to reach for it |
+    | NATS JetStream | Lightweight intra-cluster bus, single binary, NATS already in use |
+    | Kafka | High volume, cross-team schema contracts, JVM producer (Clojure/Scala) |
+    | Redis Streams | Job queue on existing Redis, no separate broker service needed |
+
+  Each with a link to its stack doc. One sentence each.
+
+  ## Typical Repo Surface
+
+  Keep the existing list but expand each entry with a concrete example:
+  - scheduler or trigger publisher: a function or cron job that publishes an event
+    to kick off a sync stage (e.g., publish a "sync.requested" event on a timer)
+  - event handler / worker: subscribes to an input subject/topic/stream; processes
+    the message and optionally publishes a completion event
+  - DLQ consumer: subscribes to the dead-letter subject/topic/stream; logs failures,
+    triggers alerting, optionally republishes for manual retry
+  - health probe for broker connectivity: each service exposes /healthz that checks
+    broker connectivity, not just process liveness
+
+  ## Event Schema Invariants
+
+  (These apply to all three brokers)
+  Every event must include:
+    - payload_version: integer, increments on schema changes; consumers pattern-match on this
+    - correlation_id: propagated from the triggering request or job; used for distributed tracing
+    - published_at: ISO 8601 timestamp at publication time
+    - entity_id (or equivalent): the primary business entity this event concerns
+
+  Anti-patterns:
+    - Putting raw document bodies in events — pass a reference ID; let the consumer fetch
+    - Omitting payload_version — impossible to evolve the schema without breaking consumers
+    - Treating topics/subjects as action queues (use event names, not verb names)
+
+  ## Idempotency and Duplicate Delivery
+
+  All three brokers provide at-least-once delivery (not exactly-once by default).
+  Consumer handlers must be idempotent:
+    - Use correlation_id or entity_id as an idempotency key
+    - Check for prior processing before doing work (e.g., database upsert)
+    - If the handler is not naturally idempotent, add an idempotency store (Redis SET NX with TTL)
+  The idempotency key pattern: `{consumer_group}:{entity_id}:{payload_version}:{published_at_date}`
+
+  ## Dead Letter Handling
+
+  Dead letter pattern (applies to all three brokers):
+    - Send to DLQ when: schema version unsupported, entity not found after retries,
+      business rule definitively rejects the event, max retry count exceeded
+    - DLQ event payload: original message + error message + retry_count + failed_at
+    - Do NOT re-process DLQ messages automatically — require human intervention
+    - A DLQ monitor service should alert on any message in the DLQ within N minutes
+
+  Per-broker DLQ:
+    - NATS: publish to "{original_subject}.dlq"
+    - Kafka: produce to "{original_topic}.dlq"
+    - Redis Streams: XADD to "{stream_key}:dlq"
+
+  ## Change Surfaces To Watch
+
+  Keep the existing list, expand:
+  - event subject/topic/stream naming: changes break consumers silently if not versioned
+  - payload_version field: bump it on every schema change; consumers must handle the old
+    version until all are migrated
+  - idempotency key shape: changes invalidate existing idempotency records
+  - consumer group ID: changing it resets offsets and may cause reprocessing or gaps
+  - checkpoint movement: move the consumer checkpoint (ack/commit/xack) ONLY after
+    successful processing, not before
+
+  ## Testing Expectations
+
+  - Prove one event-driven happy path end to end against a real broker
+  - Prove duplicate delivery handling: publish the same message twice, assert the consumer
+    processes it once (or handles it idempotently)
+  - Prove DLQ delivery for a malformed message (wrong payload_version or missing required field)
+  - Keep large raw payload bodies out of event messages; pass references instead
+  - Do not mock the broker client in integration tests — use the real broker in docker-compose
+
+  ## Related
+  - context/doctrine/broker-selection.md
+  - context/stacks/nats-jetstream.md
+  - context/stacks/kafka.md
+  - context/stacks/redis.md (Redis Streams section)
+  - context/stacks/coordination-seam-patterns.md (broker seam implementation for multi-backend)
+
+
+---
+
+SECTION 6 — REGISTRY UPDATES
+
+UPDATE context/router/alias-catalog.yaml
+
+Add under the stacks section (after existing Redis aliases):
+
+  - alias: redis streams
+    target:
+      - context/stacks/redis.md
+      - context/doctrine/broker-selection.md
+  - alias: xadd xreadgroup
+    target: context/stacks/redis.md
+  - alias: redis consumer group
+    target: context/stacks/redis.md
+  - alias: xack redis
+    target: context/stacks/redis.md
+  - alias: redis stream pending
+    target: context/stacks/redis.md
+  - alias: xclaim stale message
+    target: context/stacks/redis.md
+
+Add under the capabilities section:
+
+  - alias: broker selection
+    target: context/doctrine/broker-selection.md
+  - alias: nats vs kafka
+    target: context/doctrine/broker-selection.md
+  - alias: kafka vs nats
+    target: context/doctrine/broker-selection.md
+  - alias: kafka vs redis streams
+    target: context/doctrine/broker-selection.md
+  - alias: which broker should I use
+    target: context/doctrine/broker-selection.md
+  - alias: when to use kafka instead of nats
+    target: context/doctrine/broker-selection.md
+  - alias: when to use nats instead of kafka
+    target: context/doctrine/broker-selection.md
+  - alias: event streaming patterns
+    target:
+      - context/stacks/event-streaming-patterns.md
+      - context/doctrine/broker-selection.md
+  - alias: broker seam patterns
+    target:
+      - context/stacks/event-streaming-patterns.md
+      - context/stacks/coordination-seam-patterns.md
+  - alias: idempotent consumer
+    target: context/stacks/event-streaming-patterns.md
+  - alias: dead letter pattern
+    target: context/stacks/event-streaming-patterns.md
+
+Read the file first. Match existing format. Do not change existing entries.
+
+
+UPDATE verification/stack_support_matrix.yaml
+
+Add a new capability row "redis-streams" under the existing capabilities section:
+
+  - capability: redis-streams
+    notes: Redis Streams consumer group patterns (XADD, XREADGROUP, XACK, XCLAIM, XPENDING).
+           No live Redis Streams integration test in the default verification tier.
+    stacks:
+      - stack: redis
+        status: documented
+        note: Full Redis Streams section added to redis.md in PROMPT_56. No canonical
+              seam example exists yet.
+        follow_on_prompt: PROMPT_57
+
+Read the file first. Only add this one capability row. Do not modify existing rows.
+
+
+---
+
+SECTION 7 — COMMIT BATCHING
+
+Batch 1: Broker selection doctrine + Redis Streams depth
+  context/doctrine/broker-selection.md    (new)
+  context/stacks/redis.md                 (updated — add full Redis Streams section)
+
+Batch 2: Cross-reference updates to broker stack docs
+  context/stacks/nats-jetstream.md        (updated — add Related section)
+  context/stacks/kafka.md                 (updated if exists — add to Related)
+  context/stacks/event-streaming-patterns.md  (replaced — full rewrite)
+
+Batch 3: Registry updates
+  context/router/alias-catalog.yaml
+  verification/stack_support_matrix.yaml
+
+
+---
+
+SECTION 8 — IMPORTANT CONSTRAINTS
+
+- Read context/stacks/redis.md before updating it. Insert the new Redis Streams
+  section after "## Testing Expectations" (or wherever the end of the existing
+  content is). Do not remove or restructure any existing content in redis.md.
+
+- Read context/stacks/nats-jetstream.md before updating. Add only a Related section
+  (or entries to an existing Related section). Do not change any other content.
+
+- Read context/stacks/event-streaming-patterns.md before replacing. The replacement
+  should be strictly better — more connected, more specific, more actionable — than
+  the current ~30 lines. If the existing content is longer than expected, read it
+  fully before deciding what to keep vs. replace.
+
+- The broker-selection.md doc is opinion-first. Do not write it as a balanced academic
+  survey. Write it as "here is which one to reach for and why." Concrete criteria,
+  not abstract tradeoffs.
+
+- For the Quick Decision Table: use real, specific values. Not "varies" or "depends."
+  Where a number is the right answer, give the number (e.g., "< 1M msg/day" not "small volume").
+
+- Do NOT add a Redis Streams canonical seam example in this prompt. The stack doc
+  update and doctrine are sufficient. A canonical example can follow in PROMPT_57
+  if desired.
+
+- Generate the actual implementation in commit-ready batches. Do not propose or summarize.
+  Produce complete file contents.

@@ -1,0 +1,737 @@
+You are working inside the agent-context-base repository.
+
+Before proceeding, read:
+
+  context/stacks/nats-jetstream.md               (reference for depth and format)
+  context/stacks/nats-jetstream-mongo.md         (reference for combo pack format)
+  context/stacks/coordination-seam-patterns.md   (Kafka section — existing snippet)
+  context/stacks/duo-clojure-go.md               (primary consumer of kafka.md)
+  context/stacks/trino.md                        (Kafka connector already mentioned)
+  examples/canonical-multi-backend/duos/go-elixir-nats/   (full seam example — reference format)
+  examples/catalog.json                          (read before updating)
+  verification/stack_support_matrix.yaml         (read before updating)
+  context/router/alias-catalog.yaml             (read before updating)
+  examples/canonical-multi-backend/README.md    (read before updating)
+
+Also read:
+  context/stacks/duo-elixir-clojure.md
+  context/stacks/trio-clojure-python-go.md
+
+This prompt adds first-class Kafka support to the repo. Kafka is currently
+referenced in 8+ docs (duo-clojure-go, trio-clojure-python-go, coordination-
+seam-patterns, multi-backend-coordination, nats-jetstream, trino, etc.) but has
+no standalone stack doc, no canonical seam example, and no registry entries.
+
+Produce:
+  1. context/stacks/kafka.md — full Kafka stack doc
+  2. context/stacks/kafka-trino.md — combo pack for Kafka as a Trino data source
+  3. Update context/stacks/trino.md — add Kafka connector depth + reference kafka-trino.md
+  4. Canonical Kafka duo seam example:
+       examples/canonical-multi-backend/duos/clojure-go-kafka/
+         clojure-side.clj
+         go-side.go
+         docker-compose.yml
+         seam.md
+  5. Registry updates:
+       examples/catalog.json
+       verification/stack_support_matrix.yaml
+       context/router/alias-catalog.yaml
+       examples/canonical-multi-backend/README.md
+
+Organize into commit-ready batches. For each batch:
+1. Title and purpose.
+2. Files created or updated (full paths).
+3. Full content of every file.
+4. Suggested commit message with prefix [PROMPT_55].
+
+
+---
+
+SECTION 1 — kafka.md SPECIFICATION
+
+File: context/stacks/kafka.md
+
+This is the authoritative Kafka stack doc. It mirrors the depth of nats-jetstream.md
+but for Kafka's distinct operational model. Follow the same section structure as
+existing stack docs.
+
+Cover:
+
+  ## When Kafka Is the Right Choice
+  ## When Kafka Is NOT the Right Choice
+  ## Typical Repo Surface
+  ## Core Concepts (Topics, Partitions, Consumer Groups, Offsets)
+  ## Topic Naming Convention
+  ## Schema Strategy (Avro + Schema Registry vs. JSON)
+  ## Producer Patterns (idempotent producer, acks=all, retries)
+  ## Consumer Patterns (consumer group, manual offset commit, at-least-once semantics)
+  ## Dead Letter Topics
+  ## Local Dev Composition
+  ## Testing Expectations
+  ## Common Assistant Mistakes
+  ## Related
+
+Content notes:
+
+When Kafka IS the right choice:
+- Message volumes that benefit from horizontal partition scaling (millions/day threshold)
+- Cross-team consumer compatibility requires a schema registry (Avro, Protobuf, JSON Schema)
+- Strict ordering guarantees needed within a partition key
+- Long-term message retention (days/weeks) needed for replay or audit
+- The consumer ecosystem already uses Kafka client libraries
+- Multiple independent consumer groups reading the same topic at different offsets
+
+When Kafka is NOT the right choice:
+- Lightweight event bus with simple per-subject routing → use NATS JetStream
+- In-memory streams with consumer groups on existing Redis infrastructure → use Redis Streams
+- Small volume (< 100k messages/day) without schema registry need
+- Local dev environment where ZooKeeper/KRaft setup adds friction without benefit
+- Real-time request/response patterns → use gRPC or REST
+- Ordering not needed and fan-out is simple → NATS is operationally simpler
+
+Topic naming convention:
+- Pattern: {domain}.{entity}.{event_type}  (dot-separated, lowercase)
+- Examples: payments.orders.created, analytics.users.churned, inventory.items.updated
+- Partition key: tenant_id or entity_id (the field that should co-locate in a partition)
+- Avoid: action-verb topic names like "process-order" — topics are event logs, not queues
+
+Schema strategy:
+- JSON (no registry): fast start, readable, no tooling required. Good for internal
+  single-team services. Document the schema in seam-contract/.
+- Avro + Schema Registry (Confluent or Apicurio): best for cross-team or cross-service
+  compatibility. Schema evolution with backward/forward compatibility guarantees.
+  Use confluent_kafka with SchemaRegistryClient.
+  Show the Avro schema file format (JSON-encoded .avsc) and registration pattern.
+- JSON Schema registry: an intermediate option — human-readable schema with registry
+  enforcement. Use when Avro binary encoding is not needed but cross-team schema
+  agreement is.
+
+Producer patterns (Python example using confluent-kafka-python):
+```python
+# pip install confluent-kafka
+from confluent_kafka import Producer
+import json, time
+
+conf = {
+    "bootstrap.servers": os.getenv("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092"),
+    "acks": "all",           # strongest durability guarantee
+    "enable.idempotence": True,
+    "retries": 5,
+    "retry.backoff.ms": 200,
+}
+producer = Producer(conf)
+
+def publish_event(topic: str, key: str, event: dict) -> None:
+    payload = json.dumps({
+        "payload_version": 1,
+        "correlation_id": event.get("correlation_id", ""),
+        "published_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        **event
+    }).encode()
+    producer.produce(topic, key=key.encode(), value=payload, callback=delivery_report)
+    producer.poll(0)
+
+def delivery_report(err, msg):
+    if err:
+        log.error(f"delivery failed: {err}")
+    else:
+        log.info(f"delivered to {msg.topic()} [{msg.partition()}] @ offset {msg.offset()}")
+```
+
+Also show Clojure producer (jackdaw library):
+```clojure
+;; deps.edn: fundingcircle/jackdaw {:mvn/version "0.9.12"}
+(require '[jackdaw.client :as jc]
+         '[jackdaw.data :as jd])
+
+(def producer-config
+  {"bootstrap.servers" (System/getenv "KAFKA_BOOTSTRAP_SERVERS")
+   "acks"              "all"
+   "enable.idempotence" "true"})
+
+(defn publish-event [producer topic key event]
+  @(jc/produce! producer
+                {:topic-name topic}
+                (str key)
+                (cheshire.core/encode event)))
+```
+
+Consumer patterns (Python example, manual offset commit):
+```python
+from confluent_kafka import Consumer, KafkaError
+import json
+
+conf = {
+    "bootstrap.servers": os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
+    "group.id": "my-consumer-group",
+    "auto.offset.reset": "earliest",
+    "enable.auto.commit": False,   # manual commit for at-least-once
+}
+consumer = Consumer(conf)
+consumer.subscribe(["payments.orders.created"])
+
+while True:
+    msg = consumer.poll(timeout=1.0)
+    if msg is None:
+        continue
+    if msg.error():
+        if msg.error().code() == KafkaError._PARTITION_EOF:
+            continue
+        raise KafkaException(msg.error())
+    event = json.loads(msg.value())
+    try:
+        process_event(event)
+        consumer.commit(asynchronous=False)   # commit only after successful processing
+    except Exception as e:
+        send_to_dlq(event, str(e))
+        consumer.commit(asynchronous=False)   # commit DLQ'd messages too; don't stall
+```
+
+Also show Go consumer (franz-go):
+```go
+// go.mod: github.com/twmb/franz-go v1.x
+import (
+    "github.com/twmb/franz-go/pkg/kgo"
+)
+
+func startConsumer(brokers []string, topic, groupID string) error {
+    cl, err := kgo.NewClient(
+        kgo.SeedBrokers(brokers...),
+        kgo.ConsumerGroup(groupID),
+        kgo.ConsumeTopics(topic),
+        kgo.DisableAutoCommit(),
+    )
+    // ...fetch loop with manual commit after processing
+}
+```
+
+Dead letter topics:
+- Pattern: {original_topic}.dlq
+- Examples: payments.orders.created.dlq
+- Send to DLQ when: deserialization fails, schema version unsupported, business rule
+  rejects the event, max retries exceeded
+- Include in DLQ payload: original message, error message, retry count, failed_at timestamp
+- Consumer groups should have a dedicated DLQ monitor service
+
+Local dev composition:
+- Use bitnami/kafka or confluentinc/cp-kafka with KRaft mode (no ZooKeeper) for new
+  setups. Show both bitnami/kafka (simpler) and confluentinc/cp-kafka (full platform).
+- Primary recommendation: bitnami/kafka with KRaft (ZooKeeper-free, single container)
+- Full platform option: confluentinc/cp-zookeeper + confluentinc/cp-kafka (for schema registry)
+- Show the bitnami/kafka KRaft config as the default, with a note about Confluent platform
+  for when schema registry is needed.
+- Include healthcheck using kafka-topics.sh or kafka-broker-api-versions.sh
+
+Docker-compose snippet (bitnami/kafka with KRaft — preferred for local dev):
+```yaml
+services:
+  kafka:
+    image: bitnami/kafka:3.7
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_CFG_NODE_ID: "1"
+      KAFKA_CFG_PROCESS_ROLES: "broker,controller"
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+      KAFKA_CFG_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093"
+      KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT"
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "true"
+    healthcheck:
+      test: ["CMD", "kafka-topics.sh", "--bootstrap-server", "localhost:9092", "--list"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+```
+
+Testing expectations:
+- Run integration tests against a real Kafka broker (Docker-backed bitnami/kafka KRaft)
+- Prove one produce + consume round-trip with a real message
+- Prove DLQ delivery for a malformed message
+- Test idempotent re-delivery: produce the same message twice, verify consumer processes once
+  (or handles the duplicate correctly)
+- Do NOT mock the Kafka client in integration tests — the broker behavior is what's tested
+- Keep test topics isolated per test run using a unique group.id suffix or unique topic names
+
+Common assistant mistakes:
+- Using auto.commit=true in consumer code — this commits before processing is confirmed,
+  leading to message loss on crash. Always use manual commit.
+- Creating topics at message time inside the consumer — create topics at startup with
+  explicit partition/replication config, not auto-create on first consume.
+- Naming topics as verbs ("process-payment") instead of event log nouns ("payments.transactions.created")
+- Reusing consumer group IDs across environments — dev and test must have separate group IDs
+- Ignoring DLQ: assuming all messages will process successfully without a dead-letter path
+- Using confluentinc/cp-kafka in docker-compose without a schema registry when Avro is planned
+
+Related:
+- context/stacks/nats-jetstream.md (lighter alternative for smaller volumes)
+- context/stacks/kafka-trino.md (Kafka as a Trino-queryable source)
+- context/doctrine/broker-selection.md (three-way NATS vs Kafka vs Redis Streams decision)
+- context/stacks/coordination-seam-patterns.md (Kafka broker seam implementation)
+- context/stacks/duo-clojure-go.md (primary Kafka duo)
+- context/stacks/trio-clojure-python-go.md (Kafka in a trio pipeline)
+- examples/canonical-multi-backend/duos/clojure-go-kafka/ (canonical seam example)
+
+
+---
+
+SECTION 2 — kafka-trino.md SPECIFICATION
+
+File: context/stacks/kafka-trino.md
+
+This is the combo pack for using Kafka as a Trino-queryable data source.
+Trino's Kafka connector maps topic messages to queryable table rows. This
+is useful for ad-hoc stream analytics, debugging topic contents, and joining
+Kafka topic data with relational or object-store sources in Trino.
+
+Cover:
+
+  ## When to Use This Combo
+  ## Architecture: How the Kafka Connector Works
+  ## Kafka Catalog Config (trino/etc/catalog/kafka.properties)
+  ## Topic-to-Table Mapping (topic table definition JSON files)
+  ## Schema File Format
+  ## Example Queries
+  ## Local Dev Composition
+  ## Limitations and Anti-Patterns
+  ## Related
+
+Content notes:
+
+When to use this combo:
+- Joining Kafka topic data with Postgres or MongoDB tables in a single Trino query
+  (e.g., enrich Kafka payment events with user records from Postgres)
+- Ad-hoc analytics over Kafka topics without building a consumer pipeline
+- Debugging and inspecting topic contents at SQL level
+- BI tools that speak SQL can query Kafka data without a dedicated consumer
+
+Architecture — how the Kafka connector works:
+- The Kafka connector maps each Kafka topic to a Trino table
+- Topic messages are decoded at query time (not indexed) — no consumer group
+- Each row is one Kafka message: the connector exposes built-in columns
+  (_partition_id, _partition_offset, _message_key, _timestamp) plus columns
+  defined in a topic table definition file
+- Trino reads all partitions in parallel — scans can be expensive for large topics
+- Messages are decoded using the configured decoder (JSON, Avro, CSV)
+
+Kafka catalog config file (etc/catalog/kafka.properties):
+```
+connector.name=kafka
+kafka.nodes=kafka:9092
+kafka.table-names=payments.orders.created,analytics.users.churned
+kafka.hide-internal-columns=false
+kafka.default-schema=default
+```
+
+Topic table definition (etc/kafka/payments.orders.created.json):
+This file maps the JSON fields of a Kafka message to Trino column definitions.
+Show the full format:
+```json
+{
+  "tableName": "payments.orders.created",
+  "schemaName": "default",
+  "topicName": "payments.orders.created",
+  "message": {
+    "dataFormat": "json",
+    "fields": [
+      {"name": "payload_version", "mapping": "payload_version", "type": "BIGINT"},
+      {"name": "correlation_id", "mapping": "correlation_id", "type": "VARCHAR"},
+      {"name": "published_at", "mapping": "published_at", "type": "VARCHAR"},
+      {"name": "tenant_id", "mapping": "tenant_id", "type": "VARCHAR"},
+      {"name": "entity_id", "mapping": "entity_id", "type": "VARCHAR"},
+      {"name": "risk_score", "mapping": "data/risk_score", "type": "DOUBLE"},
+      {"name": "risk_tier", "mapping": "data/risk_tier", "type": "VARCHAR"}
+    ]
+  }
+}
+```
+
+Note: the "mapping" field uses "/" for nested JSON path navigation.
+Built-in columns (_partition_id, _partition_offset, _message_key, _timestamp) are
+always available when hide-internal-columns=false.
+
+Example queries:
+- Simple topic scan:
+  ```sql
+  SELECT correlation_id, tenant_id, risk_score, _timestamp
+  FROM kafka.default."payments.orders.created"
+  WHERE risk_tier = 'high'
+  ORDER BY _timestamp DESC
+  LIMIT 100;
+  ```
+
+- Cross-source join (Kafka topic + Postgres table):
+  ```sql
+  SELECT k.entity_id, k.risk_score, k.risk_tier,
+         p.user_email, p.account_age_days
+  FROM kafka.default."payments.orders.created" k
+  JOIN postgresql.app.users p ON k.entity_id = p.order_id
+  WHERE k.published_at >= '2026-03-01'
+    AND k.risk_tier = 'high'
+  ORDER BY k.risk_score DESC;
+  ```
+
+- Partition offset inspection:
+  ```sql
+  SELECT _partition_id, MIN(_partition_offset) AS min_offset,
+         MAX(_partition_offset) AS max_offset, COUNT(*) AS message_count
+  FROM kafka.default."payments.orders.created"
+  GROUP BY _partition_id;
+  ```
+
+Local dev composition — show how to add the Kafka catalog to the existing Trino setup:
+```yaml
+services:
+  kafka:
+    # bitnami/kafka with KRaft (see kafka.md)
+    ...
+  trino:
+    image: trinodb/trino:446
+    ports:
+      - "8085:8080"
+    volumes:
+      - ./etc/catalog:/etc/trino/catalog
+      - ./etc/kafka:/etc/trino/kafka   # topic table definition files
+    depends_on:
+      kafka:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/v1/info"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+```
+
+Limitations and anti-patterns:
+- The Kafka connector scans the entire topic on every query — it is NOT suitable for
+  high-frequency queries on large topics. Use it for ad-hoc analysis, not a hot path.
+- No filter pushdown to Kafka: Trino reads all messages and filters locally.
+  The _partition_offset range filter is the only available scan optimization.
+- Message ordering: Trino does not guarantee row order matches Kafka partition ordering
+  unless you explicitly ORDER BY _partition_id, _partition_offset.
+- Avro-encoded topics: the JSON decoder will not work on Avro messages. The Avro decoder
+  requires the Confluent Schema Registry. Document this clearly when using Avro.
+- Do not use Kafka+Trino for operational dashboards with SLA latency requirements.
+  Use it for analytical exploration and cross-source joins.
+
+Related:
+- context/stacks/kafka.md
+- context/stacks/trino.md
+- context/stacks/duckdb-trino-polars.md
+
+
+---
+
+SECTION 3 — trino.md UPDATE
+
+Update context/stacks/trino.md:
+
+Add a new section after "Compatible Catalogs":
+
+  ## Kafka Connector Depth
+
+  This section gives operational detail on the Kafka catalog. For the full combo
+  pattern (Kafka topics as Trino-queryable tables, cross-source joins), see
+  context/stacks/kafka-trino.md.
+
+  Key operational notes to add:
+  - The Kafka connector reads topic messages at query time (not indexed); queries
+    scan all partitions. Use LIMIT aggressively in dev/test.
+  - Topic table definition files (.json) must live in the directory pointed to by
+    the Trino server config's kafka.table-description-dir property.
+  - The connector supports JSON, CSV, and Avro (with Schema Registry) decoders.
+  - The _partition_offset and _timestamp built-in columns are useful for
+    bounding scans. Add WHERE _timestamp > TIMESTAMP '...' to limit scan scope.
+  - Prefer the bitnami/kafka KRaft single-container setup for local dev. The
+    confluentinc/cp-kafka + ZooKeeper stack is only needed when a Schema Registry
+    is also required.
+
+Add at the bottom of the Related section:
+  - context/stacks/kafka-trino.md
+  - context/stacks/kafka.md
+
+
+---
+
+SECTION 4 — CANONICAL KAFKA SEAM EXAMPLE SPECIFICATION
+
+Directory: examples/canonical-multi-backend/duos/clojure-go-kafka/
+
+This is the fourth duo canonical seam example. It demonstrates the Kafka broker
+seam between a Clojure producer (domain event enrichment) and a Go consumer
+(high-throughput worker). It mirrors the format of the three existing duo examples.
+
+Files:
+  clojure-side.clj    — Clojure Kafka producer
+  go-side.go          — Go Kafka consumer
+  docker-compose.yml  — bitnami/kafka KRaft + both services
+  seam.md             — companion doc
+
+Standards: same as existing duo examples.
+  - Single file per service (no multi-file packages)
+  - Seam-focused: show only connection setup, produce/consume, health endpoint
+  - Realistic image tags
+  - Health checks on every service
+  - Environment variables for seam addresses
+  - Comment at top noting this is a seam example, not a full scaffold
+
+
+clojure-side.clj
+
+  Clojure producer using jackdaw (deps.edn: fundingcircle/jackdaw {:mvn/version "0.9.12"})
+
+  - On startup: creates a Kafka producer, publishes one demo event to
+    "domain.orders.enriched" topic (partition key: tenant_id)
+  - HTTP health endpoint: GET /healthz — checks Kafka producer connectivity
+    by listing topics (or simply returning ok if producer is connected)
+  - Environment: KAFKA_BOOTSTRAP_SERVERS (default "kafka:9092"), HTTP_PORT (default 8180)
+
+  Event schema:
+  ```json
+  {
+    "payload_version": 1,
+    "correlation_id": "req-demo-001",
+    "published_at": "...",
+    "tenant_id": "demo",
+    "event_type": "order.risk_scored",
+    "entity_id": "ord-001",
+    "data": {
+      "risk_score": 0.12,
+      "risk_tier": "low",
+      "rule_version": "2026-Q1",
+      "triggered_rules": ["velocity_check"]
+    }
+  }
+  ```
+
+  Use ring/jetty-adapter (or http-kit) for the health endpoint.
+  Use jackdaw.client/producer for Kafka.
+
+  Note: since this is a single Clojure file (not a full project), show the
+  ns declaration and :require form. Keep it runnable with `clj -M:run` or
+  `clojure -m clojure-side.core`. Show how to invoke it from a Dockerfile.
+
+
+go-side.go
+
+  Go consumer using franz-go (go.mod: github.com/twmb/franz-go v1.x)
+
+  - Subscribes to "domain.orders.enriched" as consumer group "go-risk-workers"
+  - Processes each message: logs event_type, entity_id, risk_score, correlation_id
+  - Manual offset commit after successful processing
+  - Sends to DLQ logging on parse error (no actual DLQ topic in this example —
+    just log the failure clearly)
+  - HTTP health endpoint: GET /healthz — checks Kafka connectivity
+  - Environment: KAFKA_BOOTSTRAP_SERVERS, GROUP_ID (default "go-risk-workers")
+
+  Use http.HandleFunc for the health endpoint (same pattern as other go-side.go examples).
+
+
+docker-compose.yml
+
+  - kafka service: bitnami/kafka:3.7 with KRaft config (NO ZooKeeper)
+    - Ports: 9092 (client), no extra UI needed
+    - healthcheck: kafka-topics.sh --list
+  - clojure-service: built from clojure-side.clj, port 8180
+    - depends_on: kafka (service_healthy)
+    - KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+  - go-service: built from go-side.go, port 8080
+    - depends_on: kafka (service_healthy)
+    - KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    - GROUP_ID: go-risk-workers
+
+  Note: Clojure and Go are independent consumers of the same Kafka topic.
+  Neither depends on the other — they both depend only on Kafka.
+  This is the correct model for a broker seam: the producer doesn't know about
+  the consumer's startup order.
+
+
+seam.md
+
+  Explains:
+  - The broker seam: Clojure produces domain events; Go consumes them as a worker pool
+  - Why Kafka (not NATS) for this seam: cross-team schema contracts, consumer groups
+    with independent offset tracking, long-term retention for replay
+  - The topic naming convention and partition key choice
+  - The event schema with payload_version field
+  - Consumer group semantics: multiple Go workers can share the "go-risk-workers"
+    group ID; Kafka will distribute partitions among them
+  - Why Clojure and Go don't share depends_on: broker seam independence
+  - How to run, what to observe, how to verify each seam direction
+  - How to inspect offsets via kafka-consumer-groups.sh
+  - Notes on schema evolution: adding fields to the JSON payload is backward-compatible;
+    removing or renaming fields requires a versioned migration path
+
+
+---
+
+SECTION 5 — REGISTRY UPDATE SPECIFICATION
+
+UPDATE examples/catalog.json
+
+Add one entry for the new canonical example:
+  path: "examples/canonical-multi-backend/duos/clojure-go-kafka/"
+  category: "multi-backend"
+  summary: "Clojure + Go Kafka broker seam: Clojure produces enriched domain events to a Kafka topic; Go consumes them with a consumer group and manual offset commit. Shows KRaft setup, topic naming, event schema, and docker-compose."
+  tags: ["multi-backend", "clojure", "go", "broker", "kafka"]
+  stacks: ["clojure-kit-nextjdbc-hiccup", "go-echo", "kafka"]
+  archetypes: ["multi-backend-service"]
+  workflows: ["design-multi-backend-seams", "add-backend-coordination-layer"]
+  patterns: ["broker-seam", "kafka", "consumer-group", "event-enrichment"]
+  rank: 95
+  stability: "canonical"
+
+Read the file first. Match existing entry format exactly. Do not restructure.
+
+
+UPDATE verification/stack_support_matrix.yaml
+
+Add a new stack entry for "kafka" (not a capability row — a stack row):
+
+  stack: kafka
+  support_level: 2
+  verified_examples:
+    - clojure-go-kafka-seam-example
+  missing_verification:
+    - live produce + consume integration test in default verification tier
+    - schema registry (Avro) example
+    - DLQ round-trip verification
+  notes: Canonical broker seam example (clojure-go-kafka) is structure-verified only.
+         No live Kafka integration test is wired in the default verification tier.
+         KRaft single-container setup verified in docker-compose context.
+
+Also update the existing "multi-backend-seam" capability row to add Clojure status:
+  In the multi-backend-seam capability, add:
+    - stack: clojure-kit-nextjdbc-hiccup
+      status: supported  (was: documented — upgrade it now that a canonical example exists)
+      note: "Appears in: duos/clojure-go-kafka (Kafka producer)"
+      canonical_examples:
+        - examples/canonical-multi-backend/duos/clojure-go-kafka/
+
+Read the file first. Only add/update the kafka stack entry and the clojure entry in
+the multi-backend-seam capability. Do not modify other rows.
+
+
+UPDATE context/router/alias-catalog.yaml
+
+Add under the stacks section:
+  - alias: kafka
+    target: context/stacks/kafka.md
+  - alias: kafka stack
+    target: context/stacks/kafka.md
+  - alias: kafka producer
+    target: context/stacks/kafka.md
+  - alias: kafka consumer
+    target: context/stacks/kafka.md
+  - alias: kafka consumer group
+    target: context/stacks/kafka.md
+  - alias: kafka topic naming
+    target: context/stacks/kafka.md
+  - alias: dead letter topic
+    target: context/stacks/kafka.md
+  - alias: kafka dlq
+    target: context/stacks/kafka.md
+  - alias: kafka schema registry
+    target: context/stacks/kafka.md
+  - alias: avro kafka
+    target: context/stacks/kafka.md
+  - alias: kafka local dev
+    target: context/stacks/kafka.md
+  - alias: bitnami kafka
+    target: context/stacks/kafka.md
+  - alias: kraft kafka
+    target: context/stacks/kafka.md
+  - alias: kafka trino
+    target:
+      - context/stacks/kafka-trino.md
+      - context/stacks/kafka.md
+  - alias: kafka as trino source
+    target:
+      - context/stacks/kafka-trino.md
+      - context/stacks/trino.md
+  - alias: query kafka with sql
+    target: context/stacks/kafka-trino.md
+  - alias: trino kafka connector
+    target: context/stacks/kafka-trino.md
+  - alias: kafka topic table definition
+    target: context/stacks/kafka-trino.md
+  - alias: clojure go kafka
+    target:
+      - context/stacks/duo-clojure-go.md
+      - examples/canonical-multi-backend/duos/clojure-go-kafka/seam.md
+
+Also add under the existing "how to coordinate two different language backends" multi-backend alias,
+do not duplicate — check it already exists. Only add what is missing.
+
+Read the file first. Match existing format. Do not change existing entries.
+
+
+UPDATE examples/canonical-multi-backend/README.md
+
+Add a new row to the catalog table for the new duo:
+  | `duos/clojure-go-kafka/` | Clojure + Go | Broker (Kafka) | Domain event enrichment + worker consumers |
+
+Add a new docker-compose run instruction for the Kafka example in the "How to Run an Example" section:
+  # Kafka broker seam — Clojure produces, Go consumes
+  cd examples/canonical-multi-backend/duos/clojure-go-kafka
+  docker compose up --build
+  # observe Go logs: event_type, entity_id, risk_score, correlation_id
+
+Read the file first.
+
+
+---
+
+SECTION 6 — COMMIT BATCHING
+
+Batch 1: kafka.md + kafka-trino.md + trino.md update
+  context/stacks/kafka.md             (new)
+  context/stacks/kafka-trino.md       (new)
+  context/stacks/trino.md             (updated — add Kafka connector depth + related links)
+
+Batch 2: Canonical Kafka seam example
+  examples/canonical-multi-backend/duos/clojure-go-kafka/clojure-side.clj
+  examples/canonical-multi-backend/duos/clojure-go-kafka/go-side.go
+  examples/canonical-multi-backend/duos/clojure-go-kafka/docker-compose.yml
+  examples/canonical-multi-backend/duos/clojure-go-kafka/seam.md
+
+Batch 3: Registry updates
+  examples/catalog.json
+  verification/stack_support_matrix.yaml
+  context/router/alias-catalog.yaml
+  examples/canonical-multi-backend/README.md
+
+
+---
+
+SECTION 7 — IMPORTANT CONSTRAINTS
+
+- Read examples/catalog.json before updating. Match existing entry format exactly.
+  Do not add a "tags" field if no existing entry uses one — check first.
+  (Note: in PROMPT_54 the multi-backend entries added a "tags" field. Match that format
+  if those entries are present, otherwise match the canonical-api entry format.)
+
+- Read verification/stack_support_matrix.yaml before updating. Only add the kafka
+  stack row and update the clojure entry in multi-backend-seam. Touch nothing else.
+
+- Read context/router/alias-catalog.yaml before updating. Match the format of existing
+  stacks entries. Do not duplicate entries that already exist.
+
+- The docker-compose.yml for the Kafka example MUST use bitnami/kafka:3.7 with KRaft
+  (no ZooKeeper). This is the modern default. The confluentinc/cp-kafka stack is
+  documented in kafka.md as the "full platform option" but should NOT be used in
+  the canonical example.
+
+- The clojure-side.clj is a single-file seam example. It is not a full Leiningen or
+  deps.edn project with a directory structure. Show the ns declaration at the top,
+  the :require form, and a -main function. The Dockerfile for clojure-service in
+  docker-compose.yml should handle deps.
+
+- Do NOT add full application logic to the seam examples. Each file shows only:
+  seam connection setup, send/receive, health endpoint.
+
+- Generate the actual implementation in commit-ready batches. Do not propose or summarize.
+  Produce complete file contents.
