@@ -1,0 +1,26 @@
+# Cargo.toml for the compute_nif NIF crate.
+# Place this file at: native/compute_nif/Cargo.toml
+#
+# Rustler expects the crate to be at native/<crate_name>/ relative to the
+# Elixir project root. The crate name here must match:
+#   use Rustler, otp_app: :my_app, crate: "compute_nif"
+# in the Elixir host module.
+
+[package]
+name = "compute_nif"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+# lib.name must match the crate name exactly.
+name = "compute_nif"
+# cdylib is mandatory — Rustler requires a dynamic library (.so / .dylib / .dll).
+# Omitting cdylib or using rlib will cause the NIF to fail to load at runtime.
+crate-type = ["cdylib"]
+
+[dependencies]
+rustler = "0.31"
+
+# For a real cryptographic hash, uncomment and use sha2 or md5:
+# sha2 = "0.10"   # SHA-256: sha2::Sha256::digest(input.as_bytes())
+# md5 = "0.10"    # MD5: format!("{:x}", md5::compute(input))
