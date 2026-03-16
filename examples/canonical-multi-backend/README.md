@@ -15,6 +15,8 @@ These examples show the seam layer between coordinating backend services. Each e
 | `duos/elixir-clojure-rabbitmq/` | Elixir + Clojure | Broker (RabbitMQ) | Work queue + topic exchange routing |
 | `duos/rust-python-grpc/` | Rust + Python | gRPC | ML inference server + Python orchestrator |
 | `duos/node-go-rest/` | Node + Go | REST (GraphQL BFF) | GraphQL schema resolving Go domain APIs |
+| `duos/scala-rust-grpc/` | Scala + Rust | gRPC | Akka Streams pipeline delegating to Rust kernel |
+| `duos/node-elixir-nats/` | Node + Elixir | Broker (NATS) | Client connection layer + distributed state |
 | `trios/go-elixir-python/` | Go + Elixir + Python | Broker + REST | Gateway + coordination + ML |
 | `trios/go-rust-python/` | Go + Rust + Python | gRPC + REST | Gateway + kernel + ML |
 
@@ -72,6 +74,16 @@ docker compose up --build
 # curl -X POST http://localhost:3000/graphql \
 #      -H "Content-Type: application/json" \
 #      -d '{"query":"{ users { id name email } }"}'
+
+# gRPC seam — Scala Akka Streams delegates compute to Rust kernel
+cd examples/canonical-multi-backend/duos/scala-rust-grpc
+docker compose up --build   # slow: Rust compile + JVM startup
+# observe Scala logs: id=rec-001 operation=normalize result=[...] duration_ns=<N>
+
+# Broker seam — Node publishes client actions, Elixir processes and rebroadcasts
+cd examples/canonical-multi-backend/duos/node-elixir-nats
+docker compose up --build
+# observe bidirectional flow: Node action → Elixir state update → Node receives
 ```
 
 Trio examples (three-service compositions):

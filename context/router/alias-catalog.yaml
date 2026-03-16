@@ -814,3 +814,55 @@ capabilities:
     target: examples/canonical-api/zig-zap-jetzig-faceted-filter-example.zig
   - alias: filter panel zig
     target: examples/canonical-api/zig-zap-jetzig-faceted-filter-example.zig
+  - alias: akka streams
+    target: context/stacks/akka-streams.md
+  - alias: akka stream
+    target: context/stacks/akka-streams.md
+  - alias: akka pipeline
+    target: context/stacks/akka-streams.md
+  - alias: akka source flow sink
+    target: context/stacks/akka-streams.md
+  - alias: akka graphdsl
+    target: context/stacks/akka-streams.md
+  - alias: akka backpressure
+    target: context/stacks/akka-streams.md
+  - alias: alpakka kafka
+    target:
+      - context/stacks/akka-streams.md
+      - context/stacks/kafka.md
+  - alias: alpakka grpc
+    target:
+      - context/stacks/akka-streams.md
+      - context/stacks/grpc.md
+  - alias: materialized value akka
+    target: context/stacks/akka-streams.md
+  - alias: zio streams
+    target: context/stacks/zio-streams.md
+  - alias: zio stream
+    target: context/stacks/zio-streams.md
+  - alias: zstream
+    target: context/stacks/zio-streams.md
+  - alias: zsink zpipeline
+    target: context/stacks/zio-streams.md
+  - alias: zio hub fanout
+    target: context/stacks/zio-streams.md
+  - alias: zio kafka
+    target:
+      - context/stacks/zio-streams.md
+      - context/stacks/kafka.md
+  - alias: scala rust grpc
+    target:
+      - context/stacks/duo-scala-rust.md
+      - examples/canonical-multi-backend/duos/scala-rust-grpc/seam.md
+  - alias: akka streams grpc rust
+    target:
+      - context/stacks/duo-scala-rust.md
+      - examples/canonical-multi-backend/duos/scala-rust-grpc/seam.md
+  - alias: node elixir nats
+    target:
+      - context/stacks/duo-node-elixir.md
+      - examples/canonical-multi-backend/duos/node-elixir-nats/seam.md
+  - alias: node elixir real-time
+    target:
+      - context/stacks/duo-node-elixir.md
+      - examples/canonical-multi-backend/duos/node-elixir-nats/seam.md

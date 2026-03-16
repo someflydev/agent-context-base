@@ -2066,6 +2066,30 @@
       "patterns": ["rest-seam", "graphql-bff", "downstream-health-probe"],
       "rank": 95,
       "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-multi-backend/duos/scala-rust-grpc/",
+      "category": "multi-backend",
+      "summary": "Scala + Rust gRPC seam: Scala Akka Streams pipeline delegates per-element hot-path compute to a Rust tonic gRPC server using mapAsync. Shows KernelService proto contract (kernel.v1), Akka Streams gRPC integration via sbt-akka-grpc, and docker-compose with JVM + Rust build considerations.",
+      "tags": ["multi-backend", "scala", "rust", "grpc", "akka-streams"],
+      "stacks": ["scala-tapir-http4s-zio", "rust-axum-modern", "grpc", "akka-streams"],
+      "archetypes": ["multi-backend-service"],
+      "workflows": ["design-multi-backend-seams", "add-backend-coordination-layer"],
+      "patterns": ["grpc-seam", "akka-streams", "streaming-pipeline", "compute-delegation"],
+      "rank": 95,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-multi-backend/duos/node-elixir-nats/",
+      "category": "multi-backend",
+      "summary": "Node + Elixir NATS broker seam (bidirectional): Node (TypeScript/Hono) publishes client actions to NATS; Elixir (Gnat/GenServer) processes them and publishes state updates back through NATS to Node. Shows the collaborative app pattern: client connection layer (Node) + distributed state (Elixir).",
+      "tags": ["multi-backend", "node", "elixir", "broker", "nats"],
+      "stacks": ["typescript-hono-bun", "elixir-phoenix", "nats-jetstream"],
+      "archetypes": ["multi-backend-service"],
+      "workflows": ["design-multi-backend-seams", "add-backend-coordination-layer"],
+      "patterns": ["broker-seam", "nats", "bidirectional", "real-time", "collaborative-app"],
+      "rank": 95,
+      "stability": "canonical"
     }
   ]
 }
