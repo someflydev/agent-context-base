@@ -1,0 +1,673 @@
+You are working inside the agent-context-base repository.
+
+Before proceeding, read:
+
+  context/doctrine/broker-selection.md          (added in PROMPT_56 — will be updated here)
+  context/stacks/nats-jetstream.md              (reference for stack doc depth and format)
+  context/stacks/kafka.md                       (reference for broker stack doc format)
+  context/stacks/coordination-seam-patterns.md  (broker seam section — existing RabbitMQ gaps)
+  context/doctrine/multi-backend-coordination.md (references RabbitMQ as a broker seam option)
+  context/stacks/duo-elixir-clojure.md          (primary consumer of this prompt's example)
+  context/stacks/elixir-phoenix.md              (Elixir stack doc — reference)
+  examples/canonical-multi-backend/duos/go-elixir-nats/  (reference format for duo examples)
+  examples/catalog.json                         (read before updating)
+  verification/stack_support_matrix.yaml        (read before updating)
+  context/router/alias-catalog.yaml             (read before updating)
+  examples/canonical-multi-backend/README.md    (read before updating)
+
+This prompt adds first-class RabbitMQ support to the repo. RabbitMQ is currently
+referenced as a valid broker seam option in context/doctrine/multi-backend-coordination.md
+("Technology: NATS JetStream, Kafka, RabbitMQ") and implicitly in coordination-seam-patterns.md,
+but it has no standalone stack doc, no canonical seam example, and no place in the
+broker-selection doctrine (which covers only NATS, Kafka, and Redis Streams).
+
+RabbitMQ's distinct value — AMQP-native routing (exchanges, routing keys, binding patterns),
+push-based delivery to queued consumers, and first-class work-queue semantics — makes it
+the right choice for task distribution and routed messaging scenarios that are awkward in NATS
+(no per-message routing) or Kafka (log-oriented, not queue-oriented).
+
+Produce:
+  1. context/stacks/rabbitmq.md — full RabbitMQ stack doc
+  2. Update context/doctrine/broker-selection.md — add RabbitMQ as the fourth broker option
+  3. Canonical RabbitMQ duo seam example:
+       examples/canonical-multi-backend/duos/elixir-clojure-rabbitmq/
+         elixir-side.ex
+         clojure-side.clj
+         docker-compose.yml
+         seam.md
+  4. Registry updates:
+       examples/catalog.json
+       verification/stack_support_matrix.yaml
+       context/router/alias-catalog.yaml
+       examples/canonical-multi-backend/README.md
+
+Organize into commit-ready batches. For each batch:
+1. Title and purpose.
+2. Files created or updated (full paths).
+3. Full content of every file.
+4. Suggested commit message with prefix [PROMPT_57].
+
+
+---
+
+SECTION 1 — rabbitmq.md SPECIFICATION
+
+File: context/stacks/rabbitmq.md
+
+This is the authoritative RabbitMQ stack doc. Mirror the structure depth of kafka.md but
+for RabbitMQ's AMQP-native operational model. Sections must match existing stack doc conventions.
+
+Cover:
+
+  ## When RabbitMQ Is the Right Choice
+  ## When RabbitMQ Is NOT the Right Choice
+  ## Typical Repo Surface
+  ## Core Concepts (Exchanges, Queues, Bindings, Routing Keys)
+  ## Exchange Types
+  ## Message Schema and Payload Convention
+  ## Publisher Patterns
+  ## Consumer Patterns (push-based, prefetch, manual ack)
+  ## Dead Letter Exchanges and Queues
+  ## Local Dev Composition
+  ## Testing Expectations
+  ## Common Assistant Mistakes
+  ## Related
+
+Content notes:
+
+When RabbitMQ IS the right choice:
+- Task distribution: a message must be delivered to exactly one worker in a pool (work queue semantics)
+- Routed messaging: messages need content-based routing by routing key to different queues
+  (topic exchange with pattern bindings, e.g., *.orders.us goes to one queue, *.orders.eu to another)
+- Priority queues: urgent tasks must preempt normal tasks in a queue
+- Request/reply patterns: caller publishes to a queue and waits for a response on a reply-to queue
+  (RPC-over-AMQP pattern; use sparingly — prefer gRPC for sync calls)
+- Teams with existing AMQP infrastructure or where AMQP client libraries are already in use
+- The workflow already uses AMQP conventions (dead-letter-exchange, ttl, priority) that map directly
+- Elixir is a producer or consumer — Broadway has first-class AMQP support via broadway_rabbitmq
+
+When RabbitMQ is NOT the right choice:
+- High-throughput log-style event streams where multiple independent consumer groups need replay
+  → use Kafka (log append semantics, offset-based replay)
+- Lightweight subject-routed pub/sub without queue semantics → use NATS JetStream
+- The repo already runs Redis and volume is modest → use Redis Streams
+- Fan-out to many consumers where each consumer gets a copy (fanout exchange works, but
+  NATS subject wildcards are simpler for most fan-out use cases)
+- Cross-team schema contracts requiring Avro or Protobuf with a registry → use Kafka
+
+Core concepts:
+
+Exchange types:
+  - direct: routes messages whose routing key exactly matches the queue binding key
+    Example: routing key "order.created" → queue "order-processor"
+  - topic: routes messages by routing key pattern matching (* matches one word, # matches zero or more)
+    Example: routing key "us.orders.*" → queue "us-order-handler"
+                         "*.orders.#" → queue "all-orders-monitor"
+  - fanout: broadcasts to all bound queues regardless of routing key
+    Example: "notifications" fanout exchange → email-queue, sms-queue, push-queue
+  - headers: routes by message header attributes (rarely needed; use topic instead)
+
+Message schema and payload convention:
+  Every RabbitMQ message in this repo should include the following in the JSON body:
+  {
+    "payload_version": 1,
+    "correlation_id": "req-abc123",
+    "published_at": "2026-03-16T10:30:00Z",
+    "routing_key": "domain.orders.created",
+    "entity_id": "ord-001",
+    "tenant_id": "acme",
+    "data": { ... }
+  }
+  Include payload_version and correlation_id on every message — same convention as NATS/Kafka.
+  The routing_key field in the body should mirror the AMQP routing key used for publishing.
+
+Publisher patterns — Python (aio-pika):
+```python
+# pip install aio-pika
+import aio_pika
+import json
+import asyncio
+
+async def publish_event(amqp_url: str, exchange_name: str, routing_key: str, event: dict) -> None:
+    connection = await aio_pika.connect_robust(amqp_url)
+    async with connection:
+        channel = await connection.channel()
+        exchange = await channel.declare_exchange(
+            exchange_name,
+            aio_pika.ExchangeType.TOPIC,
+            durable=True,
+        )
+        message = aio_pika.Message(
+            body=json.dumps({
+                "payload_version": 1,
+                "correlation_id": event.get("correlation_id", ""),
+                "published_at": event.get("published_at", ""),
+                "routing_key": routing_key,
+                **event,
+            }).encode(),
+            delivery_mode=aio_pika.DeliveryMode.PERSISTENT,  # survive broker restart
+            content_type="application/json",
+        )
+        await exchange.publish(message, routing_key=routing_key)
+```
+
+Also show Clojure publisher using Langohr:
+```clojure
+;; deps.edn: com.novemberain/langohr {:mvn/version "5.4.0"}
+(require '[langohr.core      :as rmq]
+         '[langohr.channel   :as lch]
+         '[langohr.exchange  :as le]
+         '[langohr.basic     :as lb])
+
+(defn publish-event [conn exchange routing-key event]
+  (let [ch      (lch/open conn)
+        payload (cheshire.core/encode event)]
+    (le/declare ch exchange "topic" {:durable true})
+    (lb/publish ch exchange routing-key payload
+                {:content-type "application/json"
+                 :persistent   true
+                 :correlation-id (:correlation-id event)})))
+```
+
+Consumer patterns — Elixir (Broadway + broadway_rabbitmq):
+```elixir
+# mix.exs deps:
+# {:broadway, "~> 1.0"},
+# {:broadway_rabbitmq, "~> 0.7"}
+
+defmodule MyApp.OrderConsumer do
+  use Broadway
+
+  def start_link(_opts) do
+    Broadway.start_link(__MODULE__,
+      name: __MODULE__,
+      producer: [
+        module: {BroadwayRabbitMQ.Producer,
+          queue: "order-processor",
+          connection: [
+            host: System.get_env("RABBITMQ_HOST", "rabbitmq"),
+            port: 5672,
+            username: System.get_env("RABBITMQ_USER", "guest"),
+            password: System.get_env("RABBITMQ_PASS", "guest"),
+          ],
+          on_failure: :reject_and_requeue_once,  # dead-letter after one retry
+          qos: [prefetch_count: 10],
+        },
+        concurrency: 1,
+      ],
+      processors: [
+        default: [concurrency: 4]
+      ]
+    )
+  end
+
+  @impl true
+  def handle_message(_processor, message, _context) do
+    event = Jason.decode!(message.data)
+    case event["payload_version"] do
+      1 -> process_v1(event)
+      v -> Broadway.Message.failed(message, "unsupported payload_version: #{v}")
+    end
+  end
+
+  defp process_v1(event) do
+    # business logic
+    :ok
+  end
+end
+```
+
+Also show Python consumer (aio-pika with manual ack):
+```python
+async def consume(amqp_url: str, queue_name: str) -> None:
+    connection = await aio_pika.connect_robust(amqp_url)
+    async with connection:
+        channel = await connection.channel()
+        await channel.set_qos(prefetch_count=10)
+        queue = await channel.declare_queue(queue_name, durable=True)
+        async with queue.iterator() as queue_iter:
+            async for message in queue_iter:
+                async with message.process(requeue=False):  # ack on context exit
+                    try:
+                        event = json.loads(message.body)
+                        process_event(event)
+                    except Exception as e:
+                        # reject without requeue — message goes to DLX
+                        raise
+```
+
+Dead letter exchanges and queues:
+- Declare a dead-letter exchange (DLX) on the main queue declaration:
+  arguments={"x-dead-letter-exchange": "dlx", "x-dead-letter-routing-key": "queue-name.failed"}
+- Messages that are rejected (basic.reject with requeue=False), exceed TTL, or exceed max-length
+  are routed to the DLX and into the DLQ automatically
+- Pattern: for each main queue "foo", declare a DLQ "foo.dlq" bound to the DLX
+- Include in DLQ payload (added by RabbitMQ automatically): x-death header with original queue,
+  exchange, routing-key, reason, and count
+
+Docker-compose snippet (rabbitmq:3.13-management-alpine — includes management UI):
+```yaml
+services:
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    ports:
+      - "5672:5672"    # AMQP
+      - "15672:15672"  # management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+```
+
+Testing expectations:
+- Run integration tests against a real RabbitMQ broker (Docker-backed rabbitmq:3.13-management-alpine)
+- Prove one publish + consume round-trip with ack
+- Prove dead-letter delivery: reject a message and verify it appears in the DLQ
+- Prove topic exchange routing: publish with different routing keys and verify correct queue delivery
+- Prove prefetch_count: publish N messages and verify at most prefetch_count are in-flight simultaneously
+- Do NOT mock the AMQP client in integration tests — the broker behavior is what's tested
+- Keep test queues isolated per test run using a unique queue suffix or vhost
+
+Common assistant mistakes:
+- Using auto-ack (no_ack=True) in consumer code — auto-ack means ack is sent before the
+  message is processed, so crashes cause message loss. Always use manual ack.
+- Declaring exchanges/queues without durable=True — they disappear on broker restart
+- Not declaring the DLX on the main queue at startup — dead letters silently disappear
+- Using a direct exchange when a topic exchange is needed for routing flexibility
+- Hardcoding the connection URL in code — use RABBITMQ_URL env var
+- Not setting prefetch_count — without it, one slow consumer starves all others by holding all messages
+
+Related:
+- context/doctrine/broker-selection.md (four-way NATS vs Kafka vs Redis Streams vs RabbitMQ)
+- context/stacks/nats-jetstream.md (simpler alternative for fan-out without routing)
+- context/stacks/kafka.md (better for log-style streams with schema registry)
+- context/stacks/coordination-seam-patterns.md (broker seam pattern)
+- context/stacks/duo-elixir-clojure.md (primary RabbitMQ duo)
+- examples/canonical-multi-backend/duos/elixir-clojure-rabbitmq/ (canonical seam example)
+
+
+---
+
+SECTION 2 — broker-selection.md UPDATE
+
+Read context/doctrine/broker-selection.md fully before modifying.
+
+Add RabbitMQ as the fourth broker option throughout the doc:
+
+  1. Rename "Quick Decision Table" from 3 columns to 4 columns, adding RabbitMQ:
+     New column header: RabbitMQ
+     Row values for RabbitMQ:
+     - Operational complexity: medium (broker + optional management plugin; single Docker container)
+     - Throughput target: low-medium (tens of thousands/sec; not designed for millions/day log streams)
+     - Schema enforcement: none built-in (JSON convention, same as NATS)
+     - Ordering guarantee: per-queue FIFO (strict within a queue; no cross-queue ordering)
+     - Consumer model: push-based with prefetch (broker pushes to consumers; flow control via prefetch_count)
+     - Retention model: messages deleted after ack or DLQ routing; no log-style retention
+     - At-least-once delivery: yes, with manual ack; rejected messages go to DLX
+     - Cross-team schema contracts: JSON convention (no registry; use payload_version field)
+     - Replay capability: none (messages are consumed once and deleted; not a log; use Kafka for replay)
+     - When to reach for it: task distribution, content-based routing, work queues, AMQP ecosystem
+
+  2. Add a new "## RabbitMQ" section after the Redis Streams section:
+
+     Recommended when:
+     - Task distribution: a message must be delivered to exactly one worker in a pool (not all consumers)
+     - Content-based routing by routing key is needed (topic exchange patterns)
+     - The workflow already uses AMQP conventions (DLX, TTL, priority queues)
+     - Elixir is a consumer — Broadway's broadway_rabbitmq gives first-class work-queue integration
+     - RPC-over-AMQP pattern (request/reply queues) is already in use elsewhere in the system
+     - Teams with existing RabbitMQ infrastructure or AMQP library familiarity
+
+     NOT recommended when:
+     - Multiple independent consumer groups need to read the same messages at different offsets
+       — RabbitMQ queues are consumed-once; use Kafka for independent multi-consumer replay
+     - Long-term event log retention for audit or replay — use Kafka
+     - Volume requires partition-level horizontal scaling — use Kafka
+     - Simple subject-routed fan-out is sufficient — use NATS JetStream (simpler to operate)
+     - The repo does not already use AMQP — adding RabbitMQ for one use case adds infra friction
+
+     Key operational notes:
+     - rabbitmq:3.13-management-alpine — includes management UI at port 15672 for dev
+     - Exchange types: direct (exact routing key), topic (pattern routing), fanout (broadcast)
+     - Consumer model: push-based with prefetch_count; always set prefetch to avoid starvation
+     - Dead-letter: declare x-dead-letter-exchange on each queue at startup
+     - docker-compose healthcheck: rabbitmq-diagnostics ping (reliable; faster than rabbitmqctl status)
+     - Management API: http://localhost:15672 (default guest/guest) — useful for dev debugging
+
+  3. Update the "Seam Type Interaction" table to include RabbitMQ:
+     Add row:
+     | RabbitMQ | Task queues, routed messaging; Elixir↔Clojure, Python workers, Kotlin services |
+
+  4. Update the Related section to add:
+     - context/stacks/rabbitmq.md
+
+  Do NOT rewrite any other section of broker-selection.md. Add only what is specified above.
+  The existing NATS, Kafka, and Redis Streams sections remain unchanged.
+
+
+---
+
+SECTION 3 — CANONICAL RABBITMQ SEAM EXAMPLE SPECIFICATION
+
+Directory: examples/canonical-multi-backend/duos/elixir-clojure-rabbitmq/
+
+This is the fifth duo canonical seam example. It demonstrates the RabbitMQ broker
+seam between a Clojure producer (domain event enrichment) and an Elixir consumer
+(Broadway-based work queue). This example fills two gaps simultaneously:
+  1. First canonical RabbitMQ broker seam example
+  2. First canonical Elixir + Clojure example
+
+This duo uses RabbitMQ rather than NATS/Kafka because:
+  - Elixir's Broadway + broadway_rabbitmq is the idiomatic work-queue integration
+  - Clojure has Langohr as a mature, idiomatic AMQP client
+  - The use case (task distribution with routing) is RabbitMQ's strength, not NATS/Kafka's
+
+Files:
+  elixir-side.ex    — Elixir Broadway consumer (broadway_rabbitmq)
+  clojure-side.clj  — Clojure Langohr producer
+  docker-compose.yml — rabbitmq:3.13-management-alpine + both services
+  seam.md           — companion doc
+
+Standards: same as existing duo examples.
+  - Single file per service (no multi-file packages)
+  - Seam-focused: show only connection setup, produce/consume, health endpoint
+  - Realistic image tags
+  - Health checks on every service
+  - Environment variables for seam addresses
+  - Comment at top noting this is a seam example, not a full scaffold
+
+
+elixir-side.ex
+
+  Elixir Broadway consumer using broadway_rabbitmq.
+
+  Dependencies (shown in comment block at top):
+    {:broadway, "~> 1.0"},
+    {:broadway_rabbitmq, "~> 0.7"},
+    {:jason, "~> 1.4"},
+    {:plug_cowboy, "~> 2.6"}   -- for /healthz
+
+  - Declares a Broadway pipeline consuming from queue "domain.tasks.enriched"
+  - Queue is durable, bound to topic exchange "domain-events" with routing key "domain.tasks.*"
+  - On startup: declares the exchange, queue, and binding using AMQP (show the setup)
+  - handle_message/3: decodes JSON body, logs event_type, entity_id, tenant_id, correlation_id
+  - On failure: rejects with requeue=false (routes to DLQ via DLX configured on queue)
+  - HTTP health endpoint: GET /healthz → 200 {"status":"ok"} using Plug.Cowboy
+  - Environment: RABBITMQ_HOST (default "rabbitmq"), RABBITMQ_USER (default "guest"),
+                 RABBITMQ_PASS (default "guest"), HTTP_PORT (default 4000)
+
+  Show the queue declaration with DLX arguments in a setup function called at startup:
+  ```elixir
+  # Queue declaration with dead-letter-exchange
+  AMQP.Queue.declare(channel, "domain.tasks.enriched",
+    durable: true,
+    arguments: [
+      {"x-dead-letter-exchange", :longstr, "domain-events.dlx"},
+      {"x-dead-letter-routing-key", :longstr, "domain.tasks.failed"},
+    ]
+  )
+  ```
+
+
+clojure-side.clj
+
+  Clojure producer using Langohr.
+
+  Dependencies (shown in comment block at top):
+    com.novemberain/langohr {:mvn/version "5.4.0"}
+    cheshire/cheshire {:mvn/version "5.13.0"}
+    ring/ring-core {:mvn/version "1.12.0"}
+    ring/ring-jetty-adapter {:mvn/version "1.12.0"}
+
+  - On startup: connects to RabbitMQ, declares topic exchange "domain-events" (durable),
+    then publishes one demo event to routing key "domain.tasks.created"
+  - HTTP health endpoint: GET /healthz → 200 "ok" using ring/jetty-adapter
+  - Environment: RABBITMQ_HOST, RABBITMQ_USER, RABBITMQ_PASS, HTTP_PORT (default 8180)
+
+  Event schema:
+  ```json
+  {
+    "payload_version": 1,
+    "correlation_id": "req-demo-001",
+    "published_at": "...",
+    "routing_key": "domain.tasks.created",
+    "tenant_id": "demo",
+    "entity_id": "task-001",
+    "event_type": "task.enriched",
+    "data": {
+      "priority": "normal",
+      "category": "billing",
+      "enriched_at": "...",
+      "source_system": "clojure-enricher"
+    }
+  }
+  ```
+
+  Show the ns declaration, :require forms, and a -main function.
+  Use persistent delivery mode (content-type application/json, :persistent true).
+
+
+docker-compose.yml
+
+  - rabbitmq service: rabbitmq:3.13-management-alpine
+    - Ports: 5672 (AMQP), 15672 (management UI)
+    - Environment: RABBITMQ_DEFAULT_USER: guest, RABBITMQ_DEFAULT_PASS: guest
+    - healthcheck: rabbitmq-diagnostics ping
+    - start_period: 30s (RabbitMQ takes time to boot)
+  - elixir-service: built from elixir-side.ex, port 4000
+    - depends_on: rabbitmq (service_healthy)
+    - RABBITMQ_HOST: rabbitmq, RABBITMQ_USER: guest, RABBITMQ_PASS: guest
+  - clojure-service: built from clojure-side.clj, port 8180
+    - depends_on: rabbitmq (service_healthy)
+    - RABBITMQ_HOST: rabbitmq, RABBITMQ_USER: guest, RABBITMQ_PASS: guest
+
+  Note: Both services depend only on RabbitMQ, not on each other.
+  This is correct for a broker seam — producer and consumer are independent.
+
+
+seam.md
+
+  Explains:
+  - The broker seam: Clojure produces enriched domain tasks; Elixir consumes them
+    as a work queue (one consumer handles each message, not all consumers)
+  - Why RabbitMQ (not NATS, not Kafka) for this seam:
+    - Work queue semantics: exactly one worker handles each task (direct routing)
+    - Broadway's broadway_rabbitmq is the idiomatic Elixir integration for AMQP queues
+    - Clojure's Langohr is mature and idiomatic for AMQP publishing
+    - Topic exchange allows routing different task types to different queues in the future
+  - The exchange/queue/binding topology: topic exchange "domain-events", queue
+    "domain.tasks.enriched", binding key "domain.tasks.*"
+  - The dead-letter-exchange pattern and why it matters for work queues
+  - Why Clojure and Elixir don't share depends_on: broker seam independence
+  - How to run, what to observe in RabbitMQ management UI (localhost:15672)
+  - How to verify message delivery: check Elixir consumer logs and RabbitMQ queue depth
+  - Notes on scaling: multiple Elixir Broadway workers consume from the same queue;
+    RabbitMQ distributes messages round-robin across consumers
+  - Notes on schema evolution: bump payload_version when fields change
+
+
+---
+
+SECTION 4 — REGISTRY UPDATE SPECIFICATION
+
+UPDATE examples/catalog.json
+
+Add one entry for the new canonical example:
+  path: "examples/canonical-multi-backend/duos/elixir-clojure-rabbitmq/"
+  category: "multi-backend"
+  summary: "Elixir + Clojure RabbitMQ broker seam: Clojure (Langohr) produces enriched domain task events to a RabbitMQ topic exchange; Elixir (Broadway + broadway_rabbitmq) consumes them as a work queue. Shows exchange/queue/binding setup, DLX pattern, prefetch configuration, and docker-compose."
+  tags: ["multi-backend", "elixir", "clojure", "broker", "rabbitmq", "amqp"]
+  stacks: ["elixir-phoenix", "clojure-kit-nextjdbc-hiccup", "rabbitmq"]
+  archetypes: ["multi-backend-service"]
+  workflows: ["design-multi-backend-seams", "add-backend-coordination-layer"]
+  patterns: ["broker-seam", "rabbitmq", "work-queue", "topic-exchange", "dead-letter"]
+  rank: 95
+  stability: "canonical"
+
+Read the file first. Match existing entry format exactly. Do not restructure.
+
+
+UPDATE verification/stack_support_matrix.yaml
+
+Add a new stack entry for "rabbitmq":
+
+  stack: rabbitmq
+  support_level: 2
+  verified_examples:
+    - elixir-clojure-rabbitmq-seam-example
+  missing_verification:
+    - live AMQP integration test in default verification tier
+    - dead-letter round-trip verification
+    - topic exchange routing verification (multiple routing keys)
+    - priority queue example
+  notes: Canonical broker seam example (elixir-clojure-rabbitmq) is structure-verified only.
+         No live RabbitMQ integration test is wired in the default verification tier.
+         Management UI health probe pattern (rabbitmq-diagnostics ping) verified in docker-compose context.
+
+Also update the existing "multi-backend-seam" capability row:
+  Add Elixir to the supported entries (it now has a second canonical seam example):
+    - if elixir already has an entry in multi-backend-seam, add the new example to its
+      canonical_examples list
+    - Add Clojure if not already marked "supported" (it may already be from PROMPT_55):
+      if it's "documented", upgrade to "supported" and add the new example
+
+Read the file first. Only add the rabbitmq stack entry and update the multi-backend-seam
+capability row. Do not modify other rows.
+
+
+UPDATE context/router/alias-catalog.yaml
+
+Add under the stacks section:
+  - alias: rabbitmq
+    target: context/stacks/rabbitmq.md
+  - alias: rabbitmq stack
+    target: context/stacks/rabbitmq.md
+  - alias: amqp
+    target: context/stacks/rabbitmq.md
+  - alias: rabbitmq producer
+    target: context/stacks/rabbitmq.md
+  - alias: rabbitmq consumer
+    target: context/stacks/rabbitmq.md
+  - alias: broadway rabbitmq
+    target: context/stacks/rabbitmq.md
+  - alias: broadway amqp
+    target: context/stacks/rabbitmq.md
+  - alias: langohr clojure
+    target: context/stacks/rabbitmq.md
+  - alias: rabbitmq exchange
+    target: context/stacks/rabbitmq.md
+  - alias: topic exchange rabbitmq
+    target: context/stacks/rabbitmq.md
+  - alias: dead letter exchange
+    target: context/stacks/rabbitmq.md
+  - alias: dlx rabbitmq
+    target: context/stacks/rabbitmq.md
+  - alias: work queue rabbitmq
+    target: context/stacks/rabbitmq.md
+  - alias: prefetch rabbitmq
+    target: context/stacks/rabbitmq.md
+  - alias: rabbitmq vs nats
+    target:
+      - context/stacks/rabbitmq.md
+      - context/doctrine/broker-selection.md
+  - alias: when to use rabbitmq
+    target:
+      - context/stacks/rabbitmq.md
+      - context/doctrine/broker-selection.md
+  - alias: elixir clojure rabbitmq
+    target:
+      - context/stacks/duo-elixir-clojure.md
+      - examples/canonical-multi-backend/duos/elixir-clojure-rabbitmq/seam.md
+
+Also update the broker-selection aliases — add "rabbitmq vs kafka" and
+"four broker comparison" pointing to context/doctrine/broker-selection.md.
+
+Read the file first. Match existing format. Do not change existing entries.
+
+
+UPDATE examples/canonical-multi-backend/README.md
+
+Add a new row to the catalog table for the new duo:
+  | `duos/elixir-clojure-rabbitmq/` | Elixir + Clojure | Broker (RabbitMQ) | Work queue + topic exchange routing |
+
+Add to the Seam Types section a new paragraph for RabbitMQ:
+  **RabbitMQ broker seam (AMQP):** one service publishes messages to a RabbitMQ exchange
+  with a routing key; the exchange routes messages to bound queues based on exchange type
+  (topic, direct, fanout). Consumers receive messages via push delivery (not polling).
+  Use this when work-queue semantics are needed (one message → one worker), when content-based
+  routing by routing key is required, or when Elixir Broadway's broadway_rabbitmq integration
+  is the natural consumer. See `context/stacks/rabbitmq.md` for the full pattern.
+
+Add a run instruction in the "How to Run an Example" section:
+  # RabbitMQ broker seam — Clojure produces, Elixir (Broadway) consumes
+  cd examples/canonical-multi-backend/duos/elixir-clojure-rabbitmq
+  docker compose up --build
+  # open http://localhost:15672 (guest/guest) to inspect the exchange and queue
+  # observe Elixir logs: event_type, entity_id, tenant_id, correlation_id
+
+Read the file first.
+
+
+---
+
+SECTION 5 — COMMIT BATCHING
+
+Batch 1: RabbitMQ stack doc + broker-selection update
+  context/stacks/rabbitmq.md                      (new)
+  context/doctrine/broker-selection.md            (updated — add RabbitMQ as fourth broker)
+
+Batch 2: Canonical RabbitMQ seam example
+  examples/canonical-multi-backend/duos/elixir-clojure-rabbitmq/elixir-side.ex
+  examples/canonical-multi-backend/duos/elixir-clojure-rabbitmq/clojure-side.clj
+  examples/canonical-multi-backend/duos/elixir-clojure-rabbitmq/docker-compose.yml
+  examples/canonical-multi-backend/duos/elixir-clojure-rabbitmq/seam.md
+
+Batch 3: Registry updates
+  examples/catalog.json
+  verification/stack_support_matrix.yaml
+  context/router/alias-catalog.yaml
+  examples/canonical-multi-backend/README.md
+
+
+---
+
+SECTION 6 — IMPORTANT CONSTRAINTS
+
+- Read context/doctrine/broker-selection.md fully before updating. The existing NATS,
+  Kafka, and Redis Streams sections must remain unchanged. Add only the RabbitMQ column
+  to the Quick Decision Table and the new RabbitMQ section. Update only the seam table
+  and Related section as specified.
+
+- Read examples/catalog.json before updating. Match existing entry format exactly.
+  Check whether the entries from PROMPT_55 used a "tags" field — if so, use it;
+  if not, omit it. Match whatever format the most recent multi-backend entries use.
+
+- Read verification/stack_support_matrix.yaml before updating. Only add the rabbitmq
+  stack row and update the multi-backend-seam capability row. Touch nothing else.
+
+- Read context/router/alias-catalog.yaml before updating. Match the format of existing
+  stacks entries. Do not duplicate entries that already exist.
+
+- The docker-compose.yml for the RabbitMQ example MUST use rabbitmq:3.13-management-alpine.
+  The management UI port (15672) must be exposed — it is a key observability tool
+  for this example and should be mentioned in seam.md's "how to observe" section.
+
+- The elixir-side.ex is a single-file seam example showing Broadway + broadway_rabbitmq.
+  Show the queue setup (exchange declaration, queue declaration with DLX, binding) in
+  a separate setup function that is called before Broadway.start_link. This setup must
+  be in the file, not hand-waved.
+
+- The clojure-side.clj is a single-file seam example. Show the ns declaration at the
+  top, the :require form, and a -main function. The Dockerfile for clojure-service
+  in docker-compose.yml should handle deps.
+
+- Do NOT add full application logic to the seam examples. Each file shows only:
+  seam connection setup, send/receive, health endpoint.
+
+- Generate the actual implementation in commit-ready batches. Do not propose or summarize.
+  Produce complete file contents.

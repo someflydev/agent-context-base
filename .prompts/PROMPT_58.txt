@@ -1,0 +1,740 @@
+You are working inside the agent-context-base repository.
+
+Before proceeding, read:
+
+  context/stacks/coordination-seam-patterns.md      (gRPC section — this is the current gRPC coverage)
+  context/stacks/duo-rust-python.md                 (primary consumer of the Rust+Python gRPC example)
+  context/stacks/duo-node-go.md                     (primary consumer of the Node+Go REST example)
+  context/stacks/rust-axum-modern.md                (Rust stack doc)
+  context/stacks/python-fastapi-uv-ruff-orjson-polars.md (Python stack doc)
+  context/stacks/go-echo.md                         (Go stack doc)
+  examples/canonical-multi-backend/duos/kotlin-rust-grpc/  (existing gRPC example — reference format)
+  examples/canonical-multi-backend/duos/go-python-rest/    (existing REST example — reference format)
+  examples/catalog.json                             (read before updating)
+  verification/stack_support_matrix.yaml            (read before updating)
+  context/router/alias-catalog.yaml                 (read before updating)
+  examples/canonical-multi-backend/README.md        (read before updating)
+
+This prompt adds two things:
+
+  1. A standalone gRPC stack doc (context/stacks/grpc.md) — the first-class reference
+     for gRPC in this repo. Currently gRPC is covered only in coordination-seam-patterns.md
+     as part of the multi-backend seam pattern, and in various duo/trio docs. But gRPC
+     is complex enough (streaming RPCs, error handling, interceptors, health standard,
+     stub generation for 6+ languages) to deserve its own stack doc that can be loaded
+     independently of the multi-backend context.
+
+  2. Two canonical duo seam examples that are currently missing:
+     - Rust + Python (gRPC seam): examples/canonical-multi-backend/duos/rust-python-grpc/
+     - Node + Go (REST seam): examples/canonical-multi-backend/duos/node-go-rest/
+     The Node+Go example also demonstrates a minimal GraphQL BFF calling a Go REST service,
+     covering the GraphQL pattern lightly before a dedicated graphql.md is added in PROMPT_60.
+
+Produce:
+  1. context/stacks/grpc.md — full standalone gRPC stack doc
+  2. Canonical example: examples/canonical-multi-backend/duos/rust-python-grpc/
+       service.proto, rust-server.rs, python-caller.py, docker-compose.yml, seam.md
+  3. Canonical example: examples/canonical-multi-backend/duos/node-go-rest/
+       go-side.go, node-side.ts, docker-compose.yml, seam.md
+  4. Update context/stacks/coordination-seam-patterns.md — add reference to grpc.md
+  5. Registry updates:
+       examples/catalog.json
+       verification/stack_support_matrix.yaml
+       context/router/alias-catalog.yaml
+       examples/canonical-multi-backend/README.md
+
+Organize into commit-ready batches. For each batch:
+1. Title and purpose.
+2. Files created or updated (full paths).
+3. Full content of every file.
+4. Suggested commit message with prefix [PROMPT_58].
+
+
+---
+
+SECTION 1 — grpc.md SPECIFICATION
+
+File: context/stacks/grpc.md
+
+This is the authoritative gRPC stack doc. It covers Protocol Buffers and gRPC as a
+cross-language seam technology. It is consulted whenever a gRPC seam is chosen in
+design-multi-backend-seams.md. It does NOT duplicate the seam-specific content in
+coordination-seam-patterns.md — it provides the full technical reference that
+coordination-seam-patterns.md summarizes.
+
+Sections:
+
+  ## When gRPC Is the Right Choice
+  ## When gRPC Is NOT the Right Choice
+  ## Proto File Organization
+  ## RPC Method Types
+  ## Stub Generation (per language)
+  ## Error Handling
+  ## Deadlines and Timeouts
+  ## Interceptors
+  ## Health Checking Standard
+  ## Reflection and grpc-gateway
+  ## Local Dev Composition
+  ## Testing Expectations
+  ## Common Assistant Mistakes
+  ## Related
+
+Content notes:
+
+When gRPC IS the right choice:
+- Schema enforcement across language boundaries is required — the .proto file is the
+  canonical contract; breaking changes are caught at stub generation time
+- Synchronous results are required (caller waits for typed response)
+- Performance matters for the call itself: proto binary encoding is more compact and faster
+  to serialize/deserialize than JSON, especially for repeated numeric fields
+- Streaming is needed: server-streaming, client-streaming, or bidirectional streaming RPCs
+  are all expressible in proto and handled by gRPC natively
+- The service pair includes Rust (tonic), Go (google.golang.org/grpc), Kotlin (grpc-kotlin),
+  or Scala (ScalaPB) — all have excellent gRPC support
+
+When gRPC is NOT the right choice:
+- Simple request/response where JSON readability is preferred → REST with FastAPI or Echo
+- The caller is a browser — gRPC-Web is possible but adds complexity; use REST or GraphQL
+- Both services are the same language and the call is in-process → function call
+- The schema will change frequently in early development — proto schema evolution is
+  strict (field numbers must be stable); REST with JSON is more forgiving at the cost
+  of runtime errors instead of build-time errors
+- Team is unfamiliar with protoc and does not want to manage stub generation steps
+
+Proto file organization:
+  - All .proto files live in docs/seam-contract/ or a shared proto/ directory at the repo root
+  - Package naming: {domain}.{version} — e.g., inference.v1, compute.v1, processing.v1
+  - go_package option: required for Go stub generation; use your module path
+  - One service per .proto file; keep the file small and focused
+  - Add API-level comments to every service, RPC, message, and field
+  - Never reuse field numbers — once a field is added, its number is permanent
+  - Use reserved to document removed fields: reserved 4; reserved "old_field";
+  - Always start field numbers at 1; never use 19000–19999 (reserved by proto)
+
+Show a well-structured example proto with comments:
+```protobuf
+// docs/seam-contract/inference.proto
+syntax = "proto3";
+package inference.v1;
+
+// go_package required for Go codegen
+option go_package = "github.com/example/myapp/gen/inference/v1;inferencev1";
+
+// InferenceService handles ML model prediction requests.
+service InferenceService {
+  // Predict runs a single inference over the provided features.
+  rpc Predict(PredictRequest) returns (PredictResponse);
+
+  // PredictStream accepts a stream of requests and returns a stream of responses.
+  // Use for batched inference where client sends multiple requests.
+  rpc PredictStream(stream PredictRequest) returns (stream PredictResponse);
+}
+
+// PredictRequest carries the feature vector for a single inference.
+message PredictRequest {
+  // model_id identifies which model to use. Required.
+  string model_id = 1;
+
+  // features is the numeric feature vector. Required; must be non-empty.
+  repeated float features = 2;
+
+  // correlation_id is propagated for distributed tracing. Optional.
+  string correlation_id = 3;
+}
+
+// PredictResponse carries the inference result.
+message PredictResponse {
+  // label is the predicted class name.
+  string label = 1;
+
+  // confidence is the probability of the predicted class (0.0–1.0).
+  float confidence = 2;
+
+  // duration_ns is the server-side inference duration in nanoseconds.
+  int64 duration_ns = 3;
+}
+```
+
+RPC method types:
+  Unary: rpc Predict(Request) returns (Response)
+    - One request, one response. Use for synchronous query/response patterns.
+  Server-streaming: rpc Scan(ScanRequest) returns (stream ScanResult)
+    - One request, stream of responses. Use for paginated results or progress updates.
+  Client-streaming: rpc Upload(stream Chunk) returns (UploadResult)
+    - Stream of requests, one response. Use for file upload or batched writes.
+  Bidirectional streaming: rpc Chat(stream Msg) returns (stream Msg)
+    - Full-duplex stream. Use for real-time protocols (voice, game state).
+  For most seam patterns in this repo: use unary. Only add streaming when the use case
+  requires it — streaming adds complexity to both sides.
+
+Stub generation commands — show for each language:
+
+  Go:
+  ```bash
+  go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+  go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+  protoc --go_out=gen --go_opt=paths=source_relative \
+         --go-grpc_out=gen --go-grpc_opt=paths=source_relative \
+         docs/seam-contract/inference.proto
+  ```
+
+  Rust (tonic-build in build.rs — no standalone protoc command):
+  ```toml
+  # Cargo.toml
+  [build-dependencies]
+  tonic-build = "0.12"
+  ```
+  ```rust
+  // build.rs
+  fn main() -> Result<(), Box<dyn std::error::Error>> {
+      tonic_build::compile_protos("../../docs/seam-contract/inference.proto")?;
+      Ok(())
+  }
+  ```
+
+  Python:
+  ```bash
+  pip install grpcio-tools
+  python -m grpc_tools.protoc \
+      -I docs/seam-contract \
+      --python_out=gen \
+      --pyi_out=gen \
+      --grpc_python_out=gen \
+      docs/seam-contract/inference.proto
+  ```
+
+  Kotlin (via Gradle protobuf plugin):
+  ```kotlin
+  // build.gradle.kts
+  plugins { id("com.google.protobuf") version "0.9.4" }
+  dependencies {
+      implementation("io.grpc:grpc-kotlin-stub:1.4.1")
+      implementation("com.google.protobuf:protobuf-kotlin:3.25.0")
+  }
+  protobuf {
+      protoc { artifact = "com.google.protobuf:protoc:3.25.0" }
+      plugins {
+          id("grpc") { artifact = "io.grpc:protoc-gen-grpc-java:1.62.2" }
+          id("grpckt") { artifact = "io.grpc:protoc-gen-grpc-kotlin:1.4.1:jdk8@jar" }
+      }
+      generateProtoTasks { all().forEach { it.plugins { id("grpc"); id("grpckt") } } }
+  }
+  ```
+
+  Scala (ScalaPB via sbt):
+  ```scala
+  // build.sbt
+  libraryDependencies ++= Seq(
+    "io.grpc"                  % "grpc-netty"            % "1.62.2",
+    "com.thesamet.scalapb"    %% "scalapb-runtime-grpc"  % scalapb.compiler.Version.scalapbVersion,
+  )
+  Compile / PB.targets := Seq(scalapb.gen(grpc = true) -> (Compile / sourceManaged).value / "scalapb")
+  ```
+
+  Elixir (grpc hex package):
+  Note: gRPC is NOT idiomatic for Elixir as a seam. Prefer NATS or REST for Elixir.
+  If gRPC is required:
+  ```elixir
+  # mix.exs dep: {:grpc, "~> 0.8"}
+  # Generate stubs: mix grpc.gen --proto=docs/seam-contract/inference.proto
+  ```
+
+Error handling:
+  gRPC status codes to know:
+  - OK (0): success
+  - INVALID_ARGUMENT (3): caller sent bad input — the server should validate and return this
+  - NOT_FOUND (5): entity not found
+  - ALREADY_EXISTS (6): conflicts with existing state
+  - PERMISSION_DENIED (7): caller authenticated but not authorized
+  - UNAUTHENTICATED (16): caller not authenticated
+  - RESOURCE_EXHAUSTED (8): rate limit or quota exceeded
+  - INTERNAL (13): unexpected server error — do not expose internal details
+  - UNAVAILABLE (14): server is temporarily unavailable (safe to retry with backoff)
+  - DEADLINE_EXCEEDED (4): the call deadline elapsed before completion
+
+  In Rust (tonic): return Err(Status::invalid_argument("features must not be empty"))
+  In Go: return nil, status.Errorf(codes.InvalidArgument, "features must not be empty")
+  In Python: raise grpc.RpcError (context.abort(grpc.StatusCode.INVALID_ARGUMENT, "..."))
+
+Deadlines and timeouts:
+  Always set a deadline on the caller side. A missing deadline means a hung downstream
+  can block the caller indefinitely.
+  Go: ctx, cancel := context.WithTimeout(ctx, 5*time.Second); defer cancel()
+  Python: stub.Predict(request, timeout=5.0)
+  Kotlin: stub.withDeadlineAfter(5, TimeUnit.SECONDS).predict(request)
+
+Health checking standard:
+  Use grpc.health.v1.Health/Check — the standard health checking protocol. Both sides
+  should implement it.
+
+  Proto import: google/health/v1/health.proto (available in grpc-health-probe repo)
+
+  Alternatively: expose an HTTP /healthz alongside the gRPC server. This is simpler and
+  avoids requiring grpc_health_probe in the container. Rust (tonic) can run an Axum
+  HTTP server on a separate port alongside the gRPC server using tokio::spawn.
+
+  docker-compose health check without grpc_health_probe:
+  ```yaml
+  healthcheck:
+    test: ["CMD", "curl", "-f", "http://localhost:8082/healthz"]
+    interval: 10s
+    timeout: 5s
+    retries: 3
+    start_period: 20s
+  ```
+
+Reflection and grpc-gateway:
+  gRPC server reflection (grpc.reflection.v1alpha.ServerReflection): allows tools like
+  grpcurl and grpc-ui to introspect the server without the .proto file.
+  - Rust (tonic): add tonic-reflection crate; register the service at startup
+  - Go: add google.golang.org/grpc/reflection; register at startup
+  - Enable in dev; consider disabling in production for security
+
+  grpc-gateway: generates an HTTP/JSON reverse proxy from the proto file, allowing REST
+  clients to call gRPC services. Useful when a browser or REST-only client must reach
+  a gRPC service. Add google.api.http annotations to the proto methods.
+
+Local Dev Composition snippet (Rust gRPC server with HTTP health sidecar):
+```yaml
+services:
+  inference-kernel:
+    build:
+      context: ./services/kernel
+      dockerfile: Dockerfile
+    ports:
+      - "50051:50051"   # gRPC
+      - "8082:8082"     # HTTP /healthz sidecar
+    environment:
+      GRPC_PORT: "50051"
+      HEALTH_PORT: "8082"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  gateway:
+    build:
+      context: ./services/gateway
+    ports:
+      - "8080:8080"
+    environment:
+      GRPC_KERNEL_ADDR: inference-kernel:50051
+    depends_on:
+      inference-kernel:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+```
+
+Testing expectations:
+- Test stub generation: run protoc and verify generated files compile in each target language
+- Prove one unary RPC round-trip with a real server (no mocks)
+- Prove error handling: call with invalid input, verify the correct gRPC status code is returned
+- Prove deadline handling: make a request to a slow server, verify DEADLINE_EXCEEDED is returned
+- Prove health check: call the /healthz endpoint or Health/Check RPC, verify 200/OK
+- Do NOT mock the gRPC server in integration tests — the stub generation and wire behavior is what's tested
+- Keep test protos separate from production protos if testing error injection
+
+Common assistant mistakes:
+- Not setting go_package option in the proto file — Go codegen fails without it
+- Reusing or skipping field numbers — this breaks backward compatibility silently for binary proto
+- Not setting a deadline on the caller — any hung server causes the caller to block indefinitely
+- Using INTERNAL status code for all errors — use the most specific status code available
+- Forgetting to run protoc after changing the proto — stubs become stale
+- Not exposing an HTTP health endpoint alongside gRPC — docker-compose health checks are simpler
+  with curl than with grpc_health_probe (which requires installing the tool in the container)
+- Running Rust tonic server on a single async runtime thread — use tokio::main with multi-thread
+
+Related:
+- context/stacks/coordination-seam-patterns.md (gRPC seam implementation in context of multi-backend)
+- context/stacks/rust-axum-modern.md (Rust side: tonic + Axum sidecar)
+- context/stacks/go-echo.md (Go side: grpc client)
+- context/stacks/scala-tapir-http4s-zio.md (Scala side: ScalaPB)
+- context/doctrine/multi-backend-coordination.md (when to use gRPC as the seam type)
+- examples/canonical-multi-backend/duos/rust-python-grpc/ (Rust server + Python client)
+- examples/canonical-multi-backend/duos/kotlin-rust-grpc/ (Kotlin client + Rust server)
+- examples/canonical-multi-backend/duos/scala-rust-grpc/  (Scala Akka Streams + Rust — added in PROMPT_59)
+
+
+---
+
+SECTION 2 — CANONICAL RUST + PYTHON gRPC EXAMPLE
+
+Directory: examples/canonical-multi-backend/duos/rust-python-grpc/
+
+This example demonstrates the gRPC seam between a Rust inference server and a Python
+gRPC client. It fills the canonical example gap for duo-rust-python.md.
+
+This is the inverse of kotlin-rust-grpc (where Kotlin is the caller and Rust is the server).
+Here Python is the caller and Rust is the server — the AI platform pattern where Python
+(ML inference coordinator) calls Rust (hot-path serving engine).
+
+Files:
+  service.proto       — The seam contract (shared proto file)
+  rust-server.rs      — Rust tonic gRPC server
+  python-caller.py    — Python grpcio client
+  docker-compose.yml  — Full local dev composition
+  seam.md             — Companion doc
+
+
+service.proto
+  - syntax = "proto3"
+  - package inference.v1
+  - option go_package for potential future Go usage
+  - Service InferenceService:
+      rpc Predict(PredictRequest) returns (PredictResponse)
+  - Message PredictRequest:
+      string model_id = 1
+      repeated float features = 2
+      string correlation_id = 3
+  - Message PredictResponse:
+      string label = 1
+      float confidence = 2
+      int64 duration_ns = 3
+  - Comment: "This is a seam-focused example. For full application scaffold,
+    see context/archetypes/multi-backend-service.md."
+
+
+rust-server.rs
+  - Comment at top: seam example, not full scaffold
+  - Uses tonic 0.12+ and prost
+  - Implements InferenceServiceServer trait:
+      predict: takes features, computes stub result (label = "positive" if mean > 0.5,
+               else "low-confidence"; confidence = mean of features clamped 0..1)
+      records duration_ns using std::time::Instant
+  - Boots on GRPC_PORT env var (default 50051)
+  - Exposes HTTP /healthz on HEALTH_PORT env var (default 8082) using a minimal tokio
+    HTTP server (or Axum — match existing rust-axum-modern.md conventions)
+  - Logs each request: correlation_id, features length, duration_ns
+  - Handles empty features gracefully: returns label "undefined", confidence 0.0
+
+
+python-caller.py
+  - Comment at top: seam example, not full scaffold
+  - Uses grpcio and grpcio-tools
+  - Reads RUST_GRPC_URL env var (default "rust-server:50051")
+  - Reads HTTP_PORT env var (default 8001) for its own /healthz
+  - On startup: connects to Rust server, sends one demo PredictRequest with 5 sample features
+  - Prints the response: label, confidence, duration_ns
+  - Exposes FastAPI GET /healthz that probes the Rust gRPC server and returns 200 or 503
+    (this demonstrates the downstream health probe pattern from a Python perspective)
+  - Also exposes POST /predict that accepts {"features": [float, ...], "model_id": str}
+    and forwards to the Rust gRPC server, returning the result as JSON
+    This makes the example callable via curl for easy verification
+
+
+docker-compose.yml
+  - rust-server: built from rust-server.rs, gRPC port 50051, HTTP port 8082
+    - healthcheck: curl http://localhost:8082/healthz
+    - start_period: 60s (Rust compilation inside container is slow first time)
+  - python-caller: built from python-caller.py, port 8001
+    - depends_on: rust-server (service_healthy)
+    - RUST_GRPC_URL: rust-server:50051
+    - healthcheck: curl http://localhost:8001/healthz
+
+seam.md
+  - Purpose: Rust owns hot-path ML inference serving; Python orchestrates and calls it
+  - Why gRPC (not REST): typed schema enforcement across languages, binary encoding
+    performance for repeated float fields, strong contracts for the inference interface
+  - The proto file as the canonical contract: both sides regenerate from it
+  - Stub generation commands for Rust (tonic-build) and Python (grpcio-tools)
+  - How to run locally (docker compose up --build); first build is slow (Rust compile)
+  - How to verify: curl -X POST http://localhost:8001/predict -d '{"features":[0.8,0.6,0.9],"model_id":"demo"}'
+  - The downstream health probe pattern in Python's /healthz
+  - Related docs
+
+
+---
+
+SECTION 3 — CANONICAL NODE + GO REST EXAMPLE (with GraphQL BFF layer)
+
+Directory: examples/canonical-multi-backend/duos/node-go-rest/
+
+This example demonstrates the REST seam between a Node/TypeScript BFF and a Go domain
+service. It fills the canonical example gap for duo-node-go.md. The Node side shows
+a minimal GraphQL BFF (Apollo Server) that resolves one query by calling the Go REST API.
+This lightly previews the GraphQL pattern before grpc.md covers it in depth.
+
+Files:
+  go-side.go        — Go domain service (Echo router)
+  node-side.ts      — Node/TypeScript GraphQL BFF (Apollo Server)
+  docker-compose.yml — Full local dev composition
+  seam.md            — Companion doc
+
+
+go-side.go
+  - Comment at top: seam example, not full scaffold
+  - Uses github.com/labstack/echo/v4 (matching go-echo.md conventions)
+  - GET /users/:id — returns {"id": str, "name": str, "email": str, "created_at": str}
+    Uses stub data (deterministic: user ID maps to fixed fake name/email)
+  - GET /users — returns array of stub users (3 items)
+  - GET /healthz — returns {"status": "ok"}
+  - Reads PORT env var (default 8080)
+  - Logs each request
+
+
+node-side.ts
+  - Comment at top: seam example, not full scaffold
+  - Uses @apollo/server (Apollo Server 4) and graphql
+  - Defines a minimal GraphQL schema:
+      type User { id: ID!, name: String!, email: String!, createdAt: String! }
+      type Query { user(id: ID!): User, users: [User!]! }
+  - Resolvers call the Go service via fetch:
+      user(id): GET ${GO_SERVICE_URL}/users/{id}
+      users: GET ${GO_SERVICE_URL}/users
+  - Starts Apollo Server on PORT env var (default 3000)
+  - GraphQL endpoint at POST /graphql (Apollo's default)
+  - GET /healthz — probes Go service and returns 200 or 503
+  - Reads GO_SERVICE_URL env var (default "http://go-service:8080")
+  - Uses node-fetch or native fetch (Node 18+)
+
+
+docker-compose.yml
+  - go-service: built from go-side.go, port 8080
+    - healthcheck: wget -q --spider http://localhost:8080/healthz
+  - node-bff: built from node-side.ts, port 3000
+    - depends_on: go-service (service_healthy)
+    - GO_SERVICE_URL: http://go-service:8080
+    - healthcheck: wget -q --spider http://localhost:3000/healthz
+
+
+seam.md
+  - Purpose: Node (TypeScript/GraphQL) is the BFF contract layer; Go owns domain APIs
+  - Why REST (not gRPC): simple request/response sufficient; TypeScript fetch is
+    idiomatic; no proto compilation ceremony for this common pattern
+  - Why Node handles GraphQL (not Go): TypeScript's ecosystem (Apollo, schema stitching,
+    codegen) is the right home for the GraphQL schema; Go stays clean and REST-native
+  - How to run: docker compose up --build; then POST to http://localhost:3000/graphql
+  - Sample GraphQL query to try:
+      curl -X POST http://localhost:3000/graphql \
+        -H "Content-Type: application/json" \
+        -d '{"query":"{ users { id name email } }"}'
+  - The downstream health probe pattern in Node's /healthz
+  - Related docs
+
+
+---
+
+SECTION 4 — UPDATE coordination-seam-patterns.md
+
+Add one line to the gRPC seam section at the top of the "## gRPC Seam" heading or in
+the Related section:
+
+  For full gRPC technical reference (streaming RPCs, error codes, stub generation for
+  all languages, health checking standard, interceptors), see context/stacks/grpc.md.
+
+Do NOT restructure or rewrite the existing gRPC seam section. Only add the reference.
+
+
+---
+
+SECTION 5 — REGISTRY UPDATE SPECIFICATION
+
+UPDATE examples/catalog.json
+
+Add two entries:
+
+  1. Rust + Python gRPC:
+     path: "examples/canonical-multi-backend/duos/rust-python-grpc/"
+     category: "multi-backend"
+     summary: "Rust + Python gRPC seam: Rust (tonic) serves as the hot-path ML inference engine; Python (grpcio) calls it as an orchestrator. Shows proto contract, tonic server, Python gRPC client, downstream health probe, and docker-compose with Rust build time considerations."
+     tags: ["multi-backend", "rust", "python", "grpc", "protobuf"]
+     stacks: ["rust-axum-modern", "python-fastapi-uv-ruff-orjson-polars", "grpc"]
+     archetypes: ["multi-backend-service"]
+     workflows: ["design-multi-backend-seams", "add-backend-coordination-layer"]
+     patterns: ["grpc-seam", "protobuf", "inference-server", "downstream-health-probe"]
+     rank: 95
+     stability: "canonical"
+
+  2. Node + Go REST (GraphQL BFF):
+     path: "examples/canonical-multi-backend/duos/node-go-rest/"
+     category: "multi-backend"
+     summary: "Node + Go REST seam: Node (Apollo Server / GraphQL BFF) resolves queries by calling a Go domain service (Echo) over HTTP/REST. Shows GraphQL resolver-to-REST pattern, downstream health probe, and docker-compose."
+     tags: ["multi-backend", "node", "go", "rest", "graphql"]
+     stacks: ["typescript-hono-bun", "go-echo", "grpc"]
+     archetypes: ["multi-backend-service"]
+     workflows: ["design-multi-backend-seams", "add-backend-coordination-layer"]
+     patterns: ["rest-seam", "graphql-bff", "downstream-health-probe"]
+     rank: 95
+     stability: "canonical"
+
+Read the file first. Match existing entry format exactly.
+
+
+UPDATE verification/stack_support_matrix.yaml
+
+Add a new stack entry for "grpc":
+
+  stack: grpc
+  support_level: 2
+  verified_examples:
+    - kotlin-rust-grpc-seam-example
+    - rust-python-grpc-seam-example
+    - go-rust-python-trio-example    (gRPC leg of the Go+Rust+Python trio)
+  missing_verification:
+    - streaming RPC example (server-streaming, bidirectional)
+    - live gRPC integration test in default verification tier
+    - grpc-gateway (HTTP/JSON bridge) example
+    - gRPC reflection example
+  notes: gRPC is a cross-cutting seam technology. Canonical examples cover the Rust tonic
+         server + Kotlin caller and Rust tonic server + Python caller patterns.
+         No live gRPC integration test is wired in the default verification tier.
+         Stub generation commands are documented in grpc.md.
+
+Also update "multi-backend-seam" capability:
+  - Add Python with note "supported via grpc (rust-python-grpc) and rest (go-python-rest)"
+    if it is not already "supported" with the grpc example noted
+  - Add Node/TypeScript as "supported" in multi-backend-seam:
+      status: supported
+      note: "Appears in: duos/node-go-rest (REST + GraphQL BFF)"
+      canonical_examples:
+        - examples/canonical-multi-backend/duos/node-go-rest/
+
+Read the file first. Add only new entries; do not modify existing rows.
+
+
+UPDATE context/router/alias-catalog.yaml
+
+Add under the stacks section:
+  - alias: grpc
+    target: context/stacks/grpc.md
+  - alias: grpc stack
+    target: context/stacks/grpc.md
+  - alias: protocol buffers
+    target: context/stacks/grpc.md
+  - alias: protobuf
+    target: context/stacks/grpc.md
+  - alias: proto file
+    target: context/stacks/grpc.md
+  - alias: tonic rust grpc
+    target: context/stacks/grpc.md
+  - alias: grpc server rust
+    target: context/stacks/grpc.md
+  - alias: grpcio python
+    target: context/stacks/grpc.md
+  - alias: grpc python client
+    target: context/stacks/grpc.md
+  - alias: grpc kotlin
+    target: context/stacks/grpc.md
+  - alias: scalapb grpc
+    target: context/stacks/grpc.md
+  - alias: grpc go client
+    target: context/stacks/grpc.md
+  - alias: protoc stub generation
+    target: context/stacks/grpc.md
+  - alias: grpc error codes
+    target: context/stacks/grpc.md
+  - alias: grpc deadline timeout
+    target: context/stacks/grpc.md
+  - alias: grpc interceptor
+    target: context/stacks/grpc.md
+  - alias: grpc health check
+    target: context/stacks/grpc.md
+  - alias: grpc gateway
+    target: context/stacks/grpc.md
+  - alias: grpc streaming
+    target: context/stacks/grpc.md
+  - alias: server streaming grpc
+    target: context/stacks/grpc.md
+  - alias: bidirectional streaming grpc
+    target: context/stacks/grpc.md
+  - alias: rust python grpc
+    target:
+      - context/stacks/duo-rust-python.md
+      - examples/canonical-multi-backend/duos/rust-python-grpc/seam.md
+  - alias: node go graphql bff
+    target:
+      - context/stacks/duo-node-go.md
+      - examples/canonical-multi-backend/duos/node-go-rest/seam.md
+  - alias: apollo server node go
+    target:
+      - examples/canonical-multi-backend/duos/node-go-rest/seam.md
+
+Read the file first. Match existing format. Do not change existing entries.
+
+
+UPDATE examples/canonical-multi-backend/README.md
+
+Add two rows to the catalog table:
+  | `duos/rust-python-grpc/` | Rust + Python | gRPC | ML inference server + Python orchestrator |
+  | `duos/node-go-rest/`     | Node + Go     | REST (GraphQL BFF) | GraphQL schema resolving Go domain APIs |
+
+Add a run instruction in the "How to Run an Example" section for each:
+  # gRPC seam — Python calls Rust inference server
+  cd examples/canonical-multi-backend/duos/rust-python-grpc
+  docker compose up --build   # first build takes several minutes (Rust compile)
+  # curl -X POST http://localhost:8001/predict -d '{"features":[0.8,0.6],"model_id":"demo"}'
+
+  # REST seam — GraphQL BFF (Node) calls Go domain service
+  cd examples/canonical-multi-backend/duos/node-go-rest
+  docker compose up --build
+  # curl -X POST http://localhost:3000/graphql -H "Content-Type: application/json" \
+  #      -d '{"query":"{ users { id name email } }"}'
+
+Read the file first.
+
+
+---
+
+SECTION 6 — COMMIT BATCHING
+
+Batch 1: gRPC standalone stack doc
+  context/stacks/grpc.md                                    (new)
+  context/stacks/coordination-seam-patterns.md              (updated — add grpc.md reference)
+
+Batch 2: Canonical Rust + Python gRPC example
+  examples/canonical-multi-backend/duos/rust-python-grpc/service.proto
+  examples/canonical-multi-backend/duos/rust-python-grpc/rust-server.rs
+  examples/canonical-multi-backend/duos/rust-python-grpc/python-caller.py
+  examples/canonical-multi-backend/duos/rust-python-grpc/docker-compose.yml
+  examples/canonical-multi-backend/duos/rust-python-grpc/seam.md
+
+Batch 3: Canonical Node + Go REST/GraphQL example
+  examples/canonical-multi-backend/duos/node-go-rest/go-side.go
+  examples/canonical-multi-backend/duos/node-go-rest/node-side.ts
+  examples/canonical-multi-backend/duos/node-go-rest/docker-compose.yml
+  examples/canonical-multi-backend/duos/node-go-rest/seam.md
+
+Batch 4: Registry updates
+  examples/catalog.json
+  verification/stack_support_matrix.yaml
+  context/router/alias-catalog.yaml
+  examples/canonical-multi-backend/README.md
+
+
+---
+
+SECTION 7 — IMPORTANT CONSTRAINTS
+
+- The grpc.md stack doc must be comprehensive enough to be the single reference for gRPC
+  in this repo. An assistant should be able to load grpc.md and have everything needed
+  to implement a gRPC seam without consulting other docs. Cross-reference back to
+  coordination-seam-patterns.md for the multi-backend context but do not duplicate content.
+
+- The service.proto in rust-python-grpc/ uses package inference.v1. It is different from
+  the kotlin-rust-grpc/service.proto (package compute.v1) and the go-rust-python/service.proto
+  (package processing.v1). Each trio/duo gets a domain-appropriate package name.
+
+- The Python side in rust-python-grpc/ uses grpcio (the C extension) not grpclib (pure Python).
+  Show the grpcio import. Use Python 3.12 in docker-compose.
+
+- The Node side in node-go-rest/ uses @apollo/server 4 (standalone mode, no Express).
+  Show the startStandaloneServer import. Use the latest stable Node 22 image.
+
+- The Go side in node-go-rest/ uses github.com/labstack/echo/v4 (matching go-echo.md).
+  Do NOT use net/http stdlib for the Go service — use Echo consistently.
+
+- The docker-compose.yml for rust-python-grpc must include start_period: 60s for the
+  Rust service — Rust compile inside a container during the first build is slow.
+  Add a comment noting this in the docker-compose file.
+
+- Do NOT add full application logic. Each service shows only:
+  seam connection setup, send/receive, health endpoint.
+
+- Generate the actual implementation in commit-ready batches. Do not propose or summarize.
+  Produce complete file contents.

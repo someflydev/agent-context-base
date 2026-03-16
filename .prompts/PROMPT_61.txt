@@ -1,0 +1,487 @@
+You are working inside the agent-context-base repository.
+
+Before proceeding, read:
+
+  context/stacks/trio-elixir-go-rust.md           (primary consumer of first new trio example)
+  context/stacks/trio-node-go-python.md            (primary consumer of second new trio example)
+  context/stacks/duo-elixir-rust.md               (NIF/Port seam reference for trio-1)
+  context/stacks/nats-jetstream.md                (NATS reference for trio-1)
+  context/stacks/grpc.md                          (gRPC reference for trio-1; added in PROMPT_58)
+  context/doctrine/multi-backend-coordination.md  (multi-backend rules)
+  examples/canonical-multi-backend/trios/go-elixir-python/  (trio example format reference)
+  examples/canonical-multi-backend/trios/go-rust-python/    (trio example format reference)
+  examples/canonical-multi-backend/README.md      (read before updating)
+  examples/catalog.json                           (read before updating)
+  verification/stack_support_matrix.yaml          (read before updating)
+  context/router/alias-catalog.yaml               (read before updating)
+
+If PROMPT_58 has not yet been applied, read coordination-seam-patterns.md instead of grpc.md.
+
+This prompt adds the remaining canonical trio examples. Two of the six trios currently
+have canonical examples (go-elixir-python and go-rust-python, both added in PROMPT_54).
+This prompt adds two more, chosen for maximum architectural diversity:
+
+  1. Elixir + Go + Rust  (trio-elixir-go-rust)
+     Seam map: [Elixir Coordinator] ── NATS ──► [Go Workers] ── gRPC ──► [Rust Kernel]
+     The fault-tolerant coordination trio: Elixir supervises, Go executes, Rust computes.
+     Architecturally unique: Elixir is the ORCHESTRATOR (not Go), showing the inverted
+     topology compared to the existing go-elixir-python trio.
+
+  2. Node + Go + Python  (trio-node-go-python)
+     Seam map: [Node BFF] ── REST ──► [Go Services] ── REST ──► [Python ML]
+     The consumer product stack: frontend contract, domain services, AI layer.
+     All-REST seams — the simplest trio topology and the most common consumer product pattern.
+
+Together with the two existing trios, these bring the total to four canonical trio examples
+covering all three seam types (NATS broker, gRPC, REST) in trio configurations.
+
+Produce:
+  1. Canonical trio example: Elixir + Go + Rust
+       examples/canonical-multi-backend/trios/elixir-go-rust/
+         elixir-side.ex, go-side.go, rust-side.rs, docker-compose.yml, seam.md
+  2. Canonical trio example: Node + Go + Python
+       examples/canonical-multi-backend/trios/node-go-python/
+         node-side.ts, go-side.go, python-side.py, docker-compose.yml, seam.md
+  3. Registry updates:
+       examples/catalog.json
+       verification/stack_support_matrix.yaml
+       context/router/alias-catalog.yaml
+       examples/canonical-multi-backend/README.md
+
+Organize into commit-ready batches. For each batch:
+1. Title and purpose.
+2. Files created or updated (full paths).
+3. Full content of every file.
+4. Suggested commit message with prefix [PROMPT_61].
+
+
+---
+
+SECTION 1 — TRIO EXAMPLE 1: Elixir + Go + Rust
+
+Directory: examples/canonical-multi-backend/trios/elixir-go-rust/
+
+Architecture:
+  [Elixir Coordinator] ── NATS JetStream ──► [Go Workers] ── gRPC ──► [Rust Kernel]
+
+Seam 1 (Elixir → Go): Broker seam via NATS JetStream
+  Elixir publishes coordination events to NATS subject "work.tasks.dispatch"
+  Go workers subscribe and consume tasks from the NATS subject
+  This is the INVERTED direction from go-elixir-nats (where Go publishes, Elixir subscribes)
+
+Seam 2 (Go → Rust): gRPC seam via Protocol Buffers
+  Go calls Rust for sub-millisecond compute on each task
+  Rust returns the processed result synchronously
+
+Flow:
+  1. Elixir publishes a work task event to NATS
+  2. Go subscribes, receives the task, calls Rust gRPC to process it
+  3. Go logs the result (for the seam example; in production, Go would publish a completion event)
+
+Files:
+  elixir-side.ex   — Elixir GenServer that publishes to NATS
+  go-side.go       — Go NATS subscriber + gRPC client to Rust
+  rust-side.rs     — Rust tonic gRPC server
+  docker-compose.yml — NATS + all three services
+  seam.md          — Companion doc explaining both seams
+
+Standards: same as existing trio examples from PROMPT_54.
+  - Single file per service
+  - Seam-focused: only connection setup, seam send/receive, health endpoint
+  - Comment at top: seam example, see context/archetypes/multi-backend-service.md
+  - Realistic image tags
+  - Health checks on every service
+  - Environment variables for seam addresses
+
+
+elixir-side.ex
+  - Comment at top: seam example, not full scaffold; seam 1 of 2: Elixir → Go (NATS)
+  - Uses Gnat GenServer (same pattern as go-elixir-nats elixir-side.ex)
+  - On startup: publishes one demo coordination task event to NATS subject "work.tasks.dispatch":
+      {"payload_version": 1, "task_id": "task-demo-001", "correlation_id": "coord-001",
+       "published_at": "...", "task_type": "compute.normalize",
+       "data": {"values": [1.0, 3.0, 5.0, 2.0, 4.0], "operation": "normalize"}}
+  - Also subscribes to "work.tasks.completed" to receive completion signals from Go
+    (demonstrates that Elixir monitors task completion, closing the coordination loop)
+  - On receiving a completion event: logs task_id, result_summary, duration_ns
+  - GET /healthz checking NATS connectivity
+  - Environment: NATS_URL, HTTP_PORT (default 4000)
+
+
+go-side.go
+  - Comment at top: seam example, not full scaffold; seam 1: Go ← Elixir (NATS); seam 2: Go → Rust (gRPC)
+  - Uses nats.go for NATS subscription and franz-go would be overkill — use nats.go
+  - Subscribes to NATS subject "work.tasks.dispatch" (durable consumer on stream WORK_TASKS)
+  - On receiving a task event: decodes JSON, extracts values and operation fields
+  - Calls Rust gRPC service KernelService.Transform with the values and operation
+  - After receiving the Rust result, publishes a completion event to "work.tasks.completed":
+      {"payload_version": 1, "task_id": task_id, "correlation_id": correlation_id,
+       "published_at": "...", "result_summary": "normalized 5 values", "duration_ns": duration_ns}
+  - GET /healthz checking both NATS connectivity and Rust gRPC reachability
+  - Environment: NATS_URL, RUST_GRPC_ADDR (default "rust-kernel:50051"), HTTP_PORT (default 8080)
+
+
+rust-side.rs
+  - Comment at top: seam example, not full scaffold; seam 2 of 2: Rust ← Go (gRPC)
+  - Uses tonic gRPC server
+  - Service: KernelService (same proto as scala-rust-grpc: kernel.v1)
+  - Implements KernelService.Transform:
+      operation "normalize": min-max normalize the values array
+      operation "mean": return the mean as a single-element array
+      default: return values unchanged
+  - Returns TransformResponse: result (normalized values), method (operation name), duration_ns
+  - Boots on GRPC_PORT env var (default 50051)
+  - Exposes HTTP /healthz on HEALTH_PORT env var (default 8082)
+
+  Note: use the same kernel.v1 proto and KernelService as scala-rust-grpc/ to demonstrate
+  that the Rust server is reusable across different callers (Scala or Go).
+  Add a comment in rust-side.rs noting this.
+
+
+docker-compose.yml
+  - nats service: nats:2.10-alpine with -js flag, ports 4222 and 8222
+    - healthcheck: wget --spider http://localhost:8222/healthz
+    - start_period: 5s
+  - rust-kernel: gRPC port 50051, HTTP port 8082
+    - healthcheck: curl http://localhost:8082/healthz
+    - start_period: 60s (Rust compile)
+    - No depends_on (no upstream dependency)
+  - go-workers: port 8080
+    - depends_on: nats (service_healthy), rust-kernel (service_healthy)
+    - NATS_URL: nats://nats:4222
+    - RUST_GRPC_ADDR: rust-kernel:50051
+    - healthcheck: curl http://localhost:8080/healthz
+    - start_period: 15s
+  - elixir-coordinator: port 4000
+    - depends_on: nats (service_healthy)
+    - Note: Elixir does NOT depend on Go or Rust — it only depends on NATS.
+      The dependency is: Elixir publishes, Go consumes. Go's startup ordering is
+      handled by Go's NATS subscription — if Go isn't ready, messages are durably stored.
+    - NATS_URL: nats://nats:4222
+    - healthcheck: wget --spider http://localhost:4000/healthz
+    - start_period: 25s
+
+  Note: the depends_on ordering is critical:
+    rust-kernel has no depends_on (boots first)
+    go-workers depends on: nats (service_healthy) AND rust-kernel (service_healthy)
+    elixir-coordinator depends on: nats (service_healthy) only
+    Elixir must boot AFTER Go is ready to avoid publishing to an empty consumer group,
+    but since NATS JetStream stores messages durably, strict ordering is not required.
+    Add a comment in the docker-compose.yml explaining this.
+
+
+seam.md
+  - Architecture overview: Elixir coordinates work; Go executes; Rust computes
+  - Why this trio: Elixir's fault-tolerant OTP supervision makes it the right coordinator
+    (not Go); Go is the right executor (lightweight worker pool, not Elixir processes);
+    Rust is the right compute kernel (sub-millisecond latency, no GC pauses)
+  - Seam 1 details (Elixir → Go via NATS):
+    - Why Elixir publishes (not Go): Elixir owns the coordination layer — it decides
+      when work is dispatched, handles retries, monitors completion
+    - JetStream stream "WORK_TASKS" with subject "work.tasks.dispatch" ensures durability
+    - Multiple Go workers can subscribe to the same stream — NATS distributes messages
+      across them as a work queue
+  - Seam 2 details (Go → Rust via gRPC):
+    - Why gRPC (not REST): per-task compute call on repeated float arrays — binary
+      encoding efficiency; typed contract; Rust tonic server
+    - Note that the Rust server is the same as scala-rust-grpc (kernel.v1 proto) —
+      Rust compute servers are reusable across different callers
+  - How to run, what to observe:
+    - Elixir logs: "task published to NATS", then "completion received from Go"
+    - Go logs: "task received from NATS", "Rust result: {values}", "completion published"
+    - Rust logs: "Transform called, operation: normalize, duration_ns: ..."
+  - The closed coordination loop: Elixir publishes → Go executes → Rust computes →
+    Go publishes completion → Elixir receives confirmation
+  - Related docs
+
+
+---
+
+SECTION 2 — TRIO EXAMPLE 2: Node + Go + Python
+
+Directory: examples/canonical-multi-backend/trios/node-go-python/
+
+Architecture:
+  [Node BFF] ── REST ──► [Go Services] ── REST ──► [Python ML]
+
+Seam 1 (Node → Go): REST seam via HTTP/JSON
+  Node BFF calls Go domain service to fetch user and product data
+
+Seam 2 (Go → Python): REST seam via HTTP/JSON
+  Go calls Python ML service to get a recommendation score for a user
+
+Flow:
+  1. Node receives a GraphQL query: recommendations(userId: "u123")
+  2. Node calls Go: GET /users/u123 to get user data
+  3. Go calls Python: POST /recommend with user features to get recommendations
+  4. Go returns the enriched result to Node
+  5. Node returns the GraphQL response to the client
+
+Files:
+  node-side.ts     — Node/TypeScript GraphQL BFF (Apollo Server)
+  go-side.go       — Go domain service (calls Python for ML features)
+  python-side.py   — Python FastAPI ML recommendation stub
+  docker-compose.yml — All three services
+  seam.md          — Companion doc
+
+
+node-side.ts
+  - Comment at top: seam example, not full scaffold; seam 1 of 2: Node → Go (REST)
+  - Uses @apollo/server (Apollo Server 4, standalone mode)
+  - GraphQL schema:
+      type User { id: ID!, name: String!, email: String! }
+      type Recommendation { userId: ID!, score: Float!, category: String!, reason: String! }
+      type UserWithRecommendations { user: User!, recommendations: [Recommendation!]! }
+      type Query { userWithRecommendations(userId: ID!): UserWithRecommendations }
+  - Resolver: calls GET {GO_SERVICE_URL}/users/{userId}/recommendations
+    (Go handles the Go→Python call internally)
+  - GET /healthz — probes Go service and returns 200 or 503
+  - Environment: GO_SERVICE_URL (default "http://go-service:8080"), PORT (default 3000)
+  - Uses Hono or native http for the /healthz endpoint alongside Apollo Server
+
+
+go-side.go
+  - Comment at top: seam example, not full scaffold; seam 1: Go ← Node (REST); seam 2: Go → Python (REST)
+  - Uses Echo router (matching go-echo.md conventions)
+  - GET /users/:id/recommendations — orchestrates the recommendation flow:
+      1. Creates stub user data for the given ID
+      2. Calls Python POST /recommend with the user's features (derived from user ID as stub)
+      3. Returns combined result: {user: {...}, recommendations: [{score, category, reason}]}
+  - GET /healthz — probes Python ML service and returns degraded if Python is unreachable
+  - Environment: PYTHON_ML_URL (default "http://python-ml:8002"), PORT (default 8080)
+
+  The downstream health probe pattern: Go's /healthz calls Python's /healthz and returns:
+    {"status": "ok", "python_ml": "ok"} if both healthy
+    {"status": "degraded", "python_ml": "unavailable"} if Python is down
+
+
+python-side.py
+  - Comment at top: seam example, not full scaffold; seam 2 of 2: Python ← Go (REST)
+  - FastAPI application
+  - POST /recommend accepting {"user_id": str, "features": [float, ...]}
+  - Returns [{"score": float, "category": str, "reason": str}] (list of recommendations)
+  - Stub recommendation logic:
+      score = mean of features if features else 0.5
+      category = "premium" if score > 0.7 else "standard"
+      reason = f"User profile score: {score:.2f}"
+  - GET /healthz returning {"status": "ok"}
+  - Environment: PORT (default 8002)
+
+
+docker-compose.yml
+  - python-ml: python:3.12-slim, port 8002
+    - No depends_on
+    - healthcheck: curl http://localhost:8002/healthz
+    - start_period: 20s
+  - go-service: golang:1.23-alpine or CGO_ENABLED=0 binary, port 8080
+    - depends_on: python-ml (service_healthy)
+    - PYTHON_ML_URL: http://python-ml:8002
+    - healthcheck: curl http://localhost:8080/healthz
+    - start_period: 15s
+  - node-bff: node:22-alpine, port 3000
+    - depends_on: go-service (service_healthy)
+    - GO_SERVICE_URL: http://go-service:8080
+    - healthcheck: wget --spider http://localhost:3000/healthz
+    - start_period: 20s
+
+  Dependency chain: python-ml ← go-service ← node-bff
+  This is a strict linear chain: each service must be healthy before the next starts.
+
+
+seam.md
+  - Architecture overview: Node (GraphQL BFF) → Go (domain orchestrator) → Python (ML)
+  - Why this topology (Node→Go→Python, not Node→Go AND Node→Python):
+    Go acts as an orchestrator — it fetches user data and calls Python internally,
+    returning a unified enriched result to Node. This keeps Node's resolver simple
+    (one call to Go) and lets Go own the cross-service coordination.
+    Alternative topology: Node→Go for user data AND Node→Python directly for ML.
+    Document both topologies. Primary: Node→Go→Python (Go orchestrates).
+    When to choose the alternative: if the ML result is needed at the BFF level
+    without Go mediation (e.g., BFF needs ML score for GraphQL field selection logic).
+  - Seam 1 (Node → Go REST): simple fetch; GraphQL resolver calls Go; JSON response
+  - Seam 2 (Go → Python REST): Go POSTs to Python /recommend; JSON body with features;
+    downstream health probe in Go's /healthz
+  - How to run:
+    docker compose up --build
+    curl -X POST http://localhost:3000/graphql \
+      -H "Content-Type: application/json" \
+      -d '{"query":"{ userWithRecommendations(userId: \"u123\") { user { name } recommendations { score category } } }"}'
+  - What to observe:
+    - Node logs the GraphQL query and the Go call
+    - Go logs the Python call and the combined response
+    - Python logs the recommendation request and the computed score
+  - The downstream health probe chain: Node checks Go; Go checks Python
+  - Related docs
+
+
+---
+
+SECTION 3 — REGISTRY UPDATE SPECIFICATION
+
+UPDATE examples/catalog.json
+
+Add two entries:
+
+  1. Elixir + Go + Rust trio:
+     path: "examples/canonical-multi-backend/trios/elixir-go-rust/"
+     category: "multi-backend"
+     summary: "Elixir + Go + Rust trio seam: Elixir (Gnat/GenServer) coordinates work by publishing to NATS; Go workers subscribe and call Rust (tonic/gRPC) for compute; Go publishes completion back to Elixir. Shows the inverted coordination topology (Elixir as orchestrator), NATS JetStream + gRPC dual seams, and closed-loop coordination."
+     tags: ["multi-backend", "elixir", "go", "rust", "broker", "grpc", "nats", "trio"]
+     stacks: ["elixir-phoenix", "go-echo", "rust-axum-modern", "nats-jetstream", "grpc"]
+     archetypes: ["multi-backend-service"]
+     workflows: ["design-multi-backend-seams", "add-backend-coordination-layer"]
+     patterns: ["broker-seam", "grpc-seam", "nats", "trio", "closed-loop-coordination"]
+     rank: 95
+     stability: "canonical"
+
+  2. Node + Go + Python trio:
+     path: "examples/canonical-multi-backend/trios/node-go-python/"
+     category: "multi-backend"
+     summary: "Node + Go + Python trio seam: Node (Apollo Server GraphQL BFF) calls Go (Echo domain service) over REST; Go calls Python (FastAPI ML) over REST for recommendation scoring. Shows the consumer product stack with cascading REST seams, Go as internal orchestrator, downstream health probes, and the Node→Go→Python vs Node→Go+Python topology trade-off."
+     tags: ["multi-backend", "node", "go", "python", "rest", "graphql", "trio"]
+     stacks: ["typescript-hono-bun", "go-echo", "python-fastapi-uv-ruff-orjson-polars"]
+     archetypes: ["multi-backend-service"]
+     workflows: ["design-multi-backend-seams", "add-backend-coordination-layer"]
+     patterns: ["rest-seam", "graphql-bff", "trio", "cascading-rest", "downstream-health-probe"]
+     rank: 95
+     stability: "canonical"
+
+Read the file first. Match existing entry format exactly.
+
+
+UPDATE verification/stack_support_matrix.yaml
+
+Update the "multi-backend-seam" capability row:
+  - Mark the trio examples added here and note that Go, Elixir, Rust, Node, and Python
+    now all have at least two canonical multi-backend examples
+  - Add notes for any stacks whose status should be upgraded from "documented" to "supported"
+
+Read the file first. Only update what is strictly necessary based on the new examples.
+Do not add new capability rows — update the existing "multi-backend-seam" capability.
+
+
+UPDATE context/router/alias-catalog.yaml
+
+Add under the existing trio aliases section (added in PROMPT_54):
+  - alias: elixir go rust trio
+    target:
+      - context/stacks/trio-elixir-go-rust.md
+      - examples/canonical-multi-backend/trios/elixir-go-rust/seam.md
+  - alias: elixir coordinator go workers rust kernel
+    target:
+      - context/stacks/trio-elixir-go-rust.md
+      - examples/canonical-multi-backend/trios/elixir-go-rust/seam.md
+  - alias: node go python trio
+    target:
+      - context/stacks/trio-node-go-python.md
+      - examples/canonical-multi-backend/trios/node-go-python/seam.md
+  - alias: graphql bff go python ml
+    target:
+      - context/stacks/trio-node-go-python.md
+      - examples/canonical-multi-backend/trios/node-go-python/seam.md
+  - alias: consumer product stack trio
+    target:
+      - context/stacks/trio-node-go-python.md
+      - examples/canonical-multi-backend/trios/node-go-python/seam.md
+
+Read the file first. Match existing format. Do not change existing entries.
+
+
+UPDATE examples/canonical-multi-backend/README.md
+
+Add two rows to the catalog table:
+  | `trios/elixir-go-rust/`  | Elixir + Go + Rust   | Broker (NATS) + gRPC | Fault-tolerant coordinator + workers + compute kernel |
+  | `trios/node-go-python/`  | Node + Go + Python   | REST + REST | GraphQL BFF + domain services + ML recommendations |
+
+Add run instructions:
+  # Elixir coordinator + Go workers + Rust kernel (NATS + gRPC)
+  cd examples/canonical-multi-backend/trios/elixir-go-rust
+  docker compose up --build   # Rust compile takes several minutes on first build
+  # Elixir publishes task → Go calls Rust → Go publishes completion → Elixir receives
+
+  # Node GraphQL BFF + Go domain + Python ML (REST + REST)
+  cd examples/canonical-multi-backend/trios/node-go-python
+  docker compose up --build
+  # curl -X POST http://localhost:3000/graphql \
+  #      -H "Content-Type: application/json" \
+  #      -d '{"query":"{ userWithRecommendations(userId:\"u123\") { user { name } recommendations { score } } }"}'
+
+Read the file first.
+
+
+---
+
+SECTION 4 — COMMIT BATCHING
+
+Batch 1: Canonical trio example — Elixir + Go + Rust
+  examples/canonical-multi-backend/trios/elixir-go-rust/elixir-side.ex
+  examples/canonical-multi-backend/trios/elixir-go-rust/go-side.go
+  examples/canonical-multi-backend/trios/elixir-go-rust/rust-side.rs
+  examples/canonical-multi-backend/trios/elixir-go-rust/docker-compose.yml
+  examples/canonical-multi-backend/trios/elixir-go-rust/seam.md
+
+Batch 2: Canonical trio example — Node + Go + Python
+  examples/canonical-multi-backend/trios/node-go-python/node-side.ts
+  examples/canonical-multi-backend/trios/node-go-python/go-side.go
+  examples/canonical-multi-backend/trios/node-go-python/python-side.py
+  examples/canonical-multi-backend/trios/node-go-python/docker-compose.yml
+  examples/canonical-multi-backend/trios/node-go-python/seam.md
+
+Batch 3: Registry updates
+  examples/catalog.json
+  verification/stack_support_matrix.yaml
+  context/router/alias-catalog.yaml
+  examples/canonical-multi-backend/README.md
+
+
+---
+
+SECTION 5 — IMPORTANT CONSTRAINTS
+
+- The Rust service in elixir-go-rust/ uses kernel.v1 proto — the SAME package and service
+  definition as scala-rust-grpc/. This is intentional and important: the seam.md should
+  explicitly note that the Rust kernel is reusable across different callers. Do NOT define
+  a new proto or package — reuse kernel.v1 with TransformRequest and TransformResponse.
+
+- The Elixir side in elixir-go-rust/ subscribes to "work.tasks.completed" to receive
+  the completion loop-back from Go. This bidirectional NATS pattern (Elixir publishes tasks,
+  Go publishes completions) demonstrates the closed coordination loop from trio-elixir-go-rust.md.
+  Both subjects must be shown clearly in elixir-side.ex.
+
+- The Go side in elixir-go-rust/ has TWO seam interactions:
+    (1) NATS subscriber on "work.tasks.dispatch" (inbound from Elixir)
+    (2) gRPC client calling Rust KernelService.Transform (outbound to Rust)
+    (3) NATS publisher on "work.tasks.completed" (outbound to Elixir for the loop-back)
+  All three must be shown with clear labeled comments in go-side.go.
+
+- The docker-compose.yml for elixir-go-rust must NOT have elixir-coordinator depending on
+  go-workers. The dependency chain is:
+    rust-kernel (no deps) → go-workers (depends on nats + rust-kernel) → [none above]
+    nats (no deps) → go-workers AND elixir-coordinator (both depend on nats only)
+  Elixir should NOT wait for Go to be healthy before starting. NATS JetStream stores
+  messages durably, so if Go isn't ready when Elixir publishes, the task is retained.
+  Add a comment in the docker-compose.yml explaining this design decision.
+
+- The Go side in node-go-python/ uses Echo (matching go-echo.md). The endpoint is
+  GET /users/:id/recommendations. It calls Python internally and returns a combined
+  response. Show the downstream Python call clearly with error handling.
+
+- The Node side in node-go-python/ uses Apollo Server 4 standalone mode (same as
+  node-go-rest/ from PROMPT_58). The GraphQL schema must include UserWithRecommendations
+  as specified. Show the resolver clearly calling the Go endpoint.
+
+- The Python side in node-go-python/ uses FastAPI on PORT env var (default 8002).
+  The /recommend endpoint returns a LIST of recommendations (not a single object) to
+  reflect a realistic ML recommendation API.
+
+- The seam.md for node-go-python/ MUST document both topology variants:
+    Primary: Node → Go → Python (Go orchestrates)
+    Alternative: Node → Go (user data) AND Node → Python (recommendations directly)
+  With a clear "when to choose each" paragraph. This matches the note in
+  trio-node-go-python.md and makes the example architecturally educational.
+
+- Do NOT add full application logic. Each service shows only:
+  seam connection setup, send/receive, health endpoint.
+
+- Generate the actual implementation in commit-ready batches. Do not propose or summarize.
+  Produce complete file contents.

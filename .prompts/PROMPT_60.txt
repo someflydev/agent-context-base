@@ -1,0 +1,618 @@
+You are working inside the agent-context-base repository.
+
+Before proceeding, read:
+
+  context/stacks/duo-node-go.md              (GraphQL BFF pattern — primary consumer)
+  context/stacks/duo-node-elixir.md          (GraphQL subscriptions + Elixir context)
+  context/stacks/trio-node-go-python.md      (GraphQL in a trio context)
+  context/stacks/typescript-hono-bun.md      (Node/TypeScript stack — reference)
+  context/stacks/duo-elixir-rust.md          (NIF/Port seam — primary consumer of elixir-rust example)
+  context/stacks/coordination-seam-patterns.md  (NIF/Port section — reference for NIF example)
+  examples/canonical-multi-backend/duos/go-elixir-nats/elixir-side.ex  (Elixir seam example format)
+  examples/catalog.json                      (read before updating)
+  verification/stack_support_matrix.yaml     (read before updating)
+  context/router/alias-catalog.yaml          (read before updating)
+  examples/canonical-multi-backend/README.md (read before updating)
+
+This prompt adds two things:
+
+  1. context/stacks/graphql.md — full standalone GraphQL stack doc
+     GraphQL is referenced in duo-node-go.md, duo-node-elixir.md, and trio-node-go-python.md
+     as the BFF pattern, but has no dedicated stack doc. This doc is the first-class reference
+     for GraphQL schema design, subscriptions, federation, and code generation.
+
+  2. Canonical duo seam example: Elixir + Rust (NIF/Port seam)
+     examples/canonical-multi-backend/duos/elixir-rust-nif/
+     This is the only in-process seam example — no network, no docker-compose service separation.
+     Rust compiles into the Elixir release via Rustler. This example fills the NIF/Port gap
+     in duo-elixir-rust.md and is the most architecturally unique seam type in the repo.
+
+Produce:
+  1. context/stacks/graphql.md — full GraphQL stack doc
+  2. examples/canonical-multi-backend/duos/elixir-rust-nif/
+       elixir-host.ex, rust-nif.rs, Cargo.toml (minimal), seam.md
+     Note: this example has NO docker-compose.yml — the NIF/Port seam is in-process.
+     The seam.md explains why and provides the mix.exs + Rustler setup instead.
+  3. Registry updates:
+       examples/catalog.json
+       verification/stack_support_matrix.yaml
+       context/router/alias-catalog.yaml
+       examples/canonical-multi-backend/README.md
+
+Organize into commit-ready batches. For each batch:
+1. Title and purpose.
+2. Files created or updated (full paths).
+3. Full content of every file.
+4. Suggested commit message with prefix [PROMPT_60].
+
+
+---
+
+SECTION 1 — graphql.md SPECIFICATION
+
+File: context/stacks/graphql.md
+
+This is the authoritative GraphQL stack doc for this repo. GraphQL is used primarily
+in the Node/TypeScript BFF layer (Node+Go, Node+Elixir duos; Node+Go+Python trio).
+This doc covers schema design, resolvers, subscriptions, DataLoader, federation, and
+code generation across the languages used in the repo.
+
+Sections:
+
+  ## When GraphQL Is the Right Choice
+  ## When GraphQL Is NOT the Right Choice
+  ## Typical Repo Surface
+  ## Schema Design Principles
+  ## Query and Mutation Resolvers
+  ## Subscriptions (WebSocket, Server-Sent Events)
+  ## DataLoader Pattern (N+1 prevention)
+  ## Code Generation
+  ## Federation (Apollo Federation v2)
+  ## Language Coverage (Node, Go, Python, Elixir)
+  ## Local Dev Composition
+  ## Testing Expectations
+  ## Common Assistant Mistakes
+  ## Related
+
+Content notes:
+
+When GraphQL IS the right choice:
+- The BFF layer must serve multiple client types (mobile, web, third-party) with different
+  field subsets — clients request exactly what they need
+- Multiple underlying services (Go domain services, Python ML, Elixir real-time) need to be
+  aggregated into a single typed API surface for the frontend
+- Subscriptions are needed for real-time updates — GraphQL subscriptions over WebSocket
+  are the standard pattern for pushing updates to subscribers
+- The frontend team controls the GraphQL schema and drives API shape (schema-first)
+- API introspection is a requirement — clients can self-discover the schema
+
+When GraphQL is NOT the right choice:
+- Simple CRUD APIs with one client — REST is simpler to implement and consume
+- The caller is a non-frontend service calling another service — REST or gRPC between
+  backend services; GraphQL as a BFF, not as an internal service protocol
+- Real-time requires stateful bidirectional streams (voice, game frames) — WebSocket
+  without GraphQL is more efficient for high-frequency binary streams
+- The team is unfamiliar with GraphQL — the learning curve (resolvers, N+1, schema evolution)
+  adds risk; REST first, GraphQL later
+
+Typical repo surface (Node/TypeScript with Apollo Server):
+  - src/schema.graphql — SDL schema definition (schema-first) or
+    src/schema.ts — code-first schema with Pothos or Nexus
+  - src/resolvers/ — resolver implementations per type
+  - src/dataloaders/ — DataLoader instances for batching downstream calls
+  - src/generated/ — codegen output (graphql-codegen outputs)
+  - codegen.yml — graphql-codegen configuration
+
+Schema design principles:
+  - Schema-first preferred: write the .graphql SDL file, generate types for the server
+    (graphql-codegen) and the client (gql.tada or graphql-codegen client preset)
+  - Use GraphQL enums for finite value sets — avoids stringly-typed anti-patterns
+  - Prefer nullable fields for optional data (matching GraphQL's null semantic)
+  - Non-null (!) only on fields that are truly never null — overly strict non-null causes
+    partial responses where callers expected a full response
+  - Use Relay cursor-based pagination (Connection/Edge/Node) for paginated lists
+  - Avoid returning raw error strings in schema fields — use a union type for result variants:
+      union CreateUserResult = User | UserAlreadyExistsError | ValidationError
+
+Query and mutation resolvers (Apollo Server 4, TypeScript):
+  Schema-first with graphql-codegen:
+  ```typescript
+  // src/resolvers/User.ts
+  import { Resolvers } from './generated/types';
+
+  export const userResolvers: Resolvers = {
+    Query: {
+      user: async (_, { id }, { goUsersClient }) => {
+        const resp = await fetch(`${goUsersClient}/users/${id}`);
+        if (!resp.ok) return null;
+        return resp.json();
+      },
+      users: async (_, __, { goUsersClient }) => {
+        const resp = await fetch(`${goUsersClient}/users`);
+        return resp.json();
+      },
+    },
+  };
+  ```
+
+  Context type includes downstream client URLs / DataLoader instances:
+  ```typescript
+  interface Context {
+    goUsersUrl: string;
+    pythonScoringUrl: string;
+    userLoader: DataLoader<string, User>;
+  }
+  ```
+
+Subscriptions (WebSocket with graphql-ws):
+  Apollo Server 4 does not bundle a WebSocket server. Use graphql-ws + ws:
+  ```typescript
+  import { createServer } from 'http';
+  import { WebSocketServer } from 'ws';
+  import { useServer } from 'graphql-ws/lib/use/ws';
+  import { makeExecutableSchema } from '@graphql-tools/schema';
+
+  const schema = makeExecutableSchema({ typeDefs, resolvers });
+  const httpServer = createServer(app);
+  const wsServer = new WebSocketServer({ server: httpServer, path: '/graphql' });
+  useServer({ schema }, wsServer);
+  ```
+
+  Schema definition for subscriptions:
+  ```graphql
+  type Subscription {
+    stateUpdated(docId: ID!): StateUpdate!
+  }
+
+  type StateUpdate {
+    docId: ID!
+    eventType: String!
+    data: JSON
+  }
+  ```
+
+  Resolver: subscribe to NATS subject and yield updates:
+  ```typescript
+  Subscription: {
+    stateUpdated: {
+      subscribe: async function* (_, { docId }) {
+        const sub = natsConn.subscribe(`state.${docId}.updates`);
+        for await (const msg of sub) {
+          const event = JSON.parse(msg.string());
+          yield { stateUpdated: event };
+        }
+      },
+    },
+  }
+  ```
+
+DataLoader pattern:
+  DataLoader batches multiple resolver calls into one downstream request.
+  Without DataLoader: a query for 10 users' orders calls the orders API 10 times.
+  With DataLoader: all 10 user IDs are batched into one call.
+
+  ```typescript
+  import DataLoader from 'dataloader';
+
+  const createUserOrdersLoader = (goOrdersUrl: string) =>
+    new DataLoader<string, Order[]>(async (userIds) => {
+      const resp = await fetch(`${goOrdersUrl}/orders/bulk`, {
+        method: 'POST',
+        body: JSON.stringify({ user_ids: userIds }),
+      });
+      const orderMap: Record<string, Order[]> = await resp.json();
+      return userIds.map(id => orderMap[id] ?? []);
+    });
+
+  // In context factory (runs per request):
+  context: ({ req }) => ({
+    userOrdersLoader: createUserOrdersLoader(GO_ORDERS_URL),
+  })
+  ```
+
+Code generation (graphql-codegen):
+  The graphql-code-generator package generates typed resolvers and TypeScript types from
+  the .graphql schema and resolver signatures.
+
+  codegen.yml:
+  ```yaml
+  schema: src/schema.graphql
+  generates:
+    src/generated/types.ts:
+      plugins:
+        - typescript
+        - typescript-resolvers
+      config:
+        contextType: '../context#Context'
+        useIndexSignature: true
+  ```
+
+  For the client (React, Next.js): use the client preset to generate typed hooks:
+  ```yaml
+  generates:
+    src/generated/client/:
+      preset: client
+  ```
+
+  Run: npx graphql-codegen --config codegen.yml
+
+Federation (Apollo Federation v2):
+  Federation splits a large GraphQL schema across multiple subgraph services, each
+  owned by a different team. The Router merges them into a supergraph.
+  When to use:
+    - Multiple teams each own a segment of the GraphQL schema
+    - The schema exceeds what one BFF can reasonably own
+    - Different parts of the schema have different deployment cycles
+  When NOT to use:
+    - Single-team BFF calling 2-3 downstream services — a single Apollo Server is simpler
+    - The schema is stable and not growing across team boundaries
+  Key concepts: @key directive for entity relationships, @external, @requires, @provides.
+  Use rover CLI to compose the supergraph schema locally.
+
+Language coverage (brief — full guidance in language-specific stack docs):
+  Node/TypeScript (primary): Apollo Server 4, Pothos (code-first), graphql-codegen
+  Go: gqlgen (code-first, generates Go types from schema, no reflection)
+    Use case: Go as the GraphQL server (uncommon in this repo — prefer as REST downstream)
+  Python: Strawberry (code-first, Pythonic) or Ariadne (schema-first)
+    Use case: Python ML service exposed via GraphQL (uncommon — prefer FastAPI REST)
+  Elixir: Absinthe (schema-first, functional resolvers, Phoenix integration)
+    Use case: Elixir as a standalone GraphQL server with real-time subscriptions;
+    Absinthe's subscription infrastructure integrates directly with Phoenix PubSub
+
+  In this repo's patterns:
+    - Node is the GraphQL BFF (Apollo Server) that calls Go REST and Python REST downstreams
+    - Elixir may expose a standalone Absinthe GraphQL API for real-time features (separate
+      from the BFF pattern; see duo-node-elixir.md)
+
+Local dev composition (Node BFF calling Go service):
+  ```yaml
+  services:
+    go-service:
+      build: ./services/domain
+      ports:
+        - "8080:8080"
+      healthcheck:
+        test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/healthz"]
+        interval: 10s
+        timeout: 5s
+        retries: 3
+
+    node-bff:
+      build: ./services/bff
+      ports:
+        - "3000:3000"
+      environment:
+        GO_SERVICE_URL: http://go-service:8080
+        PORT: "3000"
+      depends_on:
+        go-service:
+          condition: service_healthy
+      healthcheck:
+        test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/healthz"]
+        interval: 10s
+        timeout: 5s
+        retries: 3
+        start_period: 20s
+  ```
+
+Testing expectations:
+- Test schema validation: ensure schema compiles with makeExecutableSchema
+- Test resolvers: mock the downstream client URLs (not the entire service) in unit tests
+- Integration test: docker compose up go-service + node-bff; run a real GraphQL query
+  against http://localhost:3000/graphql; assert the response shape
+- Test subscriptions: use a WebSocket client in tests; publish an event to NATS;
+  assert the subscription yields the expected message
+- Test DataLoader: verify batch function is called once for multiple resolver calls
+  (not once per resolver call)
+- Do NOT mock the GraphQL layer itself — test at the HTTP/WebSocket level
+
+Common assistant mistakes:
+- Putting business logic in resolvers — resolvers should only call downstream services
+  and transform responses; business logic belongs in services or downstream APIs
+- Not using DataLoader for any field that involves a nested list — any list that loads
+  child objects will have an N+1 problem without DataLoader
+- Using auto-commit session state in subscriptions — subscription connections are long-lived;
+  clean up subscriptions and free resources on disconnect
+- Returning 200 for GraphQL errors — GraphQL returns 200 even on errors (the error is in
+  the "errors" field); do not confuse HTTP status codes with GraphQL error handling
+- Over-using mutations for read operations — queries are idempotent; mutations are not;
+  use the correct operation type
+- Not generating types from the schema — hand-writing TypeScript types for GraphQL responses
+  leads to drift; always use graphql-codegen
+
+Related:
+- context/stacks/typescript-hono-bun.md (Node/TypeScript stack)
+- context/stacks/duo-node-go.md (GraphQL BFF + Go domain services pattern)
+- context/stacks/duo-node-elixir.md (GraphQL subscriptions + Elixir distributed state)
+- context/stacks/trio-node-go-python.md (Node GraphQL BFF in a three-service system)
+- examples/canonical-multi-backend/duos/node-go-rest/ (canonical Node+Go seam example with GraphQL BFF)
+- context/stacks/elixir-phoenix.md (Absinthe for Elixir-native GraphQL)
+
+
+---
+
+SECTION 2 — CANONICAL ELIXIR + RUST NIF/PORT EXAMPLE
+
+Directory: examples/canonical-multi-backend/duos/elixir-rust-nif/
+
+This example demonstrates the NIF/Port seam between Elixir (host) and Rust (native library).
+It fills the canonical example gap for duo-elixir-rust.md and is the ONLY in-process seam
+example in the repo — Rust runs inside the Elixir BEAM VM, not as a separate container.
+
+This example has NO docker-compose.yml. The NIF seam does not involve separate services.
+Instead, seam.md provides the mix.exs + Rustler setup that replaces docker-compose for
+this example.
+
+Files:
+  elixir-host.ex    — Elixir module using Rustler (with stub fallback)
+  rust-nif.rs       — Rust NIF implementation using rustler crate
+  Cargo.toml        — Minimal Cargo.toml for the NIF crate
+  seam.md           — Companion doc (replaces docker-compose with mix.exs setup instructions)
+
+
+elixir-host.ex
+  - Comment at top: in-process seam example — no docker-compose; see seam.md for setup
+  - Defines a module MyApp.ComputeNif using Rustler:
+      use Rustler, otp_app: :my_app, crate: "compute_nif"
+  - Declares the NIF stubs (replaced at runtime by the compiled Rust NIF):
+      def compute_hash(_input), do: :erlang.nif_error(:nif_not_loaded)
+      def normalize_vector(_values), do: :erlang.nif_error(:nif_not_loaded)
+  - Demonstrates calling the NIFs:
+      MyApp.ComputeNif.compute_hash("hello world")  # => {:ok, "5eb63bbbe01eeed093cb22bb8f5acdc3"}
+      MyApp.ComputeNif.normalize_vector([1.0, 2.0, 3.0])  # => {:ok, [0.0, 0.5, 1.0]}
+  - Also shows the Port alternative (in comments) for potentially unsafe operations:
+      When to use Port instead of NIF: if the Rust code might panic, block the BEAM
+      scheduler, or interact with unsafe external state.
+      Port setup: Port.open({:spawn_executable, binary_path}, [:binary, :exit_status, {:packet, 4}])
+
+
+rust-nif.rs
+  - Comment at top: NIF implementation — compiled into the Elixir BEAM VM via Rustler
+  - Uses rustler crate
+  - Implements:
+      compute_hash(input: &str) -> (Atom, String)
+        → returns {:ok, hex_md5_of_input}
+        → use md5 crate or a deterministic stub: format!("{:x}", input.len() as u64 * 0xDEADBEEF)
+        → (use the stub to avoid a real crypto dep in the example; comment explains)
+      normalize_vector(values: Vec<f64>) -> (Atom, Vec<f64>)
+        → subtracts min, divides by (max - min); if all equal, returns zeros
+        → returns {:ok, normalized_values}
+  - Uses #[rustler::nif] macro for each function
+  - rustler::init!("Elixir.MyApp.ComputeNif", [compute_hash, normalize_vector])
+  - No async, no blocking operations (NIFs must not block the BEAM scheduler)
+  - Comment explaining the dirty NIF annotation for longer operations
+
+
+Cargo.toml
+  - package name: "compute_nif"
+  - edition = "2021"
+  - lib.name = "compute_nif"
+  - lib.crate-type = ["cdylib"]
+  - [dependencies] rustler = "0.31"
+  - Note: for real crypto, add: md5 = "0.10" (shown in comment)
+
+
+seam.md
+  - Explain why there is no docker-compose.yml: the NIF seam is in-process —
+    Rust compiles into a .so/.dylib/.dll that the BEAM VM loads at runtime.
+    This is not a two-service system — it is one Elixir service with a native extension.
+
+  - Setup instructions (replaces docker-compose in this example):
+    1. mix.exs dep: {:rustler, "~> 0.31", runtime: false}
+    2. Place the Rust source at: native/compute_nif/src/lib.rs and native/compute_nif/Cargo.toml
+    3. mix deps.get && mix compile (Rustler compiles the NIF during mix compile)
+    4. Call from IEx: MyApp.ComputeNif.compute_hash("test")
+
+  - Why NIF (not Port, not a separate service):
+    - NIF: zero-overhead; sub-microsecond call; required when latency budget is < 1ms
+    - Port: safe boundary for potentially panicking code; isolated OS process; recommended
+      for Rust code that might panic, block, or interact with unsafe state
+    - Separate gRPC service: use when Rust is an independent service (not a library)
+
+  - NIF safety rules (from coordination-seam-patterns.md, summarized):
+    - Never block the BEAM scheduler for more than 1ms in a NIF — use dirty NIF for longer ops
+    - Never panic inside a NIF — a NIF panic kills the entire BEAM VM
+    - Never call into other NIFs or Erlang functions from inside a NIF
+
+  - How to observe: mix test with a test that calls compute_hash and normalize_vector;
+    assert the return values match expected
+
+  - Port variant (brief): show the Port.open pattern for the case where the Rust code
+    might panic. Reference coordination-seam-patterns.md#port-nif-seam.
+
+  - Related docs
+
+
+---
+
+SECTION 3 — REGISTRY UPDATE SPECIFICATION
+
+UPDATE examples/catalog.json
+
+Add two entries:
+
+  1. GraphQL stack doc (no example to add — graphql.md is a stack doc, not an example)
+     Do NOT add a catalog entry for graphql.md — it is a stack doc, not an example.
+     Catalog entries are for examples only.
+
+  2. Elixir + Rust NIF:
+     path: "examples/canonical-multi-backend/duos/elixir-rust-nif/"
+     category: "multi-backend"
+     summary: "Elixir + Rust NIF/Port seam: Rust (Rustler) compiles into the Elixir BEAM VM as a native implemented function. Shows compute_hash and normalize_vector NIFs, the {:ok, result} Erlang term return convention, the Rustler init! macro, and when to use Port instead of NIF for unsafe operations. No docker-compose — this is an in-process seam."
+     tags: ["multi-backend", "elixir", "rust", "nif", "rustler", "in-process"]
+     stacks: ["elixir-phoenix", "rust-axum-modern"]
+     archetypes: ["multi-backend-service"]
+     workflows: ["design-multi-backend-seams", "add-backend-coordination-layer"]
+     patterns: ["nif-seam", "rustler", "port-seam", "in-process", "compute-kernel"]
+     rank: 95
+     stability: "canonical"
+
+Read the file first. Match existing entry format exactly.
+
+
+UPDATE verification/stack_support_matrix.yaml
+
+Add a new stack entry for "graphql":
+
+  stack: graphql
+  support_level: 1
+  verified_examples:
+    - node-go-rest-seam-example   (graphql BFF section — added in PROMPT_58)
+  missing_verification:
+    - standalone GraphQL integration test
+    - subscription WebSocket test
+    - DataLoader batch verification
+    - Apollo Federation v2 example
+  notes: graphql.md stack doc added. The node-go-rest example (PROMPT_58) shows a minimal
+         GraphQL BFF pattern. No dedicated GraphQL integration test in the default tier.
+
+Also update the "multi-backend-seam" capability to add NIF/Port as a verified seam type:
+  Add an entry noting that the elixir-rust-nif example demonstrates the NIF/Port seam
+  type from coordination-seam-patterns.md, and that Elixir + Rust is now "supported"
+  (not just "documented") for the NIF seam variant.
+
+Read the file first. Only add the graphql stack entry and update multi-backend-seam.
+
+
+UPDATE context/router/alias-catalog.yaml
+
+Add under the stacks section:
+  - alias: graphql
+    target: context/stacks/graphql.md
+  - alias: graphql schema
+    target: context/stacks/graphql.md
+  - alias: graphql resolvers
+    target: context/stacks/graphql.md
+  - alias: apollo server
+    target: context/stacks/graphql.md
+  - alias: apollo server 4
+    target: context/stacks/graphql.md
+  - alias: graphql subscriptions
+    target: context/stacks/graphql.md
+  - alias: graphql websocket
+    target: context/stacks/graphql.md
+  - alias: graphql-ws
+    target: context/stacks/graphql.md
+  - alias: dataloader graphql
+    target: context/stacks/graphql.md
+  - alias: n+1 problem graphql
+    target: context/stacks/graphql.md
+  - alias: graphql codegen
+    target: context/stacks/graphql.md
+  - alias: graphql-codegen
+    target: context/stacks/graphql.md
+  - alias: apollo federation
+    target: context/stacks/graphql.md
+  - alias: graphql federation
+    target: context/stacks/graphql.md
+  - alias: pothos graphql
+    target: context/stacks/graphql.md
+  - alias: absinthe elixir graphql
+    target: context/stacks/graphql.md
+  - alias: gqlgen go graphql
+    target: context/stacks/graphql.md
+  - alias: strawberry python graphql
+    target: context/stacks/graphql.md
+  - alias: nif seam
+    target:
+      - context/stacks/coordination-seam-patterns.md
+      - examples/canonical-multi-backend/duos/elixir-rust-nif/seam.md
+  - alias: rustler nif
+    target:
+      - context/stacks/duo-elixir-rust.md
+      - examples/canonical-multi-backend/duos/elixir-rust-nif/seam.md
+  - alias: elixir rust nif
+    target:
+      - context/stacks/duo-elixir-rust.md
+      - examples/canonical-multi-backend/duos/elixir-rust-nif/seam.md
+  - alias: call rust from elixir
+    target:
+      - context/stacks/duo-elixir-rust.md
+      - examples/canonical-multi-backend/duos/elixir-rust-nif/seam.md
+  - alias: port vs nif elixir
+    target: examples/canonical-multi-backend/duos/elixir-rust-nif/seam.md
+  - alias: dirty nif
+    target: examples/canonical-multi-backend/duos/elixir-rust-nif/seam.md
+
+Read the file first. Match existing format. Do not change existing entries.
+
+
+UPDATE examples/canonical-multi-backend/README.md
+
+Add one row to the catalog table:
+  | `duos/elixir-rust-nif/` | Elixir + Rust | NIF/Port (in-process) | Rust compute kernel loaded into BEAM VM |
+
+Add a note in the Seam Types section (after the Port/NIF paragraph if it exists, or add it):
+  **NIF/Port seam (in-process, Elixir ↔ Rust):** Rust code compiles into a native implemented
+  function (NIF) loaded directly into the Elixir BEAM VM. There is no network seam and no
+  separate container — this is a single Elixir service with a Rust extension. The NIF
+  is called as an ordinary Elixir function with zero network overhead. Use this when
+  sub-millisecond latency is required and Rust's safety profile is acceptable for inline
+  loading (use Port for potentially panicking code). See `context/stacks/coordination-seam-patterns.md`
+  for the full NIF/Port pattern and safety rules.
+
+Add a run instruction:
+  # NIF seam — Rust compute kernel inside the Elixir BEAM (no docker-compose)
+  cd examples/canonical-multi-backend/duos/elixir-rust-nif
+  # See seam.md for setup: mix.exs + Rustler; run with: mix test or iex -S mix
+  # No docker compose — this is an in-process seam, not a two-service system
+
+Read the file first.
+
+
+---
+
+SECTION 4 — COMMIT BATCHING
+
+Batch 1: GraphQL stack doc
+  context/stacks/graphql.md   (new)
+
+Batch 2: Canonical Elixir + Rust NIF/Port example
+  examples/canonical-multi-backend/duos/elixir-rust-nif/elixir-host.ex
+  examples/canonical-multi-backend/duos/elixir-rust-nif/rust-nif.rs
+  examples/canonical-multi-backend/duos/elixir-rust-nif/Cargo.toml
+  examples/canonical-multi-backend/duos/elixir-rust-nif/seam.md
+
+Batch 3: Registry updates
+  examples/catalog.json
+  verification/stack_support_matrix.yaml
+  context/router/alias-catalog.yaml
+  examples/canonical-multi-backend/README.md
+
+
+---
+
+SECTION 5 — IMPORTANT CONSTRAINTS
+
+- The graphql.md doc must cover GraphQL as a cross-language concern, not just Apollo
+  Server. Include Absinthe (Elixir), gqlgen (Go), Strawberry (Python), and Pothos (Node)
+  in the Language Coverage section. The primary pattern in this repo is Node BFF, but
+  the doc should note the Elixir-native GraphQL path (Absinthe) and the Go-native path
+  (gqlgen) for teams that don't use a BFF.
+
+- The elixir-rust-nif example does NOT have a docker-compose.yml. This is intentional
+  and expected. The seam.md must clearly explain WHY (in-process, not a separate service)
+  and provide the equivalent setup steps (mix.exs, Rustler setup, mix compile).
+
+- The Rust NIF implementation in rust-nif.rs must use #[rustler::nif] (not the older
+  rustler_export! macro). Use rustler = "0.31" in Cargo.toml. The crate-type must be
+  ["cdylib"] — this is mandatory for dynamic library output.
+
+- The compute_hash function in rust-nif.rs should use a deterministic stub rather than
+  pulling in a real crypto crate (to keep the example minimal). Use a formula like
+  format!("{:x}", input.len() as u64 * 0xDEADBEEF_DEADBEEF) and add a comment
+  explaining that a real implementation would use the md5 or sha2 crate.
+
+- The normalize_vector function must handle the edge case where all values are equal
+  (max - min = 0.0 → return zeros). This is important for the seam example to be correct.
+
+- The seam.md for elixir-rust-nif MUST prominently explain the safety trade-off:
+  NIFs that panic kill the entire BEAM VM. The Port alternative exists for any Rust code
+  that might panic or block. This is the most safety-sensitive seam type in the repo.
+
+- Do NOT add full application logic. Each seam example shows only:
+  seam connection setup (NIF registration, stub declaration), the NIF functions themselves,
+  and the seam.md setup instructions.
+
+- Generate the actual implementation in commit-ready batches. Do not propose or summarize.
+  Produce complete file contents.

@@ -1,0 +1,802 @@
+You are working inside the agent-context-base repository.
+
+Before proceeding, read:
+
+  context/stacks/scala-tapir-http4s-zio.md          (Scala stack doc — context for both new docs)
+  context/stacks/duo-scala-rust.md                  (primary consumer of scala-rust example)
+  context/stacks/duo-node-elixir.md                 (primary consumer of node-elixir example)
+  context/stacks/grpc.md                             (added in PROMPT_58 — reference for Akka gRPC section)
+  context/stacks/nats-jetstream.md                  (reference for node-elixir broker seam)
+  context/stacks/coordination-seam-patterns.md      (broker seam pattern — reference)
+  examples/canonical-multi-backend/duos/kotlin-rust-grpc/  (reference for gRPC duo format)
+  examples/canonical-multi-backend/duos/go-elixir-nats/    (reference for NATS broker duo format)
+  examples/catalog.json                             (read before updating)
+  verification/stack_support_matrix.yaml            (read before updating)
+  context/router/alias-catalog.yaml                 (read before updating)
+  examples/canonical-multi-backend/README.md        (read before updating)
+
+If PROMPT_58 has not yet been applied, substitute coordination-seam-patterns.md for
+grpc.md and note that grpc.md is a planned file.
+
+This prompt adds four things:
+
+  1. context/stacks/akka-streams.md — full Akka Streams stack doc for Scala streaming topology
+     (Akka Streams is referenced throughout duo-scala-rust, trio-scala-python-go, and
+     trio-elixir-go-rust, but no standalone guidance exists)
+
+  2. context/stacks/zio-streams.md — full ZIO 2 Streams stack doc
+     (scala-tapir-http4s-zio.md covers ZIO as an effect system; ZIO Streams — ZStream,
+     ZSink, ZPipeline — is a distinct streaming subsystem that needs its own doc)
+
+  3. Canonical duo seam example: Scala + Rust (gRPC seam with Akka Streams)
+     examples/canonical-multi-backend/duos/scala-rust-grpc/
+
+  4. Canonical duo seam example: Node + Elixir (NATS broker seam)
+     examples/canonical-multi-backend/duos/node-elixir-nats/
+
+These four items are independent and can be batched in any order. The two Scala
+stack docs are new additions; the two canonical examples fill remaining duo gaps.
+
+Produce:
+  1. context/stacks/akka-streams.md
+  2. context/stacks/zio-streams.md
+  3. examples/canonical-multi-backend/duos/scala-rust-grpc/
+       scala-side.scala, rust-side.rs, docker-compose.yml, seam.md
+  4. examples/canonical-multi-backend/duos/node-elixir-nats/
+       node-side.ts, elixir-side.ex, docker-compose.yml, seam.md
+  5. Registry updates:
+       examples/catalog.json
+       verification/stack_support_matrix.yaml
+       context/router/alias-catalog.yaml
+       examples/canonical-multi-backend/README.md
+
+Organize into commit-ready batches. For each batch:
+1. Title and purpose.
+2. Files created or updated (full paths).
+3. Full content of every file.
+4. Suggested commit message with prefix [PROMPT_59].
+
+
+---
+
+SECTION 1 — akka-streams.md SPECIFICATION
+
+File: context/stacks/akka-streams.md
+
+Akka Streams is the Scala streaming library for building reactive, backpressure-aware
+stream topologies. It is used in Scala services (especially for the duo-scala-rust and
+trio-elixir-go-rust patterns) where a streaming topology must delegate hot-path compute
+to an external service via gRPC. This doc covers Akka Streams as a standalone concern —
+not as part of an HTTP framework.
+
+Sections:
+
+  ## When Akka Streams Is the Right Choice
+  ## When Akka Streams Is NOT the Right Choice
+  ## Typical Repo Surface
+  ## Core Primitives (Source, Flow, Sink, RunnableGraph)
+  ## Materialized Values
+  ## Backpressure and Demand Signaling
+  ## GraphDSL for Complex Topologies
+  ## Connecting to External Services (gRPC, HTTP, Kafka)
+  ## Local Dev Composition
+  ## Testing Expectations
+  ## Common Assistant Mistakes
+  ## Related
+
+Content notes:
+
+When Akka Streams IS the right choice:
+- Building a multi-stage processing pipeline where each stage can have different concurrency,
+  throttling, or parallelism requirements
+- Streaming data with backpressure semantics where producers must not overwhelm consumers
+- Complex topologies with fan-out (Broadcast), fan-in (Merge, Zip), or cycles (GraphDSL)
+- Connecting multiple sources (HTTP, Kafka, file, NATS) into a unified processing graph
+- The team already uses Akka/Pekko for actor-based coordination
+- Integrating with Alpakka connectors (Kafka, AMQP, AWS S3, JDBC, gRPC)
+
+When Akka Streams is NOT the right choice:
+- Simple sequential data processing where ZIO Streams or fs2 would be lighter
+- The team is not on Akka/Pekko — introduce ZIO Streams or fs2 for a pure-functional alternative
+- The streaming workload is stateless and high-throughput without complex topology — Kafka
+  consumer groups may be sufficient
+- Scala 3 is the target without legacy Akka Classic — prefer Pekko (Apache fork of Akka)
+  or ZIO Streams to avoid Lightbend licensing concerns
+
+Typical repo surface:
+  - build.sbt with com.typesafe.akka::akka-stream, com.typesafe.akka::akka-actor-typed
+  - src/main/scala/{domain}/Pipeline.scala — source → flow → sink chain
+  - src/main/scala/{domain}/StreamGraphs.scala — complex topologies using GraphDSL
+  - src/main/scala/{domain}/KernelClient.scala — gRPC client for delegating to Rust kernel
+  - src/test/scala/{domain}/PipelineSpec.scala — TestKit-based stream tests
+
+Core primitives:
+  Source — produces elements (Source[T, Mat])
+  Flow — transforms elements (Flow[In, Out, Mat])
+  Sink — consumes elements (Sink[In, Mat])
+  RunnableGraph — a connected Source+Sink that can be materialized
+
+  Show a minimal example:
+  ```scala
+  import akka.actor.ActorSystem
+  import akka.stream.scaladsl._
+
+  implicit val system: ActorSystem = ActorSystem("pipeline")
+
+  val source: Source[Int, NotUsed] = Source(1 to 100)
+  val flow: Flow[Int, Double, NotUsed] = Flow[Int].map(n => n * 1.5)
+  val sink: Sink[Double, Future[Done]] = Sink.foreach(println)
+
+  source.via(flow).runWith(sink)
+  ```
+
+Materialized values:
+  The third type parameter in Source/Flow/Sink is the materialized value — the
+  value produced when the graph is run. Common materialized values:
+  - Sink.head → Future[T] (the first emitted element)
+  - Sink.fold → Future[U] (accumulated result)
+  - Sink.queue → SinkQueueWithCancel (allow imperative pull)
+  - Source.queue → SourceQueueWithComplete (allow imperative push)
+  When composing Source.via(flow).runWith(sink), the materialized value is that of the Sink
+  (right side). Use .toMat(sink)(Keep.both) to preserve both materialized values.
+
+Backpressure:
+  Akka Streams implements the Reactive Streams specification. When a downstream operator
+  is slower than upstream, it signals demand upstream and the source slows automatically.
+  There is no need to manually handle overflow for most use cases.
+  Key operators for controlling backpressure:
+  - buffer(n, OverflowStrategy.backpressure) — buffer n elements, then signal demand stop
+  - throttle(elements, per, burst, mode) — rate limiting with bursting
+  - conflate — merge slow-consumer messages using a function (lossy, use with care)
+
+GraphDSL for complex topologies:
+  ```scala
+  import akka.stream.{ClosedShape, FlowShape}
+  import akka.stream.scaladsl.GraphDSL.Implicits._
+
+  val graph = RunnableGraph.fromGraph(GraphDSL.create() { implicit b =>
+    val broadcast = b.add(Broadcast[Event](2))
+    val merge     = b.add(Merge[ProcessedEvent](2))
+
+    source ~> broadcast
+              broadcast ~> fastFlow  ~> merge
+              broadcast ~> slowFlow  ~> merge
+                                        merge ~> sink
+    ClosedShape
+  })
+  ```
+
+Connecting to external services:
+
+  gRPC with Akka gRPC (Alpakka gRPC):
+  Akka gRPC generates Scala stubs from proto files and provides streaming gRPC support.
+  Add sbt-akka-grpc plugin. The generated stub integrates naturally with Akka Streams —
+  the streaming RPCs return Source[Response, NotUsed] or accept Source[Request, NotUsed].
+
+  Show a flow that calls an external gRPC service for each element:
+  ```scala
+  // In the streaming pipeline, delegate compute to Rust kernel
+  val kernelFlow: Flow[InputRecord, KernelResult, NotUsed] =
+    Flow[InputRecord].mapAsync(parallelism = 4) { record =>
+      val request = TransformRequest(operation = "normalize", values = record.values)
+      kernelClient.transform(request)  // returns Future[TransformResponse]
+    }
+  ```
+
+  Kafka with Alpakka Kafka:
+  ```scala
+  // Consumer source
+  val kafkaSource: Source[ConsumerMessage.CommittableMessage[String, Array[Byte]], Consumer.Control] =
+    Consumer.committableSource(consumerSettings, Subscriptions.topics("input.topic"))
+
+  // Process and commit
+  kafkaSource
+    .mapAsync(parallelism = 4) { msg => processEvent(msg.record.value()) }
+    .map(result => result.committableOffset)
+    .runWith(Committer.sink(CommitterSettings(system)))
+  ```
+
+Local dev composition:
+  Akka Streams services run in JVM containers. Key considerations:
+  - JVM startup takes longer than Go/Rust — set start_period: 40s in healthchecks
+  - Set JVM heap: -Xmx512m -Xms256m in JAVA_OPTS for dev
+  - Use eclipse-temurin:21-jre-alpine or openjdk:21-slim as base image
+  - sbt assembly to build a fat JAR for Docker
+
+  ```yaml
+  services:
+    scala-pipeline:
+      build:
+        context: ./services/pipeline
+        dockerfile: Dockerfile
+      ports:
+        - "8080:8080"
+      environment:
+        RUST_KERNEL_ADDR: "rust-kernel:50051"
+        JAVA_OPTS: "-Xmx512m"
+      depends_on:
+        rust-kernel:
+          condition: service_healthy
+      healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+        interval: 10s
+        timeout: 5s
+        retries: 3
+        start_period: 40s
+  ```
+
+Testing expectations:
+- Use AkkaSpec or ScalaTestWithActorTestKit for stream tests
+- Prove a Source → Flow → Sink pipeline with a real graph
+- Prove backpressure: use Sink.lazyInit or a slow sink and verify the source throttles
+- Prove GraphDSL broadcast/merge topologies by asserting element counts
+- Prove the gRPC integration: use a test gRPC server (testcontainers or embedded)
+- Keep stream tests deterministic: avoid time-based assertions; prefer element count assertions
+
+Common assistant mistakes:
+- Creating ActorSystem on every test — create once in test setup (it is expensive to spin up)
+- Not materializing the graph — calling .via() or .to() does NOT run the stream;
+  call .run() or .runWith(sink) to start it
+- Forgetting to shut down ActorSystem in tests — causes resource leaks and hanging test suites
+- Using Sink.foreach for production code — it blocks the stream; prefer Sink.foreachAsync
+  for async side effects
+- Ignoring materialized values — if you want the result of a Sink, capture the materialized value
+- Using Akka Classic instead of Akka Typed when starting a new service
+
+Related:
+- context/stacks/zio-streams.md (alternative: ZIO 2 Streams for pure-functional approach)
+- context/stacks/scala-tapir-http4s-zio.md (ZIO HTTP + Tapir for Scala HTTP services)
+- context/stacks/grpc.md (gRPC seam — Akka gRPC generates streaming-capable stubs)
+- context/stacks/kafka.md (Alpakka Kafka for Kafka Streams in Akka)
+- context/stacks/duo-scala-rust.md (Scala Akka Streams + Rust kernel gRPC seam)
+- context/stacks/trio-scala-python-go.md (Scala in a three-service pipeline)
+- examples/canonical-multi-backend/duos/scala-rust-grpc/ (canonical seam example)
+
+
+---
+
+SECTION 2 — zio-streams.md SPECIFICATION
+
+File: context/stacks/zio-streams.md
+
+ZIO Streams is the streaming subsystem of ZIO 2. It provides functional, type-safe
+stream processing with ZIO's effect system integration. Unlike Akka Streams, ZIO Streams
+has no actor system overhead — it runs on ZIO's fiber-based runtime. It is the natural
+choice for streaming in ZIO-based Scala services (those using scala-tapir-http4s-zio.md).
+
+Sections:
+
+  ## When ZIO Streams Is the Right Choice
+  ## When ZIO Streams Is NOT the Right Choice
+  ## Typical Repo Surface
+  ## Core Primitives (ZStream, ZSink, ZPipeline)
+  ## Channel and Hub (fan-out)
+  ## Error Handling in Streams
+  ## Integration with ZIO HTTP (streaming HTTP endpoints)
+  ## Connecting to External Services
+  ## Testing Expectations
+  ## Common Assistant Mistakes
+  ## Related
+
+Content notes:
+
+When ZIO Streams IS the right choice:
+- The service is already built on ZIO 2 (using scala-tapir-http4s-zio.md stack)
+- Pure functional effect composition is preferred over Akka's imperative mutable state
+- Streaming HTTP responses (chunked transfer, server-sent events) from http4s
+- No actor system overhead needed — ZIO fiber runtime is lighter than Akka
+- The team wants typed error channels throughout the stream (ZStream[R, E, A])
+- Integration with ZIO services (ZIO Kafka via zio-kafka, ZIO HTTP)
+
+When ZIO Streams is NOT the right choice:
+- The codebase is Akka-based — Akka Streams integrates better with Akka actors/gRPC
+- Complex graph topologies (fan-out, cycles) — Akka GraphDSL is more mature for this
+- The team needs Alpakka connectors (ZIO ecosystem has zio-kafka, zio-amqp, but
+  Alpakka has a larger connector catalog)
+
+Typical repo surface:
+  - build.sbt with dev.zio::zio-streams, dev.zio::zio
+  - src/main/scala/{domain}/Processor.scala — ZStream pipeline definition
+  - src/main/scala/{domain}/Hub.scala — fan-out to multiple fibers via Hub
+  - src/main/scala/{domain}/routes/ — ZIO HTTP streaming endpoints
+  - src/test/scala/{domain}/ProcessorSpec.scala — ZIO Test stream tests
+
+Core primitives:
+  ZStream[R, E, A] — a description of a stream that requires R, may fail with E, produces A
+  ZSink[R, E, In, L, Z] — consumes a stream and produces Z (leftover L if partial)
+  ZPipeline[R, E, In, Out] — transforms a stream (ZStream → ZStream)
+
+  Minimal example:
+  ```scala
+  import zio._
+  import zio.stream._
+
+  val program: ZIO[Any, Throwable, Unit] =
+    ZStream.fromIterable(1 to 100)
+      .map(_ * 1.5)
+      .tap(n => ZIO.debug(n.toString))
+      .run(ZSink.drain)
+  ```
+
+  Producing a stream from a resource (queue, database, file):
+  ```scala
+  ZStream.fromQueue(queue)         // from a ZQueue
+  ZStream.fromFile(path)           // from a file
+  ZStream.paginateZIO(cursor)(fetchPage)  // from paginated API
+  ```
+
+  Pipelines:
+  ```scala
+  val normalize: ZPipeline[Any, Nothing, Double, Double] =
+    ZPipeline.map(x => x / x.max(1.0))
+
+  val pipeline: ZStream[Any, Nothing, Double] =
+    ZStream.fromIterable(data) >>> normalize
+  ```
+
+Hub (fan-out to multiple subscribers):
+  ```scala
+  for {
+    hub    <- Hub.bounded[Event](capacity = 64)
+    _      <- ZStream.fromHub(hub).run(ZSink.foreach(processA)).fork
+    _      <- ZStream.fromHub(hub).run(ZSink.foreach(processB)).fork
+    _      <- ZStream.fromIterable(events).foreach(hub.publish)
+  } yield ()
+  ```
+  Hub is the ZIO equivalent of Akka Streams Broadcast — all subscribers receive all messages.
+
+Error handling:
+  ZStream has a typed error channel E. Errors cause the stream to fail and stop by default.
+  Key operators:
+  - catchAll: recover from any error, continuing with a new stream
+  - retry(Schedule): retry the failing stream on a schedule
+  - orElse: switch to a fallback stream on failure
+  - ensuring: run a cleanup effect when the stream ends (success or failure)
+
+  ```scala
+  ZStream.fromSocketServer(...)
+    .catchAll(e => ZStream.logError(e.getMessage) *> ZStream.empty)
+  ```
+
+Integration with ZIO HTTP (http4s streaming endpoint):
+  ```scala
+  // Stream JSON array from http4s endpoint
+  import org.http4s.server.Router
+  import zio.interop.catz._
+
+  val routes = HttpRoutes.of[Task] {
+    case GET -> Root / "events" =>
+      Ok(
+        ZStream.fromIterable(events)
+          .map(e => ServerSentEvent(Some(e.toJson)))
+          .toFs2Stream
+      )
+  }
+  ```
+
+Connecting to external services:
+
+  zio-kafka (canonical Kafka integration for ZIO):
+  ```scala
+  // deps: dev.zio::zio-kafka
+  import zio.kafka.consumer._
+  import zio.kafka.serde._
+
+  val stream: ZStream[Consumer, Throwable, CommittableRecord[String, String]] =
+    Consumer.subscribeAnd(Subscription.topics("input.topic"))
+      .plainStream(Serde.string, Serde.string)
+
+  stream
+    .mapZIO(record => processEvent(record.value).as(record.offset))
+    .aggregateAsync(Consumer.offsetBatches)
+    .mapZIO(_.commit)
+    .runDrain
+  ```
+
+Testing expectations:
+- Use ZIO Test and ZTestEnvironment for stream tests
+- ZStream.runCollect: materialize a stream to a Chunk[A] for assertion
+- Prove fan-out with Hub: verify each subscriber receives all messages
+- Prove error recovery: inject a failure into a stream and verify catchAll fires
+- Prove streaming HTTP: use ZIO HTTP test client to stream from an endpoint
+
+Common assistant mistakes:
+- Treating ZStream as a ZIO — ZStream is a description of a stream, not a single effect;
+  use .run(sink) to execute it
+- Not using .fork when running multiple streams — blocking on one stream prevents others
+- Confusing Hub and Queue: Hub broadcasts to all subscribers; Queue distributes (work queue)
+- Not typing the error channel — using ZStream[Any, Nothing, A] masks real errors;
+  keep E explicit until the boundary
+- Using Throwable as the error type throughout — define domain-specific error types
+  and map to Throwable only at the boundary (e.g., HTTP response encoding)
+
+Related:
+- context/stacks/akka-streams.md (alternative: Akka Streams for actor-based pipelines)
+- context/stacks/scala-tapir-http4s-zio.md (ZIO HTTP + Tapir for the HTTP service layer)
+- context/stacks/kafka.md (zio-kafka for Kafka integration)
+- context/stacks/duo-scala-rust.md (Scala in multi-backend context)
+
+
+---
+
+SECTION 3 — CANONICAL SCALA + RUST gRPC EXAMPLE (Akka Streams focus)
+
+Directory: examples/canonical-multi-backend/duos/scala-rust-grpc/
+
+This example demonstrates the gRPC seam between Scala Akka Streams (orchestrator/caller)
+and a Rust tonic server (compute kernel). It fills the canonical example gap for duo-scala-rust.md.
+
+This is similar to kotlin-rust-grpc but demonstrates the Akka Streams integration:
+the Scala side runs a streaming pipeline that delegates per-element compute to Rust via gRPC.
+
+Files:
+  service.proto     — Proto file (KernelService for transform operations)
+  scala-side.scala  — Scala Akka Streams pipeline with gRPC call to Rust
+  rust-side.rs      — Rust tonic gRPC server
+  docker-compose.yml — Full local dev composition
+  seam.md           — Companion doc
+
+
+service.proto
+  - syntax = "proto3"
+  - package kernel.v1
+  - Service KernelService:
+      rpc Transform(TransformRequest) returns (TransformResponse)
+  - Message TransformRequest:
+      string operation = 1   // e.g. "normalize", "mean"
+      repeated double values = 2
+      int32 window_size = 3
+  - Message TransformResponse:
+      repeated double result = 1
+      string method = 2
+      int64 duration_ns = 3
+  - Comment at top: seam example, see context/archetypes/multi-backend-service.md
+
+  Note: this proto is the same as the one in duo-scala-rust.md's Communication Contract
+  section — use the same package and field definitions to stay consistent with the duo doc.
+
+
+scala-side.scala
+  - Comment at top: seam example, not full scaffold
+  - Uses Akka Streams (akka-stream 2.8+) and Akka gRPC (sbt-akka-grpc)
+  - Creates a Source of synthetic InputRecord items (5 items for the demo)
+  - Applies a Flow that calls the Rust gRPC KernelService.Transform for each record
+    using mapAsync(parallelism = 2)
+  - Collects results and prints them: method, result values, duration_ns
+  - Boots an HTTP /healthz endpoint using Akka HTTP that checks gRPC connectivity
+  - Reads RUST_KERNEL_ADDR env var (default "rust-kernel:50051")
+  - Reads PORT env var (default 8080) for the HTTP endpoint
+
+
+rust-side.rs
+  - Comment at top: seam example, not full scaffold
+  - Uses tonic gRPC server
+  - Implements KernelServiceServer.Transform:
+      operation "normalize": subtract mean, divide by std dev (stub if input < 2 values: return as-is)
+      operation "mean": compute mean, return as single-element array
+      default: return values unchanged
+  - Records duration_ns
+  - Boots on GRPC_PORT env var (default 50051)
+  - Exposes HTTP /healthz on HEALTH_PORT env var (default 8082)
+
+
+docker-compose.yml
+  - rust-kernel: built from rust-side.rs, gRPC port 50051, HTTP port 8082
+    - healthcheck: curl http://localhost:8082/healthz
+    - start_period: 60s (Rust compile)
+  - scala-pipeline: built from scala-side.scala, port 8080
+    - depends_on: rust-kernel (service_healthy)
+    - RUST_KERNEL_ADDR: rust-kernel:50051
+    - JAVA_OPTS: -Xmx512m
+    - healthcheck: curl http://localhost:8080/healthz
+    - start_period: 40s (JVM startup)
+
+
+seam.md
+  - Purpose: Scala Akka Streams orchestrates a streaming pipeline; hot-path compute
+    is delegated to Rust via gRPC — the pattern from duo-scala-rust.md
+  - Why gRPC (not REST): typed contract for numeric arrays; binary encoding efficiency
+    for repeated double fields; low-latency per-element RPC call
+  - Why Akka Streams (not plain Scala): backpressure ensures Scala doesn't overwhelm
+    the Rust service; mapAsync(parallelism) controls the concurrency of gRPC calls
+  - The proto file as the canonical contract between Scala and Rust
+  - Stub generation: sbt-akka-grpc plugin (show in seam.md, not inline in code)
+  - How to run; first Rust build takes several minutes; JVM also slow to start
+  - What to observe: Scala logs showing operation, result, duration_ns from Rust
+  - Related docs
+
+
+---
+
+SECTION 4 — CANONICAL NODE + ELIXIR NATS EXAMPLE
+
+Directory: examples/canonical-multi-backend/duos/node-elixir-nats/
+
+This example demonstrates the NATS broker seam between Node/TypeScript (client connection
+layer, publishes client actions) and Elixir (distributed state, processes and rebroadcasts).
+It fills the canonical example gap for duo-node-elixir.md.
+
+This is the collaborative app seam: Node connects WebSocket clients and publishes their
+actions to NATS; Elixir processes the actions, updates distributed state, and publishes
+state updates back through NATS to Node for delivery to clients.
+
+Files:
+  node-side.ts      — Node/TypeScript NATS publisher + subscriber (bidirectional)
+  elixir-side.ex    — Elixir GenServer with Gnat (bidirectional NATS)
+  docker-compose.yml — Full local dev composition
+  seam.md           — Companion doc
+
+Note: this example shows the bidirectional NATS seam described in duo-node-elixir.md.
+Both sides publish AND subscribe. This is different from the go-elixir-nats duo where
+only Go publishes and only Elixir subscribes.
+
+
+node-side.ts
+  - Comment at top: seam example, not full scaffold
+  - Uses nats.js (npm: nats@2)
+  - Connects to NATS from NATS_URL env var (default "nats://nats:4222")
+  - Subscribes to "state.*.updates" — receives state broadcasts from Elixir
+  - On startup: publishes one demo action to "actions.sess-demo.cursor.moved" with payload:
+      {"payload_version": 1, "session_id": "sess-demo", "correlation_id": "demo-001",
+       "published_at": "...", "action_type": "cursor.moved",
+       "data": {"x": 100, "y": 200, "doc_id": "doc-abc"}}
+  - Logs received state updates from Elixir: event_type, doc_id, data
+  - GET /healthz — checks NATS connection status, returns 200 or 503
+  - Reads PORT env var (default 3000) for the HTTP endpoint
+  - Uses Hono (matching typescript-hono-bun.md conventions) for the health endpoint
+
+
+elixir-side.ex
+  - Comment at top: seam example, not full scaffold
+  - Uses Gnat (GenServer)
+  - Subscribes to "actions.>" — receives client actions from Node
+  - On receiving an action: decodes JSON, logs session_id, action_type, doc_id
+  - Publishes a state update to "state.{doc_id}.updates":
+      {"payload_version": 1, "doc_id": "doc-abc", "published_at": "...",
+       "event_type": "presence.updated",
+       "data": {"cursors": [{"session_id": "sess-demo", "x": 100, "y": 200}]}}
+  - Implements the bidirectional seam pattern: subscribes to actions, publishes state
+  - GET /healthz via Phoenix router returning {"status": "ok"}
+  - Reads NATS_URL env var
+
+
+docker-compose.yml
+  - nats service: nats:2.10-alpine with -js flag, ports 4222 and 8222
+    - healthcheck: wget --spider http://localhost:8222/healthz
+  - node-service: built from node-side.ts, port 3000
+    - depends_on: nats (service_healthy)
+    - NATS_URL: nats://nats:4222
+    - healthcheck: wget --spider http://localhost:3000/healthz
+  - elixir-service: built from elixir-side.ex, port 4000
+    - depends_on: nats (service_healthy)
+    - NATS_URL: nats://nats:4222
+    - healthcheck: wget --spider http://localhost:4000/healthz
+
+
+seam.md
+  - Purpose: Node owns client connection layer; Elixir owns distributed state
+  - Why bidirectional NATS (not unidirectional): client actions go Node→Elixir;
+    state updates go Elixir→Node; both directions use NATS subjects
+  - Why not REST for the state updates: Elixir must push updates to Node asynchronously
+    (client may be connected but idle); REST would require polling
+  - The two subject namespaces: "actions.{session_id}.{type}" (Node→Elixir)
+    and "state.{doc_id}.updates" (Elixir→Node)
+  - How to run; what to observe: Node logs the action publish; Elixir logs the
+    received action; Node logs the received state update
+  - The JetStream note: this example uses core NATS (no JetStream), which is sufficient
+    for ephemeral real-time coordination. For durable queues, use JetStream.
+  - Related docs
+
+
+---
+
+SECTION 5 — REGISTRY UPDATE SPECIFICATION
+
+UPDATE examples/catalog.json
+
+Add two entries:
+
+  1. Scala + Rust gRPC:
+     path: "examples/canonical-multi-backend/duos/scala-rust-grpc/"
+     category: "multi-backend"
+     summary: "Scala + Rust gRPC seam: Scala Akka Streams pipeline delegates per-element hot-path compute to a Rust tonic gRPC server using mapAsync. Shows KernelService proto contract, Akka Streams gRPC integration, and docker-compose with JVM + Rust build considerations."
+     tags: ["multi-backend", "scala", "rust", "grpc", "akka-streams"]
+     stacks: ["scala-tapir-http4s-zio", "rust-axum-modern", "grpc", "akka-streams"]
+     archetypes: ["multi-backend-service"]
+     workflows: ["design-multi-backend-seams", "add-backend-coordination-layer"]
+     patterns: ["grpc-seam", "akka-streams", "streaming-pipeline", "compute-delegation"]
+     rank: 95
+     stability: "canonical"
+
+  2. Node + Elixir NATS:
+     path: "examples/canonical-multi-backend/duos/node-elixir-nats/"
+     category: "multi-backend"
+     summary: "Node + Elixir NATS broker seam (bidirectional): Node (TypeScript/Hono) publishes client actions to NATS; Elixir (Gnat/GenServer) processes them and publishes state updates back through NATS to Node. Shows the collaborative app pattern: client connection layer (Node) + distributed state (Elixir)."
+     tags: ["multi-backend", "node", "elixir", "broker", "nats"]
+     stacks: ["typescript-hono-bun", "elixir-phoenix", "nats-jetstream"]
+     archetypes: ["multi-backend-service"]
+     workflows: ["design-multi-backend-seams", "add-backend-coordination-layer"]
+     patterns: ["broker-seam", "nats", "bidirectional", "real-time", "collaborative-app"]
+     rank: 95
+     stability: "canonical"
+
+Read the file first. Match existing entry format exactly.
+
+
+UPDATE verification/stack_support_matrix.yaml
+
+Add two new stack entries:
+
+  1. akka-streams:
+     stack: akka-streams
+     support_level: 2
+     verified_examples:
+       - scala-rust-grpc-seam-example
+     missing_verification:
+       - live Akka Streams pipeline test (non-trivial stage count)
+       - Alpakka Kafka integration test
+       - GraphDSL topology test
+       - native sbt compile in default verification tier
+     notes: Akka Streams stack doc added. Canonical example (scala-rust-grpc) is
+            structure-verified only. No live JVM integration test in default tier.
+
+  2. zio-streams:
+     stack: zio-streams
+     support_level: 1
+     verified_examples: []
+     missing_verification:
+       - any canonical canonical example
+       - zio-kafka integration example
+       - ZStream pipeline test
+     notes: ZIO Streams stack doc added (zio-streams.md). No canonical example yet.
+            The scala-tapir-http4s-zio examples use ZIO effects but not ZStream pipelines.
+
+Also update "multi-backend-seam" capability:
+  Add Scala as "supported" with note about scala-rust-grpc example.
+
+Read the file first. Only add these new entries; do not modify existing rows.
+
+
+UPDATE context/router/alias-catalog.yaml
+
+Add under the stacks section:
+  - alias: akka streams
+    target: context/stacks/akka-streams.md
+  - alias: akka stream
+    target: context/stacks/akka-streams.md
+  - alias: akka pipeline
+    target: context/stacks/akka-streams.md
+  - alias: akka source flow sink
+    target: context/stacks/akka-streams.md
+  - alias: akka graphdsl
+    target: context/stacks/akka-streams.md
+  - alias: akka backpressure
+    target: context/stacks/akka-streams.md
+  - alias: alpakka kafka
+    target:
+      - context/stacks/akka-streams.md
+      - context/stacks/kafka.md
+  - alias: alpakka grpc
+    target:
+      - context/stacks/akka-streams.md
+      - context/stacks/grpc.md
+  - alias: materialized value akka
+    target: context/stacks/akka-streams.md
+  - alias: zio streams
+    target: context/stacks/zio-streams.md
+  - alias: zio stream
+    target: context/stacks/zio-streams.md
+  - alias: zstream
+    target: context/stacks/zio-streams.md
+  - alias: zsink zpipeline
+    target: context/stacks/zio-streams.md
+  - alias: zio hub fanout
+    target: context/stacks/zio-streams.md
+  - alias: zio kafka
+    target:
+      - context/stacks/zio-streams.md
+      - context/stacks/kafka.md
+  - alias: scala rust grpc
+    target:
+      - context/stacks/duo-scala-rust.md
+      - examples/canonical-multi-backend/duos/scala-rust-grpc/seam.md
+  - alias: akka streams grpc rust
+    target:
+      - context/stacks/duo-scala-rust.md
+      - examples/canonical-multi-backend/duos/scala-rust-grpc/seam.md
+  - alias: node elixir nats
+    target:
+      - context/stacks/duo-node-elixir.md
+      - examples/canonical-multi-backend/duos/node-elixir-nats/seam.md
+  - alias: node elixir real-time
+    target:
+      - context/stacks/duo-node-elixir.md
+      - examples/canonical-multi-backend/duos/node-elixir-nats/seam.md
+
+Read the file first. Match existing format. Do not change existing entries.
+
+
+UPDATE examples/canonical-multi-backend/README.md
+
+Add two rows to the catalog table:
+  | `duos/scala-rust-grpc/`    | Scala + Rust      | gRPC | Akka Streams pipeline delegating to Rust kernel |
+  | `duos/node-elixir-nats/`   | Node + Elixir     | Broker (NATS) | Client connection layer + distributed state |
+
+Add run instructions:
+  # gRPC seam — Scala Akka Streams delegates compute to Rust kernel
+  cd examples/canonical-multi-backend/duos/scala-rust-grpc
+  docker compose up --build   # slow: Rust compile + JVM startup
+  # observe Scala logs: TransformResponse result, method, duration_ns
+
+  # Broker seam — Node publishes client actions, Elixir processes and rebroadcasts
+  cd examples/canonical-multi-backend/duos/node-elixir-nats
+  docker compose up --build
+  # observe bidirectional flow: Node action → Elixir state update → Node receives
+
+Read the file first.
+
+
+---
+
+SECTION 6 — COMMIT BATCHING
+
+Batch 1: Scala streaming stack docs
+  context/stacks/akka-streams.md   (new)
+  context/stacks/zio-streams.md    (new)
+
+Batch 2: Canonical Scala + Rust gRPC example (Akka Streams)
+  examples/canonical-multi-backend/duos/scala-rust-grpc/service.proto
+  examples/canonical-multi-backend/duos/scala-rust-grpc/scala-side.scala
+  examples/canonical-multi-backend/duos/scala-rust-grpc/rust-side.rs
+  examples/canonical-multi-backend/duos/scala-rust-grpc/docker-compose.yml
+  examples/canonical-multi-backend/duos/scala-rust-grpc/seam.md
+
+Batch 3: Canonical Node + Elixir NATS example
+  examples/canonical-multi-backend/duos/node-elixir-nats/node-side.ts
+  examples/canonical-multi-backend/duos/node-elixir-nats/elixir-side.ex
+  examples/canonical-multi-backend/duos/node-elixir-nats/docker-compose.yml
+  examples/canonical-multi-backend/duos/node-elixir-nats/seam.md
+
+Batch 4: Registry updates
+  examples/catalog.json
+  verification/stack_support_matrix.yaml
+  context/router/alias-catalog.yaml
+  examples/canonical-multi-backend/README.md
+
+
+---
+
+SECTION 7 — IMPORTANT CONSTRAINTS
+
+- The service.proto in scala-rust-grpc/ must use package kernel.v1 with field names
+  that match duo-scala-rust.md's Communication Contract section exactly.
+  Specifically: TransformRequest with operation, values (repeated double), window_size;
+  TransformResponse with result (repeated double), method, duration_ns.
+  This proto is different from rust-python-grpc/service.proto (package inference.v1).
+
+- The scala-side.scala uses Akka Streams mapAsync to call gRPC — this is the central
+  Akka Streams integration point. Show the Flow.mapAsync pattern clearly, with a comment
+  explaining why mapAsync parallelism controls the concurrency of gRPC calls.
+
+- The node-elixir-nats example uses CORE NATS (not JetStream). The seam.md must explain
+  why: ephemeral real-time coordination does not require durable persistence; core NATS
+  is simpler for this use case. Contrast with go-elixir-nats which uses JetStream.
+
+- The Node side uses nats.js v2 (npm: nats@2). It also uses Hono for the health endpoint
+  (matching typescript-hono-bun.md). Do NOT use Express.
+
+- The Elixir side uses Gnat (same as go-elixir-nats) — not Phoenix Channels or LiveView.
+  This is a raw NATS seam example, not a full Phoenix app. The /healthz endpoint is a
+  minimal Plug.Router or a Phoenix endpoint (either is fine, be consistent with
+  other Elixir seam examples).
+
+- akka-streams.md should reference Pekko (the Apache fork) for teams on Scala 3 who want
+  to avoid Lightbend licensing. Add a note: "For Scala 3 or teams avoiding Lightbend
+  commercial licensing, consider Apache Pekko, which is a direct fork of Akka Streams
+  with the same API under the Apache 2.0 license."
+
+- Do NOT add full application logic. Each service shows only:
+  seam connection setup, send/receive, health endpoint.
+
+- Generate the actual implementation in commit-ready batches. Do not propose or summarize.
+  Produce complete file contents.
