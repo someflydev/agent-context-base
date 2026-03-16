@@ -1,0 +1,272 @@
+You are working inside the agent-context-base repository.
+
+This prompt performs a router freshness pass. The context system only works correctly when
+every doctrine doc, stack doc, workflow doc, and archetype doc is reachable through the router
+and alias catalog. New content that exists but is not wired into the router is invisible to
+assistants following the boot sequence. This prompt audits every router file for completeness,
+identifies unwired content and broken references, and applies precise, minimal fixes.
+
+IMPORTANT: PROMPT_66 and PROMPT_67 have already run. All docs/ files and the root README.md
+are now fresh. Read the actual current file state — do not assume you know what changed.
+
+Organize all work into commit-ready batches. For each batch:
+1. Batch title and purpose.
+2. Files created or updated (full paths).
+3. Full content of every file.
+4. Suggested commit message with prefix [PROMPT_68].
+
+
+---
+
+PHASE 1 — INVENTORY READS (required before writing anything)
+
+Read every router and alias file in full:
+  context/router/task-router.md
+  context/router/stack-router.md
+  context/router/archetype-router.md
+  context/router/alias-catalog.yaml
+  context/router/repo-signal-hints.json
+
+Run directory listings to get the actual file inventory:
+  ls context/doctrine/
+  ls context/workflows/
+  ls context/stacks/
+  ls context/archetypes/
+  ls manifests/
+  ls examples/
+  ls examples/canonical-multi-backend/duos/
+  ls examples/canonical-multi-backend/trios/
+  ls examples/canonical-api/
+  ls examples/canonical-integration-tests/
+  ls examples/canonical-data-acquisition/
+  ls examples/canonical-storage/
+  ls examples/canonical-rag/
+  ls examples/canonical-cli/
+
+After the inventory is complete, proceed to PHASE 2.
+
+
+---
+
+PHASE 2 — GAP ANALYSIS
+
+For each router file, identify two classes of problems:
+
+  TYPE A — Unwired content: a file exists in the repo but has no route or alias pointing to it.
+  TYPE B — Broken reference: a router or alias entry points to a file that no longer exists.
+
+Work through each source systematically.
+
+2A. Doctrine coverage (context/doctrine/)
+  Build a complete list of every .md file under context/doctrine/.
+  For each file, check whether it appears in:
+    - task-router.md (as a load target in a task mapping or routing example)
+    - alias-catalog.yaml (as a target in any alias entry)
+  Mark each file as: WIRED (appears in at least one place) or UNWIRED (appears in neither).
+
+  UNWIRED doctrine docs need new router entries. For each unwired file:
+    - Infer 2–4 natural-language task phrases that would lead an assistant to need this doc.
+    - Infer 1–3 short alias strings that name the doc's topic directly.
+    - Propose the task-router.md entry and the alias-catalog.yaml entries.
+
+2B. Workflow coverage (context/workflows/)
+  Same process as 2A for every .md file under context/workflows/.
+  Every workflow doc should be reachable from the task router via natural language.
+  Mark each as WIRED or UNWIRED.
+
+2C. Stack coverage (context/stacks/)
+  Same process for every .md file under context/stacks/.
+  Stack docs are primarily reached via stack-router.md (by repo signal) and task-router.md
+  (by explicit task language). Check both.
+  Note: duo-*.md and trio-*.md files should be reachable via task-router.md phrases like
+  "Go + Python service", "NATS between Elixir and Go", "Elixir Go Rust trio", etc.
+
+2D. Archetype coverage (context/archetypes/)
+  Check archetype-router.md: does it list every archetype .md file that exists?
+  Check alias-catalog.yaml: does it have aliases for every archetype name?
+  Mark each as WIRED or UNWIRED.
+
+2E. Manifest coverage (manifests/)
+  Check that every .yaml file in manifests/ is referenced in at least one of:
+    - stack-router.md
+    - archetype-router.md
+    - alias-catalog.yaml
+  Note: manifests do not need to be in task-router.md directly, but should be discoverable.
+
+2F. Canonical example coverage (examples/)
+  For the top-level example categories and the multi-backend duo/trio subdirectories, check:
+  - Is each category's README referenced in at least one router or alias entry?
+  - Is each multi-backend duo and trio example (examples/canonical-multi-backend/duos/* and
+    trios/*) reachable via task-router.md or alias-catalog.yaml?
+  Mark each as WIRED or UNWIRED.
+
+2G. Broken reference audit
+  For every file path that appears as a load target in any router or alias entry:
+    - Verify the file actually exists.
+    - Mark any path that does not exist as BROKEN.
+  This is a two-sided audit: content without routes (TYPE A) and routes without content (TYPE B).
+
+
+---
+
+PHASE 3 — REPAIR RULES
+
+Apply fixes following these rules precisely.
+
+RULE: One canonical location per concept.
+  If a doc should be reached via multiple phrases, those phrases all go into task-router.md
+  pointing to the same target. Do not create a separate alias-catalog entry that duplicates
+  a task-router entry — only add aliases for concepts that are NOT already well-covered
+  by task-router entries or that benefit from short named references.
+
+RULE: Alias strings should be short and human-natural.
+  Aliases are what an operator types when they know what they want but don't know the internal
+  path. Examples: "broker selection", "polars vs pandas", "dokku deployment", "nats jetstream".
+  They are not full task descriptions.
+
+RULE: Stack-router.md entries are for repo-signal-based inference.
+  stack-router.md maps file signals (lockfiles, source patterns, imports) to stack docs.
+  It is not a synonym for task-router.md. Only add stack-router entries when a new file
+  signal or repo artifact is not yet covered.
+
+RULE: Archetype-router.md maps project shape descriptions to archetypes.
+  Each entry should describe the kind of project (in a few words) and the doc to load.
+  If new archetypes exist without entries, add them. Do not change existing archetype descriptions.
+
+RULE: repo-signal-hints.json maps file/directory patterns to context hints.
+  Check whether any new stacks, patterns, or infra packs added since the last update
+  (e.g., duckdb-parquet, python-ml-library-selection, backend-driven-ui, multi-backend trios)
+  have corresponding signal hints. Add minimal signal hints for any that don't.
+
+RULE: Minimal diff. Do not reformat, reorder, or restructure router sections that are still
+  accurate. Insert new entries near semantically related existing entries.
+
+RULE: Do not add coverage for content that is genuinely internal-only or assistant-boot-only.
+  Some docs (e.g., context/anchors/, context/memory/) are not meant to be reached via
+  task routing — they load automatically or via specific boot steps. Do not add task-router
+  entries for these unless they are genuinely missing and would benefit from explicit routing.
+
+
+---
+
+PHASE 4 — SPECIFIC AREAS TO CHECK
+
+Based on known additions to the repo since the router was last comprehensively updated,
+pay special attention to the following. These may or may not be unwired — confirm by reading.
+
+4A. DuckDB+Parquet local stack
+  context/stacks/duckdb-parquet.md (if it exists)
+  - Is it in stack-router.md under the DuckDB/Parquet signal block?
+  - Is it in task-router.md for phrases like "duckdb local analytics", "parquet without minio",
+    "local duckdb data lake"?
+  - Is it in alias-catalog.yaml?
+  Note: duckdb-trino-polars.md covers the three-tool combination. duckdb-parquet.md (if present)
+  covers the two-tool local-only pattern. These are different and should route separately.
+
+4B. Python ML library selection doctrine
+  context/doctrine/python-ml-library-selection.md (if it exists)
+  - Is it in task-router.md for phrases like "polars vs pandas", "sklearn vs xgboost",
+    "add ML to python service", "python ml library selection"?
+  - Is it in alias-catalog.yaml?
+
+4C. Backend-driven UI doctrine and workflows
+  Check all of the following for router and alias coverage:
+    context/doctrine/backend-driven-ui-correctness.md
+    context/doctrine/faceted-query-count-discipline.md
+    context/doctrine/filter-panel-rendering-rules.md
+    context/doctrine/filter-state-and-query-state.md
+    context/doctrine/search-sort-scroll-layout.md (if it exists)
+    context/doctrine/playwright-verification-philosophy.md
+    context/workflows/add-faceted-filter-ui.md
+    context/workflows/add-include-exclude-filtering.md
+    context/workflows/add-dynamic-counts.md
+    context/workflows/add-plotly-backed-query-view.md
+    context/workflows/add-playwright-ui-verification.md
+    context/workflows/verify-query-count-correctness.md
+    context/workflows/render-filter-panel-include-exclude-ui.md (if it exists)
+  Are all wired? Are any aliases missing?
+
+4D. Multi-backend coordination docs
+  Check all of the following:
+    context/doctrine/multi-backend-coordination.md
+    context/stacks/coordination-seam-patterns.md
+    context/stacks/duo-*.md files (all of them)
+    context/stacks/trio-*.md files (all of them)
+    context/workflows/design-multi-backend-seams.md
+    context/workflows/add-backend-coordination-layer.md
+  For each duo-*.md and trio-*.md: is there a task-router entry that uses the language
+  pair names in natural English (e.g., "Go and Elixir with NATS", "Elixir Go Rust trio")?
+  Are there alias-catalog entries for each language pair combination?
+
+4E. New stacks added since PROMPT_60
+  Any context/stacks/*.md files that did not exist before PROMPT_61 should be confirmed
+  as wired. Check:
+    context/stacks/parquet.md
+    context/stacks/minio.md
+    context/stacks/parquet-minio.md
+    context/stacks/duckdb-parquet.md (if present)
+  These are distinct from duckdb-trino-polars.md and need their own signal/task entries.
+
+4F. Manifests for new archetypes or stacks
+  Check whether new manifests have been added since the last router review. Each manifest
+  should have at least one alias in alias-catalog.yaml so it is easily reachable.
+
+4G. Canonical integration test examples
+  The CUJ Playwright test example (playwright-cuj-filter-example.spec.ts) added in PROMPT_65
+  should be reachable from the router. Check:
+    - Is there a task-router entry for "critical user journey tests", "cuj playwright tests"?
+    - Is there an alias for the CUJ example?
+
+
+---
+
+PHASE 5 — COMMIT BATCHING
+
+Batch 1: task-router.md updates
+  Purpose: Add entries for all unwired doctrine, workflow, stack, and example content.
+  Insert near semantically related existing entries. Do not restructure.
+
+Batch 2: alias-catalog.yaml updates
+  Purpose: Add short aliases for all unwired content and any new manifests.
+  Match existing format exactly.
+
+Batch 3: stack-router.md updates
+  Purpose: Add signal entries for any new stacks not yet covered.
+  Skip if no new signal entries are needed.
+
+Batch 4: archetype-router.md updates
+  Purpose: Add any missing archetype entries.
+  Skip if all archetypes are already covered.
+
+Batch 5: repo-signal-hints.json updates
+  Purpose: Add signal hints for new stacks and patterns.
+  Skip if all new content already has signal coverage.
+
+Batches with no changes should say: "No changes — [file] was current."
+
+
+---
+
+SECTION 6 — IMPORTANT CONSTRAINTS
+
+- Do NOT reformat or restructure any router file. Only add new entries.
+  The only exception is removing a BROKEN reference — and even then, remove only the specific
+  broken path, not the surrounding entry structure.
+
+- Do NOT add duplicate entries. Before adding a new route or alias, confirm the target is
+  not already covered by a differently-worded existing entry.
+
+- task-router.md entries must use the markdown bullet-list format already established in the
+  file. New entries must match that format exactly. Do not invent new section headers.
+
+- alias-catalog.yaml entries must match the existing YAML format exactly.
+  Read the first 40 lines of the file before writing any new entries to confirm the format.
+
+- When in doubt about whether a doc should be wired, err on the side of adding a route.
+  An unwired doc is invisible; an extra route pointing to a relevant doc is never harmful.
+
+- Produce complete file contents for every file you update. Do not produce partial content
+  or diffs only.
+
+- This pass is about routing coverage, not about quality of existing entries. Do not edit
+  the language of existing router entries. Only add missing entries and remove broken ones.

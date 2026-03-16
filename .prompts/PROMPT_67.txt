@@ -1,0 +1,163 @@
+You are working inside the agent-context-base repository.
+
+This prompt updates the root README.md to accurately reflect the current state of the repository.
+PROMPT_66 has already run: all subdir READMEs and docs/ files are now fresh and accurate.
+This prompt reads those freshly-updated sources, identifies drift in README.md, and applies
+minimal, accurate updates.
+
+Do NOT update any other file. This prompt's scope is the root README.md only.
+
+Organize all work into a single commit-ready batch:
+1. Batch title and purpose.
+2. File updated: README.md (full path).
+3. Full content of README.md.
+4. Suggested commit message with prefix [PROMPT_67].
+
+
+---
+
+PHASE 1 — READS (required before writing anything)
+
+Read each of these in full:
+
+  README.md                                          (the current file — your update target)
+  docs/repo-purpose.md                               (authoritative stacks and shapes list)
+  docs/repo-layout.md                                (authoritative layer descriptions)
+  docs/ARCHITECTURE_MAP.md                           (authoritative documentation map)
+  docs/context-boot-sequence.md
+  docs/session-start.md
+  scripts/README.md                                  (authoritative scripts list)
+
+Also run these directory listings to understand the current actual surface:
+  ls docs/
+  ls docs/architecture/
+  ls docs/usage/
+  ls context/stacks/
+  ls context/archetypes/
+  ls manifests/
+  ls scripts/
+
+After completing all reads, proceed to PHASE 2.
+
+
+---
+
+PHASE 2 — DRIFT ANALYSIS
+
+Compare the current README.md against the freshly-updated docs/. Identify drift in each section.
+Write down the drift before making any edits.
+
+2A. "Key Capabilities" section
+  - Are all five bullet points still accurate?
+  - Is there any capability that now exists in the repo but is completely absent?
+
+2B. "Example Workflow" section
+  - Is the example command still accurate (does scripts/new_repo.py accept these flags)?
+  - Does the prose around the workflow reflect the current boot sequence?
+  - Is the "Strong first prompt" paragraph still relevant?
+
+2C. "Supported Project Shapes" section
+  - Compare against context/archetypes/ directory listing.
+  - Are any archetypes missing? Are any listed that no longer have an archetype doc?
+  - The list should match what exists, not what might exist.
+
+2D. "First-class stacks include..." sentence
+  - Compare against context/stacks/ directory listing.
+  - Does the sentence accurately represent the full set of first-class stacks?
+  - Does the "Supporting infra packs" sentence accurately represent current infra stacks?
+  - Use docs/repo-purpose.md as the reference — it should already be fresh from PROMPT_66.
+    The README.md entry should match or summarize that doc, not contradict it.
+
+2E. "Deeper Documentation" table
+  - Compare against the actual files in docs/, docs/architecture/, and docs/usage/.
+  - Every doc that a human might want to read from README should be in the table.
+  - Docs that are internal-only orientation docs (like docs/context-boot-sequence.md,
+    docs/repo-layout.md, docs/session-start.md) are correctly NOT in this table — those are
+    for assistant boot, not for humans reading the front page.
+  - Docs that ARE useful for humans understanding the system (ARCHITECTURE_MAP.md,
+    system-operating-manual.md, CONTRIBUTOR_PLAYBOOK.md, system-self-explanation.md,
+    public-example-*-readiness.md) should be evaluated: should each be in the table?
+    Apply this heuristic: include it if a human exploring the repo would want to find it
+    from the front page. Skip it if it is too granular or only useful mid-task.
+  - Remove any row that points to a file that no longer exists.
+  - Add any row for a doc that exists and is human-facing but is currently absent from the table.
+
+2F. "How To Understand This Repository" section
+  - Is the prose still accurate?
+  - Are the four orientation commands still correct (correct script names, correct flags)?
+  - Is the `scripts/preview_context_bundle.py` example still a valid manifest name?
+
+2G. Anything else
+  - Is there any section in README.md that is clearly stale (refers to removed features,
+    wrong script names, wrong paths)?
+  - Is there any section that has minor wording that is still accurate? Leave it alone.
+
+
+---
+
+PHASE 3 — UPDATES
+
+Apply only the drift fixes from PHASE 2. Follow these rules:
+
+RULE: Minimum diff. Change only what is stale. Leave accurate prose untouched.
+  - Do not rewrite sections just to improve phrasing if the meaning is still correct.
+  - Do not add new sections that were not in the original file.
+  - Do not expand the README into a comprehensive system reference. It is a front-door overview.
+
+RULE: README.md should not duplicate content from docs/.
+  - Where README.md references a concept covered in depth by a docs/ file, it should use
+    a short description and point to the doc. It should not paste the doc's content inline.
+
+RULE: The "Deeper Documentation" table should be useful to a human reader, not exhaustive.
+  - The existing table lists 13 docs. After adding any newly relevant human-facing docs and
+    removing any stale ones, the table should still be navigable at a glance.
+  - Prefer a clean, scannable table over a complete one. If a doc is too granular for a
+    front-page table, link to it from ARCHITECTURE_MAP.md instead.
+
+RULE: Stacks list accuracy.
+  - The README.md sentence about first-class stacks is a human-facing summary, not a complete
+    machine-readable index. It does not need to list every stack — it should list the most
+    developed and most likely to be chosen ones.
+  - However, it must not list stacks that no longer have active support in context/stacks/.
+  - Use docs/repo-purpose.md (already fresh from PROMPT_66) as the authority.
+
+RULE: Do not change the "Why This Exists" section unless it contains a factual error.
+  The problem statement described there is stable and should not be modified to reflect
+  recent additions.
+
+RULE: Produce the complete file.
+  Output the full updated README.md content. Do not output diffs or partial content.
+
+
+---
+
+PHASE 4 — SELF-CHECK BEFORE WRITING
+
+Before producing the final file, verify:
+
+  [ ] Every file path mentioned in README.md actually exists in the repo.
+  [ ] Every script name in the orientation commands section is a real script.
+  [ ] The "Supported Project Shapes" list matches context/archetypes/ exactly.
+  [ ] The "Deeper Documentation" table has no broken links.
+  [ ] The stacks sentence reflects what docs/repo-purpose.md says after PROMPT_66's updates.
+  [ ] No content from docs/ files is copy-pasted into README.md inline.
+  [ ] The file is still a front-door overview, not a comprehensive system reference.
+
+
+---
+
+SECTION 5 — IMPORTANT CONSTRAINTS
+
+- Produce the complete README.md content. Do not produce a summary or a list of proposed
+  changes. The output is the full file, ready to commit.
+
+- The README.md is the human front door. Every change to it should make it more accurate
+  and more useful to a human who has never seen this repo before. Changes that improve
+  accuracy but reduce usability are wrong.
+
+- The README.md is NOT the place to document every new doctrine doc, every new stack,
+  or every new example that has been added since the last review. It points to the docs
+  that cover those things. It does not enumerate them itself.
+
+- If after analysis no changes are needed, say so explicitly and produce the unchanged file.
+  "No changes were needed" is a valid and correct outcome for this prompt.

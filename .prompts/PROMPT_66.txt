@@ -1,0 +1,409 @@
+You are working inside the agent-context-base repository.
+
+This prompt performs a documentation freshness pass: it reads the actual current state of the
+repository, identifies drift between that state and the documentation, then updates documentation
+accurately and minimally. It does NOT rely on memory of what prior prompts have added — it reads
+first, then writes.
+
+IMPORTANT: Four other prompts have run before this one. Their additions are already committed.
+Do not assume you know what they added. Read the actual files.
+
+Do not update the root README.md — that is handled by PROMPT_67, which runs after this one.
+
+Organize all work into commit-ready batches. For each batch:
+1. Batch title and purpose.
+2. Files created or updated (full paths).
+3. Full content of every file.
+4. Suggested commit message with prefix [PROMPT_66].
+
+
+---
+
+PHASE 1 — REPO SIGNAL READS (do these before writing anything)
+
+Read the following to understand actual current state. Do not skip any of these reads.
+
+Directory listings (use ls or equivalent):
+  ls examples/
+  ls examples/canonical-api/
+  ls examples/canonical-multi-backend/
+  ls examples/canonical-multi-backend/duos/
+  ls examples/canonical-multi-backend/trios/
+  ls examples/canonical-integration-tests/
+  ls examples/canonical-data-acquisition/
+  ls examples/canonical-storage/
+  ls examples/canonical-cli/
+  ls examples/canonical-rag/
+  ls examples/canonical-smoke-tests/
+  ls examples/canonical-seed-data/
+  ls examples/canonical-observability/
+  ls examples/canonical-prompts/
+  ls examples/canonical-workflows/
+  ls examples/canonical-dokku/
+  ls examples/fixtures/
+  ls context/stacks/
+  ls context/doctrine/
+  ls context/workflows/
+  ls context/archetypes/
+  ls manifests/
+  ls scripts/
+  ls docs/
+  ls docs/architecture/
+  ls docs/usage/
+
+File reads:
+  examples/README.md
+  examples/canonical-multi-backend/README.md
+  examples/canonical-integration-tests/README.md
+  examples/canonical-api/README.md         (if it exists and is not a single-line stub)
+  docs/repo-purpose.md
+  docs/repo-layout.md
+  docs/context-evolution.md
+  docs/ARCHITECTURE_MAP.md
+  docs/session-start.md
+  docs/memory-layer-overview.md
+  docs/assistant-failure-modes.md
+  docs/deployment-readiness-checklists.md
+  docs/architecture-mental-model.md
+  docs/system-operating-manual.md          (read fully)
+  docs/system-self-explanation.md          (read fully)
+  docs/CONTRIBUTOR_PLAYBOOK.md             (read fully)
+  docs/public-example-backend-driven-ui-readiness.md
+  docs/public-example-data-systems-readiness.md
+  docs/public-example-documentation-timing-readiness.md
+  docs/usage/STARTING_NEW_PROJECTS.md      (read fully — update target for 100 example prompts)
+  context/router/task-router.md            (skim — understand what stacks and doctrines are registered)
+  context/router/stack-router.md           (skim)
+  context/router/archetype-router.md       (skim)
+  context/router/alias-catalog.yaml        (skim)
+  context/archetypes/                      (list directory — know all archetype names)
+  verification/example_registry.yaml       (skim — understand what examples are registered and at what level)
+  verification/stack_support_matrix.yaml   (skim)
+
+After completing all reads above, proceed to PHASE 2.
+
+
+---
+
+PHASE 2 — DRIFT ANALYSIS
+
+For each area below, compare what the docs currently say against what the files actually contain.
+Write down the drift as a short list before making any edits. You will use this list to guide
+precise updates in PHASE 3.
+
+2A. examples/README.md
+  - Does the Category list include every subdirectory that currently exists under examples/?
+  - Does it accurately describe the current content of canonical-integration-tests/ (including
+    Playwright CUJ tests if present)?
+  - Does it accurately describe canonical-multi-backend/ if that directory exists?
+  - Is the "Selection Rule" and "Maintenance Rule" still accurate?
+  - Does it reference examples/catalog.json and verification/example_registry.yaml correctly?
+
+2B. examples/canonical-multi-backend/README.md
+  - Does the Catalog table list every duo and trio subdirectory that actually exists?
+  - Are the seam type descriptions still accurate given any new stacks added?
+  - Are the "How to Run an Example" bash blocks current and complete?
+  - Are the "Related" links accurate?
+
+2C. examples/canonical-integration-tests/README.md
+  - This file was observed to be very sparse. Does it describe the actual content of the
+    directory, including any Playwright tests (single-feature and CUJ) that now exist?
+  - Is it a useful entry point for an assistant arriving at this category for the first time?
+
+2D. docs/repo-purpose.md
+  - Does the "First-Class Stacks" section list all currently active stacks (including any added
+    since the last review — particularly DuckDB+Parquet, DuckDB-Trino-Polars, and any new
+    stacks added by PROMPT_66–69)?
+  - Does the "Supporting infra packs" paragraph accurately cover the infra stacks?
+  - Does the "Supported Project Shapes" list match the archetypes that exist under context/archetypes/?
+  - Are there any stale references to removed or renamed files?
+
+2E. docs/repo-layout.md
+  - Does the table accurately describe all current top-level paths?
+  - Are any new context sub-categories missing?
+  - Is the "Extension Rule" still accurate?
+
+2F. docs/context-evolution.md
+  - What is the most recent dated entry?
+  - What major additions have been made to the repo that are not yet recorded here?
+    (Use the git log, directory listings, and context/stacks/ listings to identify new stacks,
+    doctrine docs, workflow docs, examples, or trio/duo additions.)
+  - A new entry is needed for each meaningful architectural addition. See the existing entry
+    format for style: a dated heading, then a bulleted list of specific changes.
+  - Additions to record (minimum — there may be more based on your file reads):
+      * Multi-backend trio additions (any new trios and duos added since 2026-03-14)
+      * DuckDB+Parquet local stack if added
+      * Python ML library doctrine if added
+      * Backend-driven UI search/sort/scroll and CUJ test additions if added
+      * Any stacks, doctrine docs, workflows, or archetypes added by PROMPT_66–69
+
+2G. docs/ARCHITECTURE_MAP.md
+  - Does the "Documentation Map" table list every doc that currently exists under docs/ and
+    docs/architecture/ and docs/usage/?
+  - Are the "System Component Index" entries still accurate?
+  - Are any Mermaid diagram paths stale (pointing to files that no longer exist)?
+
+2H. docs/session-start.md
+  - Does it still reflect the actual repo entry sequence and MEMORY.md conventions?
+
+2I. docs/system-operating-manual.md and docs/system-self-explanation.md
+  - These are read-mostly docs. Check only:
+    * Are any stack names, script names, or file paths mentioned that no longer exist?
+    * Are any new major capabilities completely absent that should be mentioned?
+  - If either file is minimally stale (a few stale references), update precisely.
+  - If either file is broadly accurate, leave it alone.
+
+2J. docs/CONTRIBUTOR_PLAYBOOK.md
+  - Does it accurately describe how to add a new stack (router + manifest + example + verification)?
+  - Does it reference the correct script names and verification tiers?
+  - Is it still internally consistent with docs/repo-layout.md?
+
+2K. docs/public-example-*-readiness.md files
+  - These are readiness checklists. Read each one.
+  - Check only: are any specific file paths or stack names mentioned that no longer exist,
+    or are clearly outdated?
+  - If a readiness doc is substantially accurate, leave it alone. Only fix broken references.
+
+2L. docs/usage/STARTING_NEW_PROJECTS.md — "100 Example Initial Prompts" replacement
+  This is the most substantial update in this prompt. The current file contains a section
+  called "50 Example Initial Prompts". These 50 prompts are too generic: they describe
+  vague services ("analytics API", "data pipeline") without naming stacks, patterns, or
+  any of the specific capabilities this repo has scaffolded out. They are all structurally
+  identical ("build X for Y, keep it narrow, verify with smoke tests") and do not help a
+  user understand what specific projects this base can credibly support.
+
+  Replace the entire "50 Example Initial Prompts" section with "100 Example Initial Prompts".
+
+  REQUIREMENTS for the replacement prompts:
+
+  1. Each prompt must be 2–4 sentences — slightly more detailed than the current ones, but
+     still short enough to hand to a fresh assistant session and have it infer the right
+     `new_repo.py` arguments. Do not write multi-paragraph descriptions.
+
+  2. Each prompt must reference something specific: a stack name, a pattern, a storage system,
+     a seam type, a UI pattern, or a domain. Generic prompts like "build a data pipeline" are
+     not acceptable. "Build a FastAPI service that ingests partner CSVs using Polars, stores
+     normalized rows in PostgreSQL, and exposes a search endpoint" is the right level.
+
+  3. The 100 prompts must collectively exercise the full capability surface of the repo.
+     Use the following coverage taxonomy as a mandatory checklist — every category below
+     must appear in the final list, with at least the minimum count shown:
+
+     CATEGORY A — Single-backend API services (20 prompts minimum)
+       - At least 4 Python/FastAPI variants (different data patterns: analytics, enrichment,
+         scheduled jobs, webhook receiver — each using Polars and at least one of:
+         PostgreSQL, DuckDB, TimescaleDB, Redis, MongoDB)
+       - At least 2 TypeScript/Hono/Bun variants (lightweight internal API, BFF pattern)
+       - At least 2 Go/Echo variants (reporting, file processing)
+       - At least 2 Rust/Axum variants (high-throughput, batch classification)
+       - At least 1 Elixir/Phoenix
+       - At least 1 Scala/Tapir/ZIO
+       - At least 1 Kotlin/http4k/Exposed
+       - At least 1 Clojure/Kit
+       - At least 1 from the extended set: Nim, Zig, OCaml, Crystal, Dart, or Ruby/Hanami
+       - At least 1 Dokku-deployable variant for any of the above stacks
+
+     CATEGORY B — Backend-driven UI with HTMX + Tailwind + Plotly (6 prompts minimum)
+       - At least 1 analytics dashboard with faceted filters and dynamic counts
+       - At least 1 search + sort + scroll layout backed by a real query API
+       - At least 1 include/exclude filter panel with quick-exclude strip
+       - At least 1 Plotly-backed query view with filter-linked chart state
+       - At least 1 CUJ-verifiable report browser (mention Playwright test coverage)
+       - At least 1 multi-dimension faceted filter dashboard with compound state
+
+     CATEGORY C — Data acquisition and pipelines (10 prompts minimum)
+       - At least 2 API source ingestion with rate limiting + raw archive
+       - At least 2 scraping-based acquisition with parser/normalizer
+       - At least 2 ETL pipelines (Polars transforms, Parquet output)
+       - At least 1 DuckDB+Parquet local analytical stack
+       - At least 1 multi-source sync platform with event-driven coordination
+       - At least 1 classification step for enriching ingested records
+       - At least 1 recurring sync with backoff/retry discipline
+
+     CATEGORY D — ML and data science (8 prompts minimum)
+       - At least 2 FastAPI ML inference endpoints (one scikit-learn/XGBoost classification,
+         one recommendation engine with Polars data layer)
+       - At least 1 time series forecasting service (statsmodels ARIMA)
+       - At least 1 semantic search service (sentence-transformers + Qdrant)
+       - At least 1 gradient-boosted tabular model (XGBoost or LightGBM) exposed via API
+       - At least 1 embedding pipeline (generate, store in Qdrant, query by similarity)
+       - At least 2 data science / analytical pipeline repos (DuckDB+Parquet, Polars, sklearn)
+
+     CATEGORY E — Multi-backend coordination (16 prompts minimum)
+       The seam types and language pairs below are all directly supported by canonical
+       examples in examples/canonical-multi-backend/. Each prompt must name the languages,
+       seam type, and a concrete use case.
+       - Go + Python REST seam: ML scoring gateway
+       - Kotlin + Rust gRPC seam: compute kernel
+       - Elixir + Go NATS JetStream seam: event fan-out
+       - Clojure + Go Kafka seam: domain event enrichment
+       - Node + Go REST seam: GraphQL BFF resolving Go domain API
+       - Scala + Rust gRPC seam: Akka Streams pipeline delegating to Rust kernel
+       - Node + Elixir NATS seam: client action relay with Elixir distributed state
+       - Rust + Python gRPC seam: Rust inference server with Python orchestrator
+       - Elixir + Rust NIF seam: in-process Rust compute loaded into BEAM
+       - Elixir + Clojure RabbitMQ seam: work queue with Broadway consumer
+       - Go + Elixir + Python trio (NATS broker + REST): gateway + coordinator + ML
+       - Go + Rust + Python trio (gRPC + REST): gateway + compute kernel + ML scoring
+       - Elixir + Go + Rust trio (NATS JetStream + gRPC): fault-tolerant coordinator
+       - Node + Go + Python trio (REST + REST): GraphQL BFF + domain service + ML recommendations
+       - Any two additional multi-backend prompts that combine different seam types or
+         introduce a realistic product context (e.g., real-time analytics, IoT event pipeline)
+
+     CATEGORY F — Storage-focused experiments and infra (10 prompts minimum)
+       - At least 1 DuckDB+Parquet+MinIO local data lake with analytical query layer
+       - At least 1 Qdrant-backed local RAG for a real document domain
+       - At least 1 Meilisearch full-text search integration
+       - At least 1 TimescaleDB time-series analytics service
+       - At least 1 Redis caching and rate-limiting layer
+       - At least 1 NATS JetStream event capture + replay experiment
+       - At least 1 Trino federated cross-catalog analytics
+       - At least 1 multi-storage experiment (e.g., Redis + MongoDB + Parquet output)
+       - At least 2 Elasticsearch or mixed search-backend comparisons
+
+     CATEGORY G — CLI tools (6 prompts minimum)
+       - At least 2 Python CLIs (different domains: reconciliation, prompt evaluation,
+         data audit, config policy check)
+       - At least 2 Rust CLIs (batch file processing, output snapshot testing)
+       - At least 1 Go CLI (operational audit)
+       - At least 1 CLI tool that wraps a data pipeline or acquisition flow
+
+     CATEGORY H — Local RAG and semantic search (6 prompts minimum)
+       - At least 2 Qdrant-backed RAG systems (different document domains)
+       - At least 1 engineering notes indexer with deterministic corpus
+       - At least 1 policy/runbook search system
+       - At least 1 combined full-text + semantic hybrid search prototype
+       - At least 1 RAG system that feeds a backend API query endpoint
+
+     CATEGORY I — Prompt-first repos (6 prompts minimum)
+       - At least 2 prompt management + evaluation repos (different evaluation styles)
+       - At least 1 system prompt library with verification of output shape
+       - At least 1 multi-model evaluation harness (comparing outputs across configs)
+       - At least 1 prompt sequence generator for a specific domain
+       - At least 1 prompt-first repo that doubles as a living documentation base
+
+     CATEGORY J — Dokku-deployable services (8 prompts minimum)
+       - At least 2 FastAPI services with Dokku packaging (different storage patterns)
+       - At least 1 Hono/Bun service with Dokku deployment
+       - At least 1 Go/Echo service with Dokku + PostgreSQL
+       - At least 1 Elixir/Phoenix app with Dokku deployment
+       - At least 1 multi-service Dokku application
+       - At least 2 additional Dokku-ready services across any remaining stacks
+
+  4. Prompts should NOT all follow the same structural template. Vary sentence structure,
+     level of constraint specificity, and the framing (some can emphasize the testing story,
+     some the deployment target, some the data model, some the user/operator).
+
+  5. The opening paragraph before the numbered list should be updated to replace
+     "50 example initial prompts" with "100 example initial prompts", and should add one
+     sentence explaining that the prompts span specific stacks and patterns from this base
+     rather than being generic placeholders.
+
+  6. Keep all other sections of STARTING_NEW_PROJECTS.md unchanged. Do not touch the
+     "Two-Repo Model", "From Idea To Generated Repo", "What new_repo.py Actually Does",
+     "Documentation Timing", "First Steps In The Generated Repo", or "Rules That Keep
+     New Repos Clean" sections.
+
+
+---
+
+PHASE 3 — UPDATES
+
+Apply the drift fixes identified in PHASE 2. Follow these rules precisely:
+
+RULE: Additive minimum. Make the smallest change that closes the identified drift.
+  - Do not reformat sections that are still accurate.
+  - Do not rewrite prose that still conveys the right meaning.
+  - Do not add new information that was not in the drift list.
+
+RULE: No duplication. Never copy content from one doc into another.
+  - If two docs overlap on a topic, one should be authoritative and the other should link to it.
+  - If you find existing duplication while reading, note it but do not fix it in this prompt.
+    The scope here is drift, not refactoring.
+
+RULE: Links over repetition. When a doc needs to reference another area, link to the target doc.
+  Do not paste the content inline.
+
+RULE: Accurate, not aspirational. Only write what is currently true.
+  - Do not document planned additions. Do not describe capabilities as if they exist if they do not.
+  - If you are unsure whether a file exists, check before referencing it.
+
+RULE: Context-evolution entries are backward-looking facts.
+  - Each entry in context-evolution.md records what was added, not what should be added.
+  - Date entries with the actual date of the work if determinable from git, otherwise use
+    today's date (2026-03-16).
+  - Each entry should follow the existing format exactly: ## YYYY-MM-DD: Short Title,
+    then a bulleted list of specific changes.
+
+RULE: Subdir READMEs should be useful to an assistant arriving cold.
+  - They should tell an assistant: what is in this directory, how to select from it,
+    and where to go for deeper context.
+  - They should not duplicate content from docs/ files — link instead.
+  - They should not be longer than necessary.
+
+RULE: Do not touch the root README.md. That is PROMPT_67's job.
+
+
+---
+
+PHASE 4 — COMMIT BATCHING
+
+Organize updates into the following batches. If a batch has no changes after the drift analysis,
+skip it and note that it was current.
+
+Batch 1: examples/README.md
+  Purpose: Ensure all example categories are listed and descriptions are accurate.
+
+Batch 2: examples/canonical-multi-backend/README.md
+  Purpose: Ensure all duos and trios are listed and bash blocks are current.
+
+Batch 3: examples/canonical-integration-tests/README.md
+  Purpose: Expand the sparse stub to accurately describe Playwright tests present in the directory.
+
+Batch 4: docs/repo-purpose.md and docs/repo-layout.md
+  Purpose: Correct stale stack/archetype/path references.
+
+Batch 5: docs/context-evolution.md
+  Purpose: Add dated entries for all additions since the last recorded entry.
+
+Batch 6: docs/ARCHITECTURE_MAP.md
+  Purpose: Ensure documentation map table is complete and all file references are valid.
+
+Batch 7: docs/system-operating-manual.md, docs/system-self-explanation.md, docs/CONTRIBUTOR_PLAYBOOK.md
+  Purpose: Fix any stale file paths or script names. Skip if accurate.
+
+Batch 8: docs/public-example-*-readiness.md
+  Purpose: Fix broken file path references only. Skip if accurate.
+
+Batch 9: docs/usage/STARTING_NEW_PROJECTS.md
+  Purpose: Replace the 50 example prompts with 100 more specific prompts that cover the
+  full capability surface of the repo per the requirements in Section 2L.
+  This batch will be long. Produce the complete updated file, not just the prompts section.
+
+Batches with no changes should say: "No changes — [file] was current."
+
+
+---
+
+SECTION 5 — IMPORTANT CONSTRAINTS
+
+- Do NOT produce summaries, proposals, or partial content. Produce complete file contents.
+  The only exception is for files where only a small targeted addition is needed (e.g.,
+  context-evolution.md new entry): show the full updated file or at minimum the full changed
+  section with enough surrounding context to locate it precisely.
+
+- When updating context-evolution.md, do not remove any existing entries. Only add new ones at
+  the top, in reverse-chronological order.
+
+- When updating examples/README.md, do not change the philosophy/rules prose if it is still
+  accurate. Only update the Category list and any file path references.
+
+- When updating examples/canonical-integration-tests/README.md, write enough content that
+  an assistant arriving at this category for the first time understands:
+    * what kind of tests live here
+    * which examples exist (Playwright single-feature tests vs CUJ tests)
+    * when to use this category vs canonical-smoke-tests
+    * the relevant docker-compose.test.yml discipline
+
+- The goal of this prompt is accuracy, not completeness. A short, accurate doc is better than
+  a long doc that includes one stale claim.
