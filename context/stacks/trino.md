@@ -26,6 +26,18 @@ Not every storage system belongs behind Trino. Add a catalog when it materially 
 
 Do not add a catalog unless the repo genuinely runs cross-source queries. A single-source repo using Trino is almost always better served by querying that source directly.
 
+## Kafka Connector Depth
+
+This section gives operational detail on the Kafka catalog. For the full combo pattern (Kafka topics as Trino-queryable tables, cross-source joins, topic table definition files), see `context/stacks/kafka-trino.md`.
+
+Key operational notes:
+
+- The Kafka connector reads topic messages at query time (not indexed) — queries scan all partitions. Use `LIMIT` aggressively in dev/test to avoid long-running scans.
+- Topic table definition files (`.json`) must live in the directory pointed to by the Trino server config's `kafka.table-description-dir` property. Mount this directory as a volume in docker-compose.
+- The connector supports JSON, CSV, and Avro (with Confluent Schema Registry) decoders. Set `"dataFormat": "json"` in the table definition for JSON-encoded topics.
+- The `_partition_offset` and `_timestamp` built-in columns are useful for bounding scans. Add `WHERE _timestamp > TIMESTAMP '...'` to limit scan scope in larger topics.
+- Prefer the bitnami/kafka KRaft single-container setup for local dev. The confluentinc/cp-kafka + ZooKeeper stack is only needed when a Confluent Schema Registry is also required alongside Trino.
+
 ## Change Surfaces To Watch
 
 - **Catalog config** (`etc/catalog/*.properties`): connector name, connection URL, authentication. Changes here break the entire catalog, not just one query.
@@ -65,3 +77,9 @@ Queries that are not Trino-shaped:
 - Forgetting that Trino does not handle writes — any write path must go directly to the backing source
 - Missing `EXPLAIN` verification for queries that depend on pushdown for acceptable performance
 - Not accounting for type coercion when joining across catalogs with different type representations (e.g., `varchar` versus `text`, integer widths)
+
+## Related
+
+- `context/stacks/kafka-trino.md` — Kafka as a Trino-queryable data source (full combo pattern)
+- `context/stacks/kafka.md` — Kafka stack doc (producer/consumer patterns, KRaft setup)
+- `context/stacks/duckdb-trino-polars.md` — DuckDB + Trino + Polars combo pack
