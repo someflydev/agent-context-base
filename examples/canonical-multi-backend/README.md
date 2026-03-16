@@ -11,6 +11,7 @@ These examples show the seam layer between coordinating backend services. Each e
 | `duos/go-elixir-nats/` | Go + Elixir | Broker (NATS JetStream) | Event fan-out to real-time clients |
 | `duos/go-python-rest/` | Go + Python | REST (HTTP/JSON) | ML scoring gateway |
 | `duos/kotlin-rust-grpc/` | Kotlin + Rust | gRPC (Protocol Buffers) | Compute kernel |
+| `duos/clojure-go-kafka/` | Clojure + Go | Broker (Kafka) | Domain event enrichment + worker consumers |
 | `trios/go-elixir-python/` | Go + Elixir + Python | Broker + REST | Gateway + coordination + ML |
 | `trios/go-rust-python/` | Go + Rust + Python | gRPC + REST | Gateway + kernel + ML |
 
@@ -41,6 +42,11 @@ docker compose up --build
 cd examples/canonical-multi-backend/duos/kotlin-rust-grpc
 docker compose up --build
 # observe Kotlin logs showing the Rust response: result, method, duration_ns
+
+# Kafka broker seam — Clojure produces, Go consumes
+cd examples/canonical-multi-backend/duos/clojure-go-kafka
+docker compose up --build
+# observe Go logs: event_type, entity_id, risk_score, correlation_id
 ```
 
 Trio examples (three-service compositions):

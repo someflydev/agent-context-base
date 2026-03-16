@@ -334,6 +334,15 @@ stacks:
       - full pipeline integration test: publish -> consume -> assert MongoDB document
       - DLQ path integration test
     notes: Capture-enrich-persist combo pack. A structure-verified runnable .py companion (nats-jetstream-mongo-pipeline-example.py) is now present. A live docker-compose harness (nats_mongo_min_app scenario) would raise this to support_level 3.
+  - stack: kafka
+    support_level: 2
+    verified_examples:
+      - clojure-go-kafka-seam-example
+    missing_verification:
+      - live produce + consume integration test in default verification tier
+      - schema registry (Avro) example
+      - DLQ round-trip verification
+    notes: Canonical broker seam example (clojure-go-kafka) is structure-verified only. No live Kafka integration test is wired in the default verification tier. KRaft single-container setup verified in docker-compose context.
 capabilities:
   - capability: multi-backend-seam
     notes: Canonical seam examples covering broker (NATS), gRPC (Protocol Buffers), and REST seam types across duo and trio compositions.
@@ -371,8 +380,10 @@ capabilities:
         canonical_examples:
           - examples/canonical-multi-backend/duos/kotlin-rust-grpc/
       - stack: clojure-kit-nextjdbc-hiccup
-        status: documented
-        note: "Duo stack doc exists (duo-clojure-go.md, duo-elixir-clojure.md, trio-clojure-python-go.md). No canonical seam example yet."
+        status: supported
+        note: "Appears in: duos/clojure-go-kafka (Kafka producer)"
+        canonical_examples:
+          - examples/canonical-multi-backend/duos/clojure-go-kafka/
       - stack: typescript-hono-bun
         status: documented
         note: "Duo stack doc exists (duo-node-go.md, duo-node-elixir.md, trio-node-go-python.md). No canonical seam example yet."

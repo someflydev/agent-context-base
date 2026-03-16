@@ -329,6 +329,46 @@ stacks:
     target: context/stacks/nats-jetstream-mongo.md
   - alias: capture-enrich-persist
     target: context/stacks/nats-jetstream-mongo.md
+  - alias: kafka
+    target: context/stacks/kafka.md
+  - alias: kafka stack
+    target: context/stacks/kafka.md
+  - alias: kafka producer
+    target: context/stacks/kafka.md
+  - alias: kafka consumer
+    target: context/stacks/kafka.md
+  - alias: kafka consumer group
+    target: context/stacks/kafka.md
+  - alias: kafka topic naming
+    target: context/stacks/kafka.md
+  - alias: dead letter topic
+    target: context/stacks/kafka.md
+  - alias: kafka dlq
+    target: context/stacks/kafka.md
+  - alias: kafka schema registry
+    target: context/stacks/kafka.md
+  - alias: avro kafka
+    target: context/stacks/kafka.md
+  - alias: kafka local dev
+    target: context/stacks/kafka.md
+  - alias: bitnami kafka
+    target: context/stacks/kafka.md
+  - alias: kraft kafka
+    target: context/stacks/kafka.md
+  - alias: kafka trino
+    target:
+      - context/stacks/kafka-trino.md
+      - context/stacks/kafka.md
+  - alias: kafka as trino source
+    target:
+      - context/stacks/kafka-trino.md
+      - context/stacks/trino.md
+  - alias: query kafka with sql
+    target: context/stacks/kafka-trino.md
+  - alias: trino kafka connector
+    target: context/stacks/kafka-trino.md
+  - alias: kafka topic table definition
+    target: context/stacks/kafka-trino.md
   - alias: meilisearch
     target: context/stacks/meilisearch.md
   - alias: timescaledb
@@ -409,6 +449,10 @@ stacks:
     target: context/stacks/duo-clojure-go.md
   - alias: clojure producer go consumer
     target: context/stacks/duo-clojure-go.md
+  - alias: clojure go kafka
+    target:
+      - context/stacks/duo-clojure-go.md
+      - examples/canonical-multi-backend/duos/clojure-go-kafka/seam.md
   - alias: node bff go services
     target: context/stacks/duo-node-go.md
   - alias: typescript frontend go backend

@@ -2018,6 +2018,18 @@
       "patterns": ["grpc-seam", "rest-seam", "trio-pipeline", "orchestrator-pattern", "downstream-health-probe"],
       "rank": 95,
       "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-multi-backend/duos/clojure-go-kafka/",
+      "category": "multi-backend",
+      "summary": "Clojure + Go Kafka broker seam: Clojure produces enriched domain events to a Kafka topic; Go consumes them with a consumer group and manual offset commit. Shows KRaft setup, topic naming, event schema, and docker-compose.",
+      "tags": ["multi-backend", "clojure", "go", "broker", "kafka"],
+      "stacks": ["clojure-kit-nextjdbc-hiccup", "go-echo", "kafka"],
+      "archetypes": ["multi-backend-service"],
+      "workflows": ["design-multi-backend-seams", "add-backend-coordination-layer"],
+      "patterns": ["broker-seam", "kafka", "consumer-group", "event-enrichment"],
+      "rank": 95,
+      "stability": "canonical"
     }
   ]
 }
