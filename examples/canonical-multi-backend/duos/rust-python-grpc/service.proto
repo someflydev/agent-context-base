@@ -1,0 +1,45 @@
+// service.proto — canonical seam contract for Rust + Python gRPC example.
+// Both sides generate stubs from this file. This is the source of truth.
+// See seam.md for stub generation commands.
+//
+// This is a seam-focused example. For full application scaffold,
+// see context/archetypes/multi-backend-service.md.
+
+syntax = "proto3";
+
+package inference.v1;
+
+// go_package included for potential future Go usage and as a best-practice convention.
+option go_package = "github.com/example/myapp/gen/inference/v1;inferencev1";
+
+// InferenceService handles ML model prediction requests.
+// Rust serves this interface; Python (and any other caller) generates a client stub.
+service InferenceService {
+  // Predict runs a single inference over the provided features.
+  // Returns a label, confidence score, and server-side duration.
+  rpc Predict(PredictRequest) returns (PredictResponse);
+}
+
+// PredictRequest carries the feature vector for a single inference.
+message PredictRequest {
+  // model_id identifies which model to use. Required.
+  string model_id = 1;
+
+  // features is the numeric feature vector. Required; must be non-empty.
+  repeated float features = 2;
+
+  // correlation_id is propagated for distributed tracing. Optional.
+  string correlation_id = 3;
+}
+
+// PredictResponse carries the inference result.
+message PredictResponse {
+  // label is the predicted class name (e.g. "positive", "low-confidence", "undefined").
+  string label = 1;
+
+  // confidence is the model's probability estimate for the predicted class (0.0–1.0).
+  float confidence = 2;
+
+  // duration_ns is the server-side inference duration in nanoseconds.
+  int64 duration_ns = 3;
+}

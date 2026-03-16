@@ -1,0 +1,66 @@
+services:
+  rust-server:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM rust:1.82-slim AS builder
+        WORKDIR /app
+        # Install protoc — required by tonic_build during cargo build
+        RUN apt-get update && apt-get install -y protobuf-compiler && rm -rf /var/lib/apt/lists/*
+        # Generate Cargo.toml inline — avoids needing a separate Cargo.toml file in this directory
+        RUN printf '[package]\nname = "rust-server"\nversion = "0.1.0"\nedition = "2021"\n\n[[bin]]\nname = "rust-server"\npath = "src/main.rs"\n\n[dependencies]\ntonic = "0.12"\nprost = "0.13"\ntokio = { version = "1", features = ["full"] }\nhttp-body-util = "0.1"\nhyper = { version = "1", features = ["full"] }\nhyper-util = { version = "0.1", features = ["tokio"] }\n\n[build-dependencies]\ntonic-build = "0.12"\n' > Cargo.toml
+        # Generate build.rs — tonic_build compiles service.proto during cargo build
+        RUN printf 'fn main() -> Result<(), Box<dyn std::error::Error>> {\n    tonic_build::compile_protos("service.proto")?;\n    Ok(())\n}\n' > build.rs
+        COPY service.proto ./
+        COPY rust-server.rs src/main.rs
+        # start_period in the healthcheck below accounts for Rust compilation time.
+        # First build downloads and compiles all crates — expect 5–10 minutes.
+        RUN cargo build --release
+        FROM debian:bookworm-slim
+        RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+        COPY --from=builder /app/target/release/rust-server /rust-server
+        EXPOSE 50051 8082
+        CMD ["/rust-server"]
+    ports:
+      - "50051:50051"   # gRPC
+      - "8082:8082"     # HTTP /healthz sidecar
+    environment:
+      GRPC_PORT: "50051"
+      HEALTH_PORT: "8082"
+    healthcheck:
+      # Uses the HTTP sidecar on port 8082; avoids needing grpc_health_probe in the image.
+      test: ["CMD", "curl", "-f", "http://localhost:8082/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      # start_period must be long — first Rust compilation inside the container is slow.
+      # Subsequent runs use the Docker layer cache and start in seconds.
+      start_period: 60s
+
+  python-caller:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM python:3.12-slim
+        WORKDIR /app
+        RUN pip install --no-cache-dir grpcio grpcio-tools fastapi "uvicorn[standard]" pydantic
+        # Generate gRPC stubs from service.proto during image build
+        COPY service.proto ./
+        RUN python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. service.proto
+        COPY python-caller.py .
+        EXPOSE 8001
+        CMD ["python", "python-caller.py"]
+    ports:
+      - "8001:8001"
+    environment:
+      RUST_GRPC_URL: "rust-server:50051"
+      HTTP_PORT: "8001"
+    depends_on:
+      rust-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/healthz')"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
