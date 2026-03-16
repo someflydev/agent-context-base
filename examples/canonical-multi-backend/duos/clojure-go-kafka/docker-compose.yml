@@ -1,0 +1,77 @@
+services:
+  kafka:
+    image: bitnami/kafka:3.7
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_CFG_NODE_ID: "1"
+      KAFKA_CFG_PROCESS_ROLES: "broker,controller"
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+      KAFKA_CFG_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093"
+      KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT"
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "true"
+    healthcheck:
+      test: ["CMD", "kafka-topics.sh", "--bootstrap-server", "localhost:9092", "--list"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  clojure-service:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM clojure:temurin-21-tools-deps
+        WORKDIR /app
+        RUN printf '{:paths ["src"] :deps {fundingcircle/jackdaw {:mvn/version "0.9.12"} http-kit/http-kit {:mvn/version "2.7.0"} cheshire/cheshire {:mvn/version "5.12.0"}}}' > deps.edn
+        RUN mkdir -p src/clojure_side
+        COPY clojure-side.clj src/clojure_side/core.clj
+        RUN clojure -P
+        EXPOSE 8180
+        CMD ["clojure", "-M", "-m", "clojure-side.core"]
+    ports:
+      - "8180:8180"
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      HTTP_PORT: "8180"
+    depends_on:
+      kafka:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8180/healthz"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  go-service:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM golang:1.23-alpine AS builder
+        WORKDIR /app
+        RUN echo 'module kafkaseam' > go.mod && echo 'go 1.23' >> go.mod
+        COPY go-side.go .
+        RUN go get github.com/twmb/franz-go/pkg/kgo@latest
+        RUN CGO_ENABLED=0 go build -o go-service .
+        FROM alpine:3.21
+        COPY --from=builder /app/go-service /go-service
+        EXPOSE 8080
+        CMD ["/go-service"]
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      GROUP_ID: go-risk-workers
+      PORT: "8080"
+    depends_on:
+      kafka:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
