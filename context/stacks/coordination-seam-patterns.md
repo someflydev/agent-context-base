@@ -155,6 +155,8 @@ Kafka publisher in Clojure (using `clj-kafka` or `jackdaw`):
 
 Use when the caller needs a synchronous, typed result and schema enforcement across language boundaries is important.
 
+For full gRPC technical reference (streaming RPCs, error codes, stub generation for all languages, health checking standard, interceptors), see `context/stacks/grpc.md`.
+
 ### Minimal .proto file
 
 ```protobuf
