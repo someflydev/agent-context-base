@@ -1,0 +1,35 @@
+// service.proto — document processing seam contract
+// Package: processing.v1 (distinct from compute.v1 used in kotlin-rust-grpc)
+//
+// This proto is the canonical contract for the Go↔Rust gRPC seam in the
+// Go + Rust + Python trio. Both Go (client) and Rust (server) generate
+// stubs from this file. Do not hand-write the stubs.
+//
+// See examples/canonical-multi-backend/trios/go-rust-python/seam.md
+// for stub generation commands.
+
+syntax = "proto3";
+
+package processing.v1;
+
+option go_package = "github.com/example/go-rust-python/gen/processing/v1";
+
+// ProcessService preprocesses raw documents into numeric feature vectors
+// for downstream ML inference.
+service ProcessService {
+  rpc Preprocess(PreprocessRequest) returns (PreprocessResponse);
+}
+
+// PreprocessRequest carries a raw document string to be tokenized and
+// normalized by the Rust service.
+message PreprocessRequest {
+  string document = 1;
+  string doc_id   = 2;
+}
+
+// PreprocessResponse carries the extracted feature vector and token count.
+// The features field is consumed directly by the Python /score endpoint.
+message PreprocessResponse {
+  repeated double features    = 1;  // one float per token (word length normalized)
+  int32           token_count = 2;  // total tokens found in the document
+}

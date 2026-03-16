@@ -1,0 +1,92 @@
+services:
+  rust-service:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM rust:1.77-slim AS builder
+        RUN apt-get update && apt-get install -y protobuf-compiler && rm -rf /var/lib/apt/lists/*
+        WORKDIR /app
+        COPY service.proto .
+        RUN cargo init --name rust_service
+        RUN cat >> Cargo.toml << 'TOML'
+        tonic = "0.11"
+        prost = "0.12"
+        tokio = { version = "1", features = ["full"] }
+        TOML
+        RUN echo 'fn main() { tonic_build::compile_protos("service.proto").unwrap(); }' > build.rs
+        COPY rust-side.rs src/main.rs
+        RUN cargo build --release
+        FROM debian:bookworm-slim
+        RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+        COPY --from=builder /app/target/release/rust_service /rust_service
+        CMD ["/rust_service"]
+    ports:
+      - "50051:50051"
+      - "8090:8090"
+    environment:
+      GRPC_PORT: "50051"
+      HTTP_PORT: "8090"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8090/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  python-service:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM python:3.12-slim
+        WORKDIR /app
+        RUN pip install fastapi uvicorn
+        COPY python-side.py app.py
+        CMD ["python", "app.py"]
+    ports:
+      - "8003:8003"
+    environment:
+      PORT: "8003"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  go-service:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM golang:1.22-alpine AS builder
+        RUN apk add --no-cache protobuf protobuf-dev
+        WORKDIR /app
+        RUN go mod init github.com/example/go-rust-python
+        RUN go get google.golang.org/grpc@latest google.golang.org/protobuf@latest
+        RUN go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest \
+            && go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+        COPY service.proto .
+        RUN mkdir -p gen/processing/v1 && \
+            protoc --go_out=. --go-grpc_out=. --go_opt=paths=source_relative \
+                   --go-grpc_opt=paths=source_relative service.proto
+        COPY go-side.go main.go
+        RUN go build -o server .
+        FROM alpine:3.19
+        RUN apk add --no-cache curl
+        COPY --from=builder /app/server /server
+        CMD ["/server"]
+    ports:
+      - "8080:8080"
+    environment:
+      RUST_GRPC_URL: "rust-service:50051"
+      PYTHON_SCORE_URL: "http://python-service:8003"
+    depends_on:
+      rust-service:
+        condition: service_healthy
+      python-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
