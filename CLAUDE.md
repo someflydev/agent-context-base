@@ -30,6 +30,16 @@ Prefer this order:
 
 Load one dominant path, not a broad survey.
 
+## Running Verifications
+
+Verification scripts use `unittest`, not pytest. Run them with:
+
+```
+python3.14 -m unittest verification.examples.data.test_storage_examples -v
+```
+
+Use dotted module paths from the repo root. Never invoke `pytest`.
+
 ## Guardrails
 
 - Infer intent from normal language and repo signals.

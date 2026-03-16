@@ -1,0 +1,519 @@
+You are working inside the agent-context-base repository.
+
+Before proceeding, read:
+
+  context/doctrine/multi-backend-coordination.md    (added in PROMPT_52)
+  context/archetypes/multi-backend-service.md       (added in PROMPT_52)
+  context/stacks/coordination-seam-patterns.md      (added in PROMPT_52)
+  context/stacks/go-echo.md
+  context/stacks/elixir-phoenix.md
+  context/stacks/python-fastapi-uv-ruff-orjson-polars.md
+  context/stacks/rust-axum-modern.md
+  context/stacks/nats-jetstream.md
+
+If PROMPT_52 has not yet been applied, read the following in its place:
+  context/doctrine/core-principles.md
+  context/archetypes/polyglot-lab.md
+
+This prompt builds the per-duo catalog for the 10 defined multi-backend duos.
+It produces:
+  - One stack doc per duo (context/stacks/duo-{a}-{b}.md)
+  - One README for the multi-backend examples directory
+  - Three canonical seam examples covering the three primary seam types
+    (broker, gRPC, REST) using the most representative language pairs
+
+PROMPT_54 will complete the trio catalog, trio canonical examples, and registry updates.
+
+The 10 duos are:
+  1.  Rust + Python          (gRPC seam — Rust inference server, Python ML)
+  2.  Go + Elixir            (broker seam — NATS JetStream)
+  3.  Go + Python            (REST seam — Go gateway, Python scoring)
+  4.  Elixir + Rust          (NIF/Port seam — Rust hot-path called by Elixir)
+  5.  Clojure + Go           (broker seam — Kafka, Clojure producer, Go consumer)
+  6.  Node + Go              (REST seam — Node BFF, Go microservices)
+  7.  Elixir + Clojure       (broker seam — NATS or Kafka)
+  8.  Kotlin + Rust          (gRPC seam — Kotlin caller, Rust compute server)
+  9.  Scala + Rust           (gRPC seam — Scala Akka Streams, Rust kernel)
+  10. Node + Elixir          (broker seam — NATS, Node connection layer, Elixir state)
+
+Organize all work into commit-ready batches. For each batch:
+1. Give the batch title.
+2. Explain the purpose.
+3. List created or updated files.
+4. Provide the full contents of each file.
+5. End with a suggested commit message with prefix [PROMPT_53].
+
+
+---
+
+DUO STACK DOC SPECIFICATION
+
+Every duo stack doc lives at context/stacks/duo-{a}-{b}.md.
+Naming: alphabetical by language short name within each pair, matching the
+canonical list above (e.g., duo-go-elixir not duo-elixir-go).
+Exception: preserve the order from the canonical list where it reflects a
+clear directionality (e.g., duo-elixir-rust has Elixir as the supervisor).
+
+Every duo stack doc must contain exactly these sections:
+
+  # Duo: {Language A} + {Language B}
+
+  One paragraph stating what this duo accomplishes that neither language
+  could do as well alone. Be specific — name the use case archetype.
+
+  ## Division of Labor
+
+  A table:
+    | Responsibility | Owner |
+    |---|---|
+    | {specific concern} | {Language A or B} |
+    | {specific concern} | {Language A or B} |
+    | Seam contract | Both |
+
+  At least 4 rows. The last row is always "Seam contract | Both".
+  Responsibilities must be non-overlapping. If two rows could belong to
+  either language, the ownership is not yet decided — resolve it.
+
+  ## Primary Seam
+
+  One sentence: seam type + technology.
+  Example: "Broker seam via NATS JetStream: Go publishes domain events,
+  Elixir fans them out to real-time WebSocket clients."
+
+  ## Communication Contract
+
+  What crosses the seam. This section must be concrete:
+  - For gRPC: show a minimal .proto snippet (2-3 fields, 1 RPC method)
+  - For broker: show the event schema as a JSON example with field annotations
+  - For REST: show the endpoint path, method, and a curl + response example
+  - For NIF/Port: show the Erlang term shape (e.g., {:ok, result} or binary)
+
+  ## Local Dev Composition
+
+  A docker-compose.yml snippet showing both services with:
+    - image or build context for each service
+    - explicit port bindings
+    - environment variables for seam addresses
+    - healthcheck for each service
+    - depends_on with condition: service_healthy where appropriate
+    - broker service (NATS or Kafka) if required by the seam type
+
+  This snippet should be runnable (or close to it), not pseudocode.
+  Use realistic image tags from the existing stack docs.
+
+  ## Health Contract
+
+  How each service signals readiness:
+  - HTTP service: GET /healthz → 200
+  - gRPC service: grpc.health.v1.Health/Check or GET /healthz wrapper
+  - Elixir Phoenix: GET /healthz or a LiveDashboard route
+  - NIF/Port: Elixir process alive; no external endpoint
+
+  ## When to Use This Duo
+
+  3-5 bullet points listing specific use cases where this combo excels.
+  Be concrete: name industries, product types, or technical scenarios.
+
+  ## When NOT to Use This Duo
+
+  2-3 bullet points. When would a simpler (single-language) architecture be better?
+  When would a different seam type be better?
+
+  ## Related
+    - context/doctrine/multi-backend-coordination.md
+    - context/stacks/{language-a-stack}.md
+    - context/stacks/{language-b-stack}.md
+    - context/stacks/coordination-seam-patterns.md
+    - examples/canonical-multi-backend/ (link to the relevant example if one exists)
+
+
+---
+
+CANONICAL SEAM EXAMPLES SPECIFICATION
+
+Three canonical examples are produced in this prompt, one per primary seam type:
+
+  Seam type   Duo            Directory
+  ─────────────────────────────────────────────────────
+  Broker      Go + Elixir    examples/canonical-multi-backend/duos/go-elixir-nats/
+  REST        Go + Python    examples/canonical-multi-backend/duos/go-python-rest/
+  gRPC        Kotlin + Rust  examples/canonical-multi-backend/duos/kotlin-rust-grpc/
+
+These examples are SEAM-FOCUSED, not full applications. They show only the
+integration layer — how the two services communicate across the boundary.
+Each service's internal application logic follows from its existing stack doc.
+
+Each example directory contains:
+  - {a}-side.{ext}       — Service A's seam code (publisher, caller, or NIF host)
+  - {b}-side.{ext}       — Service B's seam code (subscriber, server, or NIF impl)
+  - docker-compose.yml   — Full local dev composition for both services
+  - seam.md              — Companion doc explaining the pattern
+
+
+BROKER EXAMPLE: Go + Elixir via NATS JetStream
+
+Directory: examples/canonical-multi-backend/duos/go-elixir-nats/
+
+go-side.go
+  - Uses nats.go (github.com/nats-io/nats.go)
+  - Connects to NATS from NATS_URL env var
+  - Ensures a stream exists: name "DOMAIN_EVENTS", subject "events.>"
+  - Publishes a single typed event: {"type":"user.created","user_id":"u123","ts":"..."}
+  - Includes a health check HTTP handler at /healthz that returns 200 if NATS is connected
+  - Uses a struct for the event payload; marshals to JSON before publish
+  - Handles publish errors and logs them
+
+elixir-side.ex
+  - Uses Gnat (hex package gnat)
+  - Connects to NATS from NATS_URL env var
+  - Subscribes to "events.>" subject with a durable consumer
+  - Decodes the JSON payload, logs the event type and user_id
+  - Implements a GenServer that holds the NATS connection and subscription
+  - Handles reconnection on connection loss
+  - Phoenix router exposing /healthz returning JSON {status: "ok"}
+
+docker-compose.yml
+  - nats service: nats:2.10-alpine with -js flag and /healthz check
+  - go-service: built from a Dockerfile.go or using the go image
+  - elixir-service: built from a Dockerfile.ex or using the elixir image
+  - go-service depends_on: nats (service_healthy)
+  - elixir-service depends_on: nats (service_healthy)
+  - Environment: NATS_URL=nats://nats:4222 in both services
+  - Ports: nats:4222, go-service:8080, elixir-service:4000
+
+seam.md
+  Purpose, seam type, why Go publishes and Elixir consumes (not reversed),
+  the event schema, how to run locally, what to observe, related docs.
+
+
+REST EXAMPLE: Go + Python via HTTP/JSON
+
+Directory: examples/canonical-multi-backend/duos/go-python-rest/
+
+python-side.py
+  - FastAPI application
+  - POST /score endpoint accepting {"features": [float, ...], "model": str}
+  - Returns {"score": float, "label": str, "latency_ms": float}
+  - Uses a stub model (deterministic function, not real ML) for the example
+  - GET /healthz returning {"status": "ok"}
+  - Uses uvicorn with PORT env var (default 8001)
+  - Includes request validation (Pydantic model)
+
+go-side.go
+  - Uses net/http from stdlib
+  - Calls the Python scoring service at PYTHON_SCORE_URL env var + "/score"
+  - Constructs the JSON request body using a Go struct + json.Marshal
+  - Reads the response, decodes it into a Go struct
+  - Handles HTTP errors and service unavailability gracefully
+  - Exposes its own /healthz at :8080 that calls the Python /healthz as a
+    downstream health probe (returns degraded if Python is unreachable)
+  - Has a main() that boots a minimal HTTP server with one route at /run-inference
+
+docker-compose.yml
+  - python-service: python:3.12-slim with uvicorn command
+  - go-service: golang:1.23-alpine or CGO_ENABLED=0 binary
+  - go-service depends_on: python-service (service_healthy)
+  - Environment: PYTHON_SCORE_URL=http://python-service:8001 in go-service
+  - Ports: python-service:8001, go-service:8080
+
+seam.md
+  Purpose, why Go is the gateway and Python owns scoring, the JSON schema,
+  the downstream health probe pattern, how to run locally, related docs.
+
+
+gRPC EXAMPLE: Kotlin + Rust via Protocol Buffers
+
+Directory: examples/canonical-multi-backend/duos/kotlin-rust-grpc/
+
+service.proto
+  - syntax = "proto3"
+  - package compute.v1
+  - Message ComputeRequest: int32 n, repeated double values
+  - Message ComputeResponse: double result, string method, int64 duration_ns
+  - Service ComputeService: rpc Compute(ComputeRequest) returns (ComputeResponse)
+  - Service health: rpc Check(HealthCheckRequest) returns (HealthCheckResponse)
+    using google.health.v1 standard, OR a simple custom health message
+
+rust-server.rs
+  - Uses tonic (tonic = "0.12" or current) and prost
+  - Implements ComputeServiceServer trait
+  - Compute RPC: takes request.values, computes the mean, returns result
+  - Handles empty input gracefully (returns 0.0 with a note)
+  - Boots on GRPC_PORT env var (default 50051)
+  - Logs each request with duration_ns in the response
+
+kotlin-caller.kt
+  - Uses grpc-kotlin (io.grpc:grpc-kotlin-stub) and protobuf-kotlin
+  - Reads RUST_GRPC_URL env var (default localhost:50051)
+  - Builds a ManagedChannel to the Rust server
+  - Creates a ComputeServiceCoroutineStub
+  - Sends a ComputeRequest with 5 sample values
+  - Prints the response: result, method, duration_ns
+  - Exposes a /healthz HTTP endpoint (using Ktor) that calls
+    the Rust gRPC health check and returns 200 or 503
+
+docker-compose.yml
+  - rust-service: built from rust:1.82-slim, exposes port 50051
+  - kotlin-service: built from openjdk:21-slim, exposes port 8080
+  - kotlin-service depends_on: rust-service (service_healthy via grpc_health_probe
+    or a simple TCP check at port 50051)
+  - Comment noting grpc_health_probe installation pattern for health checks
+
+seam.md
+  Purpose, why proto is the canonical contract, how to regenerate stubs
+  (protoc commands for each language), how to run locally, related docs.
+
+
+---
+
+README SPECIFICATION
+
+Create: examples/canonical-multi-backend/README.md
+
+This README is the entry point for all multi-backend canonical examples.
+It must include:
+
+  ## Purpose
+  One paragraph: these examples show the seam layer between coordinating
+  backends. Each example is seam-focused, not a full application.
+
+  ## Catalog
+  A table of all examples produced in PROMPT_53 and PROMPT_54:
+
+    | Directory | Languages | Seam Type | Use Case |
+    |---|---|---|---|
+    | duos/go-elixir-nats/ | Go + Elixir | Broker (NATS) | Event fan-out to real-time clients |
+    | duos/go-python-rest/ | Go + Python | REST | ML scoring gateway |
+    | duos/kotlin-rust-grpc/ | Kotlin + Rust | gRPC | Compute kernel |
+    | trios/go-elixir-python/ | Go + Elixir + Python | Broker + REST | Gateway + coord + ML |
+    | trios/go-rust-python/ | Go + Rust + Python | gRPC + REST | Gateway + kernel + ML |
+
+  Mark the trio entries as "added in PROMPT_54" so the README is honest
+  about what exists at time of PROMPT_53.
+
+  ## Seam types
+  One paragraph per seam type with a pointer to coordination-seam-patterns.md.
+
+  ## How to run an example
+  Generic instructions:
+    cd examples/canonical-multi-backend/duos/go-elixir-nats
+    docker compose up --build
+    # observe logs from both services
+
+  ## Related
+    - context/doctrine/multi-backend-coordination.md
+    - context/stacks/ (duo-* and trio-* docs)
+    - context/archetypes/multi-backend-service.md
+
+
+---
+
+SECTION 1 — Duo stack docs (all 10)
+
+Produce all 10 duo stack docs following the DUO STACK DOC SPECIFICATION above.
+Use the seam types listed at the top of this prompt.
+
+Additional notes per duo:
+
+DUO 1 — Rust + Python (gRPC seam)
+  Rust owns: compute-intensive processing, hot-path ML inference serving,
+             codec/crypto operations, systems-level tasks
+  Python owns: model training, ML experimentation, data science, batch pipelines,
+               orchestration and scripting
+  Primary use case: AI platform where Python trains and Rust serves at inference time.
+  gRPC proto snippet: InferenceService.Predict(PredictRequest) → PredictResponse
+  Note: tonic (Rust) + grpcio or grpc-python (Python client)
+
+DUO 2 — Go + Elixir (broker seam via NATS)
+  Go owns: external-facing HTTP/gRPC API, data ingestion, fast I/O, ops tooling
+  Elixir owns: distributed state, real-time pub/sub, WebSocket fan-out,
+               fault-tolerant supervision, presence tracking
+  Primary use case: high-throughput data ingestion (Go) driving real-time
+                    dashboards and client notifications (Elixir/Phoenix).
+  Note: Go publishes, Elixir subscribes and fans out via Phoenix Channels.
+
+DUO 3 — Go + Python (REST seam)
+  Go owns: API gateway, routing, auth, rate limiting, service mesh
+  Python owns: ML inference, data science, analytics, complex business logic
+               that benefits from numpy/pandas/scikit ecosystem
+  Primary use case: production ML system where Go is the request-handling layer
+                    and Python owns the scoring/recommendation engine.
+  Note: the most operationally common duo; REST is sufficient and avoids proto ceremony.
+
+DUO 4 — Elixir + Rust (NIF/Port seam)
+  Elixir owns: process supervision, distributed coordination, API surface,
+               fault tolerance, retry and recovery logic
+  Rust owns: CPU-bound computation — audio/video transcoding, crypto, parsing,
+             compression — called synchronously from Elixir as a library
+  Primary use case: media processing platform where Elixir orchestrates jobs
+                    and Rust does the heavy lifting inline.
+  Note: this is NOT a two-service system. Rust is a compiled library loaded into
+        the BEAM. Use Rustler for safe NIFs; use Port for potentially panicking code.
+        The docker-compose snippet shows only one service (Elixir+Rust compiled together).
+
+DUO 5 — Clojure + Go (broker seam via Kafka)
+  Clojure owns: event processing, business rule engines, Kafka Streams topology,
+                data transformation, rich domain logic
+  Go owns: high-throughput external API, lightweight microservices,
+            fast consumer workers, operational tooling
+  Primary use case: event-driven fintech/insurtech platform where Clojure
+                    owns the business logic and Go owns the execution tier.
+  Note: Kafka (not NATS) here because Clojure's Kafka Streams and confluent ecosystem
+        are a natural fit; Go consumes with franz-go or confluent-kafka-go.
+        Include Kafka in docker-compose (bitnami/kafka or confluentinc/cp-kafka).
+
+DUO 6 — Node + Go (REST seam)
+  Node/TypeScript owns: BFF layer, GraphQL schema, WebSocket connections,
+                        SSE, client-specific data shaping, OAuth flows
+  Go owns: internal microservices, domain APIs, fast background workers,
+            storage-backed CRUD, auth verification
+  Primary use case: consumer product where Node owns the frontend contract
+                    and Go owns the backend domain services.
+  Note: Node calls Go over HTTP/REST. Go services may not need to call Node at all.
+
+DUO 7 — Elixir + Clojure (broker seam via NATS or Kafka)
+  Elixir owns: real-time coordination, distributed state, fault-tolerant supervision,
+               presence, pub/sub to clients, OTP process trees
+  Clojure owns: complex data transformation, business rule engines,
+                stream processing (Kafka Streams DSL), rich map-based domain logic
+  Primary use case: event-driven platform where Clojure processes and enriches
+                    events, then Elixir delivers them fault-tolerantly in real time.
+  Note: both languages are immutable-first, functional, and LISP-family (Clojure) or
+        actor-based functional (Elixir). Data shapes translate cleanly.
+        Prefer NATS for simplicity; Kafka if Clojure is already using Kafka Streams.
+
+DUO 8 — Kotlin + Rust (gRPC seam)
+  Kotlin owns: JVM ecosystem, Android platform backend, Spring/Ktor services,
+               enterprise auth, billing, user/account management
+  Rust owns: performance-critical compute — media encoding, search indexing,
+             cryptographic operations, native library integration
+  Primary use case: mobile platform backend where Kotlin handles user concerns
+                    and Rust handles media or search at scale.
+  Note: grpc-kotlin (Kotlin) + tonic (Rust). Consider whether the Rust service
+        could be replaced by a Rust NIF in a future consolidation.
+
+DUO 9 — Scala + Rust (gRPC seam)
+  Scala owns: distributed streaming (Akka Streams / Spark), actor model,
+              batch analytics, stream topology orchestration
+  Rust owns: low-latency compute kernels — transforms too hot for JVM GC pauses,
+             SIMD-accelerated data processing, memory-safe systems work
+  Primary use case: financial data platform or observability pipeline where Scala
+                    orchestrates streams and Rust handles the critical compute path.
+  Note: Akka Streams hands off to Rust via gRPC when a stage exceeds JVM latency
+        budget. Scala uses scalapb for proto; Rust uses tonic.
+
+DUO 10 — Node + Elixir (broker seam via NATS)
+  Node/TypeScript owns: client connection management, WebSocket/SSE sessions,
+                         custom protocol handling, client-specific auth tokens,
+                         BFF GraphQL subscriptions
+  Elixir owns: distributed state, multi-node presence, fan-out coordination,
+               channel lifecycle, crash recovery, durable subscription state
+  Primary use case: collaborative apps, multiplayer games, live dashboards —
+                    Node owns the client connection, Elixir owns the distributed truth.
+  Note: Node connects clients; Elixir maintains the authoritative shared state.
+        NATS is the seam: Node publishes client actions, Elixir processes and
+        rebroadcasts state updates back through NATS to Node.
+
+
+SECTION 2 — Canonical seam examples (3 representative duos)
+
+Produce all files for the three canonical seam examples following the
+CANONICAL SEAM EXAMPLES SPECIFICATION above.
+
+Each example must be complete enough to run with `docker compose up --build`
+after the appropriate language toolchains are installed on the host (or inside
+the container). The Dockerfile content or build context should be realistic
+but minimal — a working single-file service, not a production scaffold.
+
+For the go-elixir-nats example:
+  The Go side is a single main.go (no separate packages for this example).
+  The Elixir side is a single module file showing the GenServer + Gnat pattern.
+  Add a comment at the top of each file noting: "This is a seam-focused example.
+  For a full application scaffold, see context/archetypes/multi-backend-service.md."
+
+For the go-python-rest example:
+  The Python side follows fastapi-example/app.py conventions (single file, uvicorn).
+  The Go side is a single main.go using only stdlib.
+  The downstream health probe pattern in Go is important — document it clearly.
+
+For the kotlin-rust-grpc example:
+  The proto file is the centerpiece — both sides generate from it.
+  Add a comment block to seam.md showing the exact protoc commands needed.
+  The Rust side uses tonic; the Kotlin side uses grpc-kotlin + coroutines.
+  Include a note about the build steps required for each (cargo build, gradle build).
+
+
+SECTION 3 — README
+
+Produce examples/canonical-multi-backend/README.md following the README
+SPECIFICATION above.
+
+
+---
+
+SECTION 4 — Important constraints
+
+- Do NOT produce trio examples in this prompt. PROMPT_54 covers trios.
+
+- Do NOT update the registry, catalog.json, stack_support_matrix.yaml, or
+  alias-catalog.yaml in this prompt. PROMPT_54 will do the full registry pass
+  for both duos and trios at once.
+
+- Do NOT add full application logic to the seam examples. Each service's side
+  should show only: connection setup, seam send/receive, health endpoint.
+  Nothing more.
+
+- The docker-compose.yml in each seam example must use realistic container
+  images (not placeholder names like "my-go-app"). Reference existing stack docs
+  for canonical image choices.
+
+- For Duo 4 (Elixir + Rust NIF/Port): the docker-compose snippet in the stack doc
+  shows only ONE service because Rust compiles into the Elixir release. Do not
+  fabricate a two-service composition for this duo. The NIF seam is in-process.
+
+- Kafka in Duo 5 (Clojure + Go): use bitnami/kafka:latest in the docker-compose
+  snippet. Do not use Zookeeper-dependent Kafka configs — bitnami/kafka 3.x
+  supports KRaft mode (no Zookeeper).
+
+
+---
+
+SECTION 5 — Commit-ready batching
+
+Suggested batch structure:
+
+  Batch 1: Duo stack docs — Duos 1–5
+    duo-rust-python.md, duo-go-elixir.md, duo-go-python.md,
+    duo-elixir-rust.md, duo-clojure-go.md
+
+  Batch 2: Duo stack docs — Duos 6–10
+    duo-node-go.md, duo-elixir-clojure.md, duo-kotlin-rust.md,
+    duo-scala-rust.md, duo-node-elixir.md
+
+  Batch 3: Broker canonical example — Go + Elixir + NATS
+    examples/canonical-multi-backend/README.md
+    examples/canonical-multi-backend/duos/go-elixir-nats/go-side.go
+    examples/canonical-multi-backend/duos/go-elixir-nats/elixir-side.ex
+    examples/canonical-multi-backend/duos/go-elixir-nats/docker-compose.yml
+    examples/canonical-multi-backend/duos/go-elixir-nats/seam.md
+
+  Batch 4: REST canonical example — Go + Python
+    examples/canonical-multi-backend/duos/go-python-rest/python-side.py
+    examples/canonical-multi-backend/duos/go-python-rest/go-side.go
+    examples/canonical-multi-backend/duos/go-python-rest/docker-compose.yml
+    examples/canonical-multi-backend/duos/go-python-rest/seam.md
+
+  Batch 5: gRPC canonical example — Kotlin + Rust
+    examples/canonical-multi-backend/duos/kotlin-rust-grpc/service.proto
+    examples/canonical-multi-backend/duos/kotlin-rust-grpc/rust-server.rs
+    examples/canonical-multi-backend/duos/kotlin-rust-grpc/kotlin-caller.kt
+    examples/canonical-multi-backend/duos/kotlin-rust-grpc/docker-compose.yml
+    examples/canonical-multi-backend/duos/kotlin-rust-grpc/seam.md
+
+
+---
+
+SECTION 6 — Output
+
+Generate the actual implementation pass in commit-ready batches now.
+Do not propose or summarize. Produce the complete file contents for each file.

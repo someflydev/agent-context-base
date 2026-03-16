@@ -1,0 +1,583 @@
+You are working inside the agent-context-base repository.
+
+Before proceeding, read:
+
+  context/doctrine/multi-backend-coordination.md      (added in PROMPT_52)
+  context/archetypes/multi-backend-service.md         (added in PROMPT_52)
+  context/stacks/coordination-seam-patterns.md        (added in PROMPT_52)
+  examples/canonical-multi-backend/README.md          (added in PROMPT_53)
+  examples/canonical-multi-backend/duos/go-elixir-nats/seam.md    (reference)
+  examples/canonical-multi-backend/duos/go-python-rest/seam.md    (reference)
+  examples/canonical-multi-backend/duos/kotlin-rust-grpc/seam.md  (reference)
+
+Also read:
+  examples/catalog.json
+  verification/stack_support_matrix.yaml
+  context/router/alias-catalog.yaml
+
+If PROMPT_52 or PROMPT_53 have not yet been applied, read:
+  context/doctrine/core-principles.md
+  context/archetypes/polyglot-lab.md
+
+This prompt completes the multi-backend catalog established in PROMPT_52 and PROMPT_53.
+It produces:
+  - One stack doc per trio (context/stacks/trio-{a}-{b}-{c}.md)
+  - Two canonical trio seam examples
+  - Full registry updates: catalog.json, stack_support_matrix.yaml, alias-catalog.yaml
+  - An update to examples/canonical-multi-backend/README.md (to add trio entries)
+
+The 6 trios are:
+  1. Go + Elixir + Python
+  2. Go + Rust + Python
+  3. Elixir + Go + Rust
+  4. Node + Go + Python
+  5. Clojure + Python + Go
+  6. Scala + Python + Go
+
+Organize all work into commit-ready batches. For each batch:
+1. Give the batch title.
+2. Explain the purpose.
+3. List created or updated files.
+4. Provide the full contents of each file.
+5. End with a suggested commit message with prefix [PROMPT_54].
+
+
+---
+
+TRIO STACK DOC SPECIFICATION
+
+Every trio stack doc lives at context/stacks/trio-{a}-{b}-{c}.md.
+Naming: alphabetical by language short name within each trio is preferred,
+but preserve directionality when it reflects a clear architectural flow
+(e.g., trio-go-elixir-python reads as gateway → coordinator → inference,
+which is meaningful and should be preserved).
+
+Every trio stack doc must contain exactly these sections:
+
+  # Trio: {Language A} + {Language B} + {Language C}
+
+  One paragraph stating what this trio accomplishes. Name the two key design
+  tensions the trio resolves (e.g., "throughput vs. coordination vs. intelligence")
+  and the use case archetype it targets.
+
+  ## Division of Labor
+
+  A table:
+    | Responsibility | Owner |
+    |---|---|
+    | {specific concern} | {Language} |
+    | {specific concern} | {Language} |
+    | {specific concern} | {Language} |
+    | Seam A↔B contract | A + B |
+    | Seam B↔C contract | B + C |
+
+  At least 5 rows. The last two rows name the two seams.
+  Responsibilities must be non-overlapping across all three services.
+
+  ## Seam Map
+
+  A text diagram showing the three services as nodes and the seams as labeled edges.
+  Example format (ASCII):
+
+    [Go Gateway] ──── NATS ────► [Elixir Coordinator]
+                                        │
+                                      REST
+                                        ▼
+                                 [Python Inference]
+
+  One seam per service pair. No service communicates with another via more than
+  one seam type.
+
+  ## Communication Contracts
+
+  One sub-section per seam. Follow the same specificity as the duo stack docs:
+  - Broker: event schema JSON example
+  - gRPC: .proto snippet
+  - REST: endpoint path + curl + response example
+  - NIF/Port: Erlang term shape
+
+  ## Local Dev Composition
+
+  A docker-compose.yml snippet showing all three services plus any required
+  broker or infrastructure service. Apply the same standards as duo stack docs:
+    - Explicit port bindings
+    - Environment variables for seam addresses
+    - healthcheck for each service
+    - depends_on with condition: service_healthy where appropriate
+
+  ## Health Contract
+
+  How each of the three services signals readiness. For a trio, the health
+  topology is important: which services are direct dependencies and which are
+  transitive. Document the dependency order explicitly.
+
+  ## When to Use This Trio
+
+  3-5 bullet points. Specific use cases and industries.
+  Be explicit about why all three are necessary (why a duo wouldn't suffice).
+
+  ## When NOT to Use This Trio
+
+  2-3 bullet points. When is a duo sufficient? When would a different architecture
+  be better? When does the coordination overhead outweigh the benefit?
+
+  ## Related
+    - context/doctrine/multi-backend-coordination.md
+    - context/stacks/{language-a-stack}.md
+    - context/stacks/{language-b-stack}.md
+    - context/stacks/{language-c-stack}.md
+    - context/stacks/coordination-seam-patterns.md
+    - context/stacks/duo-{a}-{b}.md (the constituent duos, if they exist)
+    - context/stacks/duo-{b}-{c}.md
+    - examples/canonical-multi-backend/trios/{dir}/ (if a canonical example exists)
+
+
+---
+
+TRIO STACK DOC CONTENT NOTES
+
+TRIO 1 — Go + Elixir + Python
+  The canonical AI platform trio: throughput, coordination, intelligence.
+  Seam map:
+    [Go Gateway] ── NATS ──► [Elixir Coordinator] ── REST ──► [Python Inference]
+  Go owns: external API ingestion, rate limiting, auth, high-throughput HTTP
+  Elixir owns: distributed job coordination, fault-tolerant retries, result fan-out,
+               real-time delivery to clients via Phoenix Channels
+  Python owns: ML model inference, feature extraction, scoring, batch analytics
+  Seam A↔B: NATS JetStream — Go publishes inference jobs, Elixir distributes them
+  Seam B↔C: REST (HTTP/JSON) — Elixir POSTs to Python scoring endpoint
+  Note: Elixir is the coordinator, not just a pass-through. It manages job queues,
+        tracks which inferences are in-flight, and fan-outs results.
+  Use cases: real-time recommendation engines, fraud detection pipelines,
+             content moderation platforms, IoT telemetry + ML scoring
+
+TRIO 2 — Go + Rust + Python
+  The performance stack: gateway, hot-path kernel, AI layer.
+  Seam map:
+    [Go Gateway] ── gRPC ──► [Rust Kernel] ── REST ──► [Python ML]
+    (or Go calls both Rust and Python separately — note both topologies)
+  Go owns: API gateway, routing, auth, service mesh, ops tooling
+  Rust owns: CPU-intensive processing — tokenization, embedding computation,
+             search indexing, codec work, data normalization at scale
+  Python owns: model training, advanced analytics, ML experimentation, batch jobs
+  Primary topology: Go receives a request, calls Rust for compute preprocessing,
+                    then calls Python for inference. Rust may return processed
+                    features that Python uses directly.
+  Seam A↔B: gRPC — Go calls Rust for synchronous compute results
+  Seam B↔C: REST — Rust results fed to Python OR Go calls Python directly
+             (document both topologies; prefer Go→Rust→Python pipeline)
+  Use cases: AI search platforms, large-scale data processing with ML scoring,
+             document processing pipelines, embedding pipelines at scale
+
+TRIO 3 — Elixir + Go + Rust
+  Fault-tolerant coordination + high-throughput services + low-latency compute.
+  Seam map:
+    [Elixir Coordinator] ── NATS ──► [Go Services] ── gRPC ──► [Rust Kernel]
+  Elixir owns: process supervision, distributed coordination, OTP trees,
+               fault isolation, retry orchestration, multi-node state
+  Go owns: external-facing HTTP APIs, fast worker pool, ingestion layer
+  Rust owns: sub-millisecond compute — financial matching engine, search,
+             cryptographic operations, real-time signal processing
+  Seam A↔B: NATS — Elixir publishes coordination events, Go workers consume
+  Seam B↔C: gRPC — Go calls Rust for latency-critical compute
+  Use cases: high-frequency financial systems, game server infrastructure,
+             telemetry processing at scale, low-latency data transformation
+
+TRIO 4 — Node + Go + Python
+  Consumer product stack: frontend contract, backend services, AI layer.
+  Seam map:
+    [Node BFF] ── REST ──► [Go Services] ── REST ──► [Python ML]
+  Node/TypeScript owns: BFF layer, GraphQL schema, WebSocket sessions, SSE,
+                        client auth tokens, frontend-specific data shaping
+  Go owns: internal domain services, storage-backed CRUD, background workers,
+            fast REST APIs consumed by Node
+  Python owns: ML recommendations, analytics, complex scoring, data science
+  Seam A↔B: REST — Node calls Go for domain data
+  Seam B↔C: REST — Go calls Python for ML features (or Node calls Python directly
+            if the ML result is needed at the BFF layer without Go mediation)
+  Note: document both topologies (Node→Go→Python vs. Node→Go and Node→Python)
+  Use cases: e-commerce with recommendations, social platforms with feed ranking,
+             SaaS products with analytics dashboards, consumer apps with AI features
+
+TRIO 5 — Clojure + Python + Go
+  Business intelligence stack: event logic, ML, fast APIs.
+  Seam map:
+    [Clojure Events] ── Kafka ──► [Python Scorer] ── REST ──► [Go API]
+    (Clojure produces enriched events; Python scores them; Go serves results)
+  Clojure owns: event processing, business rule engines, Kafka Streams topology,
+                data transformation, domain event enrichment
+  Python owns: ML scoring, model inference, risk assessment, classification
+  Go owns: low-latency read API, result serving, operational microservices
+  Seam A↔B: Kafka — Clojure produces enriched domain events, Python consumes
+  Seam B↔C: REST — Python writes scored results to a store that Go reads,
+             or Python calls Go's ingest endpoint with results
+  Use cases: insurance underwriting, credit scoring pipelines, fraud detection,
+             financial risk analytics, healthcare risk stratification
+
+TRIO 6 — Scala + Python + Go
+  Data platform stack: streaming, analytics, lightweight API.
+  Seam map:
+    [Scala Streaming] ── gRPC ──► [Python Analytics] ── REST ──► [Go API]
+  Scala owns: distributed streaming (Akka Streams / Spark), batch analytics,
+              actor model coordination, stream topology definition
+  Python owns: data science, ad-hoc analysis, model training, Jupyter-style
+               exploration, complex aggregations using pandas/polars
+  Go owns: lightweight operational API serving computed results,
+            fast read endpoints, health monitoring, alerting hooks
+  Seam A↔B: gRPC — Scala calls Python for analytical computation on stream windows
+             OR REST — Scala writes to a shared store, Python reads for analysis
+             (document both; prefer REST for simplicity unless latency matters)
+  Seam B↔C: REST — Python writes analytics results, Go serves them
+  Use cases: observability platforms, analytics SaaS, data-intensive applications,
+             streaming ML feature pipelines, BI tooling backends
+
+
+---
+
+CANONICAL TRIO SEAM EXAMPLES SPECIFICATION
+
+Two canonical trio examples are produced in this prompt:
+
+  Trio                  Directory
+  ─────────────────────────────────────────────────────────────
+  Go + Elixir + Python  examples/canonical-multi-backend/trios/go-elixir-python/
+  Go + Rust + Python    examples/canonical-multi-backend/trios/go-rust-python/
+
+Each trio example directory contains:
+  - {a}-side.{ext}        — Service A's seam code
+  - {b}-side.{ext}        — Service B's seam code
+  - {c}-side.{ext}        — Service C's seam code
+  - docker-compose.yml    — Full local dev composition for all three services
+  - seam.md               — Companion doc explaining both seams
+
+These examples are seam-focused. Show only the coordination layer — not full
+application logic. Each service's internal structure follows its stack doc.
+
+Follow the same code standards as the duo seam examples from PROMPT_53:
+  - Single file per service (no packages/modules for this example)
+  - Realistic image tags
+  - Health checks on every service
+  - Environment variables for seam addresses
+  - Comment at top noting this is a seam example, not a full scaffold
+
+
+TRIO EXAMPLE 1: Go + Elixir + Python
+
+Directory: examples/canonical-multi-backend/trios/go-elixir-python/
+
+go-side.go
+  - Receives an HTTP POST /submit-job with a JSON body: {"job_id": str, "features": [...]}
+  - Publishes a NATS event to subject "jobs.submitted" with the job payload
+  - Exposes /healthz checking NATS connectivity
+  - Environment: NATS_URL
+
+elixir-side.ex
+  - Subscribes to "jobs.submitted" from NATS (GenServer with Gnat)
+  - For each job: calls the Python scoring service via HTTP POST /score
+  - Receives the score response and publishes a "jobs.scored" event to NATS
+    (demonstrating the coordinator fan-out pattern)
+  - Exposes /healthz
+  - Environment: NATS_URL, PYTHON_SCORE_URL
+
+python-side.py
+  - FastAPI: POST /score accepting {"job_id": str, "features": [...]}
+  - Returns {"job_id": str, "score": float, "label": str}
+  - Uses a deterministic stub function for scoring (not real ML)
+  - GET /healthz
+  - Environment: PORT (default 8002)
+
+docker-compose.yml
+  - nats service (JetStream enabled)
+  - go-service (port 8080), depends_on: nats
+  - elixir-service (port 4000), depends_on: nats + python-service
+  - python-service (port 8002)
+  - All environment variables set correctly
+
+seam.md
+  Explains both seams: Go→Elixir (NATS, async), Elixir→Python (REST, sync).
+  Explains why Go doesn't call Python directly (Elixir owns coordination and retry).
+  How to run, what to observe, how to verify each seam is working.
+
+
+TRIO EXAMPLE 2: Go + Rust + Python
+
+Directory: examples/canonical-multi-backend/trios/go-rust-python/
+
+go-side.go
+  - Receives HTTP POST /process with {"document": str, "doc_id": str}
+  - Calls Rust gRPC service to preprocess (tokenize/normalize) the document
+  - Takes the preprocessed features from Rust and calls Python REST to score
+  - Returns the final scored result
+  - Exposes /healthz that checks both Rust gRPC and Python REST health
+  - Environment: RUST_GRPC_URL, PYTHON_SCORE_URL
+
+rust-side.rs
+  - tonic gRPC server implementing ProcessService.Preprocess(PreprocessRequest)
+  - PreprocessRequest: document string
+  - PreprocessResponse: repeated double features, int32 token_count
+  - Stub implementation: splits on spaces, converts word lengths to float features
+  - Boots on GRPC_PORT env var
+  - Exposes a /healthz HTTP handler (separate tokio task on HTTP_PORT)
+
+python-side.py
+  - FastAPI: POST /score accepting {"doc_id": str, "features": [...], "token_count": int}
+  - Returns {"doc_id": str, "score": float, "category": str}
+  - Stub scoring: score = mean(features), category based on token_count
+  - GET /healthz
+  - Environment: PORT (default 8003)
+
+docker-compose.yml
+  - rust-service (gRPC port 50051, HTTP health port 8090)
+  - python-service (port 8003)
+  - go-service (port 8080), depends_on: rust-service + python-service
+
+service.proto (shared, placed in this directory for reference)
+  - ProcessService.Preprocess RPC
+  - Same format as kotlin-rust-grpc/service.proto but for document processing
+
+seam.md
+  Explains both seams: Go→Rust (gRPC, sync), Go→Python (REST, sync).
+  Notes the pipeline topology: Go orchestrates, not Rust or Python.
+  The proto file is the Rust↔Go contract. The JSON schema is the Go↔Python contract.
+  How to run, how to regenerate proto stubs, what to observe.
+
+
+---
+
+REGISTRY UPDATE SPECIFICATION
+
+After all trio files are produced, update the following registries.
+
+
+UPDATE examples/catalog.json
+
+Add one entry per new example directory. Follow the existing entry format exactly.
+Group all multi-backend entries under a tag "multi-backend" in addition to any
+existing per-language tags. Entries to add:
+
+  Duo examples (from PROMPT_53, if not already present):
+    - canonical-multi-backend/duos/go-elixir-nats/  (tags: multi-backend, go, elixir, broker)
+    - canonical-multi-backend/duos/go-python-rest/  (tags: multi-backend, go, python, rest)
+    - canonical-multi-backend/duos/kotlin-rust-grpc/ (tags: multi-backend, kotlin, rust, grpc)
+
+  Trio examples:
+    - canonical-multi-backend/trios/go-elixir-python/ (tags: multi-backend, go, elixir, python, broker, rest)
+    - canonical-multi-backend/trios/go-rust-python/   (tags: multi-backend, go, rust, python, grpc, rest)
+
+If the duo entries already exist (from PROMPT_53 execution), do not duplicate them.
+Add only what is missing.
+
+
+UPDATE verification/stack_support_matrix.yaml
+
+Add a new capability row: "multi-backend-seam"
+
+For each language that appears in at least one duo or trio canonical example,
+mark the capability as "supported" with a note referencing the example directory.
+
+Languages with canonical seam examples:
+  - Go (appears in go-elixir-nats, go-python-rest, go-elixir-python, go-rust-python)
+  - Elixir (appears in go-elixir-nats, go-elixir-python)
+  - Python (appears in go-python-rest, go-elixir-python, go-rust-python)
+  - Rust (appears in kotlin-rust-grpc, go-rust-python)
+  - Kotlin (appears in kotlin-rust-grpc)
+
+Languages with duo stack docs but no canonical example (mark as "documented"):
+  - Clojure (duo-clojure-go, duo-elixir-clojure)
+  - Node/TypeScript (duo-node-go, duo-node-elixir)
+  - Scala (duo-scala-rust)
+
+Follow the existing matrix format. Do not change existing capability rows.
+
+
+UPDATE context/router/alias-catalog.yaml
+
+Add aliases for all 16 combos (10 duos + 6 trios) pointing to their respective
+stack docs and relevant canonical examples where they exist.
+
+Alias format should match existing entries: a trigger phrase mapping to one or
+more file paths. Add entries for natural-language phrases users would use:
+
+  Duo aliases (examples — expand to cover all 10 duos):
+    "rust and python backend", "python ml with rust inference",
+    "grpc between rust and python"
+      → context/stacks/duo-rust-python.md
+         context/stacks/coordination-seam-patterns.md
+
+    "go elixir backend", "go gateway elixir real-time",
+    "nats between go and elixir"
+      → context/stacks/duo-go-elixir.md
+         examples/canonical-multi-backend/duos/go-elixir-nats/seam.md
+
+    "go python backend", "python scoring service called from go",
+    "rest seam go python"
+      → context/stacks/duo-go-python.md
+         examples/canonical-multi-backend/duos/go-python-rest/seam.md
+
+    "elixir rust", "rustler nif", "rust nif from elixir", "port seam elixir rust"
+      → context/stacks/duo-elixir-rust.md
+         context/stacks/coordination-seam-patterns.md
+
+    "clojure and go", "kafka clojure go", "clojure producer go consumer"
+      → context/stacks/duo-clojure-go.md
+
+    "node bff go services", "typescript frontend go backend"
+      → context/stacks/duo-node-go.md
+
+    "elixir and clojure", "clojure enriches elixir delivers"
+      → context/stacks/duo-elixir-clojure.md
+
+    "kotlin rust grpc", "kotlin calling rust compute"
+      → context/stacks/duo-kotlin-rust.md
+         examples/canonical-multi-backend/duos/kotlin-rust-grpc/seam.md
+
+    "scala rust", "akka streams rust kernel", "scala streams with rust hot path"
+      → context/stacks/duo-scala-rust.md
+
+    "node elixir", "node websocket elixir state", "node client elixir distributed"
+      → context/stacks/duo-node-elixir.md
+
+  Trio aliases:
+    "go elixir python", "go gateway elixir coordinator python inference",
+    "three service ai platform go elixir python"
+      → context/stacks/trio-go-elixir-python.md
+         examples/canonical-multi-backend/trios/go-elixir-python/seam.md
+
+    "go rust python", "go gateway rust compute python ml",
+    "preprocessing pipeline go rust python"
+      → context/stacks/trio-go-rust-python.md
+         examples/canonical-multi-backend/trios/go-rust-python/seam.md
+
+    "elixir go rust", "elixir coordination go workers rust compute"
+      → context/stacks/trio-elixir-go-rust.md
+
+    "node go python", "bff go services python ml", "node frontend go backend python scoring"
+      → context/stacks/trio-node-go-python.md
+
+    "clojure python go", "event rules ml api stack",
+    "clojure kafka python scoring go api"
+      → context/stacks/trio-clojure-python-go.md
+
+    "scala python go", "streaming analytics api", "spark python go serving"
+      → context/stacks/trio-scala-python-go.md
+
+  Cross-cutting aliases (pointing to foundation docs):
+    "multi-backend architecture", "multiple language backends",
+    "which language should own what in a multi-service system",
+    "how to coordinate two different language backends"
+      → context/doctrine/multi-backend-coordination.md
+         context/archetypes/multi-backend-service.md
+         context/workflows/design-multi-backend-seams.md
+
+
+---
+
+README UPDATE
+
+Update examples/canonical-multi-backend/README.md:
+  - Remove the "added in PROMPT_54" placeholder markers from the trio rows
+    in the catalog table and replace them with actual directory links.
+  - Add the two trio directories to the catalog table.
+  - No other changes.
+
+
+---
+
+SECTION 1 — Trio stack docs (all 6)
+
+Produce all 6 trio stack docs following the TRIO STACK DOC SPECIFICATION
+and TRIO STACK DOC CONTENT NOTES above.
+
+
+SECTION 2 — Canonical trio examples (2)
+
+Produce both trio canonical examples following the CANONICAL TRIO SEAM
+EXAMPLES SPECIFICATION above.
+
+
+SECTION 3 — Registry updates
+
+Produce the updated versions of:
+  - examples/catalog.json
+  - verification/stack_support_matrix.yaml
+  - context/router/alias-catalog.yaml
+  - examples/canonical-multi-backend/README.md
+
+
+---
+
+SECTION 4 — Important constraints
+
+- Read examples/catalog.json before updating it. Match the existing format exactly.
+  Do not reformat or restructure the file — only add new entries.
+
+- Read verification/stack_support_matrix.yaml before updating it. Match the
+  existing entry format. Only add the new "multi-backend-seam" capability row;
+  do not modify existing capability rows.
+
+- Read context/router/alias-catalog.yaml before updating it. Match the existing
+  alias format. Do not change existing entries.
+
+- For the trio canonical examples, the docker-compose.yml must declare all
+  service health checks. Three services with cascading depends_on conditions
+  require careful ordering: the service at the bottom of the dependency chain
+  (Python, Rust) must have no depends_on; the middle service depends on the
+  bottom; the top service depends on the middle (or both bottom services).
+
+- The service.proto file in trios/go-rust-python/ is a new file specific to
+  document processing. It is not the same as the proto in kotlin-rust-grpc/.
+  Name the package differently (e.g., processing.v1 vs compute.v1).
+
+- Do NOT add full application logic to the trio examples. Each service's side
+  shows only: seam connection setup, the send/receive for each seam, health endpoint.
+
+- The Elixir side in go-elixir-python/ has TWO seam interactions:
+  (1) consuming from NATS (inbound from Go)
+  (2) calling Python via REST (outbound to Python)
+  Both must be shown clearly, with the flow labeled in comments.
+
+
+---
+
+SECTION 5 — Commit-ready batching
+
+Suggested batch structure:
+
+  Batch 1: Trio stack docs — Trios 1–3
+    trio-go-elixir-python.md
+    trio-go-rust-python.md
+    trio-elixir-go-rust.md
+
+  Batch 2: Trio stack docs — Trios 4–6
+    trio-node-go-python.md
+    trio-clojure-python-go.md
+    trio-scala-python-go.md
+
+  Batch 3: Canonical trio example — Go + Elixir + Python
+    examples/canonical-multi-backend/trios/go-elixir-python/go-side.go
+    examples/canonical-multi-backend/trios/go-elixir-python/elixir-side.ex
+    examples/canonical-multi-backend/trios/go-elixir-python/python-side.py
+    examples/canonical-multi-backend/trios/go-elixir-python/docker-compose.yml
+    examples/canonical-multi-backend/trios/go-elixir-python/seam.md
+
+  Batch 4: Canonical trio example — Go + Rust + Python
+    examples/canonical-multi-backend/trios/go-rust-python/service.proto
+    examples/canonical-multi-backend/trios/go-rust-python/go-side.go
+    examples/canonical-multi-backend/trios/go-rust-python/rust-side.rs
+    examples/canonical-multi-backend/trios/go-rust-python/python-side.py
+    examples/canonical-multi-backend/trios/go-rust-python/docker-compose.yml
+    examples/canonical-multi-backend/trios/go-rust-python/seam.md
+
+  Batch 5: Registry and alias updates
+    examples/catalog.json (updated)
+    verification/stack_support_matrix.yaml (updated)
+    context/router/alias-catalog.yaml (updated)
+    examples/canonical-multi-backend/README.md (updated)
+
+
+---
+
+SECTION 6 — Output
+
+Generate the actual implementation pass in commit-ready batches now.
+Do not propose or summarize. Produce the complete file contents for each file.

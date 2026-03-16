@@ -1,0 +1,563 @@
+You are working inside the agent-context-base repository.
+
+Before proceeding, read:
+
+  context/doctrine/core-principles.md
+  context/archetypes/polyglot-lab.md
+  context/archetypes/backend-api-service.md
+  context/router/archetype-router.md
+  context/router/task-router.md
+  context/stacks/nats-jetstream.md
+  context/workflows/add-api-endpoint.md
+
+This prompt establishes the foundation layer for multi-backend coordination —
+systems where 2-3 backends in different languages work together, each owning a
+distinct responsibility, connected by an explicit seam.
+
+This is distinct from the polyglot-lab archetype (which is exploratory) and from
+the backend-api-service archetype (which is single-service). A multi-backend
+system is intentional: every language earns its place by owning a non-overlapping
+concern that justifies the coordination overhead.
+
+The combos this foundation serves (defined in session context):
+
+  DUOS (2-backend):
+    1.  Rust + Python
+    2.  Go + Elixir
+    3.  Go + Python
+    4.  Elixir + Rust
+    5.  Clojure + Go
+    6.  Node + Go
+    7.  Elixir + Clojure
+    8.  Kotlin + Rust
+    9.  Scala + Rust
+    10. Node + Elixir
+
+  TRIOS (3-backend):
+    1. Go + Elixir + Python
+    2. Go + Rust + Python
+    3. Elixir + Go + Rust
+    4. Node + Go + Python
+    5. Clojure + Python + Go
+    6. Scala + Python + Go
+
+PROMPT_53 will build the per-duo stack docs and canonical seam examples.
+PROMPT_54 will build the per-trio stack docs, canonical trio examples, and registry updates.
+This prompt (PROMPT_52) builds only the foundation: doctrine, archetype, workflows,
+seam patterns reference, and router/alias updates.
+
+Organize all work into commit-ready batches. For each batch:
+1. Give the batch title.
+2. Explain the purpose.
+3. List created or updated files.
+4. Provide the full contents of each file.
+5. End with a suggested commit message with prefix [PROMPT_52].
+
+
+---
+
+CORE CONCEPTS
+
+Before reading the sections below, internalize these rules. Every deliverable
+must enforce them.
+
+
+RULE 1 — EACH BACKEND EARNS ITS PLACE
+
+A multi-backend system is justified only when each language owns a concern
+where the others would be meaningfully worse:
+
+  - Go: high-throughput networking, API gateway, ops tooling, service mesh
+  - Elixir: distributed coordination, fault-tolerant supervision, real-time pub/sub
+  - Python: ML/AI inference, data science, scripting, batch jobs
+  - Rust: CPU-bound hot paths, systems work, WASM, codec/crypto kernels
+  - Clojure: rich data transformation, business rule engines, Kafka Streams
+  - Kotlin: JVM ecosystem, Android platform backend, Spring/Ktor services
+  - Scala: distributed streaming (Akka/Spark), batch analytics, actor model
+  - Node/TypeScript: BFF layer, real-time WebSocket/SSE, GraphQL subscriptions
+  - Ruby, Crystal, Nim, Zig, OCaml, Dart: where a specific stack doc already exists
+
+Every service in the system must have a one-sentence ownership statement.
+If two services own the same thing, the architecture has a seam problem.
+
+
+RULE 2 — THE SEAM IS THE CONTRACT
+
+The only interface between two services is their seam. Three seam types:
+
+  BROKER SEAM (async, decoupled)
+    Technology: NATS JetStream, Kafka, RabbitMQ
+    Direction: producer → broker → consumer(s)
+    Best when: one service produces events that one or more others consume
+               independently; strict decoupling required; fan-out patterns
+    Schema: event schema defined in the broker subject/topic spec
+    Anti-pattern: using a broker for request/response loops (adds latency, complexity)
+
+  gRPC SEAM (synchronous, typed)
+    Technology: Protocol Buffers + gRPC
+    Direction: caller → server (request/response or streaming)
+    Best when: synchronous results required (ML inference, compute kernel call);
+               strong schema enforcement across language boundaries;
+               performance matters for the call itself
+    Schema: .proto file is the canonical contract; both sides generate from it
+    Anti-pattern: using gRPC when REST would suffice; versioning neglect
+
+  REST/HTTP SEAM (synchronous, self-documenting)
+    Technology: HTTP + JSON (or msgpack for binary)
+    Direction: caller → server (request/response)
+    Best when: simple request/response; human-readable schema sufficient;
+               one service is already a public API; no streaming needed
+    Schema: OpenAPI spec or equivalent; JSON schema validation at boundary
+    Anti-pattern: REST for high-frequency tight loops (use gRPC); undocumented schemas
+
+  PORT/NIF SEAM (in-process, Elixir-specific)
+    Technology: Elixir NIF (native implemented function) or Port
+    Direction: Elixir calls into Rust/C library within the same OS process
+    Best when: Rust is a hot-path library, not an independent service;
+               sub-millisecond latency required; no network overhead acceptable
+    Schema: Erlang term format or binary at the NIF boundary
+    Anti-pattern: NIFs that panic or block the BEAM scheduler; use Port for safety
+
+Each service pair may use at most one primary seam type. If two services need
+both sync and async communication, the seam is not well-defined — revisit ownership.
+
+
+RULE 3 — NO SHARED DATABASE
+
+Two services in different languages must not write to the same database schema.
+
+  Acceptable: Service A writes to its own schema; Service B reads a published
+              API or event stream from Service A.
+  Acceptable: Both services read (but only one writes) a shared read-replica.
+  Not acceptable: Service A and Service B both write to the same Postgres schema
+                  or the same MongoDB collection without an intermediary.
+
+If a shared read model is genuinely needed, prefer:
+  - Event sourcing: Service A publishes events; Service B maintains its own
+    read projection from those events.
+  - API delegation: Service B calls Service A's API to read the data.
+
+
+RULE 4 — HEALTH CONTRACT ACROSS SERVICES
+
+Every service must expose a health endpoint at a canonical path:
+  /healthz (HTTP services)
+  gRPC health check (grpc.health.v1.Health/Check for gRPC services)
+  Port heartbeat or supervision strategy (Elixir NIF/Port services)
+
+docker-compose.yml must declare:
+  healthcheck: for each service
+  depends_on: with condition: service_healthy where services must be ready before
+    their dependents start
+
+Failure propagation must be explicit in the docker-compose topology. If Service A
+calls Service B and Service B fails, Service A's health check should degrade
+predictably (not crash with an unhandled error).
+
+
+RULE 5 — SINGLE CONCERN PER SERVICE, SINGLE SEAM PER PAIR
+
+A service may have internal complexity (its own DB, cache, queue consumer).
+But its external seam to another service in the system must be a single,
+well-defined interface. Avoid:
+  - Multiple protocols between the same two services (use one)
+  - Direct DB sharing as a "fast path" around the seam
+  - Side channels (shared filesystem, shared cache without ownership)
+
+
+---
+
+SECTION 1 — New doctrine doc
+
+Create:
+
+  context/doctrine/multi-backend-coordination.md
+
+This is the authoritative reference for multi-backend system design.
+It must cover:
+
+  ## When to use multiple backends
+  Use the decision heuristic: does the added coordination overhead (seam
+  maintenance, local dev complexity, deployment ops) justify the gain from
+  each language owning its concern? The bar is real: if one language can do
+  the job well enough, don't split.
+
+  ## Ownership model
+  Cover RULE 1 fully. Include the ownership statement pattern. Include the
+  anti-pattern: two services that both "handle business logic" or both "own
+  the user entity".
+
+  ## Seam types
+  Cover RULE 2 fully. For each seam type: name, technology, direction,
+  best-for use case, schema contract, anti-pattern. Include a selection
+  heuristic table:
+
+    | Need | Preferred seam |
+    |---|---|
+    | ML inference call | gRPC |
+    | Fan-out events to real-time clients | Broker (NATS) |
+    | Simple API delegation | REST |
+    | Hot-path compute in same process | NIF/Port |
+    | BFF calling internal services | REST or gRPC |
+    | Business rules engine result | gRPC or REST |
+
+  ## No shared database (RULE 3)
+  Include the acceptable/not-acceptable patterns. Include the event sourcing
+  and API delegation alternatives.
+
+  ## Health contract (RULE 4)
+  Include the health endpoint requirement, the docker-compose healthcheck
+  pattern, and the failure propagation rule.
+
+  ## Local dev composition
+  Each service runs in its own container. The docker-compose.yml declares
+  all services with explicit port bindings, health checks, and depends_on
+  conditions. Environment variables provide the seam addresses (e.g.,
+  NATS_URL, PYTHON_INFERENCE_URL). No hardcoded IPs.
+
+  ## Deployment model
+  Three patterns, in order of operational simplicity:
+    1. Separate Dokku apps (each service deployed independently, network via URL)
+    2. Single docker-compose on a single host (all services co-located)
+    3. Kubernetes (when scale requires it — out of scope for this repo)
+  Document which pattern each combo favors and why.
+
+  ## Failure modes
+    - Domain bleed: a service doing work that belongs to another
+    - Seam proliferation: too many protocols between the same two services
+    - Shared database: direct DB writes from two services to one schema
+    - Missing health checks: silent failure propagation across seam
+    - Synchronous where async would suffice: unnecessary coupling
+    - NIF panic: Rust crash taking down the BEAM; use Port for unsafe code
+
+  ## Related
+    - context/archetypes/multi-backend-service.md
+    - context/workflows/design-multi-backend-seams.md
+    - context/workflows/add-backend-coordination-layer.md
+    - context/stacks/coordination-seam-patterns.md
+
+
+SECTION 2 — New archetype
+
+Create:
+
+  context/archetypes/multi-backend-service.md
+
+This archetype describes a repo where two or three backend services in
+different languages coordinate to serve a single product capability.
+
+It must cover:
+
+  ## When to use this archetype
+  The project explicitly assigns non-overlapping responsibilities to
+  2-3 language runtimes. The coordination seam is designed, not accidental.
+  Each service would be awkward or slow if implemented in one of the other
+  languages. Contrast with polyglot-lab (exploration) and backend-api-service
+  (single service).
+
+  ## Repo structure
+  Each service lives in its own top-level directory:
+    services/
+      {service-a}/    -- owns its own Dockerfile, deps, tests
+      {service-b}/
+      {service-c}/    -- if trio
+    docker-compose.yml  -- full composition for local dev
+    docker-compose.test.yml  -- isolated test composition
+    docs/
+      architecture.md   -- ownership table + seam diagram
+      seam-contract/    -- proto files, event schemas, OpenAPI specs
+
+  ## Required context
+    - context/doctrine/multi-backend-coordination.md
+    - context/doctrine/compose-port-and-data-isolation.md
+    - context/doctrine/testing-philosophy.md
+    - stack doc for each service's language
+    - the relevant duo or trio stack doc (from context/stacks/)
+
+  ## Common workflows
+    - context/workflows/design-multi-backend-seams.md
+    - context/workflows/add-backend-coordination-layer.md
+    - context/workflows/add-smoke-tests.md
+
+  ## Typical anti-patterns
+    - Shared database across language services
+    - Two seam types between the same pair (adds complexity without benefit)
+    - One service doing work clearly belonging to another
+    - docker-compose without health checks (boot order unpredictable)
+    - Deploying all services as one monolith to avoid coordination overhead
+      (defeats the purpose; just use one language at that point)
+
+
+SECTION 3 — New workflow: design-multi-backend-seams
+
+Create:
+
+  context/workflows/design-multi-backend-seams.md
+
+Purpose: Decide service ownership boundaries and seam type before writing code.
+Use this before add-backend-coordination-layer.md.
+
+When to use it:
+  - Starting a multi-backend project
+  - Adding a third service to an existing two-service system
+  - Refactoring a seam that has grown too complex
+
+Sequence:
+  1. For each language in the system, write a one-sentence ownership statement.
+     Stop if two statements overlap — resolve the ownership conflict first.
+  2. For each service pair, identify the communication pattern:
+     - Does caller need a synchronous result? → gRPC or REST
+     - Does producer need fire-and-forget with multiple consumers? → Broker
+     - Is one service a Rust library called from Elixir? → NIF or Port
+  3. Apply the seam selection heuristic table (from multi-backend-coordination.md).
+     Choose exactly one seam type per service pair.
+  4. Define the schema contract for each seam:
+     - gRPC → write the .proto file first
+     - Broker → write the event schema as a JSON Schema or annotated example
+     - REST → write the OpenAPI endpoint spec or a curl + response example
+     - NIF/Port → define the Erlang term shape at the boundary
+  5. Draw the ownership and seam diagram (even informally). Each node is a
+     service, each edge is labeled with the seam type and primary subject/path.
+  6. Write the architecture doc (docs/architecture.md or equivalent).
+     Include: ownership table, seam diagram, seam contracts, health contract.
+
+Outputs:
+  - Ownership table (one row per service: name, language, responsibility)
+  - Seam contract for each service pair (proto, schema, or OpenAPI snippet)
+  - docker-compose topology sketch (which service depends on which)
+  - architecture.md draft
+
+Stop conditions:
+  - Every service has an unambiguous, non-overlapping ownership statement
+  - Every service pair has exactly one seam type documented
+  - No shared database planned
+  - Health contract defined for each service
+
+Common pitfalls:
+  - Designing the seam before resolving ownership (premature infrastructure)
+  - Choosing gRPC for everything (adds proto ceremony when REST would suffice)
+  - Designing for a trio when a duo is sufficient
+  - Picking the seam before knowing the access pattern (sync vs async)
+
+
+SECTION 4 — New workflow: add-backend-coordination-layer
+
+Create:
+
+  context/workflows/add-backend-coordination-layer.md
+
+Purpose: Implement the seam between two services once ownership and seam type
+are decided (see design-multi-backend-seams.md).
+
+When to use it:
+  - After completing design-multi-backend-seams.md
+  - Adding a seam to an existing service pair
+
+Sequence:
+  1. Scaffold each service directory with its own Dockerfile and entry point.
+     Follow the service's stack doc for internal structure.
+  2. Add the seam infrastructure to docker-compose.yml:
+     - If broker seam: add the NATS or Kafka service
+     - If gRPC: no extra service needed; expose port from the server service
+     - If REST: no extra service needed; expose port from the server service
+     - If NIF/Port: no extra service; Rust is compiled into or alongside Elixir
+  3. Implement the schema contract:
+     - gRPC: generate client/server stubs from the .proto file for each language
+     - Broker: define stream/topic and write publish/subscribe helpers in each service
+     - REST: implement the endpoint in the server service; write the client call in the caller
+     - NIF: compile the Rust crate as a NIF using Rustler; add Rustler to mix.exs
+  4. Add health checks to each service in docker-compose.yml.
+     Add depends_on conditions so dependent services wait for their upstreams.
+  5. Write smoke tests for the seam:
+     - Bring up the full composition
+     - Make the caller service trigger one request/event
+     - Assert the receiving service handles it correctly
+     - Assert health endpoints return 200 on both services
+  6. Document the seam contract in docs/seam-contract/ or equivalent.
+
+Outputs:
+  - services/{service-a}/ and services/{service-b}/ scaffolds
+  - docker-compose.yml with both services, health checks, and seam infrastructure
+  - Seam contract files (proto, event schema, OpenAPI)
+  - Smoke test covering one round-trip across the seam
+
+Stop conditions:
+  - docker-compose up starts all services and health checks pass
+  - One smoke test exercises the primary seam path
+  - Seam contract is committed to the repo (not just in memory)
+
+Common pitfalls:
+  - Building application logic before the seam smoke test passes
+  - Hardcoding service addresses instead of using environment variables
+  - Skipping health checks (boot order becomes unpredictable)
+  - Implementing the seam in both directions simultaneously (do one direction first)
+
+
+SECTION 5 — New stack reference: coordination-seam-patterns
+
+Create:
+
+  context/stacks/coordination-seam-patterns.md
+
+This is a reference doc, not a step-by-step guide. It provides the canonical
+patterns for each seam type with code examples for the most common language
+pairs. It is consulted after design-multi-backend-seams.md has chosen the
+seam type.
+
+The doc must cover four sections, one per seam type:
+
+
+BROKER SEAM (NATS JetStream)
+
+Show:
+  - Publisher side in Go (use nats.go)
+  - Subscriber side in Elixir (use Gnat)
+  - docker-compose.yml snippet (nats service with JetStream enabled)
+  - Stream + consumer creation pattern
+  - Health check: NATS /healthz endpoint
+
+Also note: Kafka variant for high-throughput scenarios (publisher in Clojure
+using clj-kafka or kafka-clj, subscriber in any language). Note when to prefer
+Kafka over NATS (see nats-jetstream.md for the threshold).
+
+
+gRPC SEAM (Protocol Buffers)
+
+Show:
+  - A minimal .proto file (two fields, one RPC method)
+  - Server side in Rust (use tonic)
+  - Client side in Go (use google.golang.org/grpc) OR Kotlin (use grpc-kotlin)
+  - docker-compose.yml snippet (server service exposing gRPC port)
+  - Health check: grpc_health_probe or HTTP wrapper at /healthz
+
+Note: Python gRPC client (grpcio) for calling Rust or Go gRPC servers.
+Note: the need to run `protoc` to generate stubs — document the command.
+
+
+REST/HTTP SEAM
+
+Show:
+  - Server side in Python FastAPI (one POST endpoint accepting JSON body)
+  - Client side in Go (use net/http with json.Marshal)
+  - docker-compose.yml snippet
+  - Health check: /healthz on both services
+  - Error handling: what to do when the downstream service is unavailable
+
+Note: Node/TypeScript fetch client calling a Go server.
+Note: OpenAPI spec generation from FastAPI (automatic at /openapi.json).
+
+
+PORT/NIF SEAM (Elixir ↔ Rust)
+
+Show:
+  - Rustler NIF setup: Cargo.toml with rustler dependency, NIF function export macro
+  - Elixir module calling the NIF: use Rustler in mix.exs, define the NIF stub
+  - When to use Port instead (safety boundary for potentially panicking code)
+  - Port setup in Elixir: Port.open with a Rust binary compiled separately
+
+Note: this seam does NOT require docker-compose changes (no extra service).
+Note: NIFs that crash kill the entire BEAM VM — use Port for unsafe operations.
+
+
+SECTION 6 — Router and alias updates
+
+Update context/router/archetype-router.md:
+  Add to ## Common Archetype Mappings:
+    - two backend services coordinating, multi-language backend system,
+      Go and Python together, Elixir and Rust together, polyglot production service
+      → context/archetypes/multi-backend-service.md
+
+  Add to ## Routing Examples:
+    - "Build a system with Go as gateway and Python for ML inference"
+    - "Wire Elixir and Rust so Elixir supervises a Rust compute kernel"
+    - "Set up a three-service repo: Go + Elixir + Python"
+
+Update context/router/task-router.md:
+  Add to ## Common Task Mappings:
+    - "design a multi-backend system", "which language should own what",
+      "ownership boundaries for two services"
+      → context/workflows/design-multi-backend-seams.md
+    - "wire two services together", "add a coordination layer",
+      "connect a Go service to a Python service"
+      → context/workflows/add-backend-coordination-layer.md
+    - "gRPC between two services", "add a proto seam",
+      "call a Rust gRPC server from Go"
+      → context/stacks/coordination-seam-patterns.md
+    - "broker seam", "NATS between Go and Elixir",
+      "Kafka between Clojure and Go"
+      → context/stacks/coordination-seam-patterns.md
+    - "NIF", "Rustler", "call Rust from Elixir"
+      → context/stacks/coordination-seam-patterns.md
+
+  Add to ## Compound Requests:
+    - "Design and build a Go + Python service with gRPC"
+      → design-multi-backend-seams.md first, then add-backend-coordination-layer.md
+    - "Bootstrap a multi-backend repo with Go gateway and Elixir coordinator"
+      → bootstrap-repo.md, then design-multi-backend-seams.md
+
+Update context/router/alias-catalog.yaml:
+  Add aliases pointing to context/doctrine/multi-backend-coordination.md,
+  context/archetypes/multi-backend-service.md,
+  context/workflows/design-multi-backend-seams.md,
+  context/workflows/add-backend-coordination-layer.md,
+  and context/stacks/coordination-seam-patterns.md
+  for phrases like:
+    "multi-backend", "polyglot backend", "two services different languages",
+    "coordination seam", "gRPC seam", "broker seam", "NIF seam",
+    "NATS between Go and Elixir", "call Python from Go",
+    "Rust gRPC server", "Elixir calls Rust NIF",
+    "which language should own what", "ownership table"
+
+
+---
+
+SECTION 7 — Commit-ready batching
+
+Suggested batch structure:
+
+  Batch 1: Doctrine
+    - context/doctrine/multi-backend-coordination.md
+
+  Batch 2: Archetype + Workflows
+    - context/archetypes/multi-backend-service.md
+    - context/workflows/design-multi-backend-seams.md
+    - context/workflows/add-backend-coordination-layer.md
+
+  Batch 3: Seam patterns reference
+    - context/stacks/coordination-seam-patterns.md
+
+  Batch 4: Router + alias updates
+    - context/router/archetype-router.md (updated)
+    - context/router/task-router.md (updated)
+    - context/router/alias-catalog.yaml (updated)
+
+
+---
+
+SECTION 8 — Important constraints
+
+- Do NOT build any canonical examples in this prompt. PROMPT_53 and PROMPT_54
+  will produce the duo and trio stack docs plus seam examples. This prompt
+  builds only the foundation layer.
+
+- Do NOT enumerate or design all 16 combos in the doctrine or archetype.
+  Those docs should be general enough to apply to any multi-backend system.
+  The combo-specific content lives in the duo/trio stack docs (PROMPT_53/54).
+
+- Keep the seam patterns reference (coordination-seam-patterns.md) concrete and
+  code-forward. It should be a lookup reference for implementation, not
+  a theory document.
+
+- The archetype is about project shape, not language prescription. It must work
+  for any two or three languages from the supported list.
+
+- The workflow docs must follow existing workflow conventions: Purpose, When to
+  use it, Sequence (numbered steps), Outputs, Stop conditions, Common pitfalls.
+
+
+---
+
+SECTION 9 — Output
+
+Generate the actual implementation pass in commit-ready batches now.
+Do not propose or summarize. Produce the complete file contents for each file.
