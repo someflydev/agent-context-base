@@ -241,6 +241,20 @@ stacks:
     target: context/stacks/ruby-hanami.md
   - alias: redis
     target: context/stacks/redis.md
+  - alias: redis streams
+    target:
+      - context/stacks/redis.md
+      - context/doctrine/broker-selection.md
+  - alias: xadd xreadgroup
+    target: context/stacks/redis.md
+  - alias: redis consumer group
+    target: context/stacks/redis.md
+  - alias: xack redis
+    target: context/stacks/redis.md
+  - alias: redis stream pending
+    target: context/stacks/redis.md
+  - alias: xclaim stale message
+    target: context/stacks/redis.md
   - alias: mongo
     target: context/stacks/mongo.md
   - alias: mongodb
@@ -582,6 +596,32 @@ archetypes:
     target: context/archetypes/multi-storage-experiment.md
 
 capabilities:
+  - alias: broker selection
+    target: context/doctrine/broker-selection.md
+  - alias: nats vs kafka
+    target: context/doctrine/broker-selection.md
+  - alias: kafka vs nats
+    target: context/doctrine/broker-selection.md
+  - alias: kafka vs redis streams
+    target: context/doctrine/broker-selection.md
+  - alias: which broker should I use
+    target: context/doctrine/broker-selection.md
+  - alias: when to use kafka instead of nats
+    target: context/doctrine/broker-selection.md
+  - alias: when to use nats instead of kafka
+    target: context/doctrine/broker-selection.md
+  - alias: event streaming patterns
+    target:
+      - context/stacks/event-streaming-patterns.md
+      - context/doctrine/broker-selection.md
+  - alias: broker seam patterns
+    target:
+      - context/stacks/event-streaming-patterns.md
+      - context/stacks/coordination-seam-patterns.md
+  - alias: idempotent consumer
+    target: context/stacks/event-streaming-patterns.md
+  - alias: dead letter pattern
+    target: context/stacks/event-streaming-patterns.md
   - alias: multi-backend coordination rules
     target: context/doctrine/multi-backend-coordination.md
   - alias: no shared database

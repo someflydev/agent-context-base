@@ -344,6 +344,16 @@ stacks:
       - DLQ round-trip verification
     notes: Canonical broker seam example (clojure-go-kafka) is structure-verified only. No live Kafka integration test is wired in the default verification tier. KRaft single-container setup verified in docker-compose context.
 capabilities:
+  - capability: redis-streams
+    notes: Redis Streams consumer group patterns (XADD, XREADGROUP, XACK, XCLAIM, XPENDING).
+           No live Redis Streams integration test in the default verification tier.
+    stacks:
+      - stack: redis
+        status: documented
+        note: Full Redis Streams section added to redis.md in PROMPT_56. No canonical
+              seam example exists yet.
+        follow_on_prompt: PROMPT_57
+
   - capability: multi-backend-seam
     notes: Canonical seam examples covering broker (NATS), gRPC (Protocol Buffers), and REST seam types across duo and trio compositions.
     stacks:
