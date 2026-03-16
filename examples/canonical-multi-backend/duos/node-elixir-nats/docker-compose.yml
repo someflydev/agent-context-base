@@ -1,0 +1,106 @@
+services:
+  nats:
+    image: nats:2.10-alpine
+    command: "-js -m 8222"
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8222/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  node-service:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM node:20-alpine
+        RUN apk add --no-cache wget
+        WORKDIR /app
+        COPY <<'PKG' package.json
+        {
+          "name": "node-elixir-nats-seam",
+          "version": "0.1.0",
+          "type": "module",
+          "dependencies": {
+            "nats": "^2.19.0",
+            "hono": "^4.4.0",
+            "@hono/node-server": "^1.12.0"
+          },
+          "devDependencies": {
+            "typescript": "^5.4.0",
+            "@types/node": "^20.0.0",
+            "tsx": "^4.0.0"
+          }
+        }
+        PKG
+        RUN npm install
+        COPY node-side.ts .
+        EXPOSE 3000
+        CMD ["npx", "tsx", "node-side.ts"]
+    ports:
+      - "3000:3000"
+    environment:
+      NATS_URL: "nats://nats:4222"
+      PORT: "3000"
+    depends_on:
+      nats:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  elixir-service:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM elixir:1.16-alpine AS builder
+        RUN apk add --no-cache wget build-base
+        WORKDIR /app
+        COPY <<'MIX' mix.exs
+        defmodule SeamExample.MixProject do
+          use Mix.Project
+          def project, do: [app: :seam_example, version: "0.1.0", elixir: "~> 1.16"]
+          def application, do: [extra_applications: [:logger], mod: {SeamExample.Application, []}]
+          defp deps do
+            [
+              {:gnat, "~> 1.7"},
+              {:jason, "~> 1.4"},
+              {:phoenix, "~> 1.7"},
+              {:plug_cowboy, "~> 2.7"},
+            ]
+          end
+        end
+        MIX
+        RUN mix local.hex --force && mix local.rebar --force
+        RUN mix deps.get && mix deps.compile
+        COPY elixir-side.ex lib/seam_example.ex
+        RUN mix compile
+        FROM elixir:1.16-alpine
+        RUN apk add --no-cache wget
+        WORKDIR /app
+        COPY --from=builder /app/_build /app/_build
+        COPY --from=builder /app/deps /app/deps
+        COPY --from=builder /app/mix.exs /app/mix.exs
+        COPY elixir-side.ex lib/seam_example.ex
+        EXPOSE 4000
+        CMD ["mix", "run", "--no-halt"]
+    ports:
+      - "4000:4000"
+    environment:
+      NATS_URL: "nats://nats:4222"
+      PORT: "4000"
+    depends_on:
+      nats:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:4000/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 25s
