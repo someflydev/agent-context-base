@@ -138,3 +138,10 @@ For integration tests, use a dedicated test stream with a short retention window
 - Storing raw large payloads in NATS instead of a reference key pointing to object storage.
 - Acking a message before the downstream write (database insert, file write) confirms — this creates data loss on crash.
 - Skipping real broker tests for consumer ack and nack behavior; these cannot be meaningfully tested with mocks.
+
+## Related
+
+- context/doctrine/broker-selection.md — three-way NATS vs Kafka vs Redis Streams decision guide
+- context/stacks/kafka.md — when to use Kafka instead
+- context/stacks/redis.md — Redis Streams section
+- context/stacks/coordination-seam-patterns.md

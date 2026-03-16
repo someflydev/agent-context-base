@@ -287,6 +287,7 @@ Full platform option (confluentinc/cp-kafka + ZooKeeper): use only when a Conflu
 - `context/stacks/nats-jetstream.md` — lighter alternative for smaller volumes
 - `context/stacks/kafka-trino.md` — Kafka as a Trino-queryable data source
 - `context/doctrine/broker-selection.md` — three-way NATS vs Kafka vs Redis Streams decision
+- `context/stacks/redis.md` — Redis Streams section
 - `context/stacks/coordination-seam-patterns.md` — Kafka broker seam implementation
 - `context/stacks/duo-clojure-go.md` — primary Kafka duo
 - `context/stacks/trio-clojure-python-go.md` — Kafka in a trio pipeline
