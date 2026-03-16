@@ -1,0 +1,91 @@
+services:
+  nats:
+    image: nats:2.10-alpine
+    command: "-js"
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8222/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  python-service:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM python:3.12-slim
+        WORKDIR /app
+        RUN pip install fastapi uvicorn
+        COPY python-side.py app.py
+        CMD ["python", "app.py"]
+    ports:
+      - "8002:8002"
+    environment:
+      PORT: "8002"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  elixir-service:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM elixir:1.16-alpine
+        WORKDIR /app
+        RUN mix local.hex --force && mix local.rebar --force
+        RUN mix new coordinator --module ElixirCoordinator
+        WORKDIR /app/coordinator
+        RUN echo '{:gnat, "~> 1.7"}, {:jason, "~> 1.4"}, {:plug_cowboy, "~> 2.7"}' > /tmp/deps.txt
+        COPY elixir-side.ex lib/elixir_coordinator.ex
+        CMD ["mix", "run", "--no-halt"]
+    ports:
+      - "4000:4000"
+    environment:
+      NATS_URL: "nats://nats:4222"
+      PYTHON_SCORE_URL: "http://python-service:8002"
+    depends_on:
+      nats:
+        condition: service_healthy
+      python-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  go-service:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM golang:1.22-alpine AS builder
+        WORKDIR /app
+        RUN go mod init goservice && go get github.com/nats-io/nats.go@latest
+        COPY go-side.go main.go
+        RUN go build -o server .
+        FROM alpine:3.19
+        RUN apk add --no-cache curl
+        COPY --from=builder /app/server /server
+        CMD ["/server"]
+    ports:
+      - "8080:8080"
+    environment:
+      NATS_URL: "nats://nats:4222"
+    depends_on:
+      nats:
+        condition: service_healthy
+      elixir-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
