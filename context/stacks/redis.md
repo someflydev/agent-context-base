@@ -41,6 +41,136 @@ Choose the right native structure for the job. Do not serialize everything into 
 - For stream or list consumers, prove that a message is enqueued and consumed within the test boundary
 - Do not share the Redis instance between dev and test — cross-test contamination is hard to debug
 
+## Redis Streams
+
+### When to Use Redis Streams
+
+Use Redis Streams (not a List or Pub/Sub) when:
+
+- You need durable consumer groups — multiple named groups tracking independent offsets.
+- You need at-least-once delivery — each message must be ACKed or it stays in the Pending Entries List (PEL).
+- You need ordered delivery within the stream.
+- Volume is within Redis's capacity (< 500k messages/day) and you do not need partition scaling.
+- You already run Redis and don't want to introduce a separate broker service.
+
+Do NOT use Redis Streams as a replacement for Kafka when:
+
+- Volume requires horizontal partitioning beyond what a single Redis instance handles.
+- Long-term message retention (days/weeks) is required — MAXLEN trims messages; there is no log file.
+- Cross-team schema contracts need a registry.
+
+### Key Commands
+
+**XADD — append a message:**
+```python
+# redis-py: pip install redis
+import redis
+r = redis.Redis.from_url(os.getenv("REDIS_URL"))
+
+msg_id = r.xadd(
+    "domain:orders:events",
+    {
+        "payload_version": "1",
+        "correlation_id": "req-001",
+        "event_type": "order.created",
+        "entity_id": "ord-9182",
+        "tenant_id": "acme",
+    },
+    maxlen=10000,    # approximate trim — keeps stream bounded
+    approximate=True,
+)
+# msg_id: b'1710000000000-0' (millisecond timestamp + sequence)
+```
+
+**XREADGROUP — consume with a consumer group:**
+```python
+# Create consumer group (idempotent with mkstream=True):
+try:
+    r.xgroup_create("domain:orders:events", "order-processors", id="0", mkstream=True)
+except redis.exceptions.ResponseError as e:
+    if "BUSYGROUP" not in str(e):
+        raise  # group already exists is OK
+
+# Read new messages (> means "after my last-delivered ID"):
+messages = r.xreadgroup(
+    groupname="order-processors",
+    consumername="worker-1",
+    streams={"domain:orders:events": ">"},
+    count=10,
+    block=2000,   # block up to 2 seconds if no messages
+)
+for stream_name, entries in (messages or []):
+    for msg_id, fields in entries:
+        try:
+            process_event(fields)
+            r.xack("domain:orders:events", "order-processors", msg_id)
+        except Exception as e:
+            log.error(f"processing failed for {msg_id}: {e}")
+            # Do NOT ack — message stays in PEL for retry or DLQ handling
+```
+
+**XPENDING — inspect unacknowledged messages:**
+```python
+# Summary: how many pending messages per consumer
+pending_summary = r.xpending("domain:orders:events", "order-processors")
+
+# Detail: list specific pending messages
+pending_detail = r.xpending_range(
+    "domain:orders:events", "order-processors",
+    min="-", max="+", count=100
+)
+# Each entry: {message_id, consumer, time_since_delivered_ms, delivery_count}
+```
+
+**XCLAIM — reassign stale messages from a crashed consumer:**
+```python
+# Reassign messages idle for more than 30 seconds to "worker-2"
+claimed = r.xclaim(
+    "domain:orders:events",
+    "order-processors",
+    "worker-2",
+    min_idle_time=30000,   # milliseconds
+    message_ids=[stale_msg_id],
+)
+```
+
+**XRANGE — replay from a given ID:**
+```python
+# Read all messages from a specific ID onwards:
+messages = r.xrange("domain:orders:events", min="1710000000000-0", max="+")
+```
+
+### Stream Naming Convention
+
+- Pattern: `{domain}:{entity}:{event_type}` (colon-separated, following Redis key convention)
+- Examples: `domain:orders:events`, `notifications:emails:queued`
+- Keep the stream name short — it appears in every XADD/XREADGROUP call.
+
+### Trimming Strategy
+
+- Use `MAXLEN ~ N` (approximate) on every XADD to bound stream size automatically.
+- Approximate trimming (`approximate=True`) is significantly cheaper than exact trimming.
+- Set MAXLEN based on retention window: if messages are typically consumed within 1 hour and throughput is 100/sec, `MAXLEN=360000` keeps a 1-hour window with margin.
+- For audit or replay needs beyond the trim window, archive to a persistent store before trim.
+
+### Local Dev docker-compose Note
+
+No changes to the docker-compose pattern — Redis Streams use the same `redis:7-alpine` service as other Redis features. Ensure the service uses a named volume or `--save ""` based on whether stream persistence between restarts is needed in dev.
+
+### Testing Expectations for Streams
+
+- Prove a produce + consume round-trip with XACK.
+- Prove that an unacknowledged message (no XACK) reappears in XPENDING.
+- Prove XCLAIM correctly reassigns a stale message.
+- Use a short `maxlen` in tests to verify trimming behavior.
+- Run against a real Redis instance — do not mock XREADGROUP semantics.
+
+### Related
+
+- context/doctrine/broker-selection.md — when Redis Streams vs NATS vs Kafka
+- context/stacks/nats-jetstream.md
+- context/stacks/kafka.md
+
 ## Credible Use Cases
 
 - **Leaderboard**: sorted set with score as a numeric rank metric; `ZREVRANGE` or `ZREVRANGEBYSCORE` for top-N retrieval
