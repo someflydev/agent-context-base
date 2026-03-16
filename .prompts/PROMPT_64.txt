@@ -1,0 +1,863 @@
+You are working inside the agent-context-base repository.
+
+Before proceeding, read:
+
+  context/doctrine/faceted-query-count-discipline.md
+  context/doctrine/filter-state-and-query-state.md
+  context/doctrine/filter-panel-rendering-rules.md
+  context/workflows/render-filter-panel-include-exclude-ui.md
+  context/workflows/add-faceted-filter-ui.md
+  examples/canonical-api/fastapi-split-filter-panel-example.py
+  examples/canonical-api/README-faceted-filter-examples.md
+  examples/canonical-integration-tests/playwright-split-filter-panel-example.spec.ts
+
+This prompt extends the backend-driven faceted filter UI capability — established in
+PROMPT_31, PROMPT_50, and PROMPT_51 — with three additional features:
+
+  FEATURE A — Text search bar: a free-text input that narrows results on top of any
+               active facet filters, and whose presence must be accurately reflected
+               in all dynamic counts shown next to filter labels.
+
+  FEATURE B — Sort order: a dropdown in the results section that controls result
+               ordering with at least three options, preserved in query state and
+               across HTMX partial swaps.
+
+  FEATURE C — Independent scroll layout: the filter panel and results section sit
+               side-by-side and each scrolls independently without moving the other.
+
+These three features apply to the Python/FastAPI reference implementation and to all
+13 language stacks already covered by PROMPT_51. The shared data-* attribute contract
+is extended (not replaced) so existing Playwright tests continue to pass.
+
+Organize all work into commit-ready batches. For each batch:
+1. Give the batch title.
+2. Explain the purpose.
+3. List created or updated files.
+4. Provide the full contents of each file.
+5. End with a suggested commit message with prefix [PROMPT_64].
+
+
+---
+
+BEHAVIORAL SPECIFICATION
+
+Internalize the following rules before producing any deliverable. Every file produced
+must enforce them without exception.
+
+
+RULE 4 — TEXT SEARCH COUNT SEMANTICS
+
+Text search is a "base filter" applied before any facet logic runs. When a query
+string Q is present (non-empty, after trimming):
+
+  a) filter_rows(state): applies text search to narrow the row set first, then applies
+     all dimension filters (team_in/out, status_in/out, region_in/out) to the narrowed set.
+     Search is case-insensitive substring match against the report_id field (at minimum).
+     Implementations may also match against other string fields (region, team, status);
+     if they do, they must do so consistently and document it.
+
+  b) facet_counts(state, dimension): the relaxation of same-dimension includes applies
+     only to facet filters, never to the text search. Text search is always applied.
+     Concretely: apply Q first, then apply all other dimensions' filters fully,
+     then relax same-dimension includes. Count rows.
+
+  c) exclude_impact_counts(state, dimension): apply Q first, then apply all other
+     dimensions' filters fully (without this dimension's includes OR excludes),
+     then count rows per value in this dimension.
+
+  d) The result-count badge always reflects rows passing both Q and all facet filters.
+
+  e) When Q is empty, behaviour is identical to the existing implementation (no change).
+
+  f) The count shown next to each facet option changes when Q is active. This is
+     correct and expected — the filter panel is showing counts scoped to what is
+     currently visible given the search. Do not suppress or cache pre-search counts.
+
+  g) The search input must carry: name="query", data-role="search-input",
+     data-search-query="{Q}" (the current value). It must be inside the HTMX form so
+     that typing triggers partial updates. Use hx-trigger="keyup changed delay:300ms"
+     to debounce.
+
+
+RULE 5 — SORT ORDER SEMANTICS
+
+Sort affects the result display order only. It does NOT affect counts of any kind.
+
+  a) Three options are required (exact values used as query parameter values):
+       events_desc  —  "Events: high → low"   (default when sort param is absent)
+       events_asc   —  "Events: low → high"
+       name_asc     —  "Name: A → Z"           (alphabetical by report_id)
+
+  b) The sort value is part of query state. It must be preserved across HTMX partial
+     swaps: when the results fragment is re-rendered, the sort dropdown reflects the
+     current sort value.
+
+  c) The sort select element must carry:
+       name="sort"
+       data-role="sort-select"
+       data-sort-order="{current sort value}"
+     It must be inside the HTMX form so that changing the select triggers a partial update.
+
+  d) The sort select is rendered in the results section header, above the result list
+     but below the result-count badge.
+
+  e) The query parameter name is "sort". Default (when absent): "events_desc".
+
+
+RULE 6 — INDEPENDENT SCROLL LAYOUT
+
+The page layout must allow the filter panel and the results section to scroll
+independently. This is achieved through CSS only — no JavaScript required.
+
+  a) The outermost wrapper uses a horizontal flex layout with a fixed viewport height:
+       class="flex h-screen overflow-hidden"
+       id="reports-layout"
+
+  b) The filter panel (aside) is a fixed-width column with independent vertical scroll:
+       id="filter-panel"
+       class="w-72 flex-shrink-0 overflow-y-auto border-r p-4"
+
+  c) The results section container takes remaining width with independent vertical scroll:
+       id="report-results-container"
+       class="flex-1 overflow-y-auto p-4"
+
+  d) The actual results list (the HTMX swap target for partials) lives inside the
+     results container. The results container is NOT itself the swap target — the
+     existing id="report-results" element remains the swap target inside it.
+
+  e) The layout wrapper is rendered once on full page load. HTMX partial swaps replace
+     only id="report-results" (and OOB result-count badge). They do not re-render the
+     layout wrapper. This ensures scroll position of the filter panel is preserved across
+     result updates.
+
+  f) Implementations must carry data-role="reports-layout" on the outer wrapper
+     for Playwright assertions to locate and verify the layout structure.
+
+
+UPDATED QUERY STATE MODEL
+
+All existing six fields remain unchanged. Add two new fields:
+
+  query   — string, the text search term (empty string when no search is active)
+             Query parameter name: "query"
+             Default: "" (empty string)
+
+  sort    — string, one of: "events_desc", "events_asc", "name_asc"
+             Query parameter name: "sort"
+             Default: "events_desc"
+
+Query parameter parsing:
+  "query" is a single string value (not multi-value).
+  "sort" is a single string value (not multi-value). Invalid values default to "events_desc".
+
+
+UPDATED FINGERPRINT
+
+The fingerprint string must include query and sort fields. Example format:
+  "team_in=growth|team_out=|status_in=|status_out=archived|region_in=|region_out=|query=signup|sort=name_asc"
+
+
+UPDATED DATA-* ATTRIBUTE CONTRACT (additions only — all PROMPT_50/51 attributes unchanged)
+
+  On the outer layout wrapper:
+    data-role="reports-layout"
+
+  On the search input element:
+    name="query"
+    data-role="search-input"
+    data-search-query="{current Q value, empty string if none}"
+
+  On the sort select element:
+    name="sort"
+    data-role="sort-select"
+    data-sort-order="{current sort value}"
+
+  On the results section (existing id="report-results"):
+    Add: data-search-query="{Q}"
+    Add: data-sort-order="{sort}"
+    (These are additions; existing data-query-fingerprint and data-result-count remain.)
+
+
+---
+
+SECTION 1 — Doctrine updates
+
+Update the following existing doctrine docs. Keep all existing content intact;
+add new sections without modifying or removing existing text.
+
+
+context/doctrine/faceted-query-count-discipline.md
+  Add a section "Text Search as Base Filter" describing RULE 4.
+  Key points:
+  - Search is always applied before facet count relaxation, never relaxed itself.
+  - Facet option counts reflect rows matching both the search and the other dimensions' filters.
+  - Showing pre-search counts when a search is active is a correctness failure.
+  - When Q is empty, all existing count semantics apply unchanged.
+
+
+context/doctrine/filter-state-and-query-state.md
+  Add a note to the state model section: query and sort are now canonical state fields.
+  They are preserved in fingerprints and partial swap responses.
+  Sort is never reflected in counts; query is always reflected in counts.
+
+
+context/doctrine/filter-panel-rendering-rules.md
+  Add a section "Search Bar" describing the search input contract from RULE 4g.
+  Add a section "Sort Order" describing the sort select contract from RULE 5.
+  Add a section "Independent Scroll Layout" describing the layout contract from RULE 6.
+
+
+Add a new doctrine doc:
+
+  context/doctrine/search-sort-scroll-layout.md
+
+  This is the authoritative reference for the three features added by PROMPT_64.
+  Structure it as:
+
+  ## Text Search in Faceted Filter UIs (RULE 4)
+    When to use text search. Why it must narrow the base row set before facet logic.
+    How it interacts with facet_counts and exclude_impact_counts.
+    The failure mode: computing counts against the full dataset when a search is active
+    (makes counts misleading — filter labels claim more rows than actually exist in the
+    search-filtered result set).
+    Data-* contract for the search input.
+
+  ## Sort Order (RULE 5)
+    What sort controls. What it does NOT control (counts are never affected).
+    The three canonical sort options and their values.
+    Why sort must be preserved in the fragment response (so the dropdown doesn't reset).
+    Data-* contract for the sort select.
+
+  ## Independent Scroll Layout (RULE 6)
+    The layout constraint: filter panel and results must scroll without coupling.
+    The CSS approach: flex h-screen overflow-hidden wrapper, overflow-y-auto on each column.
+    Why the layout wrapper must NOT be a partial swap target.
+    Why this matters: users commonly scroll the filter panel to find a facet option while
+    the results section is scrolled to a different position. Coupled scroll ruins this.
+    Data-* contract for the layout wrapper.
+
+  ## Common Failure Modes
+    - Recomputing counts against the pre-search dataset when Q is active
+    - Resetting the sort dropdown to "events_desc" on every HTMX swap
+    - Making the layout wrapper a swap target (wipes scroll position)
+    - Omitting data-search-query on the input (breaks Playwright assertions)
+    - Forgetting to include "query" and "sort" in the results fragment's data-* attrs
+
+
+---
+
+SECTION 2 — Workflow updates
+
+Update the following existing workflow docs. Add new steps; keep existing steps intact.
+
+
+context/workflows/add-faceted-filter-ui.md
+  Add a "Standard Enhancements" section at the end listing text search, sort order,
+  and independent scroll layout as the canonical next steps after the base filter UI
+  is working. Reference add-text-search-to-filter-ui.md and add-sort-order-to-results.md.
+
+
+Add two new workflow docs:
+
+
+context/workflows/add-text-search-to-filter-ui.md
+
+  Purpose: Add a text search bar that narrows results and counts on top of any active
+           facet filters, following RULE 4 from search-sort-scroll-layout.md.
+
+  When to use it:
+    - When the result set is large enough that users need free-text narrowing.
+    - When the filter panel alone does not give sufficient precision.
+
+  Sequence:
+    1. Add a "query" field to the query state struct/type. Default to empty string.
+    2. Update filter_rows: apply case-insensitive substring match on report_id (and any
+       other appropriate fields) before applying dimension filters.
+    3. Update facet_counts: apply search before counting (Q is never relaxed).
+    4. Update exclude_impact_counts: apply search before counting.
+    5. Add the search input element inside the HTMX form with name="query",
+       data-role="search-input", data-search-query="{Q}", hx-trigger="keyup changed delay:300ms".
+       Pre-populate its value from the current Q state.
+    6. Add "query" to the fingerprint string.
+    7. Add data-search-query="{Q}" to the results section element.
+    8. Write Playwright assertions verifying:
+       - With query="signup": result count matches only rows containing "signup" in report_id.
+       - Facet option counts reflect the search-narrowed set.
+       - The search input value is preserved after an HTMX swap.
+
+  Outputs:
+    - Updated query state model.
+    - Updated filter logic functions.
+    - Search input in the rendered HTML.
+    - Playwright tests for search + count accuracy.
+
+  Related doctrine:
+    - context/doctrine/search-sort-scroll-layout.md
+    - context/doctrine/faceted-query-count-discipline.md
+
+  Common pitfalls:
+    - Computing facet counts against the full dataset when Q is active (count mismatch).
+    - Not pre-populating the search input value (input resets to empty on every swap).
+    - Missing data-search-query on the input or results section (breaks Playwright).
+    - Using hx-trigger="keyup" without a delay (floods the server on fast typing).
+
+  Stop conditions:
+    - A Playwright test passes: with query="signup", result count = 2 and
+      facet counts reflect only the matching rows.
+    - The search input value is preserved after an HTMX partial swap.
+
+
+context/workflows/add-sort-order-to-results.md
+
+  Purpose: Add a sort order dropdown to the results section that controls result
+           ordering without affecting any counts, following RULE 5 from
+           search-sort-scroll-layout.md.
+
+  When to use it:
+    - Any time the results section contains ordered rows that users may want to
+      re-sort without changing the active filter state.
+
+  Sequence:
+    1. Add a "sort" field to the query state struct/type. Default to "events_desc".
+       Accept values: "events_desc", "events_asc", "name_asc". Treat unknown values
+       as "events_desc".
+    2. Update results rendering: sort the result rows according to the sort field
+       before rendering. Events sorting is numeric; name sorting is lexicographic
+       on report_id (or equivalent identifier field).
+    3. Add the sort select element inside the HTMX form in the results section header.
+       Use name="sort", data-role="sort-select", data-sort-order="{current sort value}".
+       Render each option element with [selected] on the matching value.
+    4. Add "sort" to the fingerprint string.
+    5. Add data-sort-order="{sort}" to the results section element.
+    6. Write Playwright assertions verifying:
+       - With sort=events_asc: the first result card has the lowest event count.
+       - With sort=name_asc: the first result card is alphabetically first by report_id.
+       - The sort dropdown value is preserved after an HTMX partial swap triggered
+         by a facet filter change.
+
+  Outputs:
+    - Updated query state model.
+    - Sort logic in results rendering.
+    - Sort select element in the rendered HTML.
+    - Playwright tests for sort correctness and persistence.
+
+  Related doctrine:
+    - context/doctrine/search-sort-scroll-layout.md
+
+  Common pitfalls:
+    - Applying sort to counts (sort never affects counts, only result order).
+    - Resetting the sort dropdown to default on every HTMX swap (must pre-select
+      the current sort value in the fragment response).
+    - Treating "sort" as a multi-value parameter (it is always a single value).
+
+  Stop conditions:
+    - With sort=events_asc, the first rendered result card has the lowest event count.
+    - The sort dropdown retains its selected value after an HTMX swap.
+
+
+---
+
+SECTION 3 — Python reference implementation
+
+Add the following new file:
+
+  examples/canonical-api/fastapi-search-sort-filter-example.py
+
+This file extends the split filter panel pattern (fastapi-split-filter-panel-example.py)
+with text search, sort order, and independent scroll layout. It is the canonical reference
+implementation for all three PROMPT_64 features.
+
+Requirements:
+
+  - Use the same REPORT_ROWS, FACET_OPTIONS, and QUICK_EXCLUDES constants as the
+    existing examples. Do not introduce a new dataset.
+
+  - QueryState must include all eight fields:
+      team_in, team_out, status_in, status_out, region_in, region_out, query, sort
+
+  - Implement apply_text_search(rows, query) as a standalone function that filters
+    a row list by case-insensitive substring match on report_id. Call it first in
+    filter_rows before applying dimension filters.
+
+  - facet_counts(state, dimension) must call apply_text_search first.
+
+  - exclude_impact_counts(state, dimension) must call apply_text_search first.
+
+  - The sort options constant:
+      SORT_OPTIONS = [
+          ("events_desc", "Events: high → low"),
+          ("events_asc",  "Events: low → high"),
+          ("name_asc",    "Name: A → Z"),
+      ]
+
+  - sort_rows(rows, sort_value) applies the sort:
+      "events_desc" → descending by events
+      "events_asc"  → ascending by events
+      "name_asc"    → ascending by report_id (alphabetical)
+      unknown value → same as "events_desc"
+
+  - render_full_page(state) renders the complete HTML page including:
+      - The layout wrapper: <div data-role="reports-layout" class="flex h-screen overflow-hidden">
+      - The filter panel aside: id="filter-panel", class="w-72 flex-shrink-0 overflow-y-auto border-r p-4"
+      - The results container main: id="report-results-container", class="flex-1 overflow-y-auto p-4"
+      - The search input (inside the form, at the top of the filter panel):
+            <input type="text" name="query" value="{Q}" placeholder="Search reports…"
+                   data-role="search-input" data-search-query="{Q}"
+                   hx-get="/ui/reports/results" hx-target="#report-results"
+                   hx-trigger="keyup changed delay:300ms" hx-include="#report-filters" />
+      - The HTMX form (id="report-filters") wrapping the filter panel contents and results.
+      - The quick-excludes strip and per-dimension filter groups (from the split panel example).
+      - Inside the results container: the result-count badge, sort select, then id="report-results".
+
+  - render_results_fragment(state) renders:
+      - OOB result-count badge (existing contract, unchanged).
+      - The results section: id="report-results", data-query-fingerprint, data-result-count,
+        data-search-query="{Q}", data-sort-order="{sort}".
+      - Inside the results section:
+          - Active filters summary (existing).
+          - The sort select element:
+                <select name="sort" data-role="sort-select" data-sort-order="{sort}"
+                        hx-get="/ui/reports/results" hx-target="#report-results"
+                        hx-include="#report-filters">
+                  <option value="events_desc" {selected if sort==events_desc}>Events: high → low</option>
+                  <option value="events_asc"  {selected if sort==events_asc}>Events: low → high</option>
+                  <option value="name_asc"    {selected if sort==name_asc}>Name: A → Z</option>
+                </select>
+          - Result row cards (sorted per sort_rows).
+
+  - render_filter_panel_fragment(state) — same as before but now also includes the
+    search input at the top of the panel. (The filter panel fragment endpoint is used
+    when only the filter panel needs refreshing without touching the results.)
+
+  - Endpoints:
+      GET /ui/reports            → render_full_page
+      GET /ui/reports/results    → render_results_fragment
+      GET /ui/reports/filter-panel → render_filter_panel_fragment
+      GET /healthz               → health check
+
+  - fingerprint(state) includes query and sort in its output string.
+
+Also add the companion doc:
+
+  examples/canonical-api/fastapi-search-sort-filter-example.md
+
+  Following the existing companion doc pattern. Include:
+  ## Purpose
+  ## Extended query state (two new fields)
+  ## Text search semantics (RULE 4 — how it narrows counts)
+  ## Sort order semantics (RULE 5 — result order only, not counts)
+  ## Independent scroll layout (RULE 6 — CSS approach)
+  ## Endpoints
+  ## Data contract (additions to the existing data-* attribute set)
+  ## Related
+    - context/doctrine/search-sort-scroll-layout.md
+    - context/doctrine/faceted-query-count-discipline.md
+    - examples/canonical-api/fastapi-split-filter-panel-example.py
+
+
+---
+
+SECTION 4 — Multi-language extensions
+
+Every language stack updated by PROMPT_51 must be updated to incorporate FEATURES A, B,
+and C. The shared delta is described here. Per-language notes follow for any idiom-specific
+considerations. The changes are updates to existing files, not new files.
+
+
+SHARED DELTA SPECIFICATION (apply to all 13 language stacks)
+
+  1. Query state: add "query" (string, default "") and "sort" (string, default "events_desc").
+
+  2. Normalize: trim and lowercase the "query" value. Validate "sort" — if not one of
+     the three valid values, default to "events_desc".
+
+  3. apply_text_search (standalone helper): filters a row list by case-insensitive
+     substring match on report_id. Named idiomatically per language.
+
+  4. filter_rows: call apply_text_search first, then apply dimension filters.
+
+  5. facet_counts: call apply_text_search first (on the pre-dimension-relaxation set).
+
+  6. exclude_impact_counts: call apply_text_search first.
+
+  7. sort_rows (standalone helper): sorts a row list by the sort value.
+     "events_desc" → numeric descending by events.
+     "events_asc"  → numeric ascending by events.
+     "name_asc"    → lexicographic ascending by report_id.
+
+  8. fingerprint: add "|query={Q}|sort={sort}" to the existing fingerprint fields.
+
+  9. render_results_fragment: add data-search-query and data-sort-order to the
+     results section element. Add the sort select with data-role="sort-select"
+     and data-sort-order. Pre-select the current sort value.
+
+  10. render_filter_panel (or equivalent): add the search input at the top of the panel
+      with name="query", data-role="search-input", data-search-query="{Q}", pre-populated
+      value, and a debounced HTMX trigger (keyup changed delay:300ms or equivalent).
+
+  11. render_full_page (or equivalent): wrap the layout in the independent scroll structure
+      per RULE 6. Add data-role="reports-layout" on the outer wrapper.
+
+  12. Companion .md file: update the "Data contract" section to mention the two new
+      data-* attributes on the search input, sort select, and results section.
+
+
+ELIXIR PHOENIX
+
+  - QueryState map: add "query" and "sort" keys.
+  - Multi-value param parsing unchanged; add Map.get(params, "query", "") and
+    Map.get(params, "sort", "events_desc").
+  - apply_text_search/2: String.contains? with String.downcase.
+  - For sort in HEEx template: use if/else or cond to add selected attribute.
+  - Layout wrapper: add data-role="reports-layout" and Tailwind classes via Phoenix attrs.
+
+
+GO ECHO + TEMPL
+
+  - QueryState struct: add Query string and Sort string fields.
+  - Multi-value param parsing: c.QueryParam("query") and c.QueryParam("sort").
+  - applyTextSearch: strings.Contains(strings.ToLower(row.ReportID), strings.ToLower(q)).
+  - Sort in templ: use a helper to determine which option is selected.
+  - The templ FilterPanel component gains a search input at the top.
+  - Note: templ generate must be re-run after template changes.
+
+
+TYPESCRIPT HONO + BUN
+
+  - QueryState type: add query: string and sort: string fields.
+  - c.req.query("query") and c.req.query("sort").
+  - applyTextSearch: filter on reportId.toLowerCase().includes(q.toLowerCase()).
+  - Sort select in JSX: use ternary for selected attribute on each option.
+  - Layout wrapper uses class (not className) for Tailwind.
+
+
+RUST AXUM
+
+  - QueryState (Deserialize): add query: Option<String> and sort: Option<String>.
+    Use unwrap_or_default() and unwrap_or_else(|| "events_desc".to_string()).
+  - apply_text_search: row.report_id.to_lowercase().contains(&q.to_lowercase()).
+  - Sort using sort_by with a match on the sort value.
+  - HTML string building: add search input and sort select to the render functions.
+
+
+RUBY HANAMI
+
+  - QueryState Struct: add :query and :sort fields.
+  - params[:query].to_s.strip and params[:sort].to_s.
+  - apply_text_search: select with row[:report_id].downcase.include?(q.downcase).
+  - Sort in heredoc: map options with selected marker using a conditional.
+
+
+CLOJURE KIT + NEXT.JDBC + HICCUP
+
+  - query-state map: add :query and :sort keys.
+  - (get-in request [:params :query] "") and similar for sort.
+  - apply-text-search: filter using clojure.string/includes? with lower-case.
+  - Sort using sort-by with a comparator dispatched on the sort value.
+  - Hiccup select: build option vectors with conditional :selected attribute.
+
+
+KOTLIN HTTP4K + EXPOSED
+
+  - QueryState data class: add query: String = "" and sort: String = "events_desc".
+  - request.query("query") ?: "" and request.query("sort") ?: "events_desc".
+  - applyTextSearch: filter where row["report_id"].toString().lowercase()
+    .contains(q.lowercase()).
+  - sortRows: sortedBy / sortedByDescending depending on sort value.
+  - buildString for HTML: add search input and sort select blocks.
+
+
+SCALA TAPIR + HTTP4S + ZIO
+
+  - QueryState case class: add query: String = "" and sort: String = "events_desc".
+  - req.params.getOrElse("query", "") and similar for sort.
+  - applyTextSearch: filter where row.getOrElse("report_id","").toString
+    .toLowerCase.contains(q.toLowerCase).
+  - Sort using sortBy / sortWith dispatched on sort value.
+
+
+CRYSTAL KEMAL + AVRAM
+
+  - QueryState: add query : String and sort : String fields with defaults.
+  - env.params.query["query"]? and env.params.query["sort"]?.
+  - apply_text_search: select rows where row[:report_id].downcase.includes?(q.downcase).
+  - Sort using sort_by with a case expression.
+
+
+DART DARTFROG
+
+  - QueryState class: add String query and String sort fields.
+  - context.request.uri.queryParameters["query"] ?? "".
+  - applyTextSearch: where (row['report_id'] as String)
+    .toLowerCase().contains(q.toLowerCase()).
+  - Sort using List.sort with a comparator.
+
+
+OCAML DREAM + CAQTI + TYXML
+
+  - query_state record: add query: string and sort: string fields.
+  - Dream.query request "query" |> Option.value ~default:"".
+  - apply_text_search: List.filter using String.lowercase_ascii and
+    contains helper (String.sub search or re-implement substr).
+  - Sort using List.sort with a compare function dispatched on sort.
+  - TyXML: use Html.Unsafe.string_attrib for data-search-query on the input.
+
+
+NIM JESTER + HAPPYX
+
+  - QueryState: add query: string and sort: string fields.
+  - @"query" for the search param (single value).
+  - apply_text_search: filterIt(rows, it.report_id.toLowerAscii.contains(q.toLowerAscii)).
+  - Sort using algorithm.sort with a cmp proc dispatched on sort value.
+
+
+ZIG JETZIG + ZAP
+
+  - QueryState: add query field ([]const u8 or similar) and sort field.
+  - apply_text_search: std.mem.indexOf(u8, ...) after lowercasing both strings.
+    Note: Zig string handling requires care; add inline comments explaining the approach.
+  - Sort in the template: pass the sorted slice to the Zmpl template.
+  - Add a comment noting that Zig string lowercasing requires allocator usage in
+    a real implementation; the example can use a simplified approach for clarity.
+
+
+---
+
+SECTION 5 — Playwright tests for new features
+
+Add the following new Playwright test file:
+
+  examples/canonical-integration-tests/playwright-search-sort-example.spec.ts
+
+This file tests the three new features: text search, sort order, and independent scroll layout.
+Each test must assert both data-* attributes and visible DOM state (text content or computed
+CSS). It does NOT duplicate the CUJ (critical user journey) tests added by PROMPT_65; these
+are focused unit-level browser tests for each new feature in isolation.
+
+
+Test 1: "search input is present with correct data attributes"
+  - Load /ui/reports (no params)
+  - Find [data-role="search-input"]
+  - Assert name attribute is "query"
+  - Assert data-search-query is "" or absent
+  - Assert the input is not disabled
+
+Test 2: "results reflect text search — result count and result cards"
+  - Load /ui/reports?query=signup
+  - Assert [data-role="result-count"] text contains "2" (daily-signups, trial-conversions)
+  - Assert #report-results[data-result-count="2"]
+  - Assert #report-results[data-search-query="signup"]
+  - Assert exactly 2 result card elements are visible
+
+Test 3: "text search affects facet counts"
+  - Load /ui/reports?query=signup
+  - The two matching rows are: daily-signups (growth/active/us) and trial-conversions (growth/active/us)
+  - team facet:   growth count = 2, platform count = 0
+  - status facet: active count = 2, paused count = 0, archived count = 0
+  - region facet: us count = 2, eu count = 0, apac count = 0
+  - Find [data-filter-dimension="team"][data-filter-option="platform"][data-filter-mode="include"]
+  - Assert data-option-count="0"
+  - Find [data-filter-dimension="status"][data-filter-option="active"][data-filter-mode="include"]
+  - Assert data-option-count="2"
+
+Test 4: "search narrows counts in combination with facet filter"
+  - Load /ui/reports?query=import&status_out=archived
+    (legacy-import is the only row with "import" in report_id, and it is archived, so excluded)
+  - Assert result-count = 0
+  - Assert #report-results[data-result-count="0"]
+  - The status include option for "archived" must have data-excluded="true" and count=0 (RULE 1 still holds)
+
+Test 5: "search input value is preserved after HTMX partial swap triggered by facet change"
+  - Load /ui/reports?query=signup&team_in=growth
+  - Find [data-role="search-input"]
+  - Assert its value attribute is "signup"
+  - (This tests that the filter panel fragment re-populates the search input from state)
+
+Test 6: "sort select is present with correct data attributes"
+  - Load /ui/reports (no params)
+  - Find [data-role="sort-select"]
+  - Assert data-sort-order="events_desc" (the default)
+  - Assert the option with value "events_desc" has the selected attribute
+
+Test 7: "sort=events_asc places lowest-event result first"
+  - Load /ui/reports?sort=events_asc
+  - Find #report-results[data-sort-order="events_asc"]
+  - The first result card should correspond to legacy-import (events: 4)
+  - Assert the first card contains text "legacy-import" or "4"
+  - Assert data-sort-order="events_asc" on the sort select element
+
+Test 8: "sort=name_asc places alphabetically first result first"
+  - Load /ui/reports?sort=name_asc
+  - The first result card should be "api-latency" (alphabetically first among the 6 report_ids)
+  - Assert the first card contains text "api-latency"
+
+Test 9: "sort does not affect facet counts"
+  - Load /ui/reports?sort=events_asc
+  - facet counts must be identical to /ui/reports (default sort, no search)
+  - team: growth=3, platform=3
+  - status: active=4, paused=1, archived=1
+  - These counts are unchanged regardless of sort value
+
+Test 10: "sort select retains its value after an HTMX facet filter change"
+  - Load /ui/reports?sort=name_asc&status_out=archived
+  - Find [data-role="sort-select"]
+  - Assert data-sort-order="name_asc"
+  - Assert the option with value "name_asc" has the selected attribute
+
+Test 11: "layout has independent scroll structure"
+  - Load /ui/reports
+  - Find [data-role="reports-layout"]
+  - Assert it exists and contains both #filter-panel and #report-results-container
+  - Assert #filter-panel has CSS overflow-y of "auto" or "scroll"
+  - Assert #report-results-container has CSS overflow-y of "auto" or "scroll"
+  - Assert they are siblings (not nested within each other)
+
+Test 12: "sort select inside results section, search input inside filter panel"
+  - Load /ui/reports
+  - Assert [data-role="sort-select"] is a descendant of #report-results-container
+  - Assert [data-role="search-input"] is a descendant of #filter-panel
+    (or is adjacent to the filter panel, not inside the results container)
+  - This verifies the layout separation is correct
+
+Test 13: "search and sort combined — result order and count both correct"
+  - Load /ui/reports?query=signup&sort=name_asc
+  - Result count = 2 (daily-signups, trial-conversions)
+  - First result alphabetically = "daily-signups"
+  - Assert result-count = 2
+  - Assert first card is "daily-signups"
+  - Assert sort select shows "name_asc" as selected
+  - Assert search input value is "signup"
+
+
+---
+
+SECTION 6 — Registry, router, and catalog updates
+
+Update examples/catalog.json:
+  Add entries for fastapi-search-sort-filter-example.py and
+  fastapi-search-sort-filter-example.md. Tags: "faceted-filter", "search", "sort",
+  "htmx", "layout". Follow the existing entry format.
+
+Update verification/example_registry.yaml:
+  Add an entry for fastapi-search-sort-filter-example.py.
+  language: Python, framework: FastAPI, description: "Faceted filter with text search,
+  sort order, and independent scroll layout (PROMPT_64 reference)."
+
+Update context/router/task-router.md:
+  Add routing entries for:
+  - "add search bar to filter ui", "text search with faceted filters",
+    "search affects counts" → add-text-search-to-filter-ui.md
+  - "add sort order to results", "sort dropdown", "sort results" → add-sort-order-to-results.md
+  - "independent scroll", "filter panel scroll", "scroll layout" → search-sort-scroll-layout.md
+
+Update context/router/alias-catalog.yaml:
+  Add aliases for the new features pointing to the new doctrine doc and workflows.
+  Examples:
+  - "why are counts wrong when searching" → faceted-query-count-discipline.md (text search section)
+  - "search bar in htmx filter ui" → add-text-search-to-filter-ui.md
+  - "sort results without changing counts" → add-sort-order-to-results.md
+  - "filter and results scroll independently" → search-sort-scroll-layout.md
+  - "independent scroll layout htmx" → search-sort-scroll-layout.md
+
+Update verification/stack_support_matrix.yaml:
+  Add "text-search-filter", "sort-order", and "independent-scroll-layout" as capability
+  entries. Mark Python/FastAPI as supported. Mark the 13 PROMPT_51 languages as supported
+  once their examples are updated by this prompt.
+
+Update context/stacks/backend-driven-ui-htmx-tailwind-plotly.md:
+  Add a "Search, Sort, and Layout" section referencing the three new features and
+  the search-sort-scroll-layout.md doctrine doc.
+
+
+---
+
+SECTION 7 — Important constraints
+
+  - Do NOT change the dataset (REPORT_ROWS). The expected search results for "signup" are
+    daily-signups and trial-conversions (events: 12 and 7). These values must be consistent
+    across all language examples and test assertions.
+
+  - Do NOT alter the existing data-* attribute contract from PROMPT_50/51. Add to it; never
+    remove or rename attributes that existing Playwright tests rely on.
+
+  - Do NOT apply sort to counts. If you find yourself passing the sort parameter into a
+    count function, stop and reconsider.
+
+  - Do NOT use hx-trigger="keyup" without a delay on the search input. The debounce
+    (delay:300ms) is required to prevent excessive requests on fast typing.
+
+  - Do NOT make the layout wrapper (reports-layout) a partial swap target. Only
+    id="report-results" is a swap target. The layout structure is static after page load.
+
+  - Do NOT skip the companion .md update for multi-language examples. Every language
+    example that gains search/sort must have its companion .md updated to describe
+    the two new data-* attributes and the two new state fields.
+
+  - Keep all multi-language filter logic functions deterministic. Sort must be stable
+    (consistent ordering for rows with equal sort keys). Use report_id as tiebreaker
+    when events counts are equal.
+
+
+---
+
+SECTION 8 — Commit-ready batching
+
+Suggested batch structure:
+
+  Batch 1: Doctrine
+    - Add context/doctrine/search-sort-scroll-layout.md
+    - Update context/doctrine/faceted-query-count-discipline.md
+    - Update context/doctrine/filter-state-and-query-state.md
+    - Update context/doctrine/filter-panel-rendering-rules.md
+
+  Batch 2: Workflows
+    - Add context/workflows/add-text-search-to-filter-ui.md
+    - Add context/workflows/add-sort-order-to-results.md
+    - Update context/workflows/add-faceted-filter-ui.md
+
+  Batch 3: Python reference implementation
+    - Add examples/canonical-api/fastapi-search-sort-filter-example.py
+    - Add examples/canonical-api/fastapi-search-sort-filter-example.md
+
+  Batch 4: Playwright tests for new features
+    - Add examples/canonical-integration-tests/playwright-search-sort-example.spec.ts
+
+  Batch 5: Tier 1 language updates (Elixir, Go, TypeScript)
+    - Update phoenix-faceted-filter-example.ex + .html.heex + .md
+    - Update go-echo-faceted-filter-example.go + .templ + .md
+    - Update typescript-hono-faceted-filter-example.ts + .md
+
+  Batch 6: Tier 2 language updates (Rust, Ruby, Clojure)
+    - Update rust-axum-faceted-filter-example.rs + .md
+    - Update ruby-hanami-faceted-filter-example.rb + .md
+    - Update clojure-kit-nextjdbc-hiccup-faceted-filter-example.clj + .md
+
+  Batch 7: Tier 3 language updates — Kotlin, Scala, Crystal, Dart
+    - Update all four examples + companion .md files
+
+  Batch 8: Tier 3 language updates — OCaml, Nim, Zig
+    - Update all three examples + companion .md files (Zig: both .zig and .zmpl)
+
+  Batch 9: Registry, router, stack, and catalog updates
+    - examples/catalog.json
+    - verification/example_registry.yaml
+    - verification/stack_support_matrix.yaml
+    - context/router/task-router.md
+    - context/router/alias-catalog.yaml
+    - context/stacks/backend-driven-ui-htmx-tailwind-plotly.md
+
+  Batch 10: Cross-language README update
+    - Update examples/canonical-api/README-faceted-filter-examples.md
+      to document the search/sort additions, the updated expected counts
+      with search active, and the updated data-* attribute contract.
+
+You may combine batches if output is manageable. Do not combine doctrine/workflow
+batches with example code batches.
+
+
+---
+
+SECTION 9 — Output
+
+Generate the actual implementation pass in commit-ready batches now.
+Do not summarize or propose. Produce the complete file contents for each file.

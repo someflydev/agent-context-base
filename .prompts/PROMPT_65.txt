@@ -1,0 +1,630 @@
+You are working inside the agent-context-base repository.
+
+Before proceeding, read:
+
+  context/doctrine/faceted-query-count-discipline.md
+  context/doctrine/filter-panel-rendering-rules.md
+  context/doctrine/filter-state-and-query-state.md
+  context/doctrine/search-sort-scroll-layout.md            (added in PROMPT_64)
+  context/workflows/add-playwright-ui-verification.md
+  examples/canonical-api/fastapi-search-sort-filter-example.py  (added in PROMPT_64)
+  examples/canonical-integration-tests/playwright-split-filter-panel-example.spec.ts
+  examples/canonical-integration-tests/playwright-search-sort-example.spec.ts  (added in PROMPT_64)
+  examples/canonical-api/README-faceted-filter-examples.md
+
+This prompt adds comprehensive critical user journey (CUJ) Playwright tests for the
+full faceted filter UI: include/exclude filters, quick excludes, text search, sort order,
+and independent scroll layout — the complete capability set as of PROMPT_64.
+
+The existing tests (playwright-split-filter-panel-example.spec.ts,
+playwright-search-sort-example.spec.ts) test individual features in isolation.
+This prompt tests the features as a user actually uses them: in sequence, in combination,
+and with state carried across multiple interactions. These are not unit tests of the
+filter logic — they are end-to-end tests of the user experience.
+
+A critical user journey (CUJ) is a multi-step interaction sequence that represents a
+realistic task a user would perform. Each CUJ in this spec corresponds to a named
+scenario with a clear user goal, a sequence of actions, and a set of assertions that
+verify the system behaved correctly at each step and at the end.
+
+Organize all work into commit-ready batches. For each batch:
+1. Give the batch title.
+2. Explain the purpose.
+3. List created or updated files.
+4. Provide the full contents of each file.
+5. End with a suggested commit message with prefix [PROMPT_65].
+
+
+---
+
+CUJ DEFINITIONS
+
+The following ten CUJs define the scope of testing. Each maps to a describe block
+in the Playwright test file. Read these definitions carefully — they determine the
+exact test structure, the assertions to make, and the order of actions within each test.
+
+CUJ-1: "Discover and narrow: facet filter followed by text search"
+  Goal: User starts with an unfiltered view, applies a facet filter to narrow by
+        dimension, then uses the search bar to narrow further within that filtered view.
+  Steps:
+    1. Load /ui/reports with no params.
+       Verify: result count = 6, all facet option counts are at baseline.
+    2. Click/activate status_out=archived (exclude archived).
+       Verify: result count = 5, archived include option is greyed with count=0 (RULE 1),
+               archived exclude option shows data-active="true" with count=1 (RULE 2).
+    3. Type "growth" into the search input.
+       Verify: result count = 2 (daily-signups: growth/active/us, trial-conversions: growth/active/us — api-latency and checkout-failures are growth/active/eu but wait: let me clarify)
+       Wait — restate: with status_out=archived and query=growth (substring of team value
+       NOT report_id). If search matches only report_id: no rows have "growth" in report_id.
+       Use query="signup" for this step instead.
+       With status_out=archived and query=signup: matches daily-signups, trial-conversions.
+       Verify: result count = 2.
+       team facet: growth=2, platform=0.
+       The archived include option: still greyed (RULE 1, exclude still active) with count=0.
+    4. Clear the search (set query to "").
+       Verify: result count returns to 5 (status_out=archived still active).
+       Facet counts return to the archived-excluded baseline.
+  Key assertions:
+    - Counts update at each step without page reload.
+    - RULE 1 (include greyed when excluded) holds throughout.
+    - The search input value is pre-populated from state at each step.
+    - Clearing search does not clear the active facet filter.
+
+
+CUJ-2: "Search first, then progressively add facet filters"
+  Goal: User starts with a text search, then adds facet filters to narrow further.
+  Steps:
+    1. Load /ui/reports?query=a (matches: api-latency, api-latency — wait, use "latency")
+       Use query="latency": matches "api-latency" only. Result count = 1.
+       Verify: result count = 1, team facet shows platform=1, growth=0.
+    2. Still with query="latency": activate team_in=growth.
+       Verify: result count = 0 (api-latency is platform, not growth).
+       team facet: growth=0 (the only matching row is platform, growth would show 0
+       even without team_in because search has filtered to 1 platform row).
+       All facet counts drop to 0 for options outside the surviving row's values.
+    3. Remove team_in=growth (go back to query="latency" only).
+       Verify: result count = 1, team facet platform=1.
+    4. Add region_in=eu with query="latency" still active.
+       api-latency is eu, so: result count = 1, counts for eu=1 across region.
+    5. Change query to "" (clear search), keep region_in=eu.
+       Verify: result count = 3 (api-latency, checkout-failures both eu; plus queue-depth
+       is apac, daily-signups is us, trial-conversions is us, legacy-import is us —
+       wait: eu rows are api-latency and checkout-failures = 2 rows).
+       Verify: result count = 2.
+       search input is now empty.
+  Key assertions:
+    - Each step's counts are computed with both the current search and current facet filters.
+    - The results section reflects the compound filter state at every step.
+    - The search input value is preserved across facet filter changes (HTMX swaps do not clear it).
+
+
+CUJ-3: "Quick excludes + search combination"
+  Goal: User activates quick excludes and then uses search; verifies that the quick
+        exclude badge counts and main-section counts both reflect the search.
+  Steps:
+    1. Load /ui/reports. Quick excludes strip is visible.
+       The "archived" quick exclude badge shows exclude_impact_count=1 (1 archived row).
+       The "paused" quick exclude badge shows exclude_impact_count=1 (1 paused row).
+    2. Click the "archived" quick exclude to activate it (status_out=archived).
+       Verify: archived quick exclude data-active="true".
+               Main section archived exclude option data-active="true" and checked.
+               Archived include option greyed with count=0 (RULE 1).
+    3. Type query="platform" into the search. Wait for debounce.
+       Matching rows with report_id containing "platform": none in the dataset.
+       (Report IDs are: daily-signups, trial-conversions, api-latency, checkout-failures,
+       queue-depth, legacy-import. None contain "platform".)
+       Verify: result count = 0.
+       The "archived" quick exclude badge must update its count to 0 (no rows to remove
+       because search returns empty set). The archived exclude option impact count = 0.
+       The "paused" quick exclude badge must also update its count to 0.
+    4. Change query to "queue".
+       Matches: queue-depth (platform/active/apac). Status_out=archived is still active.
+       queue-depth is active, not archived, so it passes the exclude.
+       Verify: result count = 1.
+       team facet: platform=1, growth=0.
+       Quick exclude "archived" badge count = 0 (queue-depth is not archived).
+    5. Clear query.
+       Verify: counts return to the status_out=archived baseline (result count = 5).
+       Quick exclude "archived" badge count = 1 again.
+  Key assertions:
+    - Quick exclude badge counts are affected by text search (they use exclude_impact_counts
+      which applies the base search filter before counting).
+    - RULE 3 synchronization holds even when search is active (quick exclude and main
+      section show the same active state).
+    - Clearing search restores the pre-search quick-exclude counts.
+
+
+CUJ-4: "Sort persistence across filter changes"
+  Goal: User sets a non-default sort order and then changes facet filters; verifies
+        the sort order is preserved and does not affect counts.
+  Steps:
+    1. Load /ui/reports?sort=name_asc.
+       Verify: first result card is "api-latency" (alphabetically first).
+               Sort select shows "name_asc" selected.
+               result count = 6. All facet counts are at baseline.
+    2. Activate status_out=archived.
+       Verify: result count = 5. First result card is still alphabetically first
+               among the 5 remaining rows.
+               Sort select still shows "name_asc" selected.
+               data-sort-order="name_asc" on both the select and #report-results.
+    3. Activate team_in=growth.
+       With status_out=archived and team_in=growth: matches daily-signups, trial-conversions,
+       checkout-failures (all growth+active).
+       Verify: result count = 3. Sorted alphabetically: checkout-failures, daily-signups, trial-conversions.
+               First card = "checkout-failures".
+               Sort select still "name_asc".
+    4. Change sort to events_asc via the sort dropdown.
+       Verify: result count still = 3 (sort does not change filtering).
+               Facet counts are unchanged from step 3.
+               First result card = "checkout-failures" (9 events)? Wait — sort=events_asc,
+               so lowest events first. Among growth+active rows:
+               daily-signups=12, trial-conversions=7, checkout-failures=9.
+               events_asc: trial-conversions(7), checkout-failures(9), daily-signups(12).
+               First card = "trial-conversions".
+    5. Add query="daily".
+       Matches: daily-signups. result count = 1.
+               Sort does not affect a single result.
+               Sort select still shows "events_asc".
+  Key assertions:
+    - Sort is never reset to default when a facet filter or search changes.
+    - All facet counts are identical regardless of current sort value.
+    - The sort dropdown always reflects the current sort state from the fragment response.
+
+
+CUJ-5: "RULE 1 and RULE 2 hold under text search and combined filters"
+  Goal: Verify that include greying (RULE 1) and exclude impact count (RULE 2) are
+        computed correctly when a text search is also active, including edge cases where
+        the search makes an excluded value's impact count drop to zero.
+  Steps:
+    1. Load /ui/reports?status_out=archived&query=signup.
+       With search="signup": matches daily-signups, trial-conversions (both growth/active/us).
+       None of these are archived.
+       Verify:
+         - result count = 2.
+         - status "archived" include option: data-excluded="true", data-option-count="0" (RULE 1).
+           (Correct: archived is excluded AND there are no archived rows in the search result.)
+         - status "archived" exclude option: data-active="true", data-option-count="0" (RULE 2).
+           (Correct: exclude_impact_counts with search="signup" applied first — no "signup" rows
+           are archived, so removing archived removes 0 rows. Impact count = 0.)
+           IMPORTANT: the exclude option must NOT be greyed or disabled even though count=0.
+           The user applied this filter; it simply has no effect in the current search context.
+         - status "paused" include option: data-option-count="0" (no paused rows match "signup").
+           NOT greyed (paused is not in status_out, only archived is).
+         - status "active" include option: data-option-count="2" (both matching rows are active).
+    2. Clear the search.
+       With status_out=archived only:
+       Verify:
+         - result count = 5.
+         - status "archived" exclude option: data-option-count="1" (1 archived row removed).
+         - status "paused" include option: data-option-count="1" (api-latency is paused, survives).
+  Key assertions:
+    - An exclude option with count=0 due to search context must NOT be greyed or disabled.
+      Count=0 is a valid and informative state for an active exclude filter.
+    - Facet option counts are always scoped to both the search and the filter state.
+    - Clearing search restores correct non-zero counts where appropriate.
+
+
+CUJ-6: "Include and exclude options maintain visual states under rapid filter changes"
+  Goal: User rapidly changes multiple filters; verifies no visual state desync occurs
+        between the quick excludes strip and the main section.
+  Steps:
+    1. Load /ui/reports.
+    2. Activate quick exclude "archived". Verify main section archived exclude is checked.
+    3. Activate quick exclude "paused". Verify main section paused exclude is checked.
+    4. Deactivate quick exclude "archived" (click again to toggle off).
+       Verify: main section archived exclude is unchecked.
+               main section paused exclude is still checked.
+               Quick exclude "archived" shows data-active="false" or no data-active="true".
+    5. Add query="api" (matches api-latency, which is platform/paused/eu).
+       status_out=paused is active; api-latency is paused, so it is excluded.
+       Verify: result count = 0 (the only "api" row is excluded by status_out=paused).
+               Paused include option: data-excluded="true", count=0 (RULE 1 + search narrows to 0).
+               Quick exclude "paused" badge count = 0 (same reasoning as CUJ-3).
+    6. Deactivate quick exclude "paused".
+       Verify: paused include option no longer greyed (data-excluded absent or false).
+               result count = 1 (api-latency now passes, search still "api").
+  Key assertions:
+    - Quick exclude toggles and main section checkboxes always agree on active state.
+    - No stale HTML from a previous HTMX swap causes visual desync.
+    - RULE 1 is re-evaluated on every state change (no caching of greyed/not-greyed state).
+
+
+CUJ-7: "Empty state — search that matches no rows"
+  Goal: User types a search term that matches no rows; verifies graceful empty state
+        with zero counts everywhere.
+  Steps:
+    1. Load /ui/reports.
+    2. Type query="xxxxxxxxnothing" into the search input.
+       Verify: result count = 0.
+               #report-results[data-result-count="0"].
+               All facet option counts are 0 for all include options.
+               All exclude impact counts are 0 for all exclude options.
+               The results section shows an empty state message or an empty card list
+               (no JavaScript errors, no broken layout).
+    3. The quick excludes strip is still visible and rendered correctly.
+       (Quick exclude badges may show 0 counts — this is correct.)
+    4. The sort select is still present and functional.
+       Change sort to events_asc.
+       Verify: result count is still 0. Sort select shows "events_asc". No errors.
+    5. Clear the search.
+       Verify: result count returns to 6. All counts return to baseline.
+  Key assertions:
+    - Zero counts are shown as "0", not as missing or hidden elements.
+    - data-* attributes are present on all option elements even in empty state.
+    - The sort select and search input remain interactive in empty state.
+    - The layout structure (data-role="reports-layout") is intact.
+
+
+CUJ-8: "Full compound state — all filters active simultaneously"
+  Goal: User applies every type of filter at once: facet include, facet exclude,
+        quick exclude, text search, and non-default sort. Verifies that the compound
+        state is internally consistent.
+  Steps:
+    1. Load /ui/reports?team_in=growth&status_out=archived&status_out=paused&query=checkout&sort=events_desc
+       Matching logic:
+         - search "checkout": matches "checkout-failures" only.
+         - team_in=growth: checkout-failures is growth. Pass.
+         - status_out=archived, paused: checkout-failures is active. Pass.
+         Result: 1 row — checkout-failures (growth/active/eu, events=9).
+    2. Verify: result count = 1.
+       #report-results[data-result-count="1"].
+       #report-results[data-search-query="checkout"].
+       #report-results[data-sort-order="events_desc"].
+    3. Verify filter panel state:
+       - team "growth" include option: checked, count=1.
+       - team "platform" include option: not checked, count=0 (search narrows to growth row only).
+       - status "archived" include option: data-excluded="true", count=0 (RULE 1).
+       - status "paused" include option: data-excluded="true", count=0 (RULE 1).
+       - status "active" include option: not greyed, count=1.
+       - region "eu" include option: not checked, count=1 (the matching row is eu).
+       - region "us" include option: not checked, count=0.
+       - region "apac" include option: not checked, count=0.
+    4. Verify quick excludes strip:
+       - "archived" quick exclude: data-active="true".
+       - "paused" quick exclude: data-active="true".
+    5. Sort select: shows "events_desc" selected.
+       Search input: value="checkout".
+    6. Change sort to name_asc.
+       Result count still = 1. Sort select updates to "name_asc".
+       All filter states from step 3 remain unchanged.
+  Key assertions:
+    - The compound state from query params is correctly parsed and reflected everywhere.
+    - Changing only the sort param does not disturb any other filter state.
+    - RULE 1, RULE 2, RULE 3 all hold simultaneously.
+
+
+CUJ-9: "Scroll independence — filter panel and results scroll separately"
+  Goal: Verify that the layout allows the filter panel and results container to scroll
+        independently. This requires checking CSS properties, not just DOM structure.
+  Steps:
+    1. Load /ui/reports.
+    2. Verify [data-role="reports-layout"] exists.
+    3. Verify #filter-panel computed style: overflow-y is "auto" or "scroll".
+    4. Verify #report-results-container computed style: overflow-y is "auto" or "scroll".
+    5. Verify the outer wrapper's computed style: overflow is "hidden".
+    6. Programmatically scroll the filter panel to a non-zero scroll position:
+         await page.evaluate(() => {
+           document.getElementById('filter-panel').scrollTop = 200;
+         });
+    7. Verify #report-results-container scrollTop is still 0 (scrolling the filter
+       panel did not scroll the results container).
+    8. Programmatically scroll the results container:
+         await page.evaluate(() => {
+           document.getElementById('report-results-container').scrollTop = 100;
+         });
+    9. Verify #filter-panel scrollTop is still 200 (results scroll did not move filter panel).
+    10. Trigger an HTMX partial update (e.g., change query param or activate a filter via
+        the HTMX form). Wait for the swap to complete.
+    11. Verify #filter-panel scrollTop is still non-zero (the partial swap did NOT reset
+        the filter panel's scroll position — because the layout wrapper is not a swap target).
+  Key assertions:
+    - CSS overflow-y is independently set on each panel.
+    - Scrolling one panel does not move the other.
+    - HTMX partial swaps do not reset the filter panel's scroll position.
+
+
+CUJ-10: "State restoration and URL round-trip"
+  Goal: A user's full filter state — facet include/exclude, search, sort — is fully
+        encoded in the URL query params and can be bookmarked, shared, and restored
+        exactly by reloading the URL.
+  Steps:
+    1. Load /ui/reports?team_in=growth&status_out=archived&query=daily&sort=events_asc.
+       With search="daily": matches "daily-signups" (growth/active/us, events=12).
+       team_in=growth: daily-signups is growth. Pass.
+       status_out=archived: daily-signups is active. Pass.
+       Result: 1 row.
+    2. Verify: result count = 1.
+       Search input value = "daily".
+       Sort select = "events_asc" selected.
+       team "growth" include option checked.
+       status "archived" include option greyed (RULE 1), count=0.
+       Quick exclude "archived" data-active="true".
+    3. Extract the full current URL from the page.
+       Assert it contains: team_in=growth, status_out=archived, query=daily, sort=events_asc
+       (parameter order may vary but all must be present).
+    4. Navigate to the extracted URL in a new page context (page.goto(url)).
+       Verify: all assertions from step 2 hold in the new page load.
+       result count = 1, filter panel state matches, search input value "daily",
+       sort select "events_asc", RULE 1 holds for archived.
+    5. Verify fingerprint: #report-results data-query-fingerprint contains all state fields
+       including query and sort.
+  Key assertions:
+    - Every state field round-trips through the URL without loss.
+    - A page reload with the same URL produces an identical view (deterministic rendering).
+    - The fingerprint attribute reflects the full compound state.
+
+
+---
+
+SECTION 1 — Page object model
+
+The test file must use a page object model to avoid repeating DOM selectors across tests.
+Define a ReportsFilterPage class (or namespace) in the spec file with the following
+typed helper methods:
+
+  goto(params?: Record<string, string | string[]>): Promise<void>
+    Navigates to /ui/reports with the given query params.
+
+  resultCount(): Promise<number>
+    Reads and returns the numeric value from [data-role="result-count"].
+
+  facetCount(dimension: string, option: string, mode: "include" | "exclude"): Promise<number>
+    Finds the element:
+      [data-filter-dimension="{dimension}"][data-filter-option="{option}"][data-filter-mode="{mode}"]
+    Returns the numeric value of data-option-count.
+
+  isIncludeGreyed(dimension: string, option: string): Promise<boolean>
+    Returns true if the include option for the given value has data-excluded="true".
+
+  isIncludeCheckboxDisabled(dimension: string, option: string): Promise<boolean>
+    Returns true if the include checkbox for the given value has the disabled attribute.
+
+  isExcludeActive(dimension: string, option: string): Promise<boolean>
+    Returns true if the exclude option for the given value has data-active="true".
+
+  isExcludeCheckboxChecked(dimension: string, option: string): Promise<boolean>
+    Returns true if the exclude checkbox for the given value is checked.
+
+  quickExcludeActive(value: string): Promise<boolean>
+    Returns true if [data-role="quick-exclude"][data-quick-exclude-value="{value}"]
+    has data-active="true".
+
+  quickExcludeCount(value: string): Promise<number>
+    Returns the numeric text content of the count badge inside the quick exclude toggle.
+
+  searchInputValue(): Promise<string>
+    Returns the value attribute of [data-role="search-input"].
+
+  sortSelectValue(): Promise<string>
+    Returns the data-sort-order attribute of [data-role="sort-select"].
+
+  resultsSectionSearchQuery(): Promise<string>
+    Returns the data-search-query attribute of #report-results.
+
+  resultsSectionSortOrder(): Promise<string>
+    Returns the data-sort-order attribute of #report-results.
+
+  firstResultCardText(): Promise<string>
+    Returns the trimmed text content of the first result card in the results list.
+
+  allResultCardTexts(): Promise<string[]>
+    Returns the trimmed text content of all result cards in order.
+
+  filterPanelScrollTop(): Promise<number>
+    Returns document.getElementById('filter-panel').scrollTop.
+
+  resultsContainerScrollTop(): Promise<number>
+    Returns document.getElementById('report-results-container').scrollTop.
+
+  scrollFilterPanelTo(px: number): Promise<void>
+    Sets filter-panel scrollTop to the given value via page.evaluate.
+
+  scrollResultsContainerTo(px: number): Promise<void>
+    Sets report-results-container scrollTop to the given value via page.evaluate.
+
+  overflowY(elementId: string): Promise<string>
+    Returns the computed overflow-y style of the element with the given id.
+
+Each method should use `this.page` to access the Playwright Page object.
+The class is instantiated once in beforeEach with `const rp = new ReportsFilterPage(page)`.
+
+
+---
+
+SECTION 2 — Test file structure
+
+FILE: examples/canonical-integration-tests/playwright-cuj-filter-example.spec.ts
+
+The file must:
+  - Import { test, expect, Page } from '@playwright/test'.
+  - Define the ReportsFilterPage class as described in SECTION 1.
+  - Use test.describe for each CUJ (10 describe blocks, one per CUJ).
+  - Each describe block may contain one or more test() calls representing sub-steps
+    or related assertions within that CUJ. Prefer grouping the full CUJ sequence
+    into a single test() for each CUJ, with step labels in comments. Use sub-tests
+    (separate test() calls) only when the sub-steps are truly independent.
+  - Use beforeEach to create a new ReportsFilterPage instance.
+  - Use await page.waitForSelector or await page.waitForResponse where needed to
+    handle HTMX partial swaps before asserting. Do not assert immediately after
+    triggering an HTMX action without waiting.
+  - Use a BASE_URL constant (default: "http://localhost:8000") for all navigation.
+    It can be overridden by the PLAYWRIGHT_BASE_URL environment variable.
+
+Debounce handling:
+  For tests that type into the search input, use:
+    await rp.goto({ query: "signup" })
+  rather than simulating typing into the input when possible, to avoid debounce delays.
+  When the test must simulate typing (CUJ-6, CUJ-7), use:
+    await page.fill('[data-role="search-input"]', 'query-term');
+    await page.waitForTimeout(400); // exceed the 300ms debounce
+    await page.waitForSelector('#report-results[data-search-query="query-term"]');
+
+HTMX swap waiting pattern (to use after triggering form changes):
+    await page.waitForSelector('#report-results[data-query-fingerprint]');
+  Or wait for a specific expected attribute value to appear:
+    await page.waitForSelector('#report-results[data-result-count="2"]');
+
+Scroll tests (CUJ-9):
+  Use page.evaluate() calls as described in the CUJ-9 definition.
+  Add await page.waitForTimeout(100) after scroll operations to allow browser layout
+  to stabilize before asserting scroll positions.
+
+
+---
+
+SECTION 3 — Verification unit test additions
+
+Update the existing verification test file:
+  verification/examples/python/test_backend_driven_ui_examples.py
+
+Add test cases that exercise the Python reference implementation's search and sort
+logic at the unit level (pure function tests, no HTTP involved):
+
+  test_filter_rows_with_text_search:
+    Call filter_rows with query="signup", no dimension filters.
+    Assert result IDs = {"daily-signups", "trial-conversions"}.
+
+  test_filter_rows_search_and_facet_combined:
+    Call filter_rows with query="latency", team_in=["platform"].
+    Assert result IDs = {"api-latency"}.
+
+  test_filter_rows_search_and_exclude_combined:
+    Call filter_rows with query="api", status_out=["paused"].
+    api-latency is paused → excluded. Assert result = [].
+
+  test_facet_counts_respect_text_search:
+    Call facet_counts with query="signup", dimension="team".
+    Assert {"growth": 2, "platform": 0}.
+
+  test_exclude_impact_counts_respect_text_search:
+    Call exclude_impact_counts with query="signup", dimension="status".
+    Assert {"active": 2, "paused": 0, "archived": 0}.
+    (Both signup rows are active; no impact from excluding paused or archived.)
+
+  test_sort_events_desc:
+    Call sort_rows(REPORT_ROWS, "events_desc").
+    Assert first row is daily-signups (events=12), last row is legacy-import (events=4).
+
+  test_sort_events_asc:
+    Call sort_rows(REPORT_ROWS, "events_asc").
+    Assert first row is legacy-import (events=4), last row is daily-signups (events=12).
+
+  test_sort_name_asc:
+    Call sort_rows(REPORT_ROWS, "name_asc").
+    Assert first row is api-latency (alphabetically first among the six report IDs).
+
+  test_sort_unknown_defaults_to_events_desc:
+    Call sort_rows(REPORT_ROWS, "invalid_sort_value").
+    Assert first row is daily-signups (events=12), same as events_desc.
+
+  test_fingerprint_includes_query_and_sort:
+    Build a state with query="signup" and sort="name_asc".
+    Assert fingerprint string contains "query=signup" and "sort=name_asc".
+
+  test_rule1_holds_with_search_active:
+    Render the filter panel with status_out=["archived"], query="signup".
+    The archived include option must have data-option-count="0" and data-excluded="true".
+    (RULE 1 must hold even when search is active.)
+
+  test_rule2_can_be_zero_due_to_search:
+    Render the filter panel with status_out=["archived"], query="signup".
+    The archived exclude option's data-option-count must be "0".
+    (No "signup" rows are archived, so excluding archived removes 0 rows from the search set.)
+    The archived exclude option must NOT have the disabled attribute.
+    (Count=0 does not mean disabled — the filter is active, just has no effect here.)
+
+These tests follow the existing pattern in test_backend_driven_ui_examples.py.
+Import and call functions directly from the fastapi-search-sort-filter-example module.
+
+
+---
+
+SECTION 4 — Router and doctrine updates
+
+Update context/workflows/add-playwright-ui-verification.md:
+  Add a sub-section "Critical User Journey Tests" that explains the distinction between
+  isolated feature tests (playwright-split-filter-panel-example.spec.ts,
+  playwright-search-sort-example.spec.ts) and CUJ tests
+  (playwright-cuj-filter-example.spec.ts). Note that CUJ tests are multi-step, test
+  realistic workflows, and use a page object model for maintainability.
+  Reference playwright-cuj-filter-example.spec.ts as the canonical CUJ test example.
+
+Update context/router/task-router.md:
+  Add entries for:
+  - "critical user journey tests", "cuj playwright tests", "end to end filter tests"
+    → context/workflows/add-playwright-ui-verification.md (CUJ section)
+    + examples/canonical-integration-tests/playwright-cuj-filter-example.spec.ts
+  - "playwright page object model", "page object filter tests"
+    → playwright-cuj-filter-example.spec.ts
+
+Update context/router/alias-catalog.yaml:
+  Add aliases:
+  - "cuj filter tests" → playwright-cuj-filter-example.spec.ts
+  - "playwright search and sort tests" → playwright-search-sort-example.spec.ts
+  - "critical user journey playwright" → playwright-cuj-filter-example.spec.ts
+
+
+---
+
+SECTION 5 — Important constraints
+
+  - Do NOT test implementation details. Tests assert data-* attributes, visible text,
+    result counts, and CSS properties — not internal function calls or HTML class names
+    that may differ between language implementations.
+
+  - Data-* attribute selectors are the stable test contract. CSS classes may vary
+    between implementations; data-* attributes must not.
+
+  - Do NOT use page.waitForTimeout as the primary synchronization mechanism (only use
+    it for debounce handling and scroll stabilization as specified). Prefer
+    waitForSelector with a specific expected state as the sync point.
+
+  - Do NOT assert on exact HTML structure (e.g., "the label contains a span which
+    contains a checkbox"). Assert on data-* attributes and logical states. Structure
+    may evolve; the data contract must not.
+
+  - The page object model methods must not throw if an element is absent — they should
+    return a sensible null/undefined so callers can handle missing elements gracefully
+    in non-required assertions.
+
+  - Every CUJ test must reach its final assertion state even if intermediate steps
+    require state to be set via URL params (navigate to the full URL) rather than
+    simulating every interaction from a blank page. Use direct navigation where
+    it makes the test more readable and faster to execute.
+
+  - Expected count values in the tests are derived from the shared dataset defined in
+    README-faceted-filter-examples.md. Do not invent count values — compute them from
+    the dataset and verify against the README's reference counts.
+
+  - The PLAYWRIGHT_BASE_URL default must be "http://localhost:8000" to match the
+    existing test suite's convention. Do not hard-code a different port.
+
+
+---
+
+SECTION 6 — Commit-ready batching
+
+Suggested batch structure:
+
+  Batch 1: CUJ Playwright test file
+    - Add examples/canonical-integration-tests/playwright-cuj-filter-example.spec.ts
+
+  Batch 2: Verification unit test additions
+    - Update verification/examples/python/test_backend_driven_ui_examples.py
+
+  Batch 3: Workflow and router updates
+    - Update context/workflows/add-playwright-ui-verification.md
+    - Update context/router/task-router.md
+    - Update context/router/alias-catalog.yaml
+
+Do not combine the Playwright test file with the Python unit test file in the same batch.
+The Playwright file is a browser test; the Python file is a unit test. They belong to
+different layers of the verification stack.
+
+
+---
+
+SECTION 7 — Output
+
+Generate the actual implementation pass in commit-ready batches now.
+Do not summarize or propose. Produce the complete file contents for each file.
