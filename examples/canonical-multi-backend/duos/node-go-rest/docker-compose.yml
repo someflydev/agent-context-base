@@ -1,0 +1,54 @@
+services:
+  go-service:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM golang:1.23-alpine AS builder
+        WORKDIR /app
+        # Generate go.mod inline — go mod tidy will resolve Echo and its dependencies
+        RUN printf 'module seam-example\n\ngo 1.23\n' > go.mod
+        COPY go-side.go .
+        RUN go mod tidy && CGO_ENABLED=0 go build -o go-side .
+        FROM alpine:3.20
+        RUN apk add --no-cache wget
+        COPY --from=builder /app/go-side /go-side
+        EXPOSE 8080
+        CMD ["/go-side"]
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: "8080"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  node-bff:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM node:22-slim
+        WORKDIR /app
+        RUN npm init -y && npm install @apollo/server graphql tsx
+        COPY node-side.ts .
+        EXPOSE 3000 3001
+        CMD ["npx", "tsx", "node-side.ts"]
+    ports:
+      - "3000:3000"   # GraphQL endpoint
+      - "3001:3001"   # HTTP /healthz
+    environment:
+      GO_SERVICE_URL: http://go-service:8080
+      PORT: "3000"
+      HEALTH_PORT: "3001"
+    depends_on:
+      go-service:
+        condition: service_healthy
+    healthcheck:
+      # Healthcheck probes the /healthz port (3001), which in turn probes go-service.
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3001/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
