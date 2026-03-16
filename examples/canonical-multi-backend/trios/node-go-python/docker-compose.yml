@@ -1,0 +1,79 @@
+services:
+  # Dependency chain (bottom to top): python-ml → go-service → node-bff
+  # Each service must pass its healthcheck before the next starts.
+  # python-ml has no upstream dependencies; node-bff has no downstream callers.
+
+  python-ml:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM python:3.12-slim
+        WORKDIR /app
+        RUN pip install fastapi uvicorn pydantic
+        COPY python-side.py app.py
+        CMD ["python", "app.py"]
+    ports:
+      - "8002:8002"
+    environment:
+      PORT: "8002"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  go-service:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM golang:1.22-alpine AS builder
+        WORKDIR /app
+        RUN go mod init github.com/example/node-go-python
+        RUN go get github.com/labstack/echo/v4@latest
+        COPY go-side.go main.go
+        RUN go build -o server .
+        FROM alpine:3.19
+        RUN apk add --no-cache curl
+        COPY --from=builder /app/server /server
+        CMD ["/server"]
+    ports:
+      - "8080:8080"
+    environment:
+      PYTHON_ML_URL: "http://python-ml:8002"
+      PORT: "8080"
+    depends_on:
+      python-ml:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  node-bff:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM node:22-alpine
+        WORKDIR /app
+        RUN npm init -y && npm install @apollo/server graphql tsx
+        COPY node-side.ts .
+        CMD ["npx", "tsx", "node-side.ts"]
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+    environment:
+      GO_SERVICE_URL: "http://go-service:8080"
+      PORT: "3000"
+      HEALTH_PORT: "3001"
+    depends_on:
+      go-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3001/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
