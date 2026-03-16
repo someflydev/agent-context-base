@@ -115,6 +115,24 @@ tasks:
     target: context/workflows/post-flight-refinement.md
   - alias: refinement
     target: context/workflows/post-flight-refinement.md
+  - alias: design multi-backend seams
+    target: context/workflows/design-multi-backend-seams.md
+  - alias: ownership boundaries
+    target: context/workflows/design-multi-backend-seams.md
+  - alias: which language should own what
+    target: context/workflows/design-multi-backend-seams.md
+  - alias: ownership table
+    target: context/workflows/design-multi-backend-seams.md
+  - alias: seam type selection
+    target: context/workflows/design-multi-backend-seams.md
+  - alias: add coordination layer
+    target: context/workflows/add-backend-coordination-layer.md
+  - alias: wire two services
+    target: context/workflows/add-backend-coordination-layer.md
+  - alias: connect go service to python service
+    target: context/workflows/add-backend-coordination-layer.md
+  - alias: implement seam
+    target: context/workflows/add-backend-coordination-layer.md
 
 stacks:
   - alias: fastapi
@@ -273,6 +291,30 @@ stacks:
     target: context/stacks/parquet-minio.md
   - alias: write parquet to object store
     target: context/stacks/parquet-minio.md
+  - alias: coordination seam patterns
+    target: context/stacks/coordination-seam-patterns.md
+  - alias: seam patterns
+    target: context/stacks/coordination-seam-patterns.md
+  - alias: grpc seam
+    target: context/stacks/coordination-seam-patterns.md
+  - alias: broker seam
+    target: context/stacks/coordination-seam-patterns.md
+  - alias: nif seam
+    target: context/stacks/coordination-seam-patterns.md
+  - alias: rest seam
+    target: context/stacks/coordination-seam-patterns.md
+  - alias: nats between go and elixir
+    target: context/stacks/coordination-seam-patterns.md
+  - alias: kafka between clojure and go
+    target: context/stacks/coordination-seam-patterns.md
+  - alias: call python from go
+    target: context/stacks/coordination-seam-patterns.md
+  - alias: rust grpc server
+    target: context/stacks/coordination-seam-patterns.md
+  - alias: elixir calls rust nif
+    target: context/stacks/coordination-seam-patterns.md
+  - alias: rustler
+    target: context/stacks/coordination-seam-patterns.md
   - alias: nats
     target: context/stacks/nats-jetstream.md
   - alias: nats jetstream
@@ -339,6 +381,16 @@ archetypes:
     target: context/archetypes/multi-storage-experiment.md
   - alias: polyglot lab
     target: context/archetypes/polyglot-lab.md
+  - alias: multi-backend service
+    target: context/archetypes/multi-backend-service.md
+  - alias: multi backend
+    target: context/archetypes/multi-backend-service.md
+  - alias: polyglot backend
+    target: context/archetypes/multi-backend-service.md
+  - alias: two services different languages
+    target: context/archetypes/multi-backend-service.md
+  - alias: coordination seam archetype
+    target: context/archetypes/multi-backend-service.md
   - alias: dokku service
     target: context/archetypes/dokku-deployable-service.md
   - alias: prompt first repo
@@ -349,6 +401,14 @@ archetypes:
     target: context/archetypes/multi-storage-experiment.md
 
 capabilities:
+  - alias: multi-backend coordination rules
+    target: context/doctrine/multi-backend-coordination.md
+  - alias: no shared database
+    target: context/doctrine/multi-backend-coordination.md
+  - alias: seam selection heuristic
+    target: context/doctrine/multi-backend-coordination.md
+  - alias: health contract multi-backend
+    target: context/doctrine/multi-backend-coordination.md
   - alias: canonical example
     target: context/skills/canonical-example-selection.md
   - alias: canonical data acquisition

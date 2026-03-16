@@ -119,6 +119,18 @@ Route from what the user is trying to do, not from internal file names.
   - load `context/workflows/add-storage-integration.md`
 - "post-flight", "cleanup this pass", "refine before commit"
   - load `context/workflows/post-flight-refinement.md`
+- "design a multi-backend system", "which language should own what", "ownership boundaries for two services", "ownership table"
+  - load `context/workflows/design-multi-backend-seams.md`
+- "wire two services together", "add a coordination layer", "connect a Go service to a Python service", "add a seam between services"
+  - load `context/workflows/add-backend-coordination-layer.md`
+- "gRPC between two services", "add a proto seam", "call a Rust gRPC server from Go", "Rust gRPC server", "proto file for seam"
+  - load `context/stacks/coordination-seam-patterns.md`
+- "broker seam", "NATS between Go and Elixir", "Kafka between Clojure and Go", "fan-out events across services"
+  - load `context/stacks/coordination-seam-patterns.md`
+- "NIF", "Rustler", "call Rust from Elixir", "Elixir calls Rust NIF", "Port vs NIF"
+  - load `context/stacks/coordination-seam-patterns.md`
+- "multi-backend coordination rules", "seam type selection", "no shared database across services"
+  - load `context/doctrine/multi-backend-coordination.md`
 
 ## Compound Requests
 
@@ -165,6 +177,13 @@ Examples:
   - then load `context/workflows/add-event-driven-sync.md`
 - "Clean up the implementation before commit"
   - start with `context/workflows/post-flight-refinement.md`
+- "Design and build a Go + Python service with gRPC"
+  - start with `context/workflows/design-multi-backend-seams.md`
+  - then `context/workflows/add-backend-coordination-layer.md`
+  - then `context/stacks/coordination-seam-patterns.md`
+- "Bootstrap a multi-backend repo with Go gateway and Elixir coordinator"
+  - start with `context/workflows/bootstrap-repo.md`
+  - then `context/workflows/design-multi-backend-seams.md`
 
 ## Routing Examples
 
@@ -226,6 +245,20 @@ Examples:
   - stacks: `context/stacks/nats-jetstream-mongo.md`, `context/stacks/mongo.md`
 - "Make this generated repo less sloppy before I commit"
   - workflow: `context/workflows/post-flight-refinement.md`
+- "Which language should own the ML inference work?"
+  - workflow: `context/workflows/design-multi-backend-seams.md`
+- "Design the seam between Go and Python"
+  - workflow: `context/workflows/design-multi-backend-seams.md`
+- "Wire a Go gateway to a Python inference service"
+  - workflow: `context/workflows/add-backend-coordination-layer.md`
+- "Add NATS between Go and Elixir"
+  - stacks: `context/stacks/coordination-seam-patterns.md`, `context/stacks/nats-jetstream.md`
+- "Call a Rust gRPC server from Go"
+  - stacks: `context/stacks/coordination-seam-patterns.md`
+- "Set up Rustler so Elixir can call a Rust NIF"
+  - stacks: `context/stacks/coordination-seam-patterns.md`
+- "What are the rules for multi-backend systems?"
+  - doctrine: `context/doctrine/multi-backend-coordination.md`
 
 ## Stop And Clarify Internally
 
