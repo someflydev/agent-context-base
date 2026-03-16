@@ -2102,6 +2102,30 @@
       "patterns": ["nif-seam", "rustler", "port-seam", "in-process", "compute-kernel"],
       "rank": 95,
       "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-multi-backend/trios/elixir-go-rust/",
+      "category": "multi-backend",
+      "summary": "Elixir + Go + Rust trio seam: Elixir (Gnat/GenServer) coordinates work by publishing to NATS JetStream; Go workers subscribe and call Rust (tonic/gRPC KernelService.Transform) for compute; Go publishes completion back to Elixir. Shows the inverted coordination topology (Elixir as orchestrator), NATS JetStream + gRPC dual seams, closed-loop coordination, and the kernel.v1 proto shared with scala-rust-grpc.",
+      "tags": ["multi-backend", "elixir", "go", "rust", "broker", "grpc", "nats", "trio"],
+      "stacks": ["elixir-phoenix", "go-echo", "rust-axum-modern", "nats-jetstream", "grpc"],
+      "archetypes": ["multi-backend-service"],
+      "workflows": ["design-multi-backend-seams", "add-backend-coordination-layer"],
+      "patterns": ["broker-seam", "grpc-seam", "nats", "trio", "closed-loop-coordination"],
+      "rank": 95,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-multi-backend/trios/node-go-python/",
+      "category": "multi-backend",
+      "summary": "Node + Go + Python trio seam: Node (Apollo Server GraphQL BFF) calls Go (Echo domain service) over REST; Go calls Python (FastAPI ML) over REST for recommendation scoring. Shows the consumer product stack with cascading REST seams, Go as internal orchestrator, downstream health probes, and the Node→Go→Python vs Node→Go+Python topology trade-off.",
+      "tags": ["multi-backend", "node", "go", "python", "rest", "graphql", "trio"],
+      "stacks": ["typescript-hono-bun", "go-echo", "python-fastapi-uv-ruff-orjson-polars"],
+      "archetypes": ["multi-backend-service"],
+      "workflows": ["design-multi-backend-seams", "add-backend-coordination-layer"],
+      "patterns": ["rest-seam", "graphql-bff", "trio", "cascading-rest", "downstream-health-probe"],
+      "rank": 95,
+      "stability": "canonical"
     }
   ]
 }

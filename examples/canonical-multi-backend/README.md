@@ -20,6 +20,8 @@ These examples show the seam layer between coordinating backend services. Each e
 | `duos/elixir-rust-nif/` | Elixir + Rust | NIF/Port (in-process) | Rust compute kernel loaded into BEAM VM |
 | `trios/go-elixir-python/` | Go + Elixir + Python | Broker + REST | Gateway + coordination + ML |
 | `trios/go-rust-python/` | Go + Rust + Python | gRPC + REST | Gateway + kernel + ML |
+| `trios/elixir-go-rust/`  | Elixir + Go + Rust   | Broker (NATS) + gRPC | Fault-tolerant coordinator + workers + compute kernel |
+| `trios/node-go-python/`  | Node + Go + Python   | REST + REST | GraphQL BFF + domain services + ML recommendations |
 
 ## Seam Types
 
@@ -106,6 +108,18 @@ docker compose up --build
 cd examples/canonical-multi-backend/trios/go-rust-python
 docker compose up --build   # first build takes several minutes (Rust compile)
 # curl -X POST http://localhost:8080/process -d '{"document":"hello world","doc_id":"d1"}'
+
+# Elixir coordinator + Go workers + Rust kernel (NATS JetStream + gRPC)
+cd examples/canonical-multi-backend/trios/elixir-go-rust
+docker compose up --build   # Rust compile takes several minutes on first build
+# Elixir publishes task → Go subscribes → Go calls Rust → Go publishes completion → Elixir receives
+
+# Node GraphQL BFF + Go domain + Python ML (REST + REST)
+cd examples/canonical-multi-backend/trios/node-go-python
+docker compose up --build
+# curl -X POST http://localhost:3000/graphql \
+#      -H "Content-Type: application/json" \
+#      -d '{"query":"{ userWithRecommendations(userId:\"u123\") { user { name } recommendations { score category } } }"}'
 ```
 
 Read the `seam.md` companion doc in each directory before reading the code. It explains the directional choice, the event/request schema, and what to observe when running locally.

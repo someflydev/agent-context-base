@@ -624,15 +624,37 @@ stacks:
       - context/stacks/trio-go-rust-python.md
       - examples/canonical-multi-backend/trios/go-rust-python/seam.md
   - alias: elixir go rust
-    target: context/stacks/trio-elixir-go-rust.md
+    target:
+      - context/stacks/trio-elixir-go-rust.md
+      - examples/canonical-multi-backend/trios/elixir-go-rust/seam.md
+  - alias: elixir coordinator go workers rust kernel
+    target:
+      - context/stacks/trio-elixir-go-rust.md
+      - examples/canonical-multi-backend/trios/elixir-go-rust/seam.md
   - alias: elixir coordination go workers rust compute
-    target: context/stacks/trio-elixir-go-rust.md
+    target:
+      - context/stacks/trio-elixir-go-rust.md
+      - examples/canonical-multi-backend/trios/elixir-go-rust/seam.md
   - alias: node go python
-    target: context/stacks/trio-node-go-python.md
+    target:
+      - context/stacks/trio-node-go-python.md
+      - examples/canonical-multi-backend/trios/node-go-python/seam.md
+  - alias: graphql bff go python ml
+    target:
+      - context/stacks/trio-node-go-python.md
+      - examples/canonical-multi-backend/trios/node-go-python/seam.md
+  - alias: consumer product stack trio
+    target:
+      - context/stacks/trio-node-go-python.md
+      - examples/canonical-multi-backend/trios/node-go-python/seam.md
   - alias: bff go services python ml
-    target: context/stacks/trio-node-go-python.md
+    target:
+      - context/stacks/trio-node-go-python.md
+      - examples/canonical-multi-backend/trios/node-go-python/seam.md
   - alias: node frontend go backend python scoring
-    target: context/stacks/trio-node-go-python.md
+    target:
+      - context/stacks/trio-node-go-python.md
+      - examples/canonical-multi-backend/trios/node-go-python/seam.md
   - alias: clojure python go
     target: context/stacks/trio-clojure-python-go.md
   - alias: event rules ml api stack

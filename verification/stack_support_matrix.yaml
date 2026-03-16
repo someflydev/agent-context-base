@@ -416,37 +416,51 @@ capabilities:
         follow_on_prompt: PROMPT_57
 
   - capability: multi-backend-seam
-    notes: Canonical seam examples covering broker (NATS), gRPC (Protocol Buffers), and REST seam types across duo and trio compositions.
+    notes: Canonical seam examples covering broker (NATS), gRPC (Protocol Buffers), and REST seam types across duo and trio compositions. Four trio examples now exist covering all three seam types in trio configurations.
     stacks:
       - stack: go-echo
         status: supported
-        note: "Appears in: duos/go-elixir-nats (NATS publisher), duos/go-python-rest (REST caller), trios/go-elixir-python (NATS publisher), trios/go-rust-python (gRPC + REST orchestrator)"
+        note: "Appears in: duos/go-elixir-nats (NATS publisher), duos/go-python-rest (REST caller), trios/go-elixir-python (NATS publisher), trios/go-rust-python (gRPC + REST orchestrator), trios/elixir-go-rust (NATS subscriber + gRPC caller), trios/node-go-python (REST server + REST caller)"
         canonical_examples:
           - examples/canonical-multi-backend/duos/go-elixir-nats/
           - examples/canonical-multi-backend/duos/go-python-rest/
           - examples/canonical-multi-backend/trios/go-elixir-python/
           - examples/canonical-multi-backend/trios/go-rust-python/
+          - examples/canonical-multi-backend/trios/elixir-go-rust/
+          - examples/canonical-multi-backend/trios/node-go-python/
       - stack: elixir-phoenix
         status: supported
-        note: "Appears in: duos/go-elixir-nats (NATS subscriber), trios/go-elixir-python (NATS subscriber + REST caller), duos/elixir-clojure-rabbitmq (RabbitMQ Broadway consumer)"
+        note: "Appears in: duos/go-elixir-nats (NATS subscriber), trios/go-elixir-python (NATS subscriber + REST caller), duos/elixir-clojure-rabbitmq (RabbitMQ Broadway consumer), duos/elixir-rust-nif (NIF/Port), trios/elixir-go-rust (NATS publisher — coordinator role, inverted topology)"
         canonical_examples:
           - examples/canonical-multi-backend/duos/go-elixir-nats/
           - examples/canonical-multi-backend/trios/go-elixir-python/
           - examples/canonical-multi-backend/duos/elixir-clojure-rabbitmq/
+          - examples/canonical-multi-backend/duos/elixir-rust-nif/
+          - examples/canonical-multi-backend/trios/elixir-go-rust/
+        seam_types_covered:
+          - broker (NATS publisher — coordinator role in elixir-go-rust; subscriber in go-elixir-nats)
+          - broker (RabbitMQ Broadway consumer)
+          - nif-port (in-process, Rustler)
       - stack: python-fastapi-uv-ruff-orjson-polars
         status: supported
-        note: "Appears in: duos/go-python-rest (REST server), trios/go-elixir-python (REST scoring server), trios/go-rust-python (REST scoring server), duos/rust-python-grpc (gRPC caller)"
+        note: "Appears in: duos/go-python-rest (REST server), trios/go-elixir-python (REST scoring server), trios/go-rust-python (REST scoring server), duos/rust-python-grpc (gRPC caller), trios/node-go-python (REST ML server)"
         canonical_examples:
           - examples/canonical-multi-backend/duos/go-python-rest/
           - examples/canonical-multi-backend/trios/go-elixir-python/
           - examples/canonical-multi-backend/trios/go-rust-python/
           - examples/canonical-multi-backend/duos/rust-python-grpc/
+          - examples/canonical-multi-backend/trios/node-go-python/
       - stack: rust-axum-modern
         status: supported
-        note: "Appears in: duos/kotlin-rust-grpc (gRPC server), trios/go-rust-python (gRPC preprocessing server)"
+        note: "Appears in: duos/kotlin-rust-grpc (gRPC server), trios/go-rust-python (gRPC preprocessing server), duos/elixir-rust-nif (NIF library), trios/elixir-go-rust (gRPC compute kernel — kernel.v1 proto shared with scala-rust-grpc)"
         canonical_examples:
           - examples/canonical-multi-backend/duos/kotlin-rust-grpc/
           - examples/canonical-multi-backend/trios/go-rust-python/
+          - examples/canonical-multi-backend/duos/elixir-rust-nif/
+          - examples/canonical-multi-backend/trios/elixir-go-rust/
+        seam_types_covered:
+          - grpc (tonic server — kernel.v1 reusable across Go and Scala callers)
+          - nif-port (in-process, Rustler)
       - stack: kotlin-http4k-exposed
         status: supported
         note: "Appears in: duos/kotlin-rust-grpc (gRPC client)"
@@ -460,38 +474,16 @@ capabilities:
           - examples/canonical-multi-backend/duos/elixir-clojure-rabbitmq/
       - stack: typescript-hono-bun
         status: supported
-        note: "Appears in: duos/node-go-rest (REST + GraphQL BFF), duos/node-elixir-nats (NATS bidirectional seam)"
+        note: "Appears in: duos/node-go-rest (REST + GraphQL BFF), duos/node-elixir-nats (NATS bidirectional seam), trios/node-go-python (GraphQL BFF → Go → Python ML)"
         canonical_examples:
           - examples/canonical-multi-backend/duos/node-go-rest/
           - examples/canonical-multi-backend/duos/node-elixir-nats/
+          - examples/canonical-multi-backend/trios/node-go-python/
       - stack: scala-tapir-http4s-zio
         status: supported
         note: "Appears in: duos/scala-rust-grpc (Akka Streams gRPC caller). Duo stack docs exist: duo-scala-rust.md, trio-scala-python-go.md."
         canonical_examples:
           - examples/canonical-multi-backend/duos/scala-rust-grpc/
-      - stack: elixir-phoenix
-        status: supported
-        note: "NIF/Port seam variant: duos/elixir-rust-nif (PROMPT_60). Elixir hosts the Rust NIF via
-               Rustler. In-process seam — no docker-compose. Also appears in broker seam examples."
-        canonical_examples:
-          - examples/canonical-multi-backend/duos/elixir-rust-nif/
-          - examples/canonical-multi-backend/duos/go-elixir-nats/
-          - examples/canonical-multi-backend/trios/go-elixir-python/
-          - examples/canonical-multi-backend/duos/elixir-clojure-rabbitmq/
-        seam_types_covered:
-          - broker (NATS, RabbitMQ)
-          - nif-port (in-process, Rustler)
-      - stack: rust-axum-modern
-        status: supported
-        note: "NIF seam variant added in PROMPT_60: duos/elixir-rust-nif demonstrates Rust as a
-               NIF library loaded into the BEAM VM. Also appears in gRPC server examples."
-        canonical_examples:
-          - examples/canonical-multi-backend/duos/elixir-rust-nif/
-          - examples/canonical-multi-backend/duos/kotlin-rust-grpc/
-          - examples/canonical-multi-backend/trios/go-rust-python/
-        seam_types_covered:
-          - grpc (tonic server)
-          - nif-port (in-process, Rustler)
 
   - capability: faceted-filter-ui
     shared_examples:
