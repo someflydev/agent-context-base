@@ -1,0 +1,42 @@
+// This is a seam-focused example.
+// For a full application scaffold, see context/archetypes/multi-backend-service.md.
+//
+// service.proto — KernelService contract between Scala (caller) and Rust (server).
+// Package: kernel.v1 — matches duo-scala-rust.md Communication Contract exactly.
+// Both services generate stubs from this file; it is the canonical seam contract.
+
+syntax = "proto3";
+package kernel.v1;
+
+// KernelService handles numeric transform operations delegated from the Scala pipeline.
+// Scala Akka Streams calls Transform for each element via mapAsync; Rust computes the result.
+service KernelService {
+  // Transform runs a named numeric operation over the provided values.
+  // operation: "normalize" | "mean" — see Rust implementation for supported ops.
+  rpc Transform(TransformRequest) returns (TransformResponse);
+}
+
+// TransformRequest carries the numeric payload for a single pipeline stage.
+message TransformRequest {
+  // operation names the transform to apply. Required.
+  string operation = 1;
+
+  // values is the numeric input array. Required; must be non-empty.
+  repeated double values = 2;
+
+  // window_size is an optional parameter for window-based operations (e.g. rolling_mean).
+  // Set to 0 if unused.
+  int32 window_size = 3;
+}
+
+// TransformResponse carries the result of the transform operation.
+message TransformResponse {
+  // result is the numeric output array.
+  repeated double result = 1;
+
+  // method echoes the operation name that was applied.
+  string method = 2;
+
+  // duration_ns is the server-side computation duration in nanoseconds.
+  int64 duration_ns = 3;
+}

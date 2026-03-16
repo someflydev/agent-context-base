@@ -1,0 +1,99 @@
+services:
+  rust-kernel:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM rust:1.78-slim AS builder
+        RUN apt-get update && apt-get install -y protobuf-compiler && rm -rf /var/lib/apt/lists/*
+        WORKDIR /app
+        COPY rust-side.rs src/main.rs
+        COPY service.proto .
+        COPY <<'CARGO' Cargo.toml
+        [package]
+        name = "rust-kernel"
+        version = "0.1.0"
+        edition = "2021"
+        [[bin]]
+        name = "rust-kernel"
+        path = "src/main.rs"
+        [dependencies]
+        tonic = "0.12"
+        prost = "0.13"
+        tokio = { version = "1", features = ["full"] }
+        hyper = { version = "1", features = ["full"] }
+        http-body-util = "0.1"
+        hyper-util = { version = "0.1", features = ["tokio"] }
+        [build-dependencies]
+        tonic-build = "0.12"
+        CARGO
+        COPY <<'BUILD' build.rs
+        fn main() -> Result<(), Box<dyn std::error::Error>> {
+            tonic_build::compile_protos("service.proto")?;
+            Ok(())
+        }
+        BUILD
+        RUN cargo build --release
+        FROM debian:bookworm-slim
+        RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+        COPY --from=builder /app/target/release/rust-kernel /usr/local/bin/rust-kernel
+        EXPOSE 50051 8082
+        CMD ["rust-kernel"]
+    ports:
+      - "50051:50051"
+      - "8082:8082"
+    environment:
+      GRPC_PORT: "50051"
+      HEALTH_PORT: "8082"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s   # Rust compile from source takes several minutes on first build
+
+  scala-pipeline:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM sbt:1.9.8-eclipse-temurin-21 AS builder
+        WORKDIR /app
+        # Copy proto and source
+        COPY service.proto src/main/protobuf/service.proto
+        COPY scala-side.scala src/main/scala/ScalaPipeline.scala
+        # Minimal build.sbt — sbt-akka-grpc generates stubs from service.proto
+        COPY <<'SBT' build.sbt
+        ThisBuild / scalaVersion := "2.13.12"
+        ThisBuild / version := "0.1.0"
+        enablePlugins(AkkaGrpcPlugin)
+        libraryDependencies ++= Seq(
+          "com.typesafe.akka" %% "akka-stream"          % "2.8.5",
+          "com.typesafe.akka" %% "akka-actor-typed"     % "2.8.5",
+          "com.typesafe.akka" %% "akka-http"            % "10.5.3",
+          "com.typesafe.akka" %% "akka-http-spray-json" % "10.5.3",
+          "com.lightbend.akka.grpc" %% "akka-grpc-runtime" % "2.4.0",
+        )
+        SBT
+        COPY <<'PLUGINS' project/plugins.sbt
+        addSbtPlugin("com.lightbend.akka.grpc" % "sbt-akka-grpc" % "2.4.0")
+        PLUGINS
+        RUN sbt assembly
+        FROM eclipse-temurin:21-jre-alpine
+        RUN apk add --no-cache curl
+        COPY --from=builder /app/target/scala-2.13/*-assembly-*.jar /app/app.jar
+        EXPOSE 8080
+        CMD ["java", "-cp", "/app/app.jar", "ScalaPipeline"]
+    ports:
+      - "8080:8080"
+    environment:
+      RUST_KERNEL_ADDR: "rust-kernel:50051"
+      PORT: "8080"
+      JAVA_OPTS: "-Xmx512m -Xms256m"
+    depends_on:
+      rust-kernel:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 40s   # JVM startup + Akka ActorSystem initialization
