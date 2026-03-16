@@ -1,0 +1,44 @@
+// Seam contract: kernel.v1 KernelService — shared between Go (caller) and Rust (server).
+// This is the SAME proto package as duos/scala-rust-grpc/service.proto, demonstrating
+// that the Rust compute kernel is reusable across different callers (Scala or Go).
+// Do not rename the package or service — any caller that already knows scala-rust-grpc
+// can call this Rust server without modification.
+
+syntax = "proto3";
+package kernel.v1;
+
+// go_package required for Go stub generation (protoc-gen-go).
+option go_package = "github.com/example/elixir-go-rust/gen/kernel/v1;kernelv1";
+
+// KernelService handles numeric transform operations delegated from Go workers.
+// Go calls Transform for each task received from Elixir via NATS; Rust returns the result.
+service KernelService {
+  // Transform runs a named numeric operation over the provided values.
+  // operation: "normalize" (min-max) | "mean" — see Rust implementation for supported ops.
+  rpc Transform(TransformRequest) returns (TransformResponse);
+}
+
+// TransformRequest carries the numeric payload for a single compute task.
+message TransformRequest {
+  // operation names the transform to apply. Required.
+  string operation = 1;
+
+  // values is the numeric input array. Required; must be non-empty.
+  repeated double values = 2;
+
+  // window_size is an optional parameter for window-based operations.
+  // Set to 0 if unused.
+  int32 window_size = 3;
+}
+
+// TransformResponse carries the result of the transform operation.
+message TransformResponse {
+  // result is the numeric output array.
+  repeated double result = 1;
+
+  // method echoes the operation name that was applied.
+  string method = 2;
+
+  // duration_ns is the server-side computation duration in nanoseconds.
+  int64 duration_ns = 3;
+}
