@@ -343,6 +343,46 @@ stacks:
     target: context/stacks/nats-jetstream-mongo.md
   - alias: capture-enrich-persist
     target: context/stacks/nats-jetstream-mongo.md
+  - alias: rabbitmq
+    target: context/stacks/rabbitmq.md
+  - alias: rabbitmq stack
+    target: context/stacks/rabbitmq.md
+  - alias: amqp
+    target: context/stacks/rabbitmq.md
+  - alias: rabbitmq producer
+    target: context/stacks/rabbitmq.md
+  - alias: rabbitmq consumer
+    target: context/stacks/rabbitmq.md
+  - alias: broadway rabbitmq
+    target: context/stacks/rabbitmq.md
+  - alias: broadway amqp
+    target: context/stacks/rabbitmq.md
+  - alias: langohr clojure
+    target: context/stacks/rabbitmq.md
+  - alias: rabbitmq exchange
+    target: context/stacks/rabbitmq.md
+  - alias: topic exchange rabbitmq
+    target: context/stacks/rabbitmq.md
+  - alias: dead letter exchange
+    target: context/stacks/rabbitmq.md
+  - alias: dlx rabbitmq
+    target: context/stacks/rabbitmq.md
+  - alias: work queue rabbitmq
+    target: context/stacks/rabbitmq.md
+  - alias: prefetch rabbitmq
+    target: context/stacks/rabbitmq.md
+  - alias: rabbitmq vs nats
+    target:
+      - context/stacks/rabbitmq.md
+      - context/doctrine/broker-selection.md
+  - alias: when to use rabbitmq
+    target:
+      - context/stacks/rabbitmq.md
+      - context/doctrine/broker-selection.md
+  - alias: elixir clojure rabbitmq
+    target:
+      - context/stacks/duo-elixir-clojure.md
+      - examples/canonical-multi-backend/duos/elixir-clojure-rabbitmq/seam.md
   - alias: kafka
     target: context/stacks/kafka.md
   - alias: kafka stack
@@ -603,6 +643,10 @@ capabilities:
   - alias: kafka vs nats
     target: context/doctrine/broker-selection.md
   - alias: kafka vs redis streams
+    target: context/doctrine/broker-selection.md
+  - alias: rabbitmq vs kafka
+    target: context/doctrine/broker-selection.md
+  - alias: four broker comparison
     target: context/doctrine/broker-selection.md
   - alias: which broker should I use
     target: context/doctrine/broker-selection.md

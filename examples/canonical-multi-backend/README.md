@@ -12,6 +12,7 @@ These examples show the seam layer between coordinating backend services. Each e
 | `duos/go-python-rest/` | Go + Python | REST (HTTP/JSON) | ML scoring gateway |
 | `duos/kotlin-rust-grpc/` | Kotlin + Rust | gRPC (Protocol Buffers) | Compute kernel |
 | `duos/clojure-go-kafka/` | Clojure + Go | Broker (Kafka) | Domain event enrichment + worker consumers |
+| `duos/elixir-clojure-rabbitmq/` | Elixir + Clojure | Broker (RabbitMQ) | Work queue + topic exchange routing |
 | `trios/go-elixir-python/` | Go + Elixir + Python | Broker + REST | Gateway + coordination + ML |
 | `trios/go-rust-python/` | Go + Rust + Python | gRPC + REST | Gateway + kernel + ML |
 
@@ -22,6 +23,8 @@ These examples show the seam layer between coordinating backend services. Each e
 **REST seam (HTTP/JSON):** one service calls another via HTTP, receives a synchronous response, and decodes a JSON body. The seam is synchronous and self-documenting — FastAPI generates an OpenAPI spec automatically, and the schema is readable without tooling. Use this when request/response semantics are sufficient and the call frequency does not demand proto compilation. See `context/stacks/coordination-seam-patterns.md` for the REST seam pattern and downstream health probe pattern.
 
 **gRPC seam (Protocol Buffers):** one service calls another via a typed RPC, generated from a `.proto` file that both sides share. The seam is synchronous, strongly typed, and language-agnostic — stubs are generated for each language from the same source. Use this when schema enforcement across language boundaries is important, when performance matters for the call itself, or when streaming RPCs are needed. See `context/stacks/coordination-seam-patterns.md` for the gRPC seam pattern and stub generation commands.
+
+**RabbitMQ broker seam (AMQP):** one service publishes messages to a RabbitMQ exchange with a routing key; the exchange routes messages to bound queues based on exchange type (topic, direct, fanout). Consumers receive messages via push delivery (not polling). Use this when work-queue semantics are needed (one message → one worker), when content-based routing by routing key is required, or when Elixir Broadway's `broadway_rabbitmq` integration is the natural consumer. See `context/stacks/rabbitmq.md` for the full pattern.
 
 ## How to Run an Example
 
@@ -47,6 +50,12 @@ docker compose up --build
 cd examples/canonical-multi-backend/duos/clojure-go-kafka
 docker compose up --build
 # observe Go logs: event_type, entity_id, risk_score, correlation_id
+
+# RabbitMQ broker seam — Clojure produces, Elixir (Broadway) consumes
+cd examples/canonical-multi-backend/duos/elixir-clojure-rabbitmq
+docker compose up --build
+# open http://localhost:15672 (guest/guest) to inspect the exchange and queue
+# observe Elixir logs: event_type, entity_id, tenant_id, correlation_id
 ```
 
 Trio examples (three-service compositions):

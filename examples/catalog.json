@@ -2030,6 +2030,18 @@
       "patterns": ["broker-seam", "kafka", "consumer-group", "event-enrichment"],
       "rank": 95,
       "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-multi-backend/duos/elixir-clojure-rabbitmq/",
+      "category": "multi-backend",
+      "summary": "Elixir + Clojure RabbitMQ broker seam: Clojure (Langohr) produces enriched domain task events to a RabbitMQ topic exchange; Elixir (Broadway + broadway_rabbitmq) consumes them as a work queue. Shows exchange/queue/binding setup, DLX pattern, prefetch configuration, and docker-compose.",
+      "tags": ["multi-backend", "elixir", "clojure", "broker", "rabbitmq", "amqp"],
+      "stacks": ["elixir-phoenix", "clojure-kit-nextjdbc-hiccup", "rabbitmq"],
+      "archetypes": ["multi-backend-service"],
+      "workflows": ["design-multi-backend-seams", "add-backend-coordination-layer"],
+      "patterns": ["broker-seam", "rabbitmq", "work-queue", "topic-exchange", "dead-letter"],
+      "rank": 95,
+      "stability": "canonical"
     }
   ]
 }
