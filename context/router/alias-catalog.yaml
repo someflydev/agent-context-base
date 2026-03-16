@@ -305,6 +305,59 @@ stacks:
     target: context/stacks/parquet-minio.md
   - alias: write parquet to object store
     target: context/stacks/parquet-minio.md
+  - alias: grpc
+    target: context/stacks/grpc.md
+  - alias: grpc stack
+    target: context/stacks/grpc.md
+  - alias: protocol buffers
+    target: context/stacks/grpc.md
+  - alias: protobuf
+    target: context/stacks/grpc.md
+  - alias: proto file
+    target: context/stacks/grpc.md
+  - alias: tonic rust grpc
+    target: context/stacks/grpc.md
+  - alias: grpc server rust
+    target: context/stacks/grpc.md
+  - alias: grpcio python
+    target: context/stacks/grpc.md
+  - alias: grpc python client
+    target: context/stacks/grpc.md
+  - alias: grpc kotlin
+    target: context/stacks/grpc.md
+  - alias: scalapb grpc
+    target: context/stacks/grpc.md
+  - alias: grpc go client
+    target: context/stacks/grpc.md
+  - alias: protoc stub generation
+    target: context/stacks/grpc.md
+  - alias: grpc error codes
+    target: context/stacks/grpc.md
+  - alias: grpc deadline timeout
+    target: context/stacks/grpc.md
+  - alias: grpc interceptor
+    target: context/stacks/grpc.md
+  - alias: grpc health check
+    target: context/stacks/grpc.md
+  - alias: grpc gateway
+    target: context/stacks/grpc.md
+  - alias: grpc streaming
+    target: context/stacks/grpc.md
+  - alias: server streaming grpc
+    target: context/stacks/grpc.md
+  - alias: bidirectional streaming grpc
+    target: context/stacks/grpc.md
+  - alias: rust python grpc
+    target:
+      - context/stacks/duo-rust-python.md
+      - examples/canonical-multi-backend/duos/rust-python-grpc/seam.md
+  - alias: node go graphql bff
+    target:
+      - context/stacks/duo-node-go.md
+      - examples/canonical-multi-backend/duos/node-go-rest/seam.md
+  - alias: apollo server node go
+    target:
+      - examples/canonical-multi-backend/duos/node-go-rest/seam.md
   - alias: coordination seam patterns
     target: context/stacks/coordination-seam-patterns.md
   - alias: seam patterns
@@ -324,7 +377,9 @@ stacks:
   - alias: call python from go
     target: context/stacks/coordination-seam-patterns.md
   - alias: rust grpc server
-    target: context/stacks/coordination-seam-patterns.md
+    target:
+      - context/stacks/grpc.md
+      - context/stacks/coordination-seam-patterns.md
   - alias: elixir calls rust nif
     target: context/stacks/coordination-seam-patterns.md
   - alias: rustler
@@ -482,7 +537,8 @@ stacks:
   - alias: grpc between rust and python
     target:
       - context/stacks/duo-rust-python.md
-      - context/stacks/coordination-seam-patterns.md
+      - context/stacks/grpc.md
+      - examples/canonical-multi-backend/duos/rust-python-grpc/seam.md
   - alias: elixir rust
     target: context/stacks/duo-elixir-rust.md
   - alias: rustler nif

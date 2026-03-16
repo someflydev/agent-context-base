@@ -355,6 +355,21 @@ stacks:
     notes: Canonical broker seam example (elixir-clojure-rabbitmq) is structure-verified only.
            No live RabbitMQ integration test is wired in the default verification tier.
            Management UI health probe pattern (rabbitmq-diagnostics ping) verified in docker-compose context.
+  - stack: grpc
+    support_level: 2
+    verified_examples:
+      - kotlin-rust-grpc-seam-example
+      - rust-python-grpc-seam-example
+      - go-rust-python-trio-example    # gRPC leg of the Go+Rust+Python trio
+    missing_verification:
+      - streaming RPC example (server-streaming, bidirectional)
+      - live gRPC integration test in default verification tier
+      - grpc-gateway (HTTP/JSON bridge) example
+      - gRPC reflection example
+    notes: gRPC is a cross-cutting seam technology. Canonical examples cover the Rust tonic
+           server + Kotlin caller and Rust tonic server + Python caller patterns.
+           No live gRPC integration test is wired in the default verification tier.
+           Stub generation commands are documented in grpc.md.
 capabilities:
   - capability: redis-streams
     notes: Redis Streams consumer group patterns (XADD, XREADGROUP, XACK, XCLAIM, XPENDING).
@@ -386,11 +401,12 @@ capabilities:
           - examples/canonical-multi-backend/duos/elixir-clojure-rabbitmq/
       - stack: python-fastapi-uv-ruff-orjson-polars
         status: supported
-        note: "Appears in: duos/go-python-rest (REST server), trios/go-elixir-python (REST scoring server), trios/go-rust-python (REST scoring server)"
+        note: "Appears in: duos/go-python-rest (REST server), trios/go-elixir-python (REST scoring server), trios/go-rust-python (REST scoring server), duos/rust-python-grpc (gRPC caller)"
         canonical_examples:
           - examples/canonical-multi-backend/duos/go-python-rest/
           - examples/canonical-multi-backend/trios/go-elixir-python/
           - examples/canonical-multi-backend/trios/go-rust-python/
+          - examples/canonical-multi-backend/duos/rust-python-grpc/
       - stack: rust-axum-modern
         status: supported
         note: "Appears in: duos/kotlin-rust-grpc (gRPC server), trios/go-rust-python (gRPC preprocessing server)"
@@ -409,8 +425,10 @@ capabilities:
           - examples/canonical-multi-backend/duos/clojure-go-kafka/
           - examples/canonical-multi-backend/duos/elixir-clojure-rabbitmq/
       - stack: typescript-hono-bun
-        status: documented
-        note: "Duo stack doc exists (duo-node-go.md, duo-node-elixir.md, trio-node-go-python.md). No canonical seam example yet."
+        status: supported
+        note: "Appears in: duos/node-go-rest (REST + GraphQL BFF)"
+        canonical_examples:
+          - examples/canonical-multi-backend/duos/node-go-rest/
       - stack: scala-tapir-http4s-zio
         status: documented
         note: "Duo stack doc exists (duo-scala-rust.md, trio-scala-python-go.md). No canonical seam example yet."

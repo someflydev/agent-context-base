@@ -13,6 +13,8 @@ These examples show the seam layer between coordinating backend services. Each e
 | `duos/kotlin-rust-grpc/` | Kotlin + Rust | gRPC (Protocol Buffers) | Compute kernel |
 | `duos/clojure-go-kafka/` | Clojure + Go | Broker (Kafka) | Domain event enrichment + worker consumers |
 | `duos/elixir-clojure-rabbitmq/` | Elixir + Clojure | Broker (RabbitMQ) | Work queue + topic exchange routing |
+| `duos/rust-python-grpc/` | Rust + Python | gRPC | ML inference server + Python orchestrator |
+| `duos/node-go-rest/` | Node + Go | REST (GraphQL BFF) | GraphQL schema resolving Go domain APIs |
 | `trios/go-elixir-python/` | Go + Elixir + Python | Broker + REST | Gateway + coordination + ML |
 | `trios/go-rust-python/` | Go + Rust + Python | gRPC + REST | Gateway + kernel + ML |
 
@@ -56,6 +58,20 @@ cd examples/canonical-multi-backend/duos/elixir-clojure-rabbitmq
 docker compose up --build
 # open http://localhost:15672 (guest/guest) to inspect the exchange and queue
 # observe Elixir logs: event_type, entity_id, tenant_id, correlation_id
+
+# gRPC seam — Python calls Rust inference server
+cd examples/canonical-multi-backend/duos/rust-python-grpc
+docker compose up --build   # first build takes several minutes (Rust compile)
+# curl -X POST http://localhost:8001/predict \
+#      -H "Content-Type: application/json" \
+#      -d '{"features":[0.8,0.6,0.9],"model_id":"demo"}'
+
+# REST seam — GraphQL BFF (Node) calls Go domain service
+cd examples/canonical-multi-backend/duos/node-go-rest
+docker compose up --build
+# curl -X POST http://localhost:3000/graphql \
+#      -H "Content-Type: application/json" \
+#      -d '{"query":"{ users { id name email } }"}'
 ```
 
 Trio examples (three-service compositions):

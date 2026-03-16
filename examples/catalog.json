@@ -2042,6 +2042,30 @@
       "patterns": ["broker-seam", "rabbitmq", "work-queue", "topic-exchange", "dead-letter"],
       "rank": 95,
       "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-multi-backend/duos/rust-python-grpc/",
+      "category": "multi-backend",
+      "summary": "Rust + Python gRPC seam: Rust (tonic) serves as the hot-path ML inference engine; Python (grpcio) calls it as an orchestrator. Shows proto contract, tonic server, Python gRPC client, downstream health probe, and docker-compose with Rust build time considerations.",
+      "tags": ["multi-backend", "rust", "python", "grpc", "protobuf"],
+      "stacks": ["rust-axum-modern", "python-fastapi-uv-ruff-orjson-polars", "grpc"],
+      "archetypes": ["multi-backend-service"],
+      "workflows": ["design-multi-backend-seams", "add-backend-coordination-layer"],
+      "patterns": ["grpc-seam", "protobuf", "inference-server", "downstream-health-probe"],
+      "rank": 95,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-multi-backend/duos/node-go-rest/",
+      "category": "multi-backend",
+      "summary": "Node + Go REST seam: Node (Apollo Server / GraphQL BFF) resolves queries by calling a Go domain service (Echo) over HTTP/REST. Shows GraphQL resolver-to-REST pattern, downstream health probe, and docker-compose.",
+      "tags": ["multi-backend", "node", "go", "rest", "graphql"],
+      "stacks": ["typescript-hono-bun", "go-echo", "grpc"],
+      "archetypes": ["multi-backend-service"],
+      "workflows": ["design-multi-backend-seams", "add-backend-coordination-layer"],
+      "patterns": ["rest-seam", "graphql-bff", "downstream-health-probe"],
+      "rank": 95,
+      "stability": "canonical"
     }
   ]
 }
