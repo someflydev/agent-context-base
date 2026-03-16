@@ -363,6 +363,143 @@ stacks:
     target: context/stacks/backend-driven-ui-htmx-tailwind-plotly.md
   - alias: playwright ui
     target: context/stacks/backend-driven-ui-htmx-tailwind-plotly.md
+  - alias: go elixir backend
+    target: context/stacks/duo-go-elixir.md
+  - alias: go gateway elixir real-time
+    target: context/stacks/duo-go-elixir.md
+  - alias: nats between go and elixir duo
+    target:
+      - context/stacks/duo-go-elixir.md
+      - examples/canonical-multi-backend/duos/go-elixir-nats/seam.md
+  - alias: go python backend
+    target: context/stacks/duo-go-python.md
+  - alias: python scoring service called from go
+    target:
+      - context/stacks/duo-go-python.md
+      - examples/canonical-multi-backend/duos/go-python-rest/seam.md
+  - alias: rest seam go python
+    target:
+      - context/stacks/duo-go-python.md
+      - examples/canonical-multi-backend/duos/go-python-rest/seam.md
+  - alias: rust and python backend
+    target: context/stacks/duo-rust-python.md
+  - alias: python ml with rust inference
+    target: context/stacks/duo-rust-python.md
+  - alias: grpc between rust and python
+    target:
+      - context/stacks/duo-rust-python.md
+      - context/stacks/coordination-seam-patterns.md
+  - alias: elixir rust
+    target: context/stacks/duo-elixir-rust.md
+  - alias: rustler nif
+    target:
+      - context/stacks/duo-elixir-rust.md
+      - context/stacks/coordination-seam-patterns.md
+  - alias: rust nif from elixir
+    target:
+      - context/stacks/duo-elixir-rust.md
+      - context/stacks/coordination-seam-patterns.md
+  - alias: port seam elixir rust
+    target:
+      - context/stacks/duo-elixir-rust.md
+      - context/stacks/coordination-seam-patterns.md
+  - alias: clojure and go
+    target: context/stacks/duo-clojure-go.md
+  - alias: kafka clojure go
+    target: context/stacks/duo-clojure-go.md
+  - alias: clojure producer go consumer
+    target: context/stacks/duo-clojure-go.md
+  - alias: node bff go services
+    target: context/stacks/duo-node-go.md
+  - alias: typescript frontend go backend
+    target: context/stacks/duo-node-go.md
+  - alias: elixir and clojure
+    target: context/stacks/duo-elixir-clojure.md
+  - alias: clojure enriches elixir delivers
+    target: context/stacks/duo-elixir-clojure.md
+  - alias: kotlin rust grpc
+    target:
+      - context/stacks/duo-kotlin-rust.md
+      - examples/canonical-multi-backend/duos/kotlin-rust-grpc/seam.md
+  - alias: kotlin calling rust compute
+    target:
+      - context/stacks/duo-kotlin-rust.md
+      - examples/canonical-multi-backend/duos/kotlin-rust-grpc/seam.md
+  - alias: scala rust
+    target: context/stacks/duo-scala-rust.md
+  - alias: akka streams rust kernel
+    target: context/stacks/duo-scala-rust.md
+  - alias: scala streams with rust hot path
+    target: context/stacks/duo-scala-rust.md
+  - alias: node elixir
+    target: context/stacks/duo-node-elixir.md
+  - alias: node websocket elixir state
+    target: context/stacks/duo-node-elixir.md
+  - alias: node client elixir distributed
+    target: context/stacks/duo-node-elixir.md
+  - alias: go elixir python
+    target:
+      - context/stacks/trio-go-elixir-python.md
+      - examples/canonical-multi-backend/trios/go-elixir-python/seam.md
+  - alias: go gateway elixir coordinator python inference
+    target:
+      - context/stacks/trio-go-elixir-python.md
+      - examples/canonical-multi-backend/trios/go-elixir-python/seam.md
+  - alias: three service ai platform go elixir python
+    target:
+      - context/stacks/trio-go-elixir-python.md
+      - examples/canonical-multi-backend/trios/go-elixir-python/seam.md
+  - alias: go rust python
+    target:
+      - context/stacks/trio-go-rust-python.md
+      - examples/canonical-multi-backend/trios/go-rust-python/seam.md
+  - alias: go gateway rust compute python ml
+    target:
+      - context/stacks/trio-go-rust-python.md
+      - examples/canonical-multi-backend/trios/go-rust-python/seam.md
+  - alias: preprocessing pipeline go rust python
+    target:
+      - context/stacks/trio-go-rust-python.md
+      - examples/canonical-multi-backend/trios/go-rust-python/seam.md
+  - alias: elixir go rust
+    target: context/stacks/trio-elixir-go-rust.md
+  - alias: elixir coordination go workers rust compute
+    target: context/stacks/trio-elixir-go-rust.md
+  - alias: node go python
+    target: context/stacks/trio-node-go-python.md
+  - alias: bff go services python ml
+    target: context/stacks/trio-node-go-python.md
+  - alias: node frontend go backend python scoring
+    target: context/stacks/trio-node-go-python.md
+  - alias: clojure python go
+    target: context/stacks/trio-clojure-python-go.md
+  - alias: event rules ml api stack
+    target: context/stacks/trio-clojure-python-go.md
+  - alias: clojure kafka python scoring go api
+    target: context/stacks/trio-clojure-python-go.md
+  - alias: scala python go
+    target: context/stacks/trio-scala-python-go.md
+  - alias: streaming analytics api
+    target: context/stacks/trio-scala-python-go.md
+  - alias: spark python go serving
+    target: context/stacks/trio-scala-python-go.md
+  - alias: multi-backend architecture
+    target:
+      - context/doctrine/multi-backend-coordination.md
+      - context/archetypes/multi-backend-service.md
+  - alias: multiple language backends
+    target:
+      - context/doctrine/multi-backend-coordination.md
+      - context/archetypes/multi-backend-service.md
+  - alias: which language should own what in a multi-service system
+    target:
+      - context/doctrine/multi-backend-coordination.md
+      - context/archetypes/multi-backend-service.md
+  - alias: how to coordinate two different language backends
+    target:
+      - context/doctrine/multi-backend-coordination.md
+      - context/archetypes/multi-backend-service.md
+      - context/stacks/coordination-seam-patterns.md
 
 archetypes:
   - alias: backend api

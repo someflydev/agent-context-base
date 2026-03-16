@@ -1958,6 +1958,66 @@
       "patterns": ["split-filter-panel", "backend-driven-ui"],
       "rank": 88,
       "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-multi-backend/duos/go-elixir-nats/",
+      "category": "multi-backend",
+      "summary": "Go + Elixir broker seam: Go publishes NATS JetStream events, Elixir subscribes with a durable consumer. Shows stream setup, event schema, health probe, and docker-compose.",
+      "tags": ["multi-backend", "go", "elixir", "broker"],
+      "stacks": ["go-echo", "elixir-phoenix", "nats-jetstream"],
+      "archetypes": ["multi-backend-service"],
+      "workflows": ["design-multi-backend-seams", "add-backend-coordination-layer"],
+      "patterns": ["broker-seam", "nats-jetstream", "durable-consumer", "event-fan-out"],
+      "rank": 95,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-multi-backend/duos/go-python-rest/",
+      "category": "multi-backend",
+      "summary": "Go + Python REST seam: Go gateway calls Python scoring service synchronously. Shows downstream health probe pattern, JSON schema, and docker-compose.",
+      "tags": ["multi-backend", "go", "python", "rest"],
+      "stacks": ["go-echo", "python-fastapi-uv-ruff-orjson-polars"],
+      "archetypes": ["multi-backend-service"],
+      "workflows": ["design-multi-backend-seams", "add-backend-coordination-layer"],
+      "patterns": ["rest-seam", "downstream-health-probe", "ml-scoring-gateway"],
+      "rank": 95,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-multi-backend/duos/kotlin-rust-grpc/",
+      "category": "multi-backend",
+      "summary": "Kotlin + Rust gRPC seam: Kotlin calls Rust compute server via typed RPC. Shows .proto contract, stub generation, health probe, and docker-compose.",
+      "tags": ["multi-backend", "kotlin", "rust", "grpc"],
+      "stacks": ["kotlin-http4k-exposed", "rust-axum-modern"],
+      "archetypes": ["multi-backend-service"],
+      "workflows": ["design-multi-backend-seams", "add-backend-coordination-layer"],
+      "patterns": ["grpc-seam", "proto-contract", "compute-kernel"],
+      "rank": 95,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-multi-backend/trios/go-elixir-python/",
+      "category": "multi-backend",
+      "summary": "Go + Elixir + Python trio: Go publishes jobs via NATS, Elixir coordinates and calls Python for scoring, Elixir fans out results. Shows both broker and REST seams with cascading healthchecks.",
+      "tags": ["multi-backend", "go", "elixir", "python", "broker", "rest"],
+      "stacks": ["go-echo", "elixir-phoenix", "python-fastapi-uv-ruff-orjson-polars", "nats-jetstream"],
+      "archetypes": ["multi-backend-service"],
+      "workflows": ["design-multi-backend-seams", "add-backend-coordination-layer"],
+      "patterns": ["broker-seam", "rest-seam", "trio-pipeline", "coordinator-pattern", "event-fan-out"],
+      "rank": 95,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-multi-backend/trios/go-rust-python/",
+      "category": "multi-backend",
+      "summary": "Go + Rust + Python trio: Go orchestrates gRPC call to Rust for preprocessing, then REST call to Python for ML scoring. Shows proto contract (processing.v1), pipeline topology, and dual downstream health probe.",
+      "tags": ["multi-backend", "go", "rust", "python", "grpc", "rest"],
+      "stacks": ["go-echo", "rust-axum-modern", "python-fastapi-uv-ruff-orjson-polars"],
+      "archetypes": ["multi-backend-service"],
+      "workflows": ["design-multi-backend-seams", "add-backend-coordination-layer"],
+      "patterns": ["grpc-seam", "rest-seam", "trio-pipeline", "orchestrator-pattern", "downstream-health-probe"],
+      "rank": 95,
+      "stability": "canonical"
     }
   ]
 }

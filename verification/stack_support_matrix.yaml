@@ -335,6 +335,51 @@ stacks:
       - DLQ path integration test
     notes: Capture-enrich-persist combo pack. A structure-verified runnable .py companion (nats-jetstream-mongo-pipeline-example.py) is now present. A live docker-compose harness (nats_mongo_min_app scenario) would raise this to support_level 3.
 capabilities:
+  - capability: multi-backend-seam
+    notes: Canonical seam examples covering broker (NATS), gRPC (Protocol Buffers), and REST seam types across duo and trio compositions.
+    stacks:
+      - stack: go-echo
+        status: supported
+        note: "Appears in: duos/go-elixir-nats (NATS publisher), duos/go-python-rest (REST caller), trios/go-elixir-python (NATS publisher), trios/go-rust-python (gRPC + REST orchestrator)"
+        canonical_examples:
+          - examples/canonical-multi-backend/duos/go-elixir-nats/
+          - examples/canonical-multi-backend/duos/go-python-rest/
+          - examples/canonical-multi-backend/trios/go-elixir-python/
+          - examples/canonical-multi-backend/trios/go-rust-python/
+      - stack: elixir-phoenix
+        status: supported
+        note: "Appears in: duos/go-elixir-nats (NATS subscriber), trios/go-elixir-python (NATS subscriber + REST caller)"
+        canonical_examples:
+          - examples/canonical-multi-backend/duos/go-elixir-nats/
+          - examples/canonical-multi-backend/trios/go-elixir-python/
+      - stack: python-fastapi-uv-ruff-orjson-polars
+        status: supported
+        note: "Appears in: duos/go-python-rest (REST server), trios/go-elixir-python (REST scoring server), trios/go-rust-python (REST scoring server)"
+        canonical_examples:
+          - examples/canonical-multi-backend/duos/go-python-rest/
+          - examples/canonical-multi-backend/trios/go-elixir-python/
+          - examples/canonical-multi-backend/trios/go-rust-python/
+      - stack: rust-axum-modern
+        status: supported
+        note: "Appears in: duos/kotlin-rust-grpc (gRPC server), trios/go-rust-python (gRPC preprocessing server)"
+        canonical_examples:
+          - examples/canonical-multi-backend/duos/kotlin-rust-grpc/
+          - examples/canonical-multi-backend/trios/go-rust-python/
+      - stack: kotlin-http4k-exposed
+        status: supported
+        note: "Appears in: duos/kotlin-rust-grpc (gRPC client)"
+        canonical_examples:
+          - examples/canonical-multi-backend/duos/kotlin-rust-grpc/
+      - stack: clojure-kit-nextjdbc-hiccup
+        status: documented
+        note: "Duo stack doc exists (duo-clojure-go.md, duo-elixir-clojure.md, trio-clojure-python-go.md). No canonical seam example yet."
+      - stack: typescript-hono-bun
+        status: documented
+        note: "Duo stack doc exists (duo-node-go.md, duo-node-elixir.md, trio-node-go-python.md). No canonical seam example yet."
+      - stack: scala-tapir-http4s-zio
+        status: documented
+        note: "Duo stack doc exists (duo-scala-rust.md, trio-scala-python-go.md). No canonical seam example yet."
+
   - capability: faceted-filter-ui
     shared_examples:
       - README-faceted-filter-examples

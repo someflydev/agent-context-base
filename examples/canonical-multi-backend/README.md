@@ -11,8 +11,8 @@ These examples show the seam layer between coordinating backend services. Each e
 | `duos/go-elixir-nats/` | Go + Elixir | Broker (NATS JetStream) | Event fan-out to real-time clients |
 | `duos/go-python-rest/` | Go + Python | REST (HTTP/JSON) | ML scoring gateway |
 | `duos/kotlin-rust-grpc/` | Kotlin + Rust | gRPC (Protocol Buffers) | Compute kernel |
-| `trios/go-elixir-python/` | Go + Elixir + Python | Broker + REST | Gateway + coordination + ML *(added in PROMPT_54)* |
-| `trios/go-rust-python/` | Go + Rust + Python | gRPC + REST | Gateway + kernel + ML *(added in PROMPT_54)* |
+| `trios/go-elixir-python/` | Go + Elixir + Python | Broker + REST | Gateway + coordination + ML |
+| `trios/go-rust-python/` | Go + Rust + Python | gRPC + REST | Gateway + kernel + ML |
 
 ## Seam Types
 
@@ -24,7 +24,7 @@ These examples show the seam layer between coordinating backend services. Each e
 
 ## How to Run an Example
 
-Each example is self-contained. Start with any of the three duo examples:
+Each example is self-contained. Start with any of the duo examples:
 
 ```bash
 # Broker seam — Go publishes, Elixir subscribes
@@ -41,6 +41,20 @@ docker compose up --build
 cd examples/canonical-multi-backend/duos/kotlin-rust-grpc
 docker compose up --build
 # observe Kotlin logs showing the Rust response: result, method, duration_ns
+```
+
+Trio examples (three-service compositions):
+
+```bash
+# Broker + REST — Go publishes to NATS, Elixir coordinates, Elixir calls Python
+cd examples/canonical-multi-backend/trios/go-elixir-python
+docker compose up --build
+# curl -X POST http://localhost:8080/submit-job -d '{"job_id":"j1","features":[1,2,3]}'
+
+# gRPC + REST — Go calls Rust (preprocess) then Python (score) in sequence
+cd examples/canonical-multi-backend/trios/go-rust-python
+docker compose up --build   # first build takes several minutes (Rust compile)
+# curl -X POST http://localhost:8080/process -d '{"document":"hello world","doc_id":"d1"}'
 ```
 
 Read the `seam.md` companion doc in each directory before reading the code. It explains the directional choice, the event/request schema, and what to observe when running locally.
