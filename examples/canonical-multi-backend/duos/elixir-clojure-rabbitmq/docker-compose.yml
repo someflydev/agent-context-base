@@ -1,0 +1,86 @@
+# Seam example: Clojure (Langohr) producer → RabbitMQ → Elixir (Broadway) consumer
+# Run: docker compose up --build
+# Management UI: http://localhost:15672 (guest/guest)
+# Elixir health:  http://localhost:4000/healthz
+# Clojure health: http://localhost:8180/healthz
+#
+# Both services depend only on RabbitMQ, not on each other.
+# This is correct for a broker seam — producer and consumer are independent.
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    ports:
+      - "5672:5672"    # AMQP
+      - "15672:15672"  # management UI (guest/guest)
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  elixir-service:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM elixir:1.16-alpine
+        WORKDIR /app
+        RUN apk add --no-cache curl
+        RUN mix local.hex --force && mix local.rebar --force
+        RUN printf 'defmodule ElixirSide.MixProject do\n  use Mix.Project\n  def project, do: [app: :elixir_side, version: "0.1.0", elixir: "~> 1.16", deps: deps()]\n  defp deps, do: [\n    {:broadway, "~> 1.0"},\n    {:broadway_rabbitmq, "~> 0.7"},\n    {:amqp, "~> 3.3"},\n    {:jason, "~> 1.4"},\n    {:plug_cowboy, "~> 2.6"},\n  ]\n  def application, do: [mod: {ElixirSide.Application, []}, extra_applications: [:logger]]\nend\n' > mix.exs
+        RUN printf '[]\n' > mix.lock
+        RUN mix deps.get
+        RUN mix deps.compile
+        RUN mkdir -p lib
+        COPY elixir-side.ex lib/elixir_side.ex
+        EXPOSE 4000
+        CMD ["mix", "run", "--no-halt"]
+    ports:
+      - "4000:4000"
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      HTTP_PORT: "4000"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/healthz"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+
+  clojure-service:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM clojure:temurin-21-tools-deps
+        WORKDIR /app
+        RUN printf '{:paths ["src"] :deps {com.novemberain/langohr {:mvn/version "5.4.0"} cheshire/cheshire {:mvn/version "5.13.0"} ring/ring-core {:mvn/version "1.12.0"} ring/ring-jetty-adapter {:mvn/version "1.12.0"}}}' > deps.edn
+        RUN mkdir -p src/clojure_side
+        COPY clojure-side.clj src/clojure_side/core.clj
+        RUN clojure -P
+        EXPOSE 8180
+        CMD ["clojure", "-M", "-m", "clojure-side.core"]
+    ports:
+      - "8180:8180"
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      HTTP_PORT: "8180"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8180/healthz"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
