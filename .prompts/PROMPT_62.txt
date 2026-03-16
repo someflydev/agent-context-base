@@ -1,0 +1,517 @@
+You are working inside the agent-context-base repository.
+
+Before proceeding, read:
+
+  context/stacks/parquet.md                      (file-format discipline — schema, partitioning, row groups)
+  context/stacks/parquet-minio.md                (write-to-S3 path; this prompt's stack doc complements it)
+  context/stacks/duckdb-trino-polars.md          (existing DuckDB combo doc; this prompt adds a distinct scope)
+  examples/canonical-storage/duckdb-polars-example.py   (in-memory DuckDB → Polars; what this example is NOT)
+  examples/canonical-storage/duckdb-polars-example.md   (companion; read before creating the new companion)
+  examples/canonical-storage/parquet-minio-example.py   (the MinIO write path; do not duplicate)
+  examples/canonical-storage/README.md           (read before updating)
+  examples/catalog.json                          (read before updating)
+  context/router/task-router.md                  (read before updating)
+  context/router/alias-catalog.yaml              (read before updating)
+
+
+This prompt adds the DuckDB+Parquet local-file stack — the pattern where DuckDB acts as a
+native SQL query engine over Parquet files on local disk (not in MinIO, not in-memory SQL
+tables). This is a frequently needed combination that is currently split across parquet.md
+(format discipline), duckdb-trino-polars.md (broader combo), and parquet-minio.md (write to
+object store). None of those docs is the right place to load when the question is simply:
+"How do I write Parquet to local disk and query it with DuckDB?"
+
+The new stack doc answers that question directly. The canonical example shows the full
+local round-trip: write with PyArrow → query with DuckDB read_parquet() → return Polars
+DataFrame. This is the most common pattern for local analytical pipelines and lightweight
+data lake prototyping that don't require object storage.
+
+Produce:
+
+  1. Stack doc:
+       context/stacks/duckdb-parquet.md
+
+  2. Canonical storage example (two files):
+       examples/canonical-storage/duckdb-parquet-example.py
+       examples/canonical-storage/duckdb-parquet-example.md
+
+  3. Registry and router updates:
+       examples/catalog.json
+       context/router/task-router.md
+       context/router/alias-catalog.yaml
+       examples/canonical-storage/README.md
+
+Organize into commit-ready batches. For each batch:
+1. Title and purpose.
+2. Files created or updated (full paths).
+3. Full content of every file.
+4. Suggested commit message with prefix [PROMPT_62].
+
+
+---
+
+SECTION 1 — STACK DOC: context/stacks/duckdb-parquet.md
+
+This stack doc is the authoritative reference when the repo uses DuckDB as a query engine
+over Parquet files on local disk. It is NOT the right doc when MinIO or S3 is involved
+(use parquet-minio.md for that), and NOT the right doc when Trino federation is needed
+(use duckdb-trino-polars.md for that).
+
+The doc must be crisp and opinionated. Model it on parquet.md and nats-jetstream.md in
+terms of depth and specificity. Cover every decision a implementing assistant needs to
+make when adding this stack to a repo.
+
+Sections to include:
+
+## When To Load This Pack
+
+Clear decision criteria. Load this pack when:
+- The repo stores Parquet files on local disk (under data/, docker/volumes/, or a mounted
+  path) and DuckDB is the query layer.
+- The task involves writing Parquet from Python (PyArrow or DuckDB COPY TO) and reading
+  it back with DuckDB's read_parquet() function.
+- The pipeline is local-dev or CI-only; no object store is involved in the read path.
+- The user asks about "query parquet with duckdb", "read local parquet", "duckdb scan",
+  "partition parquet on disk", or similar.
+
+Do NOT load this pack when:
+- Files live in MinIO or S3 — load parquet-minio.md and duckdb-trino-polars.md.
+- Trino federation is required — load duckdb-trino-polars.md.
+- DuckDB is used only for in-memory SQL tables (no Parquet files) — the existing
+  duckdb-polars-example.py already covers that.
+
+## When To Use DuckDB vs Polars for Parquet Scanning
+
+This is the most common design decision when both are available. Be opinionated.
+
+Use DuckDB (read_parquet) when:
+- The query involves JOINs across multiple Parquet datasets.
+- The query is an aggregation (GROUP BY, window functions, SUM/COUNT over millions of rows).
+- The user already knows SQL and wants a familiar query interface.
+- Hive-style partition pruning is needed: DuckDB's hive_partitioning=true pushes predicates
+  into partition directory selection, skipping unneeded directories entirely.
+- The result of the query needs further SQL computation before becoming a DataFrame.
+
+Use Polars (scan_parquet) when:
+- The operation is a column projection + filter with no join or aggregation.
+- The transform is best expressed as a lazy Polars expression graph (map_elements,
+  rolling windows, complex column operations).
+- The downstream consumer expects a Polars LazyFrame for further chaining.
+- The pipeline is streaming (scan in chunks without loading all rows into memory).
+
+Both paths compose: use DuckDB for the SQL query, then call pl.read_database() or
+pl.from_arrow() to convert the result into a Polars DataFrame for downstream transforms.
+That composition is the canonical pattern when both a complex SQL query and a downstream
+Polars transform are needed. Show an example of this composition.
+
+## DuckDB Parquet Read API
+
+Cover:
+
+1. Basic read with glob pattern:
+   duckdb.sql("SELECT * FROM read_parquet('data/**/*.parquet')")
+
+2. Hive-style partition pruning:
+   duckdb.sql("""
+       SELECT tenant_id, COUNT(*) AS row_count
+       FROM read_parquet('data/reports/**/*.parquet', hive_partitioning=true)
+       WHERE tenant_id = 'acme'
+       GROUP BY tenant_id
+   """)
+   Explain: when hive_partitioning=true, DuckDB reads the partition key values from
+   directory names (tenant_id=acme/) and injects them as virtual columns. Predicates on
+   those virtual columns prune the directories that DuckDB needs to open entirely.
+
+3. Union multiple directories:
+   duckdb.sql("""
+       SELECT * FROM read_parquet(['data/2026-03-10/**/*.parquet',
+                                   'data/2026-03-11/**/*.parquet'])
+   """)
+
+4. Converting the DuckDB result to a Polars DataFrame:
+   import polars as pl
+   rel = conn.sql("SELECT ... FROM read_parquet(...)")
+   df = pl.from_arrow(rel.arrow())
+   Explain why from_arrow is preferred over read_database() when the source is a DuckDB
+   relation: it avoids the string-SQL round-trip and preserves the Arrow schema exactly.
+
+5. DuckDB connection mode for Parquet scanning:
+   Use duckdb.connect() (in-memory connection) for read-only scans. Only use a file-backed
+   connection (duckdb.connect('path/to/db')) when caching query results into DuckDB tables
+   for repeated queries. Do not mix file-backed connections with read_parquet scanning of
+   volatile data directories.
+
+## DuckDB Parquet Write Path (COPY TO)
+
+DuckDB can write Parquet directly, which is useful for intermediate results:
+
+conn.execute("""
+    COPY (SELECT tenant_id, report_id, total_events FROM staging_table)
+    TO 'data/reports/tenant_id=acme/date=2026-03-10/part-0001.parquet'
+    (FORMAT PARQUET, COMPRESSION 'snappy', ROW_GROUP_SIZE 131072)
+""")
+
+Rules:
+- Always specify COMPRESSION explicitly — defaults vary across DuckDB versions.
+- Use snappy for actively queried data (fast decode), zstd for archival (better ratio).
+- ROW_GROUP_SIZE is in rows, not bytes. For 128 MB row groups at ~50 bytes/row, target
+  ~2.5M rows per group. For development fixtures, 128k rows is fine.
+- Create the target directory before calling COPY TO — DuckDB will not create it.
+- When writing partitioned data from DuckDB, prefer writing each partition separately
+  (once per tenant, once per date) rather than using a single COPY with a PARTITION BY
+  clause (DuckDB's PARTITION BY in COPY is available but less predictable for Hive layout).
+
+## PyArrow Write Path (Canonical)
+
+The authoritative write path for Parquet is PyArrow, not DuckDB COPY TO. Use PyArrow when:
+- The Arrow schema must be pinned explicitly (never inferred from data).
+- The write is the primary production write path, not a DuckDB intermediate.
+- Schema version tracking is required.
+
+Reference context/stacks/parquet.md for the full PyArrow schema definition and evolution rules.
+The canonical write shape (from parquet.md):
+
+import pyarrow as pa
+import pyarrow.parquet as pq
+
+SCHEMA = pa.schema([
+    pa.field("tenant_id", pa.string(), nullable=False),
+    pa.field("report_id", pa.string(), nullable=False),
+    pa.field("event_count", pa.int32(), nullable=False),
+    pa.field("schema_version", pa.int8(), nullable=False),
+])
+
+table = pa.table({
+    "tenant_id": ["acme", "globex"],
+    "report_id": ["r-001", "r-002"],
+    "event_count": [42, 11],
+    "schema_version": [1, 1],
+}, schema=SCHEMA)
+
+pq.write_table(
+    table,
+    "data/reports/tenant_id=acme/date=2026-03-10/part-0001.snappy.parquet",
+    compression="snappy",
+    row_group_size=131072,
+)
+
+## Typical Repo Surface
+
+- data/                         — Parquet files; partitioned by Hive convention
+- app/parquet/writer.py         — PyArrow schema + write logic
+- app/parquet/reader.py         — DuckDB read_parquet() + Polars conversion
+- app/pipeline.py               — orchestrates write then query
+- scripts/write_fixtures.py     — deterministic fixture write for local dev and CI
+- tests/integration/test_parquet_roundtrip.py — write, read back, assert
+
+## Testing Expectations
+
+- Write a small deterministic dataset (at least two partition keys, at least ten rows).
+- Read it back with DuckDB read_parquet() and assert: row count, column types, and at
+  least one partition key value.
+- Assert hive_partitioning=true correctly filters: query for tenant_id='acme' and verify
+  only acme rows are returned.
+- Do not mock file I/O — write real Parquet files to a temp directory (use tempfile.mkdtemp
+  in the test; clean up in tearDown).
+- If the pipeline also returns a Polars DataFrame, assert the DataFrame schema and at
+  least one row value.
+
+## Change Surfaces To Watch
+
+- DuckDB version upgrades can change COPY TO default compression and row group behavior;
+  pin the DuckDB version in pyproject.toml and test after upgrades.
+- Glob pattern changes: adding a new partition level (e.g., adding hour= under date=)
+  breaks existing glob patterns like 'data/**/*.parquet' if the new level changes
+  directory depth unexpectedly. Use ** (recursive) globs to be safe.
+- Schema drift between the PyArrow writer SCHEMA constant and the DuckDB query's column
+  expectations — treat the SCHEMA constant as the single source of truth.
+- hive_partitioning=true requires that partition directories follow the key=value/ format
+  exactly — case matters, underscores matter. Any deviation causes the partition column
+  to be NULL for that directory.
+
+## Common Assistant Mistakes
+
+- Using DuckDB's file-backed connection (duckdb.connect('analytics.duckdb')) when only
+  read_parquet scanning is needed — wastes disk space and creates an unneeded file.
+- Forgetting to create the partition directory before calling COPY TO — DuckDB raises a
+  FileNotFoundError silently wrapped in a CatalogException.
+- Mixing hive_partitioning=true with non-Hive directory names (e.g., a directory named
+  "2026-03-10" instead of "date=2026-03-10") — the partition column is silently NULL.
+- Reading from MinIO or S3 with this pattern without configuring the httpfs extension;
+  read_parquet('s3://...') silently fails without httpfs loaded.
+- Using pl.read_database() instead of pl.from_arrow(rel.arrow()) when converting a DuckDB
+  relation to Polars — read_database accepts SQL strings, not DuckDB relation objects.
+
+
+---
+
+SECTION 2 — CANONICAL EXAMPLE
+
+Directory: examples/canonical-storage/
+Files: duckdb-parquet-example.py and duckdb-parquet-example.md
+
+This example is the reference for the local Parquet write + DuckDB query round-trip.
+It is structurally distinct from duckdb-polars-example.py (which uses in-memory DuckDB
+SQL tables, not Parquet files) and from parquet-minio-example.py (which writes to MinIO).
+
+Follow the structure of duckdb-polars-example.py exactly in terms of code style:
+- from __future__ import annotations at the top
+- Named constants for paths
+- Single public function (or two: write_fixtures() and query())
+- No argparse, no CLI scaffold
+- if __name__ == "__main__": block at the bottom that calls the function and prints
+
+duckdb-parquet-example.py
+
+The example must demonstrate all three steps in sequence:
+
+Step 1 — Write fixtures (PyArrow write path):
+  - Define SCHEMA as a pa.schema() constant at module level (pinned, not inferred).
+  - Schema fields:
+      tenant_id (pa.string, not nullable)
+      report_id (pa.string, not nullable)
+      event_count (pa.int32, not nullable)
+      schema_version (pa.int8, not nullable)
+  - DATA_DIR constant: Path("docker/volumes/dev/parquet/reports")
+  - write_fixtures() function:
+    - Creates two partition directories:
+        DATA_DIR / "tenant_id=acme" / "date=2026-03-10"
+        DATA_DIR / "tenant_id=globex" / "date=2026-03-10"
+    - Writes one Parquet file per tenant using pq.write_table():
+        acme rows: [("acme", "r-001", 42, 1), ("acme", "r-002", 17, 1)]
+        globex rows: [("globex", "r-003", 11, 1)]
+    - compression="snappy", row_group_size=131072
+    - Returns the DATA_DIR path (so the caller can pass it to query())
+
+Step 2 — Query with DuckDB (hive partition pruning):
+  - query(data_dir: Path, tenant_filter: str = "acme") function:
+    - Opens an in-memory DuckDB connection (duckdb.connect())
+    - Runs:
+        SELECT tenant_id, report_id, event_count
+        FROM read_parquet('<data_dir>/**/*.parquet', hive_partitioning=true)
+        WHERE tenant_id = '<tenant_filter>'
+        ORDER BY event_count DESC
+    - Returns a Polars DataFrame using pl.from_arrow(rel.arrow())
+
+Step 3 — __main__ block:
+  data_dir = write_fixtures()
+  df = query(data_dir)
+  print(df)
+  Add a comment in the __main__ block explaining:
+    "write_fixtures() creates real Parquet files on disk;
+     query() scans them with DuckDB hive partition pruning;
+     result is a Polars DataFrame for downstream transforms."
+
+No cleanup logic in the __main__ block — this is a dev fixture, not a test.
+Tests clean up via tempfile.mkdtemp and tearDown.
+
+
+duckdb-parquet-example.md
+
+The companion doc. Model it on duckdb-polars-example.md in terms of structure and depth.
+
+Header:
+  **Verification level: structure-verified**
+  (this example is not yet behavior-verified; that is a follow-on task)
+  Harness: none yet
+
+Sections to include:
+
+## When To Use This Example
+
+Use this example when:
+- The repo reads Parquet files from a local directory (not MinIO/S3).
+- The query layer is DuckDB (SQL-based, with partition pruning via hive_partitioning=true).
+- The downstream consumer expects a Polars DataFrame.
+- The data is written by PyArrow with a pinned schema.
+
+Do NOT use this example when:
+- Data lives in MinIO or S3 — use parquet-minio-example.py for the write path and
+  parquet-minio-example.py's read_back() for the S3 DuckDB read path.
+- DuckDB is used for in-memory SQL tables (no Parquet files) — use duckdb-polars-example.py.
+- Trino is the query layer — use trino-federated-analytics-example.sql.
+
+## Write Path: PyArrow with Pinned Schema
+
+Explain why PyArrow is the canonical write path (not DuckDB COPY TO) for primary write paths:
+- The schema is explicit and pinned at the module level in SCHEMA.
+- Schema inference from the first batch is avoided (see parquet.md for why this matters).
+- Hive-style partition directories are created explicitly by the writer.
+
+## DuckDB Read Path: hive_partitioning=true
+
+Explain the hive_partitioning=true flag:
+- DuckDB reads partition key=value pairs from directory names and injects them as virtual
+  columns in the result set.
+- A WHERE clause on tenant_id is pushed down to directory selection before DuckDB opens
+  any files — directories that don't match the predicate are skipped entirely.
+- Without hive_partitioning=true, the partition directory names are not parsed and the
+  partition columns are absent from the result.
+
+## Polars Output: pl.from_arrow() vs pl.read_database()
+
+Explain:
+- pl.from_arrow(rel.arrow()) converts a DuckDB relation object (returned by conn.sql())
+  to a Polars DataFrame without a second SQL string round-trip.
+- pl.read_database() accepts a SQL string and a connection object — it is appropriate for
+  in-memory DuckDB tables (as in duckdb-polars-example.py) but not for DuckDB relation
+  objects.
+- The from_arrow path preserves the Arrow schema exactly and is more efficient.
+
+## Connection Mode: In-Memory vs File-Backed
+
+Explain when to use duckdb.connect() (in-memory) vs duckdb.connect('path.duckdb'):
+- Use in-memory for read-only Parquet scans — no disk file is created; the connection
+  closes cleanly when the with block exits.
+- Use file-backed only when caching query results into persistent DuckDB tables for
+  repeated queries (e.g., materializing a slow aggregation for interactive exploration).
+- Do not use a file-backed connection for read_parquet scanning of volatile data
+  directories — the DuckDB file accumulates catalog metadata that becomes stale.
+
+## Relationship To Other Storage Examples
+
+Table:
+| Example | Data lives | Write path | DuckDB access | Output |
+|---|---|---|---|---|
+| duckdb-polars-example.py | In-memory DuckDB table | DuckDB SQL INSERT | Embedded file (or in-memory) | Polars DataFrame |
+| duckdb-parquet-example.py | Local Parquet files | PyArrow pq.write_table() | read_parquet() with hive_partitioning | Polars DataFrame |
+| parquet-minio-example.py | MinIO S3 bucket | PyArrow + boto3 upload | DuckDB httpfs extension | Row count scalar |
+
+
+---
+
+SECTION 3 — REGISTRY AND ROUTER UPDATES
+
+UPDATE examples/catalog.json
+
+Add one entry:
+
+  path: "examples/canonical-storage/duckdb-parquet-example.py"
+  category: "storage"
+  summary: "DuckDB+Parquet local round-trip: write partitioned Parquet files with PyArrow (pinned schema, Hive directories), query with DuckDB read_parquet() and hive_partitioning=true for partition pruning, return a Polars DataFrame via pl.from_arrow(). Structure-verified. The canonical reference for local Parquet write + SQL query without object storage."
+  tags: ["duckdb", "parquet", "polars", "local", "hive-partitioning", "pyarrow", "analytical-storage"]
+  stacks: ["python-fastapi-uv-ruff-orjson-polars", "duckdb-parquet"]
+  archetypes: []
+  workflows: ["add-storage-integration"]
+  patterns: ["parquet-local", "hive-partitioning", "duckdb-scan", "polars-output"]
+  rank: 80
+  stability: "structure-verified"
+
+Read the file first. Match existing entry format exactly.
+
+
+UPDATE context/router/task-router.md
+
+Add the following entries to the Common Task Mappings section, near the existing DuckDB/Parquet entries:
+
+- "read local parquet with duckdb", "query parquet on disk", "duckdb scan parquet", "hive partition pruning"
+  - load `context/stacks/duckdb-parquet.md`
+  - load `context/stacks/parquet.md`
+- "write local parquet", "write parquet to local disk", "pyarrow write parquet"
+  - load `context/stacks/parquet.md`
+  - load `context/stacks/duckdb-parquet.md`
+- "duckdb parquet round-trip", "write and query parquet locally"
+  - load `context/stacks/duckdb-parquet.md`
+  - load `context/stacks/parquet.md`
+  - load `context/workflows/add-storage-integration.md`
+
+Add to Routing Examples section:
+- "Query local Parquet partitions with DuckDB"
+  - stacks: `context/stacks/duckdb-parquet.md`, `context/stacks/parquet.md`
+- "Write Parquet to local disk with PyArrow then query with DuckDB"
+  - stacks: `context/stacks/duckdb-parquet.md`, `context/stacks/parquet.md`
+
+Read the file first. Insert near the existing Parquet/DuckDB routing entries. Do not
+restructure the file — insert only.
+
+
+UPDATE context/router/alias-catalog.yaml
+
+Add under the existing storage stacks section:
+
+  - alias: read local parquet with duckdb
+    target:
+      - context/stacks/duckdb-parquet.md
+      - context/stacks/parquet.md
+  - alias: query parquet on disk
+    target:
+      - context/stacks/duckdb-parquet.md
+      - context/stacks/parquet.md
+  - alias: duckdb scan parquet
+    target:
+      - context/stacks/duckdb-parquet.md
+  - alias: hive partition pruning duckdb
+    target:
+      - context/stacks/duckdb-parquet.md
+      - context/stacks/parquet.md
+  - alias: write local parquet pyarrow
+    target:
+      - context/stacks/parquet.md
+      - context/stacks/duckdb-parquet.md
+  - alias: duckdb parquet round trip
+    target:
+      - context/stacks/duckdb-parquet.md
+      - context/stacks/parquet.md
+      - context/workflows/add-storage-integration.md
+
+Read the file first. Match existing format.
+
+
+UPDATE examples/canonical-storage/README.md
+
+Add duckdb-parquet-example.py and duckdb-parquet-example.md to the examples table.
+Entry should describe it as: DuckDB+Parquet local round-trip (PyArrow write, DuckDB
+read_parquet with hive_partitioning, Polars DataFrame output). Structure-verified.
+
+Read the file first.
+
+
+---
+
+SECTION 4 — COMMIT BATCHING
+
+Batch 1: DuckDB+Parquet stack doc
+  context/stacks/duckdb-parquet.md
+
+Batch 2: Canonical DuckDB+Parquet example
+  examples/canonical-storage/duckdb-parquet-example.py
+  examples/canonical-storage/duckdb-parquet-example.md
+
+Batch 3: Registry and router updates
+  examples/catalog.json
+  context/router/task-router.md
+  context/router/alias-catalog.yaml
+  examples/canonical-storage/README.md
+
+
+---
+
+SECTION 5 — IMPORTANT CONSTRAINTS
+
+- The stack doc duckdb-parquet.md must be explicitly scoped to LOCAL Parquet files. It is
+  NOT a replacement for parquet-minio.md (write to MinIO) or duckdb-trino-polars.md
+  (DuckDB + Trino federation). Clearly state what each adjacent doc covers and when to
+  load it instead.
+
+- The canonical example uses pl.from_arrow(rel.arrow()), not pl.read_database(). This is
+  the correct conversion path from a DuckDB relation object. Document this choice in both
+  the .py file comment and the .md companion.
+
+- The example uses duckdb.connect() (in-memory, no file), not duckdb.connect('path.duckdb').
+  The in-memory connection is correct for Parquet scanning. Explain this in both files.
+
+- The SCHEMA constant in the example must be defined at module level using pa.schema() with
+  explicit field types — never infer schema from data.
+
+- The write_fixtures() function must create the partition directories explicitly before
+  calling pq.write_table() — PyArrow will raise FileNotFoundError if the directory does
+  not exist. Use path.mkdir(parents=True, exist_ok=True).
+
+- The DuckDB query must use hive_partitioning=true and include a WHERE clause on the
+  partition key to demonstrate partition pruning — not just a SELECT * with no filter.
+
+- The .md companion must include a relationship table showing how this example differs from
+  duckdb-polars-example.py and parquet-minio-example.py.
+
+- Generate the actual implementation in commit-ready batches. Do not propose or summarize.
+  Produce complete file contents.
