@@ -17,6 +17,7 @@ These examples show the seam layer between coordinating backend services. Each e
 | `duos/node-go-rest/` | Node + Go | REST (GraphQL BFF) | GraphQL schema resolving Go domain APIs |
 | `duos/scala-rust-grpc/` | Scala + Rust | gRPC | Akka Streams pipeline delegating to Rust kernel |
 | `duos/node-elixir-nats/` | Node + Elixir | Broker (NATS) | Client connection layer + distributed state |
+| `duos/elixir-rust-nif/` | Elixir + Rust | NIF/Port (in-process) | Rust compute kernel loaded into BEAM VM |
 | `trios/go-elixir-python/` | Go + Elixir + Python | Broker + REST | Gateway + coordination + ML |
 | `trios/go-rust-python/` | Go + Rust + Python | gRPC + REST | Gateway + kernel + ML |
 
@@ -29,6 +30,8 @@ These examples show the seam layer between coordinating backend services. Each e
 **gRPC seam (Protocol Buffers):** one service calls another via a typed RPC, generated from a `.proto` file that both sides share. The seam is synchronous, strongly typed, and language-agnostic — stubs are generated for each language from the same source. Use this when schema enforcement across language boundaries is important, when performance matters for the call itself, or when streaming RPCs are needed. See `context/stacks/coordination-seam-patterns.md` for the gRPC seam pattern and stub generation commands.
 
 **RabbitMQ broker seam (AMQP):** one service publishes messages to a RabbitMQ exchange with a routing key; the exchange routes messages to bound queues based on exchange type (topic, direct, fanout). Consumers receive messages via push delivery (not polling). Use this when work-queue semantics are needed (one message → one worker), when content-based routing by routing key is required, or when Elixir Broadway's `broadway_rabbitmq` integration is the natural consumer. See `context/stacks/rabbitmq.md` for the full pattern.
+
+**NIF/Port seam (in-process, Elixir ↔ Rust):** Rust code compiles into a native implemented function (NIF) loaded directly into the Elixir BEAM VM. There is no network seam and no separate container — this is a single Elixir service with a Rust extension. The NIF is called as an ordinary Elixir function with zero network overhead. Use this when sub-millisecond latency is required and Rust's safety profile is acceptable for inline loading (use Port for potentially panicking code). See `context/stacks/coordination-seam-patterns.md` for the full NIF/Port pattern and safety rules.
 
 ## How to Run an Example
 
@@ -84,6 +87,11 @@ docker compose up --build   # slow: Rust compile + JVM startup
 cd examples/canonical-multi-backend/duos/node-elixir-nats
 docker compose up --build
 # observe bidirectional flow: Node action → Elixir state update → Node receives
+
+# NIF seam — Rust compute kernel inside the Elixir BEAM (no docker-compose)
+cd examples/canonical-multi-backend/duos/elixir-rust-nif
+# See seam.md for setup: mix.exs + Rustler; run with: mix test or iex -S mix
+# No docker compose — this is an in-process seam, not a two-service system
 ```
 
 Trio examples (three-service compositions):

@@ -367,7 +367,9 @@ stacks:
   - alias: broker seam
     target: context/stacks/coordination-seam-patterns.md
   - alias: nif seam
-    target: context/stacks/coordination-seam-patterns.md
+    target:
+      - context/stacks/coordination-seam-patterns.md
+      - examples/canonical-multi-backend/duos/elixir-rust-nif/seam.md
   - alias: rest seam
     target: context/stacks/coordination-seam-patterns.md
   - alias: nats between go and elixir
@@ -381,9 +383,13 @@ stacks:
       - context/stacks/grpc.md
       - context/stacks/coordination-seam-patterns.md
   - alias: elixir calls rust nif
-    target: context/stacks/coordination-seam-patterns.md
+    target:
+      - context/stacks/coordination-seam-patterns.md
+      - examples/canonical-multi-backend/duos/elixir-rust-nif/seam.md
   - alias: rustler
-    target: context/stacks/coordination-seam-patterns.md
+    target:
+      - context/stacks/coordination-seam-patterns.md
+      - examples/canonical-multi-backend/duos/elixir-rust-nif/seam.md
   - alias: nats
     target: context/stacks/nats-jetstream.md
   - alias: nats jetstream
@@ -545,10 +551,12 @@ stacks:
     target:
       - context/stacks/duo-elixir-rust.md
       - context/stacks/coordination-seam-patterns.md
+      - examples/canonical-multi-backend/duos/elixir-rust-nif/seam.md
   - alias: rust nif from elixir
     target:
       - context/stacks/duo-elixir-rust.md
       - context/stacks/coordination-seam-patterns.md
+      - examples/canonical-multi-backend/duos/elixir-rust-nif/seam.md
   - alias: port seam elixir rust
     target:
       - context/stacks/duo-elixir-rust.md
@@ -866,3 +874,51 @@ capabilities:
     target:
       - context/stacks/duo-node-elixir.md
       - examples/canonical-multi-backend/duos/node-elixir-nats/seam.md
+  - alias: graphql
+    target: context/stacks/graphql.md
+  - alias: graphql schema
+    target: context/stacks/graphql.md
+  - alias: graphql resolvers
+    target: context/stacks/graphql.md
+  - alias: apollo server
+    target: context/stacks/graphql.md
+  - alias: apollo server 4
+    target: context/stacks/graphql.md
+  - alias: graphql subscriptions
+    target: context/stacks/graphql.md
+  - alias: graphql websocket
+    target: context/stacks/graphql.md
+  - alias: graphql-ws
+    target: context/stacks/graphql.md
+  - alias: dataloader graphql
+    target: context/stacks/graphql.md
+  - alias: n+1 problem graphql
+    target: context/stacks/graphql.md
+  - alias: graphql codegen
+    target: context/stacks/graphql.md
+  - alias: graphql-codegen
+    target: context/stacks/graphql.md
+  - alias: apollo federation
+    target: context/stacks/graphql.md
+  - alias: graphql federation
+    target: context/stacks/graphql.md
+  - alias: pothos graphql
+    target: context/stacks/graphql.md
+  - alias: absinthe elixir graphql
+    target: context/stacks/graphql.md
+  - alias: gqlgen go graphql
+    target: context/stacks/graphql.md
+  - alias: strawberry python graphql
+    target: context/stacks/graphql.md
+  - alias: elixir rust nif
+    target:
+      - context/stacks/duo-elixir-rust.md
+      - examples/canonical-multi-backend/duos/elixir-rust-nif/seam.md
+  - alias: call rust from elixir
+    target:
+      - context/stacks/duo-elixir-rust.md
+      - examples/canonical-multi-backend/duos/elixir-rust-nif/seam.md
+  - alias: port vs nif elixir
+    target: examples/canonical-multi-backend/duos/elixir-rust-nif/seam.md
+  - alias: dirty nif
+    target: examples/canonical-multi-backend/duos/elixir-rust-nif/seam.md

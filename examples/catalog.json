@@ -2090,6 +2090,18 @@
       "patterns": ["broker-seam", "nats", "bidirectional", "real-time", "collaborative-app"],
       "rank": 95,
       "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-multi-backend/duos/elixir-rust-nif/",
+      "category": "multi-backend",
+      "summary": "Elixir + Rust NIF/Port seam: Rust (Rustler) compiles into the Elixir BEAM VM as a native implemented function. Shows compute_hash and normalize_vector NIFs, the {:ok, result} Erlang term return convention, the Rustler init! macro, and when to use Port instead of NIF for unsafe operations. No docker-compose — this is an in-process seam.",
+      "tags": ["multi-backend", "elixir", "rust", "nif", "rustler", "in-process"],
+      "stacks": ["elixir-phoenix", "rust-axum-modern"],
+      "archetypes": ["multi-backend-service"],
+      "workflows": ["design-multi-backend-seams", "add-backend-coordination-layer"],
+      "patterns": ["nif-seam", "rustler", "port-seam", "in-process", "compute-kernel"],
+      "rank": 95,
+      "stability": "canonical"
     }
   ]
 }

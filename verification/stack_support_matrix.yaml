@@ -392,6 +392,18 @@ stacks:
       - ZStream pipeline test
     notes: ZIO Streams stack doc added (zio-streams.md). No canonical example yet.
            The scala-tapir-http4s-zio examples use ZIO effects but not ZStream pipelines.
+  - stack: graphql
+    support_level: 1
+    verified_examples:
+      - node-go-rest-seam-example   # graphql BFF section — added in PROMPT_58
+    missing_verification:
+      - standalone GraphQL integration test
+      - subscription WebSocket test
+      - DataLoader batch verification
+      - Apollo Federation v2 example
+    notes: graphql.md stack doc added (PROMPT_60). The node-go-rest example shows a
+           minimal GraphQL BFF pattern (Apollo Server + Go REST downstream). No dedicated
+           GraphQL integration test in the default verification tier.
 capabilities:
   - capability: redis-streams
     notes: Redis Streams consumer group patterns (XADD, XREADGROUP, XACK, XCLAIM, XPENDING).
@@ -457,6 +469,29 @@ capabilities:
         note: "Appears in: duos/scala-rust-grpc (Akka Streams gRPC caller). Duo stack docs exist: duo-scala-rust.md, trio-scala-python-go.md."
         canonical_examples:
           - examples/canonical-multi-backend/duos/scala-rust-grpc/
+      - stack: elixir-phoenix
+        status: supported
+        note: "NIF/Port seam variant: duos/elixir-rust-nif (PROMPT_60). Elixir hosts the Rust NIF via
+               Rustler. In-process seam — no docker-compose. Also appears in broker seam examples."
+        canonical_examples:
+          - examples/canonical-multi-backend/duos/elixir-rust-nif/
+          - examples/canonical-multi-backend/duos/go-elixir-nats/
+          - examples/canonical-multi-backend/trios/go-elixir-python/
+          - examples/canonical-multi-backend/duos/elixir-clojure-rabbitmq/
+        seam_types_covered:
+          - broker (NATS, RabbitMQ)
+          - nif-port (in-process, Rustler)
+      - stack: rust-axum-modern
+        status: supported
+        note: "NIF seam variant added in PROMPT_60: duos/elixir-rust-nif demonstrates Rust as a
+               NIF library loaded into the BEAM VM. Also appears in gRPC server examples."
+        canonical_examples:
+          - examples/canonical-multi-backend/duos/elixir-rust-nif/
+          - examples/canonical-multi-backend/duos/kotlin-rust-grpc/
+          - examples/canonical-multi-backend/trios/go-rust-python/
+        seam_types_covered:
+          - grpc (tonic server)
+          - nif-port (in-process, Rustler)
 
   - capability: faceted-filter-ui
     shared_examples:
