@@ -1,21 +1,21 @@
 # Broker Selection
 
-This is the first place to look when deciding which message broker to use for a new event-driven system. It covers NATS JetStream, Kafka, and Redis Streams. The answer here is opinionated — pick the one that fits, not the one with the longest feature list.
+This is the first place to look when deciding which message broker to use for a new event-driven system. It covers NATS JetStream, Kafka, Redis Streams, and RabbitMQ. The answer here is opinionated — pick the one that fits, not the one with the longest feature list.
 
 ## Quick Decision Table
 
-| Criterion | NATS JetStream | Kafka | Redis Streams |
-|---|---|---|---|
-| Operational complexity | Single binary (`nats-server -js`) | Broker + KRaft (or ZooKeeper, deprecated) | Redis instance (already running) |
-| Throughput target | < 1M messages/day | > 1M messages/day, partition scaling | < 500k messages/day |
-| Schema enforcement | None built-in | Schema registry (Avro, Protobuf, JSON Schema) | None built-in |
-| Ordering guarantee | Per-subject | Per-partition | Per-stream |
-| Consumer model | Push or durable pull | Consumer groups (partition-distributed) | Consumer groups (stream-wide) |
-| Retention model | Configurable age/size/count | Configurable age/size/count | MAXLEN trim or XDEL (no log file) |
-| At-least-once delivery | Yes — explicit ACK per message | Yes — manual offset commit | Yes — XACK after processing |
-| Cross-team schema contracts | JSON convention only | Avro or Protobuf + registry | JSON convention only |
-| Replay capability | Sequence-based replay from any stored message | Offset reset to any stored offset | XRANGE from any message ID |
-| When to reach for it | Intra-cluster bus, single binary, NATS already present | High volume, JVM producer, cross-team schema contracts | Job queue on existing Redis, no separate broker |
+| Criterion | NATS JetStream | Kafka | Redis Streams | RabbitMQ |
+|---|---|---|---|---|
+| Operational complexity | Single binary (`nats-server -js`) | Broker + KRaft (or ZooKeeper, deprecated) | Redis instance (already running) | medium (broker + optional management plugin; single Docker container) |
+| Throughput target | < 1M messages/day | > 1M messages/day, partition scaling | < 500k messages/day | low-medium (tens of thousands/sec; not designed for millions/day log streams) |
+| Schema enforcement | None built-in | Schema registry (Avro, Protobuf, JSON Schema) | None built-in | none built-in (JSON convention, same as NATS) |
+| Ordering guarantee | Per-subject | Per-partition | Per-stream | per-queue FIFO (strict within a queue; no cross-queue ordering) |
+| Consumer model | Push or durable pull | Consumer groups (partition-distributed) | Consumer groups (stream-wide) | push-based with prefetch (broker pushes to consumers; flow control via prefetch_count) |
+| Retention model | Configurable age/size/count | Configurable age/size/count | MAXLEN trim or XDEL (no log file) | messages deleted after ack or DLQ routing; no log-style retention |
+| At-least-once delivery | Yes — explicit ACK per message | Yes — manual offset commit | Yes — XACK after processing | yes, with manual ack; rejected messages go to DLX |
+| Cross-team schema contracts | JSON convention only | Avro or Protobuf + registry | JSON convention only | JSON convention (no registry; use payload_version field) |
+| Replay capability | Sequence-based replay from any stored message | Offset reset to any stored offset | XRANGE from any message ID | none (messages are consumed once and deleted; not a log; use Kafka for replay) |
+| When to reach for it | Intra-cluster bus, single binary, NATS already present | High volume, JVM producer, cross-team schema contracts | Job queue on existing Redis, no separate broker | task distribution, content-based routing, work queues, AMQP ecosystem |
 
 ## NATS JetStream
 
@@ -95,6 +95,34 @@ Key operational notes:
 - Trimming: use `MAXLEN ~ N` (approximate) on `XADD` or standalone `XTRIM` to bound stream size.
 - docker-compose: `redis:7-alpine`; healthcheck via `redis-cli ping`.
 
+## RabbitMQ
+
+Reach for RabbitMQ when:
+
+- Task distribution: a message must be delivered to exactly one worker in a pool (not all consumers).
+- Content-based routing by routing key is needed (topic exchange pattern bindings).
+- The workflow already uses AMQP conventions (DLX, TTL, priority queues).
+- Elixir is a consumer — Broadway's `broadway_rabbitmq` gives first-class work-queue integration with manual ack, prefetch control, and DLX-aware failure handling.
+- RPC-over-AMQP pattern (request/reply queues) is already in use elsewhere in the system.
+- Teams with existing RabbitMQ infrastructure or AMQP library familiarity.
+
+Do NOT use RabbitMQ when:
+
+- Multiple independent consumer groups need to read the same messages at different offsets — RabbitMQ queues are consumed-once; use Kafka for independent multi-consumer replay.
+- Long-term event log retention for audit or replay — use Kafka.
+- Volume requires partition-level horizontal scaling — use Kafka.
+- Simple subject-routed fan-out is sufficient — use NATS JetStream (simpler to operate).
+- The repo does not already use AMQP — adding RabbitMQ for one use case adds infra friction.
+
+Key operational notes:
+
+- `rabbitmq:3.13-management-alpine` — includes management UI at port 15672 for dev.
+- Exchange types: `direct` (exact routing key), `topic` (pattern routing), `fanout` (broadcast).
+- Consumer model: push-based with `prefetch_count`; always set prefetch to avoid starvation.
+- Dead-letter: declare `x-dead-letter-exchange` on each queue at startup.
+- docker-compose healthcheck: `rabbitmq-diagnostics ping` (reliable; faster than `rabbitmqctl status`).
+- Management API: `http://localhost:15672` (default guest/guest) — useful for dev debugging.
+
 ## Migration Paths
 
 **If you outgrow NATS JetStream → Kafka:**
@@ -122,11 +150,13 @@ From `context/doctrine/multi-backend-coordination.md` — the broker seam type a
 | NATS JetStream | Lightweight intra-cluster fan-out; Go↔Elixir, Go↔Go |
 | Kafka | Cross-team domain event pipelines; Clojure↔Go, Scala↔Python |
 | Redis Streams | Job queues; Elixir↔Go, Python↔Python on existing Redis |
+| RabbitMQ | Task queues, routed messaging; Elixir↔Clojure, Python workers, Kotlin services |
 
 ## Related
 
 - context/stacks/nats-jetstream.md
 - context/stacks/kafka.md
 - context/stacks/redis.md (Redis Streams section)
+- context/stacks/rabbitmq.md
 - context/stacks/coordination-seam-patterns.md
 - context/doctrine/multi-backend-coordination.md
