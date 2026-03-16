@@ -1,0 +1,74 @@
+services:
+  nats:
+    image: nats:2.10-alpine
+    command: "-js -m 8222"
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8222/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  go-service:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM golang:1.23-alpine AS builder
+        WORKDIR /app
+        COPY go.mod go.sum ./
+        RUN go mod download
+        COPY go-side.go .
+        RUN CGO_ENABLED=0 go build -o go-service .
+        FROM alpine:3.20
+        COPY --from=builder /app/go-service /go-service
+        EXPOSE 8080
+        CMD ["/go-service"]
+    ports:
+      - "8080:8080"
+    environment:
+      NATS_URL: nats://nats:4222
+      PORT: "8080"
+    depends_on:
+      nats:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  elixir-service:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM elixir:1.17-otp-27-alpine AS builder
+        WORKDIR /app
+        COPY mix.exs mix.lock ./
+        RUN mix deps.get --only prod && mix deps.compile
+        COPY elixir-side.ex lib/seam_example.ex
+        RUN MIX_ENV=prod mix release
+        FROM elixir:1.17-otp-27-alpine
+        WORKDIR /app
+        COPY --from=builder /app/_build/prod/rel/seam_example ./
+        EXPOSE 4000
+        CMD ["./bin/seam_example", "start"]
+    ports:
+      - "4000:4000"
+    environment:
+      NATS_URL: nats://nats:4222
+      PHX_HOST: localhost
+      PORT: "4000"
+      SECRET_KEY_BASE: dev-secret-key-replace-in-production
+    depends_on:
+      nats:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:4000/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 25s
