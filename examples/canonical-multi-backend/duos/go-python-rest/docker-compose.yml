@@ -1,0 +1,51 @@
+services:
+  python-service:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM python:3.12-slim
+        WORKDIR /app
+        RUN pip install --no-cache-dir fastapi uvicorn[standard] pydantic
+        COPY python-side.py .
+        EXPOSE 8001
+        CMD ["python", "python-side.py"]
+    ports:
+      - "8001:8001"
+    environment:
+      PORT: "8001"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/healthz')"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  go-service:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM golang:1.23-alpine AS builder
+        WORKDIR /app
+        COPY go.mod go.sum ./
+        RUN go mod download
+        COPY go-side.go .
+        RUN CGO_ENABLED=0 go build -o go-service .
+        FROM alpine:3.20
+        RUN apk add --no-cache curl
+        COPY --from=builder /app/go-service /go-service
+        EXPOSE 8080
+        CMD ["/go-service"]
+    ports:
+      - "8080:8080"
+    environment:
+      PYTHON_SCORE_URL: http://python-service:8001
+      PORT: "8080"
+    depends_on:
+      python-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
