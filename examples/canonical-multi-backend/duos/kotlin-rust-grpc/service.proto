@@ -1,0 +1,53 @@
+// service.proto — canonical seam contract for Kotlin + Rust gRPC example.
+// Both sides generate stubs from this file. This is the source of truth.
+// See seam.md for protoc commands.
+
+syntax = "proto3";
+
+package compute.v1;
+
+option java_package = "com.example.compute.v1";
+option java_multiple_files = true;
+
+// ComputeService performs numeric computations on behalf of Kotlin callers.
+service ComputeService {
+  // Compute accepts a slice of values and an operation name, returns the result.
+  rpc Compute(ComputeRequest) returns (ComputeResponse);
+
+  // Check returns the health of the Rust compute server (standard pattern).
+  rpc Check(HealthCheckRequest) returns (HealthCheckResponse);
+}
+
+message ComputeRequest {
+  // n is an optional operation-specific integer parameter (e.g. window size).
+  int32  n      = 1;
+  // values is the input data for the computation.
+  repeated double values = 2;
+  // method names the operation: "mean", "sum", "max", "min".
+  string method = 3;
+}
+
+message ComputeResponse {
+  // result is the scalar output of the computation.
+  double result      = 1;
+  // method echoes the operation name for verification.
+  string method      = 2;
+  // duration_ns is the server-side computation time in nanoseconds.
+  int64  duration_ns = 3;
+}
+
+message HealthCheckRequest {
+  // service is the service name to check. Empty string checks the server.
+  string service = 1;
+}
+
+message HealthCheckResponse {
+  // status: UNKNOWN=0, SERVING=1, NOT_SERVING=2.
+  ServingStatus status = 1;
+}
+
+enum ServingStatus {
+  UNKNOWN     = 0;
+  SERVING     = 1;
+  NOT_SERVING = 2;
+}
