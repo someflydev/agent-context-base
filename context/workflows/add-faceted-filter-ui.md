@@ -41,3 +41,22 @@ Add a backend-driven faceted filtering surface where results, fragments, and cou
 
 - result count and visible rows match the active query state
 - at least one representative facet shows verified counts
+
+## Standard Enhancements
+
+After the base filter UI is working and verified, apply these three enhancements as the
+canonical next step:
+
+1. **Text search bar** — a free-text input that narrows results and counts on top of
+   active facet filters. Follow `context/workflows/add-text-search-to-filter-ui.md`.
+
+2. **Sort order dropdown** — a select element in the results section header that controls
+   result ordering without affecting any counts. Follow
+   `context/workflows/add-sort-order-to-results.md`.
+
+3. **Independent scroll layout** — the filter panel and results section sit side-by-side
+   and each scrolls independently. Follow RULE 6 in
+   `context/doctrine/search-sort-scroll-layout.md`.
+
+These three features are applied together in the reference implementation:
+`examples/canonical-api/fastapi-search-sort-filter-example.py`.
