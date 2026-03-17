@@ -13,6 +13,7 @@ The repository is organized so assistants can route first, load later, and avoid
 | `context/stacks/` | Framework and infra guidance for active implementation surfaces. |
 | `context/archetypes/` | Repo-shape guidance such as backend service, CLI, local RAG, or prompt-first repo. |
 | `context/anchors/` | Very small reminder docs for startup, isolation, and integrity work. |
+| `context/skills/` | Cognitive procedure guides for selection decisions (manifest choice, verification path, context bundle assembly, continuity discipline). |
 | `context/memory/` | Rules and templates for `MEMORY.md`, stop hooks, and handoff snapshots. |
 | `manifests/` | Machine-readable context bundles, triggers, repo signals, examples, and bootstrap defaults. |
 | `examples/` | Canonical examples that should shape implementation after routing is narrow. |

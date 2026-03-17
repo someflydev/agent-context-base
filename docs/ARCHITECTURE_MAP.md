@@ -93,12 +93,14 @@ flowchart TB
     C --> H[Anchors<br/>small boot reminders]
     C --> I[Canonical examples<br/>preferred implementation pattern]
     C --> J[Recommended templates<br/>bootstrap only]
+    C --> S[Skills<br/>cognitive procedures]
 
     D --> K[Minimal active context bundle]
     E --> K
     F --> K
     G --> K
     H --> K
+    S --> K
     I --> L[Implementation choice]
     K --> L
 
@@ -174,7 +176,7 @@ The practical rule is boundary ownership: one assistant plans, one implements a 
 | --- | --- | --- | --- |
 | Entry surface | `README.md`, `AGENT.md`, `CLAUDE.md`, `docs/context-boot-sequence.md` | Defines how humans and assistants start, what to read first, and how to avoid broad scanning. | [context-boot-sequence.md](context-boot-sequence.md), [session-start.md](session-start.md) |
 | Router layer | `context/router/` | Maps task language and repo signals onto workflows, stacks, and archetypes. | [architecture/ASSISTANT_RUNTIME_MODEL.md](architecture/ASSISTANT_RUNTIME_MODEL.md), [repo-layout.md](repo-layout.md) |
-| Context layer | `context/doctrine/`, `context/workflows/`, `context/stacks/`, `context/archetypes/`, `context/anchors/` | Holds reusable guidance with explicit authority boundaries. | [architecture/CONTEXT_ENGINEERING_GUIDE.md](architecture/CONTEXT_ENGINEERING_GUIDE.md), [repo-purpose.md](repo-purpose.md) |
+| Context layer | `context/doctrine/`, `context/workflows/`, `context/stacks/`, `context/archetypes/`, `context/anchors/`, `context/skills/` | Holds reusable guidance with explicit authority boundaries. Skills cover cognitive procedures for selection decisions (manifest, verification path, bundle assembly, continuity). | [architecture/CONTEXT_ENGINEERING_GUIDE.md](architecture/CONTEXT_ENGINEERING_GUIDE.md), [repo-purpose.md](repo-purpose.md) |
 | Manifest layer | `manifests/` | Binds triggers, required context, optional context, preferred examples, recommended templates, warnings, and bootstrap defaults. | [architecture/ASSISTANT_RUNTIME_MODEL.md](architecture/ASSISTANT_RUNTIME_MODEL.md), [../scripts/README.md](../scripts/README.md) |
 | Canonical example library | `examples/`, `examples/catalog.json` | Provides preferred completed patterns for implementation, testing, prompts, storage, and operations. | [../examples/README.md](../examples/README.md), [../verification/README.md](../verification/README.md) |
 | Generation system | `scripts/new_repo.py`, `templates/` | Generates descendant repos, generated profiles, Compose defaults, and optional starter assets. | [usage/STARTING_NEW_PROJECTS.md](usage/STARTING_NEW_PROJECTS.md), [../scripts/README.md](../scripts/README.md) |

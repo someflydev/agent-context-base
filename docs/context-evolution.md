@@ -2,6 +2,15 @@
 
 This changelog records durable architectural changes to the base itself.
 
+## 2026-03-17: Cognitive Skills Layer
+
+- added four new skills covering the previously uncovered boot-sequence steps: `manifest-selection.md` (step 5), `context-bundle-assembly.md` (step 6), `verification-path-selection.md` (step 8), and `memory-continuity-discipline.md` (steps 3 and 8)
+- all four skills are now named in the bootstrap workflow copy sequence and carried into generated repos in full
+- task router updated with load triggers for all four skills; alias catalog gains a `skills:` section with short-form aliases
+- both generated-repo templates (`CLAUDE.template.md`, `AGENT.template.md`) now include a pointer to `context/skills/` so assistants booting in derived repos discover the directory
+- contributor playbook Section 7 now names skills as a first-class artifact type with format rules; Section 10 extension checklist updated
+- `docs/repo-layout.md` gains a `context/skills/` row; `docs/ARCHITECTURE_MAP.md` Component Index and Context System Map updated to include the skills layer
+
 ## 2026-03-17: CUJ Playwright Tests for Backend-Driven UI
 
 - added 10 critical user journey (CUJ) Playwright tests using a page object model, covering load, apply filter, clear filter, multi-select, exclude, keyword search, sort, scroll, count verification, and reset-all flows

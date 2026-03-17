@@ -301,6 +301,9 @@ The context system is the knowledge base assistants rely on during routing and i
 - archetype packs in `context/archetypes/`
 - workflow guides in `context/workflows/`
 - small reminder anchors in `context/anchors/`
+- skills in `context/skills/`
+
+Skills describe cognitive decision procedures, not implementation patterns. Add a skill when assistants repeatedly face the same multi-step selection or evaluation decision that is not already covered by a router, workflow, or anchor. Keep skills under 70 lines. Follow the format of existing skills (heading, procedure, triggers, avoid). Add a load trigger for the new skill in `context/router/task-router.md`.
 
 ### Rules for adding context artifacts
 
@@ -423,6 +426,7 @@ Use these checklists before opening a PR or treating a capability as first-class
 3. Keep the file narrow and directive.
 4. Add links rather than duplicate prose.
 5. Verify that manifests and examples still point to the correct artifacts.
+6. If introducing a new skill: add a load trigger in `task-router.md` and confirm it is under 70 lines and follows the existing skill format.
 
 ## 11. Example Extension Scenarios
 
