@@ -43,6 +43,14 @@ Route from what the user is trying to do, not from internal file names.
   - load `context/workflows/add-include-exclude-filtering.md`
 - "dynamic counts", "counts next to filters", "facet counts"
   - load `context/workflows/add-dynamic-counts.md`
+- "add text search to filters", "search bar with facet counts", "free-text search narrows results"
+  - load `context/workflows/add-text-search-to-filter-ui.md`
+  - load `context/doctrine/search-sort-scroll-layout.md`
+- "add sort order", "sort results dropdown", "sort by events or name"
+  - load `context/workflows/add-sort-order-to-results.md`
+  - load `context/doctrine/search-sort-scroll-layout.md`
+- "filter panel and results scroll independently", "independent scroll layout", "sidebar scrolls separately"
+  - load `context/doctrine/search-sort-scroll-layout.md`
 - "plotly chart tied to filters", "chart data from query state", "plotly-backed query view"
   - load `context/workflows/add-plotly-backed-query-view.md`
 - "playwright ui verification", "verify backend-driven ui", "test htmx behavior"
@@ -181,6 +189,10 @@ Examples:
 - "Add HTMX filters with accurate counts"
   - start with `context/workflows/add-faceted-filter-ui.md`
   - then load `context/workflows/add-dynamic-counts.md`
+- "Add text search + sort + scroll layout to a filter UI"
+  - start with `context/workflows/add-text-search-to-filter-ui.md`
+  - then load `context/workflows/add-sort-order-to-results.md`
+  - then load `context/doctrine/search-sort-scroll-layout.md`
 - "Add include/exclude filters and verify the counts"
   - start with `context/workflows/add-include-exclude-filtering.md`
   - then load `context/workflows/verify-query-count-correctness.md`

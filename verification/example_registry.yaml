@@ -3075,3 +3075,50 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: medium
+  - name: fastapi-search-sort-filter-example
+    path: examples/canonical-api/fastapi-search-sort-filter-example.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: behavior-verified
+    verification_targets:
+      - parses
+      - text search narrows results and counts
+      - sort order controls result order only
+      - facet counts unaffected by sort
+      - independent scroll layout markers present
+    docker_supported: false
+    scenario_harness: fastapi_min_app
+    confidence: high
+  - name: fastapi-search-sort-filter-example-doc
+    path: examples/canonical-api/fastapi-search-sort-filter-example.md
+    language: markdown
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: playwright-search-sort-example
+    path: examples/canonical-integration-tests/playwright-search-sort-example.spec.ts
+    language: typescript
+    stack_tags:
+      - playwright
+    archetype_tags:
+      - integration-test
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - test names reference correct dataset assertions
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium

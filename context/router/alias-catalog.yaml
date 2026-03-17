@@ -83,6 +83,27 @@ tasks:
     target: context/workflows/generate-prompt-sequence.md
   - alias: faceted filters
     target: context/workflows/add-faceted-filter-ui.md
+  - alias: add text search to filter ui
+    target: context/workflows/add-text-search-to-filter-ui.md
+  - alias: search bar with facet counts
+    target: context/workflows/add-text-search-to-filter-ui.md
+  - alias: free text search narrows results
+    target: context/workflows/add-text-search-to-filter-ui.md
+  - alias: search and sort filter ui
+    target:
+      - context/workflows/add-text-search-to-filter-ui.md
+      - context/workflows/add-sort-order-to-results.md
+      - context/doctrine/search-sort-scroll-layout.md
+  - alias: add sort order dropdown
+    target: context/workflows/add-sort-order-to-results.md
+  - alias: sort results by name or events
+    target: context/workflows/add-sort-order-to-results.md
+  - alias: independent scroll layout
+    target: context/doctrine/search-sort-scroll-layout.md
+  - alias: filter panel scrolls separately
+    target: context/doctrine/search-sort-scroll-layout.md
+  - alias: search sort scroll
+    target: context/doctrine/search-sort-scroll-layout.md
   - alias: add dynamic counts next to filters
     target: context/workflows/add-dynamic-counts.md
   - alias: verify faceted counts are accurate

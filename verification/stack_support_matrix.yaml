@@ -559,6 +559,228 @@ capabilities:
         stack_specific_examples:
           - zig-zap-jetzig-faceted-filter-example
         follow_on_prompt: PROMPT_51
+  - capability: text-search-filter
+    shared_examples:
+      - playwright-search-sort-example
+    stacks:
+      - stack: python-fastapi-uv-ruff-orjson-polars
+        status: behavior-verified
+        stack_specific_examples:
+          - fastapi-search-sort-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: elixir-phoenix
+        status: structure-verified
+        stack_specific_examples:
+          - phoenix-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: go-echo
+        status: structure-verified
+        stack_specific_examples:
+          - go-echo-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: typescript-hono-bun
+        status: structure-verified
+        stack_specific_examples:
+          - typescript-hono-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: rust-axum-modern
+        status: structure-verified
+        stack_specific_examples:
+          - rust-axum-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: ruby-hanami
+        status: structure-verified
+        stack_specific_examples:
+          - ruby-hanami-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: clojure-kit-nextjdbc-hiccup
+        status: structure-verified
+        stack_specific_examples:
+          - clojure-kit-nextjdbc-hiccup-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: kotlin-http4k-exposed
+        status: structure-verified
+        stack_specific_examples:
+          - kotlin-http4k-exposed-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: scala-tapir-http4s-zio
+        status: structure-verified
+        stack_specific_examples:
+          - scala-tapir-http4s-zio-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: crystal-kemal-avram
+        status: structure-verified
+        stack_specific_examples:
+          - crystal-kemal-avram-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: dart-dartfrog
+        status: structure-verified
+        stack_specific_examples:
+          - dart-dartfrog-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: ocaml-dream-caqti-tyxml
+        status: structure-verified
+        stack_specific_examples:
+          - ocaml-dream-caqti-tyxml-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: nim-jester-happyx
+        status: structure-verified
+        stack_specific_examples:
+          - nim-jester-happyx-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: zig-zap-jetzig
+        status: structure-verified
+        stack_specific_examples:
+          - zig-zap-jetzig-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+  - capability: sort-order
+    shared_examples:
+      - playwright-search-sort-example
+    stacks:
+      - stack: python-fastapi-uv-ruff-orjson-polars
+        status: behavior-verified
+        stack_specific_examples:
+          - fastapi-search-sort-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: elixir-phoenix
+        status: structure-verified
+        stack_specific_examples:
+          - phoenix-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: go-echo
+        status: structure-verified
+        stack_specific_examples:
+          - go-echo-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: typescript-hono-bun
+        status: structure-verified
+        stack_specific_examples:
+          - typescript-hono-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: rust-axum-modern
+        status: structure-verified
+        stack_specific_examples:
+          - rust-axum-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: ruby-hanami
+        status: structure-verified
+        stack_specific_examples:
+          - ruby-hanami-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: clojure-kit-nextjdbc-hiccup
+        status: structure-verified
+        stack_specific_examples:
+          - clojure-kit-nextjdbc-hiccup-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: kotlin-http4k-exposed
+        status: structure-verified
+        stack_specific_examples:
+          - kotlin-http4k-exposed-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: scala-tapir-http4s-zio
+        status: structure-verified
+        stack_specific_examples:
+          - scala-tapir-http4s-zio-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: crystal-kemal-avram
+        status: structure-verified
+        stack_specific_examples:
+          - crystal-kemal-avram-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: dart-dartfrog
+        status: structure-verified
+        stack_specific_examples:
+          - dart-dartfrog-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: ocaml-dream-caqti-tyxml
+        status: structure-verified
+        stack_specific_examples:
+          - ocaml-dream-caqti-tyxml-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: nim-jester-happyx
+        status: structure-verified
+        stack_specific_examples:
+          - nim-jester-happyx-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: zig-zap-jetzig
+        status: structure-verified
+        stack_specific_examples:
+          - zig-zap-jetzig-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+  - capability: independent-scroll-layout
+    shared_examples:
+      - playwright-search-sort-example
+    stacks:
+      - stack: python-fastapi-uv-ruff-orjson-polars
+        status: behavior-verified
+        stack_specific_examples:
+          - fastapi-search-sort-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: elixir-phoenix
+        status: structure-verified
+        stack_specific_examples:
+          - phoenix-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: go-echo
+        status: structure-verified
+        stack_specific_examples:
+          - go-echo-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: typescript-hono-bun
+        status: structure-verified
+        stack_specific_examples:
+          - typescript-hono-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: rust-axum-modern
+        status: structure-verified
+        stack_specific_examples:
+          - rust-axum-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: ruby-hanami
+        status: structure-verified
+        stack_specific_examples:
+          - ruby-hanami-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: clojure-kit-nextjdbc-hiccup
+        status: structure-verified
+        stack_specific_examples:
+          - clojure-kit-nextjdbc-hiccup-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: kotlin-http4k-exposed
+        status: structure-verified
+        stack_specific_examples:
+          - kotlin-http4k-exposed-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: scala-tapir-http4s-zio
+        status: structure-verified
+        stack_specific_examples:
+          - scala-tapir-http4s-zio-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: crystal-kemal-avram
+        status: structure-verified
+        stack_specific_examples:
+          - crystal-kemal-avram-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: dart-dartfrog
+        status: structure-verified
+        stack_specific_examples:
+          - dart-dartfrog-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: ocaml-dream-caqti-tyxml
+        status: structure-verified
+        stack_specific_examples:
+          - ocaml-dream-caqti-tyxml-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: nim-jester-happyx
+        status: structure-verified
+        stack_specific_examples:
+          - nim-jester-happyx-faceted-filter-example
+        follow_on_prompt: PROMPT_64
+      - stack: zig-zap-jetzig
+        status: structure-verified
+        stack_specific_examples:
+          - zig-zap-jetzig-faceted-filter-example
+        follow_on_prompt: PROMPT_64
   - capability: canonical-data-acquisition
     shared_examples:
       - canonical-data-acquisition-index

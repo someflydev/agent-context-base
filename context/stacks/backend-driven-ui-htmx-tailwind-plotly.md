@@ -66,17 +66,42 @@ See `context/doctrine/filter-panel-rendering-rules.md` for the full specificatio
 failure mode table. See `examples/canonical-api/fastapi-split-filter-panel-example.py`
 for a complete working implementation.
 
+## Search, Sort, and Independent Scroll Layout (PROMPT_64)
+
+All 14 language implementations have been extended with three additional features:
+
+- **Text search (RULE 4)**: A free-text search input in the filter panel that narrows results
+  and facet counts before any facet logic runs. `apply_text_search` is called first in
+  `filter_rows`, `facet_counts`, and `exclude_impact_counts`. Q is never relaxed.
+- **Sort order (RULE 5)**: A sort select in the results header that controls display order
+  only. `sort_rows` is never called inside count functions. Options: `events_desc` (default),
+  `events_asc`, `name_asc`. The selected option is pre-populated per state to survive HTMX swaps.
+- **Independent scroll layout (RULE 6)**: CSS-only layout with `flex h-screen overflow-hidden`
+  wrapper, `overflow-y-auto` on `#filter-panel` (sidebar) and `#report-results-container`
+  (main). The wrapper is never a swap target.
+
+**New data-* attributes added:**
+- Search input: `data-role="search-input"`, `data-search-query`
+- Sort select: `data-role="sort-select"`, `data-sort-order`
+- Results section: `data-search-query`, `data-sort-order` (added to existing `id="report-results"`)
+- Layout wrapper: `data-role="reports-layout"`
+
+**Reference implementation:** `examples/canonical-api/fastapi-search-sort-filter-example.py`
+**Playwright test suite:** `examples/canonical-integration-tests/playwright-search-sort-example.spec.ts`
+**Doctrine:** `context/doctrine/search-sort-scroll-layout.md`
+
 ## Multi-Language Support
 
-The split include/exclude filter panel pattern is implemented identically across 14 language
-stacks. All implementations share the same in-memory dataset, QueryState model, filter
-algorithm, HTML data-* attribute contract, and endpoint structure.
+The split include/exclude filter panel pattern (plus text search, sort, and scroll layout)
+is implemented identically across 14 language stacks. All implementations share the same
+in-memory dataset, QueryState model, filter algorithm, HTML data-* attribute contract,
+and endpoint structure.
 
 **Language implementations (all in `examples/canonical-api/`):**
 
 | Language | Framework | Example file |
 |----------|-----------|-------------|
-| Python | FastAPI | `fastapi-split-filter-panel-example.py` |
+| Python | FastAPI | `fastapi-search-sort-filter-example.py` |
 | Elixir | Phoenix | `phoenix-faceted-filter-example.ex` |
 | Go | Echo + templ | `go-echo-faceted-filter-example.go` |
 | TypeScript | Hono + Bun | `typescript-hono-faceted-filter-example.ts` |
