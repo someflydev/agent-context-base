@@ -2,6 +2,29 @@
 
 Use this category when the change crosses a real storage or service boundary and smoke tests alone would be misleading.
 
+## Prerequisite: docker-compose.test.yml
+
+All integration tests in this category require the test infrastructure stack to be running before
+execution. The standard flow:
+
+```bash
+docker compose -f docker-compose.test.yml up -d
+# wait for health checks to pass
+<run integration tests>
+docker compose -f docker-compose.test.yml down
+```
+
+Never run integration tests against the dev compose stack (`docker-compose.yml`). The test stack
+must be isolated so that tests can safely reset and seed state without touching dev data.
+
+The derived repo's README or a Makefile target should document this flow so any contributor can
+reproduce it without reading the test code first.
+
+## No CI Until Asked
+
+Do not add GitHub Actions or other CI workflows for integration tests until the operator explicitly
+requests it. Integration tests should reliably pass locally before they are wired into any pipeline.
+
 ## When to Use This Category
 
 Choose `canonical-integration-tests/` when:
@@ -17,6 +40,11 @@ Use `canonical-smoke-tests/` instead when the goal is the smallest possible happ
 ### Database integration test
 
 - `fastapi-db-integration-test-example.py` — FastAPI + PostgreSQL integration test pattern. Shows `docker-compose.test.yml` boot, fixture data insertion, a real write, a real read assertion, and explicit teardown. Use this as the reference shape for any new backend service that needs real-database integration coverage.
+
+  Invocation:
+  ```bash
+  .venv_tools/bin/pytest tests/integration/ -v
+  ```
 
 ### Single-feature Playwright tests (TypeScript / Bun)
 

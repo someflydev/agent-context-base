@@ -1,3 +1,17 @@
+# FastAPI + PostgreSQL integration test example.
+#
+# Prerequisite: docker-compose.test.yml must be up before running this suite.
+#   docker compose -f docker-compose.test.yml up -d
+#
+# Invocation:
+#   .venv_tools/bin/pytest tests/integration/ -v
+#
+# Never use `python -m pytest`, bare `pytest`, or `pytest` with `source .venv_tools/bin/activate`.
+# Always use the explicit .venv_tools/bin/pytest path.
+#
+# This example uses a real PostgreSQL container. It does not mock the database.
+# See context/doctrine/testing-philosophy.md — "The Mock Anti-Pattern".
+
 from __future__ import annotations
 
 import os
@@ -35,11 +49,11 @@ def isolated_test_stack() -> None:
 @pytest.fixture(autouse=True)
 def reset_test_db(isolated_test_stack: None) -> None:
     subprocess.run(
-        ["uv", "run", "python", "scripts/reset_test_db.py", "--compose-file", str(COMPOSE_FILE)],
+        [".venv_tools/bin/python", "scripts/reset_test_db.py", "--compose-file", str(COMPOSE_FILE)],
         check=True,
     )
     subprocess.run(
-        ["uv", "run", "python", "scripts/seed_test_db.py", "--compose-file", str(COMPOSE_FILE)],
+        [".venv_tools/bin/python", "scripts/seed_test_db.py", "--compose-file", str(COMPOSE_FILE)],
         check=True,
     )
 
@@ -71,4 +85,3 @@ async def test_create_report_persists_to_isolated_postgres(reset_test_db: None) 
         ).fetchone()
 
     assert row == ("acme", "daily-signups", 42)
-
