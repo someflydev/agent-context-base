@@ -141,6 +141,20 @@ Route from what the user is trying to do, not from internal file names.
   - load `context/stacks/coordination-seam-patterns.md`
 - "multi-backend coordination rules", "seam type selection", "no shared database across services"
   - load `context/doctrine/multi-backend-coordination.md`
+- "which python ml library", "when to use scikit-learn", "sklearn vs polars", "polars vs pandas",
+  "why not pandas", "python data processing library"
+  - load `context/doctrine/python-ml-library-selection.md`
+- "add ML to python service", "add classification to fastapi", "add recommendation engine python",
+  "add inference endpoint", "python ml inference"
+  - load `context/doctrine/python-ml-library-selection.md`
+  - load `context/stacks/python-fastapi-uv-ruff-orjson-polars.md`
+- "add embeddings python", "sentence embeddings fastapi", "add semantic search to python"
+  - load `context/doctrine/python-ml-library-selection.md`
+  - load `context/stacks/qdrant.md` (if vector store is involved)
+- "time series forecasting python", "ARIMA python", "statsmodels"
+  - load `context/doctrine/python-ml-library-selection.md`
+- "xgboost", "lightgbm", "gradient boosted trees python"
+  - load `context/doctrine/python-ml-library-selection.md`
 
 ## Compound Requests
 
@@ -273,6 +287,13 @@ Examples:
   - stacks: `context/stacks/coordination-seam-patterns.md`
 - "What are the rules for multi-backend systems?"
   - doctrine: `context/doctrine/multi-backend-coordination.md`
+- "Add ML classification to a FastAPI service"
+  - doctrine: `context/doctrine/python-ml-library-selection.md`
+  - stack: `context/stacks/python-fastapi-uv-ruff-orjson-polars.md`
+- "Which Python library should handle tabular data processing?"
+  - doctrine: `context/doctrine/python-ml-library-selection.md`
+- "Add semantic embeddings to a Python endpoint"
+  - doctrine: `context/doctrine/python-ml-library-selection.md`
 
 ## Stop And Clarify Internally
 

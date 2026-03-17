@@ -792,6 +792,26 @@ capabilities:
     target: examples/canonical-data-acquisition/language-support-matrix.yaml
   - alias: data acquisition invariants
     target: context/doctrine/data-acquisition-invariants.md
+  - alias: python ml library selection
+    target: context/doctrine/python-ml-library-selection.md
+  - alias: polars vs pandas
+    target: context/doctrine/python-ml-library-selection.md
+  - alias: why polars not pandas
+    target: context/doctrine/python-ml-library-selection.md
+  - alias: when to use scikit-learn
+    target: context/doctrine/python-ml-library-selection.md
+  - alias: sklearn vs xgboost
+    target: context/doctrine/python-ml-library-selection.md
+  - alias: add ml to python service
+    target:
+      - context/doctrine/python-ml-library-selection.md
+      - context/stacks/python-fastapi-uv-ruff-orjson-polars.md
+  - alias: python data science libraries
+    target: context/doctrine/python-ml-library-selection.md
+  - alias: sentence transformers embeddings
+    target: context/doctrine/python-ml-library-selection.md
+  - alias: statsmodels arima python
+    target: context/doctrine/python-ml-library-selection.md
   - alias: infer task
     target: context/skills/task-inference.md
   - alias: repo signals

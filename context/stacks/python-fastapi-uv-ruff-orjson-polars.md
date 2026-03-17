@@ -35,3 +35,30 @@ Use this pack for lightweight to medium API services and data-aware backend repo
 - defaulting to standard `json` instead of `orjson` where the repo already uses it
 - treating database-backed endpoints as unit-test-only changes
 
+## ML and Data Science Context
+
+When the repo adds ML capability (classification, regression, recommendation, clustering, embedding, or time series forecasting), the stack expands. Load the full library guidance from `context/doctrine/python-ml-library-selection.md`.
+
+Quick reference for the most common cases:
+- Tabular ML (classification, regression, feature pipelines): scikit-learn + Polars data layer
+- Gradient-boosted trees on structured data: XGBoost or LightGBM (drop-in sklearn API)
+- Semantic embeddings for search or RAG: sentence-transformers
+- Statistical inference with p-values: statsmodels
+- Array math or custom metrics: numpy
+- Statistical tests (t-test, ANOVA, chi-squared): scipy.stats
+
+The Polars data layer does not change when ML is added. Polars handles data processing; sklearn/XGBoost/LightGBM handle model training; conversion happens at the model boundary:
+
+```python
+X = df.select(feature_columns).to_numpy()
+```
+
+## Common ML Mistakes In This Stack
+
+- Adding pandas as a data processing layer when Polars already handles it.
+- Doing ETL transforms inside sklearn ColumnTransformer — use Polars for ETL.
+- Using sklearn.GradientBoostingClassifier on tabular data — prefer XGBoost or LightGBM.
+- Converting the full DataFrame to pandas before sklearn — convert only feature columns to numpy.
+- Adding the full transformers library for an embedding use case — sentence-transformers is sufficient.
+
+Read `context/doctrine/python-ml-library-selection.md` before any ML feature implementation.
