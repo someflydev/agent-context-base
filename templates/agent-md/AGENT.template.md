@@ -36,3 +36,14 @@ Load only:
 - do not create a substantial root `README.md` or root `docs/` too early; wait until implementation can support them honestly
 - stop when stack, archetype, or Compose isolation ambiguity would cause context sprawl
 - `docker-compose.test.yml` is the only target for destructive test reset flows
+
+## Running Commands
+
+Tool environments are project-local. Never use system runtimes, global installs, or bare tool
+names without an explicit path. See `context/doctrine/tool-invocation-discipline.md` in the
+base repo for the full per-stack rules.
+
+{{tool_invocation_notes}}
+
+If `.venv_tools/` exists in the repo root, always invoke via `.venv_tools/bin/` paths.
+Never activate the venv with `source` — always use the explicit binary path.

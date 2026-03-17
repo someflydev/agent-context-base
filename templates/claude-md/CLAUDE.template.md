@@ -24,3 +24,14 @@ Then load the smallest useful bundle from the task, repo signals, and active cha
 - keep root `README.md`, `docs/`, and Mermaid diagrams deferred until the repo has enough real structure to describe honestly
 - keep dev and test infrastructure isolated
 - stop when stack, archetype, or Compose isolation becomes ambiguous
+
+## Running Commands
+
+Tool environments are project-local. Never use system runtimes, global installs, or bare tool
+names without an explicit path. See `context/doctrine/tool-invocation-discipline.md` in the
+base repo for the full per-stack rules.
+
+{{tool_invocation_notes}}
+
+If `.venv_tools/` exists in the repo root, always invoke via `.venv_tools/bin/` paths.
+Never activate the venv with `source` — always use the explicit binary path.
