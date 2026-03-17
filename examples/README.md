@@ -16,7 +16,8 @@ Examples are intentionally different from templates:
 - `canonical-cli/`: command, flag, and output-shape examples
 - `canonical-data-acquisition/`: source research, acquisition invariants, stack-selection guidance, raw archival, parser, classification, sync, and event examples
 - `canonical-dokku/`: Dokku deployment wiring and release posture
-- `canonical-integration-tests/`: real-infra tests against isolated `docker-compose.test.yml`, including Playwright guidance for backend-driven UI verification
+- `canonical-integration-tests/`: real-infra tests against isolated `docker-compose.test.yml`; includes FastAPI+DB integration tests, single-feature Playwright tests (filtering, search/sort, filter counts, split filter panel), and CUJ Playwright tests for backend-driven UI verification
+- `canonical-multi-backend/`: seam-layer examples for polyglot service coordination, including REST, gRPC, broker (NATS JetStream, Kafka, RabbitMQ), and NIF seam types across ten duo and four trio compositions
 - `canonical-observability/`: logs, metrics, and trace-shape examples
 - `canonical-prompts/`: monotonic prompt-file layout and prompt text
 - `canonical-rag/`: local indexing config and metadata shape
