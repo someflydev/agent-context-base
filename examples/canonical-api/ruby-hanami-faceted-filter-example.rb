@@ -32,6 +32,8 @@ module RubyHanamiFacetedFilterExample
 
   QUICK_EXCLUDES = [["status", "archived"], ["status", "paused"]].freeze
 
+  VALID_SORT_VALUES = ["events_desc", "events_asc", "name_asc"].freeze
+
   # ---------------------------------------------------------------------------
   # Query state
   # ---------------------------------------------------------------------------
@@ -40,6 +42,7 @@ module RubyHanamiFacetedFilterExample
     :team_in, :team_out,
     :status_in, :status_out,
     :region_in, :region_out,
+    :query, :sort,
     keyword_init: true
   )
 
@@ -52,6 +55,15 @@ module RubyHanamiFacetedFilterExample
         .uniq
     end
 
+    def self.normalize_query(q)
+      (q || "").to_s.strip.downcase
+    end
+
+    def self.normalize_sort(s)
+      val = (s || "").to_s
+      VALID_SORT_VALUES.include?(val) ? val : "events_desc"
+    end
+
     def self.build_query_state(params)
       QueryState.new(
         team_in:    normalize(params[:team_in]    || params["team_in"]),
@@ -60,6 +72,8 @@ module RubyHanamiFacetedFilterExample
         status_out: normalize(params[:status_out] || params["status_out"]),
         region_in:  normalize(params[:region_in]  || params["region_in"]),
         region_out: normalize(params[:region_out] || params["region_out"]),
+        query:      normalize_query(params[:query] || params["query"]),
+        sort:       normalize_sort(params[:sort]   || params["sort"]),
       )
     end
 
@@ -71,6 +85,8 @@ module RubyHanamiFacetedFilterExample
         "status_out=#{state.status_out.join(",")}",
         "region_in=#{state.region_in.join(",")}",
         "region_out=#{state.region_out.join(",")}",
+        "query=#{state.query}",
+        "sort=#{state.sort}",
       ].join("|")
     end
 
@@ -79,8 +95,26 @@ module RubyHanamiFacetedFilterExample
         (excludes.empty? || !excludes.include?(value))
     end
 
+    def self.apply_text_search(rows, query)
+      return rows if query.empty?
+      rows.select { |r| r[:report_id].downcase.include?(query) }
+    end
+
+    def self.sort_rows(rows, sort_value)
+      case sort_value
+      when "events_asc"
+        rows.sort_by { |r| [r[:events], r[:report_id]] }
+      when "name_asc"
+        rows.sort_by { |r| r[:report_id] }
+      else
+        # events_desc (default)
+        rows.sort_by { |r| [-r[:events], r[:report_id]] }
+      end
+    end
+
     def self.filter_rows(state)
-      REPORT_ROWS.select do |row|
+      searched = apply_text_search(REPORT_ROWS, state.query)
+      searched.select do |row|
         matches_dim?(row[:team],   state.team_in,   state.team_out)   &&
         matches_dim?(row[:status], state.status_in, state.status_out) &&
         matches_dim?(row[:region], state.region_in, state.region_out)
@@ -88,10 +122,11 @@ module RubyHanamiFacetedFilterExample
     end
 
     def self.facet_counts(state, dimension)
-      options = FACET_OPTIONS[dimension] || []
-      counts  = options.map { |o| [o, 0] }.to_h
+      options  = FACET_OPTIONS[dimension] || []
+      counts   = options.map { |o| [o, 0] }.to_h
+      searched = apply_text_search(REPORT_ROWS, state.query)
 
-      REPORT_ROWS.each do |row|
+      searched.each do |row|
         pass = case dimension
         when "team"
           matches_dim?(row[:status], state.status_in, state.status_out) &&
@@ -116,12 +151,13 @@ module RubyHanamiFacetedFilterExample
     end
 
     def self.exclude_impact_counts(state, dimension)
-      options = FACET_OPTIONS[dimension] || []
-      dim_out = state.public_send(:"#{dimension}_out")
+      options  = FACET_OPTIONS[dimension] || []
+      dim_out  = state.public_send(:"#{dimension}_out")
+      searched = apply_text_search(REPORT_ROWS, state.query)
 
       options.each_with_object({}) do |option, counts|
         other_excludes = dim_out.reject { |v| v == option }
-        count = REPORT_ROWS.count do |row|
+        count = searched.count do |row|
           val = row[dimension.to_sym]
           other_dims_pass = case dimension
           when "team"
@@ -146,15 +182,43 @@ module RubyHanamiFacetedFilterExample
     # HTML rendering
     # -------------------------------------------------------------------------
 
+    def self.render_search_input(state)
+      <<~HTML
+        <input type="text" name="query" value="#{state.query}" placeholder="Search reports…"
+               data-role="search-input" data-search-query="#{state.query}"
+               hx-get="/ui/reports/results" hx-target="#report-results"
+               hx-trigger="keyup changed delay:300ms" hx-include="#report-filters"
+               class="w-full rounded border border-slate-300 px-3 py-2 text-sm" />
+      HTML
+    end
+
+    def self.render_sort_select(state)
+      sel_desc = state.sort == "events_desc" ? " selected" : ""
+      sel_asc  = state.sort == "events_asc"  ? " selected" : ""
+      sel_name = state.sort == "name_asc"    ? " selected" : ""
+      <<~HTML
+        <select name="sort" data-role="sort-select" data-sort-order="#{state.sort}"
+                hx-get="/ui/reports/results" hx-target="#report-results"
+                hx-include="#report-filters"
+                class="rounded border border-slate-200 px-2 py-1 text-sm">
+          <option value="events_desc"#{sel_desc}>Events: high → low</option>
+          <option value="events_asc"#{sel_asc}>Events: low → high</option>
+          <option value="name_asc"#{sel_name}>Name: A → Z</option>
+        </select>
+      HTML
+    end
+
     def self.render_filter_panel(state)
-      quick_strip = render_quick_excludes(state)
-      dim_groups  = ["team", "status", "region"].map { |dim| render_dimension_group(state, dim) }.join
+      search_input = render_search_input(state)
+      quick_strip  = render_quick_excludes(state)
+      dim_groups   = ["team", "status", "region"].map { |dim| render_dimension_group(state, dim) }.join
 
       <<~HTML
         <div id="filter-panel" class="space-y-4">
           <div class="rounded bg-slate-50 px-3 py-2 text-xs text-slate-600" data-role="count-discipline">
             Counts reflect the active backend query semantics.
           </div>
+          #{search_input}
           #{quick_strip}
           #{dim_groups}
         </div>
@@ -261,9 +325,10 @@ module RubyHanamiFacetedFilterExample
     end
 
     def self.render_results_fragment(state)
-      rows  = filter_rows(state)
-      n     = rows.length
-      fp    = fingerprint(state)
+      rows        = sort_rows(filter_rows(state), state.sort)
+      n           = rows.length
+      fp          = fingerprint(state)
+      sort_select = render_sort_select(state)
       cards = rows.map { |row|
         <<~HTML
           <div class="rounded border border-slate-200 px-4 py-3 text-sm" data-report-id="#{row[:report_id]}">
@@ -282,19 +347,23 @@ module RubyHanamiFacetedFilterExample
         <section id="report-results"
                  data-query-fingerprint="#{fp}"
                  data-result-count="#{n}"
+                 data-search-query="#{state.query}"
+                 data-sort-order="#{state.sort}"
                  class="space-y-2">
           <div data-role="active-filters" class="text-xs text-slate-500">#{fp}</div>
+          #{sort_select}
           #{cards}
         </section>
       HTML
     end
 
     def self.render_full_page(state)
-      panel   = render_filter_panel(state)
-      results = filter_rows(state)
-      n       = results.length
-      fp      = fingerprint(state)
-      cards   = results.map { |row|
+      panel       = render_filter_panel(state)
+      rows        = sort_rows(filter_rows(state), state.sort)
+      n           = rows.length
+      fp          = fingerprint(state)
+      sort_select = render_sort_select(state)
+      cards = rows.map { |row|
         %(<div class="rounded border border-slate-200 px-4 py-3 text-sm" data-report-id="#{row[:report_id]}"><strong>#{row[:report_id]}</strong></div>)
       }.join("\n")
 
@@ -307,25 +376,30 @@ module RubyHanamiFacetedFilterExample
           <script src="https://unpkg.com/htmx.org@1.9.10"></script>
           <script src="https://cdn.tailwindcss.com"></script>
         </head>
-        <body class="p-6 font-sans">
-          <h1 class="text-xl font-bold mb-4">Reports</h1>
+        <body class="font-sans">
+          <h1 class="text-xl font-bold p-4">Reports</h1>
           <form id="report-filters"
                 hx-get="/ui/reports/results"
                 hx-target="#report-results"
                 hx-trigger="change, submit">
-            <div class="flex gap-6">
-              <aside class="w-64 shrink-0">#{panel}</aside>
-              <main class="flex-1">
+            <div data-role="reports-layout" id="reports-layout" class="flex h-screen overflow-hidden">
+              <aside id="filter-panel" class="w-72 flex-shrink-0 overflow-y-auto border-r p-4">
+                #{panel}
+              </aside>
+              <main id="report-results-container" class="flex-1 overflow-y-auto p-4">
                 <div id="result-count"
                      data-role="result-count"
                      data-result-count="#{n}"
                      class="rounded bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700 mb-3">
                   #{n} results
                 </div>
+                #{sort_select}
                 <section id="report-results"
                          data-query-fingerprint="#{fp}"
                          data-result-count="#{n}"
-                         class="space-y-2">
+                         data-search-query="#{state.query}"
+                         data-sort-order="#{state.sort}"
+                         class="space-y-2 mt-3">
                   #{cards}
                 </section>
               </main>

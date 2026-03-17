@@ -48,6 +48,8 @@ fn facet_option_list(dimension: &str) -> &'static [&'static str] {
 
 static QUICK_EXCLUDES: &[(&str, &str)] = &[("status", "archived"), ("status", "paused")];
 
+static VALID_SORT_VALUES: &[&str] = &["events_desc", "events_asc", "name_asc"];
+
 // ---------------------------------------------------------------------------
 // Query state
 // ---------------------------------------------------------------------------
@@ -60,6 +62,8 @@ pub struct FilterQuery {
     #[serde(default)] pub status_out: Vec<String>,
     #[serde(default)] pub region_in:  Vec<String>,
     #[serde(default)] pub region_out: Vec<String>,
+    #[serde(default)] pub query:      String,
+    #[serde(default)] pub sort:       String,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -70,6 +74,8 @@ pub struct QueryState {
     pub status_out: Vec<String>,
     pub region_in:  Vec<String>,
     pub region_out: Vec<String>,
+    pub query:      String,
+    pub sort:       String,
 }
 
 fn normalize(values: Vec<String>) -> Vec<String> {
@@ -83,6 +89,14 @@ fn normalize(values: Vec<String>) -> Vec<String> {
     set.into_iter().collect()
 }
 
+fn normalize_sort(s: String) -> String {
+    if VALID_SORT_VALUES.contains(&s.as_str()) {
+        s
+    } else {
+        "events_desc".to_string()
+    }
+}
+
 fn build_query_state(q: FilterQuery) -> QueryState {
     QueryState {
         team_in:    normalize(q.team_in),
@@ -91,18 +105,22 @@ fn build_query_state(q: FilterQuery) -> QueryState {
         status_out: normalize(q.status_out),
         region_in:  normalize(q.region_in),
         region_out: normalize(q.region_out),
+        query:      q.query.trim().to_lowercase(),
+        sort:       normalize_sort(q.sort),
     }
 }
 
 fn fingerprint(state: &QueryState) -> String {
     format!(
-        "team_in={}|team_out={}|status_in={}|status_out={}|region_in={}|region_out={}",
+        "team_in={}|team_out={}|status_in={}|status_out={}|region_in={}|region_out={}|query={}|sort={}",
         state.team_in.join(","),
         state.team_out.join(","),
         state.status_in.join(","),
         state.status_out.join(","),
         state.region_in.join(","),
         state.region_out.join(","),
+        state.query,
+        state.sort,
     )
 }
 
@@ -129,8 +147,28 @@ fn row_dim_value<'a>(row: &'a ReportRow, dim: &str) -> &'a str {
     }
 }
 
+fn apply_text_search<'a>(rows: &'a [ReportRow], q: &str) -> Vec<&'a ReportRow> {
+    if q.is_empty() {
+        return rows.iter().collect();
+    }
+    rows.iter().filter(|row| row.report_id.to_lowercase().contains(q)).collect()
+}
+
+fn sort_rows(rows: &mut Vec<&'static ReportRow>, sort_val: &str) {
+    match sort_val {
+        "events_asc" => rows.sort_by(|a, b| {
+            a.events.cmp(&b.events).then_with(|| a.report_id.cmp(b.report_id))
+        }),
+        "name_asc" => rows.sort_by(|a, b| a.report_id.cmp(b.report_id)),
+        _ => rows.sort_by(|a, b| {
+            b.events.cmp(&a.events).then_with(|| a.report_id.cmp(b.report_id))
+        }),
+    }
+}
+
 fn filter_rows(state: &QueryState) -> Vec<&'static ReportRow> {
-    REPORT_ROWS.iter().filter(|row| {
+    let searched = apply_text_search(REPORT_ROWS, &state.query);
+    searched.into_iter().filter(|row| {
         matches_dim(row.team,   &state.team_in,   &state.team_out)   &&
         matches_dim(row.status, &state.status_in, &state.status_out) &&
         matches_dim(row.region, &state.region_in, &state.region_out)
@@ -141,7 +179,8 @@ fn facet_counts(state: &QueryState, dimension: &str) -> HashMap<&'static str, us
     let options = facet_option_list(dimension);
     let mut counts: HashMap<&'static str, usize> = options.iter().map(|&o| (o, 0)).collect();
 
-    for row in REPORT_ROWS.iter() {
+    let searched = apply_text_search(REPORT_ROWS, &state.query);
+    for row in searched.iter() {
         let pass = match dimension {
             "team" =>
                 matches_dim(row.status, &state.status_in, &state.status_out) &&
@@ -174,11 +213,12 @@ fn exclude_impact_counts(state: &QueryState, dimension: &str) -> HashMap<&'stati
         _        => &state.region_out,
     };
 
+    let searched = apply_text_search(REPORT_ROWS, &state.query);
     let mut counts = HashMap::new();
     for &option in options.iter() {
         let other_excludes: Vec<&String> = dim_out.iter().filter(|v| v.as_str() != option).collect();
         let mut count = 0usize;
-        for row in REPORT_ROWS.iter() {
+        for row in searched.iter() {
             let other_pass = match dimension {
                 "team" =>
                     matches_dim(row.status, &state.status_in, &state.status_out) &&
@@ -214,11 +254,31 @@ fn capitalize(s: &str) -> String {
     }
 }
 
+fn render_search_input(state: &QueryState) -> String {
+    format!(
+        r#"<input type="text" name="query" value="{}" placeholder="Search reports…" data-role="search-input" data-search-query="{}" hx-get="/ui/reports/results" hx-target="#report-results" hx-trigger="keyup changed delay:300ms" hx-include="#report-filters" class="w-full rounded border border-slate-300 px-3 py-2 text-sm" />"#,
+        state.query, state.query,
+    )
+}
+
+fn render_sort_select(state: &QueryState) -> String {
+    let sel_desc = if state.sort == "events_desc" { " selected" } else { "" };
+    let sel_asc  = if state.sort == "events_asc"  { " selected" } else { "" };
+    let sel_name = if state.sort == "name_asc"    { " selected" } else { "" };
+    format!(
+        r#"<select name="sort" data-role="sort-select" data-sort-order="{}" hx-get="/ui/reports/results" hx-target="#report-results" hx-include="#report-filters" class="rounded border border-slate-200 px-2 py-1 text-sm"><option value="events_desc"{}> Events: high → low</option><option value="events_asc"{}> Events: low → high</option><option value="name_asc"{}> Name: A → Z</option></select>"#,
+        state.sort, sel_desc, sel_asc, sel_name,
+    )
+}
+
 fn render_filter_panel(state: &QueryState) -> String {
     let mut html = String::new();
 
     html.push_str(r#"<div id="filter-panel" class="space-y-4">"#);
     html.push_str(r#"<div class="rounded bg-slate-50 px-3 py-2 text-xs text-slate-600" data-role="count-discipline">Counts reflect the active backend query semantics.</div>"#);
+
+    // Search input
+    html.push_str(&render_search_input(state));
 
     // Quick excludes strip
     html.push_str(r#"<div class="flex flex-wrap items-center gap-2 border-b border-slate-100 pb-3" data-role="quick-excludes-strip">"#);
@@ -312,9 +372,11 @@ fn render_filter_panel(state: &QueryState) -> String {
 }
 
 fn render_results_fragment(state: &QueryState) -> String {
-    let rows = filter_rows(state);
+    let mut rows = filter_rows(state);
+    sort_rows(&mut rows, &state.sort);
     let n    = rows.len();
     let fp   = fingerprint(state);
+    let sort_select = render_sort_select(state);
     let mut html = String::new();
 
     html.push_str(&format!(
@@ -322,10 +384,11 @@ fn render_results_fragment(state: &QueryState) -> String {
         n, n,
     ));
     html.push_str(&format!(
-        r#"<section id="report-results" data-query-fingerprint="{}" data-result-count="{}" class="space-y-2">"#,
-        fp, n,
+        r#"<section id="report-results" data-query-fingerprint="{}" data-result-count="{}" data-search-query="{}" data-sort-order="{}" class="space-y-2">"#,
+        fp, n, state.query, state.sort,
     ));
     html.push_str(&format!(r#"<div data-role="active-filters" class="text-xs text-slate-500">{}</div>"#, fp));
+    html.push_str(&sort_select);
     for row in rows.iter() {
         html.push_str(&format!(
             r#"<div class="rounded border border-slate-200 px-4 py-3 text-sm" data-report-id="{}"><strong>{}</strong> <span class="text-slate-500">{} / {} / {}</span></div>"#,
@@ -337,10 +400,12 @@ fn render_results_fragment(state: &QueryState) -> String {
 }
 
 fn render_full_page(state: &QueryState) -> String {
-    let panel = render_filter_panel(state);
-    let rows  = filter_rows(state);
-    let n     = rows.len();
-    let fp    = fingerprint(state);
+    let panel       = render_filter_panel(state);
+    let mut rows    = filter_rows(state);
+    sort_rows(&mut rows, &state.sort);
+    let n           = rows.len();
+    let fp          = fingerprint(state);
+    let sort_select = render_sort_select(state);
     let cards = rows.iter().map(|row| format!(
         r#"<div class="rounded border border-slate-200 px-4 py-3 text-sm" data-report-id="{}"><strong>{}</strong></div>"#,
         row.report_id, row.report_id,
@@ -352,18 +417,19 @@ fn render_full_page(state: &QueryState) -> String {
 <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="p-6 font-sans">
-<h1 class="text-xl font-bold mb-4">Reports</h1>
+<body class="font-sans">
+<h1 class="text-xl font-bold p-4">Reports</h1>
 <form id="report-filters" hx-get="/ui/reports/results" hx-target="#report-results" hx-trigger="change, submit">
-<div class="flex gap-6">
-<aside class="w-64 shrink-0">{}</aside>
-<main class="flex-1">
+<div data-role="reports-layout" id="reports-layout" class="flex h-screen overflow-hidden">
+<aside id="filter-panel" class="w-72 flex-shrink-0 overflow-y-auto border-r p-4">{}</aside>
+<main id="report-results-container" class="flex-1 overflow-y-auto p-4">
 <div id="result-count" data-role="result-count" data-result-count="{}" class="rounded bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700 mb-3">{} results</div>
-<section id="report-results" data-query-fingerprint="{}" data-result-count="{}" class="space-y-2">
+{}
+<section id="report-results" data-query-fingerprint="{}" data-result-count="{}" data-search-query="{}" data-sort-order="{}" class="space-y-2 mt-3">
 {}
 </section>
 </main></div></form></body></html>"#,
-        panel, n, n, fp, n, cards,
+        panel, n, n, sort_select, fp, n, state.query, state.sort, cards,
     )
 }
 

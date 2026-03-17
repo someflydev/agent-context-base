@@ -19,6 +19,8 @@ type QueryState = {
   status_out: string[];
   region_in: string[];
   region_out: string[];
+  query: string;
+  sort: string;
 };
 
 type ReportRow = {
@@ -53,6 +55,8 @@ const QUICK_EXCLUDES: [string, string][] = [
   ["status", "paused"],
 ];
 
+const VALID_SORT_VALUES = ["events_desc", "events_asc", "name_asc"] as const;
+
 // ---------------------------------------------------------------------------
 // Query state
 // ---------------------------------------------------------------------------
@@ -71,6 +75,10 @@ function normalize(values: string[] | undefined): string[] {
   return result.sort();
 }
 
+function normalizeSort(s: string): string {
+  return (VALID_SORT_VALUES as readonly string[]).includes(s) ? s : "events_desc";
+}
+
 function buildQueryState(searchParams: URLSearchParams): QueryState {
   return {
     team_in:    normalize(searchParams.getAll("team_in")),
@@ -79,6 +87,8 @@ function buildQueryState(searchParams: URLSearchParams): QueryState {
     status_out: normalize(searchParams.getAll("status_out")),
     region_in:  normalize(searchParams.getAll("region_in")),
     region_out: normalize(searchParams.getAll("region_out")),
+    query:      (searchParams.get("query") ?? "").trim().toLowerCase(),
+    sort:       normalizeSort(searchParams.get("sort") ?? ""),
   };
 }
 
@@ -90,6 +100,8 @@ function fingerprint(state: QueryState): string {
     `status_out=${state.status_out.join(",")}`,
     `region_in=${state.region_in.join(",")}`,
     `region_out=${state.region_out.join(",")}`,
+    `query=${state.query}`,
+    `sort=${state.sort}`,
   ].join("|");
 }
 
@@ -103,8 +115,27 @@ function matchesDim(value: string, includes: string[], excludes: string[]): bool
   return true;
 }
 
+function applyTextSearch(rows: ReportRow[], q: string): ReportRow[] {
+  if (!q) return rows;
+  return rows.filter(row => row.report_id.toLowerCase().includes(q));
+}
+
+function sortRows(rows: ReportRow[], sortVal: string): ReportRow[] {
+  const copy = [...rows];
+  if (sortVal === "events_asc") {
+    copy.sort((a, b) => a.events !== b.events ? a.events - b.events : a.report_id.localeCompare(b.report_id));
+  } else if (sortVal === "name_asc") {
+    copy.sort((a, b) => a.report_id.localeCompare(b.report_id));
+  } else {
+    // events_desc (default)
+    copy.sort((a, b) => a.events !== b.events ? b.events - a.events : a.report_id.localeCompare(b.report_id));
+  }
+  return copy;
+}
+
 function filterRows(state: QueryState): ReportRow[] {
-  return REPORT_ROWS.filter(row =>
+  const searched = applyTextSearch(REPORT_ROWS, state.query);
+  return searched.filter(row =>
     matchesDim(row.team,   state.team_in,   state.team_out)   &&
     matchesDim(row.status, state.status_in, state.status_out) &&
     matchesDim(row.region, state.region_in, state.region_out)
@@ -119,7 +150,8 @@ function facetCounts(state: QueryState, dimension: string): Record<string, numbe
   const options = FACET_OPTIONS[dimension] ?? [];
   const counts: Record<string, number> = Object.fromEntries(options.map(o => [o, 0]));
 
-  for (const row of REPORT_ROWS) {
+  const searched = applyTextSearch(REPORT_ROWS, state.query);
+  for (const row of searched) {
     let pass = false;
     if (dimension === "team") {
       pass =
@@ -152,11 +184,12 @@ function excludeImpactCounts(state: QueryState, dimension: string): Record<strin
     dimension === "status" ? state.status_out :
                              state.region_out;
 
+  const searched = applyTextSearch(REPORT_ROWS, state.query);
   const counts: Record<string, number> = {};
   for (const option of options) {
     const otherExcludes = dimOut.filter(v => v !== option);
     let count = 0;
-    for (const row of REPORT_ROWS) {
+    for (const row of searched) {
       let otherPass = false;
       if (dimension === "team") {
         otherPass =
@@ -189,15 +222,38 @@ function capitalize(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
+function renderSearchInput(state: QueryState): string {
+  return `
+  <input type="text" name="query" value="${state.query}" placeholder="Search reports…"
+         data-role="search-input" data-search-query="${state.query}"
+         hx-get="/ui/reports/results" hx-target="#report-results"
+         hx-trigger="keyup changed delay:300ms" hx-include="#report-filters"
+         class="w-full rounded border border-slate-300 px-3 py-2 text-sm" />`;
+}
+
+function renderSortSelect(state: QueryState): string {
+  return `
+<select name="sort" data-role="sort-select" data-sort-order="${state.sort}"
+        hx-get="/ui/reports/results" hx-target="#report-results"
+        hx-include="#report-filters"
+        class="rounded border border-slate-200 px-2 py-1 text-sm">
+  <option value="events_desc"${state.sort === "events_desc" ? " selected" : ""}>Events: high → low</option>
+  <option value="events_asc"${state.sort === "events_asc" ? " selected" : ""}>Events: low → high</option>
+  <option value="name_asc"${state.sort === "name_asc" ? " selected" : ""}>Name: A → Z</option>
+</select>`;
+}
+
 function renderFilterPanel(state: QueryState): string {
-  const quickStrip = renderQuickExcludes(state);
-  const dimGroups  = ["team", "status", "region"].map(dim => renderDimensionGroup(state, dim)).join("\n");
+  const searchInput = renderSearchInput(state);
+  const quickStrip  = renderQuickExcludes(state);
+  const dimGroups   = ["team", "status", "region"].map(dim => renderDimensionGroup(state, dim)).join("\n");
 
   return `
 <div id="filter-panel" class="space-y-4">
   <div class="rounded bg-slate-50 px-3 py-2 text-xs text-slate-600" data-role="count-discipline">
     Counts reflect the active backend query semantics.
   </div>
+  ${searchInput}
   ${quickStrip}
   ${dimGroups}
 </div>`;
@@ -293,9 +349,10 @@ function renderDimensionGroup(state: QueryState, dim: string): string {
 }
 
 function renderResultsFragment(state: QueryState): string {
-  const rows = filterRows(state);
+  const rows = sortRows(filterRows(state), state.sort);
   const n    = rows.length;
   const fp   = fingerprint(state);
+  const sortSelect = renderSortSelect(state);
   const cards = rows.map(r =>
     `<div class="rounded border border-slate-200 px-4 py-3 text-sm" data-report-id="${r.report_id}">` +
     `<strong>${r.report_id}</strong> <span class="text-slate-500">${r.team} / ${r.status} / ${r.region}</span></div>`
@@ -310,17 +367,21 @@ function renderResultsFragment(state: QueryState): string {
 <section id="report-results"
          data-query-fingerprint="${fp}"
          data-result-count="${n}"
+         data-search-query="${state.query}"
+         data-sort-order="${state.sort}"
          class="space-y-2">
   <div data-role="active-filters" class="text-xs text-slate-500">${fp}</div>
+  ${sortSelect}
   ${cards}
 </section>`;
 }
 
 function renderFullPage(state: QueryState): string {
-  const panel = renderFilterPanel(state);
-  const rows  = filterRows(state);
-  const n     = rows.length;
-  const fp    = fingerprint(state);
+  const panel      = renderFilterPanel(state);
+  const rows       = sortRows(filterRows(state), state.sort);
+  const n          = rows.length;
+  const fp         = fingerprint(state);
+  const sortSelect = renderSortSelect(state);
   const cards = rows.map(r =>
     `<div class="rounded border border-slate-200 px-4 py-3 text-sm" data-report-id="${r.report_id}">` +
     `<strong>${r.report_id}</strong></div>`
@@ -334,25 +395,30 @@ function renderFullPage(state: QueryState): string {
   <script src="https://unpkg.com/htmx.org@1.9.10"></script>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="p-6 font-sans">
-  <h1 class="text-xl font-bold mb-4">Reports</h1>
+<body class="font-sans">
+  <h1 class="text-xl font-bold p-4">Reports</h1>
   <form id="report-filters"
         hx-get="/ui/reports/results"
         hx-target="#report-results"
         hx-trigger="change, submit">
-    <div class="flex gap-6">
-      <aside class="w-64 shrink-0">${panel}</aside>
-      <main class="flex-1">
+    <div data-role="reports-layout" id="reports-layout" class="flex h-screen overflow-hidden">
+      <aside id="filter-panel" class="w-72 flex-shrink-0 overflow-y-auto border-r p-4">
+        ${panel}
+      </aside>
+      <main id="report-results-container" class="flex-1 overflow-y-auto p-4">
         <div id="result-count"
              data-role="result-count"
              data-result-count="${n}"
              class="rounded bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700 mb-3">
           ${n} results
         </div>
+        ${sortSelect}
         <section id="report-results"
                  data-query-fingerprint="${fp}"
                  data-result-count="${n}"
-                 class="space-y-2">
+                 data-search-query="${state.query}"
+                 data-sort-order="${state.sort}"
+                 class="space-y-2 mt-3">
           ${cards}
         </section>
       </main>
