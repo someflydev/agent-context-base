@@ -31,6 +31,19 @@ target/
 bin/
 coverage.out
 
+# Kotlin / Gradle
+.gradle/
+build/
+
+# Scala / sbt
+.bloop/
+.metals/
+.scala-build/
+
+# Ruby / Bundler
+.bundle/
+vendor/bundle/
+
 # Local Docker data
 docker/volumes/
 
