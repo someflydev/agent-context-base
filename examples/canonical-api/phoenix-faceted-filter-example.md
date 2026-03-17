@@ -20,12 +20,18 @@ Pattern matching on dimension name drives the facet count logic. Lists are norma
 
 ## Filter logic
 
-- `filter_rows/1` — applies all three dimensions; include = must be in _in if _in non-empty;
-  exclude = must not be in _out if _out non-empty.
-- `facet_counts/2` — for the target dimension, relaxes _in but keeps _out; applies all other
-  dimensions fully.
-- `exclude_impact_counts/2` — for each option: applies all other dimensions fully; applies
-  target dimension's _out except the current option; ignores target dimension's _in.
+- `filter_rows/1` — calls `apply_text_search` first, then applies all three dimensions;
+  include = must be in _in if _in non-empty; exclude = must not be in _out if _out non-empty.
+- `facet_counts/2` — calls `apply_text_search` first (Q is never relaxed); for the target
+  dimension, relaxes _in but keeps _out; applies all other dimensions fully.
+- `exclude_impact_counts/2` — calls `apply_text_search` first; for each option: applies all
+  other dimensions fully; applies target dimension's _out except the current option; ignores
+  target dimension's _in.
+- `apply_text_search/2` — filters rows by case-insensitive substring match on report_id;
+  returns all rows when query is empty.
+- `sort_rows/2` — sorts by sort value: `events_desc` (descending events, tiebreak report_id
+  asc), `events_asc` (ascending events, tiebreak report_id asc), `name_asc` (ascending
+  report_id). Sort never affects counts.
 
 ## Multi-value parameter parsing
 
@@ -58,12 +64,37 @@ Quick exclude labels carry `data-role="quick-exclude"`, `data-quick-exclude-dime
 `data-quick-exclude-value`, `data-active`.
 
 Results section carries `data-query-fingerprint` (deterministic sort-order fingerprint of
-all six state fields) and `data-result-count`.
+all eight state fields) and `data-result-count`.
+
+**Search input** (at top of filter panel, above quick-excludes strip):
+- `name="query"` — submitted with form; normalized to trimmed lowercase
+- `data-role="search-input"` — identifies the search input element
+- `data-search-query="{Q}"` — reflects current query value for client reads
+
+**Sort select** (in results section, below result-count badge, above result cards):
+- `name="sort"` — submitted with form; valid values: `events_desc`, `events_asc`, `name_asc`
+- `data-role="sort-select"` — identifies the sort control element
+- `data-sort-order="{sort}"` — reflects current sort value; option `selected` attribute set
+  to prevent dropdown reset on HTMX swaps
+
+**Results section** (`id="report-results"`) additional attributes:
+- `data-search-query="{Q}"` — current text search query
+- `data-sort-order="{sort}"` — current sort order
+
+**Layout wrapper** (`id="reports-layout"`):
+- `data-role="reports-layout"` — identifies the independent scroll layout container
+- Structure: `<div data-role="reports-layout" id="reports-layout" class="flex h-screen overflow-hidden">`
+  with `<aside id="filter-panel" class="w-72 flex-shrink-0 overflow-y-auto border-r p-4">`
+  and `<main id="report-results-container" class="flex-1 overflow-y-auto p-4">`
+
+**State fields** `query` and `sort` are now part of `QueryState` (8 total fields). Both are
+included in the fingerprint as `|query={Q}|sort={sort}` at the end of the fingerprint string.
 
 ## Related
 
 - `context/doctrine/filter-panel-rendering-rules.md`
 - `context/doctrine/faceted-query-count-discipline.md`
-- `examples/canonical-api/fastapi-split-filter-panel-example.py`
+- `context/doctrine/search-sort-scroll-layout.md`
+- `examples/canonical-api/fastapi-search-sort-filter-example.py`
 - `examples/canonical-api/phoenix-faceted-filter-example.ex`
 - `examples/canonical-api/phoenix-faceted-filter-panel-template.html.heex`

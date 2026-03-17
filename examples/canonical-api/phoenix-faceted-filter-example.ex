@@ -3,10 +3,11 @@ defmodule PhoenixFacetedFilterExample do
   phoenix-faceted-filter-example.ex
 
   Demonstrates the full split include/exclude filter panel pattern with Elixir Phoenix.
-  - QueryState with all six fields (team_in, team_out, status_in, status_out, region_in, region_out)
-  - filter_rows, facet_counts, exclude_impact_counts
+  - QueryState with all eight fields (team_in, team_out, status_in, status_out, region_in,
+    region_out, query, sort)
+  - apply_text_search, sort_rows, filter_rows, facet_counts, exclude_impact_counts
   - render_filter_panel building complete HTML with all data-* attributes
-  - render_results_fragment with OOB result-count badge
+  - render_results_fragment with OOB result-count badge, sort select, independent scroll layout
   - All four endpoints wired in the router
 
   Multi-value params: Phoenix parses ?status_out[]=archived&status_out[]=paused into
@@ -48,6 +49,13 @@ defmodule PhoenixFacetedFilterExample do
   end
   defp normalize(value), do: normalize([value])
 
+  defp normalize_query(q) do
+    String.trim(String.downcase(q || ""))
+  end
+
+  defp normalize_sort(s) when s in ["events_desc", "events_asc", "name_asc"], do: s
+  defp normalize_sort(_), do: "events_desc"
+
   defp build_query_state(params) do
     %{
       team_in:    normalize(Map.get(params, "team_in",    [])),
@@ -56,6 +64,8 @@ defmodule PhoenixFacetedFilterExample do
       status_out: normalize(Map.get(params, "status_out", [])),
       region_in:  normalize(Map.get(params, "region_in",  [])),
       region_out: normalize(Map.get(params, "region_out", [])),
+      query:      normalize_query(Map.get(params, "query", "")),
+      sort:       normalize_sort(Map.get(params, "sort", "events_desc")),
     }
   end
 
@@ -66,9 +76,10 @@ defmodule PhoenixFacetedFilterExample do
       "status_in=#{Enum.join(state.status_in, ",")}",
       "status_out=#{Enum.join(state.status_out, ",")}",
       "region_in=#{Enum.join(state.region_in, ",")}",
-      "region_out=#{Enum.join(state.region_out, ",")}",
+      "region_out=#{Enum.join(state.region_out, "")}",
     ]
     |> Enum.join("|")
+    |> Kernel.<>("|query=#{state.query}|sort=#{state.sort}")
   end
 
   # ---------------------------------------------------------------------------
@@ -80,8 +91,28 @@ defmodule PhoenixFacetedFilterExample do
     (Enum.empty?(excludes) or value not in excludes)
   end
 
+  defp apply_text_search(rows, ""), do: rows
+  defp apply_text_search(rows, query) do
+    Enum.filter(rows, fn row ->
+      String.contains?(String.downcase(row.report_id), query)
+    end)
+  end
+
+  defp sort_rows(rows, sort) do
+    case sort do
+      "events_asc" ->
+        Enum.sort_by(rows, fn row -> {row.events, row.report_id} end, :asc)
+      "name_asc" ->
+        Enum.sort_by(rows, fn row -> row.report_id end, :asc)
+      _ ->
+        Enum.sort_by(rows, fn row -> {-row.events, row.report_id} end, :asc)
+    end
+  end
+
   defp filter_rows(state) do
-    Enum.filter(@report_rows, fn row ->
+    @report_rows
+    |> apply_text_search(state.query)
+    |> Enum.filter(fn row ->
       matches_dim?(row.team,   state.team_in,   state.team_out)   and
       matches_dim?(row.status, state.status_in, state.status_out) and
       matches_dim?(row.region, state.region_in, state.region_out)
@@ -89,32 +120,36 @@ defmodule PhoenixFacetedFilterExample do
   end
 
   defp facet_counts(state, dimension) do
-    options = Map.get(@facet_options, dimension, [])
+    options  = Map.get(@facet_options, dimension, [])
     zero_map = Map.new(options, &{&1, 0})
 
     rows =
-      case dimension do
-        "team" ->
-          Enum.filter(@report_rows, fn row ->
-            matches_dim?(row.status, state.status_in, state.status_out) and
-            matches_dim?(row.region, state.region_in, state.region_out) and
-            matches_dim?(row.team,   [],              state.team_out)
-          end)
+      @report_rows
+      |> apply_text_search(state.query)
+      |> (fn base ->
+        case dimension do
+          "team" ->
+            Enum.filter(base, fn row ->
+              matches_dim?(row.status, state.status_in, state.status_out) and
+              matches_dim?(row.region, state.region_in, state.region_out) and
+              matches_dim?(row.team,   [],              state.team_out)
+            end)
 
-        "status" ->
-          Enum.filter(@report_rows, fn row ->
-            matches_dim?(row.team,   state.team_in,   state.team_out)   and
-            matches_dim?(row.region, state.region_in, state.region_out) and
-            matches_dim?(row.status, [],              state.status_out)
-          end)
+          "status" ->
+            Enum.filter(base, fn row ->
+              matches_dim?(row.team,   state.team_in,   state.team_out)   and
+              matches_dim?(row.region, state.region_in, state.region_out) and
+              matches_dim?(row.status, [],              state.status_out)
+            end)
 
-        "region" ->
-          Enum.filter(@report_rows, fn row ->
-            matches_dim?(row.team,   state.team_in,   state.team_out)   and
-            matches_dim?(row.status, state.status_in, state.status_out) and
-            matches_dim?(row.region, [],              state.region_out)
-          end)
-      end
+          "region" ->
+            Enum.filter(base, fn row ->
+              matches_dim?(row.team,   state.team_in,   state.team_out)   and
+              matches_dim?(row.status, state.status_in, state.status_out) and
+              matches_dim?(row.region, [],              state.region_out)
+            end)
+        end
+      end).()
 
     Enum.reduce(rows, zero_map, fn row, acc ->
       val = Map.get(row, String.to_atom(dimension))
@@ -123,14 +158,15 @@ defmodule PhoenixFacetedFilterExample do
   end
 
   defp exclude_impact_counts(state, dimension) do
-    options   = Map.get(@facet_options, dimension, [])
-    dim_out   = Map.get(state, String.to_atom("#{dimension}_out"), [])
+    options = Map.get(@facet_options, dimension, [])
+    dim_out = Map.get(state, String.to_atom("#{dimension}_out"), [])
+    base    = apply_text_search(@report_rows, state.query)
 
     Map.new(options, fn option ->
       other_excludes = Enum.reject(dim_out, &(&1 == option))
 
       count =
-        Enum.count(@report_rows, fn row ->
+        Enum.count(base, fn row ->
           val = Map.get(row, String.to_atom(dimension))
           other_dims_pass =
             case dimension do
@@ -159,6 +195,14 @@ defmodule PhoenixFacetedFilterExample do
   # ---------------------------------------------------------------------------
 
   defp render_filter_panel(state) do
+    search_input = """
+    <input type="text" name="query" value="#{state.query}" placeholder="Search reports…"
+           data-role="search-input" data-search-query="#{state.query}"
+           hx-get="/ui/reports/results" hx-target="#report-results"
+           hx-trigger="keyup changed delay:300ms" hx-include="#report-filters"
+           class="w-full rounded border border-slate-300 px-3 py-2 text-sm" />
+    """
+
     quick_strip = render_quick_excludes(state)
     dim_groups  = Enum.map(["team", "status", "region"], &render_dimension_group(state, &1))
 
@@ -167,6 +211,7 @@ defmodule PhoenixFacetedFilterExample do
       <div class="rounded bg-slate-50 px-3 py-2 text-xs text-slate-600" data-role="count-discipline">
         Counts reflect the active backend query semantics.
       </div>
+      #{search_input}
       #{quick_strip}
       #{Enum.join(dim_groups, "\n")}
     </div>
@@ -275,9 +320,24 @@ defmodule PhoenixFacetedFilterExample do
   end
 
   defp render_results_fragment(state) do
-    rows = filter_rows(state)
+    rows = state |> filter_rows() |> sort_rows(state.sort)
     n    = length(rows)
     fp   = fingerprint(state)
+
+    sel_desc = if state.sort == "events_desc", do: " selected", else: ""
+    sel_asc  = if state.sort == "events_asc",  do: " selected", else: ""
+    sel_name = if state.sort == "name_asc",    do: " selected", else: ""
+
+    sort_select = """
+    <select name="sort" data-role="sort-select" data-sort-order="#{state.sort}"
+            hx-get="/ui/reports/results" hx-target="#report-results"
+            hx-include="#report-filters"
+            class="rounded border border-slate-200 px-2 py-1 text-sm">
+      <option value="events_desc"#{sel_desc}>Events: high &#x2192; low</option>
+      <option value="events_asc"#{sel_asc}>Events: low &#x2192; high</option>
+      <option value="name_asc"#{sel_name}>Name: A &#x2192; Z</option>
+    </select>
+    """
 
     cards =
       Enum.map(rows, fn row ->
@@ -299,8 +359,11 @@ defmodule PhoenixFacetedFilterExample do
     <section id="report-results"
              data-query-fingerprint="#{fp}"
              data-result-count="#{n}"
+             data-search-query="#{state.query}"
+             data-sort-order="#{state.sort}"
              class="space-y-2">
       <div data-role="active-filters" class="text-xs text-slate-500">#{fp}</div>
+      #{sort_select}
       #{Enum.join(cards, "")}
     </section>
     """
@@ -308,9 +371,13 @@ defmodule PhoenixFacetedFilterExample do
 
   defp render_full_page(state) do
     panel   = render_filter_panel(state)
-    results = filter_rows(state)
+    results = state |> filter_rows() |> sort_rows(state.sort)
     n       = length(results)
     fp      = fingerprint(state)
+
+    sel_desc = if state.sort == "events_desc", do: " selected", else: ""
+    sel_asc  = if state.sort == "events_asc",  do: " selected", else: ""
+    sel_name = if state.sort == "name_asc",    do: " selected", else: ""
 
     """
     <!DOCTYPE html>
@@ -321,24 +388,36 @@ defmodule PhoenixFacetedFilterExample do
       <script src="https://unpkg.com/htmx.org@1.9.10"></script>
       <script src="https://cdn.tailwindcss.com"></script>
     </head>
-    <body class="p-6 font-sans">
-      <h1 class="text-xl font-bold mb-4">Reports</h1>
+    <body class="font-sans">
+      <h1 class="text-xl font-bold p-4 border-b">Reports</h1>
       <form id="report-filters"
             hx-get="/ui/reports/results"
             hx-target="#report-results"
             hx-trigger="change, submit">
-        <div class="flex gap-6">
-          <aside class="w-64 shrink-0">#{panel}</aside>
-          <main class="flex-1">
+        <div data-role="reports-layout" id="reports-layout" class="flex h-screen overflow-hidden">
+          <aside id="filter-panel" class="w-72 flex-shrink-0 overflow-y-auto border-r p-4">
+            #{panel}
+          </aside>
+          <main id="report-results-container" class="flex-1 overflow-y-auto p-4">
             <div id="result-count"
                  data-role="result-count"
                  data-result-count="#{n}"
                  class="rounded bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700 mb-3">
               #{n} results
             </div>
+            <select name="sort" data-role="sort-select" data-sort-order="#{state.sort}"
+                    hx-get="/ui/reports/results" hx-target="#report-results"
+                    hx-include="#report-filters"
+                    class="rounded border border-slate-200 px-2 py-1 text-sm mb-3">
+              <option value="events_desc"#{sel_desc}>Events: high &#x2192; low</option>
+              <option value="events_asc"#{sel_asc}>Events: low &#x2192; high</option>
+              <option value="name_asc"#{sel_name}>Name: A &#x2192; Z</option>
+            </select>
             <section id="report-results"
                      data-query-fingerprint="#{fp}"
                      data-result-count="#{n}"
+                     data-search-query="#{state.query}"
+                     data-sort-order="#{state.sort}"
                      class="space-y-2">
               #{Enum.map_join(results, "", fn row ->
                 ~s(<div class="rounded border border-slate-200 px-4 py-3 text-sm" data-report-id="#{row.report_id}"><strong>#{row.report_id}</strong></div>)

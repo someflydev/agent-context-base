@@ -60,6 +60,8 @@ type QueryState struct {
 	StatusOut []string
 	RegionIn  []string
 	RegionOut []string
+	Query     string
+	Sort      string
 }
 
 func normalize(values []string) []string {
@@ -76,6 +78,14 @@ func normalize(values []string) []string {
 	return result
 }
 
+func normalizeSort(s string) string {
+	switch s {
+	case "events_desc", "events_asc", "name_asc":
+		return s
+	}
+	return "events_desc"
+}
+
 func buildQueryState(c echo.Context) QueryState {
 	q := c.QueryParams()
 	return QueryState{
@@ -85,18 +95,22 @@ func buildQueryState(c echo.Context) QueryState {
 		StatusOut: normalize(q["status_out"]),
 		RegionIn:  normalize(q["region_in"]),
 		RegionOut: normalize(q["region_out"]),
+		Query:     strings.TrimSpace(strings.ToLower(c.QueryParam("query"))),
+		Sort:      normalizeSort(c.QueryParam("sort")),
 	}
 }
 
 func fingerprint(s QueryState) string {
 	return fmt.Sprintf(
-		"team_in=%s|team_out=%s|status_in=%s|status_out=%s|region_in=%s|region_out=%s",
+		"team_in=%s|team_out=%s|status_in=%s|status_out=%s|region_in=%s|region_out=%s|query=%s|sort=%s",
 		strings.Join(s.TeamIn, ","),
 		strings.Join(s.TeamOut, ","),
 		strings.Join(s.StatusIn, ","),
 		strings.Join(s.StatusOut, ","),
 		strings.Join(s.RegionIn, ","),
 		strings.Join(s.RegionOut, ","),
+		s.Query,
+		s.Sort,
 	)
 }
 
@@ -123,9 +137,49 @@ func matchesDim(value string, includes, excludes []string) bool {
 	return true
 }
 
-func filterRows(state QueryState) []ReportRow {
+func applyTextSearch(rows []ReportRow, q string) []ReportRow {
+	if q == "" {
+		return rows
+	}
 	var result []ReportRow
-	for _, row := range reportRows {
+	for _, row := range rows {
+		if strings.Contains(strings.ToLower(row.ReportID), q) {
+			result = append(result, row)
+		}
+	}
+	return result
+}
+
+func sortRows(rows []ReportRow, sortVal string) []ReportRow {
+	cp := make([]ReportRow, len(rows))
+	copy(cp, rows)
+	switch sortVal {
+	case "events_asc":
+		sort.Slice(cp, func(i, j int) bool {
+			if cp[i].Events != cp[j].Events {
+				return cp[i].Events < cp[j].Events
+			}
+			return cp[i].ReportID < cp[j].ReportID
+		})
+	case "name_asc":
+		sort.Slice(cp, func(i, j int) bool {
+			return cp[i].ReportID < cp[j].ReportID
+		})
+	default: // events_desc
+		sort.Slice(cp, func(i, j int) bool {
+			if cp[i].Events != cp[j].Events {
+				return cp[i].Events > cp[j].Events
+			}
+			return cp[i].ReportID < cp[j].ReportID
+		})
+	}
+	return cp
+}
+
+func filterRows(state QueryState) []ReportRow {
+	base := applyTextSearch(reportRows, state.Query)
+	var result []ReportRow
+	for _, row := range base {
 		if matchesDim(row.Team, state.TeamIn, state.TeamOut) &&
 			matchesDim(row.Status, state.StatusIn, state.StatusOut) &&
 			matchesDim(row.Region, state.RegionIn, state.RegionOut) {
@@ -153,7 +207,8 @@ func facetCounts(state QueryState, dimension string) map[string]int {
 	for _, o := range options {
 		counts[o] = 0
 	}
-	for _, row := range reportRows {
+	base := applyTextSearch(reportRows, state.Query)
+	for _, row := range base {
 		var pass bool
 		switch dimension {
 		case "team":
@@ -192,6 +247,7 @@ func excludeImpactCounts(state QueryState, dimension string) map[string]int {
 		dimOut = state.RegionOut
 	}
 
+	base := applyTextSearch(reportRows, state.Query)
 	for _, option := range options {
 		otherExcludes := []string{}
 		for _, v := range dimOut {
@@ -200,7 +256,7 @@ func excludeImpactCounts(state QueryState, dimension string) map[string]int {
 			}
 		}
 		count := 0
-		for _, row := range reportRows {
+		for _, row := range base {
 			var otherPass bool
 			switch dimension {
 			case "team":
@@ -225,6 +281,14 @@ func excludeImpactCounts(state QueryState, dimension string) map[string]int {
 	return counts
 }
 
+// capitalize returns s with the first letter uppercased (avoids deprecated strings.Title).
+func capitalize(s string) string {
+	if s == "" {
+		return s
+	}
+	return strings.ToUpper(s[:1]) + s[1:]
+}
+
 // ---------------------------------------------------------------------------
 // HTML rendering
 // ---------------------------------------------------------------------------
@@ -234,6 +298,16 @@ func renderFilterPanel(state QueryState) string {
 
 	b.WriteString(`<div id="filter-panel" class="space-y-4">`)
 	b.WriteString(`<div class="rounded bg-slate-50 px-3 py-2 text-xs text-slate-600" data-role="count-discipline">Counts reflect the active backend query semantics.</div>`)
+
+	// Search input (above quick excludes strip)
+	fmt.Fprintf(&b,
+		`<input type="text" name="query" value=%q placeholder="Search reports&#x2026;"` +
+			` data-role="search-input" data-search-query=%q` +
+			` hx-get="/ui/reports/results" hx-target="#report-results"` +
+			` hx-trigger="keyup changed delay:300ms" hx-include="#report-filters"` +
+			` class="w-full rounded border border-slate-300 px-3 py-2 text-sm" />`,
+		state.Query, state.Query,
+	)
 
 	// Quick excludes strip
 	b.WriteString(`<div class="flex flex-wrap items-center gap-2 border-b border-slate-100 pb-3" data-role="quick-excludes-strip">`)
@@ -259,7 +333,7 @@ func renderFilterPanel(state QueryState) string {
 			`<label data-role="quick-exclude" data-quick-exclude-dimension=%q data-quick-exclude-value=%q data-active=%q class=%q>`+
 				`<input type="checkbox" name="%s_out" value=%q%s class="sr-only" />`+
 				`%s <span class="rounded bg-slate-100 px-1 ml-1">%d</span></label>`,
-			dim, val, activeStr, cls, dim, val, checked, strings.Title(val), impact[val],
+			dim, val, activeStr, cls, dim, val, checked, capitalize(val), impact[val],
 		)
 	}
 	b.WriteString(`</div>`)
@@ -283,7 +357,7 @@ func renderFilterPanel(state QueryState) string {
 		}
 
 		fmt.Fprintf(&b, `<section data-filter-dimension=%q class="space-y-2">`, dim)
-		fmt.Fprintf(&b, `<h3 class="text-xs font-semibold uppercase tracking-wide text-slate-500">%s</h3>`, strings.Title(dim))
+		fmt.Fprintf(&b, `<h3 class="text-xs font-semibold uppercase tracking-wide text-slate-500">%s</h3>`, capitalize(dim))
 
 		// Include sub-section
 		b.WriteString(`<div data-role="include-options" class="space-y-1">`)
@@ -316,7 +390,7 @@ func renderFilterPanel(state QueryState) string {
 					`<span data-role="option-count" class="rounded bg-slate-100 px-2 py-1 text-slate-600">%d</span></label>`,
 				dim, option, optCount, excludedAttr, labelExtra,
 				dim, option, checkedAttr, disabledAttr,
-				strings.Title(option), optCount,
+				capitalize(option), optCount,
 			)
 		}
 		b.WriteString(`</div>`)
@@ -344,7 +418,7 @@ func renderFilterPanel(state QueryState) string {
 					`<span data-role="option-count" class="rounded bg-slate-100 px-2 py-1 text-slate-600">%d</span></label>`,
 				dim, option, impact, activeAttr, borderCls,
 				dim, option, checkedAttr,
-				strings.Title(option), impact,
+				capitalize(option), impact,
 			)
 		}
 		b.WriteString(`</div>`)
@@ -355,8 +429,31 @@ func renderFilterPanel(state QueryState) string {
 	return b.String()
 }
 
+func selectedAttr(current, value string) string {
+	if current == value {
+		return " selected"
+	}
+	return ""
+}
+
+func renderSortSelect(state QueryState) string {
+	var b strings.Builder
+	fmt.Fprintf(&b,
+		`<select name="sort" data-role="sort-select" data-sort-order=%q`+
+			` hx-get="/ui/reports/results" hx-target="#report-results"`+
+			` hx-include="#report-filters"`+
+			` class="rounded border border-slate-200 px-2 py-1 text-sm">`,
+		state.Sort,
+	)
+	fmt.Fprintf(&b, `<option value="events_desc"%s>Events: high &#x2192; low</option>`, selectedAttr(state.Sort, "events_desc"))
+	fmt.Fprintf(&b, `<option value="events_asc"%s>Events: low &#x2192; high</option>`, selectedAttr(state.Sort, "events_asc"))
+	fmt.Fprintf(&b, `<option value="name_asc"%s>Name: A &#x2192; Z</option>`, selectedAttr(state.Sort, "name_asc"))
+	b.WriteString(`</select>`)
+	return b.String()
+}
+
 func renderResultsFragment(state QueryState) string {
-	rows := filterRows(state)
+	rows := sortRows(filterRows(state), state.Sort)
 	n := len(rows)
 	fp := fingerprint(state)
 	var b strings.Builder
@@ -367,10 +464,11 @@ func renderResultsFragment(state QueryState) string {
 		n, n,
 	)
 	fmt.Fprintf(&b,
-		`<section id="report-results" data-query-fingerprint=%q data-result-count="%d" class="space-y-2">`,
-		fp, n,
+		`<section id="report-results" data-query-fingerprint=%q data-result-count="%d" data-search-query=%q data-sort-order=%q class="space-y-2">`,
+		fp, n, state.Query, state.Sort,
 	)
 	fmt.Fprintf(&b, `<div data-role="active-filters" class="text-xs text-slate-500">%s</div>`, fp)
+	b.WriteString(renderSortSelect(state))
 	for _, row := range rows {
 		fmt.Fprintf(&b,
 			`<div class="rounded border border-slate-200 px-4 py-3 text-sm" data-report-id=%q>`+
@@ -384,7 +482,7 @@ func renderResultsFragment(state QueryState) string {
 
 func renderFullPage(state QueryState) string {
 	panel := renderFilterPanel(state)
-	rows := filterRows(state)
+	rows := sortRows(filterRows(state), state.Sort)
 	n := len(rows)
 	fp := fingerprint(state)
 
@@ -392,19 +490,22 @@ func renderFullPage(state QueryState) string {
 	b.WriteString(`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Reports</title>`)
 	b.WriteString(`<script src="https://unpkg.com/htmx.org@1.9.10"></script>`)
 	b.WriteString(`<script src="https://cdn.tailwindcss.com"></script></head>`)
-	b.WriteString(`<body class="p-6 font-sans"><h1 class="text-xl font-bold mb-4">Reports</h1>`)
+	b.WriteString(`<body class="font-sans"><h1 class="text-xl font-bold p-4 border-b">Reports</h1>`)
 	b.WriteString(`<form id="report-filters" hx-get="/ui/reports/results" hx-target="#report-results" hx-trigger="change, submit">`)
-	b.WriteString(`<div class="flex gap-6"><aside class="w-64 shrink-0">`)
+	b.WriteString(`<div data-role="reports-layout" id="reports-layout" class="flex h-screen overflow-hidden">`)
+	b.WriteString(`<aside id="filter-panel" class="w-72 flex-shrink-0 overflow-y-auto border-r p-4">`)
 	b.WriteString(panel)
-	b.WriteString(`</aside><main class="flex-1">`)
+	b.WriteString(`</aside>`)
+	b.WriteString(`<main id="report-results-container" class="flex-1 overflow-y-auto p-4">`)
 	fmt.Fprintf(&b,
 		`<div id="result-count" data-role="result-count" data-result-count="%d" `+
 			`class="rounded bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700 mb-3">%d results</div>`,
 		n, n,
 	)
+	b.WriteString(renderSortSelect(state))
 	fmt.Fprintf(&b,
-		`<section id="report-results" data-query-fingerprint=%q data-result-count="%d" class="space-y-2">`,
-		fp, n,
+		`<section id="report-results" data-query-fingerprint=%q data-result-count="%d" data-search-query=%q data-sort-order=%q class="space-y-2">`,
+		fp, n, state.Query, state.Sort,
 	)
 	for _, row := range rows {
 		fmt.Fprintf(&b,
