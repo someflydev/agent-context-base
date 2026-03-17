@@ -28,6 +28,33 @@ Use this pack for lightweight to medium API services and data-aware backend repo
 - integration tests against Docker-backed test infra when routes touch PostgreSQL, Redis, MongoDB, search, or vector storage
 - keep Polars transforms covered by focused tests if they carry business logic
 
+## Tool Setup
+
+One-time setup (run once when cloning or initializing the repo):
+
+```bash
+uv venv --python 3.12 .venv_tools    # match the version in requires-python; default 3.12
+uv pip install --python .venv_tools/bin/python pytest httpx pytest-asyncio
+```
+
+To add Playwright for e2e tests:
+
+```bash
+uv pip install --python .venv_tools/bin/python pytest-playwright playwright
+.venv_tools/bin/playwright install chromium
+```
+
+Running tests:
+
+```bash
+.venv_tools/bin/pytest tests/unit/
+.venv_tools/bin/pytest tests/integration/
+.venv_tools/bin/pytest tests/e2e/          # if playwright is present
+```
+
+Never use `python -m pytest`, bare `pytest`, `pip install`, or `source .venv_tools/bin/activate`.
+Always use explicit `.venv_tools/bin/` paths. See `context/doctrine/tool-invocation-discipline.md`.
+
 ## Common Assistant Mistakes
 
 - centering Starlette instead of FastAPI

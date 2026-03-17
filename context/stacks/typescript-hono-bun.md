@@ -29,6 +29,26 @@ Use this pack for fast lightweight backend services, especially small HTMX, Tail
 - real-infra integration tests when Drizzle touches PostgreSQL, SQLite, or another real database
 - if HTMX responses are part of the contract, test response fragments, not just status codes
 
+## Tool Setup
+
+One-time setup:
+
+```bash
+bun install
+bunx playwright install chromium    # only if the project uses Playwright
+```
+
+Running tests:
+
+```bash
+bun test                            # Bun's built-in test runner (unit and integration)
+bun run test:e2e                    # project-defined e2e script
+bunx playwright test                # direct Playwright invocation
+```
+
+Never use `npm install`, `npx`, or bare `node` in a Bun repo. Always use `bun` or `bunx`.
+See `context/doctrine/tool-invocation-discipline.md`.
+
 ## Common Assistant Mistakes
 
 - defaulting to Express patterns
