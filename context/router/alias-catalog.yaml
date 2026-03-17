@@ -130,6 +130,12 @@ tasks:
     target: context/doctrine/filter-panel-rendering-rules.md
   - alias: test htmx + plotly behavior with playwright
     target: context/workflows/add-playwright-ui-verification.md
+  - alias: cuj filter tests
+    target: examples/canonical-integration-tests/playwright-cuj-filter-example.spec.ts
+  - alias: playwright search and sort tests
+    target: examples/canonical-integration-tests/playwright-search-sort-example.spec.ts
+  - alias: critical user journey playwright
+    target: examples/canonical-integration-tests/playwright-cuj-filter-example.spec.ts
   - alias: make sure chart data matches filter state
     target: context/workflows/verify-query-count-correctness.md
   - alias: post flight

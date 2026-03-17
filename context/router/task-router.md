@@ -55,6 +55,11 @@ Route from what the user is trying to do, not from internal file names.
   - load `context/workflows/add-plotly-backed-query-view.md`
 - "playwright ui verification", "verify backend-driven ui", "test htmx behavior"
   - load `context/workflows/add-playwright-ui-verification.md`
+- "critical user journey tests", "cuj playwright tests", "end to end filter tests"
+  - load `context/workflows/add-playwright-ui-verification.md` (CUJ section)
+  - load `examples/canonical-integration-tests/playwright-cuj-filter-example.spec.ts`
+- "playwright page object model", "page object filter tests"
+  - load `examples/canonical-integration-tests/playwright-cuj-filter-example.spec.ts`
 - "verify query counts", "verify faceted counts", "make sure chart data matches filter state"
   - load `context/workflows/verify-query-count-correctness.md`
 - "research candidate public data sources", "evaluate data sources", "find a usable dataset"

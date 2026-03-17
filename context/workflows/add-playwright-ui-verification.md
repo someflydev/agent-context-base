@@ -35,6 +35,34 @@ Add Playwright coverage for backend-driven interfaces where query correctness ma
 - brittle selectors tied to styling instead of semantics
 - not checking chart or filter-count payloads
 
+## Critical User Journey Tests
+
+Isolated feature tests (playwright-split-filter-panel-example.spec.ts,
+playwright-search-sort-example.spec.ts) verify individual rendering rules in
+isolation — one rule per test, one URL per test. They are the right tool for
+confirming that RULE 1, RULE 2, RULE 3, sort, and scroll attributes are rendered
+correctly under specific URL params.
+
+CUJ tests (playwright-cuj-filter-example.spec.ts) test the same features as a
+user actually uses them: in sequence, in combination, and with state carried
+across multiple steps. Each CUJ corresponds to a named scenario with a clear
+user goal, a sequence of actions, and assertions at each step and at the end.
+
+Key distinctions:
+
+- CUJ tests use a **page object model** (`ReportsFilterPage`) to avoid repeating
+  DOM selectors across 10 test scenarios. Each helper method returns a typed value
+  or sensible null/undefined.
+- CUJ tests exercise compound filter states (include + exclude + search + sort
+  simultaneously) that isolated tests cannot cover without combining them.
+- CUJ tests include scroll independence (CUJ-9: programmatic scroll + HTMX swap)
+  and URL round-trip (CUJ-10: bookmark → reload → identical view).
+- CUJ tests use URL navigation for most state transitions; HTMX interaction is
+  used only where the test specifically targets partial-swap behaviour (CUJ-7, CUJ-9).
+
+Canonical CUJ test example:
+`examples/canonical-integration-tests/playwright-cuj-filter-example.spec.ts`
+
 ## Stop Conditions
 
 - the spec proves one meaningful backend-driven flow end to end
