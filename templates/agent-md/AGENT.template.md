@@ -12,6 +12,10 @@ Purpose: boot the assistant into the smallest useful context bundle for this rep
 
 After that stable pass and a narrow repo-signal check, read `MEMORY.md` if it exists.
 
+When routing, selecting examples, assembling context bundles, choosing a verification path, or
+reading and writing `MEMORY.md`, load the relevant skill from `context/skills/` rather than
+relying on implicit judgment.
+
 ## Repo Profile
 
 - archetype: `{{archetype}}`

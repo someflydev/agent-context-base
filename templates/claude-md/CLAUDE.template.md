@@ -14,6 +14,10 @@ After that stable pass and a narrow repo-signal check, read `MEMORY.md` if it ex
 
 Then load the smallest useful bundle from the task, repo signals, and active change surface.
 
+When routing, selecting examples, assembling context bundles, choosing a verification path, or
+reading and writing `MEMORY.md`, load the relevant skill from `context/skills/` rather than
+relying on implicit judgment.
+
 ## Guardrails
 
 - load one workflow first
