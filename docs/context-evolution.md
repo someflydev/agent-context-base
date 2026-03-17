@@ -2,6 +2,34 @@
 
 This changelog records durable architectural changes to the base itself.
 
+## 2026-03-17: CUJ Playwright Tests for Backend-Driven UI
+
+- added 10 critical user journey (CUJ) Playwright tests using a page object model, covering load, apply filter, clear filter, multi-select, exclude, keyword search, sort, scroll, count verification, and reset-all flows
+- added verification unit tests for search correctness, sort order, RULE 1 and RULE 2 under search, and fingerprint assertions
+- added CUJ test section to the task router so queries about end-to-end UI verification route to the correct workflow
+- updated alias catalog to resolve CUJ-related aliases to the Playwright verification workflow
+
+## 2026-03-17: Text Search, Sort, and Scroll Layout Expansion
+
+- added doctrine for text search query correctness, sort order determinism, and scroll layout discipline
+- added workflows for adding text search, sort order controls, and infinite-scroll or pagination layouts to backend-driven UI surfaces
+- added Python/FastAPI reference implementation demonstrating search, sort, and scroll patterns with a Playwright verification suite
+- added Playwright single-feature tests for search+sort (search returns correct rows, sort reorders deterministically) and split filter panel (include/exclude facet behavior)
+- extended text search, sort, and scroll layout guidance to all active application stacks: FastAPI, Phoenix, Go/Echo, TypeScript/Hono, Rust/Axum, Ruby/Hanami, Clojure/Kit, Kotlin/http4k, Scala/Tapir, Crystal/Kemal, Dart/Dartfrog, OCaml/Dream, Nim/Jester, Zig/Zap
+- updated example registry, stack router, and stack docs to reflect new cross-language correctness coverage
+
+## 2026-03-17: Python ML Library Doctrine
+
+- added Python ML and data science library selection doctrine covering scikit-learn, XGBoost, LightGBM, statsmodels, sentence-transformers, and supporting libraries
+- updated the Python/FastAPI stack doc to reference the ML doctrine as the canonical selection guide for ML inference endpoints
+- updated router and alias catalog to route ML stack queries to the doctrine before the stack pack
+
+## 2026-03-17: DuckDB+Parquet Local Stack
+
+- added `context/stacks/duckdb-parquet.md` as a standalone local-file analytical stack doc covering DuckDB+Parquet round-trip patterns, query discipline, and local data lake structure
+- added a canonical DuckDB+Parquet local round-trip example demonstrating file write, DuckDB query, and result assertion
+- updated example registry and stack router to resolve DuckDB+Parquet queries to the new dedicated stack doc
+
 ## 2026-03-14: Database Stack Coverage Expansion
 
 - added solo stack packs for `mongo`, `redis`, `trino`, and `postgresql`
