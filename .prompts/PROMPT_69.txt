@@ -1,0 +1,340 @@
+You are working inside the agent-context-base repository.
+
+This prompt performs a diagrams pass. PROMPT_66 (docs freshness), PROMPT_67 (README sync), and
+PROMPT_68 (router freshness) have already run. All docs, the README, and the router are now
+fresh and accurate. This prompt audits every embedded Mermaid diagram for accuracy against the
+current repo state, fixes any stale nodes or edges, and adds new diagrams only where prose is
+genuinely harder to follow than a visual.
+
+Read before writing. Do not assume you know what changed. Do not add diagrams for decoration.
+
+Organize all work into commit-ready batches. For each batch:
+1. Batch title and purpose.
+2. Files created or updated (full paths).
+3. Full content of every file.
+4. Suggested commit message with prefix [PROMPT_69].
+
+
+---
+
+PHASE 1 — REQUIRED READS
+
+Read every file that contains Mermaid diagrams:
+
+  docs/ARCHITECTURE_MAP.md
+  docs/architecture-mental-model.md
+  docs/context-boot-sequence.md
+  docs/usage/ADVANCED_ASSISTANT_OPERATIONS.md
+
+Read the supporting docs that the diagrams claim to describe (these are the ground truth):
+
+  docs/architecture/ASSISTANT_RUNTIME_MODEL.md
+  docs/memory-layer-overview.md
+  docs/architecture/CONTEXT_ENGINEERING_GUIDE.md
+  docs/repo-layout.md
+
+Run directory listings to verify that paths mentioned inside diagrams actually exist:
+
+  ls (repo root, one level only — do not recurse)
+  ls docs/
+  ls docs/architecture/
+  ls docs/usage/
+  ls context/
+  ls scripts/
+  ls verification/
+  ls verification/scenarios/
+  ls smoke-tests/
+
+After all reads and listings, proceed to PHASE 2.
+
+
+---
+
+PHASE 2 — ACCURACY AUDIT
+
+For each file, audit every diagram node and every edge.
+
+The check for each node is:
+  (a) Does every file path or script name in a node label actually exist?
+  (b) Does the label still describe what that layer or artifact actually does?
+  (c) Is any layer absent from the diagram that is now present in the repo?
+
+The check for each edge is:
+  (a) Does the arrow still describe a real data or control flow?
+  (b) Is any connection missing that would clarify how the system works?
+
+Write down every finding before proposing any changes. Use this format:
+  FILE: <filename>
+  DIAGRAM: <diagram title>
+  FINDING: ACCURATE | STALE | MISSING
+  DETAIL: <what is wrong or absent, if not ACCURATE>
+
+Be precise. "Node says X but file Y no longer exists" is a useful finding.
+"Diagram feels incomplete" is not.
+
+
+---
+
+2A. docs/ARCHITECTURE_MAP.md — six diagrams
+
+This file has six diagrams. Audit each separately.
+
+Diagram 1: System Overview (flowchart LR)
+  - Does the entry surface node correctly name the files an assistant actually reads first?
+    Check against docs/context-boot-sequence.md for the current boot order.
+  - Does the router layer node correctly describe what context/router/ does?
+  - Does the manifest layer node correctly describe what manifests/ does?
+  - Does the context layer node list all sublayers that actually exist?
+    Check against ls context/. Missing sublayers (e.g., context/memory/) should be noted.
+  - Does the generation layer reference the correct script name?
+  - Does the verification layer reference the correct script names?
+    Check against ls scripts/ — are all three verification scripts still named correctly?
+  - Does the continuity layer correctly name the artifacts?
+
+Diagram 2: Repository Structure Map (flowchart TB)
+  - Does the tree correctly name every top-level directory that actually exists?
+    Cross-check against ls of the repo root. Any directory present but missing from the diagram
+    is a gap. Any directory in the diagram but not in the repo is a broken reference.
+  - Does the CONTEXT node's sublayer list match what is actually inside context/?
+  - Does the MANIFESTS node correctly describe what manifests hold?
+  - Does the EXAMPLES node correctly reference examples/catalog.json? Verify the file exists.
+  - Does the VERIFY node correctly reference the registry and support matrix files?
+    ls verification/ to confirm their actual names.
+  - Does the SMOKE node exist and point to the correct directory name?
+
+Diagram 3: New Project Generation Flow (flowchart LR)
+  - Does the generation node reference the correct script name?
+  - Do "Manifest defaults" and "Templates and generated profiles" accurately describe
+    what new_repo.py pulls from?
+  - Does "Generated repository" accurately describe what comes out?
+    The repo defers root README and docs by default — is that reflected or contradicted?
+  - Does the output mention AGENT.md and CLAUDE.md? Should it?
+  - Does the flow correctly end at verification + MEMORY.md/handoff?
+
+Diagram 4: Context System Map (flowchart TB)
+  - Do the six context sublayer nodes (Doctrine, Workflows, Stack packs, Archetypes,
+    Anchors, Canonical examples, Recommended templates) still match what context/ holds?
+    Check ls context/ to confirm all sublayers exist.
+  - Is context/memory/ a meaningful sublayer that should appear in this diagram?
+    It exists and plays a runtime role — evaluate whether its absence is a gap.
+  - Is the authority flow still accurate? Code/runnable examples first, then doctrine, then
+    manifests, then canonical examples, then templates?
+
+Diagram 5: Verification System Map (flowchart TB)
+  - Does it correctly name validate_context.py, run_verification.py, and verify_examples.py?
+    Confirm all three exist in scripts/.
+  - Does it reference verification/example_registry.yaml and verification/stack_support_matrix.yaml?
+    Confirm both exist.
+  - Does it reference verification/scenarios/ + Docker harnesses?
+    Confirm verification/scenarios/ exists and has content.
+  - Does it correctly describe the three verification output paths
+    (unit/, scripts/, examples/)?
+    Check ls verification/ to confirm those subdirectory names.
+
+Diagram 6: Multi-Agent Workflow Map (flowchart LR)
+  - Does the shared artifact reference correctly name MEMORY.md and handoff snapshots?
+  - Does the three-session split (implementation, verification, documentation) still match
+    the actual multi-agent operating model?
+  - Do any labels need updating to reflect the current naming conventions?
+
+
+---
+
+2B. docs/architecture-mental-model.md — four diagrams
+
+This file is the visual companion to ASSISTANT_RUNTIME_MODEL.md.
+
+Diagram 1: Assistant Runtime (flowchart LR)
+  - Does the flow still accurately sequence: repo signals → routers → manifest →
+    minimal context bundle → canonical example → implementation slice → verification →
+    MEMORY.md/handoff?
+  - Compare against the boot sequence in docs/context-boot-sequence.md.
+    Are any steps in the boot sequence missing from this diagram?
+
+Diagram 2: Repo Generation (flowchart LR)
+  - The current repo description says that generated repos "now defer a substantial root
+    README.md and root docs/ by default". Does the output node reflect this accurately?
+    Look at what the node currently says and compare against actual new_repo.py behavior.
+  - Does "Selected manifests" correctly describe what comes from manifests/ during generation?
+  - Does "Templates" correctly describe what comes from templates/ during generation?
+
+Diagram 3: Verification Loop (flowchart TB)
+  - Does it correctly show validate_context.py and run_verification.py?
+  - Does it show verify_examples.py? Should it? ARCHITECTURE_MAP.md's Verification System
+    Map treats it as a separate important script. Evaluate whether this simpler diagram
+    needs to include it or whether the simpler representation is correct for this doc's role.
+  - Are the check categories in validate_context.py's output still accurate?
+    Compare against scripts/README.md's description of what validate_context.py checks.
+
+Diagram 4: Multi-Agent Coordination (flowchart LR)
+  - Does the lead assistant → shared objective → three worktrees → shared MEMORY.md
+    or handoff → merge and rerun verification flow still accurately describe the model?
+  - Compare against docs/usage/ADVANCED_ASSISTANT_OPERATIONS.md's Multi-Agent Pattern diagram.
+    The two diagrams describe the same concept. Do they agree? If they diverge in meaningful
+    ways, pick the more accurate representation and align both.
+
+
+---
+
+2C. docs/context-boot-sequence.md — one diagram
+
+Diagram: Runtime Flow (flowchart TD)
+  - Does "Stable entrypoints<br/>boot docs plus README/docs when present" still accurately
+    describe step 1 of the boot sequence?
+  - Does the flow continue correctly through repo-signal check → MEMORY.md or handoff →
+    task router → stack and archetype routers → manifest selection → minimal context bundle →
+    canonical example → implement and verify → update MEMORY.md or handoff?
+  - Compare the diagram against the eight-step Boot Order list in this same file.
+    Does the diagram omit any step that would confuse a reader?
+  - Is the node for "MEMORY.md or handoff if relevant" still accurate given that memory is
+    only read when resuming, not always?
+
+
+---
+
+2D. docs/usage/ADVANCED_ASSISTANT_OPERATIONS.md — one diagram
+
+Diagram: Multi-Agent Pattern (flowchart LR)
+  - Compare against architecture-mental-model.md's "Multi-Agent Coordination" diagram and
+    ARCHITECTURE_MAP.md's "Multi-Agent Workflow Map". All three describe the same concept.
+  - Do the three diagrams agree on the fundamental structure?
+    If they disagree, which version is most accurate and should be the reference?
+  - This document's version is the most contextual (embedded in practical guidance prose).
+    It should match the architecture-level representations in spirit, though it can be simpler.
+
+
+---
+
+PHASE 3 — GAP ANALYSIS: WHERE NEW DIAGRAMS WOULD HELP
+
+Apply this test before proposing any new diagram:
+  Would a new reader understand this concept faster from a diagram than from the existing prose
+  or table? If yes, add it. If the prose or table is already clear, leave it alone.
+
+Evaluate each candidate location:
+
+3A. docs/memory-layer-overview.md
+  Current state: prose only, no diagram.
+  Concept to visualize: The lifecycle of the memory artifacts — when MEMORY.md is created,
+  updated, and handed off — involves timing decisions that are genuinely hard to explain in
+  prose without repetition. Specifically: the difference between "update MEMORY.md at pause
+  points" and "create a handoff snapshot when another session or assistant will continue"
+  is subtle and sequence-dependent.
+  Evaluate: Would a lifecycle flowchart here help a reader understand when to use which
+  artifact? Design it if yes. Keep it simple — this doc is short and the diagram should be too.
+
+3B. docs/architecture/CONTEXT_ENGINEERING_GUIDE.md
+  Current state: a "which artifact solves which problem" table, a numbered minimal bundle
+  heuristic list, and prose rules.
+  Concept to visualize: The artifact authority hierarchy (which artifact type has precedence
+  over others) is described in prose across several files but has no dedicated visual.
+  Evaluate: Is the existing table in this doc sufficient, or would an authority-hierarchy
+  diagram add clarity? Apply the test strictly. If the table already communicates it, skip.
+
+3C. docs/architecture/ASSISTANT_RUNTIME_MODEL.md
+  Current state: long-form normative doc with no diagrams. ARCHITECTURE_MAP.md and
+  architecture-mental-model.md provide the visual companions.
+  Evaluate: Does this doc reference ARCHITECTURE_MAP.md clearly enough that a reader knows
+  where to find visuals? If it does not, add a brief pointer — not a new diagram.
+
+3D. Any other location
+  If during the audit you identify a place where a diagram would clearly reduce confusion,
+  propose it with a justification. Otherwise skip.
+
+
+---
+
+PHASE 4 — UPDATES
+
+Apply fixes in this order:
+
+STEP 1: Fix stale diagrams.
+  For each STALE finding from PHASE 2: update only the specific node or edge that is wrong.
+  Do not restructure or reformat the surrounding diagram.
+
+STEP 2: Add new diagrams.
+  For each location in PHASE 3 where you concluded a diagram would help:
+  add it to the appropriate section of the file. Follow these design rules:
+
+  DESIGN RULE: Use flowchart for sequences and data flows.
+    Use `flowchart LR` when the steps naturally read left to right (like a pipeline).
+    Use `flowchart TD` when hierarchy or dependency reads top to bottom (like a selection tree).
+    Use `stateDiagram-v2` only when state transitions are the primary concept.
+    Do not use sequence diagrams (they are heavy and hard to read at this scale).
+
+  DESIGN RULE: Keep nodes minimal.
+    Node labels should name the artifact or concept, not describe it.
+    Descriptions belong in the prose below the diagram.
+
+  DESIGN RULE: Keep diagrams small.
+    A diagram with more than 8–10 nodes is probably doing too much.
+    Split into two focused diagrams rather than making one comprehensive one.
+
+  DESIGN RULE: Every diagram needs a one-sentence caption after it.
+    Place the sentence immediately after the closing ``` fence.
+    The sentence should say what the diagram shows, not repeat the section header.
+
+  DESIGN RULE: Do not add diagrams that duplicate ARCHITECTURE_MAP.md.
+    ARCHITECTURE_MAP.md is the canonical visual reference. Diagrams in other docs should
+    complement it with a focused view, not reproduce it at the same level of detail.
+
+STEP 3: Do not change any prose around a diagram unless:
+  - the prose directly contradicts what the updated diagram now shows, or
+  - you are adding a new diagram and the surrounding section needs a brief introduction.
+
+STEP 4: Verify every path.
+  Before writing any file, re-read the final version of each diagram and confirm:
+  - Every script name in a node matches an actual file in scripts/.
+  - Every directory name in a node matches an actual directory in the repo.
+  - Every artifact name in a node (MEMORY.md, handoff snapshot, catalog.json, etc.)
+    is still the real name used in the repo.
+
+
+---
+
+PHASE 5 — COMMIT BATCHING
+
+Batch the output by file. Each batch is one file that changed.
+
+For each batch:
+  - Title: "Diagrams — <filename>: <what changed>"
+  - List specific diagram titles that were updated and what changed
+  - List any new diagrams added and which section they appear in
+  - Produce the full file content (not a diff)
+  - Suggested commit message with prefix [PROMPT_69]
+
+If a file required no changes, say so explicitly:
+  "No changes — <filename>: all diagrams were accurate."
+
+This is a valid outcome for one or more files.
+
+
+---
+
+SECTION 6 — IMPORTANT CONSTRAINTS
+
+- Read before writing. Every accuracy claim must trace back to a file you read or an ls
+  output you ran in PHASE 1.
+
+- Minimum diff. Change only what is inaccurate. Do not reorder or reformat sections.
+  Do not improve phrasing in prose that surrounds a diagram unless it directly contradicts
+  the corrected diagram.
+
+- Do not add diagrams to show that a pass ran. Every new diagram must pass the test in
+  PHASE 3: faster to understand as a diagram than as the existing prose. "Helpful decoration"
+  is not a justification.
+
+- Do not duplicate ARCHITECTURE_MAP.md. That file is the primary visual reference. Diagrams
+  in other docs should be focused companions, not copies.
+
+- Every diagram must be valid Mermaid. Do not use edge labels with special characters
+  that break Mermaid parsers (spaces in node IDs, unescaped pipes, etc.).
+  Use quoted strings inside node shapes when the label contains a comma or line break:
+  A["label with, comma"]
+  Use <br/> for line breaks inside node labels.
+
+- Produce the complete file content for every file you change. Do not produce diffs or
+  partial sections.
+
+- If, after analysis, a file requires no changes, say so and move on. Do not manufacture
+  updates to justify the pass.
