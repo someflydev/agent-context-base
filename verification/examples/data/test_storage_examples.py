@@ -511,28 +511,32 @@ class TrinoFederationLiveTests(unittest.TestCase):
 
     Requires VERIFY_DOCKER=1. Skipped silently otherwise.
 
-    Trino takes 60-180s to start; expect this test to be slow when it runs.
+    Trino takes 60-180s to start; the docker stack is shared across all tests
+    in this class to avoid spinning it up once per test method.
     """
 
+    _rows: list[dict] = []
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls._rows = federation_smoke_check()
+
     def test_federated_join_returns_rows_for_both_tenants(self) -> None:
-        rows = federation_smoke_check()
-        tenant_ids = {row["tenant_id"] for row in rows}
+        tenant_ids = {row["tenant_id"] for row in self._rows}
         self.assertIn("acme", tenant_ids)
         self.assertIn("globex", tenant_ids)
 
     def test_successful_request_count_excludes_errors(self) -> None:
-        rows = federation_smoke_check()
-        by_tenant = {row["tenant_id"]: row for row in rows}
+        by_tenant = {row["tenant_id"]: row for row in self._rows}
         # acme has 3 log entries: 2 success (status 200) + 1 error (status 500)
         acme = by_tenant["acme"]
         self.assertEqual(int(acme["total_requests"]), 3)
         self.assertEqual(int(acme["successful_requests"]), 2)
 
     def test_result_columns_match_expected_shape(self) -> None:
-        rows = federation_smoke_check()
-        self.assertTrue(len(rows) > 0)
+        self.assertTrue(len(self._rows) > 0)
         required_columns = {"tenant_id", "tenant_name", "total_requests", "successful_requests"}
-        self.assertTrue(required_columns.issubset(rows[0].keys()))
+        self.assertTrue(required_columns.issubset(self._rows[0].keys()))
 
 
 if __name__ == "__main__":

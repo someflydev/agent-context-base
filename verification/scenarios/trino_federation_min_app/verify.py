@@ -234,7 +234,7 @@ def federation_smoke_check() -> list[dict[str, Any]]:
         seed_pg = _compose(
             project, port,
             ["exec", "-T", "postgres", "psql", "-U", "trino_read", "-d", "testdb", "-c", _SEED_PG],
-            timeout=30,
+            timeout=60,
         )
         if seed_pg.returncode != 0:
             raise AssertionError(f"postgres seed failed:\n{seed_pg.stderr or seed_pg.stdout}")
@@ -242,7 +242,7 @@ def federation_smoke_check() -> list[dict[str, Any]]:
         seed_mongo = _compose(
             project, port,
             ["exec", "-T", "mongo", "mongosh", "--quiet", "--eval", _SEED_MONGO],
-            timeout=30,
+            timeout=60,
         )
         if seed_mongo.returncode != 0:
             raise AssertionError(f"mongo seed failed:\n{seed_mongo.stderr or seed_mongo.stdout}")
