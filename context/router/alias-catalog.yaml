@@ -1141,3 +1141,31 @@ manifests:
     target: manifests/prompt-first-meta-repo.yaml
   - alias: elixir phoenix webapp manifest
     target: manifests/webapp-elixir-phoenix.yaml
+
+skills:
+  - alias: pick a manifest
+    target: context/skills/manifest-selection.md
+  - alias: manifest tie-breaking
+    target: context/skills/manifest-selection.md
+  - alias: which manifest
+    target: context/skills/manifest-selection.md
+  - alias: which test level
+    target: context/skills/verification-path-selection.md
+  - alias: verification path
+    target: context/skills/verification-path-selection.md
+  - alias: should this be a smoke test
+    target: context/skills/verification-path-selection.md
+  - alias: what context to load
+    target: context/skills/context-bundle-assembly.md
+  - alias: required vs optional context
+    target: context/skills/context-bundle-assembly.md
+  - alias: bundle assembly
+    target: context/skills/context-bundle-assembly.md
+  - alias: read memory
+    target: context/skills/memory-continuity-discipline.md
+  - alias: write memory
+    target: context/skills/memory-continuity-discipline.md
+  - alias: is memory stale
+    target: context/skills/memory-continuity-discipline.md
+  - alias: update MEMORY.md
+    target: context/skills/memory-continuity-discipline.md

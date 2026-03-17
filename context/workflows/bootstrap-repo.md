@@ -11,7 +11,7 @@ Use this workflow when creating a new project repo from this base.
 ## Sequence
 
 1. choose the manifest closest to the target repo
-2. copy only the relevant router, doctrine, workflow, stack, example, and template files
+2. copy only the relevant router, doctrine, workflow, skill, stack, example, and template files
 3. create project-local manifests and examples
 4. wire `AGENT.md`, `CLAUDE.md`, the generated profile, and stack basics
 5. defer a substantial root `README.md` and root `docs/` until implementation has real structure
@@ -24,12 +24,15 @@ Use this workflow when creating a new project repo from this base.
 - project-local routing and manifests
 - initial test and deployment posture
 
+Note: the `context/skills/` directory is copied in full because skills describe cognitive procedures that apply in any derived repo, not base-repo-specific logic.
+
 ## Related Docs
 
 - `context/archetypes/prompt-first-repo.md`
 - `context/doctrine/compose-port-and-data-isolation.md`
 - `context/doctrine/deployment-philosophy-dokku.md`
 - `context/doctrine/documentation-timing-discipline.md`
+- `context/skills/` — cognitive procedures carried into the derived repo for routing, selection, bundle assembly, and continuity
 
 ## Common Pitfalls
 

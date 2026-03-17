@@ -111,6 +111,14 @@ Route from what the user is trying to do, not from internal file names.
   - load `context/doctrine/data-acquisition-invariants.md`
   - load `context/skills/canonical-example-selection.md`
   - load `examples/canonical-data-acquisition/README.md`
+- "how to pick between manifests", "two manifests look equally relevant", "manifest tie-breaking", "which manifest should I use"
+  - load `context/skills/manifest-selection.md`
+- "which test level", "should this be a smoke test or integration test", "what verification does this change need", "is a unit test sufficient here"
+  - load `context/skills/verification-path-selection.md`
+- "what context do I need", "what to load for this task", "required vs optional context", "how to assemble the context bundle"
+  - load `context/skills/context-bundle-assembly.md`
+- "how to read MEMORY.md", "is this MEMORY.md stale", "what to write in MEMORY.md", "update the continuity file", "memory is out of date"
+  - load `context/skills/memory-continuity-discipline.md`
 - "new command", "CLI flag", "subcommand"
   - load `context/workflows/extend-cli.md`
 - "local rag", "index docs", "retrieval"
@@ -275,6 +283,9 @@ Examples:
 - "Bootstrap a multi-backend repo with Go gateway and Elixir coordinator"
   - start with `context/workflows/bootstrap-repo.md`
   - then `context/workflows/design-multi-backend-seams.md`
+- "Bootstrap a repo and make sure the right skills are available"
+  - start with `context/workflows/bootstrap-repo.md`
+  - note that `context/skills/` is copied as part of bootstrap
 
 ## Routing Examples
 
