@@ -98,6 +98,16 @@ Route from what the user is trying to do, not from internal file names.
 - "read parquet from minio with duckdb", "query minio parquet with duckdb"
   - load `context/stacks/parquet-minio.md`
   - load `context/stacks/duckdb-trino-polars.md`
+- "read local parquet with duckdb", "query parquet on disk", "duckdb scan parquet", "hive partition pruning"
+  - load `context/stacks/duckdb-parquet.md`
+  - load `context/stacks/parquet.md`
+- "write local parquet", "write parquet to local disk", "pyarrow write parquet"
+  - load `context/stacks/parquet.md`
+  - load `context/stacks/duckdb-parquet.md`
+- "duckdb parquet round-trip", "write and query parquet locally"
+  - load `context/stacks/duckdb-parquet.md`
+  - load `context/stacks/parquet.md`
+  - load `context/workflows/add-storage-integration.md`
 - "add minio bucket", "set up minio for local dev", "add minio to docker-compose"
   - load `context/stacks/minio.md`
 - "set up nats jetstream", "nats subject routing", "durable nats consumer", "nats request capture"
@@ -233,6 +243,10 @@ Examples:
   - stacks: `context/stacks/parquet-minio.md`, `context/stacks/parquet.md`, `context/stacks/minio.md`
 - "Read Parquet from MinIO with DuckDB"
   - stacks: `context/stacks/parquet-minio.md`, `context/stacks/duckdb-trino-polars.md`
+- "Query local Parquet partitions with DuckDB"
+  - stacks: `context/stacks/duckdb-parquet.md`, `context/stacks/parquet.md`
+- "Write Parquet to local disk with PyArrow then query with DuckDB"
+  - stacks: `context/stacks/duckdb-parquet.md`, `context/stacks/parquet.md`
 - "Add MinIO bucket to the dev docker-compose"
   - stacks: `context/stacks/minio.md`
 - "Set up NATS JetStream for request capture"

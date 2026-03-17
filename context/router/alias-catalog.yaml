@@ -305,6 +305,30 @@ stacks:
     target: context/stacks/parquet-minio.md
   - alias: write parquet to object store
     target: context/stacks/parquet-minio.md
+  - alias: read local parquet with duckdb
+    target:
+      - context/stacks/duckdb-parquet.md
+      - context/stacks/parquet.md
+  - alias: query parquet on disk
+    target:
+      - context/stacks/duckdb-parquet.md
+      - context/stacks/parquet.md
+  - alias: duckdb scan parquet
+    target:
+      - context/stacks/duckdb-parquet.md
+  - alias: hive partition pruning duckdb
+    target:
+      - context/stacks/duckdb-parquet.md
+      - context/stacks/parquet.md
+  - alias: write local parquet pyarrow
+    target:
+      - context/stacks/parquet.md
+      - context/stacks/duckdb-parquet.md
+  - alias: duckdb parquet round trip
+    target:
+      - context/stacks/duckdb-parquet.md
+      - context/stacks/parquet.md
+      - context/workflows/add-storage-integration.md
   - alias: grpc
     target: context/stacks/grpc.md
   - alias: grpc stack

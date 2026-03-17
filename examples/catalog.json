@@ -1608,6 +1608,18 @@
       "stability": "canonical"
     },
     {
+      "path": "examples/canonical-storage/duckdb-parquet-example.py",
+      "category": "storage",
+      "summary": "DuckDB+Parquet local round-trip: write partitioned Parquet files with PyArrow (pinned schema, Hive directories), query with DuckDB read_parquet() and hive_partitioning=true for partition pruning, return a Polars DataFrame via pl.from_arrow(). Structure-verified. The canonical reference for local Parquet write + SQL query without object storage.",
+      "tags": ["duckdb", "parquet", "polars", "local", "hive-partitioning", "pyarrow", "analytical-storage"],
+      "stacks": ["python-fastapi-uv-ruff-orjson-polars", "duckdb-parquet"],
+      "archetypes": [],
+      "workflows": ["add-storage-integration"],
+      "patterns": ["parquet-local", "hive-partitioning", "duckdb-scan", "polars-output"],
+      "rank": 80,
+      "stability": "structure-verified"
+    },
+    {
       "path": "examples/canonical-storage/nats-jetstream-mongo-pipeline-example.md",
       "category": "storage",
       "summary": "Capture-enrich-persist pipeline: NATS JetStream producer, separate consumer/enricher, MongoDB weekly-bucketed insertion, and DLQ handling.",
