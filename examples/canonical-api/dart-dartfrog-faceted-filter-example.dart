@@ -52,6 +52,8 @@ class QueryState {
   final List<String> statusOut;
   final List<String> regionIn;
   final List<String> regionOut;
+  final String query;
+  final String sort;
 
   const QueryState({
     this.teamIn    = const [],
@@ -60,6 +62,8 @@ class QueryState {
     this.statusOut = const [],
     this.regionIn  = const [],
     this.regionOut = const [],
+    this.query     = '',
+    this.sort      = 'events_desc',
   });
 }
 
@@ -75,8 +79,15 @@ List<String> normalize(List<String>? values) {
   return result;
 }
 
+String normalizeSort(String s) {
+  const valid = {'events_desc', 'events_asc', 'name_asc'};
+  return valid.contains(s) ? s : 'events_desc';
+}
+
 QueryState buildQueryState(Uri uri) {
   final p = uri.queryParametersAll;
+  final rawQuery = uri.queryParameters['query'] ?? '';
+  final rawSort  = uri.queryParameters['sort']  ?? 'events_desc';
   return QueryState(
     teamIn:    normalize(p['team_in']),
     teamOut:   normalize(p['team_out']),
@@ -84,13 +95,16 @@ QueryState buildQueryState(Uri uri) {
     statusOut: normalize(p['status_out']),
     regionIn:  normalize(p['region_in']),
     regionOut: normalize(p['region_out']),
+    query:     rawQuery.trim().toLowerCase(),
+    sort:      normalizeSort(rawSort),
   );
 }
 
 String fingerprint(QueryState state) =>
   'team_in=${state.teamIn.join(",")}|team_out=${state.teamOut.join(",")}|'
   'status_in=${state.statusIn.join(",")}|status_out=${state.statusOut.join(",")}|'
-  'region_in=${state.regionIn.join(",")}|region_out=${state.regionOut.join(",")}';
+  'region_in=${state.regionIn.join(",")}|region_out=${state.regionOut.join(",")}|'
+  'query=${state.query}|sort=${state.sort}';
 
 // ---------------------------------------------------------------------------
 // Filter helpers
@@ -109,16 +123,45 @@ String rowDimValue(ReportRow row, String dim) => switch (dim) {
   _        => '',
 };
 
-List<ReportRow> filterRows(QueryState state) => reportRows.where((row) =>
-  matchesDim(row.team,   state.teamIn,   state.teamOut)   &&
-  matchesDim(row.status, state.statusIn, state.statusOut) &&
-  matchesDim(row.region, state.regionIn, state.regionOut)
-).toList();
+List<ReportRow> applyTextSearch(List<ReportRow> rows, String q) {
+  if (q.isEmpty) return rows;
+  return rows.where((row) => row.reportId.toLowerCase().contains(q)).toList();
+}
+
+List<ReportRow> sortRows(List<ReportRow> rows, String sortVal) {
+  final sorted = List<ReportRow>.from(rows);
+  switch (sortVal) {
+    case 'events_asc':
+      sorted.sort((a, b) {
+        final c = a.events.compareTo(b.events);
+        return c != 0 ? c : a.reportId.compareTo(b.reportId);
+      });
+    case 'name_asc':
+      sorted.sort((a, b) => a.reportId.compareTo(b.reportId));
+    default: // events_desc
+      sorted.sort((a, b) {
+        final c = b.events.compareTo(a.events);
+        return c != 0 ? c : a.reportId.compareTo(b.reportId);
+      });
+  }
+  return sorted;
+}
+
+List<ReportRow> filterRows(QueryState state) {
+  final searched = applyTextSearch(reportRows.toList(), state.query);
+  final filtered = searched.where((row) =>
+    matchesDim(row.team,   state.teamIn,   state.teamOut)   &&
+    matchesDim(row.status, state.statusIn, state.statusOut) &&
+    matchesDim(row.region, state.regionIn, state.regionOut)
+  ).toList();
+  return sortRows(filtered, state.sort);
+}
 
 Map<String, int> facetCounts(QueryState state, String dimension) {
-  final options = facetOptions[dimension] ?? [];
-  final counts  = {for (final o in options) o: 0};
-  for (final row in reportRows) {
+  final options  = facetOptions[dimension] ?? [];
+  final counts   = {for (final o in options) o: 0};
+  final searched = applyTextSearch(reportRows.toList(), state.query);
+  for (final row in searched) {
     final pass = switch (dimension) {
       'team' =>
         matchesDim(row.status, state.statusIn, state.statusOut) &&
@@ -142,8 +185,9 @@ Map<String, int> facetCounts(QueryState state, String dimension) {
 }
 
 Map<String, int> excludeImpactCounts(QueryState state, String dimension) {
-  final options = facetOptions[dimension] ?? [];
-  final dimOut  = switch (dimension) {
+  final options  = facetOptions[dimension] ?? [];
+  final searched = applyTextSearch(reportRows.toList(), state.query);
+  final dimOut   = switch (dimension) {
     'team'   => state.teamOut,
     'status' => state.statusOut,
     _        => state.regionOut,
@@ -152,7 +196,7 @@ Map<String, int> excludeImpactCounts(QueryState state, String dimension) {
     for (final option in options)
       option: () {
         final otherExcludes = dimOut.where((v) => v != option).toList();
-        return reportRows.where((row) {
+        return searched.where((row) {
           final otherPass = switch (dimension) {
             'team' =>
               matchesDim(row.status, state.statusIn, state.statusOut) &&
@@ -183,7 +227,11 @@ String capitalize(String s) =>
 String renderFilterPanel(QueryState state) {
   final buf = StringBuffer();
 
-  buf.write('<div id="filter-panel" class="space-y-4">');
+  buf.write('<div id="filter-panel" class="w-72 flex-shrink-0 overflow-y-auto border-r p-4 space-y-4">');
+  buf.write('<input type="text" name="query" value="${state.query}" placeholder="Search reports\u2026" '
+      'data-role="search-input" data-search-query="${state.query}" '
+      'hx-get="/ui/reports/results" hx-target="#report-results" '
+      'hx-trigger="keyup changed delay:300ms" hx-include="#report-filters" />');
   buf.write('<div class="rounded bg-slate-50 px-3 py-2 text-xs text-slate-600" data-role="count-discipline">Counts reflect the active backend query semantics.</div>');
 
   // Quick excludes strip
@@ -258,7 +306,18 @@ String renderResultsFragment(QueryState state) {
   final fp   = fingerprint(state);
   final buf  = StringBuffer();
   buf.write('<div id="result-count" hx-swap-oob="true" data-role="result-count" data-result-count="$n" class="rounded bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">$n results</div>');
-  buf.write('<section id="report-results" data-query-fingerprint="$fp" data-result-count="$n" class="space-y-2">');
+
+  final sortEventsDescSel  = state.sort == 'events_desc' ? ' selected' : '';
+  final sortEventsAscSel   = state.sort == 'events_asc'  ? ' selected' : '';
+  final sortNameAscSel     = state.sort == 'name_asc'    ? ' selected' : '';
+  buf.write('<select name="sort" data-role="sort-select" data-sort-order="${state.sort}" '
+      'hx-get="/ui/reports/results" hx-target="#report-results" hx-include="#report-filters">');
+  buf.write('<option value="events_desc"$sortEventsDescSel>Events: high \u2192 low</option>');
+  buf.write('<option value="events_asc"$sortEventsAscSel>Events: low \u2192 high</option>');
+  buf.write('<option value="name_asc"$sortNameAscSel>Name: A \u2192 Z</option>');
+  buf.write('</select>');
+
+  buf.write('<section id="report-results" data-query-fingerprint="$fp" data-result-count="$n" data-search-query="${state.query}" data-sort-order="${state.sort}" class="space-y-2">');
   buf.write('<div data-role="active-filters" class="text-xs text-slate-500">$fp</div>');
   for (final row in rows) {
     buf.write('<div class="rounded border border-slate-200 px-4 py-3 text-sm" data-report-id="${row.reportId}"><strong>${row.reportId}</strong> <span class="text-slate-500">${row.team} / ${row.status} / ${row.region}</span></div>');
@@ -272,18 +331,28 @@ String renderFullPage(QueryState state) {
   final rows  = filterRows(state);
   final n     = rows.length;
   final fp    = fingerprint(state);
+  final sortEventsDescSel = state.sort == 'events_desc' ? ' selected' : '';
+  final sortEventsAscSel  = state.sort == 'events_asc'  ? ' selected' : '';
+  final sortNameAscSel    = state.sort == 'name_asc'    ? ' selected' : '';
   final cards = rows.map((r) => '<div class="rounded border border-slate-200 px-4 py-3 text-sm" data-report-id="${r.reportId}"><strong>${r.reportId}</strong></div>').join('\n');
   return '''<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"><title>Reports</title>
 <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 <script src="https://cdn.tailwindcss.com"></script></head>
-<body class="p-6 font-sans">
-<h1 class="text-xl font-bold mb-4">Reports</h1>
+<body class="font-sans">
+<h1 class="text-xl font-bold p-4">Reports</h1>
 <form id="report-filters" hx-get="/ui/reports/results" hx-target="#report-results" hx-trigger="change, submit">
-<div class="flex gap-6"><aside class="w-64 shrink-0">$panel</aside><main class="flex-1">
+<div data-role="reports-layout" id="reports-layout" class="flex h-screen overflow-hidden">
+<aside id="filter-panel" class="w-72 flex-shrink-0 overflow-y-auto border-r p-4">$panel</aside>
+<main id="report-results-container" class="flex-1 overflow-y-auto p-4">
 <div id="result-count" data-role="result-count" data-result-count="$n" class="rounded bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700 mb-3">$n results</div>
-<section id="report-results" data-query-fingerprint="$fp" data-result-count="$n" class="space-y-2">
+<select name="sort" data-role="sort-select" data-sort-order="${state.sort}" hx-get="/ui/reports/results" hx-target="#report-results" hx-include="#report-filters">
+<option value="events_desc"$sortEventsDescSel>Events: high \u2192 low</option>
+<option value="events_asc"$sortEventsAscSel>Events: low \u2192 high</option>
+<option value="name_asc"$sortNameAscSel>Name: A \u2192 Z</option>
+</select>
+<section id="report-results" data-query-fingerprint="$fp" data-result-count="$n" data-search-query="${state.query}" data-sort-order="${state.sort}" class="space-y-2">
 $cards
 </section></main></div></form></body></html>''';
 }

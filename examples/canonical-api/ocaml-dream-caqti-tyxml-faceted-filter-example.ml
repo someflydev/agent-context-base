@@ -6,6 +6,10 @@
    Multi-value params: Dream.queries request "status_out" returns string list.
 
    TyXML data-* attributes: use Tyxml.Html.Unsafe.string_attrib "data-filter-dimension" "team".
+
+   Note: OCaml substring search is implemented manually below since Str is not always
+   available. A production implementation may use the Str module's string_match or
+   the Re library for more ergonomic regex/substring support.
 *)
 
 open Lwt.Syntax
@@ -50,6 +54,8 @@ type query_state = {
   status_out : string list;
   region_in  : string list;
   region_out : string list;
+  query      : string;
+  sort       : string;
 }
 
 let normalize values =
@@ -58,7 +64,14 @@ let normalize values =
   |> List.filter (fun s -> s <> "")
   |> List.sort_uniq String.compare
 
+let normalize_sort s =
+  match s with
+  | "events_desc" | "events_asc" | "name_asc" -> s
+  | _ -> "events_desc"
+
 let build_query_state request =
+  let raw_query = Dream.query request "query" |> Option.value ~default:"" |> String.trim |> String.lowercase_ascii in
+  let raw_sort  = Dream.query request "sort"  |> Option.value ~default:"events_desc" in
   {
     team_in    = normalize (Dream.queries request "team_in");
     team_out   = normalize (Dream.queries request "team_out");
@@ -66,6 +79,8 @@ let build_query_state request =
     status_out = normalize (Dream.queries request "status_out");
     region_in  = normalize (Dream.queries request "region_in");
     region_out = normalize (Dream.queries request "region_out");
+    query      = raw_query;
+    sort       = normalize_sort raw_sort;
   }
 
 let fingerprint state =
@@ -76,6 +91,8 @@ let fingerprint state =
     "status_out=" ^ String.concat "," state.status_out;
     "region_in="  ^ String.concat "," state.region_in;
     "region_out=" ^ String.concat "," state.region_out;
+    "query="      ^ state.query;
+    "sort="       ^ state.sort;
   ]
 
 (* ---------------------------------------------------------------------------
@@ -92,35 +109,73 @@ let row_dim_value row dim = match dim with
   | "region" -> row.region
   | _        -> ""
 
+(* Manual substring containment check — no Str dependency required *)
+let contains s sub =
+  let slen   = String.length s in
+  let sublen = String.length sub in
+  if sublen = 0 then true
+  else if sublen > slen then false
+  else begin
+    let found = ref false in
+    let i     = ref 0 in
+    while !i <= slen - sublen && not !found do
+      if String.sub s !i sublen = sub then found := true;
+      i := !i + 1
+    done;
+    !found
+  end
+
+let apply_text_search rows q =
+  if q = "" then rows
+  else List.filter (fun row -> contains (String.lowercase_ascii row.report_id) q) rows
+
+let sort_rows rows sort_val =
+  let cmp = match sort_val with
+    | "events_asc" ->
+        (fun a b ->
+          let c = compare a.events b.events in
+          if c <> 0 then c else String.compare a.report_id b.report_id)
+    | "name_asc" ->
+        (fun a b -> String.compare a.report_id b.report_id)
+    | _ -> (* events_desc *)
+        (fun a b ->
+          let c = compare b.events a.events in
+          if c <> 0 then c else String.compare a.report_id b.report_id)
+  in
+  List.sort cmp rows
+
 let filter_rows state =
-  List.filter (fun row ->
+  let searched = apply_text_search report_rows state.query in
+  let filtered = List.filter (fun row ->
     matches_dim row.team   state.team_in   state.team_out   &&
     matches_dim row.status state.status_in state.status_out &&
     matches_dim row.region state.region_in state.region_out
-  ) report_rows
+  ) searched in
+  sort_rows filtered state.sort
 
 let facet_counts state dimension =
-  let options = List.assoc_opt dimension facet_options |> Option.value ~default:[] in
-  let init    = List.map (fun o -> (o, 0)) options in
+  let options  = List.assoc_opt dimension facet_options |> Option.value ~default:[] in
+  let init     = List.map (fun o -> (o, 0)) options in
+  let searched = apply_text_search report_rows state.query in
   let filtered = match dimension with
     | "team" ->
         List.filter (fun r ->
           matches_dim r.status state.status_in state.status_out &&
           matches_dim r.region state.region_in state.region_out &&
           matches_dim r.team   []              state.team_out
-        ) report_rows
+        ) searched
     | "status" ->
         List.filter (fun r ->
           matches_dim r.team   state.team_in   state.team_out   &&
           matches_dim r.region state.region_in state.region_out &&
           matches_dim r.status []              state.status_out
-        ) report_rows
+        ) searched
     | _ ->
         List.filter (fun r ->
           matches_dim r.team   state.team_in   state.team_out   &&
           matches_dim r.status state.status_in state.status_out &&
           matches_dim r.region []              state.region_out
-        ) report_rows
+        ) searched
   in
   List.fold_left (fun acc row ->
     let v = row_dim_value row dimension in
@@ -128,8 +183,9 @@ let facet_counts state dimension =
   ) init filtered
 
 let exclude_impact_counts state dimension =
-  let options = List.assoc_opt dimension facet_options |> Option.value ~default:[] in
-  let dim_out = match dimension with
+  let options  = List.assoc_opt dimension facet_options |> Option.value ~default:[] in
+  let searched = apply_text_search report_rows state.query in
+  let dim_out  = match dimension with
     | "team"   -> state.team_out
     | "status" -> state.status_out
     | _        -> state.region_out
@@ -152,7 +208,7 @@ let exclude_impact_counts state dimension =
       other_pass &&
       (other_excludes = [] || not (List.mem v other_excludes)) &&
       v = option
-    ) report_rows)
+    ) searched)
     in (option, count)
   ) options
 
@@ -255,6 +311,18 @@ let render_exclude_option state dimension option exc_counts =
 
 let render_filter_panel state =
   let open Tyxml.Html in
+  let search_input = input ~a:[
+    a_input_type `Text;
+    a_name "query";
+    a_value state.query;
+    str_attrib "placeholder" "Search reports\xe2\x80\xa6";
+    str_attrib "data-role" "search-input";
+    str_attrib "data-search-query" state.query;
+    str_attrib "hx-get" "/ui/reports/results";
+    str_attrib "hx-target" "#report-results";
+    str_attrib "hx-trigger" "keyup changed delay:300ms";
+    str_attrib "hx-include" "#report-filters";
+  ] () in
   let quick_toggles = List.map (fun (dim, v) -> render_quick_exclude_toggle state dim v) quick_excludes in
   let dim_groups = List.map (fun dimension ->
     let options    = List.assoc_opt dimension facet_options |> Option.value ~default:[] in
@@ -272,7 +340,11 @@ let render_filter_panel state =
       );
     ]
   ) ["team"; "status"; "region"] in
-  let panel = div ~a:[a_id "filter-panel"; a_class ["space-y-4"]] (
+  let panel = aside ~a:[
+    a_id "filter-panel";
+    a_class ["w-72 flex-shrink-0 overflow-y-auto border-r p-4 space-y-4"];
+  ] (
+    search_input ::
     div ~a:[a_class ["rounded bg-slate-50 px-3 py-2 text-xs text-slate-600"];
             str_attrib "data-role" "count-discipline"]
         [txt "Counts reflect the active backend query semantics."] ::
@@ -285,6 +357,23 @@ let render_filter_panel state =
     dim_groups
   ) in
   pp_elt panel
+
+let render_sort_select state =
+  let open Tyxml.Html in
+  let sel v = if state.sort = v then [a_selected ()] else [] in
+  let select_elt = select ~a:[
+    a_name "sort";
+    str_attrib "data-role" "sort-select";
+    str_attrib "data-sort-order" state.sort;
+    str_attrib "hx-get" "/ui/reports/results";
+    str_attrib "hx-target" "#report-results";
+    str_attrib "hx-include" "#report-filters";
+  ] [
+    option ~a:(a_value "events_desc" :: sel "events_desc") (txt "Events: high \xe2\x86\x92 low");
+    option ~a:(a_value "events_asc"  :: sel "events_asc")  (txt "Events: low \xe2\x86\x92 high");
+    option ~a:(a_value "name_asc"    :: sel "name_asc")    (txt "Name: A \xe2\x86\x92 Z");
+  ] in
+  pp_elt select_elt
 
 let render_results_fragment state =
   let open Tyxml.Html in
@@ -307,15 +396,18 @@ let render_results_fragment state =
     a_id "report-results";
     str_attrib "data-query-fingerprint" fp;
     str_attrib "data-result-count" (string_of_int n);
+    str_attrib "data-search-query" state.query;
+    str_attrib "data-sort-order"   state.sort;
     a_class ["space-y-2"];
   ] (div ~a:[str_attrib "data-role" "active-filters"; a_class ["text-xs text-slate-500"]] [txt fp] :: cards) in
-  pp_elt badge ^ pp_elt results_sec
+  pp_elt badge ^ render_sort_select state ^ pp_elt results_sec
 
 let render_full_page state =
   let panel = render_filter_panel state in
   let rows  = filter_rows state in
   let n     = List.length rows in
   let fp    = fingerprint state in
+  let sort_sel = render_sort_select state in
   let cards = List.map (fun row ->
     Printf.sprintf {|<div class="rounded border border-slate-200 px-4 py-3 text-sm" data-report-id="%s"><strong>%s</strong></div>|}
       row.report_id row.report_id
@@ -323,13 +415,16 @@ let render_full_page state =
   Printf.sprintf {|<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Reports</title>
 <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 <script src="https://cdn.tailwindcss.com"></script></head>
-<body class="p-6 font-sans"><h1 class="text-xl font-bold mb-4">Reports</h1>
+<body class="font-sans"><h1 class="text-xl font-bold p-4">Reports</h1>
 <form id="report-filters" hx-get="/ui/reports/results" hx-target="#report-results" hx-trigger="change, submit">
-<div class="flex gap-6"><aside class="w-64 shrink-0">%s</aside><main class="flex-1">
+<div data-role="reports-layout" id="reports-layout" class="flex h-screen overflow-hidden">
+<aside id="filter-panel" class="w-72 flex-shrink-0 overflow-y-auto border-r p-4">%s</aside>
+<main id="report-results-container" class="flex-1 overflow-y-auto p-4">
 <div id="result-count" data-role="result-count" data-result-count="%d" class="rounded bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700 mb-3">%d results</div>
-<section id="report-results" data-query-fingerprint="%s" data-result-count="%d" class="space-y-2">%s</section>
+%s
+<section id="report-results" data-query-fingerprint="%s" data-result-count="%d" data-search-query="%s" data-sort-order="%s" class="space-y-2">%s</section>
 </main></div></form></body></html>|}
-    panel n n fp n cards
+    panel n n sort_sel fp n state.query state.sort cards
 
 (* ---------------------------------------------------------------------------
    Routes
