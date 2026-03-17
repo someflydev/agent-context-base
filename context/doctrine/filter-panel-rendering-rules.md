@@ -131,9 +131,97 @@ attribute names.
 | Omitting `data-option-count` on exclude options | Tests cannot verify RULE 2 without parsing visible text |
 | Deriving quick excludes dynamically from data | Strip changes unpredictably; breaks predictable Playwright selectors |
 
+## Search Bar
+
+The filter panel must include a text search input above the quick-excludes strip. It is
+rendered as part of the filter panel fragment so that it is re-populated with the current
+query value on every HTMX swap.
+
+Required attributes:
+```
+name="query"
+data-role="search-input"
+data-search-query="{current Q value, empty string if none}"
+hx-trigger="keyup changed delay:300ms"
+hx-get="/ui/reports/results"
+hx-target="#report-results"
+hx-include="#report-filters"
+```
+
+The `value` attribute must be pre-populated from the current Q state. Omitting the value
+causes the input to clear on every HTMX swap, losing the user's search term.
+
+The `delay:300ms` debounce on `hx-trigger` is required. Omitting the delay floods the
+server with a request on every keystroke during fast typing.
+
+The search input must be **inside** the HTMX form (`id="report-filters"`) so that it is
+included in partial update requests.
+
+## Sort Order
+
+A sort select element is rendered in the results section header, above the result list
+but below the result-count badge. It is part of the results fragment (not the filter
+panel) so that it is always re-rendered alongside the result cards.
+
+Required attributes:
+```
+name="sort"
+data-role="sort-select"
+data-sort-order="{current sort value}"
+```
+
+Three options are required (exact `value` attribute values):
+- `events_desc` → "Events: high → low" (default when sort param is absent or invalid)
+- `events_asc`  → "Events: low → high"
+- `name_asc`    → "Name: A → Z"
+
+The option matching the current sort value must carry the `selected` attribute. This is
+the mechanism that prevents the sort dropdown from resetting to the default on every
+HTMX swap.
+
+Sort affects display order only. Sort must never be passed into any count function.
+
+Additionally, add `data-sort-order="{sort}"` to the `id="report-results"` element so
+Playwright can verify sort state via the results section element.
+
+## Independent Scroll Layout
+
+The full page layout must allow the filter panel and results section to scroll
+independently. This is achieved through CSS only — no JavaScript required.
+
+Layout structure:
+
+```html
+<div data-role="reports-layout" class="flex h-screen overflow-hidden">
+  <aside id="filter-panel" class="w-72 flex-shrink-0 overflow-y-auto border-r p-4">
+    <!-- filter panel: search input, quick excludes, dimension groups -->
+  </aside>
+  <main id="report-results-container" class="flex-1 overflow-y-auto p-4">
+    <!-- result-count badge, sort select, id="report-results" -->
+  </main>
+</div>
+```
+
+`id="report-results"` remains the HTMX swap target inside `#report-results-container`.
+The container itself (`id="report-results-container"`) is NOT a swap target. The layout
+wrapper (`data-role="reports-layout"`) is also NOT a swap target — it is rendered once on
+full page load and never replaced.
+
+This constraint preserves scroll positions during partial swaps. If the layout wrapper
+were a swap target, every filter change would reset both scroll positions to zero.
+
+Required data attribute on the outer wrapper:
+```
+data-role="reports-layout"
+```
+
 ## Related Docs
 
 - `context/doctrine/faceted-query-count-discipline.md`
 - `context/doctrine/filter-state-and-query-state.md`
+- `context/doctrine/search-sort-scroll-layout.md`
 - `context/workflows/render-filter-panel-include-exclude-ui.md`
+- `context/workflows/add-text-search-to-filter-ui.md`
+- `context/workflows/add-sort-order-to-results.md`
 - `examples/canonical-api/fastapi-split-filter-panel-example.py`
+- `examples/canonical-api/fastapi-search-sort-filter-example.py`

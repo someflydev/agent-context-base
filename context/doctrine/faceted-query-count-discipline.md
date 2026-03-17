@@ -65,3 +65,48 @@ Do not derive the exclude impact count from the facet_counts path. That path rel
 - empty-result states and zero-count options render clearly
 - include option for an excluded value has count 0 and data-excluded="true"
 - exclude option for an excluded value has a non-zero impact count and data-active="true"
+
+## Text Search as Base Filter
+
+Text search (the `query` parameter) is a **base filter**: it is applied before any facet
+dimension logic runs. It is never relaxed by the same-dimension relaxation that
+`facet_counts` applies to includes.
+
+### Application order
+
+1. Apply Q (case-insensitive substring match on `report_id` at minimum) to the full
+   row set. The narrowed set is the new working set for all subsequent computations.
+2. Apply dimension filters (_in, _out) to the narrowed set.
+
+This ordering applies identically to `filter_rows`, `facet_counts`, and
+`exclude_impact_counts`.
+
+### Count semantics when Q is active
+
+- `facet_counts(state, dimension)` must call `apply_text_search` first, then apply other
+  dimensions, then relax same-dimension includes. Q is never relaxed.
+- `exclude_impact_counts(state, dimension)` must call `apply_text_search` first, then
+  apply other dimensions (no relaxation), then count by option value.
+- The result-count badge always reflects rows passing both Q and all facet filters.
+- Facet option counts reflect the search-narrowed working set. Showing pre-search counts
+  when Q is active is a correctness failure: option counts would claim more rows than
+  exist in the visible result set.
+
+### When Q is empty
+
+All existing count semantics apply unchanged. There is no behaviour difference between
+an absent `query` parameter and an empty string after trimming.
+
+### Correctness failure pattern
+
+Computing facet option counts against the full dataset when Q is active produces counts
+that are larger than the result set can satisfy. A user who sees "platform: 3" in the
+team facet but only 1 visible result will correctly distrust the interface.
+
+Do not cache pre-search counts and display them during an active search. Always recompute
+counts against the search-narrowed working set.
+
+### Related
+
+- `context/doctrine/search-sort-scroll-layout.md` — full RULE 4 specification
+- `context/workflows/add-text-search-to-filter-ui.md`

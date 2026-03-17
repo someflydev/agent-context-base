@@ -45,9 +45,36 @@ HTMX forms, hidden inputs, pagination links, count fragments, and chart endpoint
 
 If the result list updates but the filter panel or chart uses stale params, the interface is incorrect even if each endpoint works in isolation.
 
+## Extended State Fields (PROMPT_64)
+
+Two new fields are now canonical parts of the query state model:
+
+**`query`** — string, default `""` (empty string).
+- Query parameter name: `query` (single value, not multi-value).
+- Normalize: trim whitespace; lowercase. Empty after trimming → treat as absent.
+- Applied as a base filter before any facet dimension logic. Never relaxed.
+- Included in the fingerprint: `|query={Q}`.
+- Reflected in `data-search-query="{Q}"` on the results section element and on the
+  search input element itself.
+
+**`sort`** — string, default `"events_desc"`.
+- Query parameter name: `sort` (single value, not multi-value).
+- Valid values: `events_desc`, `events_asc`, `name_asc`. Unrecognised values default to `events_desc`.
+- Affects result display order only. Sort never affects any count of any kind.
+- Included in the fingerprint: `|sort={sort}`.
+- Reflected in `data-sort-order="{sort}"` on the results section element and on the
+  sort select element.
+
+Both fields must be preserved across HTMX partial swaps. If the results fragment is
+re-rendered without restoring `query` and `sort` from state, the search input clears and
+the sort dropdown resets on every filter change.
+
 ## Common Mistakes
 
 - mutating filter state in template code instead of a named parser
 - sorting selected values differently across endpoints
 - dropping excludes when generating chart requests
 - rendering count fragments without the state they summarize
+- applying `sort` to count computations (sort never affects counts)
+- computing facet counts against the pre-search row set when Q is active
+- omitting `query` or `sort` from the fingerprint string
