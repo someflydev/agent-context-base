@@ -252,12 +252,13 @@ test.describe("CUJ-1: facet filter followed by text search", () => {
     expect(await rp.isExcludeActive("status", "archived")).toBe(true);
     expect(await rp.facetCount("status", "archived", "exclude")).toBe(1);
 
-    // Step 3: add query=signup (matches daily-signups, trial-conversions)
+    // Step 3: add query=signup — "signup" is a substring of "daily-signups" only
+    // (not "trial-conversions"); with status_out=archived, result count = 1
     await rp.goto({ status_out: "archived", query: "signup" });
-    await rp.page.waitForSelector('#report-results[data-result-count="2"]');
-    expect(await rp.resultCount()).toBe(2);
-    // team facet: both signup rows are growth
-    expect(await rp.facetCount("team", "growth", "include")).toBe(2);
+    await rp.page.waitForSelector('#report-results[data-result-count="1"]');
+    expect(await rp.resultCount()).toBe(1);
+    // team facet: daily-signups is growth
+    expect(await rp.facetCount("team", "growth", "include")).toBe(1);
     expect(await rp.facetCount("team", "platform", "include")).toBe(0);
     // RULE 1 still holds: archived include is greyed
     expect(await rp.isIncludeGreyed("status", "archived")).toBe(true);
@@ -447,10 +448,10 @@ test.describe("CUJ-5: RULE 1 and RULE 2 hold under active text search", () => {
 
   test("include greying and exclude impact counts are correct when search is active", async () => {
     // Step 1: status_out=archived and query=signup
-    // search=signup: matches daily-signups, trial-conversions (both growth/active/us)
-    // Neither is archived, so archived exclude removes 0 rows from the search set
+    // search=signup: "signup" is in "daily-signups" only (not "trial-conversions")
+    // → 1 row. daily-signups is active, not archived → passes the exclude.
     await rp.goto({ status_out: "archived", query: "signup" });
-    expect(await rp.resultCount()).toBe(2);
+    expect(await rp.resultCount()).toBe(1);
 
     // RULE 1: archived include option must be greyed with count=0
     expect(await rp.isIncludeGreyed("status", "archived")).toBe(true);
@@ -468,8 +469,8 @@ test.describe("CUJ-5: RULE 1 and RULE 2 hold under active text search", () => {
     expect(await rp.facetCount("status", "paused", "include")).toBe(0);
     expect(await rp.isIncludeGreyed("status", "paused")).toBe(false);
 
-    // active include: count=2 (both matching rows are active)
-    expect(await rp.facetCount("status", "active", "include")).toBe(2);
+    // active include: count=1 (the one matching row is active)
+    expect(await rp.facetCount("status", "active", "include")).toBe(1);
 
     // Step 2: clear the search — status_out=archived still active
     await rp.goto({ status_out: "archived" });

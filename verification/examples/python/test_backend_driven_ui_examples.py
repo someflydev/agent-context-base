@@ -15,6 +15,8 @@ SPLIT_PANEL_PATH = REPO_ROOT / "examples/canonical-api/fastapi-split-filter-pane
 PLAYWRIGHT_FILTERING_PATH = REPO_ROOT / "examples/canonical-integration-tests/playwright-backend-filtering-example.spec.ts"
 PLAYWRIGHT_COUNTS_PATH = REPO_ROOT / "examples/canonical-integration-tests/playwright-filter-counts-example.spec.ts"
 PLAYWRIGHT_SPLIT_PANEL_PATH = REPO_ROOT / "examples/canonical-integration-tests/playwright-split-filter-panel-example.spec.ts"
+SEARCH_SORT_FILTER_PATH = REPO_ROOT / "examples/canonical-api/fastapi-search-sort-filter-example.py"
+PLAYWRIGHT_CUJ_PATH = REPO_ROOT / "examples/canonical-integration-tests/playwright-cuj-filter-example.spec.ts"
 
 
 def load_example(path, module_name: str):
@@ -156,6 +158,162 @@ class SplitFilterPanelExampleTests(unittest.TestCase):
         # RULE 3
         self.assertIn('data-role="quick-exclude"', spec)
         self.assertIn('data-quick-exclude-value', spec)
+
+
+class SearchSortFilterExampleTests(unittest.TestCase):
+    """Unit tests for fastapi-search-sort-filter-example.py.
+
+    Tests text search, sort, exclude-impact-count, facet-count, fingerprint,
+    and rendering functions (RULE 1, RULE 2) using the shared REPORT_ROWS dataset.
+
+    Dataset:
+      daily-signups     growth   active   us    events=12
+      trial-conversions growth   active   us    events=7
+      api-latency       platform paused   eu    events=5
+      checkout-failures growth   active   eu    events=9
+      queue-depth       platform active   apac  events=11
+      legacy-import     platform archived us    events=4
+    """
+
+    def setUp(self) -> None:
+        self.module = load_example(
+            SEARCH_SORT_FILTER_PATH,
+            "verification.examples.python.search_sort_filter",
+        )
+
+    # -- filter_rows with text search --
+
+    def test_filter_rows_with_text_search(self) -> None:
+        # "signup" is a substring of "daily-signups" only — not of "trial-conversions"
+        state = self.module.build_query_state(query="signup")
+        rows = self.module.filter_rows(state)
+        self.assertEqual(
+            {r["report_id"] for r in rows},
+            {"daily-signups"},
+        )
+
+    def test_filter_rows_search_and_facet_combined(self) -> None:
+        state = self.module.build_query_state(query="latency", team_in=["platform"])
+        rows = self.module.filter_rows(state)
+        self.assertEqual({r["report_id"] for r in rows}, {"api-latency"})
+
+    def test_filter_rows_search_and_exclude_combined(self) -> None:
+        # api-latency is the only "api" row and it is paused → excluded
+        state = self.module.build_query_state(query="api", status_out=["paused"])
+        rows = self.module.filter_rows(state)
+        self.assertEqual(rows, [])
+
+    # -- facet_counts with text search --
+
+    def test_facet_counts_respect_text_search(self) -> None:
+        # "signup" matches only "daily-signups" (growth/active/us) → growth=1, platform=0
+        state = self.module.build_query_state(query="signup")
+        counts = self.module.facet_counts(state, "team")
+        self.assertEqual(counts, {"growth": 1, "platform": 0})
+
+    # -- exclude_impact_counts with text search --
+
+    def test_exclude_impact_counts_respect_text_search(self) -> None:
+        # search=signup: matches only daily-signups (growth/active/us)
+        # That row is active; no paused or archived rows match "signup".
+        # Excluding paused or archived removes 0 rows from the search-narrowed set.
+        state = self.module.build_query_state(query="signup")
+        counts = self.module.exclude_impact_counts(state, "status")
+        self.assertEqual(counts["active"], 1)
+        self.assertEqual(counts["paused"], 0)
+        self.assertEqual(counts["archived"], 0)
+
+    # -- sort_rows --
+
+    def test_sort_events_desc(self) -> None:
+        rows = self.module.sort_rows(self.module.REPORT_ROWS, "events_desc")
+        self.assertEqual(rows[0]["report_id"], "daily-signups")   # events=12
+        self.assertEqual(rows[-1]["report_id"], "legacy-import")  # events=4
+
+    def test_sort_events_asc(self) -> None:
+        rows = self.module.sort_rows(self.module.REPORT_ROWS, "events_asc")
+        self.assertEqual(rows[0]["report_id"], "legacy-import")   # events=4
+        self.assertEqual(rows[-1]["report_id"], "daily-signups")  # events=12
+
+    def test_sort_name_asc(self) -> None:
+        rows = self.module.sort_rows(self.module.REPORT_ROWS, "name_asc")
+        # Alphabetically first among the six report IDs
+        self.assertEqual(rows[0]["report_id"], "api-latency")
+
+    def test_sort_unknown_defaults_to_events_desc(self) -> None:
+        rows = self.module.sort_rows(self.module.REPORT_ROWS, "invalid_sort_value")
+        self.assertEqual(rows[0]["report_id"], "daily-signups")   # events=12
+
+    # -- fingerprint --
+
+    def test_fingerprint_includes_query_and_sort(self) -> None:
+        state = self.module.build_query_state(query="signup", sort="name_asc")
+        fp = state.fingerprint()
+        self.assertIn("query=signup", fp)
+        self.assertIn("sort=name_asc", fp)
+
+    # -- RULE 1: include greyed with search active --
+
+    def test_rule1_holds_with_search_active(self) -> None:
+        # With status_out=archived and query=signup, the archived include option
+        # must have data-option-count="0" and data-excluded="true" (RULE 1 applies
+        # regardless of whether the search narrows the dataset).
+        state = self.module.build_query_state(
+            status_out=["archived"], query="signup"
+        )
+        html = self.module.render_filter_panel_fragment(state)
+        self.assertIn(
+            'data-filter-option="archived" data-filter-mode="include" data-option-count="0" data-excluded="true"',
+            html,
+        )
+
+    # -- RULE 2: exclude count can be 0 due to search, but option must NOT be disabled --
+
+    def test_rule2_can_be_zero_due_to_search(self) -> None:
+        # With status_out=archived and query=signup:
+        # No "signup" rows are archived → exclude_impact_count for archived = 0.
+        # The exclude option must show count=0 but must NOT have the disabled attribute.
+        state = self.module.build_query_state(
+            status_out=["archived"], query="signup"
+        )
+        html = self.module.render_filter_panel_fragment(state)
+        # Exclude option must be active with count=0
+        self.assertIn(
+            'data-filter-option="archived" data-filter-mode="exclude" data-option-count="0" data-active="true"',
+            html,
+        )
+        # The exclude option checkbox must NOT carry the disabled attribute
+        # (count=0 does not mean disabled — the filter is active, just has no effect here)
+        self.assertNotIn('name="status_out" value="archived" disabled', html)
+
+    # -- CUJ spec structural check --
+
+    def test_playwright_cuj_spec_covers_all_ten_cujs(self) -> None:
+        spec = PLAYWRIGHT_CUJ_PATH.read_text(encoding="utf-8")
+        # All 10 CUJ describe blocks must be present
+        for cuj in [
+            "CUJ-1",
+            "CUJ-2",
+            "CUJ-3",
+            "CUJ-4",
+            "CUJ-5",
+            "CUJ-6",
+            "CUJ-7",
+            "CUJ-8",
+            "CUJ-9",
+            "CUJ-10",
+        ]:
+            self.assertIn(cuj, spec, f"{cuj} describe block missing from CUJ spec")
+        # Page object model class must be present
+        self.assertIn("class ReportsFilterPage", spec)
+        self.assertIn("facetCount", spec)
+        self.assertIn("quickExcludeActive", spec)
+        self.assertIn("overflowY", spec)
+        # Key assertion patterns
+        self.assertIn('data-result-count="0"', spec)
+        self.assertIn("data-query-fingerprint", spec)
+        self.assertIn("filterPanelScrollTop", spec)
+        self.assertIn("scrollFilterPanelTo", spec)
 
 
 if __name__ == "__main__":
