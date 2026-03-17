@@ -195,11 +195,20 @@ The practical rule is boundary ownership: one assistant plans, one implements a 
 | [architecture/ASSISTANT_RUNTIME_MODEL.md](architecture/ASSISTANT_RUNTIME_MODEL.md) | Normative high-level runtime model across routing, manifests, examples, verification, and continuity. | 6 |
 | [architecture/CONTEXT_ENGINEERING_GUIDE.md](architecture/CONTEXT_ENGINEERING_GUIDE.md) | Explains how context is kept narrow and why artifact boundaries matter. | 7 |
 | [architecture-mental-model.md](architecture-mental-model.md) | Small companion diagram set for runtime, generation, verification, and multi-agent flow. | 8 |
-| [usage/STARTING_NEW_PROJECTS.md](usage/STARTING_NEW_PROJECTS.md) | Operator workflow for turning an idea into a generated repo. | 9 |
+| [usage/STARTING_NEW_PROJECTS.md](usage/STARTING_NEW_PROJECTS.md) | Operator workflow for turning an idea into a generated repo, including 100 example initial prompts. | 9 |
 | [usage/ASSISTANT_BEHAVIOR_SPEC.md](usage/ASSISTANT_BEHAVIOR_SPEC.md) | Normative assistant behavior contract for this system and derived repos. | 10 |
 | [usage/ADVANCED_ASSISTANT_OPERATIONS.md](usage/ADVANCED_ASSISTANT_OPERATIONS.md) | Long-running session guidance, multi-agent coordination, and cross-repo boundaries. | 11 |
 | [memory-layer-overview.md](memory-layer-overview.md) | Explains the role of `MEMORY.md` and handoff snapshots. | 12 |
 | [../verification/README.md](../verification/README.md) | Explains the verification framework, example trust model, and maturity ladder. | 13 |
+| [system-operating-manual.md](system-operating-manual.md) | One-page operational reference: the end-to-end flow and working rules. | reference |
+| [system-self-explanation.md](system-self-explanation.md) | Concise explanation of each layer's single responsibility. | reference |
+| [CONTRIBUTOR_PLAYBOOK.md](CONTRIBUTOR_PLAYBOOK.md) | Rules and checklists for extending the repo: stacks, examples, archetypes, verification. | reference |
+| [context-evolution.md](context-evolution.md) | Reverse-chronological changelog of architectural changes to the base. | reference |
+| [assistant-failure-modes.md](assistant-failure-modes.md) | Catalog of common assistant failure patterns and their primary mitigations. | reference |
+| [deployment-readiness-checklists.md](deployment-readiness-checklists.md) | Baseline checks before treating a deployment boundary as real. | reference |
+| [public-example-backend-driven-ui-readiness.md](public-example-backend-driven-ui-readiness.md) | Readiness summary for future public repos needing backend-driven UI capability. | reference |
+| [public-example-data-systems-readiness.md](public-example-data-systems-readiness.md) | Readiness summary for future public repos with non-trivial data acquisition and storage. | reference |
+| [public-example-documentation-timing-readiness.md](public-example-documentation-timing-readiness.md) | Governance for delaying front-facing docs in derived repos until implementation is real. | reference |
 
 ## Design Principles Summary
 
