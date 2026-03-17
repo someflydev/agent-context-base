@@ -51,6 +51,9 @@ Infer the active stack from repo signals, touched files, and user language.
   - load `context/stacks/trino.md`
 - `duckdb` plus `trino` plus `polars`, local analytical pipeline with cross-source federation
   - load `context/stacks/duckdb-trino-polars.md`
+- `duckdb` plus `parquet`, `duckdb.read_parquet`, local parquet scan, hive partition directory pattern without MinIO or Trino
+  - load `context/stacks/duckdb-parquet.md`
+  - load `context/stacks/parquet.md`
 - `duckdb` or `polars` without trino
   - load primary application stack; load `context/stacks/duckdb-trino-polars.md` only if trino is also present
 - `postgresql`, `postgres`, `jsonb`, `materialized view`, migration-heavy SQL, transactional SQL baseline
