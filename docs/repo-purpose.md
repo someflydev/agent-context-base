@@ -36,8 +36,12 @@ Its job is to make assistant behavior more reliable by separating the repository
 - Backend API services
 - CLI tools
 - Data pipelines
+- Data acquisition services
+- Multi-backend services
+- Multi-source sync platforms
 - Local RAG systems
 - Multi-storage experiments
+- Polyglot labs
 - Dokku-deployable services
 
 ## First-Class Stacks
@@ -52,5 +56,11 @@ The most developed stacks in this base are:
 - Scala / Tapir / http4s / ZIO
 - Kotlin / http4k / Exposed
 - Nim / Jester / HappyX
+- Clojure / Kit / next.jdbc / Hiccup
+- Dart / Dartfrog
+- OCaml / Dream / Caqti / Tyxml
+- Crystal / Kemal / Avram
+- Zig / Zap / Jetzig
+- Ruby / Hanami
 
-Supporting infra packs cover systems such as Redis, MongoDB, DuckDB, Trino, NATS JetStream, Meilisearch, Elasticsearch, TimescaleDB, and Qdrant. Additional stacks can be added by extending the same router, manifest, example, and verification structure.
+Supporting infra packs cover systems such as Redis, MongoDB, DuckDB, DuckDB+Parquet, Trino, NATS JetStream, Kafka, RabbitMQ, Meilisearch, Elasticsearch, TimescaleDB, Qdrant, and MinIO. Additional stacks can be added by extending the same router, manifest, example, and verification structure.
