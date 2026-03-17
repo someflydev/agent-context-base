@@ -24,9 +24,23 @@ Use this pack for lightweight to medium API services and data-aware backend repo
 
 ## Testing Expectations
 
+Canonical layout:
+
+```
+tests/
+  unit/             # validators, Polars transforms, data models — no docker needed
+  integration/      # storage and service boundaries — requires docker-compose.test.yml
+  e2e/              # pytest-playwright — requires running app + docker-compose.test.yml
+```
+
 - smoke test app boot plus one representative route
+- unit tests for pure logic: validators, Polars transforms, service-layer calculations
 - integration tests against Docker-backed test infra when routes touch PostgreSQL, Redis, MongoDB, search, or vector storage
-- keep Polars transforms covered by focused tests if they carry business logic
+- keep Polars transforms covered by focused unit tests if they carry business logic
+
+Anti-patterns:
+- never mock the database in integration tests — mocks cannot catch schema drift, migration errors, or constraint violations
+- never use SQLite in-memory as a stand-in for Postgres integration tests — behavior diverges in ways that matter
 
 ## Tool Setup
 

@@ -23,9 +23,37 @@ Use this pack for Go services that need a pragmatic HTTP stack and server-render
 
 ## Testing Expectations
 
+Canonical layout:
+
+```
+tests/
+  unit/             # pure Go logic: validators, transforms, filter builders — no docker needed
+  integration/      # storage and service boundaries — requires docker-compose.test.yml
+  e2e/              # playwright-go — requires running app + docker-compose.test.yml
+```
+
+Use build tags to keep integration tests out of the default `go test ./...` run:
+
+```go
+//go:build integration
+```
+
+Running tests by layer:
+
+```bash
+go test ./tests/unit/...                              # no docker needed
+go test -tags integration ./tests/integration/...    # requires docker-compose.test.yml up
+go test ./tests/e2e/...                               # requires running app
+```
+
 - smoke test server boot plus one representative route
+- unit tests for pure Go functions that take no external dependencies
 - integration tests against Docker-backed infra when handlers depend on databases, queues, or search
 - verify rendered `templ` output when HTML fragments are contractually important
+
+Anti-patterns:
+- never mock the database in integration tests — mocks cannot catch schema drift, real query behavior, or constraint violations
+- never substitute an in-memory fake for a real Postgres or Redis instance in integration tests
 
 ## Tool Setup
 

@@ -25,9 +25,31 @@ Use this pack for fast lightweight backend services, especially small HTMX, Tail
 
 ## Testing Expectations
 
+Canonical layout:
+
+```
+tests/
+  unit/             # pure logic: validators, transforms, query builders — no docker needed
+  integration/      # Drizzle queries + real DB — requires docker-compose.test.yml
+  e2e/              # Playwright — requires running app + docker-compose.test.yml
+```
+
+Running tests by layer:
+
+```bash
+bun test tests/unit/                    # no docker needed
+bun test tests/integration/             # requires docker-compose.test.yml up
+bunx playwright test tests/e2e/         # requires running app
+```
+
 - smoke test boot and one representative Hono route
-- real-infra integration tests when Drizzle touches PostgreSQL, SQLite, or another real database
+- unit tests for pure logic: validators, transforms, query builder helpers
+- real-infra integration tests when Drizzle touches PostgreSQL or another real database
 - if HTMX responses are part of the contract, test response fragments, not just status codes
+
+Anti-patterns:
+- never mock the database in integration tests — Drizzle query behavior against a mock cannot catch real schema drift or constraint violations
+- never use SQLite in-memory as a stand-in when the real database is Postgres — type and constraint behavior differs in ways that matter
 
 ## Tool Setup
 
