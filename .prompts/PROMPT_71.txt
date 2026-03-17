@@ -1,0 +1,324 @@
+You are working inside the agent-context-base repository.
+
+This prompt sharpens the testing discipline for derived repos. PROMPT_70 established how tools
+are invoked. This prompt establishes what tests to write, how to structure them, and what to
+avoid — particularly: no mocks at the integration layer, no CI infrastructure until explicitly
+asked, and a clear split between unit tests (pure logic) and integration tests (real services
+via docker-compose.test.yml).
+
+The failure patterns this addresses:
+  - Integration tests that mock the database and therefore never catch real schema drift
+  - Pytest fixtures that spin up an in-memory SQLite fake instead of the Dockerized Postgres
+  - CI (GitHub Actions) scaffolded early, breaking on every push before the stack is stable
+  - Assistants writing "unit tests" for route handlers that require real storage to mean anything
+  - Overly broad test suites that are slow, flaky, and never run because docker isn't up
+
+The goal: derived repos should have a small, honest test suite that proves the boundaries work.
+Fast unit tests for pure logic. Real-infra integration tests for the storage/queue/search
+boundary. Nothing in between that pretends to be integration but isn't.
+
+PROMPT_70 has already run. tool-invocation-discipline.md exists and stack docs have Tool Setup
+sections. This prompt assumes those are in place and builds on them.
+
+Organize all work into commit-ready batches. For each batch:
+1. Batch title and purpose.
+2. Files created or updated (full paths).
+3. Full content of every file.
+4. Suggested commit message with prefix [PROMPT_71].
+
+
+---
+
+PHASE 1 — REQUIRED READS
+
+Read these files in full before writing anything:
+
+  context/doctrine/testing-philosophy.md
+  context/doctrine/tool-invocation-discipline.md  (added by PROMPT_70 — read actual state)
+  context/doctrine/smoke-test-philosophy.md
+  context/doctrine/playwright-verification-philosophy.md
+  templates/claude-md/CLAUDE.template.md          (updated by PROMPT_70 — read actual state)
+  templates/agent-md/AGENT.template.md            (updated by PROMPT_70 — read actual state)
+  context/stacks/python-fastapi-uv-ruff-orjson-polars.md  (updated by PROMPT_70)
+  context/stacks/typescript-hono-bun.md           (updated by PROMPT_70)
+  context/stacks/go-echo.md                       (updated by PROMPT_70)
+  examples/canonical-integration-tests/README.md
+  examples/canonical-integration-tests/fastapi-db-integration-test-example.py
+  examples/canonical-smoke-tests/README.md        (if it exists)
+
+Run these listings:
+
+  ls examples/canonical-integration-tests/
+  ls examples/canonical-smoke-tests/
+  ls context/doctrine/
+
+After all reads, proceed to PHASE 2.
+
+
+---
+
+PHASE 2 — GAP ANALYSIS
+
+Write down findings before proposing any changes.
+
+2A. Testing philosophy doc
+  Read context/doctrine/testing-philosophy.md.
+  Does it cover:
+  - The explicit rule against mocks at the integration layer?
+    (Unit tests may use mocks/stubs for isolated logic. Integration tests must not.)
+  - When unit tests are the right layer (pure functions, data transforms, validators,
+    parameterized edge case coverage)?
+  - When integration tests are the right layer (any change that touches a real storage,
+    queue, search, or service boundary)?
+  - The rule about NOT adding CI (GitHub Actions) until explicitly asked?
+  - The docker-compose.test.yml pattern: integration tests require that stack to be up,
+    and the assistant should document this clearly in the repo's README or test/README?
+  - Test naming and file layout conventions (tests/unit/, tests/integration/, tests/e2e/)?
+  Note any gap — a principle mentioned in the overview but not actionably documented.
+
+2B. Template coverage
+  Do CLAUDE.template.md and AGENT.template.md include a guardrail about:
+  - Not adding CI/GitHub Actions until explicitly asked?
+  - Keeping test infra in docker-compose.test.yml, not docker-compose.yml?
+  Both of these are currently in AGENT.template.md's Guardrails. Are they in CLAUDE.template.md?
+  Note any gap.
+
+2C. Integration test examples
+  Read the fastapi integration test example and the integration test README.
+  Does the example demonstrate:
+  - A real Postgres (or other real service) connection via docker-compose.test.yml?
+  - pytest fixtures that set up and tear down state using the real service?
+  - NO mocking of the storage layer?
+  - The correct invocation path using .venv_tools/bin/pytest?
+  Note any gap.
+
+2D. Smoke test examples
+  Read the smoke test README (if it exists).
+  Do the smoke test examples correctly distinguish smoke tests from integration tests?
+    Smoke: hit one happy-path endpoint to confirm the app boots and serves
+    Integration: hit a storage/queue/search boundary with real infra to prove the contract
+  Note any gap.
+
+2E. Stack-doc testing sections
+  For Python/FastAPI, Go/Echo, and TypeScript/Hono/Bun:
+  Do the "Testing Expectations" sections clearly state:
+  - Which layer applies to which kind of change?
+  - That integration tests use real Docker-backed infra (docker-compose.test.yml)?
+  - That mocking storage in integration tests is an anti-pattern?
+  Note any gap.
+
+2F. Per-language test structure conventions
+  Write down the canonical test structure for the three primary stacks:
+
+  Python / FastAPI / pytest:
+    Layout:
+      tests/
+        unit/             # pure logic: validators, transforms, data models
+        integration/      # storage and service boundaries, requires docker-compose.test.yml
+        e2e/              # playwright, requires running app + docker-compose.test.yml
+    Fixtures:
+      conftest.py at tests/integration/ should set up a real DB connection, create tables
+      (or apply migrations), yield the connection/client, and tear down after each test.
+      Use pytest-asyncio for async FastAPI routes.
+      NEVER: mock the database with sqlite in-memory or unittest.mock for integration layer.
+    Commands:
+      .venv_tools/bin/pytest tests/unit/ -v                      # no docker needed
+      .venv_tools/bin/pytest tests/integration/ -v               # requires docker-compose.test.yml up
+      .venv_tools/bin/pytest tests/e2e/ -v                       # requires app running
+
+  TypeScript / Hono / Bun:
+    Layout:
+      tests/
+        unit/             # pure logic
+        integration/      # Drizzle queries + real DB, requires docker-compose.test.yml
+        e2e/              # playwright
+    Approach:
+      Use Bun's test runner for unit and integration tests.
+      For Playwright: use @playwright/test as a dev dep, run via bunx playwright test.
+      NEVER: use an in-memory SQLite stub when the real DB is Postgres.
+    Commands:
+      bun test tests/unit/                                        # no docker needed
+      bun test tests/integration/                                 # requires docker-compose.test.yml up
+      bunx playwright test tests/e2e/                            # requires app running
+
+  Go / Echo:
+    Layout:
+      tests/
+        unit/             # pure logic (Go functions that take no external deps)
+        integration/      # storage, requires docker-compose.test.yml
+        e2e/              # playwright-go, requires running app
+    Approach:
+      Use standard `go test ./...` for unit and integration tests.
+      Use build tags to separate integration tests from unit tests:
+        //go:build integration
+      Run integration: `go test -tags integration ./tests/integration/...`
+      Run unit only: `go test ./...` (integration tag excludes them by default)
+    Commands:
+      go test ./tests/unit/...                                    # no docker needed
+      go test -tags integration ./tests/integration/...          # requires docker-compose.test.yml up
+      go test ./tests/e2e/...                                     # requires running app
+
+
+---
+
+PHASE 3 — UPDATES
+
+Apply changes in this order.
+
+3A. Update: context/doctrine/testing-philosophy.md
+  This is the authoritative testing doctrine. Expand it to cover the gaps from 2A.
+  The updated doc should include all of the following sections:
+
+  "Default Test Layers" (already exists — keep, verify it is still accurate)
+
+  "Unit Tests: When and What"
+    - Pure logic that does not require real infra: validators, data transforms, algorithms
+    - Parameterized edge cases where you want fast coverage of many inputs
+    - Correct: test a filter-query builder function with 10 inputs/outputs
+    - Wrong: test a route handler as a "unit test" when it needs a real DB to mean anything
+
+  "Integration Tests: When and What"
+    - Any change that crosses a real storage, queue, search, or service boundary
+    - Must use Docker-backed infra via docker-compose.test.yml — never mocked storage
+    - Must include at least one write + read cycle to confirm the boundary works
+    - Required when a change touches: DB writes/reads, cache reads/writes, message pub/sub,
+      search index or retrieval, vector index or retrieval, service-to-service calls
+
+  "The Mock Anti-Pattern"
+    - Mocking the database in an integration test produces a test that cannot catch:
+      schema drift, migration errors, query planner differences, constraint violations
+    - Unit tests may use mocks/stubs for isolated logic. Integration tests must not.
+    - Specific anti-patterns to name:
+        sqlite in-memory as a stand-in for Postgres
+        unittest.mock patching the storage adapter in an integration suite
+        a fake message broker that doesn't exercise the real pub/sub contract
+
+  "Test File Layout"
+    Document the canonical layout: tests/unit/, tests/integration/, tests/e2e/
+    State that each directory should have its own README if the suite is non-trivial.
+
+  "Running Integration Tests"
+    The docker-compose.test.yml stack must be up before integration tests run.
+    Document the standard flow:
+      docker compose -f docker-compose.test.yml up -d
+      <wait for health checks>
+      <run integration tests>
+      docker compose -f docker-compose.test.yml down
+    The README or a Makefile target in the derived repo should document this flow.
+
+  "CI: Do Not Add Until Asked"
+    GitHub Actions (or any other CI platform) should NOT be added to a derived repo
+    until the operator explicitly requests it. Reasons:
+      - CI adds maintenance surface before the test suite is stable
+      - Broken CI on every push discourages good test hygiene early
+      - The right moment for CI is when the integration tests reliably pass locally
+    This rule applies to: .github/workflows/, Makefile CI targets, any other automation
+    that pushes or runs on merge. Local Makefile helpers are fine.
+
+  "Smoke Tests vs Integration Tests"
+    Smoke: confirms the app boots and the happy path responds — no docker needed if
+    the app can start without real infra (use test env vars to skip infra on boot).
+    Integration: proves a real boundary works — always needs docker-compose.test.yml.
+    Never conflate the two. A smoke test that requires full infra to be up is not a smoke test.
+
+3B. Update: templates/claude-md/CLAUDE.template.md
+  Ensure the Guardrails section includes:
+  - "do not add GitHub Actions or CI workflows until explicitly asked"
+  - "docker-compose.test.yml is the only target for destructive test reset flows"
+    (this is in AGENT.template.md — confirm it is also in CLAUDE.template.md)
+  Do not duplicate the full testing doctrine — just the guardrails that prevent the most
+  common early mistakes. Two lines are enough.
+
+3C. Update: templates/agent-md/AGENT.template.md
+  Confirm the CI guardrail is present (it should be from the AGENT template).
+  Add if missing. Keep in sync with CLAUDE.template.md.
+
+3D. Update: context/stacks/python-fastapi-uv-ruff-orjson-polars.md
+  In the "Testing Expectations" section:
+  - Add explicit anti-patterns: "never mock the database in integration tests",
+    "never use sqlite in-memory as a stand-in for Postgres integration tests"
+  - Add the canonical test layout (tests/unit/, tests/integration/, tests/e2e/)
+  - Confirm the Tool Setup section (added by PROMPT_70) includes the right pytest command
+
+3E. Update: context/stacks/typescript-hono-bun.md
+  Same additions to Testing Expectations as 3D, adapted for Bun + Drizzle.
+
+3F. Update: context/stacks/go-echo.md
+  Same additions to Testing Expectations as 3D, adapted for Go + build tags approach.
+
+3G. Update: examples/canonical-integration-tests/README.md
+  Ensure the README:
+  - States that these examples hit real services (no mocks)
+  - Explains that running them requires docker-compose.test.yml to be up
+  - Shows the standard "bring up infra → run tests → bring down infra" flow
+  - Notes that CI should not be added until the operator requests it
+  - Lists any new examples added by PROMPT_70 (playwright-go, playwright-python if added)
+
+3H. Update: examples/canonical-integration-tests/fastapi-db-integration-test-example.py
+  If the example currently uses a mock or in-memory substitute for the database, replace it
+  with a real fixture pattern (conftest.py style, real Postgres connection).
+  If it already uses a real connection, confirm the invocation path uses
+  .venv_tools/bin/pytest and update the file header comment if it references a different path.
+  Do not change the test logic if it is already correct — only fix tool paths and mock usage.
+
+
+---
+
+PHASE 4 — SELF-CHECK
+
+Before producing any file content:
+
+  [ ] testing-philosophy.md explicitly names the mock anti-pattern with specific examples.
+  [ ] testing-philosophy.md includes the "do not add CI until asked" rule.
+  [ ] The unit/integration/e2e split is consistent across the doctrine doc and all stack docs.
+  [ ] CLAUDE.template.md and AGENT.template.md both include the no-CI guardrail.
+  [ ] The integration test example (fastapi) uses a real DB fixture, not a mock or in-memory.
+  [ ] The integration test README explains the docker-compose.test.yml prerequisite.
+  [ ] No stack doc describes mocking as an acceptable integration-layer approach.
+  [ ] Changes are minimal — do not rewrite testing sections that are already accurate.
+
+
+---
+
+PHASE 5 — COMMIT BATCHING
+
+Batch 1: Doctrine — testing-philosophy.md
+  Purpose: adds the mock anti-pattern rule, test layer definitions, CI timing rule, and
+  smoke vs integration distinction to the authoritative testing doctrine.
+
+Batch 2: Template guardrails — CLAUDE.template.md and AGENT.template.md
+  Purpose: ensures the CI anti-pattern and compose isolation rules are in both boot templates.
+  Skip with "No changes" if both guardrails are already present.
+
+Batch 3: Stack doc testing sections — Python, Go, TypeScript/Bun
+  Purpose: adds anti-patterns and canonical test layout to the three primary stack docs.
+
+Batch 4: Integration test example and README updates
+  Purpose: aligns the canonical example with the no-mock rule and the updated tool paths.
+
+Batches with no changes should say: "No changes — [reason]."
+
+
+---
+
+SECTION 6 — IMPORTANT CONSTRAINTS
+
+- Do not add CI infrastructure in this pass. This prompt is about testing discipline,
+  not about shipping a CI pipeline. The rule is "no CI until asked" — follow it here too.
+
+- Do not rewrite the existing testing-philosophy.md from scratch. Read it, find the gaps,
+  and add the missing sections. Keep what is accurate. A minimal diff is correct.
+
+- The "no mock at the integration layer" rule is non-negotiable. Do not soften it with
+  "sometimes it is acceptable to..." language. The doctrine should be clear.
+
+- Do not add a testing section to every stack doc in this pass. Only Python/FastAPI,
+  Go/Echo, and TypeScript/Hono/Bun. Others will be updated in a follow-on pass.
+
+- The examples must use the correct invocation paths from tool-invocation-discipline.md
+  (added by PROMPT_70). If that file does not yet exist (PROMPT_70 has not run), note
+  this dependency and use placeholder commands that follow the same pattern.
+
+- Produce complete file contents for every file updated. No diffs, no partial sections.
+
+- If after analysis a batch requires no changes, say so explicitly and move on.

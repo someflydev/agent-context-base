@@ -1,0 +1,383 @@
+You are working inside the agent-context-base repository.
+
+This prompt establishes tool-invocation discipline across all derived repos. The problem it solves:
+when assistants start a task in a derived repo, they often try `python`, fail, try `python3`,
+fail, try to invoke `pytest` globally, fail, and repeat variations of this loop. The same pattern
+recurs with templ in Go repos, with playwright installed globally instead of locally, with
+`go install` causing version drift, and with other language-specific tool invocations.
+
+The fix is not to retry smarter — it is to have deterministic, pre-established invocation paths
+baked into the repo's boot context from the first session.
+
+This prompt creates that discipline: a doctrine doc that covers every first-class stack, template
+updates that surface the right invocation paths in every derived repo's CLAUDE.md and AGENT.md,
+gitignore updates so the tool environments are excluded from version control, and stack doc
+additions so assistants see the right tool commands on the same page as the framework guidance.
+
+Also addressed: whether canonical Playwright examples are needed for non-TypeScript backends
+(Go with templ/htmx, Python with htmx), and how Playwright installs should work per stack.
+
+IMPORTANT: This repo (agent-context-base) itself uses `python3.14 -m unittest` with dotted
+module paths. That is correct and specific to THIS meta-repo. Do not change CLAUDE.md's
+"Running Verifications" section — it is right. The tool discipline this prompt creates applies
+to DERIVED repos, not to agent-context-base itself.
+
+Organize all work into commit-ready batches. For each batch:
+1. Batch title and purpose.
+2. Files created or updated (full paths).
+3. Full content of every file.
+4. Suggested commit message with prefix [PROMPT_70].
+
+
+---
+
+PHASE 1 — REQUIRED READS
+
+Read these files in full before writing anything:
+
+  templates/claude-md/CLAUDE.template.md
+  templates/agent-md/AGENT.template.md
+  context/doctrine/testing-philosophy.md
+  context/doctrine/playwright-verification-philosophy.md
+  context/stacks/python-fastapi-uv-ruff-orjson-polars.md
+  context/stacks/go-echo.md
+  context/stacks/typescript-hono-bun.md
+  context/stacks/rust-axum-modern.md
+  context/stacks/elixir-phoenix.md
+  context/stacks/kotlin-http4k-exposed.md
+  context/stacks/scala-tapir-http4s-zio.md
+  context/stacks/clojure-kit-nextjdbc-hiccup.md
+  context/stacks/ruby-hanami.md
+  examples/canonical-integration-tests/README.md
+  scripts/README.md
+  CLAUDE.md                           (this repo — read to understand what NOT to change)
+
+Run these listings:
+
+  ls context/doctrine/
+  ls templates/
+  ls templates/claude-md/
+  ls templates/agent-md/
+  ls templates/gitignore/
+  ls examples/canonical-integration-tests/
+
+After all reads, proceed to PHASE 2.
+
+
+---
+
+PHASE 2 — INVENTORY AND GAP ANALYSIS
+
+Work through each area systematically and write down findings before proposing changes.
+
+2A. Current template state
+  Read templates/claude-md/CLAUDE.template.md and templates/agent-md/AGENT.template.md.
+  Do either of them have a section about how to run commands, invoke tools, or set up
+  the language runtime? If yes, is it accurate? If no, this is the primary gap.
+
+2B. Gitignore template state
+  Check templates/gitignore/. If it exists and has content, read it.
+  Does it include .venv_tools/ ? Does it include common language-specific build artifacts
+  that tool environments would create (e.g., .venv, __pycache__, node_modules already there)?
+  Note what is missing.
+
+2C. Stack doc tool guidance
+  For each stack doc read in Phase 1, check: does it have a "Tool Setup" or "Running Commands"
+  section that tells an assistant exactly how to invoke the test runner, code generator, or
+  other project tool for that stack?
+  Mark each as: HAS_TOOL_GUIDANCE | MISSING_TOOL_GUIDANCE.
+
+2D. Existing canonical Playwright examples
+  List the Playwright example files in examples/canonical-integration-tests/.
+  Note: are any of them written for Go (playwright-go) or Python? Or are they all TypeScript?
+  This matters for 2E.
+
+2E. Playwright for non-TypeScript backends
+  The canonical Playwright examples are currently TypeScript (.spec.ts). The repo has two
+  stacks that commonly serve HTMX from non-JS backends: Go/Echo/templ and Python/FastAPI.
+  Evaluate each:
+
+  Go/Echo/templ with HTMX:
+    The `playwright-community/playwright-go` package is mature and actively maintained.
+    It allows writing Playwright tests in Go, sharing the same test binary as the
+    application under test. For a Go HTMX backend, this means tests live in
+    `tests/e2e/` as Go test files and run with `go test ./tests/e2e/...`.
+    The package requires a one-time `go run github.com/playwright-community/playwright-go/cmd/playwright install --with-deps chromium` to install browser binaries (pinned in go.sum).
+    Decision: If Go is a first-class stack with HTMX support, a canonical playwright-go
+    example would let assistants produce correctly structured Go e2e tests instead of
+    reaching for Node. Evaluate whether this is worth adding now.
+
+  Python/FastAPI with HTMX:
+    `playwright` for Python is first-class (maintained by Microsoft, same API surface).
+    For a Python backend, installing playwright via the project's tool environment and
+    running `pytest` with the `pytest-playwright` plugin is the right approach.
+    Decision: Evaluate whether a canonical playwright-python example is needed or whether
+    the existing TypeScript examples plus clear doctrine is sufficient for now.
+
+2F. The core tool invocation rules to document
+  Based on what you know about each stack, write down the correct invocation pattern for each.
+  Use this as the ground truth before writing any docs:
+
+  Python (FastAPI / uv / Ruff / Polars — derived repos):
+    Runtime: managed by `uv` via `pyproject.toml`. Never use system `python` or `python3`.
+    Test tools setup: `uv venv --python 3.12 .venv_tools` (use the version from pyproject.toml
+      requires-python, default 3.12 if unspecified)
+    Install test tools: `uv pip install --python .venv_tools/bin/python pytest httpx pytest-asyncio`
+    Add playwright: `uv pip install --python .venv_tools/bin/python pytest-playwright playwright`
+                    then `.venv_tools/bin/playwright install chromium`
+    Run tests: `.venv_tools/bin/pytest tests/unit/`
+               `.venv_tools/bin/pytest tests/integration/`
+               `.venv_tools/bin/pytest tests/e2e/` (if playwright)
+    NEVER: `python -m pytest`, `python3 pytest`, `pip install pytest`, global pytest
+    NEVER: `source .venv_tools/bin/activate` — always use the explicit path
+    Gitignore: `.venv_tools/`
+
+  TypeScript / Hono / Bun:
+    Runtime: Bun. Never use npm to run a Bun project.
+    Install: `bun install`
+    Test tools: `bun add -d @playwright/test` (dev dependency in package.json)
+    Run Playwright: `bunx playwright install chromium` (once, after bun install)
+                    `bunx playwright test` or `bun run test:e2e`
+    Run unit/integration tests: use Bun's built-in test runner or vitest — `bun test`
+    Gitignore: `node_modules/` (bun creates this for compatibility)
+
+  TypeScript / Node (non-Bun stacks):
+    Runtime: nvm-managed Node. Confirm node is available: `which node` or `node --version`.
+    Install: `npm install`
+    Playwright: `npm install --save-dev @playwright/test`
+                then `npx playwright install chromium` (or `./node_modules/.bin/playwright install`)
+    Run tests: `./node_modules/.bin/playwright test` (prefer explicit path over global npx)
+    Gitignore: `node_modules/`
+
+  Go / Echo / templ:
+    Runtime: Go toolchain. Minimum version: 1.24.
+    Tool installs (project-scoped, not global):
+      `go get -tool github.com/a-h/templ/cmd/templ@latest`
+      The `-tool` flag records it in go.mod as a project tool dep.
+    Run templ: `go tool templ generate`
+    Run tests: `go test ./...`
+    Playwright (Go): `go get github.com/playwright-community/playwright-go`
+                     `go run github.com/playwright-community/playwright-go/cmd/playwright install --with-deps chromium`
+                     Tests in `tests/e2e/` as `*_test.go` files, run with `go test ./tests/e2e/...`
+    NEVER: `go install github.com/a-h/templ/cmd/templ` (global install, version drift)
+    NEVER: use a Go version before 1.24 for the -tool approach
+
+  Rust / Axum:
+    Runtime: Rust toolchain (cargo is always present).
+    Run tests: `cargo test`
+    Run app: `cargo run`
+    No special tool setup needed — cargo handles everything.
+
+  Elixir / Phoenix:
+    Runtime: Elixir + Mix (via asdf or system install).
+    Install deps: `mix deps.get`
+    Run tests: `mix test`
+    Run app: `mix phx.server`
+    No separate tool environment needed.
+
+  Scala / Tapir / http4s / ZIO:
+    Runtime: sbt.
+    Run tests: `sbt test`
+    Run app: `sbt run`
+    No separate tool environment needed.
+
+  Kotlin / http4k / Exposed:
+    Runtime: Gradle wrapper.
+    Run tests: `./gradlew test`
+    Run app: `./gradlew run`
+    The wrapper script (gradlew) is committed to the repo.
+
+  Clojure / Kit / next.jdbc:
+    Runtime: Clojure CLI tools.
+    Run tests: `clojure -M:test` (alias defined in deps.edn)
+    Run app: `clojure -M:run`
+    No separate tool environment needed.
+
+  Ruby / Hanami:
+    Runtime: Ruby via bundler.
+    Install: `bundle install`
+    Run tests: `bundle exec rspec` (or `bundle exec rake test` depending on setup)
+    NEVER: `gem install rspec` globally
+    Gitignore: `.bundle/` (if bundle path is local), `vendor/bundle/`
+
+  OCaml / Dream / Caqti / Tyxml:
+    Runtime: opam environment + dune.
+    Build: `dune build`
+    Run tests: `dune test`
+    The opam switch defines the environment — rely on it being set up.
+
+  Crystal / Kemal / Avram:
+    Runtime: Crystal + Shards.
+    Install: `shards install`
+    Run tests: `crystal spec`
+
+  Dart / Dartfrog:
+    Runtime: Dart SDK.
+    Install: `dart pub get`
+    Run tests: `dart test`
+
+  Nim / Jester / HappyX:
+    Runtime: Nim + Nimble.
+    Install: `nimble install`
+    Run tests: `nimble test`
+
+  Zig / Zap / Jetzig:
+    Runtime: Zig toolchain.
+    Build: `zig build`
+    Run tests: `zig build test`
+
+
+---
+
+PHASE 3 — WHAT TO CREATE AND UPDATE
+
+Based on the gap analysis from PHASE 2, apply the following changes.
+
+3A. Create: context/doctrine/tool-invocation-discipline.md
+  This is the authoritative doctrine doc for how tools are found and invoked in derived repos.
+  Structure it as follows:
+
+  - Opening paragraph: the problem (bumbling tool discovery, repeated failures, global installs
+    that drift) and the rule (deterministic, project-local invocation from the first attempt).
+
+  - A section per language ecosystem, each with:
+    - Runtime assumption (what is globally available vs. what must be project-local)
+    - One-time setup commands (what to run once when creating or cloning the repo)
+    - Invocation paths (exact commands to use, not approximations)
+    - What never to do (specific anti-patterns for that stack)
+
+  Use the ground-truth rules from 2F above. Write for an assistant reading this during a
+  task — it should be able to copy-paste commands with confidence.
+
+  Include a section at the end: "Playwright for non-TypeScript HTMX backends" that describes
+  the two supported approaches (playwright-go for Go backends, playwright + pytest-playwright
+  for Python backends) and when each applies.
+
+  Include a final section: "This repo (agent-context-base)" that notes this meta-repo uses
+  `python3.14 -m unittest` with dotted module paths and that this is not a derived repo
+  pattern — it is specific to this base repo's own verification suite.
+
+3B. Update: templates/claude-md/CLAUDE.template.md
+  Add a "Running Commands" section after the Guardrails section.
+  This section should:
+  - State the governing principle: tool envs are project-local, never global
+  - Point to context/doctrine/tool-invocation-discipline.md for the full rules
+  - Include 2-3 lines of concrete guidance for the primary stack of the derived repo,
+    using a placeholder that new_repo.py can fill in: {{tool_invocation_notes}}
+  - If a .venv_tools/ directory exists in the repo root, always use `.venv_tools/bin/`
+    paths rather than system python
+
+  Keep it short — 8-12 lines. This is a boot doc, not a tutorial.
+
+3C. Update: templates/agent-md/AGENT.template.md
+  Same "Running Commands" section as 3B. CLAUDE.md and AGENT.md should give consistent
+  guidance — an assistant using either one should see the same tool invocation rules.
+
+3D. Update: templates/gitignore/ content
+  If templates/gitignore/ is empty or missing a file, create or update the canonical
+  gitignore template content to include:
+    .venv_tools/          # Python tool environment (never committed)
+    .venv/                # Python runtime venv (if separate from uv sync venv)
+  These should be added near the Python section if one exists, or in a new
+  "Tool environments" section if the file is structured by category.
+  Do not remove any existing entries.
+
+3E. Update: context/stacks/python-fastapi-uv-ruff-orjson-polars.md
+  Add a "Tool Setup" section after "Testing Expectations".
+  Content: the exact setup and invocation commands from 2F for Python/uv.
+  Keep it concrete — 10-15 lines with real commands, not prose descriptions.
+
+3F. Update: context/stacks/go-echo.md
+  Add a "Tool Setup" section after "Testing Expectations".
+  Content: the Go 1.24+ tool approach for templ, go test commands, and (if playwright-go
+  is being added as a canonical example) the playwright-go setup commands.
+
+3G. Update: context/stacks/typescript-hono-bun.md
+  Add a "Tool Setup" section after "Testing Expectations".
+  Content: bun install, bun test, bunx playwright.
+
+3H. Playwright canonical example decision
+  Based on your analysis in 2E:
+  - If playwright-go is worth adding: create
+    examples/canonical-integration-tests/playwright-go-htmx-example_test.go
+    with a minimal but real example showing how playwright-go tests an HTMX fragment
+    response from a Go backend. Follow the same structural conventions as the existing
+    TypeScript examples (arrange → act → assert, semantic assertions, not pixel checks).
+  - If playwright-python (pytest-playwright) is worth adding: create
+    examples/canonical-integration-tests/playwright-python-htmx-example.py
+    with a minimal pytest-playwright example.
+  - If neither is clearly needed yet, add a note to the README of
+    examples/canonical-integration-tests/README.md explaining that Go and Python
+    Playwright patterns are documented in context/doctrine/tool-invocation-discipline.md
+    and will be promoted to canonical examples when a first real usage is committed.
+  - Do not add placeholder example files. Either the example is real or it is documented
+    as pending.
+
+
+---
+
+PHASE 4 — SELF-CHECK
+
+Before producing any file content:
+
+  [ ] Every command in tool-invocation-discipline.md uses the exact paths described in 2F.
+  [ ] The .venv_tools/ approach never activates the venv — always uses explicit bin/ paths.
+  [ ] Go tool setup uses `go get -tool`, not `go install`.
+  [ ] Bun repos use `bunx` or `bun run`, not `npx`.
+  [ ] The template "Running Commands" section is short enough to be a boot doc (< 15 lines).
+  [ ] The gitignore template adds .venv_tools/ without removing existing entries.
+  [ ] Stack doc "Tool Setup" sections contain real commands, not prose.
+  [ ] No changes to CLAUDE.md (this repo's root) — it is correct as-is.
+  [ ] Any new Playwright example (if added) uses the exact playwright-go or pytest-playwright
+      API, not a made-up approximation.
+
+
+---
+
+PHASE 5 — COMMIT BATCHING
+
+Batch 1: Doctrine — tool-invocation-discipline.md
+  Purpose: establishes the authoritative per-stack invocation rules.
+
+Batch 2: Template updates — CLAUDE.template.md and AGENT.template.md
+  Purpose: surfaces the invocation rules in every derived repo's boot docs.
+
+Batch 3: Gitignore template update
+  Purpose: ensures .venv_tools/ and other tool env dirs are gitignored by default.
+
+Batch 4: Stack doc additions — Python, Go, TypeScript/Bun
+  Purpose: adds Tool Setup sections to the three most commonly used stacks.
+
+Batch 5: Playwright canonical example (if adding one)
+  Purpose: gives assistants a real example to copy from for non-TypeScript backends.
+  Skip this batch with "No changes — playwright-go/python example deferred" if not adding.
+
+Batches with no changes should say: "No changes — [reason]."
+
+
+---
+
+SECTION 6 — IMPORTANT CONSTRAINTS
+
+- Every command shown in a doc or example must be correct for the tool version in use.
+  Do not invent flags. If a flag's existence is uncertain, use the safer form.
+
+- The .venv_tools/ convention is NEVER activated. Every invocation is an explicit path.
+  `.venv_tools/bin/pytest tests/` not `source .venv_tools/bin/activate && pytest tests/`.
+
+- The Go tool approach requires Go 1.24+. Every Go tool setup instruction must include
+  a note about the minimum Go version. Do not use `go install` as an alternative.
+
+- For Bun repos, never suggest npm or node directly. Bun is the runtime.
+  The exception: `playwright install` downloads browsers, which works via `bunx playwright`.
+
+- Do not add a "Tool Setup" section to every stack doc in this pass. Only update
+  Python/FastAPI, Go/Echo, and TypeScript/Hono/Bun. The remaining stacks can be updated
+  in a follow-on pass once the doctrine and template pattern are confirmed.
+
+- Do not change the "Running Verifications" section in CLAUDE.md (this repo).
+  That section is correct and specific to this meta-repo's own test suite.
+
+- Produce complete file contents for every file updated. No diffs, no partial sections.
+
+- If after analysis a batch requires no changes, say so explicitly and move on.
