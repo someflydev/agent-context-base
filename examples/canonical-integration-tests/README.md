@@ -18,7 +18,7 @@ Use `canonical-smoke-tests/` instead when the goal is the smallest possible happ
 
 - `fastapi-db-integration-test-example.py` — FastAPI + PostgreSQL integration test pattern. Shows `docker-compose.test.yml` boot, fixture data insertion, a real write, a real read assertion, and explicit teardown. Use this as the reference shape for any new backend service that needs real-database integration coverage.
 
-### Single-feature Playwright tests
+### Single-feature Playwright tests (TypeScript / Bun)
 
 These tests verify one backend-driven UI behavior in isolation. Each uses a real running service and asserts that the server-side response (HTMX fragment, JSON payload, or count field) is correct.
 
@@ -27,11 +27,23 @@ These tests verify one backend-driven UI behavior in isolation. Each uses a real
 - `playwright-search-sort-example.spec.ts` — verifies the search → sort → result-display sequence: keyword search returns correct rows, sort changes reorder results deterministically
 - `playwright-split-filter-panel-example.spec.ts` — verifies the split include/exclude filter panel: including a facet adds records, excluding a facet removes them, counts update correctly
 
-### CUJ Playwright tests
+### CUJ Playwright tests (TypeScript / Bun)
 
 CUJ (critical user journey) tests cover multi-step user flows. They are longer than single-feature tests and prove that the full interaction sequence works end-to-end.
 
 - `playwright-cuj-filter-example.spec.ts` — 10 CUJ tests using a page object model; covers load, apply filter, clear filter, multi-select, exclude, keyword search, sort, scroll, count verification, and reset-all flows
+
+### Playwright tests for non-TypeScript HTMX backends
+
+Use these when the backend is Go or Python, not a Node/Bun runtime. The assertions follow the
+same semantic pattern (fragment count, count label, facet update) as the TypeScript examples.
+
+- `playwright-go-htmx-example_test.go` — playwright-go test for a Go/Echo/templ backend. Uses
+  `TestMain` for browser lifecycle, individual test functions for page-scoped tests. Run with
+  `go test ./tests/e2e/...`. Requires `github.com/playwright-community/playwright-go`.
+- `playwright-python-htmx-example.py` — pytest-playwright test for a Python/FastAPI backend.
+  Uses the `page` fixture injected by pytest-playwright. Run with
+  `.venv_tools/bin/pytest tests/e2e/`. Requires `pytest-playwright` in `.venv_tools/`.
 
 ## Strong Examples in This Category Show
 
