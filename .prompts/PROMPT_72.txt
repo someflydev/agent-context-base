@@ -1,0 +1,411 @@
+You are working inside the agent-context-base repository.
+
+This prompt adds four new cognitive skill files to context/skills/, wires them into the routing
+and bootstrap systems so generated repos inherit them, and then does a targeted doc freshness pass
+covering everything added since the 2026-03-13 documentation refactor (PROMPT_70 tool discipline,
+PROMPT_71 testing discipline, and the skills themselves).
+
+The problem being solved: the existing three skills cover the routing/selection phase of the boot
+sequence (steps 2, 4, 7). Five boot-sequence steps have no corresponding skill, which means the
+assistant falls back to implicit judgment at exactly the points where the system is most vulnerable
+to context bloat, wrong manifest picks, and unverified implementation claims. Skills also currently
+live only in the base repo — generated repos do not inherit them, even though the task router
+already cites context/skills/canonical-example-selection.md as a load target, which only works if
+the generated repo copied that file.
+
+Four skills to add:
+  1. manifest-selection          — fills boot step 5: how to choose between near-match manifests
+  2. verification-path-selection — fills boot step 8: which test level for which change surface
+  3. context-bundle-assembly     — fills boot step 6: required vs optional, load-order discipline
+  4. memory-continuity-discipline — fills steps 3 and 8: how to read and write MEMORY.md well
+
+Bootstrap carry-over: the skills directory must be named in the bootstrap workflow, the CLAUDE and
+AGENT templates, and new_repo.py so derived repos get the same cognitive discipline as the base.
+
+PROMPT_70 and PROMPT_71 have already run. Tool-invocation doctrine, testing doctrine, and template
+guardrail updates from those prompts are in place. This prompt builds on that state.
+
+Organize all work into commit-ready batches. For each batch:
+1. Batch title and purpose.
+2. Files created or updated (full paths).
+3. Full content of every file.
+4. Suggested commit message with prefix [PROMPT_72].
+
+
+---
+
+PHASE 1 — REQUIRED READS
+
+Read these files in full before writing anything:
+
+  context/skills/task-inference.md
+  context/skills/repo-signal-detection.md
+  context/skills/canonical-example-selection.md
+  context/router/task-router.md
+  context/router/alias-catalog.yaml
+  context/workflows/bootstrap-repo.md
+  templates/claude-md/CLAUDE.template.md
+  templates/agent-md/AGENT.template.md
+  docs/repo-layout.md
+  docs/CONTRIBUTOR_PLAYBOOK.md        (sections 7 and 10 — Expanding the Context System)
+  docs/ARCHITECTURE_MAP.md            (System Component Index and Context System Map sections)
+  docs/context-evolution.md
+
+Run these listings:
+
+  ls context/skills/
+  ls context/router/
+
+After all reads, proceed to PHASE 2.
+
+
+---
+
+PHASE 2 — GAP ANALYSIS
+
+Write down findings before proposing any changes.
+
+2A. Existing skill format and conventions
+  Read the three existing skills.
+  Note: what is the file structure? (heading, ## Procedure, ## Good Triggers / ## Priority /
+  ## Strong Signals, ## Avoid). Note the approximate length (each is under 40 lines).
+  The four new skills must follow the same lightweight format: heading, purpose sentence,
+  procedure steps, triggers/priority, avoid list. No prose padding.
+
+2B. Task router coverage of skills
+  Does the task router have load targets for any of the four new skills?
+  Note which are missing. Each new skill should have at least one trigger phrase mapping to it.
+
+2C. Bootstrap workflow — skills copy
+  Does context/workflows/bootstrap-repo.md name context/skills/ as a directory to copy?
+  The copy list currently reads: "router, doctrine, workflow, stack, example, and template files".
+  Skills are not named. Note this gap.
+
+2D. Templates — skills reference
+  Do CLAUDE.template.md and AGENT.template.md reference context/skills/ at all?
+  Note whether they should gain a pointer, or whether the bootstrap workflow change is sufficient.
+  The question to answer: when an assistant boots inside a generated repo, will it know the skills
+  directory exists? If no boot doc mentions it, it will be silently ignored even after being copied.
+
+2E. new_repo.py — skills copy
+  Read scripts/new_repo.py (or a relevant portion) to understand how it copies context files into
+  the generated repo. Specifically: does it have an explicit allowlist of context/ subdirectories?
+  If yes, context/skills/ needs to be added. If it copies all of context/ by default, no change
+  is needed there — confirm and note it.
+
+2F. docs/repo-layout.md — skills entry
+  The layout table lists: doctrine/, router/, workflows/, stacks/, archetypes/, anchors/, memory/.
+  Does it list skills/? Note the gap if missing.
+
+2G. docs/CONTRIBUTOR_PLAYBOOK.md — skills as a recognized artifact type
+  Section 7 "Expanding the Context System" lists main context artifact types:
+    doctrines, stack packs, archetype packs, workflow guides, small reminder anchors.
+  Skills are not listed. Note this gap.
+
+2H. docs/ARCHITECTURE_MAP.md — Component Index for skills
+  The Context System Map mermaid diagram may already show skills/ in the ROUTERS node.
+  The System Component Index table lists the context layer but may not mention skills/ explicitly.
+  Note what is present vs absent.
+
+2I. Doc freshness since 2026-03-13 refactor
+  The following capabilities were added after the last documentation refactor:
+    - PROMPT_70: tool-invocation-discipline.md, Tool Setup sections in three stack docs,
+      CLAUDE.template.md and AGENT.template.md Running Commands section, gitignore template
+    - PROMPT_71: expanded testing-philosophy.md, testing anti-patterns in three stack docs,
+      no-CI guardrail in both templates, integration test README update
+    - Now (PROMPT_72): four new skills, bootstrap carry-over, router updates
+
+  For each of these docs, check whether they need an update to reflect the new state:
+    docs/context-evolution.md        — needs a new changelog entry for skills
+    docs/repo-layout.md              — may need skills/ row added
+    docs/ARCHITECTURE_MAP.md         — Component Index may need skills referenced
+    docs/CONTRIBUTOR_PLAYBOOK.md     — Section 7 may need skills as an artifact type
+    README.md                        — check Key Capabilities; probably no change needed,
+                                       but verify skills are implicitly covered or not
+
+  Do not refresh docs that accurately describe current state. Only update where there is genuine
+  drift or a real omission introduced by PROMPT_70, PROMPT_71, or the new skills work.
+
+
+---
+
+PHASE 3 — UPDATES
+
+Apply changes in this order.
+
+3A. Create: context/skills/manifest-selection.md
+  This skill fills boot-sequence step 5: "Select a manifest: prefer the manifest with the
+  strongest repo-signal and router match."
+
+  The skill must cover:
+  - How to score signal strength: lockfile match > framework entrypoint > doc-only mention.
+    A manifest backed by two or more strong signals outranks one backed by a single weak signal.
+  - The tie-breaking rule: when signal strength is equal, prefer the manifest with the narrower
+    scope (fewer optional context items) because it reflects a more precise task match.
+  - When repo-signal-hints.json exists, it is machine-readable authority — read it before
+    comparing manifests by hand.
+  - What to do when no manifest is clearly dominant: stop, state the ambiguity, and do not merge
+    near-match manifests. Raising the ambiguity is more valuable than a plausible guess.
+  - The Avoid list: choosing a manifest from one transient file, merging two near-matches, picking
+    the manifest that loads the most context as a hedge.
+
+  Format: follow the existing skill format (heading, purpose sentence, ## Procedure, ## Good
+  Triggers, ## Avoid). Under 50 lines.
+
+3B. Create: context/skills/verification-path-selection.md
+  This skill fills boot-sequence step 8 (verify the changed boundary).
+
+  The skill must cover:
+  - The decision tree for which verification level the current change surface requires:
+      storage write or read     → real integration test against docker-compose.test.yml
+      UI state or HTMX fragment → Playwright e2e test against running app
+      pure logic, transforms    → unit test, no docker needed
+      boot health, happy path   → smoke test, can run without full infra
+  - The rule that verification is not complete until a test, harness, or check was actually run.
+    "Plausible generation" is not verification.
+  - The escalation rule: when in doubt, use the higher-confidence level, not the lower one.
+  - When to load a specific workflow instead of implementing ad hoc:
+      storage boundary → context/workflows/add-storage-integration.md
+      smoke check      → context/workflows/add-smoke-tests.md
+      Playwright e2e   → context/workflows/add-playwright-ui-verification.md
+  - The Avoid list: calling a mock-backed test an integration test, claiming the smoke test
+    covers a storage boundary, skipping verification because "the logic is simple".
+
+  Format: same lightweight format as other skills. Under 60 lines.
+
+3C. Create: context/skills/context-bundle-assembly.md
+  This skill fills boot-sequence step 6: "Assemble the minimal bundle: required context first,
+  optional context only when activated by the task."
+
+  The skill must cover:
+  - What makes context required: the active change surface directly touches it. A storage write
+    requires the storage stack doc. A route change requires the stack's API surface doc.
+  - What makes context optional: the content is nearby but not on the change surface. The
+    Postgres doc is not required when the change is a pure data-transform function.
+  - Load-order discipline:
+      doctrine before workflow (invariants before steps)
+      workflow before stack (what to do before how to do it)
+      stack before example (framework rules before implementation patterns)
+      one example over several near-matches
+  - The one-dominant-path invariant: load one workflow, one stack surface, one archetype.
+    If two workflows look equally relevant, pick the one that touches the change surface first.
+  - When to add a second context item: only when the task has a clear orthogonal concern (e.g.,
+    a storage write plus a smoke test). Two clearly distinct surfaces can each load one item.
+  - The Avoid list: loading several near-match examples as a hedge, loading doctrine "just in
+    case", widening the bundle when routing is still ambiguous (stop instead).
+
+  Format: same lightweight format. Under 60 lines.
+
+3D. Create: context/skills/memory-continuity-discipline.md
+  This skill covers both boot step 3 (recover continuity) and step 8 (update continuity).
+
+  The skill must cover two sub-procedures:
+
+  READING MEMORY.md:
+  - Check whether the stated objective still matches the current repo signals and task.
+  - Check the working set: do the files listed still exist and still look active?
+  - Check verification status: is the claimed verification state still consistent with the
+    test files present?
+  - If MEMORY.md is stale (objective completed, working set gone, or contradicts current state),
+    treat it as outdated and do not use it to constrain the current task.
+
+  WRITING MEMORY.md:
+  - Capture: current objective, active working set (3–7 files max), key decisions made,
+    verification status (what was run, what passed), and the next concrete step.
+  - Prune: completed sub-tasks, superseded plans, files that are no longer on the change surface.
+  - Update at meaningful stop points, not continuously. The right moment is when a phase
+    boundary is crossed or a verification step completes.
+  - Never write implementation details that are already in the code or commit history.
+    MEMORY.md is operational state, not a second source of truth.
+
+  Format: same lightweight format, two clearly labeled subsections. Under 70 lines.
+
+3E. Update: context/router/task-router.md and context/router/alias-catalog.yaml
+  In task-router.md: add load triggers for the four new skills. Place them under a new short block
+  near the existing skills references (search for "canonical-example-selection" in the router to
+  find the right area). Add triggers such as:
+
+  - "how to pick between manifests", "two manifests look equally relevant", "manifest tie-breaking"
+    → load context/skills/manifest-selection.md
+  - "which test level", "should this be a smoke test or integration test", "what verification
+    does this change need", "is a unit test sufficient here"
+    → load context/skills/verification-path-selection.md
+  - "what context do I need", "what to load for this task", "required vs optional context",
+    "how to assemble the context bundle"
+    → load context/skills/context-bundle-assembly.md
+  - "how to read MEMORY.md", "is this MEMORY.md stale", "what to write in MEMORY.md",
+    "update the continuity file", "memory is out of date"
+    → load context/skills/memory-continuity-discipline.md
+
+  Also add compound request examples at the bottom of the Compound Requests block:
+  - "Bootstrap a repo and make sure the right skills are available"
+    → start with context/workflows/bootstrap-repo.md
+    → note that context/skills/ is copied as part of bootstrap
+
+  Do not rewrite the task router. Add the new entries in the correct structural location.
+
+  In alias-catalog.yaml: add short aliases for the four new skills, following the existing format.
+  Example aliases to add under a new "skills" or "cognitive procedures" comment block:
+    - alias: pick a manifest / manifest tie-breaking / which manifest
+      target: context/skills/manifest-selection.md
+    - alias: which test level / verification path / should this be a smoke test
+      target: context/skills/verification-path-selection.md
+    - alias: what context to load / required vs optional context / bundle assembly
+      target: context/skills/context-bundle-assembly.md
+    - alias: read memory / write memory / is memory stale / update MEMORY.md
+      target: context/skills/memory-continuity-discipline.md
+
+3F. Update: context/workflows/bootstrap-repo.md
+  In the Sequence section, item 2 currently reads:
+    "copy only the relevant router, doctrine, workflow, stack, example, and template files"
+  Change to:
+    "copy only the relevant router, doctrine, workflow, skill, stack, example, and template files"
+
+  Add a note under the Outputs section: "the context/skills/ directory is copied in full because
+  skills describe cognitive procedures that apply in any derived repo, not base-repo-specific logic."
+
+  Also add context/skills/ to the Related Docs block if it is not already there, as a pointer
+  to the skills directory for understanding what is being carried over.
+
+3G. Update: templates/claude-md/CLAUDE.template.md
+  In the boot read list (the numbered items at the top), add a pointer after the current items:
+    "Load context/skills/ for cognitive procedure guidance when routing, selecting examples,
+    assembling bundles, choosing verification paths, or updating MEMORY.md."
+
+  This ensures an assistant booting in a generated repo knows the skills directory exists and
+  when to use it. Keep it to 2–3 lines. Do not duplicate the skill content here.
+
+3H. Update: templates/agent-md/AGENT.template.md
+  Same addition as 3G, consistent with the CLAUDE template. AGENT.md and CLAUDE.md must give
+  the same skills discovery signal.
+
+3I. Update: docs/repo-layout.md
+  In the layout table, add a row for context/skills/:
+    | `context/skills/` | Cognitive procedure guides for selection decisions (manifest choice,
+    verification path, context bundle assembly, continuity discipline). |
+
+  Place it after the context/anchors/ row, which is its natural neighbor.
+
+3J. Update: docs/CONTRIBUTOR_PLAYBOOK.md
+  In Section 7 "Expanding the Context System", under "Main context artifact types", add:
+    - skills in `context/skills/`
+
+  And add a brief rule:
+    "Skills describe cognitive decision procedures, not implementation patterns. Add a skill when
+    assistants repeatedly face the same multi-step selection or evaluation decision that is not
+    already covered by a router, workflow, or anchor. Keep skills under 70 lines. Follow the
+    format of existing skills (heading, procedure, triggers, avoid). Add a load trigger for
+    the new skill in context/router/task-router.md."
+
+  In Section 10 "Extension Checklists", add a checklist item under "Checklist: expanding the
+  context system":
+    "If introducing a new skill: add a load trigger in task-router.md and confirm it is under
+    70 lines and follows the existing skill format."
+
+3K. Update: docs/ARCHITECTURE_MAP.md
+  In the System Component Index table, the Context layer row currently lists:
+    context/doctrine/, context/workflows/, context/stacks/, context/archetypes/, context/anchors/
+  Add context/skills/ to that list.
+
+  If the Context System Map mermaid diagram does not yet show a "Skills / cognitive procedures"
+  node feeding into the Minimal active context bundle, add it. If it already shows skills/ in
+  the ROUTERS sub-node, leave that as-is and just update the table.
+
+3L. Update: docs/context-evolution.md
+  Add a new changelog entry at the top (most recent first). Entry date: 2026-03-17.
+  Entry title: "Cognitive Skills Layer"
+  Content: brief summary of what was added:
+  - four new skills covering manifest selection, verification path selection, context bundle
+    assembly, and memory continuity discipline
+  - all four are now copied into generated repos via the bootstrap workflow
+  - task router updated with load triggers for all four skills
+  - contributor playbook and repo-layout updated to recognize skills as a first-class artifact type
+
+
+---
+
+PHASE 4 — SELF-CHECK
+
+Before producing any file content:
+
+  [ ] Each new skill file is under 70 lines and follows the existing skill format exactly.
+  [ ] manifest-selection.md covers the repo-signal-hints.json tie-breaking rule.
+  [ ] verification-path-selection.md names the four change surface types and their test levels.
+  [ ] context-bundle-assembly.md states the load-order priority (doctrine → workflow → stack →
+      example) and the one-dominant-path invariant.
+  [ ] memory-continuity-discipline.md has two clearly labeled subsections: reading and writing.
+  [ ] The task router additions do not rewrite existing content — they extend it.
+  [ ] alias-catalog.yaml has short-form aliases for all four new skills.
+  [ ] bootstrap-repo.md now names "skill" in the copy-files step.
+  [ ] Both templates have a pointer to context/skills/ that is consistent with each other.
+  [ ] docs/repo-layout.md has a skills/ row in the layout table.
+  [ ] docs/CONTRIBUTOR_PLAYBOOK.md names skills as an artifact type in Section 7.
+  [ ] docs/ARCHITECTURE_MAP.md Component Index names skills/ in the context layer row.
+  [ ] docs/context-evolution.md has a new entry dated 2026-03-17.
+  [ ] No doc is rewritten when a targeted addition is sufficient.
+  [ ] scripts/new_repo.py is checked: if it has an explicit context/ subdirectory allowlist,
+      context/skills/ is added; if it copies all of context/, the bootstrap workflow update
+      is sufficient and no script change is needed.
+
+
+---
+
+PHASE 5 — COMMIT BATCHING
+
+Batch 1: Four new skill files
+  Files: context/skills/manifest-selection.md, context/skills/verification-path-selection.md,
+         context/skills/context-bundle-assembly.md, context/skills/memory-continuity-discipline.md
+  Purpose: fills the five uncovered boot-sequence steps with explicit cognitive procedures.
+
+Batch 2: Router and bootstrap workflow updates
+  Files: context/router/task-router.md, context/router/alias-catalog.yaml,
+         context/workflows/bootstrap-repo.md
+  Purpose: wires all four new skills into the routing system (task-router triggers and
+  alias-catalog short forms) and ensures they are named in the bootstrap copy sequence.
+
+Batch 3: Template carry-over
+  Files: templates/claude-md/CLAUDE.template.md, templates/agent-md/AGENT.template.md
+  Purpose: ensures generated repos know the skills directory exists from the first boot session.
+  Also include scripts/new_repo.py if it requires an explicit change for skills/ copy.
+  Skip new_repo.py with "No changes — context/skills/ already copied by default" if confirmed.
+
+Batch 4: Docs freshness — repo structure and contributor guidance
+  Files: docs/repo-layout.md, docs/CONTRIBUTOR_PLAYBOOK.md, docs/ARCHITECTURE_MAP.md,
+         docs/context-evolution.md
+  Purpose: aligns the layout table, component index, contributor rules, and changelog with
+  the new skills layer and everything added since the 2026-03-13 refactor.
+
+Batches with no changes should say: "No changes — [reason]."
+
+
+---
+
+SECTION 6 — IMPORTANT CONSTRAINTS
+
+- Do not change the content of existing skill files. The three existing skills are correct.
+  Only add new skills.
+
+- Keep each new skill under 70 lines. Skills are lightweight cognitive procedures, not doctrine
+  or workflow replacements. If a skill starts explaining implementation details, it has grown
+  into a workflow and should be split.
+
+- The verification-path-selection skill must not duplicate the content of
+  context/doctrine/testing-philosophy.md or context/doctrine/smoke-test-philosophy.md.
+  It is a selection procedure ("given this change surface, which level applies") not a
+  restatement of those doctrines.
+
+- The memory-continuity-discipline skill must not duplicate context/memory/ templates or rules.
+  It is a reading and writing procedure, not a template. Point to context/memory/ for templates.
+
+- When updating task-router.md, add entries surgically. Do not reorganize the router.
+  Find the section where canonical-example-selection is already referenced and add nearby.
+
+- When updating CONTRIBUTOR_PLAYBOOK.md and ARCHITECTURE_MAP.md, make targeted additions
+  only. Do not rewrite or restructure those docs.
+
+- Produce complete file contents for every file updated. No diffs, no partial sections.
+
+- If after analysis a batch requires no changes, say so explicitly and move on.
+
+- Do not add CI infrastructure. Do not add new examples. Do not expand stack docs. This
+  prompt is scoped to the skills layer and its carry-over to generated repos.
