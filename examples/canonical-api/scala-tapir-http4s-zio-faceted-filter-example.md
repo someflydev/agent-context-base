@@ -16,11 +16,18 @@ per-option HTML strings. All filter functions are pure.
 
 ## Filter logic
 
-- `filterRows(state)` — `filter { row => matchesDim(...) }` per dimension.
-- `facetCounts(state, dim)` — `dim match { ... }` dispatch; relaxes _in, keeps _out for
-  target; applies all other dimensions fully. Returns `Map[String, Int]`.
-- `excludeImpactCounts(state, dim)` — per option: other dims fully; target _out minus
-  current option; _in ignored.
+- `filterRows(state)` — calls `applyTextSearch` first, then `filter { row => matchesDim(...) }`
+  per dimension, then `sortRows`.
+- `facetCounts(state, dim)` — calls `applyTextSearch` first; `dim match { ... }` dispatch;
+  relaxes _in, keeps _out for target; applies all other dimensions fully.
+  Returns `Map[String, Int]`. Sort is never applied.
+- `excludeImpactCounts(state, dim)` — calls `applyTextSearch` first; per option: other dims
+  fully; target _out minus current option; _in ignored. Sort is never applied.
+- `applyTextSearch(rows, q)` — filters on `reportId.toLowerCase.contains(q)`. Returns all
+  rows if q is empty.
+- `sortRows(rows, sortVal)` — `"events_asc"`: ascending events tiebreak reportId;
+  `"name_asc"`: ascending reportId; default `"events_desc"`: descending events tiebreak reportId.
+- `normalizeSort(s)` — validates against allowed values; defaults to `"events_desc"`.
 
 ## Multi-value parameter parsing
 
@@ -32,7 +39,7 @@ values for repeated keys. `normalize` deduplicates and sorts.
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | /ui/reports | Full dashboard page with filter panel and results |
-| GET | /ui/reports/results | HTMX partial: OOB result-count badge + results section |
+| GET | /ui/reports/results | HTMX partial: OOB result-count badge + sort select + results section |
 | GET | /ui/reports/filter-panel | HTMX partial: filter panel only |
 | GET | /healthz | Health check |
 
@@ -45,12 +52,26 @@ All option elements carry `data-filter-dimension`, `data-filter-option`, `data-f
 Quick exclude labels carry `data-role="quick-exclude"`, `data-quick-exclude-dimension`,
 `data-quick-exclude-value`, `data-active`.
 
-Results section: `id="report-results"`, `data-query-fingerprint`, `data-result-count`.
+Search input: `data-role="search-input"`, `data-search-query="{query}"`.
+
+Sort select: `data-role="sort-select"`, `data-sort-order="{sort}"`. Options pre-select
+the current sort value using `if (state.sort == val) " selected" else ""`.
+
+Results section: `id="report-results"`, `data-query-fingerprint`, `data-result-count`,
+`data-search-query="{query}"`, `data-sort-order="{sort}"`.
 OOB badge: `id="result-count"`, `hx-swap-oob="true"`, `data-role="result-count"`, `data-result-count`.
+
+Full page layout uses independent scroll:
+`data-role="reports-layout"`, `id="reports-layout"`, `class="flex h-screen overflow-hidden"`.
+Filter aside: `id="filter-panel"`, `class="w-72 flex-shrink-0 overflow-y-auto border-r p-4"`.
+Results main: `id="report-results-container"`, `class="flex-1 overflow-y-auto p-4"`.
+
+Fingerprint format: `team_in=...|...|region_out=...|query={q}|sort={sort}`.
 
 ## Related
 
 - `context/doctrine/filter-panel-rendering-rules.md`
 - `context/doctrine/faceted-query-count-discipline.md`
-- `examples/canonical-api/fastapi-split-filter-panel-example.py`
+- `context/doctrine/search-sort-scroll-layout.md`
+- `examples/canonical-api/fastapi-search-sort-filter-example.py`
 - `examples/canonical-api/scala-tapir-http4s-zio-faceted-filter-example.scala`

@@ -53,10 +53,15 @@ object FacetedFilterExample:
     statusOut: List[String] = Nil,
     regionIn:  List[String] = Nil,
     regionOut: List[String] = Nil,
+    query:     String = "",
+    sort:      String = "events_desc",
   )
 
   def normalize(values: List[String]): List[String] =
     values.map(_.trim.toLowerCase).filter(_.nonEmpty).sorted.distinct
+
+  def normalizeSort(s: String): String =
+    if Set("events_desc", "events_asc", "name_asc").contains(s) then s else "events_desc"
 
   def buildQueryState(params: Map[String, List[String]]): QueryState = QueryState(
     teamIn    = normalize(params.getOrElse("team_in",    Nil)),
@@ -65,12 +70,15 @@ object FacetedFilterExample:
     statusOut = normalize(params.getOrElse("status_out", Nil)),
     regionIn  = normalize(params.getOrElse("region_in",  Nil)),
     regionOut = normalize(params.getOrElse("region_out", Nil)),
+    query     = params.getOrElse("query", Nil).headOption.getOrElse("").trim.toLowerCase,
+    sort      = normalizeSort(params.getOrElse("sort", Nil).headOption.getOrElse("")),
   )
 
   def fingerprint(state: QueryState): String =
     s"team_in=${state.teamIn.mkString(",")}|team_out=${state.teamOut.mkString(",")}|" +
     s"status_in=${state.statusIn.mkString(",")}|status_out=${state.statusOut.mkString(",")}|" +
-    s"region_in=${state.regionIn.mkString(",")}|region_out=${state.regionOut.mkString(",")}"
+    s"region_in=${state.regionIn.mkString(",")}|region_out=${state.regionOut.mkString(",")}|" +
+    s"query=${state.query}|sort=${state.sort}"
 
   // -------------------------------------------------------------------------
   // Filter helpers
@@ -86,29 +94,41 @@ object FacetedFilterExample:
     case "region" => row.region
     case _        => ""
 
+  def applyTextSearch(rows: List[ReportRow], q: String): List[ReportRow] =
+    if q.isEmpty then rows
+    else rows.filter(_.reportId.toLowerCase.contains(q))
+
+  def sortRows(rows: List[ReportRow], sortVal: String): List[ReportRow] = sortVal match
+    case "events_asc" => rows.sortWith((a, b) => a.events < b.events || (a.events == b.events && a.reportId < b.reportId))
+    case "name_asc"   => rows.sortBy(_.reportId)
+    case _            => rows.sortWith((a, b) => a.events > b.events || (a.events == b.events && a.reportId < b.reportId))
+
   def filterRows(state: QueryState): List[ReportRow] =
-    reportRows.filter { row =>
+    val searched = applyTextSearch(reportRows, state.query)
+    val filtered = searched.filter { row =>
       matchesDim(row.team,   state.teamIn,   state.teamOut)   &&
       matchesDim(row.status, state.statusIn, state.statusOut) &&
       matchesDim(row.region, state.regionIn, state.regionOut)
     }
+    sortRows(filtered, state.sort)
 
   def facetCounts(state: QueryState, dimension: String): Map[String, Int] =
-    val options = facetOptions.getOrElse(dimension, Nil)
-    val init    = options.map(_ -> 0).toMap
+    val options  = facetOptions.getOrElse(dimension, Nil)
+    val init     = options.map(_ -> 0).toMap
+    val searched = applyTextSearch(reportRows, state.query)
     val filtered = dimension match
       case "team" =>
-        reportRows.filter(r =>
+        searched.filter(r =>
           matchesDim(r.status, state.statusIn, state.statusOut) &&
           matchesDim(r.region, state.regionIn, state.regionOut) &&
           matchesDim(r.team,   Nil,            state.teamOut))
       case "status" =>
-        reportRows.filter(r =>
+        searched.filter(r =>
           matchesDim(r.team,   state.teamIn,   state.teamOut)   &&
           matchesDim(r.region, state.regionIn, state.regionOut) &&
           matchesDim(r.status, Nil,            state.statusOut))
       case _ =>
-        reportRows.filter(r =>
+        searched.filter(r =>
           matchesDim(r.team,   state.teamIn,   state.teamOut)   &&
           matchesDim(r.status, state.statusIn, state.statusOut) &&
           matchesDim(r.region, Nil,            state.regionOut))
@@ -118,14 +138,15 @@ object FacetedFilterExample:
     }
 
   def excludeImpactCounts(state: QueryState, dimension: String): Map[String, Int] =
-    val options = facetOptions.getOrElse(dimension, Nil)
-    val dimOut  = dimension match
+    val options  = facetOptions.getOrElse(dimension, Nil)
+    val dimOut   = dimension match
       case "team"   => state.teamOut
       case "status" => state.statusOut
       case _        => state.regionOut
+    val searched = applyTextSearch(reportRows, state.query)
     options.map { option =>
       val otherExcludes = dimOut.filterNot(_ == option)
-      val count = reportRows.count { row =>
+      val count = searched.count { row =>
         val otherPass = dimension match
           case "team" =>
             matchesDim(row.status, state.statusIn, state.statusOut) &&
@@ -147,6 +168,14 @@ object FacetedFilterExample:
   // -------------------------------------------------------------------------
 
   def capitalize(s: String): String = if s.isEmpty then s else s.head.toUpper +: s.tail
+
+  def sortSelectHtml(state: QueryState): String =
+    def sel(v: String) = if state.sort == v then " selected" else ""
+    s"""<select name="sort" data-role="sort-select" data-sort-order="${state.sort}" hx-get="/ui/reports/results" hx-target="#report-results" hx-include="#report-filters">""" +
+    s"""<option value="events_desc"${sel("events_desc")}>Events: high &rarr; low</option>""" +
+    s"""<option value="events_asc"${sel("events_asc")}>Events: low &rarr; high</option>""" +
+    s"""<option value="name_asc"${sel("name_asc")}>Name: A &rarr; Z</option>""" +
+    "</select>"
 
   def renderQuickExcludes(state: QueryState): String =
     val buttons = quickExcludes.map { (dim, v) =>
@@ -203,21 +232,29 @@ object FacetedFilterExample:
     "</section>"
 
   def renderFilterPanel(state: QueryState): String =
+    val qEsc      = state.query.replace("\"", "&quot;")
+    val searchInput =
+      s"""<input type="text" name="query" value="$qEsc" placeholder="Search reports&hellip;" """ +
+      s"""data-role="search-input" data-search-query="$qEsc" """ +
+      s"""hx-get="/ui/reports/results" hx-target="#report-results" """ +
+      s"""hx-trigger="keyup changed delay:300ms" hx-include="#report-filters" """ +
+      s"""class="w-full rounded border border-slate-300 px-3 py-2 text-sm" />"""
     val quickStrip = renderQuickExcludes(state)
     val dimGroups  = List("team", "status", "region").map(renderDimensionGroup(state, _)).mkString
     s"""<div id="filter-panel" class="space-y-4">""" +
     s"""<div class="rounded bg-slate-50 px-3 py-2 text-xs text-slate-600" data-role="count-discipline">Counts reflect the active backend query semantics.</div>""" +
-    quickStrip + dimGroups + "</div>"
+    searchInput + quickStrip + dimGroups + "</div>"
 
   def renderResultsFragment(state: QueryState): String =
-    val rows = filterRows(state)
-    val n    = rows.size
-    val fp   = fingerprint(state)
+    val rows  = filterRows(state)
+    val n     = rows.size
+    val fp    = fingerprint(state)
     val cards = rows.map(r =>
       s"""<div class="rounded border border-slate-200 px-4 py-3 text-sm" data-report-id="${r.reportId}"><strong>${r.reportId}</strong> <span class="text-slate-500">${r.team} / ${r.status} / ${r.region}</span></div>"""
     ).mkString("\n")
     s"""<div id="result-count" hx-swap-oob="true" data-role="result-count" data-result-count="$n" class="rounded bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">$n results</div>""" +
-    s"""<section id="report-results" data-query-fingerprint="$fp" data-result-count="$n" class="space-y-2">""" +
+    sortSelectHtml(state) +
+    s"""<section id="report-results" data-query-fingerprint="$fp" data-result-count="$n" data-search-query="${state.query}" data-sort-order="${state.sort}" class="space-y-2">""" +
     s"""<div data-role="active-filters" class="text-xs text-slate-500">$fp</div>$cards</section>"""
 
   def renderFullPage(state: QueryState): String =
@@ -230,11 +267,14 @@ object FacetedFilterExample:
     ).mkString("\n")
     s"""<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Reports</title>""" +
     s"""<script src="https://unpkg.com/htmx.org@1.9.10"></script><script src="https://cdn.tailwindcss.com"></script></head>""" +
-    s"""<body class="p-6 font-sans"><h1 class="text-xl font-bold mb-4">Reports</h1>""" +
+    s"""<body class="font-sans"><h1 class="text-xl font-bold p-4">Reports</h1>""" +
     s"""<form id="report-filters" hx-get="/ui/reports/results" hx-target="#report-results" hx-trigger="change, submit">""" +
-    s"""<div class="flex gap-6"><aside class="w-64 shrink-0">$panel</aside><main class="flex-1">""" +
+    s"""<div data-role="reports-layout" id="reports-layout" class="flex h-screen overflow-hidden">""" +
+    s"""<aside id="filter-panel" class="w-72 flex-shrink-0 overflow-y-auto border-r p-4">$panel</aside>""" +
+    s"""<main id="report-results-container" class="flex-1 overflow-y-auto p-4">""" +
     s"""<div id="result-count" data-role="result-count" data-result-count="$n" class="rounded bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700 mb-3">$n results</div>""" +
-    s"""<section id="report-results" data-query-fingerprint="$fp" data-result-count="$n" class="space-y-2">$cards</section>""" +
+    sortSelectHtml(state) +
+    s"""<section id="report-results" data-query-fingerprint="$fp" data-result-count="$n" data-search-query="${state.query}" data-sort-order="${state.sort}" class="space-y-2">$cards</section>""" +
     "</main></div></form></body></html>"
 
   // -------------------------------------------------------------------------

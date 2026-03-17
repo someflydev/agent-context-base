@@ -12,17 +12,24 @@ Single `.clj` namespace file. HTML is built with Hiccup2 (`hiccup2.core/html`) u
 nested Clojure vectors: `[:div {:data-filter-dimension dim} [...]]`. Keyword data-*
 attributes (`:data-filter-dimension`) are used throughout.
 
-`QueryState` is a plain Clojure map with six keys. `normalize` uses `(distinct)`,
+`QueryState` is a plain Clojure map with eight keys. `normalize` uses `(distinct)`,
 `(map str/lower-case)`, `(map str/trim)`, and `(sort)` in a threading macro.
 All filter functions are pure — no side effects.
 
 ## Filter logic
 
-- `filter-rows` — `(filter ...)` with `matches-dim` per dimension.
-- `facet-counts` — per-dimension `cond` dispatch; relaxes `:_in`, keeps `:_out` for
-  target; applies all other dimensions fully. Returns frequency map.
-- `exclude-impact-counts` — per option: other dims fully applied; target `:_out` minus
-  current option; `:_in` ignored. Returns count map.
+- `filter-rows` — calls `apply-text-search` first, then `(filter ...)` with `matches-dim`
+  per dimension, then `sort-rows`.
+- `facet-counts` — calls `apply-text-search` first; per-dimension `cond` dispatch;
+  relaxes `:_in`, keeps `:_out` for target; applies all other dimensions fully.
+  Returns frequency map. Sort is never applied.
+- `exclude-impact-counts` — calls `apply-text-search` first; per option: other dims fully
+  applied; target `:_out` minus current option; `:_in` ignored. Returns count map.
+  Sort is never applied.
+- `apply-text-search` — filters rows by case-insensitive substring match on `:report-id`.
+  Returns all rows if query is blank.
+- `sort-rows` — sorts by `sort-val`: `"events_desc"` (desc events, tiebreak report-id asc),
+  `"events_asc"` (asc events, tiebreak report-id asc), `"name_asc"` (asc report-id).
 
 ## Multi-value parameter parsing
 
@@ -35,7 +42,7 @@ dedup and sort.
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | /ui/reports | Full dashboard page with filter panel and results |
-| GET | /ui/reports/results | HTMX partial: OOB result-count badge + results section |
+| GET | /ui/reports/results | HTMX partial: OOB result-count badge + sort select + results section |
 | GET | /ui/reports/filter-panel | HTMX partial: filter panel only |
 | GET | /healthz | Health check |
 
@@ -48,12 +55,26 @@ All option elements carry `data-filter-dimension`, `data-filter-option`, `data-f
 Quick exclude labels carry `data-role="quick-exclude"`, `data-quick-exclude-dimension`,
 `data-quick-exclude-value`, `data-active`.
 
-Results section: `id="report-results"`, `data-query-fingerprint`, `data-result-count`.
+Search input: `data-role="search-input"`, `data-search-query="{query}"`.
+
+Sort select: `data-role="sort-select"`, `data-sort-order="{sort}"`. Options pre-select
+the current sort value via `:selected true` in Hiccup attrs.
+
+Results section: `id="report-results"`, `data-query-fingerprint`, `data-result-count`,
+`data-search-query="{query}"`, `data-sort-order="{sort}"`.
 OOB badge: `id="result-count"`, `hx-swap-oob="true"`, `data-role="result-count"`, `data-result-count`.
+
+Full page layout uses independent scroll:
+`data-role="reports-layout"`, `id="reports-layout"`, `class="flex h-screen overflow-hidden"`.
+Filter aside: `id="filter-panel"`, `class="w-72 flex-shrink-0 overflow-y-auto border-r p-4"`.
+Results main: `id="report-results-container"`, `class="flex-1 overflow-y-auto p-4"`.
+
+Fingerprint format: `team_in=...|...|region_out=...|query={q}|sort={sort}`.
 
 ## Related
 
 - `context/doctrine/filter-panel-rendering-rules.md`
 - `context/doctrine/faceted-query-count-discipline.md`
-- `examples/canonical-api/fastapi-split-filter-panel-example.py`
+- `context/doctrine/search-sort-scroll-layout.md`
+- `examples/canonical-api/fastapi-search-sort-filter-example.py`
 - `examples/canonical-api/clojure-kit-nextjdbc-hiccup-faceted-filter-example.clj`

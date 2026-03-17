@@ -39,20 +39,41 @@ QUICK_EXCLUDES = [{"status", "archived"}, {"status", "paused"}]
 # Query state
 # ---------------------------------------------------------------------------
 
-record QueryState,
-  team_in : Array(String),
-  team_out : Array(String),
-  status_in : Array(String),
-  status_out : Array(String),
-  region_in : Array(String),
-  region_out : Array(String)
+class QueryState
+  property team_in : Array(String)
+  property team_out : Array(String)
+  property status_in : Array(String)
+  property status_out : Array(String)
+  property region_in : Array(String)
+  property region_out : Array(String)
+  property query : String
+  property sort : String
+
+  def initialize(
+    @team_in    = [] of String,
+    @team_out   = [] of String,
+    @status_in  = [] of String,
+    @status_out = [] of String,
+    @region_in  = [] of String,
+    @region_out = [] of String,
+    @query      = "",
+    @sort       = "events_desc"
+  )
+  end
+end
 
 def normalize(values : Array(String)) : Array(String)
   values.map(&.strip.downcase).reject(&.empty?).uniq.sort
 end
 
+def normalize_sort(s : String) : String
+  ["events_desc", "events_asc", "name_asc"].includes?(s) ? s : "events_desc"
+end
+
 def build_query_state(env : HTTP::Server::Context) : QueryState
   qp = env.request.query_params
+  raw_query = qp["query"]?.to_s.strip.downcase
+  raw_sort  = normalize_sort(qp["sort"]?.to_s)
   QueryState.new(
     team_in:    normalize(qp.fetch_all("team_in")),
     team_out:   normalize(qp.fetch_all("team_out")),
@@ -60,13 +81,16 @@ def build_query_state(env : HTTP::Server::Context) : QueryState
     status_out: normalize(qp.fetch_all("status_out")),
     region_in:  normalize(qp.fetch_all("region_in")),
     region_out: normalize(qp.fetch_all("region_out")),
+    query:      raw_query,
+    sort:       raw_sort,
   )
 end
 
 def fingerprint(state : QueryState) : String
   "team_in=#{state.team_in.join(",")}|team_out=#{state.team_out.join(",")}|" \
   "status_in=#{state.status_in.join(",")}|status_out=#{state.status_out.join(",")}|" \
-  "region_in=#{state.region_in.join(",")}|region_out=#{state.region_out.join(",")}"
+  "region_in=#{state.region_in.join(",")}|region_out=#{state.region_out.join(",")}|" \
+  "query=#{state.query}|sort=#{state.sort}"
 end
 
 # ---------------------------------------------------------------------------
@@ -87,19 +111,38 @@ def row_dim_value(row : ReportRow, dim : String) : String
   end
 end
 
+def apply_text_search(rows : Array(ReportRow), query : String) : Array(ReportRow)
+  return rows if query.empty?
+  rows.select { |row| row.report_id.downcase.includes?(query) }
+end
+
+def sort_rows(rows : Array(ReportRow), sort_value : String) : Array(ReportRow)
+  case sort_value
+  when "events_asc"
+    rows.sort_by { |r| {r.events, r.report_id} }
+  when "name_asc"
+    rows.sort_by(&.report_id)
+  else
+    rows.sort_by { |r| {-r.events, r.report_id} }
+  end
+end
+
 def filter_rows(state : QueryState) : Array(ReportRow)
-  REPORT_ROWS.select do |row|
+  searched = apply_text_search(REPORT_ROWS, state.query)
+  filtered = searched.select do |row|
     matches_dim?(row.team,   state.team_in,   state.team_out)   &&
     matches_dim?(row.status, state.status_in, state.status_out) &&
     matches_dim?(row.region, state.region_in, state.region_out)
   end
+  sort_rows(filtered, state.sort)
 end
 
 def facet_counts(state : QueryState, dimension : String) : Hash(String, Int32)
-  options = FACET_OPTIONS[dimension]? || [] of String
-  counts  = options.each_with_object({} of String => Int32) { |o, h| h[o] = 0 }
+  options  = FACET_OPTIONS[dimension]? || [] of String
+  counts   = options.each_with_object({} of String => Int32) { |o, h| h[o] = 0 }
+  searched = apply_text_search(REPORT_ROWS, state.query)
 
-  REPORT_ROWS.each do |row|
+  searched.each do |row|
     pass = case dimension
     when "team"
       matches_dim?(row.status, state.status_in, state.status_out) &&
@@ -123,16 +166,17 @@ def facet_counts(state : QueryState, dimension : String) : Hash(String, Int32)
 end
 
 def exclude_impact_counts(state : QueryState, dimension : String) : Hash(String, Int32)
-  options = FACET_OPTIONS[dimension]? || [] of String
-  dim_out = case dimension
+  options  = FACET_OPTIONS[dimension]? || [] of String
+  dim_out  = case dimension
   when "team"   then state.team_out
   when "status" then state.status_out
   else               state.region_out
   end
+  searched = apply_text_search(REPORT_ROWS, state.query)
 
   options.each_with_object({} of String => Int32) do |option, counts|
     other_excludes = dim_out.reject { |v| v == option }
-    count = REPORT_ROWS.count do |row|
+    count = searched.count do |row|
       val = row_dim_value(row, dimension)
       other_pass = case dimension
       when "team"
@@ -157,17 +201,38 @@ end
 # HTML rendering
 # ---------------------------------------------------------------------------
 
+def sort_select_html(state : QueryState) : String
+  def sel(current : String, value : String) : String
+    current == value ? " selected" : ""
+  end
+  s = state.sort
+  %(<select name="sort" data-role="sort-select" data-sort-order="#{s}" ) +
+  %(hx-get="/ui/reports/results" hx-target="#report-results" hx-include="#report-filters">) +
+  %(<option value="events_desc"#{sel(s, "events_desc")}>Events: high &rarr; low</option>) +
+  %(<option value="events_asc"#{sel(s, "events_asc")}>Events: low &rarr; high</option>) +
+  %(<option value="name_asc"#{sel(s, "name_asc")}>Name: A &rarr; Z</option>) +
+  %(</select>)
+end
+
 def render_filter_panel(state : QueryState) : String
+  q_esc = state.query.gsub('"', "&quot;")
   String.build do |io|
     io << %(<div id="filter-panel" class="space-y-4">)
     io << %(<div class="rounded bg-slate-50 px-3 py-2 text-xs text-slate-600" data-role="count-discipline">Counts reflect the active backend query semantics.</div>)
+
+    # Search input
+    io << %(<input type="text" name="query" value="#{q_esc}" placeholder="Search reports&hellip;" )
+    io << %(data-role="search-input" data-search-query="#{q_esc}" )
+    io << %(hx-get="/ui/reports/filter-panel" hx-target="#filter-panel" )
+    io << %(hx-include="#report-filters" hx-trigger="keyup changed delay:300ms" )
+    io << %(class="w-full rounded border border-slate-300 px-3 py-2 text-sm" />)
 
     # Quick excludes strip
     io << %(<div class="flex flex-wrap items-center gap-2 border-b border-slate-100 pb-3" data-role="quick-excludes-strip">)
     io << %(<span class="text-xs font-semibold uppercase tracking-wide text-slate-400 self-center">Quick excludes</span>)
     QUICK_EXCLUDES.each do |dim, val|
-      impact   = exclude_impact_counts(state, dim)
-      dim_out  = dim == "status" ? state.status_out : dim == "team" ? state.team_out : state.region_out
+      impact    = exclude_impact_counts(state, dim)
+      dim_out   = dim == "status" ? state.status_out : dim == "team" ? state.team_out : state.region_out
       is_active = dim_out.includes?(val)
       active_str = is_active ? "true" : "false"
       checked    = is_active ? " checked" : ""
@@ -234,7 +299,8 @@ def render_results_fragment(state : QueryState) : String
   fp   = fingerprint(state)
   String.build do |io|
     io << %(<div id="result-count" hx-swap-oob="true" data-role="result-count" data-result-count="#{n}" class="rounded bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">#{n} results</div>)
-    io << %(<section id="report-results" data-query-fingerprint="#{fp}" data-result-count="#{n}" class="space-y-2">)
+    io << sort_select_html(state)
+    io << %(<section id="report-results" data-query-fingerprint="#{fp}" data-result-count="#{n}" data-search-query="#{state.query}" data-sort-order="#{state.sort}" class="space-y-2">)
     io << %(<div data-role="active-filters" class="text-xs text-slate-500">#{fp}</div>)
     rows.each do |row|
       io << %(<div class="rounded border border-slate-200 px-4 py-3 text-sm" data-report-id="#{row.report_id}"><strong>#{row.report_id}</strong> <span class="text-slate-500">#{row.team} / #{row.status} / #{row.region}</span></div>)
@@ -252,11 +318,14 @@ def render_full_page(state : QueryState) : String
     io << %(<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Reports</title>)
     io << %(<script src="https://unpkg.com/htmx.org@1.9.10"></script>)
     io << %(<script src="https://cdn.tailwindcss.com"></script></head>)
-    io << %(<body class="p-6 font-sans"><h1 class="text-xl font-bold mb-4">Reports</h1>)
+    io << %(<body class="font-sans"><h1 class="text-xl font-bold p-4">Reports</h1>)
     io << %(<form id="report-filters" hx-get="/ui/reports/results" hx-target="#report-results" hx-trigger="change, submit">)
-    io << %(<div class="flex gap-6"><aside class="w-64 shrink-0">#{panel}</aside><main class="flex-1">)
+    io << %(<div data-role="reports-layout" id="reports-layout" class="flex h-screen overflow-hidden">)
+    io << %(<aside id="filter-panel" class="w-72 flex-shrink-0 overflow-y-auto border-r p-4">#{panel}</aside>)
+    io << %(<main id="report-results-container" class="flex-1 overflow-y-auto p-4">)
     io << %(<div id="result-count" data-role="result-count" data-result-count="#{n}" class="rounded bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700 mb-3">#{n} results</div>)
-    io << %(<section id="report-results" data-query-fingerprint="#{fp}" data-result-count="#{n}" class="space-y-2">)
+    io << sort_select_html(state)
+    io << %(<section id="report-results" data-query-fingerprint="#{fp}" data-result-count="#{n}" data-search-query="#{state.query}" data-sort-order="#{state.sort}" class="space-y-2">)
     rows.each { |row| io << %(<div class="rounded border border-slate-200 px-4 py-3 text-sm" data-report-id="#{row.report_id}"><strong>#{row.report_id}</strong></div>) }
     io << %(</section></main></div></form></body></html>)
   end

@@ -42,13 +42,20 @@
        distinct
        vec))
 
+(defn normalize-sort [s]
+  (if (#{"events_desc" "events_asc" "name_asc"} s)
+    s
+    "events_desc"))
+
 (defn build-query-state [params]
   {:team-in    (normalize (get params :team_in    (get params "team_in")))
    :team-out   (normalize (get params :team_out   (get params "team_out")))
    :status-in  (normalize (get params :status_in  (get params "status_in")))
    :status-out (normalize (get params :status_out (get params "status_out")))
    :region-in  (normalize (get params :region_in  (get params "region_in")))
-   :region-out (normalize (get params :region_out (get params "region_out")))})
+   :region-out (normalize (get params :region_out (get params "region_out")))
+   :query      (-> (or (get params :query) (get params "query") "") str str/trim str/lower-case)
+   :sort       (normalize-sort (str (or (get params :sort) (get params "sort") "")))})
 
 (defn fingerprint [state]
   (str/join "|"
@@ -57,7 +64,9 @@
      (str "status_in="  (str/join "," (:status-in  state)))
      (str "status_out=" (str/join "," (:status-out state)))
      (str "region_in="  (str/join "," (:region-in  state)))
-     (str "region_out=" (str/join "," (:region-out state)))]))
+     (str "region_out=" (str/join "," (:region-out state)))
+     (str "query=" (:query state))
+     (str "sort="  (:sort  state))]))
 
 ;; ---------------------------------------------------------------------------
 ;; Filter helpers
@@ -67,17 +76,34 @@
   (and (or (empty? includes) (some #{value} includes))
        (not (and (seq excludes) (some #{value} excludes)))))
 
+(defn apply-text-search [rows query]
+  (if (str/blank? query)
+    rows
+    (filter #(str/includes? (str/lower-case (:report-id %)) query) rows)))
+
+(defn sort-rows [rows sort-val]
+  (case sort-val
+    "events_asc"
+    (sort-by (juxt :events :report-id) rows)
+    "name_asc"
+    (sort-by :report-id rows)
+    ;; default: events_desc, tiebreak report-id asc
+    (sort-by (juxt #(- (:events %)) :report-id) rows)))
+
 (defn filter-rows [state]
-  (filter (fn [row]
-            (and (matches-dim? (:team   row) (:team-in   state) (:team-out   state))
-                 (matches-dim? (:status row) (:status-in state) (:status-out state))
-                 (matches-dim? (:region row) (:region-in state) (:region-out state))))
-          report-rows))
+  (let [searched (apply-text-search report-rows (:query state))
+        filtered (filter (fn [row]
+                           (and (matches-dim? (:team   row) (:team-in   state) (:team-out   state))
+                                (matches-dim? (:status row) (:status-in state) (:status-out state))
+                                (matches-dim? (:region row) (:region-in state) (:region-out state))))
+                         searched)]
+    (sort-rows filtered (:sort state))))
 
 (defn facet-counts [state dimension]
   (let [options  (get facet-options dimension [])
         zero-map (into {} (map #(vector % 0) options))
         dim-key  (keyword dimension)
+        searched (apply-text-search report-rows (:query state))
         rows
         (case dimension
           "team"
@@ -85,19 +111,19 @@
                     (and (matches-dim? (:status r) (:status-in state) (:status-out state))
                          (matches-dim? (:region r) (:region-in state) (:region-out state))
                          (matches-dim? (:team   r) []               (:team-out   state))))
-                  report-rows)
+                  searched)
           "status"
           (filter (fn [r]
                     (and (matches-dim? (:team   r) (:team-in   state) (:team-out   state))
                          (matches-dim? (:region r) (:region-in state) (:region-out state))
                          (matches-dim? (:status r) []               (:status-out state))))
-                  report-rows)
+                  searched)
           ;; region
           (filter (fn [r]
                     (and (matches-dim? (:team   r) (:team-in   state) (:team-out   state))
                          (matches-dim? (:status r) (:status-in state) (:status-out state))
                          (matches-dim? (:region r) []               (:region-out state))))
-                  report-rows))]
+                  searched))]
     (reduce (fn [acc row]
               (let [val (get row dim-key)]
                 (if (contains? acc val) (update acc val inc) acc)))
@@ -107,7 +133,8 @@
 (defn exclude-impact-counts [state dimension]
   (let [options  (get facet-options dimension [])
         dim-out  (get state (keyword (str dimension "-out")) [])
-        dim-key  (keyword dimension)]
+        dim-key  (keyword dimension)
+        searched (apply-text-search report-rows (:query state))]
     (into {}
       (for [option options]
         (let [other-excludes (remove #(= % option) dim-out)
@@ -129,7 +156,7 @@
                            (and other-pass
                                 (or (empty? other-excludes) (not (some #{val} other-excludes)))
                                 (= val option))))
-                       report-rows))]
+                       searched))]
           [option count])))))
 
 ;; ---------------------------------------------------------------------------
@@ -203,6 +230,17 @@
             :data-role "count-discipline"}
       "Counts reflect the active backend query semantics."]
 
+     ;; Search input
+     [:input {:type "text" :name "query" :value (:query state)
+              :placeholder "Search reports\u2026"
+              :data-role "search-input"
+              :data-search-query (:query state)
+              :hx-get "/ui/reports/results"
+              :hx-target "#report-results"
+              :hx-trigger "keyup changed delay:300ms"
+              :hx-include "#report-filters"
+              :class "w-full rounded border border-slate-300 px-3 py-2 text-sm"}]
+
      ;; Quick excludes strip
      [:div {:class "flex flex-wrap items-center gap-2 border-b border-slate-100 pb-3"
             :data-role "quick-excludes-strip"}
@@ -231,7 +269,9 @@
 (defn render-results-fragment [state]
   (let [rows (filter-rows state)
         n    (count rows)
-        fp   (fingerprint state)]
+        fp   (fingerprint state)
+        q    (:query state)
+        srt  (:sort state)]
     (str
      (h/html
       [:div {:id "result-count"
@@ -241,9 +281,21 @@
              :class "rounded bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700"}
        (str n " results")])
      (h/html
+      [:select {:name "sort"
+                :data-role "sort-select"
+                :data-sort-order srt
+                :hx-get "/ui/reports/results"
+                :hx-target "#report-results"
+                :hx-include "#report-filters"}
+       [:option (merge {:value "events_desc"} (when (= srt "events_desc") {:selected true})) "Events: high \u2192 low"]
+       [:option (merge {:value "events_asc"}  (when (= srt "events_asc")  {:selected true})) "Events: low \u2192 high"]
+       [:option (merge {:value "name_asc"}    (when (= srt "name_asc")    {:selected true})) "Name: A \u2192 Z"]])
+     (h/html
       [:section {:id "report-results"
                  :data-query-fingerprint fp
                  :data-result-count (str n)
+                 :data-search-query q
+                 :data-sort-order srt
                  :class "space-y-2"}
        [:div {:data-role "active-filters" :class "text-xs text-slate-500"} fp]
        (for [row rows]
@@ -257,29 +309,45 @@
   (let [panel (render-filter-panel state)
         rows  (filter-rows state)
         n     (count rows)
-        fp    (fingerprint state)]
+        fp    (fingerprint state)
+        q     (:query state)
+        srt   (:sort state)]
     (str
      "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><title>Reports</title>"
      "<script src=\"https://unpkg.com/htmx.org@1.9.10\"></script>"
      "<script src=\"https://cdn.tailwindcss.com\"></script></head>"
-     "<body class=\"p-6 font-sans\">"
-     "<h1 class=\"text-xl font-bold mb-4\">Reports</h1>"
+     "<body class=\"font-sans\">"
+     "<h1 class=\"text-xl font-bold p-4\">Reports</h1>"
      "<form id=\"report-filters\" hx-get=\"/ui/reports/results\" hx-target=\"#report-results\" hx-trigger=\"change, submit\">"
-     "<div class=\"flex gap-6\"><aside class=\"w-64 shrink-0\">"
-     panel
-     "</aside><main class=\"flex-1\">"
      (str (h/html
-           [:div {:id "result-count" :data-role "result-count" :data-result-count (str n)
-                  :class "rounded bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700 mb-3"}
-            (str n " results")]))
-     (str (h/html
-           [:section {:id "report-results" :data-query-fingerprint fp :data-result-count (str n)
-                      :class "space-y-2"}
-            (for [row rows]
-              [:div {:class "rounded border border-slate-200 px-4 py-3 text-sm"
-                     :data-report-id (:report-id row)}
-               [:strong (:report-id row)]])]))
-     "</main></div></form></body></html>")))
+           [:div {:data-role "reports-layout" :id "reports-layout"
+                  :class "flex h-screen overflow-hidden"}
+            [:aside {:id "filter-panel" :class "w-72 flex-shrink-0 overflow-y-auto border-r p-4"}
+             panel]
+            [:main {:id "report-results-container" :class "flex-1 overflow-y-auto p-4"}
+             [:div {:id "result-count" :data-role "result-count" :data-result-count (str n)
+                    :class "rounded bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700 mb-3"}
+              (str n " results")]
+             [:select {:name "sort"
+                       :data-role "sort-select"
+                       :data-sort-order srt
+                       :hx-get "/ui/reports/results"
+                       :hx-target "#report-results"
+                       :hx-include "#report-filters"}
+              [:option (merge {:value "events_desc"} (when (= srt "events_desc") {:selected true})) "Events: high \u2192 low"]
+              [:option (merge {:value "events_asc"}  (when (= srt "events_asc")  {:selected true})) "Events: low \u2192 high"]
+              [:option (merge {:value "name_asc"}    (when (= srt "name_asc")    {:selected true})) "Name: A \u2192 Z"]]
+             [:section {:id "report-results"
+                        :data-query-fingerprint fp
+                        :data-result-count (str n)
+                        :data-search-query q
+                        :data-sort-order srt
+                        :class "space-y-2"}
+              (for [row rows]
+                [:div {:class "rounded border border-slate-200 px-4 py-3 text-sm"
+                       :data-report-id (:report-id row)}
+                 [:strong (:report-id row)]])]]]))
+     "</form></body></html>")))
 
 ;; ---------------------------------------------------------------------------
 ;; Routes (Reitit-compatible)

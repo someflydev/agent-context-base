@@ -56,6 +56,8 @@ data class QueryState(
     val statusOut: List<String> = emptyList(),
     val regionIn:  List<String> = emptyList(),
     val regionOut: List<String> = emptyList(),
+    val query:     String = "",
+    val sort:      String = "events_desc",
 )
 
 fun normalize(values: List<String?>): List<String> =
@@ -65,6 +67,9 @@ fun normalize(values: List<String?>): List<String> =
         .toSortedSet()
         .toList()
 
+fun normalizeSort(s: String): String =
+    if (s in listOf("events_desc", "events_asc", "name_asc")) s else "events_desc"
+
 fun buildQueryState(request: Request): QueryState = QueryState(
     teamIn    = normalize(request.queries("team_in")),
     teamOut   = normalize(request.queries("team_out")),
@@ -72,6 +77,8 @@ fun buildQueryState(request: Request): QueryState = QueryState(
     statusOut = normalize(request.queries("status_out")),
     regionIn  = normalize(request.queries("region_in")),
     regionOut = normalize(request.queries("region_out")),
+    query     = request.query("query")?.trim()?.lowercase() ?: "",
+    sort      = normalizeSort(request.query("sort") ?: ""),
 )
 
 fun fingerprint(state: QueryState): String = buildString {
@@ -81,6 +88,8 @@ fun fingerprint(state: QueryState): String = buildString {
     append("|status_out=${state.statusOut.joinToString(",")}")
     append("|region_in=${state.regionIn.joinToString(",")}")
     append("|region_out=${state.regionOut.joinToString(",")}")
+    append("|query=${state.query}")
+    append("|sort=${state.sort}")
 }
 
 // ---------------------------------------------------------------------------
@@ -98,18 +107,32 @@ fun rowDimValue(row: ReportRow, dim: String): String = when (dim) {
     else     -> ""
 }
 
-fun filterRows(state: QueryState): List<ReportRow> =
-    REPORT_ROWS.filter { row ->
+fun applyTextSearch(rows: List<ReportRow>, q: String): List<ReportRow> =
+    if (q.isEmpty()) rows
+    else rows.filter { it.reportId.lowercase().contains(q) }
+
+fun sortRows(rows: List<ReportRow>, sortVal: String): List<ReportRow> = when (sortVal) {
+    "events_asc" -> rows.sortedWith(compareBy({ it.events }, { it.reportId }))
+    "name_asc"   -> rows.sortedBy { it.reportId }
+    else         -> rows.sortedWith(compareByDescending<ReportRow> { it.events }.thenBy { it.reportId })
+}
+
+fun filterRows(state: QueryState): List<ReportRow> {
+    val searched = applyTextSearch(REPORT_ROWS, state.query)
+    val filtered = searched.filter { row ->
         matchesDim(row.team,   state.teamIn,   state.teamOut)   &&
         matchesDim(row.status, state.statusIn, state.statusOut) &&
         matchesDim(row.region, state.regionIn, state.regionOut)
     }
+    return sortRows(filtered, state.sort)
+}
 
 fun facetCounts(state: QueryState, dimension: String): Map<String, Int> {
-    val options = FACET_OPTIONS[dimension] ?: emptyList()
-    val counts  = options.associateWith { 0 }.toMutableMap()
+    val options  = FACET_OPTIONS[dimension] ?: emptyList()
+    val counts   = options.associateWith { 0 }.toMutableMap()
+    val searched = applyTextSearch(REPORT_ROWS, state.query)
 
-    for (row in REPORT_ROWS) {
+    for (row in searched) {
         val pass = when (dimension) {
             "team" ->
                 matchesDim(row.status, state.statusIn, state.statusOut) &&
@@ -133,15 +156,16 @@ fun facetCounts(state: QueryState, dimension: String): Map<String, Int> {
 }
 
 fun excludeImpactCounts(state: QueryState, dimension: String): Map<String, Int> {
-    val options = FACET_OPTIONS[dimension] ?: emptyList()
-    val dimOut  = when (dimension) {
+    val options  = FACET_OPTIONS[dimension] ?: emptyList()
+    val dimOut   = when (dimension) {
         "team"   -> state.teamOut
         "status" -> state.statusOut
         else     -> state.regionOut
     }
+    val searched = applyTextSearch(REPORT_ROWS, state.query)
     return options.associateWith { option ->
         val otherExcludes = dimOut.filter { it != option }
-        REPORT_ROWS.count { row ->
+        searched.count { row ->
             val otherPass = when (dimension) {
                 "team" ->
                     matchesDim(row.status, state.statusIn, state.statusOut) &&
@@ -169,22 +193,26 @@ fun renderFilterPanel(state: QueryState): String = buildString {
     append("""<div id="filter-panel" class="space-y-4">""")
     append("""<div class="rounded bg-slate-50 px-3 py-2 text-xs text-slate-600" data-role="count-discipline">Counts reflect the active backend query semantics.</div>""")
 
+    // Search input
+    val qEsc = state.query.replace("\"", "&quot;")
+    append("""<input type="text" name="query" value="$qEsc" placeholder="Search reports&hellip;" data-role="search-input" data-search-query="$qEsc" hx-get="/ui/reports/results" hx-target="#report-results" hx-trigger="keyup changed delay:300ms" hx-include="#report-filters" class="w-full rounded border border-slate-300 px-3 py-2 text-sm" />""")
+
     // Quick excludes strip
     append("""<div class="flex flex-wrap items-center gap-2 border-b border-slate-100 pb-3" data-role="quick-excludes-strip">""")
     append("""<span class="text-xs font-semibold uppercase tracking-wide text-slate-400 self-center">Quick excludes</span>""")
-    for ((dim, val) in QUICK_EXCLUDES) {
+    for ((dim, v) in QUICK_EXCLUDES) {
         val impact   = excludeImpactCounts(state, dim)
         val dimOut   = when (dim) { "status" -> state.statusOut; "team" -> state.teamOut; else -> state.regionOut }
-        val isActive = dimOut.contains(val)
+        val isActive = dimOut.contains(v)
         val activeStr = if (isActive) "true" else "false"
         val checked   = if (isActive) " checked" else ""
         val cls = if (isActive)
             "flex items-center gap-1 rounded border border-red-300 bg-red-50 px-2 py-1 text-xs font-medium text-red-700 cursor-pointer"
         else
             "flex items-center gap-1 rounded border border-slate-200 px-2 py-1 text-xs text-slate-600 cursor-pointer"
-        append("""<label data-role="quick-exclude" data-quick-exclude-dimension="$dim" data-quick-exclude-value="$val" data-active="$activeStr" class="$cls">""")
-        append("""<input type="checkbox" name="${dim}_out" value="$val"$checked class="sr-only" />""")
-        append("""${val.replaceFirstChar { it.uppercase() }} <span class="rounded bg-slate-100 px-1 ml-1">${impact[val] ?: 0}</span></label>""")
+        append("""<label data-role="quick-exclude" data-quick-exclude-dimension="$dim" data-quick-exclude-value="$v" data-active="$activeStr" class="$cls">""")
+        append("""<input type="checkbox" name="${dim}_out" value="$v"$checked class="sr-only" />""")
+        append("""${v.replaceFirstChar { it.uppercase() }} <span class="rounded bg-slate-100 px-1 ml-1">${impact[v] ?: 0}</span></label>""")
     }
     append("</div>")
 
@@ -235,13 +263,23 @@ fun renderFilterPanel(state: QueryState): String = buildString {
     append("</div>")
 }
 
+fun sortSelectHtml(state: QueryState): String {
+    fun sel(v: String) = if (state.sort == v) " selected" else ""
+    return """<select name="sort" data-role="sort-select" data-sort-order="${state.sort}" hx-get="/ui/reports/results" hx-target="#report-results" hx-include="#report-filters">""" +
+        """<option value="events_desc"${sel("events_desc")}>Events: high &rarr; low</option>""" +
+        """<option value="events_asc"${sel("events_asc")}>Events: low &rarr; high</option>""" +
+        """<option value="name_asc"${sel("name_asc")}>Name: A &rarr; Z</option>""" +
+        "</select>"
+}
+
 fun renderResultsFragment(state: QueryState): String {
     val rows = filterRows(state)
     val n    = rows.size
     val fp   = fingerprint(state)
     return buildString {
         append("""<div id="result-count" hx-swap-oob="true" data-role="result-count" data-result-count="$n" class="rounded bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">$n results</div>""")
-        append("""<section id="report-results" data-query-fingerprint="$fp" data-result-count="$n" class="space-y-2">""")
+        append(sortSelectHtml(state))
+        append("""<section id="report-results" data-query-fingerprint="$fp" data-result-count="$n" data-search-query="${state.query}" data-sort-order="${state.sort}" class="space-y-2">""")
         append("""<div data-role="active-filters" class="text-xs text-slate-500">$fp</div>""")
         for (row in rows) {
             append("""<div class="rounded border border-slate-200 px-4 py-3 text-sm" data-report-id="${row.reportId}"><strong>${row.reportId}</strong> <span class="text-slate-500">${row.team} / ${row.status} / ${row.region}</span></div>""")
@@ -259,11 +297,14 @@ fun renderFullPage(state: QueryState): String {
         append("""<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Reports</title>""")
         append("""<script src="https://unpkg.com/htmx.org@1.9.10"></script>""")
         append("""<script src="https://cdn.tailwindcss.com"></script></head>""")
-        append("""<body class="p-6 font-sans"><h1 class="text-xl font-bold mb-4">Reports</h1>""")
+        append("""<body class="font-sans"><h1 class="text-xl font-bold p-4">Reports</h1>""")
         append("""<form id="report-filters" hx-get="/ui/reports/results" hx-target="#report-results" hx-trigger="change, submit">""")
-        append("""<div class="flex gap-6"><aside class="w-64 shrink-0">$panel</aside><main class="flex-1">""")
+        append("""<div data-role="reports-layout" id="reports-layout" class="flex h-screen overflow-hidden">""")
+        append("""<aside id="filter-panel" class="w-72 flex-shrink-0 overflow-y-auto border-r p-4">$panel</aside>""")
+        append("""<main id="report-results-container" class="flex-1 overflow-y-auto p-4">""")
         append("""<div id="result-count" data-role="result-count" data-result-count="$n" class="rounded bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700 mb-3">$n results</div>""")
-        append("""<section id="report-results" data-query-fingerprint="$fp" data-result-count="$n" class="space-y-2">""")
+        append(sortSelectHtml(state))
+        append("""<section id="report-results" data-query-fingerprint="$fp" data-result-count="$n" data-search-query="${state.query}" data-sort-order="${state.sort}" class="space-y-2">""")
         for (row in rows) {
             append("""<div class="rounded border border-slate-200 px-4 py-3 text-sm" data-report-id="${row.reportId}"><strong>${row.reportId}</strong></div>""")
         }
