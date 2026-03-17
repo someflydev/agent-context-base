@@ -23,6 +23,8 @@ Then load the smallest useful bundle from the task, repo signals, and active cha
 - create a handoff snapshot when another session is likely
 - keep root `README.md`, `docs/`, and Mermaid diagrams deferred until the repo has enough real structure to describe honestly
 - keep dev and test infrastructure isolated
+- `docker-compose.test.yml` is the only target for destructive test reset flows
+- do not add GitHub Actions or CI workflows until explicitly asked
 - stop when stack, archetype, or Compose isolation becomes ambiguous
 
 ## Running Commands

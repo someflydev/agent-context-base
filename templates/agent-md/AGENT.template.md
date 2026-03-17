@@ -36,6 +36,7 @@ Load only:
 - do not create a substantial root `README.md` or root `docs/` too early; wait until implementation can support them honestly
 - stop when stack, archetype, or Compose isolation ambiguity would cause context sprawl
 - `docker-compose.test.yml` is the only target for destructive test reset flows
+- do not add GitHub Actions or CI workflows until explicitly asked
 
 ## Running Commands
 
