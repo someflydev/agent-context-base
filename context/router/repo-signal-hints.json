@@ -146,6 +146,16 @@
       "guidance": "Prefer data-pipeline doctrine and deterministic fixture guidance."
     },
     {
+      "name": "duckdb-parquet",
+      "patterns": [
+        "app/parquet/*.py",
+        "scripts/write_parquet.py",
+        "tests/integration/test_parquet_*.py",
+        "data/**/*.parquet"
+      ],
+      "guidance": "Load duckdb-parquet stack for local parquet scan patterns, hive partition pruning, and DuckDB read_parquet workflows without MinIO or Trino."
+    },
+    {
       "name": "scraping-and-ingestion-patterns",
       "patterns": [
         "app/sources/*.py",
@@ -376,6 +386,18 @@
         "scripts/smoke/*.sh"
       ],
       "guidance": "Dokku artifacts indicate a deployable single-service posture."
+    },
+    {
+      "name": "multi-backend-service",
+      "patterns": [
+        "services/*/Dockerfile",
+        "services/**/go.mod",
+        "services/**/mix.exs",
+        "services/**/Cargo.toml",
+        "services/**/pyproject.toml",
+        "seam.md"
+      ],
+      "guidance": "Multiple service directories with different language artifacts indicate a multi-backend system. Load coordination seam patterns and multi-backend doctrine."
     }
   ],
   "workflows": [
