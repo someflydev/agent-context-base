@@ -12,7 +12,7 @@ flowchart LR
     B --> C[Entry surface<br/>README.md, AGENT.md, CLAUDE.md,<br/>boot docs, repo signals]
     C --> D[Router layer<br/>task, stack, archetype]
     D --> E[Manifest layer<br/>smallest justified bundle]
-    E --> F[Context layer<br/>doctrine, workflows, stacks,<br/>archetypes, anchors]
+    E --> F[Context layer<br/>doctrine, workflows, stacks,<br/>archetypes, anchors, skills]
     E --> G[Example layer<br/>preferred canonical example]
     F --> H[Implementation slice]
     G --> H
@@ -41,7 +41,7 @@ flowchart TB
     R --> VERIFY[verification/<br/>registry, support matrix, suites, harnesses]
     R --> SMOKE[smoke-tests/<br/>repo-level smoke assets]
 
-    CONTEXT --> ROUTERS[router/, doctrine/, workflows/,<br/>stacks/, archetypes/, anchors/, memory/]
+    CONTEXT --> ROUTERS[router/, doctrine/, workflows/,<br/>stacks/, archetypes/, anchors/, memory/, skills/]
     MANIFESTS --> BUNDLES[bind triggers, context, examples,<br/>templates, warnings, defaults]
     EXAMPLES --> CATALOG[examples/catalog.json]
     VERIFY --> REGISTRY[example_registry.yaml<br/>stack_support_matrix.yaml]
@@ -122,7 +122,7 @@ flowchart TB
     F[verification/stack_support_matrix.yaml] --> C
     G[verification/scenarios/ + Docker harnesses] --> E
 
-    B --> H[Integrity checks<br/>manifest schema, catalog links,<br/>router metadata, bootstrap invariants]
+    B --> H[Integrity checks<br/>manifest schema, catalog links,<br/>router metadata, prompt numbering,<br/>bootstrap invariants, doc cross-references]
     C --> I[Tiered suites<br/>fast, medium, heavy]
     E --> J[Selective example checks<br/>by stack or by example]
     G --> K[Runtime smoke checks<br/>container build, boot, request path]

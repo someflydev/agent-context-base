@@ -57,4 +57,4 @@ New repositories are generated from the same runtime model:
 - preserve Compose names, port bands, and data-isolation defaults from the chosen manifests
 - start work in the generated repo with the same boot sequence and continuity rules
 
-See `docs/architecture-mental-model.md` for diagrams and `docs/usage/STARTING_NEW_PROJECTS.md` for the operator workflow.
+See `docs/ARCHITECTURE_MAP.md` for the full system visual map, `docs/architecture-mental-model.md` for focused companion diagrams, and `docs/usage/STARTING_NEW_PROJECTS.md` for the operator workflow.
