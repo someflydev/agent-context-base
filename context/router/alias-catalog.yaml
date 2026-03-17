@@ -168,6 +168,10 @@ stacks:
     target: context/stacks/python-fastapi-uv-ruff-orjson-polars.md
   - alias: python api
     target: context/stacks/python-fastapi-uv-ruff-orjson-polars.md
+  - alias: python-fastapi-uv-ruff
+    target: context/stacks/python-fastapi-uv-ruff.md
+  - alias: fastapi uv ruff
+    target: context/stacks/python-fastapi-uv-ruff.md
   - alias: typescript
     target: context/stacks/typescript-hono-bun.md
   - alias: hono
@@ -849,6 +853,52 @@ capabilities:
     target: context/doctrine/raw-data-retention.md
   - alias: source rate limits
     target: context/doctrine/sync-safety-rate-limits.md
+  - alias: smoke test philosophy
+    target: context/doctrine/smoke-test-philosophy.md
+  - alias: what smoke tests check
+    target: context/doctrine/smoke-test-philosophy.md
+  - alias: testing philosophy
+    target: context/doctrine/testing-philosophy.md
+  - alias: unit vs integration testing
+    target: context/doctrine/testing-philosophy.md
+  - alias: documentation timing
+    target: context/doctrine/documentation-timing-discipline.md
+  - alias: when to write docs
+    target: context/doctrine/documentation-timing-discipline.md
+  - alias: mermaid freshness rules
+    target: context/doctrine/mermaid-diagram-freshness.md
+  - alias: diagram drift criteria
+    target: context/doctrine/mermaid-diagram-freshness.md
+  - alias: prompt-first conventions
+    target: context/doctrine/prompt-first-conventions.md
+  - alias: prompt file format
+    target: context/doctrine/prompt-first-conventions.md
+  - alias: canonical examples guide
+    target: context/doctrine/canonical-examples.md
+  - alias: which canonical example to use
+    target: context/doctrine/canonical-examples.md
+  - alias: dokku deployment philosophy
+    target: context/doctrine/deployment-philosophy-dokku.md
+  - alias: why dokku
+    target: context/doctrine/deployment-philosophy-dokku.md
+  - alias: naming conventions
+    target: context/doctrine/naming-and-clarity.md
+  - alias: naming clarity
+    target: context/doctrine/naming-and-clarity.md
+  - alias: commit hygiene
+    target: context/doctrine/commit-hygiene.md
+  - alias: commit message format
+    target: context/doctrine/commit-hygiene.md
+  - alias: compose port isolation
+    target: context/doctrine/compose-port-and-data-isolation.md
+  - alias: test container isolation
+    target: context/doctrine/compose-port-and-data-isolation.md
+  - alias: data acquisition philosophy
+    target: context/doctrine/data-acquisition-philosophy.md
+  - alias: source research discipline
+    target: context/doctrine/source-research-discipline.md
+  - alias: source scoring methodology
+    target: context/doctrine/source-research-discipline.md
   - alias: backend driven ui
     target: context/doctrine/backend-driven-ui-correctness.md
   - alias: faceted counts
@@ -1015,3 +1065,79 @@ capabilities:
     target: examples/canonical-multi-backend/duos/elixir-rust-nif/seam.md
   - alias: dirty nif
     target: examples/canonical-multi-backend/duos/elixir-rust-nif/seam.md
+  - alias: canonical storage examples
+    target: examples/canonical-storage/README.md
+  - alias: canonical rag example
+    target: examples/canonical-rag/README.md
+  - alias: canonical cli example
+    target: examples/canonical-cli/README.md
+  - alias: canonical dokku example
+    target: examples/canonical-dokku/README.md
+  - alias: canonical smoke tests example
+    target: examples/canonical-smoke-tests/README.md
+  - alias: canonical observability example
+    target: examples/canonical-observability/README.md
+  - alias: canonical prompts example
+    target: examples/canonical-prompts/README.md
+  - alias: canonical seed data example
+    target: examples/canonical-seed-data/README.md
+  - alias: canonical workflows example
+    target: examples/canonical-workflows/README.md
+  - alias: playwright backend filtering example
+    target: examples/canonical-integration-tests/playwright-backend-filtering-example.spec.ts
+  - alias: playwright filter counts example
+    target: examples/canonical-integration-tests/playwright-filter-counts-example.spec.ts
+  - alias: playwright split filter panel example
+    target: examples/canonical-integration-tests/playwright-split-filter-panel-example.spec.ts
+  - alias: fastapi db integration test example
+    target: examples/canonical-integration-tests/fastapi-db-integration-test-example.py
+
+manifests:
+  - alias: fastapi backend api manifest
+    target: manifests/backend-api-fastapi-polars.yaml
+  - alias: typescript hono backend api manifest
+    target: manifests/backend-api-typescript-hono-bun.yaml
+  - alias: go echo backend api manifest
+    target: manifests/backend-api-go-echo.yaml
+  - alias: rust axum backend api manifest
+    target: manifests/backend-api-rust-axum.yaml
+  - alias: nim jester backend api manifest
+    target: manifests/backend-api-nim-jester-happyx.yaml
+  - alias: clojure kit backend api manifest
+    target: manifests/backend-api-clojure-kit-nextjdbc-hiccup.yaml
+  - alias: dart dartfrog backend api manifest
+    target: manifests/backend-api-dart-dartfrog.yaml
+  - alias: kotlin http4k backend api manifest
+    target: manifests/backend-api-kotlin-http4k-exposed.yaml
+  - alias: scala tapir backend api manifest
+    target: manifests/backend-api-scala-tapir-http4s-zio.yaml
+  - alias: zig zap backend api manifest
+    target: manifests/backend-api-zig-zap-jetzig.yaml
+  - alias: cli python manifest
+    target: manifests/cli-python.yaml
+  - alias: data acquisition manifest
+    target: manifests/data-acquisition-service.yaml
+  - alias: data lake parquet minio manifest
+    target: manifests/data-lake-parquet-minio.yaml
+  - alias: data pipeline polars manifest
+    target: manifests/data-pipeline-polars.yaml
+  - alias: dokku fastapi manifest
+    target: manifests/dokku-deployable-fastapi.yaml
+  - alias: dokku go echo manifest
+    target: manifests/dokku-deployable-go-echo.yaml
+  - alias: dokku phoenix manifest
+    target: manifests/dokku-deployable-phoenix.yaml
+  - alias: dokku typescript manifest
+    target: manifests/dokku-deployable-typescript-hono-bun.yaml
+  - alias: nats mongo pipeline manifest
+    target: manifests/event-capture-nats-mongo.yaml
+  - alias: local rag manifest
+    target: manifests/local-rag-base.yaml
+  - alias: multi source sync manifest
+    target: manifests/multi-source-sync-platform.yaml
+  - alias: multi storage zoo manifest
+    target: manifests/multi-storage-zoo.yaml
+  - alias: prompt first meta repo manifest
+    target: manifests/prompt-first-meta-repo.yaml
+  - alias: elixir phoenix webapp manifest
+    target: manifests/webapp-elixir-phoenix.yaml
