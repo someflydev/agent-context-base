@@ -18,7 +18,7 @@ AI-assisted development fails in predictable ways: assistants scan too much, mix
 
 ## Example Workflow
 
-Start in `agent-context-base`, launch Codex, Claude, or Gemini there, and give it a short 2-5 sentence project description. Do not try to guess the `scripts/new_repo.py` arguments first. In the normal flow, the assistant reads this repo's routing docs and option surfaces, proposes the right `new_repo.py` command, and you approve or refine it. `docs/usage/STARTING_NEW_PROJECTS.md` includes 50 example initial prompts you can reuse.
+Start in `agent-context-base`, launch Codex, Claude, or Gemini there, and give it a short 2-5 sentence project description. Do not try to guess the `scripts/new_repo.py` arguments first. In the normal flow, the assistant reads this repo's routing docs and option surfaces, proposes the right `new_repo.py` command, and you approve or refine it. `docs/usage/STARTING_NEW_PROJECTS.md` includes 100 example initial prompts you can reuse.
 
 The generated repo can be created anywhere convenient, including a clean path such as `/tmp/analytics-api`, so the assistant is not working inside a half-prepared directory from the start.
 
@@ -42,29 +42,33 @@ Strong first prompt inside the generated repo:
 
 ## Supported Project Shapes
 
+- Prompt-first meta repos
 - Backend API services
 - CLI tools
 - Data pipelines
+- Data acquisition services
+- Multi-backend services
+- Multi-source sync platforms
 - Local RAG systems
 - Multi-storage experiments
-- Prompt-first meta repos
+- Polyglot labs
 - Dokku-deployable services
 
-First-class stacks include FastAPI, Hono/Bun, Rust/Axum, Go/Echo, Phoenix, Scala/Tapir/http4s/ZIO, Kotlin/http4k/Exposed, Nim/Jester/HappyX, plus supporting storage and infra packs such as Redis, MongoDB, DuckDB, Trino, NATS JetStream, Meilisearch, Elasticsearch, TimescaleDB, and Qdrant.
+First-class stacks include FastAPI, Hono/Bun, Rust/Axum, Go/Echo, Phoenix, Scala/Tapir/http4s/ZIO, Kotlin/http4k/Exposed, Nim/Jester/HappyX, Clojure/Kit, Dart/Dartfrog, OCaml/Dream, Crystal/Kemal, Zig/Zap/Jetzig, and Ruby/Hanami, plus supporting infra packs such as Redis, MongoDB, DuckDB, DuckDB+Parquet, Trino, NATS JetStream, Kafka, RabbitMQ, Meilisearch, Elasticsearch, TimescaleDB, Qdrant, and MinIO.
 
 ## Deeper Documentation
 
 | Doc | Description |
 | --- | --- |
 | `docs/repo-purpose.md` | What this repository is for, what it is not for, and the core terms used throughout the system. |
-| `docs/repo-layout.md` | Map of the top-level layers and where to look for doctrine, manifests, examples, templates, and scripts. |
-| `docs/context-boot-sequence.md` | Deterministic startup contract for assistants working inside this repo or a derived repo. |
-| `docs/session-start.md` | Short operational checklist for beginning or resuming a task. |
+| `docs/ARCHITECTURE_MAP.md` | System architecture diagrams, component index, and full documentation map. |
+| `docs/system-operating-manual.md` | One-page operational reference covering the end-to-end flow and working rules. |
 | `docs/architecture/ASSISTANT_RUNTIME_MODEL.md` | High-level architecture of the assistant runtime, including routing, manifests, examples, verification, and continuity. |
 | `docs/architecture/CONTEXT_ENGINEERING_GUIDE.md` | Principles for keeping context small, high-signal, and explainable. |
 | `docs/usage/STARTING_NEW_PROJECTS.md` | Practical guide for using this base to classify an idea, generate a repo, and start implementation. |
 | `docs/usage/ASSISTANT_BEHAVIOR_SPEC.md` | Normative behavior contract for assistants operating in repos derived from this system. |
 | `docs/usage/ADVANCED_ASSISTANT_OPERATIONS.md` | Guidance for long-running sessions, multi-agent work, cross-repo coordination, and higher-autonomy workflows. |
+| `docs/CONTRIBUTOR_PLAYBOOK.md` | Rules and checklists for extending the repo: new stacks, examples, archetypes, and verification coverage. |
 | `docs/memory-layer-overview.md` | How `MEMORY.md`, stop hooks, and handoff snapshots fit into the runtime. |
 | `docs/deployment-readiness-checklists.md` | Concise deployment and release-readiness checks for service and prompt-first repos. |
 | `docs/assistant-failure-modes.md` | Common failure patterns and the repo features that mitigate them. |
