@@ -16,23 +16,43 @@ Route from what the user is trying to do, not from internal file names.
   - load `context/workflows/refactor.md`
 - "add smoke tests", "happy-path check", "boot verification"
   - load `context/workflows/add-smoke-tests.md`
+- "smoke test philosophy", "what should smoke tests verify", "smoke test scope and depth"
+  - load `context/doctrine/smoke-test-philosophy.md`
+- "testing philosophy", "unit vs integration test approach", "when to use real infrastructure in tests"
+  - load `context/doctrine/testing-philosophy.md`
 - "integration test", "real db test", "docker-backed test"
   - load `context/workflows/add-storage-integration.md`
+- "docker compose port isolation", "isolate test containers from dev services", "compose port conflicts between test and dev"
+  - load `context/doctrine/compose-port-and-data-isolation.md`
 - "bootstrap a repo", "new repo from base", "starter repo"
   - load `context/workflows/bootstrap-repo.md`
   - prefer `scripts/new_repo.py` when the task is repo generation instead of a manual copy pass
+- "naming conventions", "how to name things in this repo", "naming clarity rules", "naming discipline"
+  - load `context/doctrine/naming-and-clarity.md`
+- "commit hygiene", "how to write commit messages", "commit message format rules"
+  - load `context/doctrine/commit-hygiene.md`
+- "prompt-first conventions", "how to write prompts for a prompt-first repo", "prompt file format rules"
+  - load `context/doctrine/prompt-first-conventions.md`
+- "canonical examples guide", "which canonical example applies here", "how to read a canonical example"
+  - load `context/doctrine/canonical-examples.md`
 - "don't create the README yet", "wait before adding a README", "README can wait"
   - load `context/workflows/decide-when-to-create-root-readme.md`
 - "wait until the repo has substance before adding docs", "don't add docs yet", "should we create docs now"
   - load `context/workflows/decide-when-to-create-project-docs-dir.md`
+- "documentation timing discipline", "when is the right time to write docs", "avoid premature documentation"
+  - load `context/doctrine/documentation-timing-discipline.md`
 - "refresh outdated mermaid diagrams", "update the architecture diagram", "diagram looks stale"
   - load `context/workflows/refresh-mermaid-diagrams.md`
+- "mermaid diagram freshness rules", "when is a mermaid diagram stale", "diagram drift criteria"
+  - load `context/doctrine/mermaid-diagram-freshness.md`
 - "do a doc freshness pass", "check docs for drift", "refresh repo docs after implementation"
   - load `context/workflows/perform-doc-freshness-pass.md`
 - "make a prompt sequence", "split this into prompts"
   - load `context/workflows/generate-prompt-sequence.md`
 - "deploy", "Dokku", "Procfile", "release phase"
   - load `context/workflows/add-deployment-support.md`
+- "Dokku deployment philosophy", "why Dokku not kubernetes", "deployment approach and tradeoffs"
+  - load `context/doctrine/deployment-philosophy-dokku.md`
 - "seed data", "fixtures", "sample records"
   - load `context/workflows/add-seed-data.md`
 - "new endpoint", "new route", "new handler"
@@ -67,6 +87,10 @@ Route from what the user is trying to do, not from internal file names.
 - "show me the language-agnostic data acquisition invariants", "generic acquisition guidance", "invariants before picking a stack"
   - load `context/doctrine/data-acquisition-invariants.md`
   - load `examples/canonical-data-acquisition/README.md`
+- "data acquisition philosophy", "why structure acquisition this way", "acquisition design principles"
+  - load `context/doctrine/data-acquisition-philosophy.md`
+- "source research discipline", "how to rigorously evaluate data sources", "source scoring methodology"
+  - load `context/doctrine/source-research-discipline.md`
 - "add a new API source", "pull from an API", "ingest an API feed"
   - load `context/workflows/add-api-ingestion-source.md`
 - "add a scraper", "scrape this site", "ingest by scraping"
@@ -168,6 +192,32 @@ Route from what the user is trying to do, not from internal file names.
   - load `context/doctrine/python-ml-library-selection.md`
 - "xgboost", "lightgbm", "gradient boosted trees python"
   - load `context/doctrine/python-ml-library-selection.md`
+- "build a Clojure rules engine with Python scoring and Go serving", "Clojure Python Go three-service system"
+  - load `context/stacks/trio-clojure-python-go.md`
+- "build a Scala streaming pipeline with Python and Go serving", "Scala Python Go trio", "Spark pipeline with Python and Go"
+  - load `context/stacks/trio-scala-python-go.md`
+- "show the canonical storage examples", "storage example patterns", "how storage tests are structured"
+  - load `examples/canonical-storage/README.md`
+- "show the canonical RAG indexing example", "local rag example", "vector indexing example"
+  - load `examples/canonical-rag/README.md`
+  - load `context/workflows/add-local-rag-indexing.md`
+- "show the canonical CLI example", "CLI command example", "how to implement CLI commands"
+  - load `examples/canonical-cli/README.md`
+  - load `context/workflows/extend-cli.md`
+- "show the canonical Dokku deployment example", "Dokku example files", "Procfile and app.json examples"
+  - load `examples/canonical-dokku/README.md`
+  - load `context/stacks/dokku-conventions.md`
+- "show the canonical smoke test example", "smoke test implementation example"
+  - load `examples/canonical-smoke-tests/README.md`
+- "show the canonical observability example", "logging and tracing examples", "structured log example"
+  - load `examples/canonical-observability/README.md`
+- "show the canonical prompt examples", "prompt file examples", "prompt-first layout example"
+  - load `examples/canonical-prompts/README.md`
+- "show the canonical seed data example", "seed data implementation example"
+  - load `examples/canonical-seed-data/README.md`
+  - load `context/workflows/add-seed-data.md`
+- "show the canonical workflow examples", "post-flight checklist example", "handoff snapshot example"
+  - load `examples/canonical-workflows/README.md`
 
 ## Compound Requests
 
