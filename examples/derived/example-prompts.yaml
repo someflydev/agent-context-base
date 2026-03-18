@@ -1,0 +1,1695 @@
+examples:
+
+  # ── Category A — Single-Backend API Services ──────────────────────────────
+
+  - number: 1
+    codename: partner-data-enrichment
+    category: A
+    category_name: Single-Backend API Services
+    prompt: |
+      Build a FastAPI service that normalizes incoming JSON from multiple partner APIs into
+      a unified schema stored in PostgreSQL. Use Polars for in-memory transformation and
+      implement cursor-based pagination for the list endpoint. Smoke tests verify the health
+      endpoint and at least one query endpoint returns normalized records from seed data.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 2
+    codename: analytics-parquet-api
+    category: A
+    category_name: Single-Backend API Services
+    prompt: |
+      Build a FastAPI analytics service that reads from a directory of Parquet files using
+      DuckDB, exposing aggregate and trend query endpoints. Polars handles result
+      transformation before JSON serialization. Smoke tests confirm at least two aggregate
+      endpoints return correct totals from seeded fixture Parquet files.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 3
+    codename: timeseries-ingest
+    category: A
+    category_name: Single-Backend API Services
+    prompt: |
+      Build a FastAPI ingestion service that writes time-series records to a TimescaleDB
+      hypertable with batch-flush writes and exposes windowed aggregate query endpoints.
+      Seed with timestamps spread across multiple time windows. Smoke tests verify both the
+      ingest endpoint and at least one windowed aggregate.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 4
+    codename: webhook-receiver
+    category: A
+    category_name: Single-Backend API Services
+    prompt: |
+      Build a FastAPI service that receives, validates, and normalizes webhook events,
+      persisting raw and normalized forms to MongoDB with Redis-backed rate limiting on the
+      ingest endpoint. Seed with varied event shapes to exercise the normalization path.
+      Smoke tests verify ingest, rate-limiter response, and normalization correctness.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 5
+    codename: scheduled-enrichment
+    category: A
+    category_name: Single-Backend API Services
+    prompt: |
+      Build a FastAPI service with a PostgreSQL-backed enrichment pipeline that runs on a
+      configurable schedule, processing pending records with Polars and writing enriched
+      results back. Expose a trigger-and-inspect endpoint for testing without waiting for
+      the schedule. Smoke tests verify the trigger endpoint returns an enrichment summary.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 6
+    codename: hono-internal-api
+    category: A
+    category_name: Single-Backend API Services
+    prompt: |
+      Build a lean internal API using Hono on Bun with SQLite, exposing three
+      domain-specific endpoints. Keep the service self-contained with no external
+      infrastructure beyond SQLite. Smoke tests verify all three endpoints return correct
+      responses with seeded fixture data.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: typescript-hono-bun
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 7
+    codename: hono-bff-aggregator
+    category: A
+    category_name: Single-Backend API Services
+    prompt: |
+      Build a Hono/Bun Backend-for-Frontend that aggregates responses from multiple upstream
+      services into a unified payload with graceful degradation when an upstream is
+      unavailable. Configure for Dokku deployment with health check and Procfile. Smoke
+      tests verify the aggregated response and the degraded-upstream fallback path.
+    new_repo_args:
+      archetype: dokku-deployable-service
+      primary_stack: typescript-hono-bun
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: true
+
+  - number: 8
+    codename: go-parquet-reports
+    category: A
+    category_name: Single-Backend API Services
+    prompt: |
+      Build a Go/Echo reporting service that reads Parquet files via DuckDB, exposing
+      endpoints for filtered, sorted, and paginated report output. Seed fixture Parquet
+      files with enough rows to verify pagination boundaries. Smoke tests confirm filter,
+      sort, and page-boundary responses.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: go-echo
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 9
+    codename: go-file-upload
+    category: A
+    category_name: Single-Backend API Services
+    prompt: |
+      Build a Go/Echo service that accepts file uploads, validates format and size
+      constraints, normalizes content to a canonical schema, and persists metadata to
+      PostgreSQL. Seed with fixture records representing prior uploads. Smoke tests verify
+      upload acceptance, rejection of invalid files, and metadata retrieval.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: go-echo
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 10
+    codename: rust-event-ingest
+    category: A
+    category_name: Single-Backend API Services
+    prompt: |
+      Build a high-throughput Rust/Axum ingest service that batches incoming events and
+      flushes to PostgreSQL on a configurable interval or batch-size threshold. Seed with
+      fixture event streams. Smoke tests verify the ingest endpoint accepts batches and
+      the PostgreSQL table receives flushed records.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: rust-axum-modern
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 11
+    codename: rust-batch-classifier
+    category: A
+    category_name: Single-Backend API Services
+    prompt: |
+      Build a Rust/Axum classification service that accepts feature vectors, scores them
+      against a precomputed model, and returns classification labels with confidence scores.
+      Embed fixture model state at startup; no live storage required. Smoke tests verify the
+      classify endpoint returns expected labels for known input vectors.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: rust-axum-modern
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 12
+    codename: phoenix-scheduling
+    category: A
+    category_name: Single-Backend API Services
+    prompt: |
+      Build an Elixir/Phoenix service with Ecto and PostgreSQL that manages availability
+      windows for a scheduling domain, supporting create, query, and conflict-detection
+      endpoints. Seed with overlapping and non-overlapping fixture windows. Smoke tests
+      verify conflict detection and availability query endpoints.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: elixir-phoenix
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 13
+    codename: scala-financial-reports
+    category: A
+    category_name: Single-Backend API Services
+    prompt: |
+      Build a Scala/Tapir+ZIO financial reporting service that generates period summaries
+      and period-over-period comparison reports from PostgreSQL data. Seed with multi-period
+      fixture records. Smoke tests verify at least one summary and one comparison endpoint
+      return correctly computed results.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: scala-tapir-http4s-zio
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 14
+    codename: kotlin-invoice-tracker
+    category: A
+    category_name: Single-Backend API Services
+    prompt: |
+      Build a Kotlin/http4k+Exposed CRUD service for tracking invoices with status
+      transitions (draft, sent, paid, overdue) and filter-by-status list endpoints backed
+      by PostgreSQL. Seed with invoices across all status values. Smoke tests verify create,
+      status transition, and filtered list endpoints.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: kotlin-http4k-exposed
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 15
+    codename: clojure-preferences
+    category: A
+    category_name: Single-Backend API Services
+    prompt: |
+      Build a Clojure/Kit+next.jdbc service that stores and retrieves user preference maps
+      in PostgreSQL, supporting get, set, and partial-update operations per user key. Seed
+      with fixture users and preference maps. Smoke tests verify get, set, and partial-update
+      return consistent results.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: clojure-kit-nextjdbc-hiccup
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 16
+    codename: ruby-content-store
+    category: A
+    category_name: Single-Backend API Services
+    prompt: |
+      Build a Ruby/Hanami service that stores content records in PostgreSQL, exposing
+      paginated list endpoints with field-level filtering. Seed with enough fixture records
+      to verify pagination boundaries and filter combinations. Smoke tests confirm paginated
+      list and filtered queries return correct subsets.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: ruby-hanami
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 17
+    codename: nim-json-filter
+    category: A
+    category_name: Single-Backend API Services
+    prompt: |
+      Build a Nim/Jester service that filters fixture JSON documents by field predicates,
+      returning matching subsets without any live database dependency. Load fixture JSON at
+      startup and serve filter queries in memory. Smoke tests verify multiple predicate
+      combinations against known fixture documents.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: nim-jester-happyx
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 18
+    codename: dart-audit-log
+    category: A
+    category_name: Single-Backend API Services
+    prompt: |
+      Build a Dart/Dartfrog service that appends audit events to a PostgreSQL audit trail,
+      supporting append and time-bounded query endpoints. Seed with fixture audit entries
+      spanning multiple time ranges. Smoke tests verify append and bounded-query endpoints.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: dart-dartfrog
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 19
+    codename: ocaml-metadata-store
+    category: A
+    category_name: Single-Backend API Services
+    prompt: |
+      Build an OCaml/Dream+Caqti+TyXML service that stores and retrieves project metadata
+      records in PostgreSQL, supporting CRUD and list-with-filter. Seed with fixture metadata
+      records. Smoke tests verify create, read, update, delete, and filtered list endpoints.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: ocaml-dream-caqti-tyxml
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 20
+    codename: crystal-cache-proxy
+    category: A
+    category_name: Single-Backend API Services
+    prompt: |
+      Build a Crystal/Kemal+Avram caching proxy that wraps a PostgreSQL query behind a
+      time-bounded cache, returning cache-hit headers when served from cache and refreshing
+      on expiry. Seed with fixture data. Smoke tests verify a cold-cache miss, a warm-cache
+      hit, and a cache-refresh path.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: crystal-kemal-avram
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 21
+    codename: fastapi-dokku-analytics
+    category: A
+    category_name: Single-Backend API Services
+    prompt: |
+      Build a FastAPI analytics service backed by PostgreSQL and Polars, configured for
+      Dokku deployment with a Procfile, health endpoint, and release script. Expose at least
+      two aggregate query endpoints. Smoke tests verify health and at least one aggregate
+      endpoint after seed.
+    new_repo_args:
+      archetype: dokku-deployable-service
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: true
+
+  # ── Category B — Backend-Driven UI ───────────────────────────────────────
+
+  - number: 22
+    codename: faceted-dashboard
+    category: B
+    category_name: Backend-Driven UI
+    prompt: |
+      Build a FastAPI+HTMX server-rendered dashboard with Tailwind and Plotly, supporting
+      faceted include/exclude filtering with dynamic counts recalculated on each filter
+      change. Seed with multi-dimensional fixture data. Playwright integration tests verify
+      that applying and removing facets updates both the chart and the count labels.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: true
+      seed_data: true
+      dokku: false
+
+  - number: 23
+    codename: search-sort-paginate
+    category: B
+    category_name: Backend-Driven UI
+    prompt: |
+      Build a FastAPI+HTMX service with keyword search, multi-field sort, and infinite-scroll
+      pagination via HTMX partial responses. Seed with enough fixture records to verify
+      pagination boundaries and sort correctness. Playwright tests verify search results,
+      sort order toggling, and scroll-triggered page loads.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: true
+      seed_data: true
+      dokku: false
+
+  - number: 24
+    codename: split-filter-panel
+    category: B
+    category_name: Backend-Driven UI
+    prompt: |
+      Build a FastAPI+HTMX service with a split include/exclude facet panel maintaining
+      server-side filter state across partial renders. Seed with fixture records across
+      multiple categories. Playwright tests verify that adding an include filter reduces
+      the count and that adding an exclude filter further narrows the intersection.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: true
+      seed_data: true
+      dokku: false
+
+  - number: 25
+    codename: shared-query-chart-table
+    category: B
+    category_name: Backend-Driven UI
+    prompt: |
+      Build a FastAPI+HTMX+Plotly service that issues a single database query and renders
+      both a chart and a table from the same result set, updating both with a single HTMX
+      swap. Seed with fixture data producing distinguishable chart and table values. Playwright
+      tests verify chart and table consistency after filter changes.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: true
+      seed_data: true
+      dokku: false
+
+  - number: 26
+    codename: report-browser-cuj
+    category: B
+    category_name: Backend-Driven UI
+    prompt: |
+      Build a FastAPI+HTMX+Tailwind report browser designed around critical user journeys:
+      search, select, view detail, and export. Seed with representative fixture reports.
+      Playwright tests cover the full CUJ—search → select → detail → export—verifying
+      each transition completes correctly.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: true
+      seed_data: true
+      dokku: false
+
+  - number: 27
+    codename: compound-facet-dashboard
+    category: B
+    category_name: Backend-Driven UI
+    prompt: |
+      Build a FastAPI+HTMX dashboard with compound multi-dimension AND filters that compute
+      intersection counts across all active facets simultaneously. Seed with fixture data
+      across at least three dimensions. Playwright tests verify that two active facets from
+      different dimensions return only records matching both and the displayed count is accurate.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: true
+      seed_data: true
+      dokku: false
+
+  # ── Category C — Data Acquisition and Pipelines ───────────────────────────
+
+  - number: 28
+    codename: python-api-acquisition
+    category: C
+    category_name: Data Acquisition and Pipelines
+    prompt: |
+      Build a Python data acquisition service that paginates through an external REST API
+      with exponential backoff on transient errors, archives each raw response, and loads
+      normalized records into PostgreSQL. Include a fixture server for deterministic tests.
+      Smoke tests verify all fixture pages are processed and raw archives are created.
+    new_repo_args:
+      archetype: data-acquisition-service
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 29
+    codename: go-api-ingestion
+    category: C
+    category_name: Data Acquisition and Pipelines
+    prompt: |
+      Build a Go data ingestion service that fetches daily JSON payloads from an external
+      API, applies exponential backoff on failure, emits structured log events, and persists
+      normalized records to PostgreSQL. Seed fixture JSON responses for deterministic runs.
+      Smoke tests verify the daily fetch loop completes and records are persisted.
+    new_repo_args:
+      archetype: data-acquisition-service
+      primary_stack: go-echo
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 30
+    codename: python-scraper
+    category: C
+    category_name: Data Acquisition and Pipelines
+    prompt: |
+      Build a Python scraper that fetches HTML pages, extracts structured records using a
+      defined schema, normalizes and deduplicates with Polars, persists to PostgreSQL, and
+      archives raw HTML. Seed with fixture HTML pages for deterministic execution. Smoke
+      tests verify extraction correctness and raw archive creation.
+    new_repo_args:
+      archetype: data-acquisition-service
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 31
+    codename: bun-scraper
+    category: C
+    category_name: Data Acquisition and Pipelines
+    prompt: |
+      Build a TypeScript/Bun scraper that parses HTML pages, extracts records into
+      Drizzle-managed PostgreSQL tables, and runs fixture-driven tests using static HTML
+      snapshots. Smoke tests verify that parsing fixture pages produces the expected record
+      count and correct field values.
+    new_repo_args:
+      archetype: data-acquisition-service
+      primary_stack: typescript-hono-bun
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 32
+    codename: csv-etl-pipeline
+    category: C
+    category_name: Data Acquisition and Pipelines
+    prompt: |
+      Build a Python ETL pipeline that reads heterogeneous CSV files, normalizes schemas
+      with Polars, and writes deterministic Parquet output with consistent column types and
+      sort order. Smoke tests verify that processing a fixture CSV set produces byte-identical
+      Parquet output on repeated runs.
+    new_repo_args:
+      archetype: data-pipeline
+      primary_stack: duckdb-trino-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 33
+    codename: json-etl-pipeline
+    category: C
+    category_name: Data Acquisition and Pipelines
+    prompt: |
+      Build a Python ETL pipeline that reads partner JSON exports, enriches records with
+      Polars transformations, and bulk-inserts normalized results into PostgreSQL with
+      provenance metadata. Seed with fixture JSON exports. Smoke tests verify enrichment
+      correctness and row counts after bulk insert.
+    new_repo_args:
+      archetype: data-pipeline
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 34
+    codename: duckdb-parquet-analytics
+    category: C
+    category_name: Data Acquisition and Pipelines
+    prompt: |
+      Build a local DuckDB+Parquet+CSV analytical pipeline that reads CSV source files,
+      transforms them into Parquet partitions, and executes DuckDB analytical queries
+      against the partitions. Smoke tests verify that processing fixture CSVs produces
+      correct aggregate outputs from DuckDB queries.
+    new_repo_args:
+      archetype: data-pipeline
+      primary_stack: duckdb-trino-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 35
+    codename: multi-source-sync
+    category: C
+    category_name: Data Acquisition and Pipelines
+    prompt: |
+      Build a multi-source coordination service that subscribes to NATS JetStream streams
+      from two sources, deduplicates and reconciles incoming events, and persists merged
+      records to PostgreSQL. Seed with overlapping fixture events from both sources. Smoke
+      tests verify deduplication logic and merged record correctness.
+    new_repo_args:
+      archetype: multi-source-sync-platform
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 36
+    codename: classification-enrichment
+    category: C
+    category_name: Data Acquisition and Pipelines
+    prompt: |
+      Build a Python enrichment service that classifies incoming records using a precomputed
+      label set, appends classification tags and confidence scores, and persists enriched
+      records with provenance metadata to PostgreSQL. Seed with fixture records spanning
+      multiple classification outcomes. Smoke tests verify tag assignment and confidence
+      score ranges.
+    new_repo_args:
+      archetype: data-acquisition-service
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 37
+    codename: recurring-sync
+    category: C
+    category_name: Data Acquisition and Pipelines
+    prompt: |
+      Build a Python recurring-sync service with a configurable schedule, exponential
+      backoff with jitter on transient errors, and raw archival of each sync run's source
+      data. Expose a trigger endpoint for on-demand sync. Smoke tests verify the trigger
+      initiates a sync, backoff is applied on simulated failure, and raw archives are created.
+    new_repo_args:
+      archetype: data-acquisition-service
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 38
+    codename: elixir-data-acquisition
+    category: C
+    category_name: Data Acquisition and Pipelines
+    prompt: |
+      Build an Elixir/Phoenix service with a GenServer that paginates through an external
+      API, persists normalized records to PostgreSQL via Ecto, and supports fixture-driven
+      verification of paginated acquisition. Smoke tests verify all fixture pages are
+      processed and the expected record count is persisted.
+    new_repo_args:
+      archetype: data-acquisition-service
+      primary_stack: elixir-phoenix
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  # ── Category D — ML and Data Science ─────────────────────────────────────
+
+  - number: 39
+    codename: sklearn-inference
+    category: D
+    category_name: ML and Data Science
+    prompt: |
+      Build a FastAPI inference service that loads a pre-trained scikit-learn model from
+      disk at startup and exposes a predict endpoint accepting feature vectors and returning
+      classification labels. Include a fixture model for deterministic testing. Smoke tests
+      verify expected labels are returned for known input vectors.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 40
+    codename: recommendation-engine
+    category: D
+    category_name: ML and Data Science
+    prompt: |
+      Build a FastAPI recommendation service that reads precomputed recommendation records
+      from PostgreSQL and returns ordered recommendation lists for a given entity. Seed with
+      fixture recommendation data. Smoke tests verify the endpoint returns the correct top-N
+      results for known entity IDs.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 41
+    codename: arima-forecasting
+    category: D
+    category_name: ML and Data Science
+    prompt: |
+      Build a FastAPI forecasting service backed by statsmodels ARIMA that accepts a
+      time-series identifier, fits a model to historical data, and returns a forecast with
+      confidence intervals. Seed with fixture time-series data. Smoke tests verify the
+      forecast endpoint returns the expected number of future periods with non-null bounds.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 42
+    codename: semantic-search-qdrant
+    category: D
+    category_name: ML and Data Science
+    prompt: |
+      Build a FastAPI semantic search service that indexes a fixture corpus into Qdrant using
+      sentence-transformers embeddings, then exposes a query endpoint returning semantically
+      similar documents. Smoke tests verify that a known phrase query returns the fixture
+      document with the highest semantic similarity.
+    new_repo_args:
+      archetype: local-rag-system
+      primary_stack: qdrant
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 43
+    codename: xgboost-serving
+    category: D
+    category_name: ML and Data Science
+    prompt: |
+      Build a FastAPI serving layer for a pre-trained XGBoost model that returns predictions
+      with feature importance metadata alongside each response. Load a fixture model at
+      startup. Smoke tests verify the prediction endpoint returns valid scores and non-empty
+      feature importance for known input vectors.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 44
+    codename: embedding-pipeline
+    category: D
+    category_name: ML and Data Science
+    prompt: |
+      Build a full embedding pipeline with sentence-transformers and Qdrant, exposing both
+      corpus indexing (POST /index) and semantic query (GET /query) as a single FastAPI
+      service. Smoke tests verify that indexing fixture documents followed by a query returns
+      the expected top result.
+    new_repo_args:
+      archetype: local-rag-system
+      primary_stack: qdrant
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 45
+    codename: duckdb-polars-sklearn
+    category: D
+    category_name: ML and Data Science
+    prompt: |
+      Build a Python research pipeline that reads Parquet fixture data, queries it with
+      DuckDB, transforms results with Polars, trains a scikit-learn model, and evaluates
+      it in a single pipeline script. Smoke tests verify the pipeline completes without
+      error and evaluation metrics fall within expected ranges for fixture data.
+    new_repo_args:
+      archetype: data-pipeline
+      primary_stack: duckdb-trino-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 46
+    codename: lightgbm-tabular
+    category: D
+    category_name: ML and Data Science
+    prompt: |
+      Build a Python LightGBM tabular training pipeline that reads Parquet fixture data,
+      performs feature engineering with Polars, trains a LightGBM model, and outputs
+      evaluation metrics. Smoke tests verify training completes and accuracy metrics exceed
+      a fixture-tuned threshold.
+    new_repo_args:
+      archetype: data-pipeline
+      primary_stack: duckdb-trino-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  # ── Category E — Multi-Backend Coordination ───────────────────────────────
+
+  - number: 47
+    codename: go-python-ml-gateway
+    category: E
+    category_name: Multi-Backend Coordination
+    prompt: |
+      Build a Go/Echo gateway that routes prediction requests to a FastAPI ML scoring backend
+      via a REST seam, aggregating scores and returning enriched responses to callers. Include
+      a fixture FastAPI scoring server for deterministic tests. Smoke tests verify the
+      end-to-end route: request in, prediction score out.
+    new_repo_args:
+      archetype: multi-backend-service
+      primary_stack: go-echo
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 48
+    codename: kotlin-rust-grpc
+    category: E
+    category_name: Multi-Backend Coordination
+    prompt: |
+      Build a Kotlin/http4k gRPC caller and a Rust/Tonic compute server sharing a .proto
+      contract, where Kotlin invokes the Rust kernel for compute-intensive scoring. Smoke
+      tests verify the Kotlin→gRPC→Rust round-trip with fixture inputs and expected outputs.
+    new_repo_args:
+      archetype: multi-backend-service
+      primary_stack: kotlin-http4k-exposed
+      smoke_tests: true
+      integration_tests: false
+      seed_data: false
+      dokku: false
+
+  - number: 49
+    codename: elixir-go-nats
+    category: E
+    category_name: Multi-Backend Coordination
+    prompt: |
+      Build an Elixir/Phoenix publisher and a Go NATS JetStream consumer, where Elixir
+      publishes domain events to a NATS stream and Go processes and persists them. Smoke
+      tests verify that publishing an event in Elixir results in a processed record in the
+      Go service's store.
+    new_repo_args:
+      archetype: multi-backend-service
+      primary_stack: elixir-phoenix
+      smoke_tests: true
+      integration_tests: false
+      seed_data: false
+      dokku: false
+
+  - number: 50
+    codename: clojure-go-kafka
+    category: E
+    category_name: Multi-Backend Coordination
+    prompt: |
+      Build a Clojure Kafka producer and a Go Kafka consumer, where Clojure emits domain
+      events and Go enriches and persists them. Smoke tests verify the full Kafka round-trip:
+      event produced by Clojure, enriched and stored by Go.
+    new_repo_args:
+      archetype: multi-backend-service
+      primary_stack: clojure-kit-nextjdbc-hiccup
+      smoke_tests: true
+      integration_tests: false
+      seed_data: false
+      dokku: false
+
+  - number: 51
+    codename: node-go-graphql
+    category: E
+    category_name: Multi-Backend Coordination
+    prompt: |
+      Build a Node/Hono GraphQL BFF that resolves queries by calling a Go/Echo domain REST
+      API, shaping responses into a GraphQL schema. Smoke tests verify that a GraphQL query
+      resolves correctly against a fixture Go backend.
+    new_repo_args:
+      archetype: multi-backend-service
+      primary_stack: typescript-hono-bun
+      smoke_tests: true
+      integration_tests: false
+      seed_data: false
+      dokku: false
+
+  - number: 52
+    codename: scala-rust-grpc-streams
+    category: E
+    category_name: Multi-Backend Coordination
+    prompt: |
+      Build a Scala/Akka Streams pipeline and a Rust/Tonic gRPC kernel, where the Scala
+      pipeline streams data to the Rust kernel for computation and streams results back.
+      Smoke tests verify a fixture stream round-trip produces expected output stages.
+    new_repo_args:
+      archetype: multi-backend-service
+      primary_stack: scala-tapir-http4s-zio
+      smoke_tests: true
+      integration_tests: false
+      seed_data: false
+      dokku: false
+
+  - number: 53
+    codename: node-elixir-nats-bidir
+    category: E
+    category_name: Multi-Backend Coordination
+    prompt: |
+      Build a Node service and an Elixir service connected by a bidirectional NATS seam,
+      where each side can publish and receive messages. Smoke tests verify Node-published
+      events appear in Elixir and Elixir-published events appear in Node.
+    new_repo_args:
+      archetype: multi-backend-service
+      primary_stack: typescript-hono-bun
+      smoke_tests: true
+      integration_tests: false
+      seed_data: false
+      dokku: false
+
+  - number: 54
+    codename: rust-python-grpc-infer
+    category: E
+    category_name: Multi-Backend Coordination
+    prompt: |
+      Build a Rust/Tonic gRPC inference server and a Python orchestrator that sends batch
+      feature vectors to the Rust server and aggregates results. Smoke tests verify the
+      Python→gRPC→Rust inference round-trip with fixture batch input.
+    new_repo_args:
+      archetype: multi-backend-service
+      primary_stack: rust-axum-modern
+      smoke_tests: true
+      integration_tests: false
+      seed_data: false
+      dokku: false
+
+  - number: 55
+    codename: elixir-rust-nif
+    category: E
+    category_name: Multi-Backend Coordination
+    prompt: |
+      Build an Elixir service that calls a Rust NIF via Rustler for in-process compute,
+      eliminating network overhead. Smoke tests verify the NIF returns expected results for
+      fixture inputs with no network latency.
+    new_repo_args:
+      archetype: multi-backend-service
+      primary_stack: elixir-phoenix
+      smoke_tests: true
+      integration_tests: false
+      seed_data: false
+      dokku: false
+
+  - number: 56
+    codename: elixir-clojure-rabbitmq
+    category: E
+    category_name: Multi-Backend Coordination
+    prompt: |
+      Build an Elixir RabbitMQ producer and a Clojure Broadway consumer, where Elixir
+      publishes domain events and Clojure processes and acknowledges them. Smoke tests verify
+      end-to-end message delivery and acknowledgment.
+    new_repo_args:
+      archetype: multi-backend-service
+      primary_stack: elixir-phoenix
+      smoke_tests: true
+      integration_tests: false
+      seed_data: false
+      dokku: false
+
+  - number: 57
+    codename: trio-go-elixir-python
+    category: E
+    category_name: Multi-Backend Coordination
+    prompt: |
+      Build a three-service coordination chain: Go/Echo gateway receives HTTP requests and
+      publishes to NATS, an Elixir coordinator picks up and coordinates, and a Python FastAPI
+      ML service provides final scoring via REST. Smoke tests verify the full chain: HTTP
+      request in, Python ML score out.
+    new_repo_args:
+      archetype: multi-backend-service
+      primary_stack: go-echo
+      smoke_tests: true
+      integration_tests: false
+      seed_data: false
+      dokku: false
+
+  - number: 58
+    codename: trio-go-rust-python-dual
+    category: E
+    category_name: Multi-Backend Coordination
+    prompt: |
+      Build a three-service dual-seam system where a Go gateway routes to both a Rust gRPC
+      compute backend and a Python REST ML backend, then combines results. Smoke tests verify
+      both seams are exercised and combined results are returned.
+    new_repo_args:
+      archetype: multi-backend-service
+      primary_stack: go-echo
+      smoke_tests: true
+      integration_tests: false
+      seed_data: false
+      dokku: false
+
+  - number: 59
+    codename: trio-elixir-go-rust-nats
+    category: E
+    category_name: Multi-Backend Coordination
+    prompt: |
+      Build a three-service NATS coordination: Elixir coordinator publishes tasks to NATS,
+      a Go worker consumes and calls a Rust gRPC kernel, then publishes results back for
+      Elixir to collect. Smoke tests verify the full round-trip completes.
+    new_repo_args:
+      archetype: multi-backend-service
+      primary_stack: elixir-phoenix
+      smoke_tests: true
+      integration_tests: false
+      seed_data: false
+      dokku: false
+
+  - number: 60
+    codename: trio-node-go-python-gql
+    category: E
+    category_name: Multi-Backend Coordination
+    prompt: |
+      Build a three-service GraphQL platform: Node GraphQL BFF resolves queries via a Go
+      domain REST API, which delegates ML calls to a Python FastAPI service. Smoke tests
+      verify GraphQL queries traverse all three services successfully.
+    new_repo_args:
+      archetype: multi-backend-service
+      primary_stack: typescript-hono-bun
+      smoke_tests: true
+      integration_tests: false
+      seed_data: false
+      dokku: false
+
+  - number: 61
+    codename: trio-rust-nats-go-iot
+    category: E
+    category_name: Multi-Backend Coordination
+    prompt: |
+      Build a three-service IoT chain: a Rust ingestor receives sensor events and publishes
+      to NATS JetStream, a Go consumer subscribes and performs windowed aggregation, and an
+      HTTP endpoint exposes aggregate results. Smoke tests verify ingest→publish→aggregate→query.
+    new_repo_args:
+      archetype: multi-backend-service
+      primary_stack: rust-axum-modern
+      smoke_tests: true
+      integration_tests: false
+      seed_data: false
+      dokku: false
+
+  - number: 62
+    codename: scala-go-python-federated
+    category: E
+    category_name: Multi-Backend Coordination
+    prompt: |
+      Build a federated analytics system where a Scala/Tapir coordinator calls a Go gRPC
+      analytics service and a Python REST ML service, federates their results, and returns a
+      unified response. Smoke tests verify the full federation round-trip.
+    new_repo_args:
+      archetype: multi-backend-service
+      primary_stack: scala-tapir-http4s-zio
+      smoke_tests: true
+      integration_tests: false
+      seed_data: false
+      dokku: false
+
+  # ── Category F — Storage Experiments ─────────────────────────────────────
+
+  - number: 63
+    codename: duckdb-parquet-minio-lake
+    category: F
+    category_name: Storage Experiments
+    prompt: |
+      Build a local data lake with DuckDB reading Parquet files staged in a MinIO bucket,
+      exposing an analytical query endpoint targeting the lake directly. Seed the MinIO
+      bucket with fixture Parquet partitions. Smoke tests verify DuckDB queries against
+      MinIO-staged Parquet return expected aggregate results.
+    new_repo_args:
+      archetype: data-pipeline
+      primary_stack: duckdb-trino-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 64
+    codename: rag-engineering-runbooks
+    category: F
+    category_name: Storage Experiments
+    prompt: |
+      Build a FastAPI RAG service that indexes engineering runbooks into Qdrant using
+      sentence-transformers and serves semantic search queries returning the most relevant
+      runbook sections. Seed with a fixture runbook corpus. Smoke tests verify the search
+      endpoint returns the most relevant runbook for a known query phrase.
+    new_repo_args:
+      archetype: local-rag-system
+      primary_stack: qdrant
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 65
+    codename: meilisearch-fulltext
+    category: F
+    category_name: Storage Experiments
+    prompt: |
+      Build a FastAPI full-text search service backed by Meilisearch with field-level
+      ranking and facet filtering. Index fixture documents with multiple field types at
+      startup. Smoke tests verify keyword search returns ranked results and facet filters
+      narrow the result set correctly.
+    new_repo_args:
+      archetype: multi-storage-experiment
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 66
+    codename: timescaledb-sensors
+    category: F
+    category_name: Storage Experiments
+    prompt: |
+      Build a FastAPI sensor data service backed by TimescaleDB with a hypertable, supporting
+      high-frequency writes and hourly/daily aggregate query endpoints. Seed with fixture
+      sensor readings across multiple time windows. Smoke tests verify ingest, hourly
+      aggregate, and daily aggregate endpoints.
+    new_repo_args:
+      archetype: backend-api-service
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 67
+    codename: redis-cache-ratelimit
+    category: F
+    category_name: Storage Experiments
+    prompt: |
+      Build a FastAPI service with a Redis caching layer and per-key rate limiter, exposing
+      endpoints that exercise cache-miss, cache-hit, and rate-limited (429) paths. Smoke
+      tests verify all three paths against a fixture backend with known cache TTLs.
+    new_repo_args:
+      archetype: multi-storage-experiment
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 68
+    codename: nats-event-capture-replay
+    category: F
+    category_name: Storage Experiments
+    prompt: |
+      Build a NATS JetStream event capture and replay service with stream configuration,
+      publish endpoint, subscribe consumer, and replay-from-offset capability. Smoke tests
+      verify publish→subscribe delivery and that replay-from-offset returns events in the
+      correct order.
+    new_repo_args:
+      archetype: multi-storage-experiment
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 69
+    codename: trino-federated-query
+    category: F
+    category_name: Storage Experiments
+    prompt: |
+      Build a local Trino analytical service with PostgreSQL and Parquet catalogs configured,
+      exposing cross-catalog join query endpoints. Seed both PostgreSQL and Parquet fixtures.
+      Smoke tests verify a cross-catalog join returns correct results merging both sources.
+    new_repo_args:
+      archetype: data-pipeline
+      primary_stack: duckdb-trino-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 70
+    codename: multi-storage-split
+    category: F
+    category_name: Storage Experiments
+    prompt: |
+      Build a read/write split experiment that persists hot-path writes to Redis, cold-path
+      writes to MongoDB, and archives to Parquet, with storage-tier selection logic. Smoke
+      tests verify records land in the correct storage tier based on write-path classification.
+    new_repo_args:
+      archetype: multi-storage-experiment
+      primary_stack: redis-keydb-mongo
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 71
+    codename: elasticsearch-search
+    category: F
+    category_name: Storage Experiments
+    prompt: |
+      Build a FastAPI search service backed by Elasticsearch with relevance scoring and
+      field-level filtering, indexing fixture documents at startup. Smoke tests verify
+      search returns relevance-ranked results and field filters narrow the result set.
+    new_repo_args:
+      archetype: multi-storage-experiment
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 72
+    codename: es-vs-meilisearch
+    category: F
+    category_name: Storage Experiments
+    prompt: |
+      Build a side-by-side comparison service that indexes the same fixture corpus into both
+      Elasticsearch and Meilisearch, exposes parallel query endpoints for each, and returns
+      a comparison payload with scores from both engines. Smoke tests verify both engines
+      return results for the same query.
+    new_repo_args:
+      archetype: multi-storage-experiment
+      primary_stack: redis-keydb-mongo
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  # ── Category G — CLI Tools ────────────────────────────────────────────────
+
+  - number: 73
+    codename: data-reconciliation-cli
+    category: G
+    category_name: CLI Tools
+    prompt: |
+      Build a Python CLI that accepts two data export files (CSV or JSON), computes a
+      structured diff report highlighting missing, added, and changed records by key, and
+      writes output to stdout or a file. Smoke tests verify the CLI produces expected diff
+      output for fixture export pairs with known differences.
+    new_repo_args:
+      archetype: cli-tool
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 74
+    codename: prompt-eval-cli
+    category: G
+    category_name: CLI Tools
+    prompt: |
+      Build a Python CLI that reads a set of prompt variants and a shared test corpus,
+      evaluates each variant's outputs against a rubric, and produces a structured comparison
+      report. Smoke tests verify the CLI produces a report with scores for each prompt variant
+      against fixture test cases.
+    new_repo_args:
+      archetype: cli-tool
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 75
+    codename: rust-batch-processor
+    category: G
+    category_name: CLI Tools
+    prompt: |
+      Build a Rust CLI that accepts a directory of input files, validates and normalizes each
+      file against a schema, and writes a processing report summarizing successes, failures,
+      and normalization changes. Smoke tests verify the CLI processes a fixture input directory
+      and the report matches expected outcomes.
+    new_repo_args:
+      archetype: cli-tool
+      primary_stack: rust-axum-modern
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 76
+    codename: rust-snapshot-cli
+    category: G
+    category_name: CLI Tools
+    prompt: |
+      Build a Rust CLI whose primary verification method is snapshot testing: the CLI produces
+      JSON output and tests assert byte-level equality against committed snapshot files. Smoke
+      tests verify CLI output matches committed snapshots for fixture inputs.
+    new_repo_args:
+      archetype: cli-tool
+      primary_stack: rust-axum-modern
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 77
+    codename: go-config-auditor
+    category: G
+    category_name: CLI Tools
+    prompt: |
+      Build a Go CLI that reads YAML configuration files, evaluates them against a set of
+      policy rules, and produces a structured findings report listing violations with severity
+      levels. Smoke tests verify the CLI reports expected violations for fixture configs with
+      known policy breaches.
+    new_repo_args:
+      archetype: cli-tool
+      primary_stack: go-echo
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 78
+    codename: python-pipeline-cli
+    category: G
+    category_name: CLI Tools
+    prompt: |
+      Build a Python CLI wrapping a data acquisition pipeline with three subcommands: sync
+      (run acquisition), inspect (show last run summary), and replay (re-process a past run).
+      Smoke tests verify each subcommand executes correctly against fixture pipeline state.
+    new_repo_args:
+      archetype: cli-tool
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  # ── Category H — Local RAG and Semantic Search ────────────────────────────
+
+  - number: 79
+    codename: rag-legal-docs
+    category: H
+    category_name: Local RAG and Semantic Search
+    prompt: |
+      Build a FastAPI RAG service that chunks and indexes a fixture legal document corpus
+      into Qdrant using sentence-transformers, returning relevant clauses with source
+      citations for semantic queries. Smoke tests verify the most relevant clause is returned
+      for a known query phrase.
+    new_repo_args:
+      archetype: local-rag-system
+      primary_stack: qdrant
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 80
+    codename: rag-api-reference
+    category: H
+    category_name: Local RAG and Semantic Search
+    prompt: |
+      Build a FastAPI RAG service that indexes API documentation into Qdrant with HTTP method
+      and endpoint metadata, supporting queries filtered by method or endpoint pattern. Smoke
+      tests verify endpoint-filtered search returns only matching API docs.
+    new_repo_args:
+      archetype: local-rag-system
+      primary_stack: qdrant
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 81
+    codename: markdown-notes-indexer
+    category: H
+    category_name: Local RAG and Semantic Search
+    prompt: |
+      Build a FastAPI service that chunks Markdown notes by section heading, indexes chunks
+      into Qdrant with section and source metadata, and supports source-tracked semantic
+      search. Smoke tests verify that a phrase from a specific section returns that section's
+      chunk with correct source metadata.
+    new_repo_args:
+      archetype: local-rag-system
+      primary_stack: qdrant
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 82
+    codename: runbook-search
+    category: H
+    category_name: Local RAG and Semantic Search
+    prompt: |
+      Build a FastAPI runbook search service that indexes operational runbooks into Qdrant by
+      intent tags and supports intent-based semantic queries. Seed with fixture runbooks across
+      diverse operational intents. Smoke tests verify a query with a known intent returns the
+      correct runbook.
+    new_repo_args:
+      archetype: local-rag-system
+      primary_stack: qdrant
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 83
+    codename: hybrid-search-prototype
+    category: H
+    category_name: Local RAG and Semantic Search
+    prompt: |
+      Build a FastAPI hybrid search service that queries both Meilisearch (full-text) and
+      Qdrant (semantic), applies weighted rank fusion to combine results, and returns a unified
+      ranked list. Smoke tests verify hybrid results include documents from both engines and
+      rank fusion scores are present in each result.
+    new_repo_args:
+      archetype: local-rag-system
+      primary_stack: qdrant
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 84
+    codename: rag-plus-structured
+    category: H
+    category_name: Local RAG and Semantic Search
+    prompt: |
+      Build a FastAPI service that uses RAG context from Qdrant to enrich structured database
+      query results, returning both structured rows and relevant contextual passages in a
+      unified response. Smoke tests verify the response contains both database records and
+      Qdrant context passages for a known query.
+    new_repo_args:
+      archetype: local-rag-system
+      primary_stack: qdrant
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  # ── Category I — Prompt-First Repos ──────────────────────────────────────
+
+  - number: 85
+    codename: prompt-rubric-evaluator
+    category: I
+    category_name: Prompt-First Repos
+    prompt: |
+      Build a prompt management repository with YAML rubric definitions and a Python
+      evaluation harness that scores model outputs against rubric criteria, producing
+      structured comparison reports across prompt variants. No service infrastructure
+      required. Tests verify the harness produces correct rubric scores for fixture outputs.
+    new_repo_args:
+      archetype: prompt-first-repo
+      primary_stack: prompt-first-repo
+      smoke_tests: false
+      integration_tests: false
+      seed_data: false
+      dokku: false
+
+  - number: 86
+    codename: output-shape-compliance
+    category: I
+    category_name: Prompt-First Repos
+    prompt: |
+      Build a prompt evaluation repository focused on JSON schema conformance, with prompts
+      that instruct models to produce structured outputs and a test harness that validates
+      output shapes against JSON Schema definitions. Tests verify fixture model outputs pass
+      or fail conformance checks as expected.
+    new_repo_args:
+      archetype: prompt-first-repo
+      primary_stack: prompt-first-repo
+      smoke_tests: false
+      integration_tests: false
+      seed_data: false
+      dokku: false
+
+  - number: 87
+    codename: prompt-assertion-library
+    category: I
+    category_name: Prompt-First Repos
+    prompt: |
+      Build a system prompt library with a structured collection of reusable prompt components
+      and a Python assertion harness verifying output properties (format, length, key presence)
+      for each component. Tests verify assertion coverage and that fixture outputs pass their
+      expected assertions.
+    new_repo_args:
+      archetype: prompt-first-repo
+      primary_stack: prompt-first-repo
+      smoke_tests: false
+      integration_tests: false
+      seed_data: false
+      dokku: false
+
+  - number: 88
+    codename: model-config-comparison
+    category: I
+    category_name: Prompt-First Repos
+    prompt: |
+      Build a model configuration comparison repository that evaluates the same prompt corpus
+      across multiple model configurations (temperature, system prompt variants) and produces
+      a compliance-scored comparison matrix. Tests verify the matrix contains scores for all
+      configuration combinations against fixture prompts.
+    new_repo_args:
+      archetype: prompt-first-repo
+      primary_stack: prompt-first-repo
+      smoke_tests: false
+      integration_tests: false
+      seed_data: false
+      dokku: false
+
+  - number: 89
+    codename: task-prompt-sequences
+    category: I
+    category_name: Prompt-First Repos
+    prompt: |
+      Build a domain-specific prompt sequence repository that generates multi-step prompt
+      chains with continuation conditions, managing prompt-to-prompt context passing. Tests
+      verify that a fixture task generates the expected sequence and continuation conditions
+      trigger correctly.
+    new_repo_args:
+      archetype: prompt-first-repo
+      primary_stack: prompt-first-repo
+      smoke_tests: false
+      integration_tests: false
+      seed_data: false
+      dokku: false
+
+  - number: 90
+    codename: living-doc-prompts
+    category: I
+    category_name: Prompt-First Repos
+    prompt: |
+      Build a prompt-driven documentation generation repository where prompts produce
+      structured documentation artifacts verified for section presence, structure, and length
+      constraints. No service infrastructure required. Tests validate fixture prompt outputs
+      against a defined documentation schema.
+    new_repo_args:
+      archetype: prompt-first-repo
+      primary_stack: prompt-first-repo
+      smoke_tests: false
+      integration_tests: false
+      seed_data: false
+      dokku: false
+
+  # ── Category J — Dokku-Deployable Services ────────────────────────────────
+
+  - number: 91
+    codename: dokku-fastapi-analytics
+    category: J
+    category_name: Dokku-Deployable Services
+    prompt: |
+      Build a FastAPI analytics service backed by PostgreSQL and Polars, fully configured for
+      Dokku deployment: Procfile, release script, DATABASE_URL via environment, and a health
+      endpoint. Expose at least two aggregate query endpoints. Smoke tests verify health and
+      aggregate endpoints after seed.
+    new_repo_args:
+      archetype: dokku-deployable-service
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: true
+
+  - number: 92
+    codename: dokku-fastapi-redis-cache
+    category: J
+    category_name: Dokku-Deployable Services
+    prompt: |
+      Build a FastAPI service with Redis caching configured for Dokku deployment, demonstrating
+      cache-miss and cache-hit paths with REDIS_URL injected via environment. Smoke tests
+      verify both cache paths and that the Dokku health endpoint responds correctly.
+    new_repo_args:
+      archetype: dokku-deployable-service
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: true
+
+  - number: 93
+    codename: dokku-hono-bun
+    category: J
+    category_name: Dokku-Deployable Services
+    prompt: |
+      Build a Hono/Bun service configured for Dokku deployment with a Procfile, health
+      endpoint, and a domain query endpoint. Smoke tests verify health and domain query
+      respond correctly in the Dokku configuration.
+    new_repo_args:
+      archetype: dokku-deployable-service
+      primary_stack: typescript-hono-bun
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: true
+
+  - number: 94
+    codename: dokku-go-echo
+    category: J
+    category_name: Dokku-Deployable Services
+    prompt: |
+      Build a Go/Echo reporting service configured for Dokku with PostgreSQL via DATABASE_URL,
+      a health endpoint, and at least one reporting endpoint. Smoke tests verify health and
+      reporting endpoints after seed data is loaded via the Dokku release script.
+    new_repo_args:
+      archetype: dokku-deployable-service
+      primary_stack: go-echo
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: true
+
+  - number: 95
+    codename: dokku-phoenix
+    category: J
+    category_name: Dokku-Deployable Services
+    prompt: |
+      Build an Elixir/Phoenix+Ecto service configured for Dokku with PostgreSQL via
+      DATABASE_URL, Ecto migrations in the release script, and a health endpoint. Smoke tests
+      verify health and at least one domain endpoint after migration and seed.
+    new_repo_args:
+      archetype: dokku-deployable-service
+      primary_stack: elixir-phoenix
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: true
+
+  - number: 96
+    codename: dokku-multi-service
+    category: J
+    category_name: Dokku-Deployable Services
+    prompt: |
+      Build a multi-service Dokku deployment with a FastAPI backend, a Hono/Bun BFF, and a
+      shared PostgreSQL instance connected via internal service URLs. Smoke tests verify the
+      BFF endpoint successfully aggregates data from the FastAPI backend.
+    new_repo_args:
+      archetype: dokku-deployable-service
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: true
+
+  - number: 97
+    codename: dokku-rust-axum
+    category: J
+    category_name: Dokku-Deployable Services
+    prompt: |
+      Build a Rust/Axum service configured for Dokku deployment, accounting for multi-minute
+      initial build time, with a health endpoint and at least one domain endpoint. Smoke tests
+      verify health and domain endpoint after Dokku build completes.
+    new_repo_args:
+      archetype: dokku-deployable-service
+      primary_stack: rust-axum-modern
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: true
+
+  - number: 98
+    codename: dokku-kotlin-http4k
+    category: J
+    category_name: Dokku-Deployable Services
+    prompt: |
+      Build a Kotlin/http4k service with PostgreSQL backed by Dokku, with a Procfile and
+      Gradle-based build. Smoke tests verify health and at least one domain endpoint after
+      seed data is loaded.
+    new_repo_args:
+      archetype: dokku-deployable-service
+      primary_stack: kotlin-http4k-exposed
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: true
+
+  # ── Additional ────────────────────────────────────────────────────────────
+
+  - number: 99
+    codename: crystal-data-acquisition
+    category: ADDITIONAL
+    category_name: Additional
+    prompt: |
+      Build a Crystal/Kemal+Avram data acquisition service that paginates through a fixture
+      API, validates records against a schema, archives raw responses, and persists normalized
+      records to PostgreSQL. Smoke tests verify the acquisition loop processes all fixture
+      pages, archives are created, and the correct record count is persisted.
+    new_repo_args:
+      archetype: data-acquisition-service
+      primary_stack: crystal-kemal-avram
+      smoke_tests: true
+      integration_tests: false
+      seed_data: true
+      dokku: false
+
+  - number: 100
+    codename: polyglot-seam-lab
+    category: ADDITIONAL
+    category_name: Additional
+    prompt: |
+      Build a 2-3 language seam experiment that documents coordination infrastructure and
+      seam contracts in discovery notes, with at least one working inter-service call as a
+      proof of concept. Smoke tests verify the cross-language seam call completes successfully
+      with fixture input and output.
+    new_repo_args:
+      archetype: multi-backend-service
+      primary_stack: python-fastapi-uv-ruff-orjson-polars
+      smoke_tests: true
+      integration_tests: false
+      seed_data: false
+      dokku: false

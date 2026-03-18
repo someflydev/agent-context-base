@@ -1,0 +1,318 @@
+derived:
+
+  # ── Team A — Intelligent Data Platform ───────────────────────────────────
+
+  - name: ingestion-normalization-core
+    team: A
+    team_name: Intelligent Data Platform
+    description: "Acquisition → normalization → multi-source NATS coordination"
+    source_examples: [28, 1, 35]
+    prompt: |
+      Build an end-to-end data ingestion and normalization core handling the complete
+      acquisition-to-storage path for partner data. The system consists of three coordinated
+      services: a paginated REST acquirer (#28 python-api-acquisition), a Polars-based
+      normalization service (#1 partner-data-enrichment), and a NATS JetStream multi-source
+      coordinator (#35 multi-source-sync). Use --use-example 28 to scaffold the acquisition
+      service: it pages through an external REST API with exponential backoff, archives raw
+      responses, and emits sync.requested events to NATS JetStream. Use --use-example 1 for
+      the normalization service: it consumes sync.requested events, normalizes records from
+      multiple partner formats into a unified PostgreSQL schema using Polars, and emits
+      sync.completed events. Use --use-example 35 for the multi-source coordinator: it
+      subscribes to both source streams, deduplicates cross-source overlap, and maintains a
+      merged record set in PostgreSQL. The seam contracts are: acquisition → NATS
+      (sync.requested), normalization ← NATS → NATS (sync.completed), coordinator ←
+      NATS (sync.completed). Smoke tests for each service verify individual behavior; running
+      all three together verifies the coordinated pipeline produces correct merged output.
+    new_repo_args:
+      - example: 28
+        archetype: data-acquisition-service
+        primary_stack: python-fastapi-uv-ruff-orjson-polars
+        smoke_tests: true
+        seed_data: true
+        dokku: false
+        integration_tests: false
+      - example: 1
+        archetype: backend-api-service
+        primary_stack: python-fastapi-uv-ruff-orjson-polars
+        smoke_tests: true
+        seed_data: true
+        dokku: false
+        integration_tests: false
+      - example: 35
+        archetype: multi-source-sync-platform
+        primary_stack: python-fastapi-uv-ruff-orjson-polars
+        smoke_tests: true
+        seed_data: true
+        dokku: false
+        integration_tests: false
+
+  - name: analytics-lake-deployment
+    team: A
+    team_name: Intelligent Data Platform
+    description: "DuckDB/Parquet analytics API + MinIO data lake + Dokku deployment"
+    source_examples: [2, 63, 91]
+    prompt: |
+      Build a three-tier analytical storage and serving platform covering staging, querying,
+      and production deployment. Use --use-example 63 to scaffold the data lake service: it
+      stages Parquet partitions in MinIO and exposes a DuckDB query interface against the
+      lake. Use --use-example 2 to scaffold the analytics API: it reads Parquet files via
+      DuckDB and exposes aggregate and trend endpoints, consuming the same Parquet partitions
+      staged by the lake service. Use --use-example 91 to scaffold the Dokku deployment
+      wrapper: it packages the analytics queries in a production-ready FastAPI service with a
+      Procfile, release script, and DATABASE_URL injection for Dokku. The seam contracts are:
+      pipeline writes Parquet partitions to MinIO, the analytics API reads from the same
+      Parquet paths, and the Dokku service wraps the analytics API for production deployment.
+      Seed the lake with representative Parquet partitions that the analytics API and Dokku
+      service can query against fixture aggregates. Smoke tests for each service verify
+      independent operation; integration tests verify the full path from Parquet partition
+      in MinIO to API response.
+    new_repo_args:
+      - example: 63
+        archetype: data-pipeline
+        primary_stack: duckdb-trino-polars
+        smoke_tests: true
+        seed_data: true
+        dokku: false
+        integration_tests: false
+      - example: 2
+        archetype: backend-api-service
+        primary_stack: python-fastapi-uv-ruff-orjson-polars
+        smoke_tests: true
+        seed_data: true
+        dokku: false
+        integration_tests: false
+      - example: 91
+        archetype: dokku-deployable-service
+        primary_stack: python-fastapi-uv-ruff-orjson-polars
+        smoke_tests: true
+        seed_data: true
+        dokku: true
+        integration_tests: false
+
+  - name: ml-gateway-intelligence
+    team: A
+    team_name: Intelligent Data Platform
+    description: "Embedding pipeline (Qdrant) behind a Go ML routing gateway"
+    source_examples: [44, 47]
+    prompt: |
+      Build a two-service ML intelligence layer combining an embedding pipeline with a
+      Go routing gateway. Use --use-example 44 to scaffold the embedding pipeline: it indexes
+      a fixture corpus using sentence-transformers into Qdrant and exposes both corpus indexing
+      (POST /index) and semantic query (GET /query) as a combined FastAPI service. Use
+      --use-example 47 to scaffold the Go ML gateway: it routes external HTTP requests to the
+      embedding pipeline's query endpoint, applies rate limiting at the gateway layer, and
+      enriches responses before returning them to callers. The seam contract is Go gateway →
+      FastAPI embedding service (REST). Seed the Qdrant index with a fixture corpus before
+      running gateway smoke tests so queries return non-empty results. Smoke tests verify the
+      embedding pipeline's index and query endpoints independently; gateway smoke tests verify
+      the full route-through from Go to FastAPI to Qdrant and back. The gateway pattern
+      established here scales to front any number of ML backends added to the system.
+    new_repo_args:
+      - example: 44
+        archetype: local-rag-system
+        primary_stack: qdrant
+        smoke_tests: true
+        seed_data: true
+        dokku: false
+        integration_tests: false
+      - example: 47
+        archetype: multi-backend-service
+        primary_stack: go-echo
+        smoke_tests: true
+        seed_data: true
+        dokku: false
+        integration_tests: false
+
+  - name: operator-surface
+    team: A
+    team_name: Intelligent Data Platform
+    description: "Faceted HTMX dashboard + data reconciliation CLI for operator workflows"
+    source_examples: [22, 73]
+    prompt: |
+      Build a two-component operator surface combining a real-time analytics dashboard with
+      an offline data quality tool. Use --use-example 22 to scaffold the faceted dashboard:
+      it uses FastAPI+HTMX+Tailwind+Plotly with include/exclude facet filters, dynamic
+      counts recalculated on each filter change, and Playwright integration tests verifying
+      filter behavior. Use --use-example 73 to scaffold the reconciliation CLI: it accepts
+      two data export files and produces a structured diff report identifying missing, added,
+      and changed records by key. The two components are loosely coupled: both read from
+      PostgreSQL (dashboard live, CLI via export snapshots), so they operate independently
+      or in concert. Seed PostgreSQL with multi-dimensional fixture data that exercises all
+      facet dimensions in the dashboard and appears in export files for the CLI. Playwright
+      tests verify the dashboard's filter-and-count behavior; CLI smoke tests verify diff
+      correctness for fixture export pairs with known differences. Together they provide
+      real-time visibility and periodic audit capability for the platform.
+    new_repo_args:
+      - example: 22
+        archetype: backend-api-service
+        primary_stack: python-fastapi-uv-ruff-orjson-polars
+        smoke_tests: true
+        seed_data: true
+        dokku: false
+        integration_tests: true
+      - example: 73
+        archetype: cli-tool
+        primary_stack: python-fastapi-uv-ruff-orjson-polars
+        smoke_tests: true
+        seed_data: true
+        dokku: false
+        integration_tests: false
+
+  # ── Team B — ML-Powered Observability ────────────────────────────────────
+
+  - name: event-driven-coordination
+    team: B
+    team_name: ML-Powered Observability
+    description: "Trio polyglot coordination chain + NATS event capture and replay"
+    source_examples: [57, 68]
+    prompt: |
+      Build an event-driven coordination skeleton combining a three-service polyglot chain
+      with NATS event capture and replay infrastructure. Use --use-example 57 to scaffold
+      the trio coordination chain: a Go/Echo gateway receives HTTP requests, publishes work
+      to NATS JetStream, an Elixir coordinator processes events and manages state, and a
+      Python FastAPI ML service provides final scoring via REST. Use --use-example 68 to
+      scaffold the NATS event capture service: it passively subscribes to all streams on the
+      trio's NATS instance, captures events with timestamps, and supports replay-from-offset
+      and an inspection endpoint for debugging event history. The seam contracts are: Go
+      gateway → NATS (work.requested), Elixir ← NATS → Python ML (REST), NATS capture ←
+      all streams (passive). Seed the NATS stream with fixture events and use the capture
+      service to verify they appear in the correct order before replay. Smoke tests verify
+      the full trio chain end-to-end; integration tests verify the capture service records
+      events published by the trio and can replay them in sequence.
+    new_repo_args:
+      - example: 57
+        archetype: multi-backend-service
+        primary_stack: go-echo
+        smoke_tests: true
+        seed_data: false
+        dokku: false
+        integration_tests: false
+      - example: 68
+        archetype: multi-storage-experiment
+        primary_stack: python-fastapi-uv-ruff-orjson-polars
+        smoke_tests: true
+        seed_data: true
+        dokku: false
+        integration_tests: false
+
+  - name: search-and-inference
+    team: B
+    team_name: ML-Powered Observability
+    description: "scikit-learn model serving + Qdrant semantic search + hybrid rank fusion"
+    source_examples: [39, 42, 83]
+    prompt: |
+      Build a three-engine search and inference platform covering classification, semantic
+      retrieval, and hybrid full-text+semantic search. Use --use-example 39 to scaffold the
+      sklearn inference service: it loads a fixture scikit-learn model at startup and returns
+      classification labels with confidence scores for feature vector inputs. Use --use-example
+      42 to scaffold the Qdrant semantic search service: it indexes a fixture corpus using
+      sentence-transformers and returns semantically similar documents for free-text queries.
+      Use --use-example 83 to scaffold the hybrid search service: it queries both Meilisearch
+      (full-text) and Qdrant (semantic), applies weighted rank fusion, and returns a unified
+      ranked list with scores from both engines. The seam contracts are: inference is
+      standalone (feature vector in, label out); semantic and hybrid search share a common
+      Qdrant collection indexed from the same corpus, while Meilisearch is indexed in parallel.
+      Smoke tests for each service verify independent operation; a combined smoke test verifies
+      that the same phrase query returns overlapping top results from both semantic and hybrid
+      search, and that inference scores correctly for feature vectors derived from corpus docs.
+    new_repo_args:
+      - example: 39
+        archetype: backend-api-service
+        primary_stack: python-fastapi-uv-ruff-orjson-polars
+        smoke_tests: true
+        seed_data: true
+        dokku: false
+        integration_tests: false
+      - example: 42
+        archetype: local-rag-system
+        primary_stack: qdrant
+        smoke_tests: true
+        seed_data: true
+        dokku: false
+        integration_tests: false
+      - example: 83
+        archetype: local-rag-system
+        primary_stack: qdrant
+        smoke_tests: true
+        seed_data: true
+        dokku: false
+        integration_tests: false
+
+  - name: acquisition-and-timeseries
+    team: B
+    team_name: ML-Powered Observability
+    description: "HTML scraper into PostgreSQL + TimescaleDB hypertable sensor ingest"
+    source_examples: [30, 3]
+    prompt: |
+      Build a data acquisition and time-series observation pair serving complementary roles
+      in an observability platform. Use --use-example 30 to scaffold the scraper: it fetches
+      HTML pages, extracts structured records using a defined schema, normalizes and
+      deduplicates with Polars, persists to PostgreSQL, and archives raw HTML for audit.
+      Use --use-example 3 to scaffold the TimescaleDB ingest service: it writes time-series
+      records to a hypertable with batch-flush writes and exposes hourly and daily aggregate
+      query endpoints. These services are independent but complementary: the scraper supplies
+      domain records, and the time-series service captures operational metrics for all other
+      services in the platform. Seed both services with fixture data covering multiple time
+      ranges and scraping source patterns to verify aggregate accuracy at hourly and daily
+      boundaries. Smoke tests verify scraper extraction correctness and time-series aggregate
+      accuracy independently; running both populates PostgreSQL data that downstream dashboard
+      and analytics services can query.
+    new_repo_args:
+      - example: 30
+        archetype: data-acquisition-service
+        primary_stack: python-fastapi-uv-ruff-orjson-polars
+        smoke_tests: true
+        seed_data: true
+        dokku: false
+        integration_tests: false
+      - example: 3
+        archetype: backend-api-service
+        primary_stack: python-fastapi-uv-ruff-orjson-polars
+        smoke_tests: true
+        seed_data: true
+        dokku: false
+        integration_tests: false
+
+  - name: operational-quality
+    team: B
+    team_name: ML-Powered Observability
+    description: "Redis caching/rate-limiting + prompt rubric evaluation + YAML config auditing"
+    source_examples: [67, 85, 77]
+    prompt: |
+      Build a three-component operational quality layer covering infrastructure efficiency,
+      prompt quality, and configuration compliance. Use --use-example 67 to scaffold the Redis
+      service: it wraps domain queries with a time-bounded cache and applies per-key rate
+      limiting, with explicit paths exercising cache-miss, cache-hit, and rate-limited (429)
+      responses. Use --use-example 85 to scaffold the prompt evaluator: it reads YAML rubric
+      definitions and scores model outputs against rubric criteria, producing comparison
+      reports across prompt variants without any service infrastructure. Use --use-example 77
+      to scaffold the config auditor: it reads YAML configuration files, evaluates them
+      against policy rules, and produces a structured findings report listing violations with
+      severity levels. These three components serve different operational concerns but share
+      a common pattern: each produces a structured report artifact suitable for CI assertion.
+      Smoke tests for each component verify their report output against fixture inputs; a
+      combined CI step runs all three and asserts zero violations in the config auditor output,
+      passing rubric scores in the prompt evaluator, and correct cache/rate-limit behavior
+      in the Redis service.
+    new_repo_args:
+      - example: 67
+        archetype: multi-storage-experiment
+        primary_stack: python-fastapi-uv-ruff-orjson-polars
+        smoke_tests: true
+        seed_data: true
+        dokku: false
+        integration_tests: false
+      - example: 85
+        archetype: prompt-first-repo
+        primary_stack: prompt-first-repo
+        smoke_tests: false
+        seed_data: false
+        dokku: false
+        integration_tests: false
+      - example: 77
+        archetype: cli-tool
+        primary_stack: go-echo
+        smoke_tests: true
+        seed_data: true
+        dokku: false
+        integration_tests: false
