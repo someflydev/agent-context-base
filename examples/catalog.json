@@ -3029,6 +3029,28 @@
       "patterns": ["reference", "derived-examples", "multi-service"],
       "rank": 80,
       "stability": "reference"
+    },
+    {
+      "path": "verification/examples/derived/__init__.py",
+      "category": "test",
+      "summary": "Package init for the derived coverage verification test module.",
+      "stacks": [],
+      "archetypes": [],
+      "workflows": ["coverage-verification"],
+      "patterns": ["test-module", "package-init"],
+      "rank": 40,
+      "stability": "reference"
+    },
+    {
+      "path": "verification/examples/derived/test_derived_coverage.py",
+      "category": "test",
+      "summary": "Coverage verification for the 101 example prompts and 8 derived examples: count, sequential numbering, required fields, valid archetypes/stacks, and full coverage assertions.",
+      "stacks": [],
+      "archetypes": [],
+      "workflows": ["coverage-verification"],
+      "patterns": ["test-module", "coverage-verification", "archetype-coverage", "stack-coverage"],
+      "rank": 70,
+      "stability": "reference"
     }
   ]
 }

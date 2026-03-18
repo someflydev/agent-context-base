@@ -4480,3 +4480,28 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: medium
+  - name: derived-coverage-init
+    path: verification/examples/derived/__init__.py
+    language: python
+    stack_tags: []
+    archetype_tags: []
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: derived-coverage-test
+    path: verification/examples/derived/test_derived_coverage.py
+    language: python
+    stack_tags: []
+    archetype_tags: []
+    verification_level: behavior-verified
+    verification_targets:
+      - file exists
+      - 16 tests pass
+      - archetype coverage complete
+      - stack coverage complete
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high

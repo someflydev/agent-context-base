@@ -47,6 +47,7 @@ HEAVY_MODULES = MEDIUM_MODULES + [
     "verification.examples.typescript.test_typescript_examples",
     "verification.examples.typescript.test_hono_data_acquisition_examples",
     "verification.examples.data.test_data_acquisition_examples",
+    "verification.examples.derived.test_derived_coverage",
 ]
 
 
