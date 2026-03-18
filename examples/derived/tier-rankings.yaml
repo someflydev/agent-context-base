@@ -1,0 +1,830 @@
+tier_rankings:
+  - tier: 1
+    label: Foundational
+    score_range: "8-10"
+    description: "Projects that anchor entire platforms"
+    entries:
+      - number: 47
+        codename: go-python-ml-gateway
+        score: 10
+        standalone: 3
+        composability: 3
+        technical_depth: 2
+        uniqueness: 2
+        note: "Go ML gateway with Python inference routing — platform backbone"
+      - number: 57
+        codename: trio-go-elixir-python
+        score: 10
+        standalone: 3
+        composability: 3
+        technical_depth: 2
+        uniqueness: 2
+        note: "Polyglot trio with Elixir supervision — highest fault-tolerance pattern"
+      - number: 28
+        codename: python-api-acquisition
+        score: 9
+        standalone: 3
+        composability: 3
+        technical_depth: 2
+        uniqueness: 1
+        note: "REST data acquisition service — foundational ingestion component"
+      - number: 1
+        codename: partner-data-enrichment
+        score: 9
+        standalone: 3
+        composability: 3
+        technical_depth: 2
+        uniqueness: 1
+        note: "Partner API normalization and enrichment service"
+      - number: 44
+        codename: embedding-pipeline
+        score: 9
+        standalone: 3
+        composability: 3
+        technical_depth: 2
+        uniqueness: 1
+        note: "Embedding pipeline with Qdrant vector storage"
+      - number: 22
+        codename: faceted-dashboard
+        score: 9
+        standalone: 3
+        composability: 3
+        technical_depth: 2
+        uniqueness: 1
+        note: "HTMX+Plotly faceted dashboard with backend-driven query state"
+      - number: 35
+        codename: multi-source-sync
+        score: 9
+        standalone: 3
+        composability: 3
+        technical_depth: 2
+        uniqueness: 1
+        note: "NATS-coordinated multi-source synchronization"
+      - number: 2
+        codename: analytics-parquet-api
+        score: 9
+        standalone: 3
+        composability: 3
+        technical_depth: 2
+        uniqueness: 1
+        note: "DuckDB analytics API over Parquet data"
+      - number: 42
+        codename: semantic-search-qdrant
+        score: 8
+        standalone: 3
+        composability: 2
+        technical_depth: 2
+        uniqueness: 1
+        note: "Semantic search with Qdrant and sentence-transformers"
+      - number: 63
+        codename: duckdb-parquet-minio-lake
+        score: 8
+        standalone: 3
+        composability: 2
+        technical_depth: 2
+        uniqueness: 1
+        note: "MinIO data lake with DuckDB querying Parquet"
+      - number: 39
+        codename: sklearn-inference
+        score: 8
+        standalone: 3
+        composability: 2
+        technical_depth: 2
+        uniqueness: 1
+        note: "scikit-learn model inference service"
+      - number: 83
+        codename: hybrid-search-prototype
+        score: 8
+        standalone: 3
+        composability: 2
+        technical_depth: 2
+        uniqueness: 1
+        note: "Hybrid rank fusion across Qdrant and Meilisearch"
+      - number: 3
+        codename: timeseries-ingest
+        score: 8
+        standalone: 3
+        composability: 2
+        technical_depth: 2
+        uniqueness: 1
+        note: "TimescaleDB time-series ingestion service"
+
+  - tier: 2
+    label: High Value
+    score_range: "6-7"
+    description: "Strong standalone, good composability"
+    entries:
+      - number: 91
+        codename: dokku-fastapi-analytics
+        score: 7
+        standalone: 3
+        composability: 2
+        technical_depth: 1
+        uniqueness: 1
+        note: "FastAPI analytics service with Dokku deployment"
+      - number: 67
+        codename: redis-cache-ratelimit
+        score: 7
+        standalone: 3
+        composability: 2
+        technical_depth: 1
+        uniqueness: 1
+        note: "Redis caching and rate-limiting middleware"
+      - number: 30
+        codename: python-scraper
+        score: 7
+        standalone: 3
+        composability: 2
+        technical_depth: 1
+        uniqueness: 1
+        note: "HTML scraper with corpus enrichment"
+      - number: 73
+        codename: data-reconciliation-cli
+        score: 7
+        standalone: 3
+        composability: 2
+        technical_depth: 1
+        uniqueness: 1
+        note: "Data reconciliation CLI for pipeline verification"
+      - number: 85
+        codename: prompt-rubric-evaluator
+        score: 7
+        standalone: 3
+        composability: 2
+        technical_depth: 1
+        uniqueness: 1
+        note: "Prompt quality evaluation against structured rubrics"
+      - number: 68
+        codename: nats-event-capture-replay
+        score: 7
+        standalone: 3
+        composability: 2
+        technical_depth: 1
+        uniqueness: 1
+        note: "NATS event capture and replay for debugging"
+      - number: 5
+        codename: scheduled-enrichment
+        score: 7
+        standalone: 3
+        composability: 2
+        technical_depth: 1
+        uniqueness: 1
+        note: "Scheduled data enrichment pipeline"
+      - number: 10
+        codename: rust-event-ingest
+        score: 7
+        standalone: 3
+        composability: 2
+        technical_depth: 1
+        uniqueness: 1
+        note: "High-throughput Rust event ingestion service"
+      - number: 58
+        codename: trio-go-rust-python-dual
+        score: 7
+        standalone: 3
+        composability: 2
+        technical_depth: 1
+        uniqueness: 1
+        note: "Go/Rust/Python trio with dual processing paths"
+      - number: 59
+        codename: trio-elixir-go-rust-nats
+        score: 7
+        standalone: 3
+        composability: 2
+        technical_depth: 1
+        uniqueness: 1
+        note: "Elixir/Go/Rust trio coordinated via NATS"
+      - number: 7
+        codename: hono-bff-aggregator
+        score: 7
+        standalone: 3
+        composability: 2
+        technical_depth: 1
+        uniqueness: 1
+        note: "Hono BFF aggregator for frontend data assembly"
+      - number: 77
+        codename: go-config-auditor
+        score: 6
+        standalone: 3
+        composability: 1
+        technical_depth: 1
+        uniqueness: 1
+        note: "Go CLI for YAML configuration compliance auditing"
+      - number: 33
+        codename: json-etl-pipeline
+        score: 6
+        standalone: 3
+        composability: 1
+        technical_depth: 1
+        uniqueness: 1
+        note: "JSON extraction, transformation, and load pipeline"
+      - number: 32
+        codename: csv-etl-pipeline
+        score: 6
+        standalone: 3
+        composability: 1
+        technical_depth: 1
+        uniqueness: 1
+        note: "CSV extraction, transformation, and load pipeline"
+      - number: 34
+        codename: duckdb-parquet-analytics
+        score: 6
+        standalone: 3
+        composability: 1
+        technical_depth: 1
+        uniqueness: 1
+        note: "DuckDB analytics over local Parquet files"
+      - number: 36
+        codename: classification-enrichment
+        score: 6
+        standalone: 3
+        composability: 1
+        technical_depth: 1
+        uniqueness: 1
+        note: "Classification-based data enrichment service"
+      - number: 37
+        codename: recurring-sync
+        score: 6
+        standalone: 3
+        composability: 1
+        technical_depth: 1
+        uniqueness: 1
+        note: "Recurring scheduled synchronization service"
+      - number: 40
+        codename: recommendation-engine
+        score: 6
+        standalone: 3
+        composability: 1
+        technical_depth: 1
+        uniqueness: 1
+        note: "Collaborative filtering recommendation engine"
+      - number: 41
+        codename: arima-forecasting
+        score: 6
+        standalone: 3
+        composability: 1
+        technical_depth: 1
+        uniqueness: 1
+        note: "ARIMA time-series forecasting service"
+      - number: 43
+        codename: xgboost-serving
+        score: 6
+        standalone: 3
+        composability: 1
+        technical_depth: 1
+        uniqueness: 1
+        note: "XGBoost model serving with feature preprocessing"
+      - number: 64
+        codename: rag-engineering-runbooks
+        score: 6
+        standalone: 3
+        composability: 1
+        technical_depth: 1
+        uniqueness: 1
+        note: "RAG over engineering runbooks and operations docs"
+      - number: 65
+        codename: meilisearch-fulltext
+        score: 6
+        standalone: 3
+        composability: 1
+        technical_depth: 1
+        uniqueness: 1
+        note: "Meilisearch full-text search service"
+      - number: 66
+        codename: timescaledb-sensors
+        score: 6
+        standalone: 3
+        composability: 1
+        technical_depth: 1
+        uniqueness: 1
+        note: "TimescaleDB sensor data ingestion and query"
+      - number: 61
+        codename: trio-rust-nats-go-iot
+        score: 6
+        standalone: 3
+        composability: 1
+        technical_depth: 1
+        uniqueness: 1
+        note: "Rust/NATS/Go trio for IoT data processing"
+      - number: 84
+        codename: rag-plus-structured
+        score: 6
+        standalone: 3
+        composability: 1
+        technical_depth: 1
+        uniqueness: 1
+        note: "RAG combining unstructured docs with structured data"
+      - number: 51
+        codename: node-go-graphql
+        score: 6
+        standalone: 3
+        composability: 1
+        technical_depth: 1
+        uniqueness: 1
+        note: "Node/Go GraphQL gateway with schema stitching"
+      - number: 48
+        codename: kotlin-rust-grpc
+        score: 6
+        standalone: 3
+        composability: 1
+        technical_depth: 1
+        uniqueness: 1
+        note: "Kotlin/Rust gRPC service pair"
+      - number: 54
+        codename: rust-python-grpc-infer
+        score: 6
+        standalone: 3
+        composability: 1
+        technical_depth: 1
+        uniqueness: 1
+        note: "Rust/Python gRPC inference service"
+
+  - tier: 3
+    label: Solid
+    score_range: "4-5"
+    description: "Good standalone, moderate composability"
+    entries:
+      - number: 21
+        codename: fastapi-dokku-analytics
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "FastAPI analytics service deployed on Dokku"
+      - number: 23
+        codename: search-sort-paginate
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Search, sort, and pagination UI component"
+      - number: 24
+        codename: split-filter-panel
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Split-panel filter UI with dynamic updates"
+      - number: 25
+        codename: shared-query-chart-table
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Shared query state across chart and table views"
+      - number: 26
+        codename: report-browser-cuj
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Report browsing critical user journey"
+      - number: 27
+        codename: compound-facet-dashboard
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Compound faceted dashboard with multiple filter axes"
+      - number: 29
+        codename: go-api-ingestion
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Go API ingestion service"
+      - number: 31
+        codename: bun-scraper
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Bun-based web scraper"
+      - number: 38
+        codename: elixir-data-acquisition
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Elixir data acquisition with OTP supervision"
+      - number: 4
+        codename: webhook-receiver
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Webhook receiver with event validation"
+      - number: 6
+        codename: hono-internal-api
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Hono internal API service"
+      - number: 8
+        codename: go-parquet-reports
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Go service generating Parquet-backed reports"
+      - number: 9
+        codename: go-file-upload
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Go file upload service with storage backend"
+      - number: 45
+        codename: duckdb-polars-sklearn
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "DuckDB + Polars + scikit-learn analysis pipeline"
+      - number: 46
+        codename: lightgbm-tabular
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "LightGBM tabular model training and serving"
+      - number: 50
+        codename: clojure-go-kafka
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Clojure/Go service pair with Kafka coordination"
+      - number: 49
+        codename: elixir-go-nats
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Elixir/Go service pair coordinated via NATS"
+      - number: 53
+        codename: node-elixir-nats-bidir
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Node/Elixir bidirectional NATS messaging"
+      - number: 55
+        codename: elixir-rust-nif
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Elixir/Rust NIF for performance-critical processing"
+      - number: 56
+        codename: elixir-clojure-rabbitmq
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Elixir/Clojure service pair with RabbitMQ"
+      - number: 60
+        codename: trio-node-go-python-gql
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Node/Go/Python trio with GraphQL API layer"
+      - number: 62
+        codename: scala-go-python-federated
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Scala/Go/Python federated learning platform"
+      - number: 70
+        codename: multi-storage-split
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Multi-storage routing and data split service"
+      - number: 71
+        codename: elasticsearch-search
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Elasticsearch full-text search service"
+      - number: 72
+        codename: es-vs-meilisearch
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Elasticsearch vs Meilisearch comparison harness"
+      - number: 74
+        codename: prompt-eval-cli
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "CLI for prompt evaluation and scoring"
+      - number: 75
+        codename: rust-batch-processor
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Rust batch processing service"
+      - number: 78
+        codename: python-pipeline-cli
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Python CLI for pipeline orchestration"
+      - number: 79
+        codename: rag-legal-docs
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "RAG over legal documents and contracts"
+      - number: 80
+        codename: rag-api-reference
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "RAG over API reference documentation"
+      - number: 81
+        codename: markdown-notes-indexer
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Markdown notes indexer with full-text search"
+      - number: 82
+        codename: runbook-search
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Runbook search with semantic ranking"
+      - number: 86
+        codename: output-shape-compliance
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Output shape compliance checker for AI responses"
+      - number: 87
+        codename: prompt-assertion-library
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Assertion library for prompt output validation"
+      - number: 88
+        codename: model-config-comparison
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Model configuration comparison and diff tool"
+      - number: 92
+        codename: dokku-fastapi-redis-cache
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "FastAPI service with Redis cache on Dokku"
+      - number: 52
+        codename: scala-rust-grpc-streams
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Scala/Rust gRPC streaming service pair"
+      - number: 69
+        codename: trino-federated-query
+        score: 5
+        standalone: 2
+        composability: 2
+        technical_depth: 1
+        uniqueness: 0
+        note: "Trino federated query across heterogeneous data sources"
+
+  - tier: 4
+    label: Specialized
+    score_range: "3-4"
+    description: "Valuable in specific contexts"
+    entries:
+      - number: 11
+        codename: rust-batch-classifier
+        score: 4
+        standalone: 2
+        composability: 1
+        technical_depth: 1
+        uniqueness: 0
+        note: "Rust batch classification service"
+      - number: 12
+        codename: phoenix-scheduling
+        score: 4
+        standalone: 2
+        composability: 1
+        technical_depth: 1
+        uniqueness: 0
+        note: "Phoenix LiveView scheduling application"
+      - number: 13
+        codename: scala-financial-reports
+        score: 4
+        standalone: 2
+        composability: 1
+        technical_depth: 1
+        uniqueness: 0
+        note: "Scala financial report generation service"
+      - number: 14
+        codename: kotlin-invoice-tracker
+        score: 4
+        standalone: 2
+        composability: 1
+        technical_depth: 1
+        uniqueness: 0
+        note: "Kotlin invoice tracking application"
+      - number: 15
+        codename: clojure-preferences
+        score: 4
+        standalone: 2
+        composability: 1
+        technical_depth: 1
+        uniqueness: 0
+        note: "Clojure user preferences service"
+      - number: 16
+        codename: ruby-content-store
+        score: 4
+        standalone: 2
+        composability: 1
+        technical_depth: 1
+        uniqueness: 0
+        note: "Ruby content store with versioning"
+      - number: 76
+        codename: rust-snapshot-cli
+        score: 4
+        standalone: 2
+        composability: 1
+        technical_depth: 1
+        uniqueness: 0
+        note: "Rust CLI for data snapshot management"
+      - number: 89
+        codename: task-prompt-sequences
+        score: 4
+        standalone: 2
+        composability: 1
+        technical_depth: 1
+        uniqueness: 0
+        note: "Task-oriented prompt sequence library"
+      - number: 90
+        codename: living-doc-prompts
+        score: 4
+        standalone: 2
+        composability: 1
+        technical_depth: 1
+        uniqueness: 0
+        note: "Living documentation generated from prompt sequences"
+      - number: 93
+        codename: dokku-hono-bun
+        score: 4
+        standalone: 2
+        composability: 1
+        technical_depth: 1
+        uniqueness: 0
+        note: "Hono/Bun service deployed on Dokku"
+      - number: 94
+        codename: dokku-go-echo
+        score: 4
+        standalone: 2
+        composability: 1
+        technical_depth: 1
+        uniqueness: 0
+        note: "Go Echo service deployed on Dokku"
+      - number: 95
+        codename: dokku-phoenix
+        score: 4
+        standalone: 2
+        composability: 1
+        technical_depth: 1
+        uniqueness: 0
+        note: "Phoenix service deployed on Dokku"
+      - number: 96
+        codename: dokku-multi-service
+        score: 4
+        standalone: 2
+        composability: 1
+        technical_depth: 1
+        uniqueness: 0
+        note: "Multi-service Dokku deployment configuration"
+      - number: 97
+        codename: dokku-rust-axum
+        score: 4
+        standalone: 2
+        composability: 1
+        technical_depth: 1
+        uniqueness: 0
+        note: "Rust Axum service deployed on Dokku"
+      - number: 98
+        codename: dokku-kotlin-http4k
+        score: 4
+        standalone: 2
+        composability: 1
+        technical_depth: 1
+        uniqueness: 0
+        note: "Kotlin Http4k service deployed on Dokku"
+
+  - tier: 5
+    label: Niche
+    score_range: "2-3"
+    description: "Language exploration, narrow use cases"
+    entries:
+      - number: 17
+        codename: nim-json-filter
+        score: 3
+        standalone: 1
+        composability: 1
+        technical_depth: 1
+        uniqueness: 0
+        note: "Nim JSON filtering utility"
+      - number: 18
+        codename: dart-audit-log
+        score: 3
+        standalone: 1
+        composability: 1
+        technical_depth: 1
+        uniqueness: 0
+        note: "Dart audit log service"
+      - number: 19
+        codename: ocaml-metadata-store
+        score: 3
+        standalone: 1
+        composability: 1
+        technical_depth: 1
+        uniqueness: 0
+        note: "OCaml metadata store"
+      - number: 20
+        codename: crystal-cache-proxy
+        score: 3
+        standalone: 1
+        composability: 1
+        technical_depth: 1
+        uniqueness: 0
+        note: "Crystal cache proxy service"
+      - number: 99
+        codename: crystal-data-acquisition
+        score: 3
+        standalone: 1
+        composability: 1
+        technical_depth: 1
+        uniqueness: 0
+        note: "Crystal data acquisition service"
+      - number: 100
+        codename: polyglot-seam-lab
+        score: 3
+        standalone: 1
+        composability: 1
+        technical_depth: 1
+        uniqueness: 0
+        note: "Polyglot seam exploration laboratory"

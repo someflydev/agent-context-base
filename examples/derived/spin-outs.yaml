@@ -1,0 +1,155 @@
+spin_outs:
+  - name: dataforge
+    title: DataForge — Unified Data Acquisition Framework
+    origin: team_a
+    description: "REST + scraper + multi-source NATS coordinator + reconciliation CLI"
+    source_examples: [28, 30, 35, 73]
+    what_it_becomes: |
+      A generalized data acquisition platform supporting REST APIs, HTML scraping,
+      file imports, and automated reconciliation via a shared NATS event bus. Each
+      source type gets an adapter; the reconciliation CLI becomes a verification step
+      in the pipeline. NATS events coordinate multi-source runs and track completion.
+    value: "Replaces ad-hoc data import scripts with a composable, event-driven acquisition platform."
+    seam_notes: |
+      All sources publish sync.requested to NATS; reconciliation CLI reads PostgreSQL
+      exports after sync.completed. No direct service-to-service calls.
+
+  - name: lakeview
+    title: LakeView — Analytical Data Platform
+    origin: team_a
+    description: "MinIO data lake + DuckDB analytics API + HTMX faceted dashboard"
+    source_examples: [63, 2, 22]
+    what_it_becomes: |
+      An end-to-end analytical platform where data lands in MinIO as Parquet, DuckDB
+      queries serve the API layer, and the HTMX+Plotly dashboard provides interactive
+      exploration with faceted filters and dynamic counts. Analysts get a self-service
+      interface backed by columnar storage.
+    value: "A self-hosted alternative to lightweight BI tools — no external SaaS dependency."
+    seam_notes: |
+      Pipeline writes Parquet to MinIO; analytics API reads via DuckDB; dashboard
+      queries the analytics API directly. All three services share the Parquet path
+      convention.
+
+  - name: semanticgate
+    title: SemanticGate — AI-Powered API Gateway
+    origin: team_a
+    description: "Go ML gateway + embedding pipeline (Qdrant) + partner enrichment"
+    source_examples: [47, 44, 1]
+    what_it_becomes: |
+      An API gateway that not only routes and rate-limits but also enriches requests
+      with semantic context. Incoming queries are embedded and matched against a Qdrant
+      knowledge base before routing to downstream services; enriched context travels
+      with the request to the normalization service.
+    value: "Intelligent request routing based on content semantics, not just URL patterns."
+    seam_notes: |
+      Go gateway → FastAPI embedding service (REST seam); gateway → normalization
+      service (REST seam with enriched context header). Qdrant is shared between
+      embedding pipeline and gateway lookup.
+
+  - name: syncorchestrator
+    title: SyncOrchestrator — Multi-Source Event Coordinator
+    origin: team_a
+    description: "NATS multi-source coordinator + acquisition + Dokku production deployment"
+    source_examples: [35, 28, 91]
+    what_it_becomes: |
+      A production-grade sync orchestration platform that coordinates data pulls from
+      multiple external sources, manages sync state via NATS JetStream, handles failures
+      with backoff, and deploys to Dokku. Every sync run generates an observable event
+      trail for debugging and auditing.
+    value: "Reliable external data synchronization as a managed, deployable service."
+    seam_notes: |
+      Acquisition service emits to NATS JetStream; coordinator subscribes and tracks
+      state in PostgreSQL. Dokku service wraps the coordinator for production.
+
+  - name: hybridmind
+    title: HybridMind — Intelligent Search Platform
+    origin: team_b
+    description: "Qdrant semantic search + Meilisearch hybrid rank fusion + web scraper corpus"
+    source_examples: [42, 83, 30]
+    what_it_becomes: |
+      A comprehensive search platform combining full-text relevance (Meilisearch) with
+      semantic understanding (Qdrant + sentence-transformers). The scraper continuously
+      enriches the corpus. Weighted rank fusion produces results that are both
+      keyword-relevant and semantically meaningful.
+    value: "Enterprise search that understands intent, not just keywords."
+    seam_notes: |
+      Scraper writes records to PostgreSQL and triggers re-index in both Qdrant and
+      Meilisearch. Hybrid search service queries both on each request and fuses scores.
+
+  - name: trioserve
+    title: TrioServe — Polyglot ML Serving Infrastructure
+    origin: team_b
+    description: "Trio Go/Elixir/Python coordination + sklearn inference + Redis prediction cache"
+    source_examples: [57, 39, 67]
+    what_it_becomes: |
+      A production ML serving infrastructure where Go handles traffic, Elixir supervises
+      and coordinates via NATS, and Python serves models — with Redis caching hot
+      predictions. The Elixir supervisor tree provides fault tolerance and graceful
+      degradation that pure Go or Python cannot match alone.
+    value: "Fault-tolerant, cached ML inference at scale with polyglot supervision."
+    seam_notes: |
+      Go gateway → NATS → Elixir coordinator → Python inference (REST). Redis sits
+      in front of Python inference; cache miss triggers actual model call.
+
+  - name: observestream
+    title: ObserveStream — Event-Driven Observability
+    origin: team_b
+    description: "NATS event capture/replay + TimescaleDB metrics + YAML config auditor"
+    source_examples: [68, 3, 77]
+    what_it_becomes: |
+      An observability platform where all system events flow through NATS JetStream,
+      time-series metrics land in TimescaleDB hypertables for windowed aggregates, and
+      the config auditor verifies deployment configurations. Event replay enables
+      debugging production issues by replaying exact event sequences.
+    value: "Debug-by-replay observability with configuration compliance enforcement."
+    seam_notes: |
+      NATS capture is a passive subscriber on all streams. TimescaleDB receives metric
+      events via a dedicated consumer. Config auditor is a standalone CLI that reads
+      YAML files from all service deployments.
+
+  - name: promptops
+    title: PromptOps — Prompt Engineering CI/CD
+    origin: team_b
+    description: "Prompt rubric evaluator + shape compliance + model config comparison"
+    source_examples: [85, 86, 88]
+    what_it_becomes: |
+      A CI/CD pipeline for prompt engineering where prompts are version-controlled,
+      evaluated against rubrics, checked for output shape compliance, and compared
+      across model configurations. Each component produces a structured report artifact
+      that CI can assert against.
+    value: "Disciplined prompt management as a first-class engineering practice."
+    seam_notes: |
+      All three components are standalone CLIs sharing a common prompt corpus directory.
+      CI runs all three in parallel and gates on zero rubric failures and zero shape
+      violations.
+
+  - name: fullstack-intelligence
+    title: FullStack Intelligence Platform
+    origin: cross_team
+    description: "Best 10 + Next Best 10 selective merge — complete data intelligence platform"
+    source_examples: [47, 57, 44, 83, 22, 3, 28, 63]
+    what_it_becomes: |
+      The complete platform — data flows in through REST acquisition, gets normalized and
+      embedded, lands in a data lake, serves analytics through a faceted dashboard,
+      handles ML scoring through a polyglot trio, and provides hybrid search across the
+      entire corpus. The Go gateway handles all external traffic across both clusters.
+    value: "A complete data intelligence platform built from composable, independently-tested microservices."
+    seam_notes: |
+      Gateway-A routes to data platform services (Best 10); Gateway-B routes to
+      ML/search services (Next Best 10). Cross-gateway coordination goes through NATS,
+      never direct HTTP.
+
+  - name: meta-platform
+    title: The Meta-Platform — Self-Managing Intelligence Infrastructure
+    origin: cross_team
+    description: "Full intelligence platform + PromptOps + config audit + event capture + Dokku deployment"
+    source_examples: [47, 57, 44, 83, 22, 28, 63, 85, 77, 68, 91]
+    what_it_becomes: |
+      A self-managing platform where prompts that generated each service are themselves
+      version-controlled and evaluated, configurations are continuously audited, events
+      are captured for replay debugging, and everything deploys to Dokku. The platform
+      monitors its own health and can regenerate any component from its prompt sequence.
+    value: "Infrastructure that maintains itself through AI-assisted operations and can reconstruct any service from its genesis prompts."
+    seam_notes: |
+      PromptOps CI gate runs on all .prompts/ directories across services. Config auditor
+      reads Dokku deployment configs. Event capture passively observes all NATS traffic.
