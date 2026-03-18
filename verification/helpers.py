@@ -71,10 +71,30 @@ EXAMPLE_SUPPORT_FILENAMES = {
 # Directory path segments that mark build/dependency artifacts — any file whose relative
 # path contains one of these segments is excluded from the catalog coverage check.
 EXAMPLE_SKIP_PATH_PARTS = {
+    # Python
     "__pycache__",
+    # Elixir/OCaml (dune)
     "_build",
+    # Elixir hex deps
     "deps",
+    # Node/TypeScript
     "node_modules",
+    # Rust
+    "target",
+    # Scala / Clojure / JVM (Maven/sbt)
+    # "target" already covers this
+    # Kotlin / Gradle
+    "build",
+    # Dart
+    ".dart_tool",
+    # Zig
+    "zig-cache",
+    "zig-out",
+    # Nim
+    "nimcache",
+    # Go modules vendor
+    "vendor",
+    # Generic
     ".git",
 }
 
