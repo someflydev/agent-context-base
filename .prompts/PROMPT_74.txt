@@ -1,0 +1,329 @@
+You are working inside the agent-context-base repository.
+
+This prompt performs a holistic alignment audit of the full repo. Each major capability added to
+this repo lives in at least five layers (archetype, stack, manifest, example, router signal) and
+the layers must remain mutually consistent. When layers drift apart, the system degrades silently:
+an assistant routes correctly but finds no example, or finds an example that references a context
+path that no longer exists, or bootstraps a repo that fails validation. The scripts freshness pass
+(PROMPT_73) corrected the scripts layer specifically. This prompt checks that all layers are
+correctly aligned with each other and that no layer is acting as a bottleneck.
+
+The audit covers:
+  1. Archetype completeness: all archetypes registered in all layers
+  2. Stack completeness: all bootstrappable stacks registered end-to-end
+  3. Manifest quality: all manifests reference paths that exist and are internally consistent
+  4. Example coverage: canonical examples exist and are registered for all major stacks
+  5. Router coverage: all stacks and archetypes reachable via routing signals
+  6. Template freshness: generated bootstrap output reflects current conventions
+  7. Cross-layer naming: naming conventions are consistent across layers
+  8. Dead files and orphaned references: unreferenced files and broken links
+
+Output changes as commit-ready batches. For each batch:
+1. Batch title and purpose.
+2. Files created or updated (full paths).
+3. Full content of every file.
+4. Suggested commit message with prefix [PROMPT_74].
+
+If a layer is already in excellent shape, state that explicitly and move on.
+
+
+---
+
+PHASE 1 — REQUIRED READS
+
+Read these files before beginning the audit:
+
+  README.md
+  docs/repo-layout.md
+  docs/ARCHITECTURE_MAP.md
+  docs/context-evolution.md
+  context/router/task-router.md
+  context/router/alias-catalog.yaml
+  context/router/stack-router.md          (if it exists — list context/router/ first)
+  context/router/archetype-router.md      (if it exists)
+
+Run these listings to establish the full catalog before proceeding:
+
+  ls context/archetypes/
+  ls context/stacks/
+  ls manifests/
+  ls examples/
+  ls examples/canonical-api/
+  ls templates/
+  ls templates/claude-md/
+  ls templates/agent-md/
+
+Also read:
+
+  examples/catalog.json                   (the example registry — central to example coverage)
+  verification/example_registry.yaml      (if it exists)
+  verification/stack_support_matrix.yaml  (if it exists)
+  context/context-weights.json            (path weights for context loading)
+
+After all reads and listings, proceed to PHASE 2.
+
+
+---
+
+PHASE 2 — LAYER-BY-LAYER GAP ANALYSIS
+
+Write findings section by section before proposing any changes.
+
+2A. Archetype completeness
+  The full archetype set is defined by what exists in context/archetypes/.
+  For each archetype file in context/archetypes/:
+    a. Is it referenced in context/router/task-router.md or context/router/archetype-router.md
+       with a routing signal? If not, how would an assistant know to use it?
+    b. Is it referenced in context/router/alias-catalog.yaml with at least one short alias?
+    c. Does at least one manifest in manifests/ reference this archetype or carry context that
+       would be loaded for this archetype?
+    d. Does the archetype file have a well-formed structure:
+       heading, Common Goals, Required Context, Common Workflows, Likely Examples, Anti-Patterns?
+       Note any structural gaps.
+
+  For each missing signal, note the gap without proposing fixes yet.
+
+2B. Stack completeness
+  A stack is "complete" when it has: a context/stacks/ doc, at least one manifest, and a
+  routing signal in the router. Bootstrappable stacks additionally need a STACKS entry in
+  new_repo.py and a BOOTSTRAP_CASES entry in validate_context.py (covered by PROMPT_73 —
+  confirm those are now in place rather than re-auditing them in detail here).
+
+  For each entry in context/stacks/ (excluding duo/trio/polyglot combos — read below):
+    a. Is there at least one manifest that lists this stack's context doc as a required or
+       recommended path?
+    b. Is there a router signal ("use <stack>", "<stack> service", etc.) in task-router.md
+       or stack-router.md that loads this context doc?
+    c. Is there a canonical example in examples/ that demonstrates this stack?
+    d. Is the stack referenced in examples/catalog.json?
+
+  Duo, trio, and polyglot context docs in context/stacks/ are supporting docs for multi-stack
+  repos, not primary stacks. They need router signals but NOT bootstrappable STACKS entries.
+  Check that they have at least one routing signal.
+
+  Note gaps for each stack — but keep the findings focused. Do not audit more than 5 stacks in
+  deep detail; the goal is to find patterns of omission, not to produce a line-by-line diff.
+
+2C. Manifest quality
+  A manifest is "healthy" when: all context.required and context.recommended paths in it exist
+  on disk, all example paths in it resolve, and the manifest's archetype and stack fields match
+  the names used in ARCHETYPES and STACKS.
+
+  Do NOT re-run validate_manifests.py here (it is slow). Instead, spot-check:
+    - Pick 3–5 recently added manifests (likely candidates: data-acquisition-service.yaml,
+      multi-source-sync-platform.yaml, and any nim/scala/clojure/dart manifests)
+    - For each: read the manifest and verify that every path listed in context.required,
+      context.recommended, and examples actually exists under the repo root
+    - Note any paths that do not exist or that have changed names
+
+  Also check: are there manifests in manifests/ that have no corresponding archetype? If so,
+  note whether the manifest references an archetype that exists in context/archetypes/ or
+  whether it is orphaned.
+
+2D. Example coverage
+  The examples/ directory contains canonical implementation patterns. Coverage is meaningful
+  when: every stack with a bootstrappable manifest has at least one implementation example.
+
+  For each stack in the STACKS dict (from new_repo.py, now updated by PROMPT_73):
+    - Is there a directory or file in examples/canonical-api/ (or examples/canonical-*/) that
+      corresponds to this stack?
+    - Is that example registered in examples/catalog.json?
+    - Does the README of the example reference the correct stack and archetype?
+
+  Focus on newly added stacks from PROMPT_73 (nim, scala, clojure, dart if added), plus the
+  new archetypes (data-acquisition-service, multi-source-sync-platform). If those examples
+  already exist but are not in catalog.json, note the registration gap.
+
+2E. Router coverage
+  The task router must provide a routing path for each archetype and each primary stack.
+  For each archetype in context/archetypes/:
+    - Is there a phrase like "data acquisition service", "multi-source sync", "polyglot lab"
+      in the router that would trigger loading the archetype doc?
+  For each primary stack in the STACKS dict:
+    - Is there a phrase in the router or alias catalog that triggers loading its stack doc?
+  Note any archetypes or stacks with no routing signal at all.
+
+2F. Alias catalog completeness
+  context/router/alias-catalog.yaml should have short-form aliases for every archetype and
+  every bootstrappable stack. For any archetype or stack found missing in 2E, check whether
+  at least an alias covers it. Note if neither a router signal nor an alias exists.
+
+2G. Template freshness
+  The templates in templates/ are the starting point for generated repos. Check:
+    - Does templates/claude-md/CLAUDE.template.md reference context/skills/ (added in PROMPT_72)?
+    - Does templates/agent-md/AGENT.template.md reference context/skills/ (added in PROMPT_72)?
+    - Are there template files in templates/ for stacks added since the last template update?
+      (Check: is there a template README or starter for nim, scala, clojure, dart? If those
+      stacks don't use extra_template, that's fine — note it as intentional.)
+    - Does the gitignore template in templates/ cover languages in the new stacks?
+
+  Read templates/claude-md/CLAUDE.template.md and templates/agent-md/AGENT.template.md fully.
+
+2H. Cross-layer naming consistency
+  The system uses consistent prefixes to tie layers together. Check:
+    - Manifests named "backend-api-<stack>" should match stacks named "<stack>" in STACKS.
+    - Archetype names in context/archetypes/ (filename stems) should match keys in ARCHETYPES.
+    - Router aliases should use the same slug forms as context file names.
+  Note any naming mismatches — even if functionally harmless, they make cross-referencing harder.
+
+2I. Orphaned files and broken internal links
+  An orphaned file is one never referenced by any router, manifest, alias catalog, or README.
+  This audit should be targeted, not exhaustive. Check:
+    - Are there files in context/archetypes/ or context/stacks/ that are NOT referenced in
+      any manifest AND have no router signal AND have no alias?
+    - Run scripts/validate_doc_governance.py and report any broken cross-reference errors.
+    - Check docs/ for any references to scripts, context docs, or manifests that do not exist.
+
+  Do not audit examples/canonical-api/phoenix-example/deps/ — that is a vendored dependency
+  directory and its internal links are out of scope.
+
+2J. context-weights.json coverage
+  context/context-weights.json assigns tier weights to paths for context scoring. Spot-check:
+    - Are the recently added archetypes and stacks represented with appropriate weights?
+    - Are context/skills/ files in the weight catalog?
+    - Note if any major new directories are unweighted (zero-weight paths are not wrong, but
+      note if they should have explicit weights to affect routing scores).
+
+
+---
+
+PHASE 3 — TARGETED FIXES
+
+Based on the gap analysis, apply fixes in this priority order.
+
+Priority 1: Broken manifest paths (2C)
+  If any manifest references a context path, example path, or template path that does not
+  exist, fix the manifest to reference the correct path. Do not rename existing files.
+  If the referenced file was renamed, update the manifest to use the new name.
+  If the referenced file simply does not exist and should exist, note it as a TODO but do
+  not create the file in this pass — creation is out of scope.
+
+Priority 2: Missing router signals and aliases (2E, 2F)
+  For each archetype or stack with no router signal and no alias:
+    - Add a short, natural-language trigger phrase to task-router.md
+    - Add a short alias to alias-catalog.yaml
+  Follow the existing format exactly. Do not restructure the router.
+
+Priority 3: Example catalog registration gaps (2D)
+  If examples exist on disk but are not in examples/catalog.json:
+    - Read examples/catalog.json to understand the schema
+    - Add entries for unregistered examples, following the existing format
+  Do not create new examples. Only register existing ones.
+
+Priority 4: Template freshness fixes (2G)
+  If CLAUDE.template.md or AGENT.template.md do not reference context/skills/, add the pointer
+  using the same language as in templates already updated. (If PROMPT_72 already added it,
+  confirm and leave unchanged.)
+  If the gitignore template is missing coverage for a new language, add the appropriate entries.
+
+Priority 5: Archetype structural gaps (2A)
+  If an archetype file is missing a structural section (Common Goals, Required Context, etc.),
+  add the missing section with minimal content that matches the archetype's purpose.
+  Only patch the sections that are clearly missing — do not rewrite complete archetype files.
+
+Priority 6: Context weights gaps (2J)
+  If context/skills/ files or newly added archetypes/stacks are missing from context-weights.json
+  and the omission would affect routing quality, add the missing entries.
+  Use the tier and weight values from adjacent entries as a reference.
+
+Lower-priority findings that require more investigation than this prompt warrants:
+  - Creating missing examples (scope: separate prompt)
+  - Writing new manifest files (scope: separate prompt)
+  - Deep router restructuring (scope: separate prompt)
+  For these, note them clearly in the output so they can inform a future prompt.
+
+
+---
+
+PHASE 4 — SELF-CHECK
+
+Before producing any file content:
+
+  [ ] No manifest changes introduce new paths that do not exist on disk.
+  [ ] Router additions do not rewrite or reorganize existing router content.
+  [ ] Alias additions follow the exact YAML structure of existing aliases.
+  [ ] catalog.json additions follow the exact schema of existing catalog entries.
+  [ ] Template additions are consistent with PROMPT_72 language where applicable.
+  [ ] context-weights.json additions follow the tier/weight pattern of neighbors.
+  [ ] The self-check does not include "verified by reading the code" — every claim is backed
+      by an explicit file read or listing from PHASE 1 or PHASE 2.
+
+Run validation after all changes:
+
+  python scripts/validate_context.py
+  python scripts/validate_doc_governance.py
+
+Both must pass. If either fails, diagnose and fix before batching commits.
+
+
+---
+
+PHASE 5 — COMMIT BATCHING
+
+Batch 1: Manifest fixes
+  Files: any manifests/ files with broken or stale paths
+  Purpose: ensure all manifests reference context and example paths that exist.
+  Commit prefix: [PROMPT_74]
+  If no fixes needed: "No changes — all sampled manifest paths resolve correctly."
+
+Batch 2: Router and alias coverage
+  Files: context/router/task-router.md, context/router/alias-catalog.yaml
+        (and context/router/stack-router.md or archetype-router.md if they exist)
+  Purpose: ensure all archetypes and bootstrappable stacks have at least one routing signal.
+  Commit prefix: [PROMPT_74]
+  If no fixes needed: "No changes — all archetypes and stacks have routing signals."
+
+Batch 3: Example catalog registration
+  Files: examples/catalog.json
+  Purpose: register any examples that exist on disk but are absent from the catalog.
+  Commit prefix: [PROMPT_74]
+  If no fixes needed: "No changes — all examples are registered."
+
+Batch 4: Template and weight fixes
+  Files: templates/claude-md/CLAUDE.template.md, templates/agent-md/AGENT.template.md,
+         context/context-weights.json, templates/gitignore.template (if applicable)
+  Purpose: bring templates and context weights in line with the current layer set.
+  Commit prefix: [PROMPT_74]
+  If no fixes needed: "No changes — templates and weights are current."
+
+Batch 5: Archetype structural patches
+  Files: any context/archetypes/ files with missing sections
+  Purpose: ensure all archetype files have the same structural completeness.
+  Commit prefix: [PROMPT_74]
+  If no fixes needed: "No changes — all archetype files are structurally complete."
+
+Batch 6: Future-work summary
+  This is not a commit. It is a written summary listing:
+    - Gaps found but deferred (examples not created, manifests not written, etc.)
+    - Recommended follow-on prompts for each deferred gap
+    - Any systemic naming inconsistencies found that are harmless but worth cleaning up later
+
+  Write this summary as a final section in the prompt output, not as a file change.
+
+
+---
+
+SECTION 6 — IMPORTANT CONSTRAINTS
+
+- Do not create new archetypes, stacks, manifests, or examples. This is an alignment pass, not
+  an expansion pass. Creating new content is out of scope.
+
+- Do not restructure or rewrite any file that is correct and coherent. Targeted additions and
+  fixes only.
+
+- Do not audit the phoenix-example/deps/ subtree. It is vendored and its cross-references are
+  out of scope.
+
+- Do not add CI infrastructure or new test suites.
+
+- When in doubt about whether a gap is real or apparent, read the relevant file before flagging.
+  A gap is only a gap if it is confirmed by a file read, not inferred from a listing.
+
+- The only acceptable test runner is python3.14 -m unittest. Never invoke pytest.
+  When running validate_context.py or validate_doc_governance.py, call them as scripts
+  directly: python scripts/validate_context.py
+
+- Produce complete file contents for every file updated. No diffs, no partial sections.
+
+- If after analysis a batch requires no changes, say so explicitly and move on.
+  An honest "this layer is already aligned" is a good outcome, not a sign of insufficient effort.

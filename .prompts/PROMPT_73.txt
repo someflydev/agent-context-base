@@ -1,0 +1,321 @@
+You are working inside the agent-context-base repository.
+
+This prompt performs a scripts freshness pass. The scripts directory was authored during the
+initial repo build and has not been updated since. Several archetypes, stacks, manifests, and
+validation cases have been added since then. The result is that scripts/new_repo.py (and related
+scripts) contain stale catalogs, missing cases, and test coverage gaps that would silently produce
+incorrect bootstrap output or fail to exercise new capabilities.
+
+The specific known gap that triggered this pass: ARCHETYPES in new_repo.py has 7 entries, but
+context/archetypes/ contains 11 files. The four missing archetypes are:
+  - polyglot-lab
+  - data-acquisition-service
+  - multi-source-sync-platform
+  - multi-backend-service
+
+This gap is a symptom. The full pass must audit all scripts systematically.
+
+Organize all work into commit-ready batches. For each batch:
+1. Batch title and purpose.
+2. Files created or updated (full paths).
+3. Full content of every file.
+4. Suggested commit message with prefix [PROMPT_73].
+
+
+---
+
+PHASE 1 — REQUIRED READS
+
+Read these files in full before writing anything:
+
+  scripts/new_repo.py
+  scripts/validate_context.py
+  scripts/context_tools.py
+  scripts/manifest_tools.py
+  scripts/validate_manifests.py
+  scripts/validate_doc_governance.py
+  scripts/preview_context_bundle.py
+  scripts/pattern_diff.py
+  scripts/check_memory_freshness.py
+  scripts/prompt_first_repo_analyzer.py
+  scripts/init_memory.py
+  scripts/create_handoff_snapshot.py
+  scripts/run_verification.py
+  scripts/verify_examples.py
+
+Run these listings:
+
+  ls context/archetypes/
+  ls context/stacks/
+  ls manifests/
+
+After all reads and listings, proceed to PHASE 2.
+
+
+---
+
+PHASE 2 — GAP ANALYSIS
+
+Write down all findings before proposing any changes. Do not skip sections.
+
+2A. ARCHETYPES dict in new_repo.py
+  Compare the keys in ARCHETYPES to the filenames in context/archetypes/ (strip .md).
+  For each file in context/archetypes/ that is NOT in ARCHETYPES:
+    - Note the archetype key (filename without .md)
+    - Read the archetype file and extract its one-line summary
+    - Decide what the ARCHETYPES description string should be (match the file's purpose sentence)
+  For each key in ARCHETYPES that has NO corresponding file in context/archetypes/:
+    - Note it as an orphaned key
+
+2B. STACKS dict in new_repo.py
+  The STACKS dict registers stacks that new_repo.py can scaffold. Some stacks in context/stacks/
+  are "context-only" references (storage supplements, polyglot patterns, duo/trio lang combos)
+  that are never bootstrapped directly. Distinguish between:
+    - Stacks that have a manifest in manifests/ → must have a STACKS entry to be bootstrappable
+    - Stacks that are context-only references → do NOT need a STACKS entry
+
+  Cross-check: for each manifest in manifests/ whose name maps to a primary stack
+  (e.g., backend-api-nim-jester-happyx → nim-jester-happyx), check whether that stack key
+  appears in STACKS. If not, note the gap.
+
+  Known stacks with manifests but likely missing STACKS entries:
+    - nim-jester-happyx (manifest: backend-api-nim-jester-happyx.yaml)
+    - scala-tapir-http4s-zio (manifest: backend-api-scala-tapir-http4s-zio.yaml)
+    - clojure-kit-nextjdbc-hiccup (manifest: backend-api-clojure-kit-nextjdbc-hiccup.yaml)
+    - dart-dartfrog (manifest: backend-api-dart-dartfrog.yaml)
+
+  For each missing stack:
+    - Read the corresponding stack doc in context/stacks/
+    - Read the manifest in manifests/
+    - Determine: app_image, app_command, test_command, app_container_port, route_path,
+      smoke_path, integration_path, seed_path, directories, stack_gitignore
+    - Note whether the manifest implies an explicit docker image or leaves it generic
+
+  Do not guess values. If a stack doc or manifest clearly implies the right value, use it.
+  If a value is genuinely ambiguous, use a safe default (e.g., port 8080 for JVM stacks,
+  port 3000 for most others) and leave a # TODO comment for the user to verify.
+
+2C. DEFAULT_MANIFESTS in new_repo.py
+  DEFAULT_MANIFESTS maps (archetype, primary_stack) tuples to a list of manifest names.
+  For each new archetype identified in 2A, check whether DEFAULT_MANIFESTS has entries.
+  For each new stack identified in 2B, check whether DEFAULT_MANIFESTS has entries for
+  the (backend-api-service, <new-stack>) pair and for any other valid archetype pairings.
+
+  Also check: are there manifests in manifests/ that are not referenced in DEFAULT_MANIFESTS
+  and not Dokku-specific? List them.
+
+  Note: data-acquisition-service.yaml and multi-source-sync-platform.yaml exist in manifests/.
+  These must be wired into DEFAULT_MANIFESTS via the corresponding archetypes.
+
+2D. BOOTSTRAP_CASES in validate_context.py
+  BOOTSTRAP_CASES is the integration test matrix for new_repo.py. It currently covers 12 cases.
+  For each new archetype that gets a StackProfile in STACKS and a DEFAULT_MANIFESTS entry,
+  a corresponding BOOTSTRAP_CASES entry must be added.
+
+  For each new (archetype, stack) pair added in PHASE 3:
+    - Note the minimal viable test case: archetype, primary_stack, dokku=False, no special flags
+    - Note whether the bootstrap output needs any extra assertions (dokku, docs, etc.)
+
+2E. Service inference in infer_support_services()
+  infer_support_services() maps archetypes and stacks to their docker dependencies.
+  For each new archetype and each new stack:
+    - What support services does it need? (postgres, redis, mongo, etc.)
+    - Is it already handled by the existing if/elif chain?
+    - If not, what clause needs adding?
+
+2F. Audit remaining scripts for stale references
+  For each of these scripts, check whether it hard-codes archetype names, stack names, manifest
+  names, or context paths that may now be out of date:
+    - scripts/pattern_diff.py
+    - scripts/preview_context_bundle.py
+    - scripts/check_memory_freshness.py
+    - scripts/prompt_first_repo_analyzer.py
+    - scripts/init_memory.py
+    - scripts/create_handoff_snapshot.py
+    - scripts/run_verification.py
+    - scripts/verify_examples.py
+
+  Note any hard-coded names that are either missing new entries or reference things that no
+  longer exist. If a script is purely dynamic (reads from disk, no hard-coded catalog), say so.
+
+2G. Help text and CLI --list-archetypes / --list-stacks
+  new_repo.py builds its CLI choices from ARCHETYPES and STACKS. Verify:
+    - The docstring examples at the top of new_repo.py — do they still reflect valid combinations?
+    - Is there a help text comment or usage note that lists archetypes or stacks by name and
+      needs updating?
+
+2H. Verification that the new additions are internally consistent
+  For each new archetype added to ARCHETYPES:
+    - Does a corresponding manifest exist that could be used in DEFAULT_MANIFESTS?
+    - If not, note that the archetype should be added to ARCHETYPES for completeness but
+      that it cannot be wired into DEFAULT_MANIFESTS until a manifest is created.
+
+  For each new stack added to STACKS:
+    - Does the context/stacks/ doc exist and provide enough detail to fill the StackProfile?
+    - Does the manifest exist and validate cleanly against the existing validate_manifest logic?
+
+
+---
+
+PHASE 3 — UPDATES
+
+Apply changes in this order.
+
+3A. Update ARCHETYPES in scripts/new_repo.py
+  Add entries for all archetypes found in context/archetypes/ that are missing from the dict.
+  Use short, precise description strings — match the style of existing entries.
+  Do not rewrite or reorder existing entries.
+
+  Required additions (at minimum):
+    - "polyglot-lab": read context/archetypes/polyglot-lab.md for the right description
+    - "data-acquisition-service": read context/archetypes/data-acquisition-service.md
+    - "multi-source-sync-platform": read context/archetypes/multi-source-sync-platform.md
+    - "multi-backend-service": read context/archetypes/multi-backend-service.md
+
+  If any additional archetypes are found in 2A, add those too.
+
+3B. Update STACKS in scripts/new_repo.py
+  Add StackProfile entries for all stacks that have manifests but no STACKS entry.
+  Use the stack doc and manifest to fill each field. Leave a # TODO comment on any field
+  where the correct value is not derivable from existing docs.
+
+  Each new StackProfile must include:
+    - description, display_name
+    - app_image, app_command, test_command, app_container_port
+    - route_path, smoke_path, integration_path, seed_path
+    - directories tuple (must include docs/, manifests/, scripts/ at minimum)
+    - stack_gitignore tuple (use () if nothing obvious)
+    - extra_template: None unless a specific template already exists in templates/
+
+  Preserve all existing StackProfile entries exactly. Do not rewrite them.
+
+3C. Update DEFAULT_MANIFESTS in scripts/new_repo.py
+  Add entries for all (archetype, stack) pairs that now have both an archetype in ARCHETYPES
+  and a manifest in manifests/. Follow these rules:
+    - Use the exact manifest stem (filename without .yaml)
+    - For archetypes that don't have a single primary stack (e.g., polyglot-lab), only add
+      entries for combinations that have an actual manifest
+    - For data-acquisition-service: use manifest "data-acquisition-service"
+    - For multi-source-sync-platform: use manifest "multi-source-sync-platform"
+    - For each new backend-api-service stack (nim, scala, clojure, dart): add the corresponding
+      "backend-api-<stack-key>" manifest entry under ("backend-api-service", "<stack-key>")
+
+  Do not add speculative entries for combinations without manifests.
+
+3D. Update infer_support_services() in scripts/new_repo.py
+  Add conditional clauses for any new stacks or archetypes that require support services.
+  If a new stack is a JVM backend (nim, scala, clojure, dart-dartfrog), it likely uses postgres.
+  If an archetype (data-acquisition-service, multi-source-sync-platform) implies a specific
+  storage backend, infer it from the archetype's context doc.
+
+  Keep the function structure flat (if/elif/return). Do not restructure it.
+
+3E. Update BOOTSTRAP_CASES in scripts/validate_context.py
+  Add one test case per new (archetype, primary_stack) pair added in 3B/3C.
+  Minimal case format:
+    {"archetype": "<archetype>", "primary_stack": "<stack>", "dokku": False}
+
+  Also add at minimum one test case for each new backend-api-service stack variant
+  (nim, scala, clojure, dart if added).
+
+  For new archetypes whose stack is not directly bootstrappable (no StackProfile), do NOT
+  add a BOOTSTRAP_CASES entry — they can only be verified once a stack profile exists.
+
+  If a new archetype has its own required assertions (similar to dokku or prompt-first
+  assertions in the existing code), add those too, documented with a comment.
+
+3F. Fix any stale references found in 2F
+  For each stale hard-coded reference found in other scripts:
+    - If the script references archetype/stack names in a display or help context, update the list
+    - If the script references manifest names in a hard-coded way, add any missing names
+    - If the script is purely dynamic (reads from disk), no change needed — confirm and move on
+
+  Do not refactor scripts that are merely stale in their comments or docstrings unless the
+  stale text would mislead an operator running the script.
+
+3G. Update docstring examples in scripts/new_repo.py if needed
+  The top-of-file docstring shows two example invocations. If new archetypes/stacks suggest
+  a more illustrative second example, update it. Only change if the existing examples are now
+  misleading (e.g., they reference an archetype or stack that no longer exists). Otherwise
+  leave unchanged.
+
+
+---
+
+PHASE 4 — SELF-CHECK
+
+Before producing any file content, verify:
+
+  [ ] Every file in context/archetypes/ (strip .md) has a matching key in ARCHETYPES.
+  [ ] Every manifest that implies a primary stack has either a STACKS entry or a clear reason
+      it is not bootstrappable (context-only stacks like duo/trio combos are context-only by design).
+  [ ] Every (archetype, stack) pair in DEFAULT_MANIFESTS references a manifest stem that actually
+      exists in manifests/.
+  [ ] Every stack key in DEFAULT_MANIFESTS values (DOKKU_MANIFESTS, etc.) also exists in STACKS.
+  [ ] BOOTSTRAP_CASES covers at minimum one (archetype, stack) pair for each archetype in ARCHETYPES
+      that has a StackProfile. Archetypes without a StackProfile are exempt.
+  [ ] infer_support_services() returns a non-empty list for each new stack that uses a database.
+  [ ] No existing ARCHETYPES entries were removed or reworded.
+  [ ] No existing STACKS entries were changed.
+  [ ] No existing DEFAULT_MANIFESTS entries were changed.
+  [ ] No existing BOOTSTRAP_CASES entries were changed.
+  [ ] Changes to validate_context.py are additive only (new BOOTSTRAP_CASES entries appended).
+  [ ] Any # TODO comments in new StackProfile entries are actionable (not vague).
+
+Run validation after changes:
+
+  python3.14 -m unittest verification.examples.data.test_storage_examples -v
+
+Also run the full context validator:
+
+  python scripts/validate_context.py
+
+Both must pass before treating the work as complete. If either fails, diagnose and fix.
+
+
+---
+
+PHASE 5 — COMMIT BATCHING
+
+Batch 1: ARCHETYPES and STACKS expansion in new_repo.py
+  Files: scripts/new_repo.py
+  Purpose: registers the four missing archetypes and adds StackProfile entries for any stacks
+  that have manifests but no bootstrappable profile yet.
+  Commit prefix: [PROMPT_73]
+
+Batch 2: DEFAULT_MANIFESTS and service inference wiring
+  Files: scripts/new_repo.py (continued, or same commit if small)
+  Purpose: wires new (archetype, stack) pairs into DEFAULT_MANIFESTS and ensures
+  infer_support_services() returns the right services for each new combination.
+  Note: if batch 1 and batch 2 are both changes to new_repo.py only, they may be one commit.
+
+Batch 3: Validation case expansion
+  Files: scripts/validate_context.py
+  Purpose: extends BOOTSTRAP_CASES so new archetypes and stacks are exercised by the
+  context validator.
+  Commit prefix: [PROMPT_73]
+
+Batch 4: Other scripts freshness (if any)
+  Files: any scripts identified as stale in 2F
+  Purpose: brings stale hard-coded references in support scripts in line with current repo.
+  If no other scripts have stale references, say "No changes — all support scripts are dynamic."
+  Commit prefix: [PROMPT_73]
+
+Batches with no changes should say: "No changes — [reason]."
+
+
+---
+
+SECTION 6 — IMPORTANT CONSTRAINTS
+
+- Do not change the behavior of existing logic — only add new entries and cases.
+- Do not refactor new_repo.py. The audit is additive. Preserve existing code structure exactly.
+- Do not add new CLI flags or new script behavior. This is a catalog-and-coverage pass only.
+- Do not create new manifests, archetype files, or stack docs. Work only from what exists.
+- If a new archetype has no manifest and no usable stack, add it to ARCHETYPES (so --list-archetypes
+  is accurate) but do not add it to DEFAULT_MANIFESTS or BOOTSTRAP_CASES.
+- StackProfile fields that are genuinely unknowable from existing docs should get a # TODO comment
+  with a specific question, not a silent guess.
+- Produce complete file contents for every file updated. No diffs, no partial sections.
+- Do not add CI infrastructure. This prompt is scoped to scripts/ only.
+- The only acceptable test runner is python3.14 -m unittest. Never invoke pytest.
