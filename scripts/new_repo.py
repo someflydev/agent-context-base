@@ -531,6 +531,36 @@ SERVICE_PRESETS = {
 }
 
 
+def _load_derived_data() -> dict[str, list[dict]]:
+    """Load derived-examples.yaml and spin-outs.yaml from examples/derived/.
+
+    Returns {"derived": [...], "spin_outs": [...]}.
+    Returns empty lists for any file that does not exist yet (run PROMPT_76/78 first).
+    Uses the repo's custom load_yaml_like parser (no PyYAML dependency).
+    """
+    import sys
+
+    repo_root = Path(__file__).resolve().parent.parent
+    verification_path = str(repo_root)
+    if verification_path not in sys.path:
+        sys.path.insert(0, verification_path)
+    from verification.helpers import load_yaml_like  # noqa: PLC0415
+
+    derived_dir = repo_root / "examples" / "derived"
+
+    derived: list[dict] = []
+    spin_outs: list[dict] = []
+    de_path = derived_dir / "derived-examples.yaml"
+    if de_path.exists():
+        raw = load_yaml_like(de_path)
+        derived = raw.get("derived", []) if isinstance(raw, dict) else []
+    so_path = derived_dir / "spin-outs.yaml"
+    if so_path.exists():
+        raw = load_yaml_like(so_path)
+        spin_outs = raw.get("spin_outs", []) if isinstance(raw, dict) else []
+    return {"derived": derived, "spin_outs": spin_outs}
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Create the CLI parser."""
 
@@ -610,6 +640,16 @@ def build_parser() -> argparse.ArgumentParser:
         "--list-manifests",
         action="store_true",
         help="Print available manifests and exit.",
+    )
+    parser.add_argument(
+        "--list-derived",
+        action="store_true",
+        help="Print all derived examples (sub-groups and spin-out platforms) and exit.",
+    )
+    parser.add_argument(
+        "--derived-example",
+        metavar="NAME",
+        help="Print the cluster guide for a derived example or spin-out by name and exit.",
     )
     return parser
 
@@ -1423,6 +1463,62 @@ def main(argv: list[str]) -> int:
             "Manifests",
             {name: str(data.get("description", "")) for name, data in manifests.items()},
         )
+
+    if args.list_derived:
+        data = _load_derived_data()
+        if not data["derived"] and not data["spin_outs"]:
+            print("No derived examples found. Run PROMPT_76 and PROMPT_78 to generate them.")
+            return 0
+        if data["derived"]:
+            print("Derived Examples (sub-groups):")
+            for entry in data["derived"]:
+                print(f"  {entry['name']:<40}  Team {entry['team']}  {entry['description']}")
+        if data["spin_outs"]:
+            print()
+            print("Spin-out Platforms:")
+            for entry in data["spin_outs"]:
+                print(f"  {entry['name']:<40}  {entry['origin']:<12}  {entry['description']}")
+        return 0
+
+    if args.derived_example is not None:
+        name = args.derived_example
+        data = _load_derived_data()
+        entry = next(
+            (e for e in data["derived"] + data["spin_outs"] if e.get("name") == name),
+            None,
+        )
+        if entry is None:
+            print(f"Unknown derived example: {name!r}. Use --list-derived to see available names.")
+            return 1
+        is_derived = entry in data["derived"]
+        kind = "Sub-group" if is_derived else "Spin-out Platform"
+        print(f"=== {entry['name']} ===")
+        print(f"{kind}: {entry.get('title', entry['name'])}")
+        if is_derived:
+            print(f"Team: {entry.get('team', '?')} — {entry.get('team_name', '')}")
+        else:
+            print(f"Origin: {entry.get('origin', '?')}")
+        print(f"\nDescription: {entry['description']}")
+        print("\n--- Prompt ---")
+        print(entry.get("prompt", "").strip())
+        print("\n--- Source Examples ---")
+        # EXAMPLE_PROJECTS is added by PROMPT_75; fall back to empty dict if not yet present
+        example_projects = globals().get("EXAMPLE_PROJECTS", {})
+        for num in entry.get("source_examples", []):
+            ex = example_projects.get(num)
+            if ex is not None:
+                print(f"  #{num:>3}  --use-example {num:<4}  {ex.codename:<45}  {ex.title}")
+            else:
+                print(f"  #{num:>3}  --use-example {num}")
+        print("\n--- Scaffold Commands ---")
+        for num in entry.get("source_examples", []):
+            ex = example_projects.get(num)
+            slug = f"{ex.codename}" if ex else f"example-{num:03d}"
+            print(f"  python3 scripts/new_repo.py --use-example {num} --dry-run --target-dir /tmp/{num:03d}-{slug}")
+        if not is_derived and entry.get("seam_notes"):
+            print("\n--- Seam Notes ---")
+            print(entry["seam_notes"].strip())
+        return 0
 
     if not args.repo_name:
         parser.error("repo_name is required unless a --list-* flag is used")

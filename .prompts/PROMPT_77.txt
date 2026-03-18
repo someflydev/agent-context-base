@@ -61,21 +61,26 @@ The module must follow the existing verification test style:
 - One TestCase subclass: TestDerivedCoverage
 - All test methods begin with test_
 
+IMPORTANT: PyYAML is NOT available in this repo's python3.14 environment.
+Do NOT use `import yaml`. Use the repo's custom parser from verification/helpers.py:
+
+  from verification.helpers import load_yaml_like
+
 The module needs two helper functions at module level (not inside TestCase):
 
   def load_example_prompts() -> list[dict]:
       """Load and return the examples list from examples/derived/example-prompts.yaml."""
       repo_root = Path(__file__).resolve().parents[3]
       path = repo_root / "examples" / "derived" / "example-prompts.yaml"
-      with path.open() as f:
-          return yaml.safe_load(f)["examples"]
+      data = load_yaml_like(path)
+      return data["examples"]
 
   def load_derived_examples() -> list[dict]:
       """Load and return the derived list from examples/derived/derived-examples.yaml."""
       repo_root = Path(__file__).resolve().parents[3]
       path = repo_root / "examples" / "derived" / "derived-examples.yaml"
-      with path.open() as f:
-          return yaml.safe_load(f)["derived"]
+      data = load_yaml_like(path)
+      return data["derived"]
 
 For ARCHETYPES and STACKS, import them from new_repo.py using importlib or sys.path
 manipulation (the same pattern used in other verification modules that import from scripts/).

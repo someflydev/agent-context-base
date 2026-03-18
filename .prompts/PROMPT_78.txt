@@ -1,0 +1,476 @@
+You are working inside the agent-context-base repository.
+
+This prompt extends the derived content layer (examples/derived/) with three additional
+structured YAML files covering: 10 spin-out platform descriptions, effectiveness tier
+rankings for all 100 examples, and 5 orchestration strategies. These files are the
+second tier of the derived content layer created by PROMPT_76 and are consumed by the
+--list-derived / --derived-example flags added in PROMPT_75/79.
+Output changes as commit-ready batches labeled [PROMPT_78].
+
+================================================================================
+CONSTRAINTS
+================================================================================
+
+- Do NOT modify examples/derived/example-prompts.yaml or derived-examples.yaml.
+- Do NOT change scripts/new_repo.py, verification scripts, or manifests.
+- validate_context.py and validate_doc_governance.py must both pass after all changes.
+- Run: python3.14 scripts/validate_context.py
+       python3.14 scripts/validate_doc_governance.py
+  after each batch and fix any failures before continuing.
+
+================================================================================
+REQUIRED READS
+================================================================================
+
+  examples/derived/README.md              (to understand current content)
+  examples/derived/example-prompts.yaml   (for example numbers referenced by spin-outs)
+  examples/catalog.json                   (catalog entry format)
+  verification/example_registry.yaml      (last 10 entries — registry format)
+
+================================================================================
+I. WHAT TO BUILD
+================================================================================
+
+1. Create examples/derived/spin-outs.yaml — 10 spin-out platform descriptions.
+2. Create examples/derived/tier-rankings.yaml — effectiveness tier rankings.
+3. Create examples/derived/orchestration-strategies.yaml — 5 orchestration strategies.
+4. Update examples/derived/README.md to mention all three new files.
+5. Add all three files to examples/catalog.json.
+6. Add all three files to verification/example_registry.yaml.
+
+================================================================================
+II. examples/derived/spin-outs.yaml
+================================================================================
+
+Top-level key: `spin_outs` (list of 10 entries).
+Each entry:
+
+  - name: <slug codename, e.g. "dataforge">
+    title: <human-readable title>
+    origin: <"team_a", "team_b", or "cross_team">
+    description: <one-line description>
+    source_examples: [<list of ints from the 100>]
+    what_it_becomes: |
+      <2-3 sentence description of the emergent platform>
+    value: <one-line statement of the spin-out's value proposition>
+    seam_notes: |
+      <1-2 sentences on coordination seam or key integration points>
+
+Write exactly these 10 entries:
+
+1.  name: dataforge
+    title: DataForge — Unified Data Acquisition Framework
+    origin: team_a
+    source_examples: [28, 30, 35, 73]
+    description: "REST + scraper + multi-source NATS coordinator + reconciliation CLI"
+    what_it_becomes: |
+      A generalized data acquisition platform supporting REST APIs, HTML scraping,
+      file imports, and automated reconciliation via a shared NATS event bus. Each
+      source type gets an adapter; the reconciliation CLI becomes a verification step
+      in the pipeline. NATS events coordinate multi-source runs and track completion.
+    value: "Replaces ad-hoc data import scripts with a composable, event-driven acquisition platform."
+    seam_notes: |
+      All sources publish sync.requested to NATS; reconciliation CLI reads PostgreSQL
+      exports after sync.completed. No direct service-to-service calls.
+
+2.  name: lakeview
+    title: LakeView — Analytical Data Platform
+    origin: team_a
+    source_examples: [63, 2, 22]
+    description: "MinIO data lake + DuckDB analytics API + HTMX faceted dashboard"
+    what_it_becomes: |
+      An end-to-end analytical platform where data lands in MinIO as Parquet, DuckDB
+      queries serve the API layer, and the HTMX+Plotly dashboard provides interactive
+      exploration with faceted filters and dynamic counts. Analysts get a self-service
+      interface backed by columnar storage.
+    value: "A self-hosted alternative to lightweight BI tools — no external SaaS dependency."
+    seam_notes: |
+      Pipeline writes Parquet to MinIO; analytics API reads via DuckDB; dashboard
+      queries the analytics API directly. All three services share the Parquet path
+      convention.
+
+3.  name: semanticgate
+    title: SemanticGate — AI-Powered API Gateway
+    origin: team_a
+    source_examples: [47, 44, 1]
+    description: "Go ML gateway + embedding pipeline (Qdrant) + partner enrichment"
+    what_it_becomes: |
+      An API gateway that not only routes and rate-limits but also enriches requests
+      with semantic context. Incoming queries are embedded and matched against a Qdrant
+      knowledge base before routing to downstream services; enriched context travels
+      with the request to the normalization service.
+    value: "Intelligent request routing based on content semantics, not just URL patterns."
+    seam_notes: |
+      Go gateway → FastAPI embedding service (REST seam); gateway → normalization
+      service (REST seam with enriched context header). Qdrant is shared between
+      embedding pipeline and gateway lookup.
+
+4.  name: syncorchestrator
+    title: SyncOrchestrator — Multi-Source Event Coordinator
+    origin: team_a
+    source_examples: [35, 28, 91]
+    description: "NATS multi-source coordinator + acquisition + Dokku production deployment"
+    what_it_becomes: |
+      A production-grade sync orchestration platform that coordinates data pulls from
+      multiple external sources, manages sync state via NATS JetStream, handles failures
+      with backoff, and deploys to Dokku. Every sync run generates an observable event
+      trail for debugging and auditing.
+    value: "Reliable external data synchronization as a managed, deployable service."
+    seam_notes: |
+      Acquisition service emits to NATS JetStream; coordinator subscribes and tracks
+      state in PostgreSQL. Dokku service wraps the coordinator for production.
+
+5.  name: hybridmind
+    title: HybridMind — Intelligent Search Platform
+    origin: team_b
+    source_examples: [42, 83, 30]
+    description: "Qdrant semantic search + Meilisearch hybrid rank fusion + web scraper corpus"
+    what_it_becomes: |
+      A comprehensive search platform combining full-text relevance (Meilisearch) with
+      semantic understanding (Qdrant + sentence-transformers). The scraper continuously
+      enriches the corpus. Weighted rank fusion produces results that are both
+      keyword-relevant and semantically meaningful.
+    value: "Enterprise search that understands intent, not just keywords."
+    seam_notes: |
+      Scraper writes records to PostgreSQL and triggers re-index in both Qdrant and
+      Meilisearch. Hybrid search service queries both on each request and fuses scores.
+
+6.  name: trioserve
+    title: TrioServe — Polyglot ML Serving Infrastructure
+    origin: team_b
+    source_examples: [57, 39, 67]
+    description: "Trio Go/Elixir/Python coordination + sklearn inference + Redis prediction cache"
+    what_it_becomes: |
+      A production ML serving infrastructure where Go handles traffic, Elixir supervises
+      and coordinates via NATS, and Python serves models — with Redis caching hot
+      predictions. The Elixir supervisor tree provides fault tolerance and graceful
+      degradation that pure Go or Python cannot match alone.
+    value: "Fault-tolerant, cached ML inference at scale with polyglot supervision."
+    seam_notes: |
+      Go gateway → NATS → Elixir coordinator → Python inference (REST). Redis sits
+      in front of Python inference; cache miss triggers actual model call.
+
+7.  name: observestream
+    title: ObserveStream — Event-Driven Observability
+    origin: team_b
+    source_examples: [68, 3, 77]
+    description: "NATS event capture/replay + TimescaleDB metrics + YAML config auditor"
+    what_it_becomes: |
+      An observability platform where all system events flow through NATS JetStream,
+      time-series metrics land in TimescaleDB hypertables for windowed aggregates, and
+      the config auditor verifies deployment configurations. Event replay enables
+      debugging production issues by replaying exact event sequences.
+    value: "Debug-by-replay observability with configuration compliance enforcement."
+    seam_notes: |
+      NATS capture is a passive subscriber on all streams. TimescaleDB receives metric
+      events via a dedicated consumer. Config auditor is a standalone CLI that reads
+      YAML files from all service deployments.
+
+8.  name: promptops
+    title: PromptOps — Prompt Engineering CI/CD
+    origin: team_b
+    source_examples: [85, 86, 88]
+    description: "Prompt rubric evaluator + shape compliance + model config comparison"
+    what_it_becomes: |
+      A CI/CD pipeline for prompt engineering where prompts are version-controlled,
+      evaluated against rubrics, checked for output shape compliance, and compared
+      across model configurations. Each component produces a structured report artifact
+      that CI can assert against.
+    value: "Disciplined prompt management as a first-class engineering practice."
+    seam_notes: |
+      All three components are standalone CLIs sharing a common prompt corpus directory.
+      CI runs all three in parallel and gates on zero rubric failures and zero shape
+      violations.
+
+9.  name: fullstack-intelligence
+    title: FullStack Intelligence Platform
+    origin: cross_team
+    source_examples: [47, 57, 44, 83, 22, 3, 28, 63]
+    description: "Best 10 + Next Best 10 selective merge — complete data intelligence platform"
+    what_it_becomes: |
+      The complete platform — data flows in through REST acquisition, gets normalized and
+      embedded, lands in a data lake, serves analytics through a faceted dashboard,
+      handles ML scoring through a polyglot trio, and provides hybrid search across the
+      entire corpus. The Go gateway handles all external traffic across both clusters.
+    value: "A complete data intelligence platform built from composable, independently-tested microservices."
+    seam_notes: |
+      Gateway-A routes to data platform services (Best 10); Gateway-B routes to
+      ML/search services (Next Best 10). Cross-gateway coordination goes through NATS,
+      never direct HTTP.
+
+10. name: meta-platform
+    title: The Meta-Platform — Self-Managing Intelligence Infrastructure
+    origin: cross_team
+    source_examples: [47, 57, 44, 83, 22, 28, 63, 85, 77, 68, 91]
+    description: "Full intelligence platform + PromptOps + config audit + event capture + Dokku deployment"
+    what_it_becomes: |
+      A self-managing platform where prompts that generated each service are themselves
+      version-controlled and evaluated, configurations are continuously audited, events
+      are captured for replay debugging, and everything deploys to Dokku. The platform
+      monitors its own health and can regenerate any component from its prompt sequence.
+    value: "Infrastructure that maintains itself through AI-assisted operations and can reconstruct any service from its genesis prompts."
+    seam_notes: |
+      PromptOps CI gate runs on all .prompts/ directories across services. Config auditor
+      reads Dokku deployment configs. Event capture passively observes all NATS traffic.
+
+================================================================================
+III. examples/derived/tier-rankings.yaml
+================================================================================
+
+Top-level key: `tier_rankings` (list of tier entries, each containing projects).
+Structure:
+
+  - tier: <int 1-5>
+    label: <"Foundational", "High Value", "Solid", "Specialized", or "Niche">
+    score_range: <e.g. "8-10">
+    description: <one sentence description of this tier>
+    entries:
+      - number: <int>
+        codename: <str>
+        score: <int>
+        standalone: <int 0-3>
+        composability: <int 0-3>
+        technical_depth: <int 0-2>
+        uniqueness: <int 0-2>
+        note: <one-line description>
+
+Write exactly 5 tiers with the following entries.
+Scoring formula: standalone(0-3) + composability(0-3) + technical_depth(0-2) + uniqueness(0-2) = total(0-10).
+
+TIER 1 — Foundational (score 8-10) — "Projects that anchor entire platforms"
+  score 10: #47 go-python-ml-gateway (standalone=3, composability=3, depth=2, unique=2)
+  score 10: #57 trio-go-elixir-python (standalone=3, composability=3, depth=2, unique=2)
+  score  9: #28 python-api-acquisition (standalone=3, composability=3, depth=2, unique=1)
+  score  9: #1  partner-data-enrichment (standalone=3, composability=3, depth=2, unique=1)
+  score  9: #44 embedding-pipeline (standalone=3, composability=3, depth=2, unique=1)
+  score  9: #22 faceted-dashboard (standalone=3, composability=3, depth=2, unique=1)
+  score  9: #35 multi-source-sync (standalone=3, composability=3, depth=2, unique=1)
+  score  9: #2  analytics-parquet-api (standalone=3, composability=3, depth=2, unique=1)
+  score  8: #42 semantic-search-qdrant (standalone=3, composability=2, depth=2, unique=1)
+  score  8: #63 duckdb-parquet-minio-lake (standalone=3, composability=2, depth=2, unique=1)
+  score  8: #39 sklearn-inference (standalone=3, composability=2, depth=2, unique=1)
+  score  8: #83 hybrid-search-prototype (standalone=3, composability=2, depth=2, unique=1)
+  score  8: #3  timeseries-ingest (standalone=3, composability=2, depth=2, unique=1)
+
+TIER 2 — High Value (score 6-7) — "Strong standalone, good composability"
+  score 7: #91 dokku-fastapi-analytics
+  score 7: #67 redis-cache-ratelimit
+  score 7: #30 python-scraper
+  score 7: #73 data-reconciliation-cli
+  score 7: #85 prompt-rubric-evaluator
+  score 7: #68 nats-event-capture-replay
+  score 7: #5  scheduled-enrichment
+  score 7: #10 rust-event-ingest
+  score 7: #58 trio-go-rust-python-dual
+  score 7: #59 trio-elixir-go-rust-nats
+  score 7: #7  hono-bff-aggregator
+  score 6: #77 go-config-auditor
+  score 6: #33 json-etl-pipeline
+  score 6: #32 csv-etl-pipeline
+  score 6: #34 duckdb-parquet-analytics
+  score 6: #36 classification-enrichment
+  score 6: #37 recurring-sync
+  score 6: #40 recommendation-engine
+  score 6: #41 arima-forecasting
+  score 6: #43 xgboost-serving
+  score 6: #64 rag-engineering-runbooks
+  score 6: #65 meilisearch-fulltext
+  score 6: #66 timescaledb-sensors
+  score 6: #61 trio-rust-nats-go-iot
+  score 6: #84 rag-plus-structured
+  score 6: #51 node-go-graphql
+  score 6: #48 kotlin-rust-grpc
+  score 6: #54 rust-python-grpc-infer
+
+TIER 3 — Solid (score 4-5) — "Good standalone, moderate composability"
+  score 5: #21 fastapi-dokku-analytics
+  score 5: #23 search-sort-paginate
+  score 5: #24 split-filter-panel
+  score 5: #25 shared-query-chart-table
+  score 5: #26 report-browser-cuj
+  score 5: #27 compound-facet-dashboard
+  score 5: #29 go-api-ingestion
+  score 5: #31 bun-scraper
+  score 5: #38 elixir-data-acquisition
+  score 5: #4  webhook-receiver
+  score 5: #6  hono-internal-api
+  score 5: #8  go-parquet-reports
+  score 5: #9  go-file-upload
+  score 5: #45 duckdb-polars-sklearn
+  score 5: #46 lightgbm-tabular
+  score 5: #50 clojure-go-kafka
+  score 5: #49 elixir-go-nats
+  score 5: #53 node-elixir-nats-bidir
+  score 5: #55 elixir-rust-nif
+  score 5: #56 elixir-clojure-rabbitmq
+  score 5: #60 trio-node-go-python-gql
+  score 5: #62 scala-go-python-federated
+  score 5: #70 multi-storage-split
+  score 5: #71 elasticsearch-search
+  score 5: #72 es-vs-meilisearch
+  score 5: #74 prompt-eval-cli
+  score 5: #75 rust-batch-processor
+  score 5: #78 python-pipeline-cli
+  score 5: #79 rag-legal-docs
+  score 5: #80 rag-api-reference
+  score 5: #81 markdown-notes-indexer
+  score 5: #82 runbook-search
+  score 5: #86 output-shape-compliance
+  score 5: #87 prompt-assertion-library
+  score 5: #88 model-config-comparison
+  score 5: #92 dokku-fastapi-redis-cache
+  score 5: #52 scala-rust-grpc-streams
+  score 5: #69 trino-federated-query
+
+TIER 4 — Specialized (score 3-4) — "Valuable in specific contexts"
+  score 4: #11 rust-batch-classifier
+  score 4: #12 phoenix-scheduling
+  score 4: #13 scala-financial-reports
+  score 4: #14 kotlin-invoice-tracker
+  score 4: #15 clojure-preferences
+  score 4: #16 ruby-content-store
+  score 4: #76 rust-snapshot-cli
+  score 4: #89 task-prompt-sequences
+  score 4: #90 living-doc-prompts
+  score 4: #93 dokku-hono-bun
+  score 4: #94 dokku-go-echo
+  score 4: #95 dokku-phoenix
+  score 4: #96 dokku-multi-service
+  score 4: #97 dokku-rust-axum
+  score 4: #98 dokku-kotlin-http4k
+
+TIER 5 — Niche (score 2-3) — "Language exploration, narrow use cases"
+  score 3: #17 nim-json-filter
+  score 3: #18 dart-audit-log
+  score 3: #19 ocaml-metadata-store
+  score 3: #20 crystal-cache-proxy
+  score 3: #99 crystal-data-acquisition
+  score 3: #100 polyglot-seam-lab
+
+For scoring in YAML: use round numbers derived from the rubric. Do not add fabricated
+precision. Just carry through the scores exactly as listed above.
+
+================================================================================
+IV. examples/derived/orchestration-strategies.yaml
+================================================================================
+
+Top-level key: `orchestration_strategies` (list of 5 strategy entries).
+Each entry:
+
+  - name: <slug, e.g. "event-bus-backbone">
+    title: <human-readable title>
+    primary_examples: [<list of example numbers most relevant>]
+    summary: |
+      <2-3 sentence description of the strategy>
+    when_to_use: <one sentence guideline>
+    tradeoffs: <one sentence describing the main tradeoff>
+
+Write exactly these 5 entries:
+
+1.  name: event-bus-backbone
+    title: "Strategy 1: Event Bus as Backbone"
+    primary_examples: [35, 68, 49, 50, 56]
+    summary: |
+      Use NATS JetStream or Kafka as the central nervous system: every service publishes
+      domain events to typed subjects and subscribes only to events it cares about.
+      Dead letter queues handle failures without blocking producers; replay enables
+      debugging and reprocessing. 13 of the 100 projects already use or are compatible
+      with event streaming patterns from the base repo.
+    when_to_use: "When multiple services need to coordinate without tight coupling and event replay is a debugging requirement."
+    tradeoffs: "Adds operational complexity (NATS/Kafka infra) and eventual consistency; removes direct service-to-service dependencies."
+
+2.  name: gateway-mesh
+    title: "Strategy 2: Gateway Mesh"
+    primary_examples: [47, 57, 51, 60]
+    summary: |
+      Deploy multiple Go gateways that route to different service clusters: Gateway-A
+      to data platform services, Gateway-B to ML/search services, Gateway-C to storage
+      experiments. Each gateway owns its routing table and health probes. Cross-gateway
+      communication goes through the event bus, never direct HTTP.
+    when_to_use: "When scaling beyond 5 services and cross-service HTTP spaghetti becomes a maintenance risk."
+    tradeoffs: "Adds Go gateway infrastructure; eliminates direct inter-service calls but requires maintaining routing tables."
+
+3.  name: shared-data-layer
+    title: "Strategy 3: Shared Data Layer"
+    primary_examples: [67, 1, 3, 63, 42, 44, 83]
+    summary: |
+      Three storage tiers: Redis for sub-millisecond cached results, PostgreSQL for
+      normalized operational data, MinIO+Parquet for analytical and archival data.
+      Services write to the appropriate tier based on access pattern. DuckDB queries
+      cold-tier Parquet without moving data; Qdrant holds vector embeddings as a
+      parallel index.
+    when_to_use: "When different services need different access patterns against the same underlying data."
+    tradeoffs: "Requires discipline about which tier owns which data; avoids duplication but adds schema coordination overhead."
+
+4.  name: prompt-first-regeneration
+    title: "Strategy 4: Prompt-First Regeneration"
+    primary_examples: [85, 86, 87, 88, 89, 90]
+    summary: |
+      Each of the 100 projects was generated from a 2-4 sentence prompt and built via
+      a prompt sequence (.prompts/ directory). Any service can be regenerated from
+      scratch by replaying its prompts; services can be forked by modifying the initial
+      prompt. The prompt evaluator audits prompt quality across all services.
+    when_to_use: "When a service needs to be rebuilt, forked for a new domain, or audited for prompt quality drift."
+    tradeoffs: "Relies on the generating AI maintaining consistent output given the same prompts; best verified by the test suite."
+
+5.  name: verification-mesh
+    title: "Strategy 5: Verification Mesh"
+    primary_examples: [22, 23, 24, 25, 26, 27, 73, 77]
+    summary: |
+      Cross-service verification using the base repo's testing philosophy: each service
+      has smoke tests (fast, no external deps), integration tests (real containers via
+      docker-compose), and cross-service tests that verify seam contracts end-to-end.
+      The reconciliation CLI and config auditor provide offline quality and compliance
+      checks.
+    when_to_use: "Always — this is the baseline verification posture for any combination of projects."
+    tradeoffs: "Integration tests require docker-compose and are slower; smoke tests provide the fast feedback loop."
+
+================================================================================
+V. README UPDATE
+================================================================================
+
+Update examples/derived/README.md to add a brief mention of the three new files:
+- spin-outs.yaml: 10 emergent platform descriptions derived from combining examples
+- tier-rankings.yaml: effectiveness tier rankings (Tier 1-5) for all 100 examples
+- orchestration-strategies.yaml: 5 strategies for combining projects at scale
+
+Keep the README under 30 lines total. Do not change the existing content — append
+a new section at the bottom.
+
+================================================================================
+VI. BATCH STRUCTURE
+================================================================================
+
+Batch 1 — Create spin-outs.yaml, tier-rankings.yaml, orchestration-strategies.yaml
+  Files: examples/derived/spin-outs.yaml
+         examples/derived/tier-rankings.yaml
+         examples/derived/orchestration-strategies.yaml
+  Content: per Sections II, III, IV
+  Commit: [PROMPT_78] Batch 1: add spin-outs, tier-rankings, and orchestration-strategies to derived layer
+
+Batch 2 — Update README and register new files
+  Files: examples/derived/README.md
+         examples/catalog.json
+         verification/example_registry.yaml
+  Content: README update (Section V) + 3 new catalog entries + 3 new registry entries
+  Run: python3.14 scripts/validate_context.py
+       python3.14 scripts/validate_doc_governance.py
+  Commit: [PROMPT_78] Batch 2: register derived spin-outs and rankings in catalog and registry
+
+================================================================================
+VII. VERIFICATION
+================================================================================
+
+After all batches:
+
+  python3.14 scripts/validate_context.py
+  python3.14 scripts/validate_doc_governance.py
+
+Both must pass cleanly.
+
+Spot-check:
+  - spin-outs.yaml has exactly 10 entries (count top-level `name:` keys)
+  - tier-rankings.yaml has exactly 5 tier entries
+  - orchestration-strategies.yaml has exactly 5 entries
+  - All source_examples in spin-outs.yaml reference numbers 1-100
+  - All primary_examples in orchestration-strategies.yaml reference numbers 1-100

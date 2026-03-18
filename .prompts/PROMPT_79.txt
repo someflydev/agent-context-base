@@ -1,0 +1,276 @@
+You are working inside the agent-context-base repository.
+
+This prompt extends the coverage verification layer (PROMPT_77) to also cover the
+spin-out platforms (PROMPT_78) and extends new_repo.py's --derived-example and
+--list-derived flags (partially added in PROMPT_75/79 stubs) with full implementation.
+It also validates that the tier-rankings and orchestration-strategies files are
+structurally correct. Output changes as commit-ready batches labeled [PROMPT_79].
+
+================================================================================
+PREREQUISITES
+================================================================================
+
+This prompt depends on:
+  - PROMPT_75: --use-example, EXAMPLE_PROJECTS, and 3 new stacks in new_repo.py
+  - PROMPT_76: examples/derived/example-prompts.yaml and derived-examples.yaml
+  - PROMPT_77: verification/examples/derived/test_derived_coverage.py
+  - PROMPT_78: examples/derived/spin-outs.yaml, tier-rankings.yaml,
+               orchestration-strategies.yaml
+
+Verify all four prerequisite prompts are complete before beginning.
+Check by confirming: scripts/new_repo.py contains EXAMPLE_PROJECTS,
+examples/derived/ contains all 5 YAML files, and
+verification/examples/derived/test_derived_coverage.py exists and passes.
+
+================================================================================
+CONSTRAINTS
+================================================================================
+
+- Verification uses python3.14 -m unittest, not pytest.
+- validate_context.py and validate_doc_governance.py must both pass after all changes.
+- Run: python3.14 scripts/validate_context.py
+       python3.14 scripts/validate_doc_governance.py
+  after each batch and fix any failures before continuing.
+
+================================================================================
+REQUIRED READS
+================================================================================
+
+  scripts/new_repo.py                                  (full file — current state after PROMPT_75)
+  examples/derived/derived-examples.yaml               (8 sub-group entries)
+  examples/derived/spin-outs.yaml                      (10 spin-out entries)
+  examples/derived/tier-rankings.yaml                  (tier structure)
+  examples/derived/orchestration-strategies.yaml       (strategy structure)
+  verification/examples/derived/test_derived_coverage.py  (existing tests to extend)
+  scripts/run_verification.py                          (HEAVY_MODULES)
+
+================================================================================
+I. WHAT TO BUILD
+================================================================================
+
+1. Complete the --derived-example NAME and --list-derived flags in new_repo.py.
+   (PROMPT_75 may have added stubs; this prompt adds the full implementation.)
+
+2. Extend verification/examples/derived/test_derived_coverage.py with 8 new tests
+   covering spin-outs, tier-rankings, and orchestration-strategies.
+
+3. Register the updated test module entry in run_verification.py (if count changed).
+
+================================================================================
+II. new_repo.py — --derived-example and --list-derived FULL IMPLEMENTATION
+================================================================================
+
+NOTE: _load_derived_data() is already implemented in new_repo.py (added in the
+same session as PROMPT_79 was written). It uses load_yaml_like from
+verification/helpers.py — no PyYAML dependency. PyYAML is not available in
+this repo's python3.14 environment; do NOT add `import yaml` to new_repo.py.
+
+The existing _load_derived_data() implementation:
+  - Imports load_yaml_like from verification.helpers
+  - Loads derived-examples.yaml → dict["derived"]
+  - Loads spin-outs.yaml → dict["spin_outs"]
+  - Returns empty lists for missing files
+
+If _load_derived_data() is already correct in new_repo.py, skip Batch 1 and
+proceed directly to Batch 2 (the verification test extension). Verify by running:
+  python3.14 scripts/new_repo.py --list-derived
+  python3.14 scripts/new_repo.py --derived-example nonexistent
+
+
+Add these two arguments in build_parser() after the --list-manifests argument:
+
+  parser.add_argument(
+      "--list-derived",
+      action="store_true",
+      help="Print all derived examples (sub-groups and spin-out platforms) and exit.",
+  )
+  parser.add_argument(
+      "--derived-example",
+      metavar="NAME",
+      help="Print the cluster guide for a derived example or spin-out by name and exit.",
+  )
+
+
+In main(), add handlers immediately after the --list-manifests handler block:
+
+  --- --list-derived ---
+  If args.list_derived is True:
+    Load derived data. Print two sections:
+
+    "Derived Examples (sub-groups):"
+    For each entry in derived list, print:
+      f"  {entry['name']:<40}  Team {entry['team']}  {entry['description']}"
+
+    "" (blank line)
+
+    "Spin-out Platforms:"
+    For each entry in spin_outs list, print:
+      f"  {entry['name']:<40}  {entry['origin']:<12}  {entry['description']}"
+
+    If both lists are empty, print:
+      "No derived examples found. Run PROMPT_76 and PROMPT_78 to generate them."
+
+    Return 0.
+
+  --- --derived-example NAME ---
+  If args.derived_example is not None:
+    name = args.derived_example
+    Load derived data. Search both derived and spin_outs lists for entry with
+    entry["name"] == name.
+    If not found: print f"Unknown derived example: {name!r}. Use --list-derived to see available names."
+    Return 1.
+
+    If found, print the cluster guide in this format:
+
+      f"=== {entry['name']} ==="
+      f"{'Sub-group' if found_in_derived else 'Spin-out Platform'}: {entry.get('title', entry['name'])}"
+      (if derived entry): f"Team: {entry['team']} — {entry['team_name']}"
+      (if spin-out entry): f"Origin: {entry['origin']}"
+      f""
+      f"Description: {entry['description']}"
+      f""
+      f"--- Prompt ---"
+      entry['prompt'].strip()
+      f""
+      f"--- Source Examples ---"
+      For each num in entry['source_examples']:
+          Look up the example in EXAMPLE_PROJECTS (available after PROMPT_75).
+          If found: print f"  #{num:>3}  --use-example {num:<4}  {example.codename:<45}  {example.title}"
+          If not found: print f"  #{num:>3}  --use-example {num}"
+      f""
+      f"--- Scaffold Commands ---"
+      For each num in entry['source_examples']:
+          Print: f"  python3 scripts/new_repo.py --use-example {num} --dry-run --target-dir /tmp/{num:03d}-<codename>"
+      (If spin-out): print the seam_notes under "--- Seam Notes ---"
+
+    Return 0.
+
+NOTE: The EXAMPLE_PROJECTS lookup (added in PROMPT_75) provides codename and title.
+If EXAMPLE_PROJECTS is not yet available in the current new_repo.py (because PROMPT_75
+has not run), use an empty dict fallback so the output is still useful.
+
+================================================================================
+III. EXTENDED VERIFICATION TESTS
+================================================================================
+
+Add these 8 new test methods to TestDerivedCoverage in
+verification/examples/derived/test_derived_coverage.py:
+
+--- test_spin_outs_loaded ---
+  Load examples/derived/spin-outs.yaml. Assert the file exists and contains
+  a "spin_outs" key. Assert len(spin_outs) == 10.
+
+--- test_spin_outs_required_fields ---
+  For each spin-out entry, assert these fields are present: name, title, origin,
+  description, source_examples, what_it_becomes, value, seam_notes.
+  Assert source_examples is a non-empty list.
+  Accumulate failures and report together.
+
+--- test_spin_outs_valid_origin ---
+  For each spin-out, assert origin is one of: "team_a", "team_b", "cross_team".
+  Accumulate failures and report together.
+
+--- test_spin_outs_source_references_valid ---
+  For each spin-out, assert every number in source_examples is in range 1-100.
+  Accumulate failures and report together.
+
+--- test_tier_rankings_loaded ---
+  Load examples/derived/tier-rankings.yaml. Assert the file exists and contains
+  a "tier_rankings" key. Assert len(tier_rankings) == 5.
+
+--- test_tier_rankings_all_100_covered ---
+  Collect all entry numbers from all tiers. Assert the set equals set(range(1, 101)).
+  This verifies every one of the 100 examples appears in exactly one tier.
+
+--- test_orchestration_strategies_loaded ---
+  Load examples/derived/orchestration-strategies.yaml. Assert the file exists
+  and contains an "orchestration_strategies" key. Assert len == 5.
+
+--- test_orchestration_strategies_required_fields ---
+  For each strategy, assert these fields are present: name, title, primary_examples,
+  summary, when_to_use, tradeoffs.
+  Assert primary_examples is a non-empty list.
+  For each number in primary_examples, assert it is in range 1-100.
+  Accumulate failures and report together.
+
+Add helper at module level to load spin-outs (use load_yaml_like, NOT yaml):
+
+  def load_spin_outs() -> list[dict]:
+      repo_root = Path(__file__).resolve().parents[3]
+      path = repo_root / "examples" / "derived" / "spin-outs.yaml"
+      return load_yaml_like(path)["spin_outs"]
+
+Add helpers for tier-rankings and orchestration-strategies following the same pattern.
+ALL YAML loading must use load_yaml_like from verification.helpers — never PyYAML.
+
+================================================================================
+IV. RUN VERIFICATION
+================================================================================
+
+After adding the 8 new tests, confirm the module still passes:
+
+  python3.14 -m unittest verification.examples.derived.test_derived_coverage -v
+
+Expected: 23 passing tests (15 from PROMPT_77 + 8 new).
+
+If test_tier_rankings_all_100_covered fails because a tier entry's number is
+wrong, fix tier-rankings.yaml (or the test's expected set) to match the actual
+100 entries in example-prompts.yaml.
+
+================================================================================
+V. SPOT-CHECK CLI FLAGS
+================================================================================
+
+After all batches, spot-check the new CLI flags:
+
+  python3.14 scripts/new_repo.py --list-derived
+  # Should show 8 sub-groups (Team A and Team B) and 10 spin-out platforms
+
+  python3.14 scripts/new_repo.py --derived-example ingestion-normalization-core
+  # Should show prompt, source examples #28/#1/#35, and scaffold commands
+
+  python3.14 scripts/new_repo.py --derived-example dataforge
+  # Should show spin-out cluster guide with seam notes
+
+  python3.14 scripts/new_repo.py --derived-example nonexistent
+  # Should print error and return exit code 1
+
+================================================================================
+VI. BATCH STRUCTURE
+================================================================================
+
+Batch 1 — Add --derived-example and --list-derived to new_repo.py
+  Files: scripts/new_repo.py
+  Content: _load_derived_data() helper + build_parser() additions + main() handlers
+  Run: python3.14 scripts/new_repo.py --list-derived
+       python3.14 scripts/new_repo.py --derived-example ingestion-normalization-core
+       python3.14 scripts/new_repo.py --derived-example dataforge
+  Commit: [PROMPT_79] Batch 1: add --derived-example and --list-derived to new_repo.py
+
+Batch 2 — Extend test_derived_coverage with 8 new tests
+  Files: verification/examples/derived/test_derived_coverage.py
+  Content: 8 new test methods + 3 new loader helpers per Section III
+  Run: python3.14 -m unittest verification.examples.derived.test_derived_coverage -v
+  Fix any failures. Then run:
+       python3.14 scripts/validate_context.py
+       python3.14 scripts/validate_doc_governance.py
+  Commit: [PROMPT_79] Batch 2: extend derived coverage tests to include spin-outs, tiers, and strategies
+
+================================================================================
+VII. VERIFICATION
+================================================================================
+
+Final state after all batches:
+
+  python3.14 -m unittest verification.examples.derived.test_derived_coverage -v
+  # 23 tests, all passing
+
+  python3.14 scripts/validate_context.py
+  python3.14 scripts/validate_doc_governance.py
+  # Both pass cleanly
+
+  python3.14 scripts/new_repo.py --list-derived
+  # Prints structured table of 8 sub-groups + 10 spin-outs
+
+  python3.14 scripts/new_repo.py --derived-example semanticgate
+  # Prints cluster guide for SemanticGate spin-out
