@@ -119,6 +119,30 @@ def load_derived_examples() -> list[dict]:
     return data["derived"]
 
 
+def load_spin_outs() -> list[dict]:
+    """Load and return the spin_outs list from examples/derived/spin-outs.yaml."""
+    repo_root = Path(__file__).resolve().parents[3]
+    path = repo_root / "examples" / "derived" / "spin-outs.yaml"
+    data = _load_yaml_with_block_scalars(path)
+    return data["spin_outs"]
+
+
+def load_tier_rankings() -> list[dict]:
+    """Load and return the tier_rankings list from examples/derived/tier-rankings.yaml."""
+    repo_root = Path(__file__).resolve().parents[3]
+    path = repo_root / "examples" / "derived" / "tier-rankings.yaml"
+    data = load_yaml_like(path)
+    return data["tier_rankings"]
+
+
+def load_orchestration_strategies() -> list[dict]:
+    """Load and return the orchestration_strategies list from examples/derived/orchestration-strategies.yaml."""
+    repo_root = Path(__file__).resolve().parents[3]
+    path = repo_root / "examples" / "derived" / "orchestration-strategies.yaml"
+    data = _load_yaml_with_block_scalars(path)
+    return data["orchestration_strategies"]
+
+
 # ---------------------------------------------------------------------------
 # new_repo.py importer
 # ---------------------------------------------------------------------------
@@ -371,6 +395,117 @@ class TestDerivedCoverage(unittest.TestCase):
             5,
             f"expected at least 5 examples with integration_tests=True, got {len(integration_examples)}",
         )
+
+
+    # ------------------------------------------------------------------
+    # spin-outs.yaml tests
+    # ------------------------------------------------------------------
+
+    def test_spin_outs_loaded(self) -> None:
+        spin_outs = load_spin_outs()
+        self.assertEqual(
+            len(spin_outs),
+            10,
+            f"expected 10 spin-out entries, got {len(spin_outs)}",
+        )
+
+    def test_spin_outs_required_fields(self) -> None:
+        spin_outs = load_spin_outs()
+        required = ("name", "title", "origin", "description", "source_examples",
+                    "what_it_becomes", "value", "seam_notes")
+        errors: list[str] = []
+        for entry in spin_outs:
+            name = entry.get("name", "?")
+            for field in required:
+                if field not in entry:
+                    errors.append(f"spin-out '{name}': missing field '{field}'")
+            src = _coerce_int_list(entry.get("source_examples", []))
+            if not src:
+                errors.append(f"spin-out '{name}': source_examples must be a non-empty list")
+        self.assertEqual(errors, [], "\n".join(errors))
+
+    def test_spin_outs_valid_origin(self) -> None:
+        spin_outs = load_spin_outs()
+        valid_origins = {"team_a", "team_b", "cross_team"}
+        errors: list[str] = []
+        for entry in spin_outs:
+            name = entry.get("name", "?")
+            origin = entry.get("origin", "")
+            if origin not in valid_origins:
+                errors.append(
+                    f"spin-out '{name}': invalid origin '{origin}' (valid: {sorted(valid_origins)})"
+                )
+        self.assertEqual(errors, [], "\n".join(errors))
+
+    def test_spin_outs_source_references_valid(self) -> None:
+        spin_outs = load_spin_outs()
+        errors: list[str] = []
+        for entry in spin_outs:
+            name = entry.get("name", "?")
+            src = _coerce_int_list(entry.get("source_examples", []))
+            for num in src:
+                if num not in range(1, 101):
+                    errors.append(f"spin-out '{name}': source_examples ref {num} not in range 1-100")
+        self.assertEqual(errors, [], "\n".join(errors))
+
+    # ------------------------------------------------------------------
+    # tier-rankings.yaml tests
+    # ------------------------------------------------------------------
+
+    def test_tier_rankings_loaded(self) -> None:
+        tier_rankings = load_tier_rankings()
+        self.assertEqual(
+            len(tier_rankings),
+            5,
+            f"expected 5 tier entries, got {len(tier_rankings)}",
+        )
+
+    def test_tier_rankings_all_100_covered(self) -> None:
+        tier_rankings = load_tier_rankings()
+        all_numbers: set[int] = set()
+        for tier in tier_rankings:
+            for entry in tier.get("entries", []):
+                num = entry.get("number")
+                if num is not None:
+                    all_numbers.add(int(num))
+        expected = set(range(1, 101))
+        missing = expected - all_numbers
+        extra = all_numbers - expected
+        errors: list[str] = []
+        if missing:
+            errors.append(f"numbers missing from tier-rankings: {sorted(missing)}")
+        if extra:
+            errors.append(f"numbers outside 1-100 in tier-rankings: {sorted(extra)}")
+        self.assertEqual(errors, [], "\n".join(errors))
+
+    # ------------------------------------------------------------------
+    # orchestration-strategies.yaml tests
+    # ------------------------------------------------------------------
+
+    def test_orchestration_strategies_loaded(self) -> None:
+        strategies = load_orchestration_strategies()
+        self.assertEqual(
+            len(strategies),
+            5,
+            f"expected 5 orchestration strategies, got {len(strategies)}",
+        )
+
+    def test_orchestration_strategies_required_fields(self) -> None:
+        strategies = load_orchestration_strategies()
+        required = ("name", "title", "primary_examples", "summary", "when_to_use", "tradeoffs")
+        errors: list[str] = []
+        for entry in strategies:
+            name = entry.get("name", "?")
+            for field in required:
+                if field not in entry:
+                    errors.append(f"strategy '{name}': missing field '{field}'")
+            src = _coerce_int_list(entry.get("primary_examples", []))
+            if not src:
+                errors.append(f"strategy '{name}': primary_examples must be a non-empty list")
+            for num in src:
+                if num not in range(1, 101):
+                    errors.append(f"strategy '{name}': primary_examples ref {num} not in range 1-100")
+        self.assertEqual(errors, [], "\n".join(errors))
 
 
 if __name__ == "__main__":
