@@ -34,6 +34,8 @@ Useful commands:
 python scripts/new_repo.py --list-archetypes
 python scripts/new_repo.py --list-stacks
 python scripts/new_repo.py --list-manifests
+python scripts/new_repo.py --list-examples
+python scripts/new_repo.py --use-example 1 --dry-run --target-dir /tmp/example-001
 python scripts/preview_context_bundle.py backend-api-fastapi-polars --show-weights --show-anchors
 ```
 
@@ -94,6 +96,54 @@ The assistant should load `AGENT.md` or `CLAUDE.md`, the generated profile, and 
 - let manifests and generated profiles narrow the first working set
 - avoid carrying speculative future dependencies into the initial repo
 - avoid eager front-facing README and docs content that describes architecture the repo has not implemented yet
+
+## Using a Reference Example
+
+`new_repo.py` ships with a catalog of 100 reference projects covering every
+supported archetype and stack combination.  Each entry has a short codename,
+an archetype, a primary stack, and a set of boolean flags (dokku,
+smoke-tests, integration-tests, seed-data).
+
+**Browse the catalog:**
+
+```bash
+python scripts/new_repo.py --list-examples
+```
+
+**Bootstrap directly from a catalog entry:**
+
+```bash
+# Pre-fills archetype, stack, and flags from project #1.
+# repo_name defaults to 001-partner-data-enrichment.
+python scripts/new_repo.py --use-example 1 --target-dir /tmp/001-partner-data-enrichment
+
+# Preview what would be generated without writing files.
+python scripts/new_repo.py --use-example 47 --dry-run --target-dir /tmp/047-go-python-ml-gateway
+```
+
+**Override any pre-filled value:**
+
+Explicit flags always win over catalog defaults.  Pass any supported flag
+to override the pre-filled value:
+
+```bash
+# Use project #12 but give it a custom repo name.
+python scripts/new_repo.py my-scheduler --use-example 12 --target-dir /tmp/my-scheduler
+
+# Use project #91 but skip seed data.
+# Note: --use-example pre-fills smoke-tests and seed-data from the entry,
+# but there is no --no-seed-data flag; omit seed data by not passing the flag
+# and letting the example's seed_data=True take effect (or choose a different entry).
+python scripts/new_repo.py --use-example 91 --dry-run --target-dir /tmp/091-dokku-fastapi
+```
+
+**Preview with `--dry-run`:**
+
+Use `--dry-run` to see the planned file list before generating anything:
+
+```bash
+python scripts/new_repo.py --use-example 20 --dry-run --target-dir /tmp/020-crystal-cache-proxy
+```
 
 ## 100 Example Initial Prompts
 
