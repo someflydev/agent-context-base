@@ -2996,6 +2996,39 @@
       "patterns": ["rest-seam", "trio", "ml-scoring"],
       "rank": 85,
       "stability": "canonical"
+    },
+    {
+      "path": "examples/derived/README.md",
+      "category": "derived",
+      "summary": "Overview of the derived examples layer: 100 natural-language briefs and 8 sub-group prompts.",
+      "stacks": [],
+      "archetypes": [],
+      "workflows": ["coverage-verification"],
+      "patterns": ["reference", "derived-examples"],
+      "rank": 70,
+      "stability": "reference"
+    },
+    {
+      "path": "examples/derived/example-prompts.yaml",
+      "category": "derived",
+      "summary": "100 natural-language project briefs with new_repo_args, one per EXAMPLE_PROJECTS entry.",
+      "stacks": [],
+      "archetypes": [],
+      "workflows": ["coverage-verification"],
+      "patterns": ["reference", "derived-examples", "example-prompts"],
+      "rank": 80,
+      "stability": "reference"
+    },
+    {
+      "path": "examples/derived/derived-examples.yaml",
+      "category": "derived",
+      "summary": "8 sub-group derived example prompts synthesizing clusters of the 100 individual briefs.",
+      "stacks": [],
+      "archetypes": [],
+      "workflows": ["coverage-verification"],
+      "patterns": ["reference", "derived-examples", "multi-service"],
+      "rank": 80,
+      "stability": "reference"
     }
   ]
 }

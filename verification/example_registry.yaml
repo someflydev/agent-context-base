@@ -4445,3 +4445,38 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: medium
+  - name: derived-readme
+    path: examples/derived/README.md
+    language: markdown
+    stack_tags: []
+    archetype_tags: []
+    verification_level: reference
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: derived-example-prompts
+    path: examples/derived/example-prompts.yaml
+    language: yaml
+    stack_tags: []
+    archetype_tags: []
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - contains 100 entries
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: derived-examples
+    path: examples/derived/derived-examples.yaml
+    language: yaml
+    stack_tags: []
+    archetype_tags: []
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - contains 8 entries
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
