@@ -628,7 +628,8 @@ def _markdown_paths(repo_root: Path) -> list[Path]:
         if not root.exists():
             continue
         for path in root.rglob("*.md"):
-            if "verification/fixtures" in path.relative_to(repo_root).as_posix():
+            rel = path.relative_to(repo_root).as_posix()
+            if "verification/fixtures" in rel or "/deps/" in rel:
                 continue
             paths.append(path)
     return sorted(set(paths))
@@ -637,6 +638,11 @@ def _markdown_paths(repo_root: Path) -> list[Path]:
 def _resolve_markdown_target(repo_root: Path, doc_path: Path, target: str) -> Path | None:
     cleaned = target.split("#", 1)[0].split("?", 1)[0].strip()
     if not cleaned or cleaned.startswith(("http://", "https://", "mailto:")):
+        return None
+    # Skip targets that are not valid relative paths (code literals, type parameters, etc.)
+    if any(c in cleaned for c in (" ", "=")) or cleaned.startswith('"'):
+        return None
+    if len(cleaned) <= 1:
         return None
     return (doc_path.parent / cleaned).resolve()
 

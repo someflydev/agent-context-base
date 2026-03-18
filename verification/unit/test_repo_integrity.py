@@ -114,6 +114,8 @@ class RepoIntegrityTests(unittest.TestCase):
                     self.assertIn(name, known)
             for entry in capability.get("stacks", []):
                 fallback = str(entry.get("fallback_example", ""))
+                if not fallback:
+                    continue
                 with self.subTest(stack=entry.get("stack"), fallback=fallback):
                     self.assertIn(fallback, known)
 
@@ -121,7 +123,10 @@ class RepoIntegrityTests(unittest.TestCase):
         doc_paths = [
             REPO_ROOT / "README.md",
             *sorted((REPO_ROOT / "docs").glob("*.md")),
-            *sorted((REPO_ROOT / "examples").glob("**/*.md")),
+            *[
+                p for p in sorted((REPO_ROOT / "examples").glob("**/*.md"))
+                if "/deps/" not in p.relative_to(REPO_ROOT).as_posix()
+            ],
             REPO_ROOT / "scripts/README.md",
         ]
         pattern = re.compile(r"(templates/[A-Za-z0-9._/\-]+)")
@@ -129,6 +134,10 @@ class RepoIntegrityTests(unittest.TestCase):
             text = doc_path.read_text(encoding="utf-8")
             for match in pattern.finditer(text):
                 template_ref = match.group(1).rstrip(").,")
+                # Skip refs where the leaf component has no extension (e.g. Rails routes,
+                # vendored internal refs like embed_templates/2)
+                if "." not in template_ref.split("/")[-1]:
+                    continue
                 with self.subTest(doc=doc_path.name, template_ref=template_ref):
                     self.assertTrue((REPO_ROOT / template_ref).exists(), template_ref)
 

@@ -18,11 +18,14 @@ class AliasCatalogTests(unittest.TestCase):
             for entry in entries:
                 self.assertIsInstance(entry, dict)
                 alias = str(entry.get("alias", "")).strip()
-                target = str(entry.get("target", "")).strip()
+                raw_target = entry.get("target", "")
+                targets = raw_target if isinstance(raw_target, list) else [str(raw_target).strip()]
                 with self.subTest(section=section, alias=alias):
                     self.assertTrue(alias)
                     self.assertNotIn(alias, seen)
-                    self.assertTrue((REPO_ROOT / target).exists(), target)
+                    for t in targets:
+                        with self.subTest(target=t):
+                            self.assertTrue((REPO_ROOT / str(t)).exists(), str(t))
                 seen.add(alias)
 
 

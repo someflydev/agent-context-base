@@ -52,7 +52,7 @@ class DataAcquisitionExampleTests(unittest.TestCase):
         data = load_yaml_like(path)
         self.assertEqual(data.get("capability"), "canonical-data-acquisition")
         languages = data.get("languages", [])
-        self.assertEqual(len(languages), 11)
+        self.assertEqual(len(languages), 14)
         registry = registry_by_name()
         for entry in languages:
             with self.subTest(stack=entry.get("stack")):

@@ -150,7 +150,7 @@ examples:
       - hx-swap-oob present
       - api reports shape
     docker_supported: true
-    scenario_harness: fastapi_uv_min_app
+    scenario_harness: fastapi_min_app
     confidence: high
   - name: nim-jester-json-endpoint-example-doc
     path: examples/canonical-api/nim-jester-json-endpoint-example.md
@@ -1904,7 +1904,7 @@ examples:
       - references polars_data_pipeline harness
       - references parquet-minio-example.py
     docker_supported: false
-    scenario_harness: none
+    scenario_harness: ""
     last_verified_by: verification/examples/data/test_storage_examples.py
     confidence: medium
   - name: duckdb-polars-example
@@ -3119,6 +3119,159 @@ examples:
     verification_targets:
       - file exists
       - test names reference correct dataset assertions
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: README-faceted-filter-examples
+    path: examples/canonical-api/README-faceted-filter-examples.md
+    language: markdown
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - cross-language contract documented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: fastapi-split-filter-panel-example
+    path: examples/canonical-api/fastapi-split-filter-panel-example.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: behavior-verified
+    verification_targets:
+      - parses
+      - imports with stubs
+      - render_split_filter_panel produces valid html
+      - include/exclude filter logic verified
+    docker_supported: false
+    scenario_harness: fastapi_min_app
+    confidence: high
+  - name: clojure-go-kafka-seam-example
+    path: examples/canonical-multi-backend/duos/clojure-go-kafka/seam.md
+    language: markdown
+    stack_tags:
+      - kafka
+      - clojure-kit-nextjdbc-hiccup
+      - go-echo
+    archetype_tags:
+      - multi-backend-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - seam type documented
+      - service responsibilities documented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: elixir-clojure-rabbitmq-seam-example
+    path: examples/canonical-multi-backend/duos/elixir-clojure-rabbitmq/seam.md
+    language: markdown
+    stack_tags:
+      - rabbitmq
+      - elixir-phoenix
+      - clojure-kit-nextjdbc-hiccup
+    archetype_tags:
+      - multi-backend-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - seam type documented
+      - service responsibilities documented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: kotlin-rust-grpc-seam-example
+    path: examples/canonical-multi-backend/duos/kotlin-rust-grpc/seam.md
+    language: markdown
+    stack_tags:
+      - grpc
+      - kotlin-http4k-exposed
+      - rust-axum-modern
+    archetype_tags:
+      - multi-backend-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - seam type documented
+      - proto contract documented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: rust-python-grpc-seam-example
+    path: examples/canonical-multi-backend/duos/rust-python-grpc/seam.md
+    language: markdown
+    stack_tags:
+      - grpc
+      - rust-axum-modern
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - multi-backend-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - seam type documented
+      - proto contract documented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: go-rust-python-trio-example
+    path: examples/canonical-multi-backend/trios/go-rust-python/seam.md
+    language: markdown
+    stack_tags:
+      - grpc
+      - go-echo
+      - rust-axum-modern
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - multi-backend-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - seam types documented
+      - trio ownership documented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: scala-rust-grpc-seam-example
+    path: examples/canonical-multi-backend/duos/scala-rust-grpc/seam.md
+    language: markdown
+    stack_tags:
+      - grpc
+      - akka-streams
+      - scala-tapir-http4s-zio
+      - rust-axum-modern
+    archetype_tags:
+      - multi-backend-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - seam type documented
+      - proto contract documented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: node-go-rest-seam-example
+    path: examples/canonical-multi-backend/duos/node-go-rest/seam.md
+    language: markdown
+    stack_tags:
+      - graphql
+      - typescript-hono-bun
+      - go-echo
+    archetype_tags:
+      - multi-backend-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - seam type documented
+      - service responsibilities documented
     docker_supported: false
     scenario_harness: ""
     confidence: medium

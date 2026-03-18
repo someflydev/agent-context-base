@@ -352,26 +352,20 @@ stacks:
       - dead-letter round-trip verification
       - topic exchange routing verification (multiple routing keys)
       - priority queue example
-    notes: Canonical broker seam example (elixir-clojure-rabbitmq) is structure-verified only.
-           No live RabbitMQ integration test is wired in the default verification tier.
-           Management UI health probe pattern (rabbitmq-diagnostics ping) verified in docker-compose context.
+    notes: "Canonical broker seam example (elixir-clojure-rabbitmq) is structure-verified only. No live RabbitMQ integration test is wired in the default verification tier. Management UI health probe pattern (rabbitmq-diagnostics ping) verified in docker-compose context."
   - stack: grpc
     support_level: 2
     verified_examples:
       - kotlin-rust-grpc-seam-example
       - rust-python-grpc-seam-example
-      - go-rust-python-trio-example    # gRPC leg of the Go+Rust+Python trio
+      - go-rust-python-trio-example
       - scala-rust-grpc-seam-example
     missing_verification:
       - streaming RPC example (server-streaming, bidirectional)
       - live gRPC integration test in default verification tier
       - grpc-gateway (HTTP/JSON bridge) example
       - gRPC reflection example
-    notes: gRPC is a cross-cutting seam technology. Canonical examples cover the Rust tonic
-           server + Kotlin caller, Rust tonic server + Python caller, and Rust tonic server +
-           Scala Akka Streams caller patterns.
-           No live gRPC integration test is wired in the default verification tier.
-           Stub generation commands are documented in grpc.md.
+    notes: "gRPC is a cross-cutting seam technology. Canonical examples cover the Rust tonic server + Kotlin caller, Rust tonic server + Python caller, and Rust tonic server + Scala Akka Streams caller patterns. No live gRPC integration test is wired in the default verification tier. Stub generation commands are documented in grpc.md."
   - stack: akka-streams
     support_level: 2
     verified_examples:
@@ -381,8 +375,7 @@ stacks:
       - Alpakka Kafka integration test
       - GraphDSL topology test
       - native sbt compile in default verification tier
-    notes: Akka Streams stack doc added (akka-streams.md). Canonical example (scala-rust-grpc)
-           is structure-verified only. No live JVM integration test in default tier.
+    notes: "Akka Streams stack doc added (akka-streams.md). Canonical example (scala-rust-grpc) is structure-verified only. No live JVM integration test in default tier."
   - stack: zio-streams
     support_level: 1
     verified_examples: []
@@ -390,29 +383,24 @@ stacks:
       - any canonical example
       - zio-kafka integration example
       - ZStream pipeline test
-    notes: ZIO Streams stack doc added (zio-streams.md). No canonical example yet.
-           The scala-tapir-http4s-zio examples use ZIO effects but not ZStream pipelines.
+    notes: "ZIO Streams stack doc added (zio-streams.md). No canonical example yet. The scala-tapir-http4s-zio examples use ZIO effects but not ZStream pipelines."
   - stack: graphql
     support_level: 1
     verified_examples:
-      - node-go-rest-seam-example   # graphql BFF section — added in PROMPT_58
+      - node-go-rest-seam-example
     missing_verification:
       - standalone GraphQL integration test
       - subscription WebSocket test
       - DataLoader batch verification
       - Apollo Federation v2 example
-    notes: graphql.md stack doc added (PROMPT_60). The node-go-rest example shows a
-           minimal GraphQL BFF pattern (Apollo Server + Go REST downstream). No dedicated
-           GraphQL integration test in the default verification tier.
+    notes: "graphql.md stack doc added (PROMPT_60). The node-go-rest example shows a minimal GraphQL BFF pattern (Apollo Server + Go REST downstream). No dedicated GraphQL integration test in the default verification tier."
 capabilities:
   - capability: redis-streams
-    notes: Redis Streams consumer group patterns (XADD, XREADGROUP, XACK, XCLAIM, XPENDING).
-           No live Redis Streams integration test in the default verification tier.
+    notes: "Redis Streams consumer group patterns (XADD, XREADGROUP, XACK, XCLAIM, XPENDING). No live Redis Streams integration test in the default verification tier."
     stacks:
       - stack: redis
         status: documented
-        note: Full Redis Streams section added to redis.md in PROMPT_56. No canonical
-              seam example exists yet.
+        note: "Full Redis Streams section added to redis.md in PROMPT_56. No canonical seam example exists yet."
         follow_on_prompt: PROMPT_57
 
   - capability: multi-backend-seam
