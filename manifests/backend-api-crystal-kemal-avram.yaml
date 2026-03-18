@@ -1,0 +1,78 @@
+schema_version: 2
+name: backend-api-crystal-kemal-avram
+description: Preferred Crystal backend profile using Kemal for routing and Avram for PostgreSQL ORM in API and data endpoint services.
+archetype: backend-api-service
+primary_stack: crystal-kemal-avram
+secondary_stacks:
+  - redis-keydb-mongo
+triggers:
+  - crystal api
+  - kemal service
+  - kemal avram backend
+  - crystal backend
+aliases:
+  - crystal service
+  - kemal api
+required_context:
+  - context/doctrine/core-principles.md
+  - context/doctrine/testing-philosophy.md
+  - context/doctrine/compose-port-and-data-isolation.md
+  - context/workflows/add-api-endpoint.md
+  - context/stacks/crystal-kemal-avram.md
+  - context/archetypes/backend-api-service.md
+optional_context:
+  - context/workflows/add-smoke-tests.md
+  - context/workflows/add-storage-integration.md
+  - context/workflows/post-flight-refinement.md
+  - context/doctrine/canonical-examples.md
+preferred_examples:
+  - examples/canonical-api/crystal-kemal-avram-api-endpoint-example.cr
+  - examples/canonical-api/crystal-kemal-avram-html-fragment-example.cr
+  - examples/canonical-api/crystal-kemal-avram-data-endpoint-example.cr
+  - examples/canonical-api/crystal-kemal-avram-example/src/app.cr
+recommended_templates:
+  - templates/readme/README.template.md
+  - templates/agent-md/AGENT.template.md
+  - templates/claude-md/CLAUDE.template.md
+  - templates/compose/docker-compose.template.yaml
+  - templates/compose/docker-compose-test.template.yaml
+  - templates/manifest/profile-summary.template.yaml
+repo_signals:
+  - shard.yml
+  - src/
+  - src/**/*.cr
+  - spec/
+task_hints:
+  - add-api-endpoint
+  - add-smoke-tests
+  - add-storage-integration
+  - post-flight-refinement
+warnings:
+  - Keep Kemal route blocks narrow and move payload shaping into named helpers when the response grows.
+  - Treat HTML fragment responses as a contract surface with stable markers instead of throwaway strings.
+  - Prefer Docker-backed smoke checks so verification does not depend on host Crystal tooling.
+bootstrap_defaults:
+  - include_docker_compose
+  - include_smoke_tests
+  - include_integration_tests
+  - include_generated_profile
+compose_files:
+  - docker-compose.yml
+  - docker-compose.test.yml
+compose_project_name_dev: "{repo_slug}"
+compose_project_name_test: "{repo_slug}-test"
+port_band_app_dev: 14000-14099
+port_band_app_test: 15000-15099
+port_band_data_dev: 24000-24099
+port_band_data_test: 25000-25099
+data_isolation:
+  - docker/volumes/dev
+  - docker/volumes/test
+  - destructive test cleanup must stay scoped to docker-compose.test.yml resources only
+dokku_relevance: optional
+smoke_test_expectations:
+  - boot health route
+  - representative JSON API check
+  - one HTML fragment check
+  - one chart dataset check
+prompt_first_support: supported

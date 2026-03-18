@@ -1,0 +1,78 @@
+schema_version: 2
+name: backend-api-ocaml-dream-caqti-tyxml
+description: Preferred OCaml backend profile using Dream for routing, Caqti for PostgreSQL access, and Tyxml for typed HTML fragment responses.
+archetype: backend-api-service
+primary_stack: ocaml-dream-caqti-tyxml
+secondary_stacks:
+  - redis-keydb-mongo
+triggers:
+  - ocaml api
+  - dream service
+  - dream caqti backend
+  - ocaml dream
+aliases:
+  - ocaml service
+  - dream api
+required_context:
+  - context/doctrine/core-principles.md
+  - context/doctrine/testing-philosophy.md
+  - context/doctrine/compose-port-and-data-isolation.md
+  - context/workflows/add-api-endpoint.md
+  - context/stacks/ocaml-dream-caqti-tyxml.md
+  - context/archetypes/backend-api-service.md
+optional_context:
+  - context/workflows/add-smoke-tests.md
+  - context/workflows/add-storage-integration.md
+  - context/workflows/post-flight-refinement.md
+  - context/doctrine/canonical-examples.md
+preferred_examples:
+  - examples/canonical-api/ocaml-dream-caqti-tyxml-api-endpoint-example.ml
+  - examples/canonical-api/ocaml-dream-caqti-tyxml-html-fragment-example.ml
+  - examples/canonical-api/ocaml-dream-caqti-tyxml-data-endpoint-example.ml
+  - examples/canonical-api/ocaml-dream-caqti-tyxml-example/bin/main.ml
+recommended_templates:
+  - templates/readme/README.template.md
+  - templates/agent-md/AGENT.template.md
+  - templates/claude-md/CLAUDE.template.md
+  - templates/compose/docker-compose.template.yaml
+  - templates/compose/docker-compose-test.template.yaml
+  - templates/manifest/profile-summary.template.yaml
+repo_signals:
+  - dune-project
+  - bin/
+  - lib/
+  - "*.opam"
+task_hints:
+  - add-api-endpoint
+  - add-smoke-tests
+  - add-storage-integration
+  - post-flight-refinement
+warnings:
+  - Keep Dream route handlers narrow and move Caqti query logic into dedicated lib modules.
+  - Treat Tyxml HTML fragment responses as a typed contract surface — preserve node structure.
+  - Prefer Docker-backed smoke checks so verification does not depend on host opam tooling.
+bootstrap_defaults:
+  - include_docker_compose
+  - include_smoke_tests
+  - include_integration_tests
+  - include_generated_profile
+compose_files:
+  - docker-compose.yml
+  - docker-compose.test.yml
+compose_project_name_dev: "{repo_slug}"
+compose_project_name_test: "{repo_slug}-test"
+port_band_app_dev: 14000-14099
+port_band_app_test: 15000-15099
+port_band_data_dev: 24000-24099
+port_band_data_test: 25000-25099
+data_isolation:
+  - docker/volumes/dev
+  - docker/volumes/test
+  - destructive test cleanup must stay scoped to docker-compose.test.yml resources only
+dokku_relevance: optional
+smoke_test_expectations:
+  - boot health route
+  - representative JSON API check
+  - one HTML fragment check
+  - one chart dataset check
+prompt_first_support: supported

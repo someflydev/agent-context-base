@@ -51,6 +51,10 @@ BOOTSTRAP_CASES = (
     # Two new archetypes wired to their manifests in PROMPT_73.
     {"archetype": "data-acquisition-service", "primary_stack": "python-fastapi-uv-ruff-orjson-polars", "dokku": False},
     {"archetype": "multi-source-sync-platform", "primary_stack": "python-fastapi-uv-ruff-orjson-polars", "dokku": False},
+    # Three new backend-api-service stacks with manifests added in PROMPT_75.
+    {"archetype": "backend-api-service", "primary_stack": "crystal-kemal-avram", "dokku": False},
+    {"archetype": "backend-api-service", "primary_stack": "ruby-hanami", "dokku": False},
+    {"archetype": "backend-api-service", "primary_stack": "ocaml-dream-caqti-tyxml", "dokku": False},
 )
 
 

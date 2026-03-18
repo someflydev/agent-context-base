@@ -416,6 +416,78 @@ STACKS: dict[str, StackProfile] = {
         ),
         stack_gitignore=(".dart_tool/", "build/"),
     ),
+    "crystal-kemal-avram": StackProfile(
+        description="Crystal HTTP service using Kemal for routing and Avram for PostgreSQL ORM.",
+        display_name="Crystal + Kemal + Avram",
+        app_image="84codes/crystal:latest-ubuntu-24.04",
+        app_command='sh -lc "shards install && crystal run src/app.cr"',
+        test_command='sh -lc "crystal spec"',
+        app_container_port=3000,
+        route_path="src/routes/reports.cr",
+        smoke_path="spec/smoke/health_spec.cr",
+        integration_path="spec/integration/report_runs_spec.cr",
+        seed_path="scripts/seed_data.cr",
+        directories=(
+            "docs",
+            "docker/volumes/dev",
+            "docker/volumes/test",
+            "manifests",
+            "scripts",
+            "src",
+            "src/routes",
+            "spec/smoke",
+            "spec/integration",
+        ),
+        stack_gitignore=(".crystal", "bin/"),
+    ),
+    "ruby-hanami": StackProfile(
+        description="Ruby HTTP service using Hanami for actions, views, and PostgreSQL persistence.",
+        display_name="Ruby + Hanami",
+        app_image="ruby:3.3-slim",
+        app_command='sh -lc "bundle install && bundle exec hanami server --host 0.0.0.0 --port 2300"',
+        test_command='sh -lc "bundle exec rspec"',
+        app_container_port=2300,
+        route_path="app/actions/reports/index.rb",
+        smoke_path="spec/smoke/health_spec.rb",
+        integration_path="spec/integration/report_runs_spec.rb",
+        seed_path="scripts/seed_data.rb",
+        directories=(
+            "docs",
+            "docker/volumes/dev",
+            "docker/volumes/test",
+            "manifests",
+            "scripts",
+            "app/actions/reports",
+            "app/views/reports",
+            "spec/smoke",
+            "spec/integration",
+        ),
+        stack_gitignore=(".bundle",),
+    ),
+    "ocaml-dream-caqti-tyxml": StackProfile(
+        description="OCaml HTTP service using Dream for routing, Caqti for PostgreSQL, and Tyxml for fragments.",
+        display_name="OCaml + Dream + Caqti + Tyxml",
+        app_image="ocaml/opam:ubuntu-24.04-ocaml-5.2",
+        app_command='sh -lc "opam exec -- dune exec ./bin/main.exe"',
+        test_command='sh -lc "opam exec -- dune runtest"',
+        app_container_port=8080,
+        route_path="bin/routes.ml",
+        smoke_path="test/smoke/test_health.ml",
+        integration_path="test/integration/test_report_runs.ml",
+        seed_path="scripts/seed_data.ml",
+        directories=(
+            "docs",
+            "docker/volumes/dev",
+            "docker/volumes/test",
+            "manifests",
+            "scripts",
+            "bin",
+            "lib",
+            "test/smoke",
+            "test/integration",
+        ),
+        stack_gitignore=("_build",),
+    ),
 }
 
 
@@ -1089,6 +1161,10 @@ DEFAULT_MANIFESTS = {
     ("backend-api-service", "dart-dartfrog"): ["backend-api-dart-dartfrog"],
     ("data-acquisition-service", "python-fastapi-uv-ruff-orjson-polars"): ["data-acquisition-service"],
     ("multi-source-sync-platform", "python-fastapi-uv-ruff-orjson-polars"): ["multi-source-sync-platform"],
+    ("backend-api-service", "crystal-kemal-avram"): ["backend-api-crystal-kemal-avram"],
+    ("backend-api-service", "ruby-hanami"): ["backend-api-ruby-hanami"],
+    ("backend-api-service", "ocaml-dream-caqti-tyxml"): ["backend-api-ocaml-dream-caqti-tyxml"],
+    ("data-acquisition-service", "crystal-kemal-avram"): ["backend-api-crystal-kemal-avram"],
 }
 
 DOKKU_MANIFESTS = {
@@ -1402,6 +1478,9 @@ def infer_support_services(archetype: str, primary_stack: str, selected_manifest
         "scala-tapir-http4s-zio",
         "clojure-kit-nextjdbc-hiccup",
         "dart-dartfrog",
+        "crystal-kemal-avram",
+        "ruby-hanami",
+        "ocaml-dream-caqti-tyxml",
     }:
         return ["postgres"]
     if primary_stack == "duckdb-trino-polars":
@@ -1999,6 +2078,39 @@ def render_dart_starters() -> dict[str, str]:
     }
 
 
+def render_crystal_starters() -> dict[str, str]:
+    """Render Crystal + Kemal + Avram starter app and tests."""
+
+    return {
+        "src/routes/reports.cr": 'require "kemal"\n\nget "/reports/summary" do |env|\n  env.response.content_type = "application/json"\n  {report_id: "daily-signups", status: "ready"}.to_json\nend\n',
+        "spec/smoke/health_spec.cr": 'require "spec"\n\ndescribe "health smoke" do\n  it "placeholder" do\n    true.should be_true\n  end\nend\n',
+        "spec/integration/report_runs_spec.cr": 'require "spec"\n\ndescribe "report runs integration" do\n  it "placeholder" do\n    # Replace with docker-compose.test.yml boot and a real round-trip assertion.\n    true.should be_true\n  end\nend\n',
+        "scripts/seed_data.cr": '# Replace with deterministic seed data.\nputs "seed data placeholder"\n',
+    }
+
+
+def render_ruby_starters() -> dict[str, str]:
+    """Render Ruby + Hanami starter actions and tests."""
+
+    return {
+        "app/actions/reports/index.rb": 'module Actions\n  module Reports\n    class Index < Hanami::Action\n      def handle(request, response)\n        response.body = [{report_id: "daily-signups", status: "ready"}].to_json\n      end\n    end\n  end\nend\n',
+        "spec/smoke/health_spec.rb": "require 'spec_helper'\n\nRSpec.describe 'health smoke' do\n  it 'placeholder' do\n    expect(true).to be true\n  end\nend\n",
+        "spec/integration/report_runs_spec.rb": "require 'spec_helper'\n\nRSpec.describe 'report runs integration' do\n  it 'placeholder' do\n    # Replace with docker-compose.test.yml boot and a real round-trip assertion.\n    expect(true).to be true\n  end\nend\n",
+        "scripts/seed_data.rb": "# Replace with deterministic seed data.\nputs 'seed data placeholder'\n",
+    }
+
+
+def render_ocaml_starters() -> dict[str, str]:
+    """Render OCaml + Dream + Caqti + Tyxml starter app and tests."""
+
+    return {
+        "bin/routes.ml": 'let routes =\n  [\n    Dream.get "/reports/summary" (fun _ ->\n      Dream.json {|{"report_id":"daily-signups","status":"ready"}|});\n  ]\n',
+        "test/smoke/test_health.ml": 'let () =\n  (* health smoke placeholder *)\n  assert true\n',
+        "test/integration/test_report_runs.ml": '(* Replace with docker-compose.test.yml boot and a real round-trip assertion. *)\nlet () = assert true\n',
+        "scripts/seed_data.ml": '(* Replace with deterministic seed data. *)\nlet () = print_endline "seed data placeholder"\n',
+    }
+
+
 def starter_files_for_stack(primary_stack: str, slug: str) -> dict[str, str]:
     """Return the starter files for the selected primary stack."""
 
@@ -2026,6 +2138,12 @@ def starter_files_for_stack(primary_stack: str, slug: str) -> dict[str, str]:
         return render_clojure_starters()
     if primary_stack == "dart-dartfrog":
         return render_dart_starters()
+    if primary_stack == "crystal-kemal-avram":
+        return render_crystal_starters()
+    if primary_stack == "ruby-hanami":
+        return render_ruby_starters()
+    if primary_stack == "ocaml-dream-caqti-tyxml":
+        return render_ocaml_starters()
     raise ValueError(f"Unsupported primary stack: {primary_stack}")
 
 
@@ -2355,6 +2473,8 @@ def main(argv: list[str]) -> int:
         route_only_keys.update({starter_paths["route"], f"lib/{phoenix_app_name(slug)}_web/controllers/health_controller.ex"})
     elif args.primary_stack == "prompt-first-repo":
         route_only_keys.update({"scripts/validate_repo.py"})
+    elif args.primary_stack in {"crystal-kemal-avram", "ruby-hanami", "ocaml-dream-caqti-tyxml"}:
+        route_only_keys.update({starter_paths["route"]})
     else:
         route_only_keys.update({starter_paths["route"], "app/__init__.py"})
     for relative_path, content in starter_files.items():

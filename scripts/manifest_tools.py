@@ -86,6 +86,8 @@ STACK_PATHS = {
     "go-echo": "context/stacks/go-echo.md",
     "elixir-phoenix": "context/stacks/elixir-phoenix.md",
     "ruby-hanami": "context/stacks/ruby-hanami.md",
+    "crystal-kemal-avram": "context/stacks/crystal-kemal-avram.md",
+    "ocaml-dream-caqti-tyxml": "context/stacks/ocaml-dream-caqti-tyxml.md",
     "mongo": "context/stacks/mongo.md",
     "redis": "context/stacks/redis.md",
     "trino": "context/stacks/trino.md",
