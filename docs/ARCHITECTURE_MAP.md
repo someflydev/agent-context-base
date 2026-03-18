@@ -197,7 +197,7 @@ The practical rule is boundary ownership: one assistant plans, one implements a 
 | [architecture/ASSISTANT_RUNTIME_MODEL.md](architecture/ASSISTANT_RUNTIME_MODEL.md) | Normative high-level runtime model across routing, manifests, examples, verification, and continuity. | 6 |
 | [architecture/CONTEXT_ENGINEERING_GUIDE.md](architecture/CONTEXT_ENGINEERING_GUIDE.md) | Explains how context is kept narrow and why artifact boundaries matter. | 7 |
 | [architecture-mental-model.md](architecture-mental-model.md) | Small companion diagram set for runtime, generation, verification, and multi-agent flow. | 8 |
-| [usage/STARTING_NEW_PROJECTS.md](usage/STARTING_NEW_PROJECTS.md) | Operator workflow for turning an idea into a generated repo, including 100 example initial prompts. | 9 |
+| [usage/STARTING_NEW_PROJECTS.md](usage/STARTING_NEW_PROJECTS.md) | Operator workflow for turning an idea into a generated repo, including 100 example initial prompts and derived cluster guides. | 9 |
 | [usage/ASSISTANT_BEHAVIOR_SPEC.md](usage/ASSISTANT_BEHAVIOR_SPEC.md) | Normative assistant behavior contract for this system and derived repos. | 10 |
 | [usage/ADVANCED_ASSISTANT_OPERATIONS.md](usage/ADVANCED_ASSISTANT_OPERATIONS.md) | Long-running session guidance, multi-agent coordination, and cross-repo boundaries. | 11 |
 | [memory-layer-overview.md](memory-layer-overview.md) | Explains the role of `MEMORY.md` and handoff snapshots. | 12 |

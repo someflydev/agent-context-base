@@ -35,7 +35,9 @@ python scripts/new_repo.py --list-archetypes
 python scripts/new_repo.py --list-stacks
 python scripts/new_repo.py --list-manifests
 python scripts/new_repo.py --list-examples
+python scripts/new_repo.py --list-derived
 python scripts/new_repo.py --use-example 1 --dry-run --target-dir /tmp/example-001
+python scripts/new_repo.py --derived-example ingestion-normalization-core
 python scripts/preview_context_bundle.py backend-api-fastapi-polars --show-weights --show-anchors
 ```
 

@@ -72,7 +72,7 @@ The acquisition layer now also includes real Dart, Ruby, and OCaml examples alon
 - `verification/scripts/`
   Tests for Python maintenance scripts and helper CLIs.
 - `verification/examples/`
-  Stack-specific verification suites for Python, TypeScript, Nim, Scala, Kotlin, Dart, Clojure, OCaml, Go, Rust, Elixir, Ruby, and static data examples.
+  Stack-specific verification suites for Python, TypeScript, Nim, Scala, Kotlin, Dart, Clojure, OCaml, Go, Rust, Elixir, Ruby, and static data examples. The `derived/` sub-directory contains `test_derived_coverage.py`, which validates the 100-example catalog, 8 derived sub-groups, 10 spin-outs, 5 tier rankings, and 5 orchestration strategies in `examples/derived/`.
 - `verification/scenarios/`
   Minimal harness helpers that mount, run, or probe canonical examples.
 - `verification/fixtures/`

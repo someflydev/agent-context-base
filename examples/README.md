@@ -25,6 +25,7 @@ Examples are intentionally different from templates:
 - `canonical-smoke-tests/`: smallest meaningful happy-path checks
 - `canonical-storage/`: database, cache, queue, search, and vector boundary patterns
 - `canonical-workflows/`: compact workflow artifacts such as post-flight checklists
+- `derived/`: catalog files generated from the 100-example reference set — `example-prompts.yaml` (101 prompt entries), `derived-examples.yaml` (8 sub-group cluster guides), `spin-outs.yaml` (10 spin-out platform guides), `tier-rankings.yaml` (5-tier composability ranking), and `orchestration-strategies.yaml` (5 named coordination strategies)
 - `fixtures/`: minimal fixture datasets that stay intentionally small
 
 ## Selection Rule

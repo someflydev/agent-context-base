@@ -2,6 +2,21 @@
 
 This changelog records durable architectural changes to the base itself.
 
+## 2026-03-18: 100-Example Catalog, Derived Examples, and Extended Verification
+
+- added `EXAMPLE_PROJECTS` (100 entries, #1–#100) and `ExampleProject` dataclass to `new_repo.py`; `--use-example N` now pre-fills archetype, stack, and flags from the catalog entry
+- added `--list-examples` flag to browse the full catalog grouped by category
+- added three new archetypes (`data-acquisition-service`, `multi-source-sync-platform`, `multi-backend-service`) and three new stacks (`qdrant`, `duckdb-trino-polars`, `redis-keydb-mongo`) to `new_repo.py`
+- added `examples/derived/example-prompts.yaml` (101 entries, #1–#101) with per-example prompts, archetypes, stacks, and `new_repo_args`
+- added `examples/derived/derived-examples.yaml` with 8 sub-group cluster guides (4 Team A, 4 Team B)
+- added `examples/derived/spin-outs.yaml` with 10 spin-out platform entries (team_a, team_b, cross_team)
+- added `examples/derived/tier-rankings.yaml` with 5 tiers covering all 100 examples by composability score
+- added `examples/derived/orchestration-strategies.yaml` with 5 named coordination patterns
+- added `--list-derived` flag to `new_repo.py` to print sub-groups and spin-out platforms in aligned columns
+- added `--derived-example NAME` flag to `new_repo.py` to print the cluster guide for any sub-group or spin-out, including source examples and scaffold commands
+- added `verification/examples/derived/test_derived_coverage.py` (24 tests) covering: example-prompts count and structure, derived-examples team split and field completeness, spin-outs field completeness and origin validity, tier coverage of all 100 examples, and orchestration-strategy field completeness
+- registered `test_derived_coverage` in `HEAVY_MODULES` of `run_verification.py`
+
 ## 2026-03-17: Cognitive Skills Layer
 
 - added four new skills covering the previously uncovered boot-sequence steps: `manifest-selection.md` (step 5), `context-bundle-assembly.md` (step 6), `verification-path-selection.md` (step 8), and `memory-continuity-discipline.md` (steps 3 and 8)
