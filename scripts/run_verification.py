@@ -34,11 +34,19 @@ MEDIUM_MODULES = FAST_MODULES + [
 
 HEAVY_MODULES = MEDIUM_MODULES + [
     "verification.examples.nim.test_nim_jester_happyx_examples",
+    "verification.examples.scala.test_scala_tapir_http4s_zio_examples",
+    "verification.examples.kotlin.test_http4k_exposed_examples",
+    "verification.examples.dart.test_dart_dartfrog_examples",
     "verification.examples.clojure.test_kit_nextjdbc_hiccup_examples",
     "verification.examples.ocaml.test_ocaml_dream_caqti_tyxml_examples",
+    "verification.examples.zig.test_zig_zap_jetzig_examples",
     "verification.examples.go.test_echo_examples",
     "verification.examples.rust.test_axum_examples",
     "verification.examples.elixir.test_phoenix_examples",
+    "verification.examples.ruby.test_ruby_hanami_examples",
+    "verification.examples.typescript.test_typescript_examples",
+    "verification.examples.typescript.test_hono_data_acquisition_examples",
+    "verification.examples.data.test_data_acquisition_examples",
 ]
 
 
