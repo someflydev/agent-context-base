@@ -4464,7 +4464,7 @@ examples:
     verification_level: reference
     verification_targets:
       - file exists
-      - contains 100 entries
+      - contains 101 entries
     docker_supported: false
     scenario_harness: ""
     confidence: medium

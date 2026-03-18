@@ -1693,3 +1693,21 @@ examples:
       integration_tests: false
       seed_data: false
       dokku: false
+
+  - number: 101
+    codename: zig-polyglot-lab
+    category: ADDITIONAL
+    category_name: Additional
+    prompt: |
+      Build a polyglot exploratory lab with Zig as the primary surface and a Python FastAPI
+      service as a secondary surface. Each language owns a clearly defined surface: the Zig
+      Zap service handles high-throughput HTTP routing and the Python FastAPI side handles
+      domain logic. Discovery notes document the seam contract and coordination infrastructure.
+      Smoke tests verify each surface independently and at least one cross-language call.
+    new_repo_args:
+      archetype: polyglot-lab
+      primary_stack: zig-zap-jetzig
+      smoke_tests: true
+      integration_tests: false
+      seed_data: false
+      dokku: false
