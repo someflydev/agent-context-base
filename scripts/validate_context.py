@@ -43,6 +43,14 @@ BOOTSTRAP_CASES = (
     {"archetype": "local-rag-system", "primary_stack": "qdrant", "dokku": False},
     {"archetype": "multi-storage-experiment", "primary_stack": "redis-keydb-mongo", "dokku": False},
     {"archetype": "prompt-first-repo", "primary_stack": "prompt-first-repo", "dokku": False},
+    # Four new backend-api-service stacks with manifests added in PROMPT_73.
+    {"archetype": "backend-api-service", "primary_stack": "nim-jester-happyx", "dokku": False},
+    {"archetype": "backend-api-service", "primary_stack": "scala-tapir-http4s-zio", "dokku": False},
+    {"archetype": "backend-api-service", "primary_stack": "clojure-kit-nextjdbc-hiccup", "dokku": False},
+    {"archetype": "backend-api-service", "primary_stack": "dart-dartfrog", "dokku": False},
+    # Two new archetypes wired to their manifests in PROMPT_73.
+    {"archetype": "data-acquisition-service", "primary_stack": "python-fastapi-uv-ruff-orjson-polars", "dokku": False},
+    {"archetype": "multi-source-sync-platform", "primary_stack": "python-fastapi-uv-ruff-orjson-polars", "dokku": False},
 )
 
 
