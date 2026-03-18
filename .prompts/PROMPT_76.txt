@@ -1,0 +1,920 @@
+You are working inside the agent-context-base repository.
+
+This prompt creates a derived-examples content layer: 100 natural-language project briefs
+(2-4 sentences each) and 8 sub-group "derived example" prompts (7-12 sentences each) that
+synthesize clusters of the 100. All content is stored as structured YAML in examples/derived/.
+Output changes as commit-ready batches labeled [PROMPT_76].
+
+================================================================================
+CONSTRAINTS
+================================================================================
+
+- Do NOT modify any file in examples/ outside of examples/derived/.
+- Do NOT change scripts/new_repo.py, verification scripts, or manifests.
+- validate_context.py and validate_doc_governance.py must both pass after all changes.
+- Run: python3.14 scripts/validate_context.py
+       python3.14 scripts/validate_doc_governance.py
+  after each batch and fix any failures before continuing.
+
+================================================================================
+REQUIRED READS
+================================================================================
+
+Read these files before beginning:
+
+  scripts/new_repo.py             (for ARCHETYPES list and STACKS dict keys)
+  examples/catalog.json           (understand catalog entry format)
+  verification/example_registry.yaml   (understand registry entry format — last 20 entries)
+
+================================================================================
+I. WHAT TO BUILD
+================================================================================
+
+1. Create examples/derived/ directory with three files:
+   examples/derived/README.md              (brief description of this directory)
+   examples/derived/example-prompts.yaml   (100 natural-language project briefs)
+   examples/derived/derived-examples.yaml  (8 sub-group derived example prompts)
+
+2. Add all three files to examples/catalog.json following the existing entry format.
+
+3. Add all three files to verification/example_registry.yaml following the existing
+   entry format (verification_level: reference, docker_supported: false).
+
+================================================================================
+II. examples/derived/README.md
+================================================================================
+
+Write a brief README (no frontmatter) explaining:
+- What example-prompts.yaml is (100 natural-language briefs, one per reference project)
+- What derived-examples.yaml is (8 sub-group prompts synthesizing clusters of the 100)
+- How these files are used by the coverage verification layer (PROMPT_77)
+- That prompt text must not be modified without also updating the corresponding new_repo_args
+
+================================================================================
+III. examples/derived/example-prompts.yaml STRUCTURE
+================================================================================
+
+Top-level key: `examples` (list of 100 entries).
+Each entry:
+
+  - number: <int 1-100>
+    codename: <slug matching EXAMPLE_PROJECTS in new_repo.py>
+    category: <letter A-J or ADDITIONAL>
+    category_name: <human-readable category name>
+    prompt: |
+      <2-4 sentence natural language project brief>
+    new_repo_args:
+      archetype: <archetype key>
+      primary_stack: <stack key>
+      smoke_tests: <true|false>
+      integration_tests: <true|false>
+      seed_data: <true|false>
+      dokku: <true|false>
+
+Write the file with exactly these 100 entries in order. Use the new_repo_args values
+from Section II of PROMPT_75 (the table). Prompt text is given in Section IV below.
+
+================================================================================
+IV. ALL 100 EXAMPLE PROMPTS
+================================================================================
+
+--- CATEGORY A — Single-Backend API Services ---
+
+1  partner-data-enrichment
+   Build a FastAPI service that normalizes incoming JSON from multiple partner APIs into
+   a unified schema stored in PostgreSQL. Use Polars for in-memory transformation and
+   implement cursor-based pagination for the list endpoint. Smoke tests verify the health
+   endpoint and at least one query endpoint returns normalized records from seed data.
+
+2  analytics-parquet-api
+   Build a FastAPI analytics service that reads from a directory of Parquet files using
+   DuckDB, exposing aggregate and trend query endpoints. Polars handles result
+   transformation before JSON serialization. Smoke tests confirm at least two aggregate
+   endpoints return correct totals from seeded fixture Parquet files.
+
+3  timeseries-ingest
+   Build a FastAPI ingestion service that writes time-series records to a TimescaleDB
+   hypertable with batch-flush writes and exposes windowed aggregate query endpoints.
+   Seed with timestamps spread across multiple time windows. Smoke tests verify both the
+   ingest endpoint and at least one windowed aggregate.
+
+4  webhook-receiver
+   Build a FastAPI service that receives, validates, and normalizes webhook events,
+   persisting raw and normalized forms to MongoDB with Redis-backed rate limiting on the
+   ingest endpoint. Seed with varied event shapes to exercise the normalization path.
+   Smoke tests verify ingest, rate-limiter response, and normalization correctness.
+
+5  scheduled-enrichment
+   Build a FastAPI service with a PostgreSQL-backed enrichment pipeline that runs on a
+   configurable schedule, processing pending records with Polars and writing enriched
+   results back. Expose a trigger-and-inspect endpoint for testing without waiting for
+   the schedule. Smoke tests verify the trigger endpoint returns an enrichment summary.
+
+6  hono-internal-api
+   Build a lean internal API using Hono on Bun with SQLite, exposing three
+   domain-specific endpoints. Keep the service self-contained with no external
+   infrastructure beyond SQLite. Smoke tests verify all three endpoints return correct
+   responses with seeded fixture data.
+
+7  hono-bff-aggregator
+   Build a Hono/Bun Backend-for-Frontend that aggregates responses from multiple upstream
+   services into a unified payload with graceful degradation when an upstream is
+   unavailable. Configure for Dokku deployment with health check and Procfile. Smoke
+   tests verify the aggregated response and the degraded-upstream fallback path.
+
+8  go-parquet-reports
+   Build a Go/Echo reporting service that reads Parquet files via DuckDB, exposing
+   endpoints for filtered, sorted, and paginated report output. Seed fixture Parquet
+   files with enough rows to verify pagination boundaries. Smoke tests confirm filter,
+   sort, and page-boundary responses.
+
+9  go-file-upload
+   Build a Go/Echo service that accepts file uploads, validates format and size
+   constraints, normalizes content to a canonical schema, and persists metadata to
+   PostgreSQL. Seed with fixture records representing prior uploads. Smoke tests verify
+   upload acceptance, rejection of invalid files, and metadata retrieval.
+
+10  rust-event-ingest
+   Build a high-throughput Rust/Axum ingest service that batches incoming events and
+   flushes to PostgreSQL on a configurable interval or batch-size threshold. Seed with
+   fixture event streams. Smoke tests verify the ingest endpoint accepts batches and
+   the PostgreSQL table receives flushed records.
+
+11  rust-batch-classifier
+   Build a Rust/Axum classification service that accepts feature vectors, scores them
+   against a precomputed model, and returns classification labels with confidence scores.
+   Embed fixture model state at startup; no live storage required. Smoke tests verify the
+   classify endpoint returns expected labels for known input vectors.
+
+12  phoenix-scheduling
+   Build an Elixir/Phoenix service with Ecto and PostgreSQL that manages availability
+   windows for a scheduling domain, supporting create, query, and conflict-detection
+   endpoints. Seed with overlapping and non-overlapping fixture windows. Smoke tests
+   verify conflict detection and availability query endpoints.
+
+13  scala-financial-reports
+   Build a Scala/Tapir+ZIO financial reporting service that generates period summaries
+   and period-over-period comparison reports from PostgreSQL data. Seed with multi-period
+   fixture records. Smoke tests verify at least one summary and one comparison endpoint
+   return correctly computed results.
+
+14  kotlin-invoice-tracker
+   Build a Kotlin/http4k+Exposed CRUD service for tracking invoices with status
+   transitions (draft, sent, paid, overdue) and filter-by-status list endpoints backed
+   by PostgreSQL. Seed with invoices across all status values. Smoke tests verify create,
+   status transition, and filtered list endpoints.
+
+15  clojure-preferences
+   Build a Clojure/Kit+next.jdbc service that stores and retrieves user preference maps
+   in PostgreSQL, supporting get, set, and partial-update operations per user key. Seed
+   with fixture users and preference maps. Smoke tests verify get, set, and partial-update
+   return consistent results.
+
+16  ruby-content-store
+   Build a Ruby/Hanami service that stores content records in PostgreSQL, exposing
+   paginated list endpoints with field-level filtering. Seed with enough fixture records
+   to verify pagination boundaries and filter combinations. Smoke tests confirm paginated
+   list and filtered queries return correct subsets.
+
+17  nim-json-filter
+   Build a Nim/Jester service that filters fixture JSON documents by field predicates,
+   returning matching subsets without any live database dependency. Load fixture JSON at
+   startup and serve filter queries in memory. Smoke tests verify multiple predicate
+   combinations against known fixture documents.
+
+18  dart-audit-log
+   Build a Dart/Dartfrog service that appends audit events to a PostgreSQL audit trail,
+   supporting append and time-bounded query endpoints. Seed with fixture audit entries
+   spanning multiple time ranges. Smoke tests verify append and bounded-query endpoints.
+
+19  ocaml-metadata-store
+   Build an OCaml/Dream+Caqti+TyXML service that stores and retrieves project metadata
+   records in PostgreSQL, supporting CRUD and list-with-filter. Seed with fixture metadata
+   records. Smoke tests verify create, read, update, delete, and filtered list endpoints.
+
+20  crystal-cache-proxy
+   Build a Crystal/Kemal+Avram caching proxy that wraps a PostgreSQL query behind a
+   time-bounded cache, returning cache-hit headers when served from cache and refreshing
+   on expiry. Seed with fixture data. Smoke tests verify a cold-cache miss, a warm-cache
+   hit, and a cache-refresh path.
+
+21  fastapi-dokku-analytics
+   Build a FastAPI analytics service backed by PostgreSQL and Polars, configured for
+   Dokku deployment with a Procfile, health endpoint, and release script. Expose at least
+   two aggregate query endpoints. Smoke tests verify health and at least one aggregate
+   endpoint after seed.
+
+--- CATEGORY B — Backend-Driven UI ---
+
+22  faceted-dashboard
+   Build a FastAPI+HTMX server-rendered dashboard with Tailwind and Plotly, supporting
+   faceted include/exclude filtering with dynamic counts recalculated on each filter
+   change. Seed with multi-dimensional fixture data. Playwright integration tests verify
+   that applying and removing facets updates both the chart and the count labels.
+
+23  search-sort-paginate
+   Build a FastAPI+HTMX service with keyword search, multi-field sort, and infinite-scroll
+   pagination via HTMX partial responses. Seed with enough fixture records to verify
+   pagination boundaries and sort correctness. Playwright tests verify search results,
+   sort order toggling, and scroll-triggered page loads.
+
+24  split-filter-panel
+   Build a FastAPI+HTMX service with a split include/exclude facet panel maintaining
+   server-side filter state across partial renders. Seed with fixture records across
+   multiple categories. Playwright tests verify that adding an include filter reduces
+   the count and that adding an exclude filter further narrows the intersection.
+
+25  shared-query-chart-table
+   Build a FastAPI+HTMX+Plotly service that issues a single database query and renders
+   both a chart and a table from the same result set, updating both with a single HTMX
+   swap. Seed with fixture data producing distinguishable chart and table values. Playwright
+   tests verify chart and table consistency after filter changes.
+
+26  report-browser-cuj
+   Build a FastAPI+HTMX+Tailwind report browser designed around critical user journeys:
+   search, select, view detail, and export. Seed with representative fixture reports.
+   Playwright tests cover the full CUJ—search → select → detail → export—verifying
+   each transition completes correctly.
+
+27  compound-facet-dashboard
+   Build a FastAPI+HTMX dashboard with compound multi-dimension AND filters that compute
+   intersection counts across all active facets simultaneously. Seed with fixture data
+   across at least three dimensions. Playwright tests verify that two active facets from
+   different dimensions return only records matching both and the displayed count is accurate.
+
+--- CATEGORY C — Data Acquisition and Pipelines ---
+
+28  python-api-acquisition
+   Build a Python data acquisition service that paginates through an external REST API
+   with exponential backoff on transient errors, archives each raw response, and loads
+   normalized records into PostgreSQL. Include a fixture server for deterministic tests.
+   Smoke tests verify all fixture pages are processed and raw archives are created.
+
+29  go-api-ingestion
+   Build a Go data ingestion service that fetches daily JSON payloads from an external
+   API, applies exponential backoff on failure, emits structured log events, and persists
+   normalized records to PostgreSQL. Seed fixture JSON responses for deterministic runs.
+   Smoke tests verify the daily fetch loop completes and records are persisted.
+
+30  python-scraper
+   Build a Python scraper that fetches HTML pages, extracts structured records using a
+   defined schema, normalizes and deduplicates with Polars, persists to PostgreSQL, and
+   archives raw HTML. Seed with fixture HTML pages for deterministic execution. Smoke
+   tests verify extraction correctness and raw archive creation.
+
+31  bun-scraper
+   Build a TypeScript/Bun scraper that parses HTML pages, extracts records into
+   Drizzle-managed PostgreSQL tables, and runs fixture-driven tests using static HTML
+   snapshots. Smoke tests verify that parsing fixture pages produces the expected record
+   count and correct field values.
+
+32  csv-etl-pipeline
+   Build a Python ETL pipeline that reads heterogeneous CSV files, normalizes schemas
+   with Polars, and writes deterministic Parquet output with consistent column types and
+   sort order. Smoke tests verify that processing a fixture CSV set produces byte-identical
+   Parquet output on repeated runs.
+
+33  json-etl-pipeline
+   Build a Python ETL pipeline that reads partner JSON exports, enriches records with
+   Polars transformations, and bulk-inserts normalized results into PostgreSQL with
+   provenance metadata. Seed with fixture JSON exports. Smoke tests verify enrichment
+   correctness and row counts after bulk insert.
+
+34  duckdb-parquet-analytics
+   Build a local DuckDB+Parquet+CSV analytical pipeline that reads CSV source files,
+   transforms them into Parquet partitions, and executes DuckDB analytical queries
+   against the partitions. Smoke tests verify that processing fixture CSVs produces
+   correct aggregate outputs from DuckDB queries.
+
+35  multi-source-sync
+   Build a multi-source coordination service that subscribes to NATS JetStream streams
+   from two sources, deduplicates and reconciles incoming events, and persists merged
+   records to PostgreSQL. Seed with overlapping fixture events from both sources. Smoke
+   tests verify deduplication logic and merged record correctness.
+
+36  classification-enrichment
+   Build a Python enrichment service that classifies incoming records using a precomputed
+   label set, appends classification tags and confidence scores, and persists enriched
+   records with provenance metadata to PostgreSQL. Seed with fixture records spanning
+   multiple classification outcomes. Smoke tests verify tag assignment and confidence
+   score ranges.
+
+37  recurring-sync
+   Build a Python recurring-sync service with a configurable schedule, exponential
+   backoff with jitter on transient errors, and raw archival of each sync run's source
+   data. Expose a trigger endpoint for on-demand sync. Smoke tests verify the trigger
+   initiates a sync, backoff is applied on simulated failure, and raw archives are created.
+
+38  elixir-data-acquisition
+   Build an Elixir/Phoenix service with a GenServer that paginates through an external
+   API, persists normalized records to PostgreSQL via Ecto, and supports fixture-driven
+   verification of paginated acquisition. Smoke tests verify all fixture pages are
+   processed and the expected record count is persisted.
+
+--- CATEGORY D — ML and Data Science ---
+
+39  sklearn-inference
+   Build a FastAPI inference service that loads a pre-trained scikit-learn model from
+   disk at startup and exposes a predict endpoint accepting feature vectors and returning
+   classification labels. Include a fixture model for deterministic testing. Smoke tests
+   verify expected labels are returned for known input vectors.
+
+40  recommendation-engine
+   Build a FastAPI recommendation service that reads precomputed recommendation records
+   from PostgreSQL and returns ordered recommendation lists for a given entity. Seed with
+   fixture recommendation data. Smoke tests verify the endpoint returns the correct top-N
+   results for known entity IDs.
+
+41  arima-forecasting
+   Build a FastAPI forecasting service backed by statsmodels ARIMA that accepts a
+   time-series identifier, fits a model to historical data, and returns a forecast with
+   confidence intervals. Seed with fixture time-series data. Smoke tests verify the
+   forecast endpoint returns the expected number of future periods with non-null bounds.
+
+42  semantic-search-qdrant
+   Build a FastAPI semantic search service that indexes a fixture corpus into Qdrant using
+   sentence-transformers embeddings, then exposes a query endpoint returning semantically
+   similar documents. Smoke tests verify that a known phrase query returns the fixture
+   document with the highest semantic similarity.
+
+43  xgboost-serving
+   Build a FastAPI serving layer for a pre-trained XGBoost model that returns predictions
+   with feature importance metadata alongside each response. Load a fixture model at
+   startup. Smoke tests verify the prediction endpoint returns valid scores and non-empty
+   feature importance for known input vectors.
+
+44  embedding-pipeline
+   Build a full embedding pipeline with sentence-transformers and Qdrant, exposing both
+   corpus indexing (POST /index) and semantic query (GET /query) as a single FastAPI
+   service. Smoke tests verify that indexing fixture documents followed by a query returns
+   the expected top result.
+
+45  duckdb-polars-sklearn
+   Build a Python research pipeline that reads Parquet fixture data, queries it with
+   DuckDB, transforms results with Polars, trains a scikit-learn model, and evaluates
+   it in a single pipeline script. Smoke tests verify the pipeline completes without
+   error and evaluation metrics fall within expected ranges for fixture data.
+
+46  lightgbm-tabular
+   Build a Python LightGBM tabular training pipeline that reads Parquet fixture data,
+   performs feature engineering with Polars, trains a LightGBM model, and outputs
+   evaluation metrics. Smoke tests verify training completes and accuracy metrics exceed
+   a fixture-tuned threshold.
+
+--- CATEGORY E — Multi-Backend Coordination ---
+
+47  go-python-ml-gateway
+   Build a Go/Echo gateway that routes prediction requests to a FastAPI ML scoring backend
+   via a REST seam, aggregating scores and returning enriched responses to callers. Include
+   a fixture FastAPI scoring server for deterministic tests. Smoke tests verify the
+   end-to-end route: request in, prediction score out.
+
+48  kotlin-rust-grpc
+   Build a Kotlin/http4k gRPC caller and a Rust/Tonic compute server sharing a .proto
+   contract, where Kotlin invokes the Rust kernel for compute-intensive scoring. Smoke
+   tests verify the Kotlin→gRPC→Rust round-trip with fixture inputs and expected outputs.
+
+49  elixir-go-nats
+   Build an Elixir/Phoenix publisher and a Go NATS JetStream consumer, where Elixir
+   publishes domain events to a NATS stream and Go processes and persists them. Smoke
+   tests verify that publishing an event in Elixir results in a processed record in the
+   Go service's store.
+
+50  clojure-go-kafka
+   Build a Clojure Kafka producer and a Go Kafka consumer, where Clojure emits domain
+   events and Go enriches and persists them. Smoke tests verify the full Kafka round-trip:
+   event produced by Clojure, enriched and stored by Go.
+
+51  node-go-graphql
+   Build a Node/Hono GraphQL BFF that resolves queries by calling a Go/Echo domain REST
+   API, shaping responses into a GraphQL schema. Smoke tests verify that a GraphQL query
+   resolves correctly against a fixture Go backend.
+
+52  scala-rust-grpc-streams
+   Build a Scala/Akka Streams pipeline and a Rust/Tonic gRPC kernel, where the Scala
+   pipeline streams data to the Rust kernel for computation and streams results back.
+   Smoke tests verify a fixture stream round-trip produces expected output stages.
+
+53  node-elixir-nats-bidir
+   Build a Node service and an Elixir service connected by a bidirectional NATS seam,
+   where each side can publish and receive messages. Smoke tests verify Node-published
+   events appear in Elixir and Elixir-published events appear in Node.
+
+54  rust-python-grpc-infer
+   Build a Rust/Tonic gRPC inference server and a Python orchestrator that sends batch
+   feature vectors to the Rust server and aggregates results. Smoke tests verify the
+   Python→gRPC→Rust inference round-trip with fixture batch input.
+
+55  elixir-rust-nif
+   Build an Elixir service that calls a Rust NIF via Rustler for in-process compute,
+   eliminating network overhead. Smoke tests verify the NIF returns expected results for
+   fixture inputs with no network latency.
+
+56  elixir-clojure-rabbitmq
+   Build an Elixir RabbitMQ producer and a Clojure Broadway consumer, where Elixir
+   publishes domain events and Clojure processes and acknowledges them. Smoke tests verify
+   end-to-end message delivery and acknowledgment.
+
+57  trio-go-elixir-python
+   Build a three-service coordination chain: Go/Echo gateway receives HTTP requests and
+   publishes to NATS, an Elixir coordinator picks up and coordinates, and a Python FastAPI
+   ML service provides final scoring via REST. Smoke tests verify the full chain: HTTP
+   request in, Python ML score out.
+
+58  trio-go-rust-python-dual
+   Build a three-service dual-seam system where a Go gateway routes to both a Rust gRPC
+   compute backend and a Python REST ML backend, then combines results. Smoke tests verify
+   both seams are exercised and combined results are returned.
+
+59  trio-elixir-go-rust-nats
+   Build a three-service NATS coordination: Elixir coordinator publishes tasks to NATS,
+   a Go worker consumes and calls a Rust gRPC kernel, then publishes results back for
+   Elixir to collect. Smoke tests verify the full round-trip completes.
+
+60  trio-node-go-python-gql
+   Build a three-service GraphQL platform: Node GraphQL BFF resolves queries via a Go
+   domain REST API, which delegates ML calls to a Python FastAPI service. Smoke tests
+   verify GraphQL queries traverse all three services successfully.
+
+61  trio-rust-nats-go-iot
+   Build a three-service IoT chain: a Rust ingestor receives sensor events and publishes
+   to NATS JetStream, a Go consumer subscribes and performs windowed aggregation, and an
+   HTTP endpoint exposes aggregate results. Smoke tests verify ingest→publish→aggregate→query.
+
+62  scala-go-python-federated
+   Build a federated analytics system where a Scala/Tapir coordinator calls a Go gRPC
+   analytics service and a Python REST ML service, federates their results, and returns a
+   unified response. Smoke tests verify the full federation round-trip.
+
+--- CATEGORY F — Storage Experiments ---
+
+63  duckdb-parquet-minio-lake
+   Build a local data lake with DuckDB reading Parquet files staged in a MinIO bucket,
+   exposing an analytical query endpoint targeting the lake directly. Seed the MinIO
+   bucket with fixture Parquet partitions. Smoke tests verify DuckDB queries against
+   MinIO-staged Parquet return expected aggregate results.
+
+64  rag-engineering-runbooks
+   Build a FastAPI RAG service that indexes engineering runbooks into Qdrant using
+   sentence-transformers and serves semantic search queries returning the most relevant
+   runbook sections. Seed with a fixture runbook corpus. Smoke tests verify the search
+   endpoint returns the most relevant runbook for a known query phrase.
+
+65  meilisearch-fulltext
+   Build a FastAPI full-text search service backed by Meilisearch with field-level
+   ranking and facet filtering. Index fixture documents with multiple field types at
+   startup. Smoke tests verify keyword search returns ranked results and facet filters
+   narrow the result set correctly.
+
+66  timescaledb-sensors
+   Build a FastAPI sensor data service backed by TimescaleDB with a hypertable, supporting
+   high-frequency writes and hourly/daily aggregate query endpoints. Seed with fixture
+   sensor readings across multiple time windows. Smoke tests verify ingest, hourly
+   aggregate, and daily aggregate endpoints.
+
+67  redis-cache-ratelimit
+   Build a FastAPI service with a Redis caching layer and per-key rate limiter, exposing
+   endpoints that exercise cache-miss, cache-hit, and rate-limited (429) paths. Smoke
+   tests verify all three paths against a fixture backend with known cache TTLs.
+
+68  nats-event-capture-replay
+   Build a NATS JetStream event capture and replay service with stream configuration,
+   publish endpoint, subscribe consumer, and replay-from-offset capability. Smoke tests
+   verify publish→subscribe delivery and that replay-from-offset returns events in the
+   correct order.
+
+69  trino-federated-query
+   Build a local Trino analytical service with PostgreSQL and Parquet catalogs configured,
+   exposing cross-catalog join query endpoints. Seed both PostgreSQL and Parquet fixtures.
+   Smoke tests verify a cross-catalog join returns correct results merging both sources.
+
+70  multi-storage-split
+   Build a read/write split experiment that persists hot-path writes to Redis, cold-path
+   writes to MongoDB, and archives to Parquet, with storage-tier selection logic. Smoke
+   tests verify records land in the correct storage tier based on write-path classification.
+
+71  elasticsearch-search
+   Build a FastAPI search service backed by Elasticsearch with relevance scoring and
+   field-level filtering, indexing fixture documents at startup. Smoke tests verify
+   search returns relevance-ranked results and field filters narrow the result set.
+
+72  es-vs-meilisearch
+   Build a side-by-side comparison service that indexes the same fixture corpus into both
+   Elasticsearch and Meilisearch, exposes parallel query endpoints for each, and returns
+   a comparison payload with scores from both engines. Smoke tests verify both engines
+   return results for the same query.
+
+--- CATEGORY G — CLI Tools ---
+
+73  data-reconciliation-cli
+   Build a Python CLI that accepts two data export files (CSV or JSON), computes a
+   structured diff report highlighting missing, added, and changed records by key, and
+   writes output to stdout or a file. Smoke tests verify the CLI produces expected diff
+   output for fixture export pairs with known differences.
+
+74  prompt-eval-cli
+   Build a Python CLI that reads a set of prompt variants and a shared test corpus,
+   evaluates each variant's outputs against a rubric, and produces a structured comparison
+   report. Smoke tests verify the CLI produces a report with scores for each prompt variant
+   against fixture test cases.
+
+75  rust-batch-processor
+   Build a Rust CLI that accepts a directory of input files, validates and normalizes each
+   file against a schema, and writes a processing report summarizing successes, failures,
+   and normalization changes. Smoke tests verify the CLI processes a fixture input directory
+   and the report matches expected outcomes.
+
+76  rust-snapshot-cli
+   Build a Rust CLI whose primary verification method is snapshot testing: the CLI produces
+   JSON output and tests assert byte-level equality against committed snapshot files. Smoke
+   tests verify CLI output matches committed snapshots for fixture inputs.
+
+77  go-config-auditor
+   Build a Go CLI that reads YAML configuration files, evaluates them against a set of
+   policy rules, and produces a structured findings report listing violations with severity
+   levels. Smoke tests verify the CLI reports expected violations for fixture configs with
+   known policy breaches.
+
+78  python-pipeline-cli
+   Build a Python CLI wrapping a data acquisition pipeline with three subcommands: sync
+   (run acquisition), inspect (show last run summary), and replay (re-process a past run).
+   Smoke tests verify each subcommand executes correctly against fixture pipeline state.
+
+--- CATEGORY H — Local RAG and Semantic Search ---
+
+79  rag-legal-docs
+   Build a FastAPI RAG service that chunks and indexes a fixture legal document corpus
+   into Qdrant using sentence-transformers, returning relevant clauses with source
+   citations for semantic queries. Smoke tests verify the most relevant clause is returned
+   for a known query phrase.
+
+80  rag-api-reference
+   Build a FastAPI RAG service that indexes API documentation into Qdrant with HTTP method
+   and endpoint metadata, supporting queries filtered by method or endpoint pattern. Smoke
+   tests verify endpoint-filtered search returns only matching API docs.
+
+81  markdown-notes-indexer
+   Build a FastAPI service that chunks Markdown notes by section heading, indexes chunks
+   into Qdrant with section and source metadata, and supports source-tracked semantic
+   search. Smoke tests verify that a phrase from a specific section returns that section's
+   chunk with correct source metadata.
+
+82  runbook-search
+   Build a FastAPI runbook search service that indexes operational runbooks into Qdrant by
+   intent tags and supports intent-based semantic queries. Seed with fixture runbooks across
+   diverse operational intents. Smoke tests verify a query with a known intent returns the
+   correct runbook.
+
+83  hybrid-search-prototype
+   Build a FastAPI hybrid search service that queries both Meilisearch (full-text) and
+   Qdrant (semantic), applies weighted rank fusion to combine results, and returns a unified
+   ranked list. Smoke tests verify hybrid results include documents from both engines and
+   rank fusion scores are present in each result.
+
+84  rag-plus-structured
+   Build a FastAPI service that uses RAG context from Qdrant to enrich structured database
+   query results, returning both structured rows and relevant contextual passages in a
+   unified response. Smoke tests verify the response contains both database records and
+   Qdrant context passages for a known query.
+
+--- CATEGORY I — Prompt-First Repos ---
+
+85  prompt-rubric-evaluator
+   Build a prompt management repository with YAML rubric definitions and a Python
+   evaluation harness that scores model outputs against rubric criteria, producing
+   structured comparison reports across prompt variants. No service infrastructure
+   required. Tests verify the harness produces correct rubric scores for fixture outputs.
+
+86  output-shape-compliance
+   Build a prompt evaluation repository focused on JSON schema conformance, with prompts
+   that instruct models to produce structured outputs and a test harness that validates
+   output shapes against JSON Schema definitions. Tests verify fixture model outputs pass
+   or fail conformance checks as expected.
+
+87  prompt-assertion-library
+   Build a system prompt library with a structured collection of reusable prompt components
+   and a Python assertion harness verifying output properties (format, length, key presence)
+   for each component. Tests verify assertion coverage and that fixture outputs pass their
+   expected assertions.
+
+88  model-config-comparison
+   Build a model configuration comparison repository that evaluates the same prompt corpus
+   across multiple model configurations (temperature, system prompt variants) and produces
+   a compliance-scored comparison matrix. Tests verify the matrix contains scores for all
+   configuration combinations against fixture prompts.
+
+89  task-prompt-sequences
+   Build a domain-specific prompt sequence repository that generates multi-step prompt
+   chains with continuation conditions, managing prompt-to-prompt context passing. Tests
+   verify that a fixture task generates the expected sequence and continuation conditions
+   trigger correctly.
+
+90  living-doc-prompts
+   Build a prompt-driven documentation generation repository where prompts produce
+   structured documentation artifacts verified for section presence, structure, and length
+   constraints. No service infrastructure required. Tests validate fixture prompt outputs
+   against a defined documentation schema.
+
+--- CATEGORY J — Dokku-Deployable Services ---
+
+91  dokku-fastapi-analytics
+   Build a FastAPI analytics service backed by PostgreSQL and Polars, fully configured for
+   Dokku deployment: Procfile, release script, DATABASE_URL via environment, and a health
+   endpoint. Expose at least two aggregate query endpoints. Smoke tests verify health and
+   aggregate endpoints after seed.
+
+92  dokku-fastapi-redis-cache
+   Build a FastAPI service with Redis caching configured for Dokku deployment, demonstrating
+   cache-miss and cache-hit paths with REDIS_URL injected via environment. Smoke tests
+   verify both cache paths and that the Dokku health endpoint responds correctly.
+
+93  dokku-hono-bun
+   Build a Hono/Bun service configured for Dokku deployment with a Procfile, health
+   endpoint, and a domain query endpoint. Smoke tests verify health and domain query
+   respond correctly in the Dokku configuration.
+
+94  dokku-go-echo
+   Build a Go/Echo reporting service configured for Dokku with PostgreSQL via DATABASE_URL,
+   a health endpoint, and at least one reporting endpoint. Smoke tests verify health and
+   reporting endpoints after seed data is loaded via the Dokku release script.
+
+95  dokku-phoenix
+   Build an Elixir/Phoenix+Ecto service configured for Dokku with PostgreSQL via
+   DATABASE_URL, Ecto migrations in the release script, and a health endpoint. Smoke tests
+   verify health and at least one domain endpoint after migration and seed.
+
+96  dokku-multi-service
+   Build a multi-service Dokku deployment with a FastAPI backend, a Hono/Bun BFF, and a
+   shared PostgreSQL instance connected via internal service URLs. Smoke tests verify the
+   BFF endpoint successfully aggregates data from the FastAPI backend.
+
+97  dokku-rust-axum
+   Build a Rust/Axum service configured for Dokku deployment, accounting for multi-minute
+   initial build time, with a health endpoint and at least one domain endpoint. Smoke tests
+   verify health and domain endpoint after Dokku build completes.
+
+98  dokku-kotlin-http4k
+   Build a Kotlin/http4k service with PostgreSQL backed by Dokku, with a Procfile and
+   Gradle-based build. Smoke tests verify health and at least one domain endpoint after
+   seed data is loaded.
+
+--- ADDITIONAL ---
+
+99  crystal-data-acquisition
+   Build a Crystal/Kemal+Avram data acquisition service that paginates through a fixture
+   API, validates records against a schema, archives raw responses, and persists normalized
+   records to PostgreSQL. Smoke tests verify the acquisition loop processes all fixture
+   pages, archives are created, and the correct record count is persisted.
+
+100  polyglot-seam-lab
+   Build a 2-3 language seam experiment that documents coordination infrastructure and
+   seam contracts in discovery notes, with at least one working inter-service call as a
+   proof of concept. Smoke tests verify the cross-language seam call completes successfully
+   with fixture input and output.
+
+================================================================================
+V. examples/derived/derived-examples.yaml STRUCTURE
+================================================================================
+
+Top-level key: `derived` (list of 8 entries).
+Each entry:
+
+  - name: <sub-group codename>
+    team: <"A" or "B">
+    team_name: <"Intelligent Data Platform" or "ML-Powered Observability">
+    description: <one-line description of what this sub-group covers>
+    source_examples: [<list of ints>]
+    prompt: |
+      <7-12 sentence combined project prompt>
+    new_repo_args:
+      - example: <int>
+        archetype: <archetype>
+        primary_stack: <stack>
+        smoke_tests: <bool>
+        seed_data: <bool>
+        dokku: <bool>
+        integration_tests: <bool>
+
+Write the file with exactly these 8 entries in order (4 Team A, 4 Team B).
+Sub-group names, source examples, and prompt text are given in Section VI below.
+
+================================================================================
+VI. ALL 8 DERIVED EXAMPLE PROMPTS
+================================================================================
+
+--- TEAM A — Intelligent Data Platform ---
+
+name: ingestion-normalization-core
+team: A
+source_examples: [28, 1, 35]
+description: "Acquisition → normalization → multi-source NATS coordination"
+
+prompt: |
+  Build an end-to-end data ingestion and normalization core handling the complete
+  acquisition-to-storage path for partner data. The system consists of three coordinated
+  services: a paginated REST acquirer (#28 python-api-acquisition), a Polars-based
+  normalization service (#1 partner-data-enrichment), and a NATS JetStream multi-source
+  coordinator (#35 multi-source-sync). Use --use-example 28 to scaffold the acquisition
+  service: it pages through an external REST API with exponential backoff, archives raw
+  responses, and emits sync.requested events to NATS JetStream. Use --use-example 1 for
+  the normalization service: it consumes sync.requested events, normalizes records from
+  multiple partner formats into a unified PostgreSQL schema using Polars, and emits
+  sync.completed events. Use --use-example 35 for the multi-source coordinator: it
+  subscribes to both source streams, deduplicates cross-source overlap, and maintains a
+  merged record set in PostgreSQL. The seam contracts are: acquisition → NATS
+  (sync.requested), normalization ← NATS → NATS (sync.completed), coordinator ←
+  NATS (sync.completed). Smoke tests for each service verify individual behavior; running
+  all three together verifies the coordinated pipeline produces correct merged output.
+
+---
+
+name: analytics-lake-deployment
+team: A
+source_examples: [2, 63, 91]
+description: "DuckDB/Parquet analytics API + MinIO data lake + Dokku deployment"
+
+prompt: |
+  Build a three-tier analytical storage and serving platform covering staging, querying,
+  and production deployment. Use --use-example 63 to scaffold the data lake service: it
+  stages Parquet partitions in MinIO and exposes a DuckDB query interface against the
+  lake. Use --use-example 2 to scaffold the analytics API: it reads Parquet files via
+  DuckDB and exposes aggregate and trend endpoints, consuming the same Parquet partitions
+  staged by the lake service. Use --use-example 91 to scaffold the Dokku deployment
+  wrapper: it packages the analytics queries in a production-ready FastAPI service with a
+  Procfile, release script, and DATABASE_URL injection for Dokku. The seam contracts are:
+  pipeline writes Parquet partitions to MinIO, the analytics API reads from the same
+  Parquet paths, and the Dokku service wraps the analytics API for production deployment.
+  Seed the lake with representative Parquet partitions that the analytics API and Dokku
+  service can query against fixture aggregates. Smoke tests for each service verify
+  independent operation; integration tests verify the full path from Parquet partition
+  in MinIO to API response.
+
+---
+
+name: ml-gateway-intelligence
+team: A
+source_examples: [44, 47]
+description: "Embedding pipeline (Qdrant) behind a Go ML routing gateway"
+
+prompt: |
+  Build a two-service ML intelligence layer combining an embedding pipeline with a
+  Go routing gateway. Use --use-example 44 to scaffold the embedding pipeline: it indexes
+  a fixture corpus using sentence-transformers into Qdrant and exposes both corpus indexing
+  (POST /index) and semantic query (GET /query) as a combined FastAPI service. Use
+  --use-example 47 to scaffold the Go ML gateway: it routes external HTTP requests to the
+  embedding pipeline's query endpoint, applies rate limiting at the gateway layer, and
+  enriches responses before returning them to callers. The seam contract is Go gateway →
+  FastAPI embedding service (REST). Seed the Qdrant index with a fixture corpus before
+  running gateway smoke tests so queries return non-empty results. Smoke tests verify the
+  embedding pipeline's index and query endpoints independently; gateway smoke tests verify
+  the full route-through from Go to FastAPI to Qdrant and back. The gateway pattern
+  established here scales to front any number of ML backends added to the system.
+
+---
+
+name: operator-surface
+team: A
+source_examples: [22, 73]
+description: "Faceted HTMX dashboard + data reconciliation CLI for operator workflows"
+
+prompt: |
+  Build a two-component operator surface combining a real-time analytics dashboard with
+  an offline data quality tool. Use --use-example 22 to scaffold the faceted dashboard:
+  it uses FastAPI+HTMX+Tailwind+Plotly with include/exclude facet filters, dynamic
+  counts recalculated on each filter change, and Playwright integration tests verifying
+  filter behavior. Use --use-example 73 to scaffold the reconciliation CLI: it accepts
+  two data export files and produces a structured diff report identifying missing, added,
+  and changed records by key. The two components are loosely coupled: both read from
+  PostgreSQL (dashboard live, CLI via export snapshots), so they operate independently
+  or in concert. Seed PostgreSQL with multi-dimensional fixture data that exercises all
+  facet dimensions in the dashboard and appears in export files for the CLI. Playwright
+  tests verify the dashboard's filter-and-count behavior; CLI smoke tests verify diff
+  correctness for fixture export pairs with known differences. Together they provide
+  real-time visibility and periodic audit capability for the platform.
+
+---
+
+--- TEAM B — ML-Powered Observability ---
+
+name: event-driven-coordination
+team: B
+source_examples: [57, 68]
+description: "Trio polyglot coordination chain + NATS event capture and replay"
+
+prompt: |
+  Build an event-driven coordination skeleton combining a three-service polyglot chain
+  with NATS event capture and replay infrastructure. Use --use-example 57 to scaffold
+  the trio coordination chain: a Go/Echo gateway receives HTTP requests, publishes work
+  to NATS JetStream, an Elixir coordinator processes events and manages state, and a
+  Python FastAPI ML service provides final scoring via REST. Use --use-example 68 to
+  scaffold the NATS event capture service: it passively subscribes to all streams on the
+  trio's NATS instance, captures events with timestamps, and supports replay-from-offset
+  and an inspection endpoint for debugging event history. The seam contracts are: Go
+  gateway → NATS (work.requested), Elixir ← NATS → Python ML (REST), NATS capture ←
+  all streams (passive). Seed the NATS stream with fixture events and use the capture
+  service to verify they appear in the correct order before replay. Smoke tests verify
+  the full trio chain end-to-end; integration tests verify the capture service records
+  events published by the trio and can replay them in sequence.
+
+---
+
+name: search-and-inference
+team: B
+source_examples: [39, 42, 83]
+description: "scikit-learn model serving + Qdrant semantic search + hybrid rank fusion"
+
+prompt: |
+  Build a three-engine search and inference platform covering classification, semantic
+  retrieval, and hybrid full-text+semantic search. Use --use-example 39 to scaffold the
+  sklearn inference service: it loads a fixture scikit-learn model at startup and returns
+  classification labels with confidence scores for feature vector inputs. Use --use-example
+  42 to scaffold the Qdrant semantic search service: it indexes a fixture corpus using
+  sentence-transformers and returns semantically similar documents for free-text queries.
+  Use --use-example 83 to scaffold the hybrid search service: it queries both Meilisearch
+  (full-text) and Qdrant (semantic), applies weighted rank fusion, and returns a unified
+  ranked list with scores from both engines. The seam contracts are: inference is
+  standalone (feature vector in, label out); semantic and hybrid search share a common
+  Qdrant collection indexed from the same corpus, while Meilisearch is indexed in parallel.
+  Smoke tests for each service verify independent operation; a combined smoke test verifies
+  that the same phrase query returns overlapping top results from both semantic and hybrid
+  search, and that inference scores correctly for feature vectors derived from corpus docs.
+
+---
+
+name: acquisition-and-timeseries
+team: B
+source_examples: [30, 3]
+description: "HTML scraper into PostgreSQL + TimescaleDB hypertable sensor ingest"
+
+prompt: |
+  Build a data acquisition and time-series observation pair serving complementary roles
+  in an observability platform. Use --use-example 30 to scaffold the scraper: it fetches
+  HTML pages, extracts structured records using a defined schema, normalizes and
+  deduplicates with Polars, persists to PostgreSQL, and archives raw HTML for audit.
+  Use --use-example 3 to scaffold the TimescaleDB ingest service: it writes time-series
+  records to a hypertable with batch-flush writes and exposes hourly and daily aggregate
+  query endpoints. These services are independent but complementary: the scraper supplies
+  domain records, and the time-series service captures operational metrics for all other
+  services in the platform. Seed both services with fixture data covering multiple time
+  ranges and scraping source patterns to verify aggregate accuracy at hourly and daily
+  boundaries. Smoke tests verify scraper extraction correctness and time-series aggregate
+  accuracy independently; running both populates PostgreSQL data that downstream dashboard
+  and analytics services can query.
+
+---
+
+name: operational-quality
+team: B
+source_examples: [67, 85, 77]
+description: "Redis caching/rate-limiting + prompt rubric evaluation + YAML config auditing"
+
+prompt: |
+  Build a three-component operational quality layer covering infrastructure efficiency,
+  prompt quality, and configuration compliance. Use --use-example 67 to scaffold the Redis
+  service: it wraps domain queries with a time-bounded cache and applies per-key rate
+  limiting, with explicit paths exercising cache-miss, cache-hit, and rate-limited (429)
+  responses. Use --use-example 85 to scaffold the prompt evaluator: it reads YAML rubric
+  definitions and scores model outputs against rubric criteria, producing comparison
+  reports across prompt variants without any service infrastructure. Use --use-example 77
+  to scaffold the config auditor: it reads YAML configuration files, evaluates them
+  against policy rules, and produces a structured findings report listing violations with
+  severity levels. These three components serve different operational concerns but share
+  a common pattern: each produces a structured report artifact suitable for CI assertion.
+  Smoke tests for each component verify their report output against fixture inputs; a
+  combined CI step runs all three and asserts zero violations in the config auditor output,
+  passing rubric scores in the prompt evaluator, and correct cache/rate-limit behavior
+  in the Redis service.
+
+================================================================================
+VII. BATCH STRUCTURE
+================================================================================
+
+Batch 1 — Create examples/derived/ YAML files
+  Files: examples/derived/README.md
+         examples/derived/example-prompts.yaml
+         examples/derived/derived-examples.yaml
+  Content: README + all 100 prompts + all 8 derived prompts per Sections II-VI
+  Commit: [PROMPT_76] Batch 1: add examples/derived with 100 example prompts and 8 derived examples
+
+Batch 2 — Register derived files in catalog and registry
+  Files: examples/catalog.json
+         verification/example_registry.yaml
+  Content: Add 3 new entries (README.md, example-prompts.yaml, derived-examples.yaml)
+  Commit: [PROMPT_76] Batch 2: register examples/derived files in catalog and example_registry
+
+================================================================================
+VIII. VERIFICATION
+================================================================================
+
+After all batches, confirm:
+
+  python3.14 scripts/validate_context.py
+  python3.14 scripts/validate_doc_governance.py
+
+Both must pass cleanly. Fix any failures before committing.
+
+Also manually verify:
+  - examples/derived/example-prompts.yaml has exactly 100 entries (wc -l as a proxy)
+  - examples/derived/derived-examples.yaml has exactly 8 entries
+  - Every entry in example-prompts.yaml has a non-empty prompt field
+  - Every derived entry has source_examples matching real numbers from 1-100

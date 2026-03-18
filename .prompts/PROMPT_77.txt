@@ -1,0 +1,245 @@
+You are working inside the agent-context-base repository.
+
+This prompt builds the coverage verification layer for the derived example prompts created
+in PROMPT_76. It adds a new verification test module that validates the 100 example prompts
+and 8 derived examples in examples/derived/, checks that every new_repo_args entry maps to
+a valid archetype and stack, and produces a coverage report showing which archetypes and
+stacks are exercised. Output changes as commit-ready batches labeled [PROMPT_77].
+
+================================================================================
+CONSTRAINTS
+================================================================================
+
+- Do NOT modify examples/derived/ files — read them only.
+- Do NOT modify scripts/new_repo.py or manifests/.
+- Verification uses python3.14 -m unittest, not pytest.
+- validate_context.py and validate_doc_governance.py must both pass after all changes.
+- Run: python3.14 scripts/validate_context.py
+       python3.14 scripts/validate_doc_governance.py
+  after each batch and fix any failures before continuing.
+
+================================================================================
+REQUIRED READS
+================================================================================
+
+Read these files before beginning:
+
+  examples/derived/example-prompts.yaml          (100 example entries)
+  examples/derived/derived-examples.yaml         (8 derived entries)
+  scripts/new_repo.py                            (ARCHETYPES list, STACKS dict keys)
+  scripts/run_verification.py                    (HEAVY_MODULES list)
+  verification/helpers.py                        (existing helper patterns)
+  examples/catalog.json                          (catalog entry format)
+  verification/example_registry.yaml             (last 10 entries — registry format)
+
+Also read one existing test module for structural patterns (pick either):
+  verification/examples/data/test_storage_examples.py
+  verification/examples/canonical_api/test_canonical_api_examples.py
+
+================================================================================
+I. WHAT TO BUILD
+================================================================================
+
+1. Create verification/examples/derived/__init__.py (empty).
+
+2. Create verification/examples/derived/test_derived_coverage.py implementing the
+   tests described in Section II.
+
+3. Add the new module to HEAVY_MODULES in scripts/run_verification.py.
+
+4. Add catalog.json and example_registry.yaml entries for the two new files created
+   in this batch.
+
+================================================================================
+II. TEST MODULE STRUCTURE AND TESTS
+================================================================================
+
+File: verification/examples/derived/test_derived_coverage.py
+
+The module must follow the existing verification test style:
+- import unittest
+- One TestCase subclass: TestDerivedCoverage
+- All test methods begin with test_
+
+The module needs two helper functions at module level (not inside TestCase):
+
+  def load_example_prompts() -> list[dict]:
+      """Load and return the examples list from examples/derived/example-prompts.yaml."""
+      repo_root = Path(__file__).resolve().parents[3]
+      path = repo_root / "examples" / "derived" / "example-prompts.yaml"
+      with path.open() as f:
+          return yaml.safe_load(f)["examples"]
+
+  def load_derived_examples() -> list[dict]:
+      """Load and return the derived list from examples/derived/derived-examples.yaml."""
+      repo_root = Path(__file__).resolve().parents[3]
+      path = repo_root / "examples" / "derived" / "derived-examples.yaml"
+      with path.open() as f:
+          return yaml.safe_load(f)["derived"]
+
+For ARCHETYPES and STACKS, import them from new_repo.py using importlib or sys.path
+manipulation (the same pattern used in other verification modules that import from scripts/).
+If new_repo.py uses module-level constants ARCHETYPES (list) and STACKS (dict), extract
+their keys.
+
+Implement these tests in order:
+
+--- test_example_prompts_count ---
+Load example-prompts.yaml. Assert len(examples) == 100.
+
+--- test_example_prompts_sequential_numbering ---
+Assert the number field increments from 1 to 100 without gaps or duplicates. Use a sorted
+list of numbers and compare to list(range(1, 101)).
+
+--- test_example_prompts_required_fields ---
+For each entry, assert all required fields are present: number, codename, category,
+category_name, prompt, new_repo_args. Also assert new_repo_args contains: archetype,
+primary_stack. Collect all failures and report them together (use subTest or accumulate
+errors into a list and assertEqual(errors, []) at the end).
+
+--- test_example_prompts_valid_archetypes ---
+Load ARCHETYPES from new_repo.py. For each entry, assert entry["new_repo_args"]["archetype"]
+is in ARCHETYPES. Accumulate failures and report together.
+
+--- test_example_prompts_valid_stacks ---
+Load STACKS from new_repo.py. For each entry, assert entry["new_repo_args"]["primary_stack"]
+is in STACKS. Accumulate failures and report together.
+
+--- test_example_prompts_nonempty_prompt_text ---
+For each entry, assert entry["prompt"] is a non-empty string after stripping whitespace.
+Accumulate failures and report together.
+
+--- test_derived_examples_count ---
+Load derived-examples.yaml. Assert len(derived) == 8.
+
+--- test_derived_examples_team_split ---
+Assert exactly 4 entries have team == "A" and exactly 4 have team == "B".
+
+--- test_derived_examples_required_fields ---
+For each derived entry, assert these fields are present: name, team, team_name, description,
+source_examples, prompt, new_repo_args. Assert source_examples is a non-empty list.
+Assert new_repo_args is a non-empty list. Accumulate failures and report together.
+
+--- test_derived_examples_source_references_valid ---
+Load example-prompts.yaml to get the set of valid numbers. For each derived entry, assert
+every number in source_examples is in that valid set. Accumulate failures and report together.
+
+--- test_derived_examples_valid_archetypes ---
+For each derived entry, for each item in new_repo_args, assert archetype is in ARCHETYPES.
+Accumulate failures and report together.
+
+--- test_derived_examples_valid_stacks ---
+For each derived entry, for each item in new_repo_args, assert primary_stack is in STACKS.
+Accumulate failures and report together.
+
+--- test_archetype_coverage ---
+Compute the set of archetypes covered by the 100 examples. Load ARCHETYPES from new_repo.py.
+Assert the covered set equals set(ARCHETYPES). If any archetypes are missing, fail with a
+clear message listing the uncovered archetypes by name. This test enforces that the 100
+examples collectively exercise every archetype in the generator.
+
+--- test_stack_coverage ---
+Compute the set of stacks covered by the 100 examples. Load STACKS from new_repo.py.
+Assert the covered set equals set(STACKS.keys()). If any stacks are missing, fail with a
+clear message listing uncovered stack keys. This test enforces that the 100 examples
+collectively exercise every stack in the generator.
+
+  NOTE: After PROMPT_75 is complete, new_repo.py will contain all stacks including the
+  three new ones (crystal-kemal-avram, ruby-hanami, ocaml-dream-caqti-tyxml) and the
+  special "prompt-first-repo" stack for Category I. If test_stack_coverage fails because
+  a stack exists in STACKS but has zero examples, add a missing example to
+  example-prompts.yaml — do NOT skip or weaken the test. Document any such addition
+  in the commit message.
+
+--- test_dokku_flag_coverage ---
+Assert at least 8 examples have dokku=True in new_repo_args. This verifies the Dokku
+deployment archetype is meaningfully represented.
+
+--- test_integration_tests_flag_coverage ---
+Assert at least 5 examples have integration_tests=True in new_repo_args. This verifies
+the integration-test flag is meaningfully represented (Category B covers 6).
+
+================================================================================
+III. IMPORTING FROM new_repo.py
+================================================================================
+
+new_repo.py is in scripts/, not in a package. Use this pattern to import its module-level
+constants:
+
+  import importlib.util, sys
+  from pathlib import Path
+
+  def _load_new_repo():
+      repo_root = Path(__file__).resolve().parents[3]
+      spec = importlib.util.spec_from_file_location(
+          "new_repo", repo_root / "scripts" / "new_repo.py"
+      )
+      mod = importlib.util.module_from_spec(spec)
+      spec.loader.exec_module(mod)
+      return mod
+
+  # Call once at module level, cache result
+  _new_repo = _load_new_repo()
+  ARCHETYPES = _new_repo.ARCHETYPES   # list of str
+  STACKS = _new_repo.STACKS           # dict[str, StackProfile]
+
+If new_repo.py raises an ImportError when loaded this way (e.g. due to a missing
+dependency), catch it in _load_new_repo and re-raise with a clear message. Do not
+silently swallow import errors.
+
+================================================================================
+IV. RUNNING THE TEST MODULE
+================================================================================
+
+Run the new test module with:
+
+  python3.14 -m unittest verification.examples.derived.test_derived_coverage -v
+
+All tests must pass. If test_archetype_coverage or test_stack_coverage fail because
+a stack or archetype is not covered by any of the 100 examples, investigate whether:
+  a) A new example should be added to example-prompts.yaml (preferred), or
+  b) The stack or archetype was added to new_repo.py after PROMPT_75 and needs a
+     corresponding example added.
+Do NOT comment out or skip these coverage tests.
+
+================================================================================
+V. BATCH STRUCTURE
+================================================================================
+
+Batch 1 — Create verification test module
+  Files: verification/examples/derived/__init__.py
+         verification/examples/derived/test_derived_coverage.py
+  Content: empty __init__, full test module per Section II
+  Run: python3.14 -m unittest verification.examples.derived.test_derived_coverage -v
+  Fix any failures before continuing.
+  Commit: [PROMPT_77] Batch 1: add test_derived_coverage verification module
+
+Batch 2 — Add to run_verification.py and register in catalog and registry
+  Files: scripts/run_verification.py   (HEAVY_MODULES addition)
+         examples/catalog.json         (two new entries)
+         verification/example_registry.yaml  (two new entries)
+  Content:
+    - HEAVY_MODULES: append "verification.examples.derived.test_derived_coverage"
+    - catalog.json: add entries for verification/examples/derived/__init__.py
+      and verification/examples/derived/test_derived_coverage.py
+    - example_registry.yaml: add entries for both files
+      (verification_level: test, docker_supported: false)
+  Run: python3.14 scripts/validate_context.py
+       python3.14 scripts/validate_doc_governance.py
+  Commit: [PROMPT_77] Batch 2: register derived coverage test in run_verification and catalog
+
+================================================================================
+VI. VERIFICATION
+================================================================================
+
+After all batches:
+
+  python3.14 -m unittest verification.examples.derived.test_derived_coverage -v
+  python3.14 scripts/validate_context.py
+  python3.14 scripts/validate_doc_governance.py
+
+All must pass cleanly. The test module output should show 15 passing tests.
+
+Spot-check that coverage tests are genuinely asserting coverage (not trivially passing):
+- Print the set of archetypes covered and confirm it matches ARCHETYPES
+- Print the set of stacks covered and confirm it matches STACKS.keys()
