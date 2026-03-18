@@ -418,6 +418,642 @@ STACKS: dict[str, StackProfile] = {
     ),
 }
 
+
+@dataclass(frozen=True)
+class ExampleProject:
+    codename: str
+    title: str
+    archetype: str
+    primary_stack: str
+    dokku: bool = False
+    smoke_tests: bool = False
+    integration_tests: bool = False
+    seed_data: bool = False
+
+
+EXAMPLE_CATEGORIES: tuple[tuple[str, range], ...] = (
+    ("Category A — Single-Backend API Services", range(1, 22)),
+    ("Category B — Backend-Driven UI", range(22, 28)),
+    ("Category C — Data Acquisition and Pipelines", range(28, 39)),
+    ("Category D — ML and Data Science", range(39, 47)),
+    ("Category E — Multi-Backend Coordination", range(47, 63)),
+    ("Category F — Storage Experiments", range(63, 73)),
+    ("Category G — CLI Tools", range(73, 79)),
+    ("Category H — Local RAG and Semantic Search", range(79, 85)),
+    ("Category I — Prompt-First Repos", range(85, 91)),
+    ("Category J — Dokku-Deployable Services", range(91, 99)),
+    ("Additional", range(99, 101)),
+)
+
+EXAMPLE_PROJECTS: dict[int, ExampleProject] = {
+    # ── Category A — Single-Backend API Services ──────────────────────────
+    1: ExampleProject(
+        "partner-data-enrichment",
+        "FastAPI + Polars + PostgreSQL, JSON normalization, cursor pagination",
+        "backend-api-service", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True, seed_data=True,
+    ),
+    2: ExampleProject(
+        "analytics-parquet-api",
+        "FastAPI analytics over DuckDB + Parquet, Polars transforms, trend and summary endpoints",
+        "backend-api-service", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True, seed_data=True,
+    ),
+    3: ExampleProject(
+        "timeseries-ingest",
+        "FastAPI + TimescaleDB hypertable ingest, windowed aggregate queries",
+        "backend-api-service", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True, seed_data=True,
+    ),
+    4: ExampleProject(
+        "webhook-receiver",
+        "FastAPI webhook receiver, Redis rate-limit, MongoDB document store, Polars normalize",
+        "backend-api-service", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True, seed_data=True,
+    ),
+    5: ExampleProject(
+        "scheduled-enrichment",
+        "FastAPI scheduled enrichment, Polars transforms, PostgreSQL, last-run inspection endpoint",
+        "backend-api-service", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True, seed_data=True,
+    ),
+    6: ExampleProject(
+        "hono-internal-api",
+        "Hono/Bun internal API, SQLite-backed domain query, health check, narrow and fast",
+        "backend-api-service", "typescript-hono-bun",
+        smoke_tests=True, seed_data=True,
+    ),
+    7: ExampleProject(
+        "hono-bff-aggregator",
+        "Hono/Bun BFF aggregator, upstream REST fan-in, graceful failure, Dokku-ready",
+        "dokku-deployable-service", "typescript-hono-bun",
+        dokku=True, smoke_tests=True, seed_data=True,
+    ),
+    8: ExampleProject(
+        "go-parquet-reports",
+        "Go/Echo Parquet report service, filter + sort + paginate JSON results",
+        "backend-api-service", "go-echo",
+        smoke_tests=True, seed_data=True,
+    ),
+    9: ExampleProject(
+        "go-file-upload",
+        "Go/Echo file upload service, validation + normalization + PostgreSQL write path",
+        "backend-api-service", "go-echo",
+        smoke_tests=True, seed_data=True,
+    ),
+    10: ExampleProject(
+        "rust-event-ingest",
+        "Rust/Axum high-throughput event ingest, batch-flush to PostgreSQL append table",
+        "backend-api-service", "rust-axum-modern",
+        smoke_tests=True, seed_data=True,
+    ),
+    11: ExampleProject(
+        "rust-batch-classifier",
+        "Rust/Axum batch classification service, feature vector labeling, confidence scores",
+        "backend-api-service", "rust-axum-modern",
+        smoke_tests=True, seed_data=True,
+    ),
+    12: ExampleProject(
+        "phoenix-scheduling",
+        "Elixir/Phoenix scheduling service, availability windows, overlap query, PostgreSQL",
+        "backend-api-service", "elixir-phoenix",
+        smoke_tests=True, seed_data=True,
+    ),
+    13: ExampleProject(
+        "scala-financial-reports",
+        "Scala/Tapir/ZIO financial report aggregation, period summary and comparison endpoints",
+        "backend-api-service", "scala-tapir-http4s-zio",
+        smoke_tests=True, seed_data=True,
+    ),
+    14: ExampleProject(
+        "kotlin-invoice-tracker",
+        "Kotlin/http4k/Exposed supplier invoice tracker, CRUD + filter-by-status, PostgreSQL",
+        "backend-api-service", "kotlin-http4k-exposed",
+        smoke_tests=True, seed_data=True,
+    ),
+    15: ExampleProject(
+        "clojure-preferences",
+        "Clojure/Kit user preference service, next.jdbc + PostgreSQL, one read + one write",
+        "backend-api-service", "clojure-kit-nextjdbc-hiccup",
+        smoke_tests=True, seed_data=True,
+    ),
+    16: ExampleProject(
+        "ruby-content-store",
+        "Ruby/Hanami content record store, paginated list, basic filtering, PostgreSQL",
+        "backend-api-service", "ruby-hanami",
+        smoke_tests=True, seed_data=True,
+    ),
+    17: ExampleProject(
+        "nim-json-filter",
+        "Nim/Jester fixture-backed JSON filter API, query param filtering, no live storage",
+        "backend-api-service", "nim-jester-happyx",
+        smoke_tests=True, seed_data=True,
+    ),
+    18: ExampleProject(
+        "dart-audit-log",
+        "Dart/Dartfrog audit log service, PostgreSQL write + paginated read, boot check",
+        "backend-api-service", "dart-dartfrog",
+        smoke_tests=True, seed_data=True,
+    ),
+    19: ExampleProject(
+        "ocaml-metadata-store",
+        "OCaml/Dream + Caqti/PostgreSQL metadata store, record creation and lookup, Tyxml fragments",
+        "backend-api-service", "ocaml-dream-caqti-tyxml",
+        smoke_tests=True, seed_data=True,
+    ),
+    20: ExampleProject(
+        "crystal-cache-proxy",
+        "Crystal/Kemal cache proxy, Avram PostgreSQL, cache-stats endpoint, smoke-tested",
+        "backend-api-service", "crystal-kemal-avram",
+        smoke_tests=True, seed_data=True,
+    ),
+    21: ExampleProject(
+        "fastapi-dokku-analytics",
+        "FastAPI analytics + Dokku, Polars CSV ingest, PostgreSQL, ingest + summary endpoints",
+        "dokku-deployable-service", "python-fastapi-uv-ruff-orjson-polars",
+        dokku=True, smoke_tests=True, seed_data=True,
+    ),
+    # ── Category B — Backend-Driven UI ───────────────────────────────────
+    22: ExampleProject(
+        "faceted-dashboard",
+        "FastAPI + HTMX faceted dashboard, Plotly chart, Tailwind, Playwright fragment tests",
+        "backend-api-service", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True, integration_tests=True, seed_data=True,
+    ),
+    23: ExampleProject(
+        "search-sort-paginate",
+        "FastAPI + HTMX search/sort/paginate UI, keyword search, three-field sort, Playwright CUJ",
+        "backend-api-service", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True, integration_tests=True, seed_data=True,
+    ),
+    24: ExampleProject(
+        "split-filter-panel",
+        "FastAPI + HTMX split filter panel, server-side state, include/exclude facets, Playwright",
+        "backend-api-service", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True, integration_tests=True, seed_data=True,
+    ),
+    25: ExampleProject(
+        "shared-query-chart-table",
+        "FastAPI shared query for Plotly chart + table, HTMX fragment swap, Playwright verified",
+        "backend-api-service", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True, integration_tests=True, seed_data=True,
+    ),
+    26: ExampleProject(
+        "report-browser-cuj",
+        "FastAPI report browser, HTMX + Tailwind, five CUJ Playwright tests, filter/sort/export",
+        "backend-api-service", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True, integration_tests=True, seed_data=True,
+    ),
+    27: ExampleProject(
+        "compound-facet-dashboard",
+        "FastAPI compound facet dashboard, AND-logic multi-dimension filter, Playwright count tests",
+        "backend-api-service", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True, integration_tests=True, seed_data=True,
+    ),
+    # ── Category C — Data Acquisition and Pipelines ───────────────────────
+    28: ExampleProject(
+        "python-api-acquisition",
+        "Python data acquisition, paginated REST API, raw JSON archive, PostgreSQL sync state",
+        "data-acquisition-service", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True, seed_data=True,
+    ),
+    29: ExampleProject(
+        "go-api-ingestion",
+        "Go API ingestion, external JSON API, archive + normalize + PostgreSQL, retry with backoff",
+        "data-acquisition-service", "go-echo",
+        smoke_tests=True, seed_data=True,
+    ),
+    30: ExampleProject(
+        "python-scraper",
+        "Python HTML scraper, Polars normalize, raw HTML archive, PostgreSQL, fixture parser tests",
+        "data-acquisition-service", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True, seed_data=True,
+    ),
+    31: ExampleProject(
+        "bun-scraper",
+        "TypeScript/Bun HTML scraper, Drizzle PostgreSQL write, fixture-based parser tests",
+        "data-acquisition-service", "typescript-hono-bun",
+        smoke_tests=True, seed_data=True,
+    ),
+    32: ExampleProject(
+        "csv-etl-pipeline",
+        "Python CSV ETL pipeline, Polars transforms, Parquet output, fixture-based verification",
+        "data-pipeline", "duckdb-trino-polars",
+        smoke_tests=True, seed_data=True,
+    ),
+    33: ExampleProject(
+        "json-etl-pipeline",
+        "Python JSON ETL pipeline, Polars enrich + validate, PostgreSQL bulk insert, fixture tests",
+        "data-pipeline", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True, seed_data=True,
+    ),
+    34: ExampleProject(
+        "duckdb-parquet-analytics",
+        "DuckDB + Parquet local analytics pipeline, CSV ingest, SQL queries, no cloud deps",
+        "data-pipeline", "duckdb-trino-polars",
+        smoke_tests=True, seed_data=True,
+    ),
+    35: ExampleProject(
+        "multi-source-sync",
+        "Python multi-source sync platform, NATS JetStream events, two sources, coordinator",
+        "multi-source-sync-platform", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True, seed_data=True,
+    ),
+    36: ExampleProject(
+        "classification-enrichment",
+        "Python classification enrichment, PostgreSQL input, classifier tag + confidence, provenance",
+        "data-acquisition-service", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True, seed_data=True,
+    ),
+    37: ExampleProject(
+        "recurring-sync",
+        "Python recurring sync service, configurable schedule, backoff + jitter, archive + metadata",
+        "data-acquisition-service", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True, seed_data=True,
+    ),
+    38: ExampleProject(
+        "elixir-data-acquisition",
+        "Elixir data acquisition, GenServer polling, raw JSON archive, Ecto normalize, PostgreSQL",
+        "data-acquisition-service", "elixir-phoenix",
+        smoke_tests=True, seed_data=True,
+    ),
+    # ── Category D — ML and Data Science ─────────────────────────────────
+    39: ExampleProject(
+        "sklearn-inference",
+        "FastAPI scikit-learn inference service, persisted model, predict endpoint, fixture smoke tests",
+        "backend-api-service", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True, seed_data=True,
+    ),
+    40: ExampleProject(
+        "recommendation-engine",
+        "FastAPI recommendation endpoint, Polars + PostgreSQL pre-computed table, ranked list",
+        "backend-api-service", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True, seed_data=True,
+    ),
+    41: ExampleProject(
+        "arima-forecasting",
+        "FastAPI ARIMA forecasting service, statsmodels, multi-step forecast, confidence intervals",
+        "backend-api-service", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True, seed_data=True,
+    ),
+    42: ExampleProject(
+        "semantic-search-qdrant",
+        "FastAPI semantic search, sentence-transformers + Qdrant, fixture corpus smoke test",
+        "local-rag-system", "qdrant",
+        smoke_tests=True, seed_data=True,
+    ),
+    43: ExampleProject(
+        "xgboost-serving",
+        "FastAPI XGBoost serving, persisted model, feature importance metadata, fixture smoke test",
+        "backend-api-service", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True, seed_data=True,
+    ),
+    44: ExampleProject(
+        "embedding-pipeline",
+        "Python embedding pipeline, sentence-transformers + Qdrant upsert, FastAPI query endpoint",
+        "local-rag-system", "qdrant",
+        smoke_tests=True, seed_data=True,
+    ),
+    45: ExampleProject(
+        "duckdb-polars-sklearn",
+        "DuckDB + Polars + scikit-learn pipeline, Parquet feature sets, classification report",
+        "data-pipeline", "duckdb-trino-polars",
+        smoke_tests=True, seed_data=True,
+    ),
+    46: ExampleProject(
+        "lightgbm-tabular",
+        "LightGBM tabular pipeline, Polars feature engineering, Parquet training data, eval metrics",
+        "data-pipeline", "duckdb-trino-polars",
+        smoke_tests=True, seed_data=True,
+    ),
+    # ── Category E — Multi-Backend Coordination ───────────────────────────
+    47: ExampleProject(
+        "go-python-ml-gateway",
+        "Go/Echo gateway + FastAPI Python ML scoring, REST seam, docker-compose end-to-end",
+        "multi-backend-service", "go-echo",
+        smoke_tests=True, seed_data=True,
+    ),
+    48: ExampleProject(
+        "kotlin-rust-grpc",
+        "Kotlin/http4k caller + Rust/Tonic gRPC server, .proto seam, docker-compose verified",
+        "multi-backend-service", "kotlin-http4k-exposed",
+        smoke_tests=True,
+    ),
+    49: ExampleProject(
+        "elixir-go-nats",
+        "Elixir NATS publisher + Go JetStream consumer, fan-out, subject structure, ACK demo",
+        "multi-backend-service", "elixir-phoenix",
+        smoke_tests=True,
+    ),
+    50: ExampleProject(
+        "clojure-go-kafka",
+        "Clojure Kafka producer + Go Kafka consumer, correlation ID enrichment, docker-compose",
+        "multi-backend-service", "clojure-kit-nextjdbc-hiccup",
+        smoke_tests=True,
+    ),
+    51: ExampleProject(
+        "node-go-graphql",
+        "Node/Hono GraphQL BFF + Go/Echo domain REST API, resolver + HTTP client mapping",
+        "multi-backend-service", "typescript-hono-bun",
+        smoke_tests=True,
+    ),
+    52: ExampleProject(
+        "scala-rust-grpc-streams",
+        "Scala/Akka Streams pipeline + Rust/Tonic gRPC compute kernel, docker-compose",
+        "multi-backend-service", "scala-tapir-http4s-zio",
+        smoke_tests=True,
+    ),
+    53: ExampleProject(
+        "node-elixir-nats-bidir",
+        "Node NATS publisher + Elixir NATS subscriber, bidirectional event seam, docker-compose",
+        "multi-backend-service", "typescript-hono-bun",
+        smoke_tests=True,
+    ),
+    54: ExampleProject(
+        "rust-python-grpc-infer",
+        "Rust/Tonic gRPC inference server + Python orchestrator, batch features, docker-compose",
+        "multi-backend-service", "rust-axum-modern",
+        smoke_tests=True,
+    ),
+    55: ExampleProject(
+        "elixir-rust-nif",
+        "Elixir + Rust NIF via Rustler, in-process compute function, no docker-compose",
+        "multi-backend-service", "elixir-phoenix",
+        smoke_tests=True,
+    ),
+    56: ExampleProject(
+        "elixir-clojure-rabbitmq",
+        "Elixir RabbitMQ producer + Clojure Broadway consumer, work queue, docker-compose",
+        "multi-backend-service", "elixir-phoenix",
+        smoke_tests=True,
+    ),
+    57: ExampleProject(
+        "trio-go-elixir-python",
+        "Go gateway + Elixir NATS coordinator + Python ML REST service, three-service docker-compose",
+        "multi-backend-service", "go-echo",
+        smoke_tests=True,
+    ),
+    58: ExampleProject(
+        "trio-go-rust-python-dual",
+        "Go gateway + Rust gRPC kernel + Python REST scoring, two seam types, docker-compose",
+        "multi-backend-service", "go-echo",
+        smoke_tests=True,
+    ),
+    59: ExampleProject(
+        "trio-elixir-go-rust-nats",
+        "Elixir coordinator + Go NATS worker + Rust gRPC kernel, supervision + fault tolerance",
+        "multi-backend-service", "elixir-phoenix",
+        smoke_tests=True,
+    ),
+    60: ExampleProject(
+        "trio-node-go-python-gql",
+        "Node GraphQL BFF + Go domain REST + Python ML REST, GraphQL schema stitching",
+        "multi-backend-service", "typescript-hono-bun",
+        smoke_tests=True,
+    ),
+    61: ExampleProject(
+        "trio-rust-nats-go-iot",
+        "Rust IoT ingestor + NATS JetStream + Go windowed aggregator REST endpoint",
+        "multi-backend-service", "rust-axum-modern",
+        smoke_tests=True,
+    ),
+    62: ExampleProject(
+        "scala-go-python-federated",
+        "Scala/gRPC + Go analytics worker + Python data layer REST, federated analytics",
+        "multi-backend-service", "scala-tapir-http4s-zio",
+        smoke_tests=True,
+    ),
+    # ── Category F — Storage Experiments ─────────────────────────────────
+    63: ExampleProject(
+        "duckdb-parquet-minio-lake",
+        "DuckDB + Parquet + MinIO local data lake, S3-compatible query, docker-compose",
+        "data-pipeline", "duckdb-trino-polars",
+        smoke_tests=True, seed_data=True,
+    ),
+    64: ExampleProject(
+        "rag-engineering-runbooks",
+        "Local RAG for engineering runbooks, Qdrant + sentence-transformers, fixture corpus",
+        "local-rag-system", "qdrant",
+        smoke_tests=True, seed_data=True,
+    ),
+    65: ExampleProject(
+        "meilisearch-fulltext",
+        "FastAPI + Meilisearch full-text search, attribute ranking, fixture data, smoke tests",
+        "multi-storage-experiment", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True, seed_data=True,
+    ),
+    66: ExampleProject(
+        "timescaledb-sensors",
+        "FastAPI + TimescaleDB sensor ingest, hypertable, hourly + daily aggregate endpoints",
+        "backend-api-service", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True, seed_data=True,
+    ),
+    67: ExampleProject(
+        "redis-cache-ratelimit",
+        "FastAPI + Redis caching layer + rate limiter, cache hit/miss and rejection verified",
+        "multi-storage-experiment", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True, seed_data=True,
+    ),
+    68: ExampleProject(
+        "nats-event-capture-replay",
+        "NATS JetStream event capture + replay experiment, stream config, publish/subscribe",
+        "multi-storage-experiment", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True, seed_data=True,
+    ),
+    69: ExampleProject(
+        "trino-federated-query",
+        "Trino federated query, PostgreSQL + Parquet catalogs, FastAPI cross-catalog endpoint",
+        "data-pipeline", "duckdb-trino-polars",
+        smoke_tests=True, seed_data=True,
+    ),
+    70: ExampleProject(
+        "multi-storage-split",
+        "Redis hot cache + MongoDB document store + Parquet batch export, storage split",
+        "multi-storage-experiment", "redis-keydb-mongo",
+        smoke_tests=True, seed_data=True,
+    ),
+    71: ExampleProject(
+        "elasticsearch-search",
+        "FastAPI + Elasticsearch search, relevance scoring + field filtering, fixture corpus",
+        "multi-storage-experiment", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True, seed_data=True,
+    ),
+    72: ExampleProject(
+        "es-vs-meilisearch",
+        "Elasticsearch vs Meilisearch side-by-side comparison, same corpus, timing metadata",
+        "multi-storage-experiment", "redis-keydb-mongo",
+        smoke_tests=True, seed_data=True,
+    ),
+    # ── Category G — CLI Tools ────────────────────────────────────────────
+    73: ExampleProject(
+        "data-reconciliation-cli",
+        "Python CLI data reconciliation, structured diff report, two-file key comparison",
+        "cli-tool", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True, seed_data=True,
+    ),
+    74: ExampleProject(
+        "prompt-eval-cli",
+        "Python CLI prompt evaluator, YAML rubric, fixture dataset, structured comparison report",
+        "cli-tool", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True, seed_data=True,
+    ),
+    75: ExampleProject(
+        "rust-batch-processor",
+        "Rust CLI batch processor, directory input, validation + normalization, snapshot tests",
+        "cli-tool", "rust-axum-modern",
+        smoke_tests=True, seed_data=True,
+    ),
+    76: ExampleProject(
+        "rust-snapshot-cli",
+        "Rust CLI snapshot test harness, structured JSON output, fixture-driven exact verification",
+        "cli-tool", "rust-axum-modern",
+        smoke_tests=True, seed_data=True,
+    ),
+    77: ExampleProject(
+        "go-config-auditor",
+        "Go CLI config auditor, YAML policy rules, directory config scan, findings report",
+        "cli-tool", "go-echo",
+        smoke_tests=True, seed_data=True,
+    ),
+    78: ExampleProject(
+        "python-pipeline-cli",
+        "Python CLI data acquisition wrapper, sync/inspect/replay subcommands, sync state tracking",
+        "cli-tool", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True, seed_data=True,
+    ),
+    # ── Category H — Local RAG and Semantic Search ────────────────────────
+    79: ExampleProject(
+        "rag-legal-docs",
+        "Local RAG for legal documents, Qdrant + sentence-transformers, metadata excerpts",
+        "local-rag-system", "qdrant",
+        smoke_tests=True, seed_data=True,
+    ),
+    80: ExampleProject(
+        "rag-api-reference",
+        "Local RAG for API reference docs, Qdrant + metadata (endpoint/method/desc), fixture corpus",
+        "local-rag-system", "qdrant",
+        smoke_tests=True, seed_data=True,
+    ),
+    81: ExampleProject(
+        "markdown-notes-indexer",
+        "Markdown notes indexer, section chunking, sentence-transformers + Qdrant, source metadata",
+        "local-rag-system", "qdrant",
+        smoke_tests=True, seed_data=True,
+    ),
+    82: ExampleProject(
+        "runbook-search",
+        "Policy and runbook search, Qdrant intent query, most relevant step + context",
+        "local-rag-system", "qdrant",
+        smoke_tests=True, seed_data=True,
+    ),
+    83: ExampleProject(
+        "hybrid-search-prototype",
+        "Hybrid search: Meilisearch full-text + Qdrant semantic, weighted rank fusion, unified list",
+        "local-rag-system", "qdrant",
+        smoke_tests=True, seed_data=True,
+    ),
+    84: ExampleProject(
+        "rag-plus-structured",
+        "RAG-supplemented structured query, Qdrant context chunks + structured result, fixture corpus",
+        "local-rag-system", "qdrant",
+        smoke_tests=True, seed_data=True,
+    ),
+    # ── Category I — Prompt-First Repos ──────────────────────────────────
+    85: ExampleProject(
+        "prompt-rubric-evaluator",
+        "Prompt-first repo: YAML rubric evaluator, scored evaluation reports, monotonic prompt files",
+        "prompt-first-repo", "prompt-first-repo",
+    ),
+    86: ExampleProject(
+        "output-shape-compliance",
+        "Prompt-first repo: output shape compliance, JSON schema assertions, fixture-based harness",
+        "prompt-first-repo", "prompt-first-repo",
+    ),
+    87: ExampleProject(
+        "prompt-assertion-library",
+        "Prompt-first system prompt library, output assertion set, single harness run",
+        "prompt-first-repo", "prompt-first-repo",
+    ),
+    88: ExampleProject(
+        "model-config-comparison",
+        "Prompt-first model config comparison, multi-config output comparison, structured report",
+        "prompt-first-repo", "prompt-first-repo",
+    ),
+    89: ExampleProject(
+        "task-prompt-sequences",
+        "Prompt-first task prompt sequences, monotonic numbering, output shapes + continuations",
+        "prompt-first-repo", "prompt-first-repo",
+    ),
+    90: ExampleProject(
+        "living-doc-prompts",
+        "Prompt-first living doc repo, documentation fragment generation + structure verification",
+        "prompt-first-repo", "prompt-first-repo",
+    ),
+    # ── Category J — Dokku-Deployable Services ────────────────────────────
+    91: ExampleProject(
+        "dokku-fastapi-analytics",
+        "FastAPI analytics + Dokku, PostgreSQL aggregate endpoint, Procfile + app.json",
+        "dokku-deployable-service", "python-fastapi-uv-ruff-orjson-polars",
+        dokku=True, smoke_tests=True, seed_data=True,
+    ),
+    92: ExampleProject(
+        "dokku-fastapi-redis-cache",
+        "FastAPI + Redis caching + Dokku, cache-hit/miss paths, Dokku Redis plugin notes",
+        "dokku-deployable-service", "python-fastapi-uv-ruff-orjson-polars",
+        dokku=True, smoke_tests=True, seed_data=True,
+    ),
+    93: ExampleProject(
+        "dokku-hono-bun",
+        "Hono/Bun + Dokku, health check + domain query, Procfile, env var discipline",
+        "dokku-deployable-service", "typescript-hono-bun",
+        dokku=True, smoke_tests=True, seed_data=True,
+    ),
+    94: ExampleProject(
+        "dokku-go-echo",
+        "Go/Echo + PostgreSQL + Dokku, health + reporting route, Procfile + go.mod",
+        "dokku-deployable-service", "go-echo",
+        dokku=True, smoke_tests=True, seed_data=True,
+    ),
+    95: ExampleProject(
+        "dokku-phoenix",
+        "Elixir/Phoenix + Dokku, one API route + server-rendered view, Ecto + Procfile",
+        "dokku-deployable-service", "elixir-phoenix",
+        dokku=True, smoke_tests=True, seed_data=True,
+    ),
+    96: ExampleProject(
+        "dokku-multi-service",
+        "FastAPI + Hono/Bun multi-service Dokku deploy, shared PostgreSQL, service isolation",
+        "dokku-deployable-service", "python-fastapi-uv-ruff-orjson-polars",
+        dokku=True, smoke_tests=True, seed_data=True,
+    ),
+    97: ExampleProject(
+        "dokku-rust-axum",
+        "Rust/Axum + Dokku, health + domain route, Procfile + Docker build stage",
+        "dokku-deployable-service", "rust-axum-modern",
+        dokku=True, smoke_tests=True, seed_data=True,
+    ),
+    98: ExampleProject(
+        "dokku-kotlin-http4k",
+        "Kotlin/http4k + PostgreSQL + Dokku, reporting route, Procfile + JVM config",
+        "dokku-deployable-service", "kotlin-http4k-exposed",
+        dokku=True, smoke_tests=True, seed_data=True,
+    ),
+    # ── Additional ────────────────────────────────────────────────────────
+    99: ExampleProject(
+        "crystal-data-acquisition",
+        "Crystal/Kemal data acquisition, Avram PostgreSQL, archive + normalize, fixture smoke tests",
+        "data-acquisition-service", "crystal-kemal-avram",
+        smoke_tests=True, seed_data=True,
+    ),
+    100: ExampleProject(
+        "polyglot-seam-lab",
+        "Polyglot seam lab, two-or-three-language coordination, broker or REST seam, round-trip demo",
+        "multi-backend-service", "python-fastapi-uv-ruff-orjson-polars",
+        smoke_tests=True,
+    ),
+}
+
+
 DEFAULT_MANIFESTS = {
     ("backend-api-service", "python-fastapi-uv-ruff-orjson-polars"): ["backend-api-fastapi-polars"],
     ("backend-api-service", "typescript-hono-bun"): ["backend-api-typescript-hono-bun"],
@@ -650,6 +1286,18 @@ def build_parser() -> argparse.ArgumentParser:
         "--derived-example",
         metavar="NAME",
         help="Print the cluster guide for a derived example or spin-out by name and exit.",
+    )
+    parser.add_argument(
+        "--list-examples",
+        action="store_true",
+        help="Print all 100 reference project examples grouped by category and exit.",
+    )
+    parser.add_argument(
+        "--use-example",
+        type=int,
+        metavar="N",
+        help="Pre-fill archetype, stack, and flags from reference project N (1-100). "
+             "repo_name defaults to NNN-codename unless supplied explicitly.",
     )
     return parser
 
@@ -1519,6 +2167,36 @@ def main(argv: list[str]) -> int:
             print("\n--- Seam Notes ---")
             print(entry["seam_notes"].strip())
         return 0
+
+    if args.list_examples:
+        for category_name, num_range in EXAMPLE_CATEGORIES:
+            print(f"\n{category_name}")
+            for n in num_range:
+                if n in EXAMPLE_PROJECTS:
+                    ex = EXAMPLE_PROJECTS[n]
+                    print(f"  {n:>3}  {ex.codename}")
+        return 0
+
+    if args.use_example is not None:
+        n = args.use_example
+        if n not in EXAMPLE_PROJECTS:
+            print(f"Unknown example number: {n}. Use --list-examples to see available projects.", file=sys.stderr)
+            return 1
+        entry = EXAMPLE_PROJECTS[n]
+        if not args.archetype:
+            args.archetype = entry.archetype
+        if not args.primary_stack:
+            args.primary_stack = entry.primary_stack
+        if not args.dokku:
+            args.dokku = entry.dokku
+        if not args.smoke_tests:
+            args.smoke_tests = entry.smoke_tests
+        if not args.integration_tests:
+            args.integration_tests = entry.integration_tests
+        if not args.seed_data:
+            args.seed_data = entry.seed_data
+        if not args.repo_name:
+            args.repo_name = f"{n:03d}-{entry.codename}"
 
     if not args.repo_name:
         parser.error("repo_name is required unless a --list-* flag is used")
