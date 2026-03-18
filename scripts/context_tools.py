@@ -18,6 +18,7 @@ if str(REPO_ROOT) not in sys.path:
 
 from verification.helpers import (  # noqa: E402
     EXAMPLE_SUPPORT_FILENAMES,
+    EXAMPLE_SKIP_PATH_PARTS,
     confidence_score,
     load_yaml_like,
     load_registry,
@@ -386,7 +387,9 @@ def validate_example_catalog(repo_root: Path) -> list[str]:
     actual_example_paths = {
         normalize_repo_path(example_path.relative_to(repo_root).as_posix())
         for example_path in (repo_root / "examples").rglob("*")
-        if example_path.is_file() and example_path.name not in EXAMPLE_SUPPORT_FILENAMES
+        if example_path.is_file()
+        and example_path.name not in EXAMPLE_SUPPORT_FILENAMES
+        and not any(part in EXAMPLE_SKIP_PATH_PARTS for part in example_path.parts)
     }
     missing = sorted(actual_example_paths - cataloged_paths)
     for missing_path in missing:

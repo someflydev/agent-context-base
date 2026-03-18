@@ -3275,3 +3275,1173 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: medium
+  # --- PROMPT_74 additions: verification registry entries for newly registered catalog paths ---
+  - name: duckdb-parquet-example
+    path: examples/canonical-storage/duckdb-parquet-example.py
+    language: python
+    stack_tags:
+      - duckdb-trino-polars
+    archetype_tags:
+      - data-pipeline
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - parses
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: duckdb-parquet-example-doc
+    path: examples/canonical-storage/duckdb-parquet-example.md
+    language: markdown
+    stack_tags:
+      - duckdb-trino-polars
+    archetype_tags:
+      - data-pipeline
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: phoenix-faceted-filter-panel-template
+    path: examples/canonical-api/phoenix-faceted-filter-panel-template.html.heex
+    language: heex
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: go-echo-faceted-filter-panel-template
+    path: examples/canonical-api/go-echo-faceted-filter-panel-template.templ
+    language: go
+    stack_tags:
+      - go-echo
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: zig-zap-jetzig-faceted-filter-panel-template
+    path: examples/canonical-api/zig-zap-jetzig-faceted-filter-panel-template.zmpl
+    language: zig
+    stack_tags:
+      - zig-zap-jetzig
+    archetype_tags:
+      - backend-api-service
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: fastapi-uv-runtime-pyproject
+    path: examples/canonical-api/fastapi-uv-example/pyproject.toml
+    language: toml
+    stack_tags:
+      - python-fastapi-uv-ruff
+    archetype_tags:
+      - backend-api-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: go-echo-handler-example-doc
+    path: examples/canonical-api/go-echo-handler-example.md
+    language: markdown
+    stack_tags:
+      - go-echo
+    archetype_tags:
+      - backend-api-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: phoenix-route-controller-example-doc
+    path: examples/canonical-api/phoenix-route-controller-example.md
+    language: markdown
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - backend-api-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: rust-axum-route-example-doc
+    path: examples/canonical-api/rust-axum-route-example.md
+    language: markdown
+    stack_tags:
+      - rust-axum-modern
+    archetype_tags:
+      - backend-api-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: typescript-hono-handler-example-doc
+    path: examples/canonical-api/typescript-hono-handler-example.md
+    language: markdown
+    stack_tags:
+      - typescript-hono-bun
+    archetype_tags:
+      - backend-api-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - referenced source example exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: phoenix-example-config-exs
+    path: examples/canonical-api/phoenix-example/config/config.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - backend-api-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: phoenix-example-runtime-exs
+    path: examples/canonical-api/phoenix-example/config/runtime.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - backend-api-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: phoenix-example-application-ex
+    path: examples/canonical-api/phoenix-example/lib/example/application.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - backend-api-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: phoenix-example-reporting-ex
+    path: examples/canonical-api/phoenix-example/lib/example/reporting.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - backend-api-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: phoenix-example-web-ex
+    path: examples/canonical-api/phoenix-example/lib/example_web.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - backend-api-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: phoenix-example-chart-controller
+    path: examples/canonical-api/phoenix-example/lib/example_web/controllers/chart_controller.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - backend-api-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: phoenix-example-fragment-controller
+    path: examples/canonical-api/phoenix-example/lib/example_web/controllers/fragment_controller.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - backend-api-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: phoenix-example-health-controller
+    path: examples/canonical-api/phoenix-example/lib/example_web/controllers/health_controller.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - backend-api-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: phoenix-example-report-controller
+    path: examples/canonical-api/phoenix-example/lib/example_web/controllers/report_controller.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - backend-api-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: phoenix-example-endpoint-ex
+    path: examples/canonical-api/phoenix-example/lib/example_web/endpoint.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - backend-api-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: playwright-cuj-filter-example
+    path: examples/canonical-integration-tests/playwright-cuj-filter-example.spec.ts
+    language: typescript
+    stack_tags:
+      - playwright
+    archetype_tags:
+      - integration-test
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - test names reference correct dataset assertions
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: playwright-go-htmx-example
+    path: examples/canonical-integration-tests/playwright-go-htmx-example_test.go
+    language: go
+    stack_tags:
+      - playwright
+      - go-echo
+    archetype_tags:
+      - integration-test
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: playwright-python-htmx-example
+    path: examples/canonical-integration-tests/playwright-python-htmx-example.py
+    language: python
+    stack_tags:
+      - playwright
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - integration-test
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: playwright-split-filter-panel-example
+    path: examples/canonical-integration-tests/playwright-split-filter-panel-example.spec.ts
+    language: typescript
+    stack_tags:
+      - playwright
+    archetype_tags:
+      - integration-test
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+      - test names reference correct dataset assertions
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  # --- multi-backend duo directory entries ---
+  - name: clojure-go-kafka-duo
+    path: examples/canonical-multi-backend/duos/clojure-go-kafka
+    language: markdown
+    stack_tags:
+      - kafka
+      - clojure-kit-nextjdbc-hiccup
+      - go-echo
+    archetype_tags:
+      - multi-backend-service
+    verification_level: structure-verified
+    verification_targets:
+      - directory exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: clojure-go-kafka-clojure-side
+    path: examples/canonical-multi-backend/duos/clojure-go-kafka/clojure-side.clj
+    language: clojure
+    stack_tags:
+      - kafka
+      - clojure-kit-nextjdbc-hiccup
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: clojure-go-kafka-go-side
+    path: examples/canonical-multi-backend/duos/clojure-go-kafka/go-side.go
+    language: go
+    stack_tags:
+      - kafka
+      - go-echo
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: elixir-clojure-rabbitmq-duo
+    path: examples/canonical-multi-backend/duos/elixir-clojure-rabbitmq
+    language: markdown
+    stack_tags:
+      - rabbitmq
+      - elixir-phoenix
+      - clojure-kit-nextjdbc-hiccup
+    archetype_tags:
+      - multi-backend-service
+    verification_level: structure-verified
+    verification_targets:
+      - directory exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: elixir-clojure-rabbitmq-clojure-side
+    path: examples/canonical-multi-backend/duos/elixir-clojure-rabbitmq/clojure-side.clj
+    language: clojure
+    stack_tags:
+      - rabbitmq
+      - clojure-kit-nextjdbc-hiccup
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: elixir-clojure-rabbitmq-elixir-side
+    path: examples/canonical-multi-backend/duos/elixir-clojure-rabbitmq/elixir-side.ex
+    language: elixir
+    stack_tags:
+      - rabbitmq
+      - elixir-phoenix
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: elixir-rust-nif-duo
+    path: examples/canonical-multi-backend/duos/elixir-rust-nif
+    language: markdown
+    stack_tags:
+      - nif
+      - elixir-phoenix
+      - rust-axum-modern
+    archetype_tags:
+      - multi-backend-service
+    verification_level: structure-verified
+    verification_targets:
+      - directory exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: elixir-rust-nif-seam
+    path: examples/canonical-multi-backend/duos/elixir-rust-nif/seam.md
+    language: markdown
+    stack_tags:
+      - nif
+      - elixir-phoenix
+      - rust-axum-modern
+    archetype_tags:
+      - multi-backend-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - seam type documented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: elixir-rust-nif-elixir-host
+    path: examples/canonical-multi-backend/duos/elixir-rust-nif/elixir-host.ex
+    language: elixir
+    stack_tags:
+      - nif
+      - elixir-phoenix
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: elixir-rust-nif-rust-nif
+    path: examples/canonical-multi-backend/duos/elixir-rust-nif/rust-nif.rs
+    language: rust
+    stack_tags:
+      - nif
+      - rust-axum-modern
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: go-elixir-nats-duo
+    path: examples/canonical-multi-backend/duos/go-elixir-nats
+    language: markdown
+    stack_tags:
+      - nats
+      - go-echo
+      - elixir-phoenix
+    archetype_tags:
+      - multi-backend-service
+    verification_level: structure-verified
+    verification_targets:
+      - directory exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: go-elixir-nats-seam
+    path: examples/canonical-multi-backend/duos/go-elixir-nats/seam.md
+    language: markdown
+    stack_tags:
+      - nats
+      - go-echo
+      - elixir-phoenix
+    archetype_tags:
+      - multi-backend-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - seam type documented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: go-elixir-nats-go-side
+    path: examples/canonical-multi-backend/duos/go-elixir-nats/go-side.go
+    language: go
+    stack_tags:
+      - nats
+      - go-echo
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: go-elixir-nats-elixir-side
+    path: examples/canonical-multi-backend/duos/go-elixir-nats/elixir-side.ex
+    language: elixir
+    stack_tags:
+      - nats
+      - elixir-phoenix
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: go-python-rest-duo
+    path: examples/canonical-multi-backend/duos/go-python-rest
+    language: markdown
+    stack_tags:
+      - rest
+      - go-echo
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - multi-backend-service
+    verification_level: structure-verified
+    verification_targets:
+      - directory exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: go-python-rest-seam
+    path: examples/canonical-multi-backend/duos/go-python-rest/seam.md
+    language: markdown
+    stack_tags:
+      - rest
+      - go-echo
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - multi-backend-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - seam type documented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: go-python-rest-go-side
+    path: examples/canonical-multi-backend/duos/go-python-rest/go-side.go
+    language: go
+    stack_tags:
+      - rest
+      - go-echo
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: go-python-rest-python-side
+    path: examples/canonical-multi-backend/duos/go-python-rest/python-side.py
+    language: python
+    stack_tags:
+      - rest
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: kotlin-rust-grpc-duo
+    path: examples/canonical-multi-backend/duos/kotlin-rust-grpc
+    language: markdown
+    stack_tags:
+      - grpc
+      - kotlin-http4k-exposed
+      - rust-axum-modern
+    archetype_tags:
+      - multi-backend-service
+    verification_level: structure-verified
+    verification_targets:
+      - directory exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: kotlin-rust-grpc-kotlin-caller
+    path: examples/canonical-multi-backend/duos/kotlin-rust-grpc/kotlin-caller.kt
+    language: kotlin
+    stack_tags:
+      - grpc
+      - kotlin-http4k-exposed
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: kotlin-rust-grpc-rust-server
+    path: examples/canonical-multi-backend/duos/kotlin-rust-grpc/rust-server.rs
+    language: rust
+    stack_tags:
+      - grpc
+      - rust-axum-modern
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: kotlin-rust-grpc-proto
+    path: examples/canonical-multi-backend/duos/kotlin-rust-grpc/service.proto
+    language: protobuf
+    stack_tags:
+      - grpc
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: node-elixir-nats-duo
+    path: examples/canonical-multi-backend/duos/node-elixir-nats
+    language: markdown
+    stack_tags:
+      - nats
+      - typescript-hono-bun
+      - elixir-phoenix
+    archetype_tags:
+      - multi-backend-service
+    verification_level: structure-verified
+    verification_targets:
+      - directory exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: node-elixir-nats-seam
+    path: examples/canonical-multi-backend/duos/node-elixir-nats/seam.md
+    language: markdown
+    stack_tags:
+      - nats
+      - typescript-hono-bun
+      - elixir-phoenix
+    archetype_tags:
+      - multi-backend-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - seam type documented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: node-elixir-nats-node-side
+    path: examples/canonical-multi-backend/duos/node-elixir-nats/node-side.ts
+    language: typescript
+    stack_tags:
+      - nats
+      - typescript-hono-bun
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: node-elixir-nats-elixir-side
+    path: examples/canonical-multi-backend/duos/node-elixir-nats/elixir-side.ex
+    language: elixir
+    stack_tags:
+      - nats
+      - elixir-phoenix
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: node-go-rest-duo
+    path: examples/canonical-multi-backend/duos/node-go-rest
+    language: markdown
+    stack_tags:
+      - graphql
+      - typescript-hono-bun
+      - go-echo
+    archetype_tags:
+      - multi-backend-service
+    verification_level: structure-verified
+    verification_targets:
+      - directory exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: node-go-rest-node-side
+    path: examples/canonical-multi-backend/duos/node-go-rest/node-side.ts
+    language: typescript
+    stack_tags:
+      - graphql
+      - typescript-hono-bun
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: node-go-rest-go-side
+    path: examples/canonical-multi-backend/duos/node-go-rest/go-side.go
+    language: go
+    stack_tags:
+      - graphql
+      - go-echo
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: rust-python-grpc-duo
+    path: examples/canonical-multi-backend/duos/rust-python-grpc
+    language: markdown
+    stack_tags:
+      - grpc
+      - rust-axum-modern
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - multi-backend-service
+    verification_level: structure-verified
+    verification_targets:
+      - directory exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: rust-python-grpc-rust-server
+    path: examples/canonical-multi-backend/duos/rust-python-grpc/rust-server.rs
+    language: rust
+    stack_tags:
+      - grpc
+      - rust-axum-modern
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: rust-python-grpc-python-caller
+    path: examples/canonical-multi-backend/duos/rust-python-grpc/python-caller.py
+    language: python
+    stack_tags:
+      - grpc
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: rust-python-grpc-proto
+    path: examples/canonical-multi-backend/duos/rust-python-grpc/service.proto
+    language: protobuf
+    stack_tags:
+      - grpc
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: scala-rust-grpc-duo
+    path: examples/canonical-multi-backend/duos/scala-rust-grpc
+    language: markdown
+    stack_tags:
+      - grpc
+      - scala-tapir-http4s-zio
+      - rust-axum-modern
+    archetype_tags:
+      - multi-backend-service
+    verification_level: structure-verified
+    verification_targets:
+      - directory exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: scala-rust-grpc-scala-side
+    path: examples/canonical-multi-backend/duos/scala-rust-grpc/scala-side.scala
+    language: scala
+    stack_tags:
+      - grpc
+      - scala-tapir-http4s-zio
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: scala-rust-grpc-rust-side
+    path: examples/canonical-multi-backend/duos/scala-rust-grpc/rust-side.rs
+    language: rust
+    stack_tags:
+      - grpc
+      - rust-axum-modern
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: scala-rust-grpc-proto
+    path: examples/canonical-multi-backend/duos/scala-rust-grpc/service.proto
+    language: protobuf
+    stack_tags:
+      - grpc
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  # --- multi-backend trio directory entries ---
+  - name: elixir-go-rust-trio
+    path: examples/canonical-multi-backend/trios/elixir-go-rust
+    language: markdown
+    stack_tags:
+      - grpc
+      - elixir-phoenix
+      - go-echo
+      - rust-axum-modern
+    archetype_tags:
+      - multi-backend-service
+    verification_level: structure-verified
+    verification_targets:
+      - directory exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: elixir-go-rust-seam
+    path: examples/canonical-multi-backend/trios/elixir-go-rust/seam.md
+    language: markdown
+    stack_tags:
+      - grpc
+      - elixir-phoenix
+      - go-echo
+      - rust-axum-modern
+    archetype_tags:
+      - multi-backend-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - seam types documented
+      - trio ownership documented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: elixir-go-rust-elixir-side
+    path: examples/canonical-multi-backend/trios/elixir-go-rust/elixir-side.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: elixir-go-rust-go-side
+    path: examples/canonical-multi-backend/trios/elixir-go-rust/go-side.go
+    language: go
+    stack_tags:
+      - go-echo
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: elixir-go-rust-rust-side
+    path: examples/canonical-multi-backend/trios/elixir-go-rust/rust-side.rs
+    language: rust
+    stack_tags:
+      - rust-axum-modern
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: elixir-go-rust-proto
+    path: examples/canonical-multi-backend/trios/elixir-go-rust/service.proto
+    language: protobuf
+    stack_tags:
+      - grpc
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: go-elixir-python-trio
+    path: examples/canonical-multi-backend/trios/go-elixir-python
+    language: markdown
+    stack_tags:
+      - nats
+      - go-echo
+      - elixir-phoenix
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - multi-backend-service
+    verification_level: structure-verified
+    verification_targets:
+      - directory exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: go-elixir-python-seam
+    path: examples/canonical-multi-backend/trios/go-elixir-python/seam.md
+    language: markdown
+    stack_tags:
+      - nats
+      - go-echo
+      - elixir-phoenix
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - multi-backend-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - seam types documented
+      - trio ownership documented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: go-elixir-python-go-side
+    path: examples/canonical-multi-backend/trios/go-elixir-python/go-side.go
+    language: go
+    stack_tags:
+      - nats
+      - go-echo
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: go-elixir-python-elixir-side
+    path: examples/canonical-multi-backend/trios/go-elixir-python/elixir-side.ex
+    language: elixir
+    stack_tags:
+      - nats
+      - elixir-phoenix
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: go-elixir-python-python-side
+    path: examples/canonical-multi-backend/trios/go-elixir-python/python-side.py
+    language: python
+    stack_tags:
+      - nats
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: go-rust-python-trio
+    path: examples/canonical-multi-backend/trios/go-rust-python
+    language: markdown
+    stack_tags:
+      - grpc
+      - go-echo
+      - rust-axum-modern
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - multi-backend-service
+    verification_level: structure-verified
+    verification_targets:
+      - directory exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: go-rust-python-go-side
+    path: examples/canonical-multi-backend/trios/go-rust-python/go-side.go
+    language: go
+    stack_tags:
+      - grpc
+      - go-echo
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: go-rust-python-rust-side
+    path: examples/canonical-multi-backend/trios/go-rust-python/rust-side.rs
+    language: rust
+    stack_tags:
+      - grpc
+      - rust-axum-modern
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: go-rust-python-python-side
+    path: examples/canonical-multi-backend/trios/go-rust-python/python-side.py
+    language: python
+    stack_tags:
+      - grpc
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: go-rust-python-proto
+    path: examples/canonical-multi-backend/trios/go-rust-python/service.proto
+    language: protobuf
+    stack_tags:
+      - grpc
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: node-go-python-trio
+    path: examples/canonical-multi-backend/trios/node-go-python
+    language: markdown
+    stack_tags:
+      - rest
+      - typescript-hono-bun
+      - go-echo
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - multi-backend-service
+    verification_level: structure-verified
+    verification_targets:
+      - directory exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: node-go-python-seam
+    path: examples/canonical-multi-backend/trios/node-go-python/seam.md
+    language: markdown
+    stack_tags:
+      - rest
+      - typescript-hono-bun
+      - go-echo
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - multi-backend-service
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - seam types documented
+      - trio ownership documented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: node-go-python-node-side
+    path: examples/canonical-multi-backend/trios/node-go-python/node-side.ts
+    language: typescript
+    stack_tags:
+      - rest
+      - typescript-hono-bun
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: node-go-python-go-side
+    path: examples/canonical-multi-backend/trios/node-go-python/go-side.go
+    language: go
+    stack_tags:
+      - rest
+      - go-echo
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: node-go-python-python-side
+    path: examples/canonical-multi-backend/trios/node-go-python/python-side.py
+    language: python
+    stack_tags:
+      - rest
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - multi-backend-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium

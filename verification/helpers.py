@@ -61,6 +61,21 @@ EXAMPLE_SUPPORT_FILENAMES = {
     "Cargo.lock",
     "Gemfile",
     "config.ru",
+    # Elixir project and lockfile — analogous to Cargo.toml/Cargo.lock
+    "mix.exs",
+    "mix.lock",
+    # Infrastructure support file used to run multi-backend examples — not a pattern doc
+    "docker-compose.yml",
+}
+
+# Directory path segments that mark build/dependency artifacts — any file whose relative
+# path contains one of these segments is excluded from the catalog coverage check.
+EXAMPLE_SKIP_PATH_PARTS = {
+    "__pycache__",
+    "_build",
+    "deps",
+    "node_modules",
+    ".git",
 }
 
 
