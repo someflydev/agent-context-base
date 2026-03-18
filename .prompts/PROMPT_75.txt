@@ -1,0 +1,394 @@
+You are working inside the agent-context-base repository.
+
+This prompt extends new_repo.py with a curated catalog of 100 reference project examples and a
+--use-example flag so any of the 100 can be bootstrapped by number. It also adds three missing
+language stacks (Crystal/Kemal+Avram, Ruby/Hanami, OCaml/Dream+Caqti) that appear in the examples
+directory but were never wired into the generator. Output changes as commit-ready batches labeled
+[PROMPT_75].
+
+================================================================================
+CONSTRAINTS
+================================================================================
+
+- Do NOT modify any example files in examples/ or their verified content.
+- Do NOT change the ordering of the 100 projects below.
+- validate_context.py and validate_doc_governance.py must both pass after all changes.
+- Follow the same conventions established in PROMPT_73 for adding new stacks.
+- Run: python3.14 scripts/validate_context.py
+       python3.14 scripts/validate_doc_governance.py
+  ...after each batch and fix any failures before continuing.
+
+================================================================================
+REQUIRED READS
+================================================================================
+
+Read these files before beginning:
+
+  scripts/new_repo.py                          (full file)
+  docs/usage/STARTING_NEW_PROJECTS.md
+  scripts/validate_context.py                  (BOOTSTRAP_CASES, HEAVY_MODULES)
+  manifests/backend-api-clojure-kit-nextjdbc-hiccup.yaml   (manifest format reference)
+  manifests/backend-api-dart-dartfrog.yaml                  (most recently added manifest)
+
+================================================================================
+I. WHAT TO BUILD
+================================================================================
+
+1. Add an ExampleProject dataclass and EXAMPLE_PROJECTS dict (int → ExampleProject) to
+   new_repo.py, covering all 100 reference projects defined in Section II below.
+
+2. Add --use-example N to the CLI. When given:
+   - Pre-fill --archetype and --primary-stack from the entry.
+   - Pre-fill any boolean flags (--dokku, --smoke-tests, --integration-tests, --seed-data,
+     --include-root-readme, --include-docs-dir) from the entry's flags dict.
+   - Default repo_name to the zero-padded codename: f"{N:03d}-{entry.codename}" unless the
+     caller supplies a repo_name positional argument explicitly.
+   - Explicit CLI flags always win over pre-filled defaults.
+   - If N is not in EXAMPLE_PROJECTS, print a clear error and exit non-zero.
+
+3. Add --list-examples to the CLI. Print a two-column table: number and codename, grouped by
+   category header. Return 0.
+
+4. Add three new stacks to STACKS in new_repo.py:
+   "crystal-kemal-avram", "ruby-hanami", "ocaml-dream-caqti-tyxml"
+   Follow the StackProfile convention exactly. Use images, ports, commands, and directory
+   layouts consistent with how the existing examples in examples/canonical-api/ are structured
+   for each language. Look at the actual example files to infer the right layout.
+
+5. Add DEFAULT_MANIFESTS entries for the three new stacks paired with "backend-api-service"
+   and "data-acquisition-service" (where applicable).
+
+6. Create three new manifests:
+   manifests/backend-api-crystal-kemal-avram.yaml
+   manifests/backend-api-ruby-hanami.yaml
+   manifests/backend-api-ocaml-dream-caqti-tyxml.yaml
+   Model each on manifests/backend-api-dart-dartfrog.yaml. Fill in:
+   - description
+   - archetype: backend-api-service
+   - primary_stack matching the stack key
+   - required_context: use the same context paths as dart-dartfrog but swap archetype/stack files
+   - preferred_examples: reference the actual example files on disk in examples/canonical-api/
+   - compose_project_name_dev / compose_project_name_test: use a short slug
+   - app_port matching the StackProfile
+
+7. Add the three new stacks to BOOTSTRAP_CASES in scripts/validate_context.py:
+   {"archetype": "backend-api-service", "primary_stack": "crystal-kemal-avram", "dokku": False}
+   {"archetype": "backend-api-service", "primary_stack": "ruby-hanami", "dokku": False}
+   {"archetype": "backend-api-service", "primary_stack": "ocaml-dream-caqti-tyxml", "dokku": False}
+
+8. Update docs/usage/STARTING_NEW_PROJECTS.md:
+   - Add --list-examples and --use-example to the "Useful commands" block.
+   - Add a short "Using a Reference Example" section explaining the 100-project catalog,
+     how --use-example pre-fills arguments, how to override any pre-filled value, and how
+     --dry-run can be used to preview what would be generated.
+
+================================================================================
+II. THE 100 REFERENCE PROJECTS
+================================================================================
+
+Each entry: number, codename (the short slug used in the repo name), archetype, primary_stack,
+and a flags dict (keys: dokku, smoke_tests, integration_tests, seed_data).
+
+For multi-backend projects the primary_stack is the entry-point or coordinating service's stack.
+For storage experiments without a dedicated stack in STACKS, use the FastAPI stack as primary
+(the storage backend is configured as a service preset after generation).
+
+CATEGORY A — Single-Backend API Services
+  1   partner-data-enrichment       backend-api-service              python-fastapi-uv-ruff-orjson-polars   smoke_tests=True, seed_data=True
+  2   analytics-parquet-api         backend-api-service              python-fastapi-uv-ruff-orjson-polars   smoke_tests=True, seed_data=True
+  3   timeseries-ingest             backend-api-service              python-fastapi-uv-ruff-orjson-polars   smoke_tests=True, seed_data=True
+  4   webhook-receiver              backend-api-service              python-fastapi-uv-ruff-orjson-polars   smoke_tests=True, seed_data=True
+  5   scheduled-enrichment          backend-api-service              python-fastapi-uv-ruff-orjson-polars   smoke_tests=True, seed_data=True
+  6   hono-internal-api             backend-api-service              typescript-hono-bun                    smoke_tests=True, seed_data=True
+  7   hono-bff-aggregator           dokku-deployable-service         typescript-hono-bun                    dokku=True, smoke_tests=True, seed_data=True
+  8   go-parquet-reports            backend-api-service              go-echo                                smoke_tests=True, seed_data=True
+  9   go-file-upload                backend-api-service              go-echo                                smoke_tests=True, seed_data=True
+  10  rust-event-ingest             backend-api-service              rust-axum-modern                       smoke_tests=True, seed_data=True
+  11  rust-batch-classifier         backend-api-service              rust-axum-modern                       smoke_tests=True, seed_data=True
+  12  phoenix-scheduling            backend-api-service              elixir-phoenix                         smoke_tests=True, seed_data=True
+  13  scala-financial-reports       backend-api-service              scala-tapir-http4s-zio                 smoke_tests=True, seed_data=True
+  14  kotlin-invoice-tracker        backend-api-service              kotlin-http4k-exposed                  smoke_tests=True, seed_data=True
+  15  clojure-preferences           backend-api-service              clojure-kit-nextjdbc-hiccup            smoke_tests=True, seed_data=True
+  16  ruby-content-store            backend-api-service              ruby-hanami                            smoke_tests=True, seed_data=True
+  17  nim-json-filter               backend-api-service              nim-jester-happyx                      smoke_tests=True, seed_data=True
+  18  dart-audit-log                backend-api-service              dart-dartfrog                          smoke_tests=True, seed_data=True
+  19  ocaml-metadata-store          backend-api-service              ocaml-dream-caqti-tyxml                smoke_tests=True, seed_data=True
+  20  crystal-cache-proxy           backend-api-service              crystal-kemal-avram                    smoke_tests=True, seed_data=True
+  21  fastapi-dokku-analytics       dokku-deployable-service         python-fastapi-uv-ruff-orjson-polars   dokku=True, smoke_tests=True, seed_data=True
+
+CATEGORY B — Backend-Driven UI
+  22  faceted-dashboard             backend-api-service              python-fastapi-uv-ruff-orjson-polars   smoke_tests=True, integration_tests=True, seed_data=True
+  23  search-sort-paginate          backend-api-service              python-fastapi-uv-ruff-orjson-polars   smoke_tests=True, integration_tests=True, seed_data=True
+  24  split-filter-panel            backend-api-service              python-fastapi-uv-ruff-orjson-polars   smoke_tests=True, integration_tests=True, seed_data=True
+  25  shared-query-chart-table      backend-api-service              python-fastapi-uv-ruff-orjson-polars   smoke_tests=True, integration_tests=True, seed_data=True
+  26  report-browser-cuj            backend-api-service              python-fastapi-uv-ruff-orjson-polars   smoke_tests=True, integration_tests=True, seed_data=True
+  27  compound-facet-dashboard      backend-api-service              python-fastapi-uv-ruff-orjson-polars   smoke_tests=True, integration_tests=True, seed_data=True
+
+CATEGORY C — Data Acquisition and Pipelines
+  28  python-api-acquisition        data-acquisition-service         python-fastapi-uv-ruff-orjson-polars   smoke_tests=True, seed_data=True
+  29  go-api-ingestion              data-acquisition-service         go-echo                                smoke_tests=True, seed_data=True
+  30  python-scraper                data-acquisition-service         python-fastapi-uv-ruff-orjson-polars   smoke_tests=True, seed_data=True
+  31  bun-scraper                   data-acquisition-service         typescript-hono-bun                    smoke_tests=True, seed_data=True
+  32  csv-etl-pipeline              data-pipeline                    duckdb-trino-polars                    smoke_tests=True, seed_data=True
+  33  json-etl-pipeline             data-pipeline                    python-fastapi-uv-ruff-orjson-polars   smoke_tests=True, seed_data=True
+  34  duckdb-parquet-analytics      data-pipeline                    duckdb-trino-polars                    smoke_tests=True, seed_data=True
+  35  multi-source-sync             multi-source-sync-platform       python-fastapi-uv-ruff-orjson-polars   smoke_tests=True, seed_data=True
+  36  classification-enrichment     data-acquisition-service         python-fastapi-uv-ruff-orjson-polars   smoke_tests=True, seed_data=True
+  37  recurring-sync                data-acquisition-service         python-fastapi-uv-ruff-orjson-polars   smoke_tests=True, seed_data=True
+  38  elixir-data-acquisition       data-acquisition-service         elixir-phoenix                         smoke_tests=True, seed_data=True
+
+CATEGORY D — ML and Data Science
+  39  sklearn-inference             backend-api-service              python-fastapi-uv-ruff-orjson-polars   smoke_tests=True, seed_data=True
+  40  recommendation-engine         backend-api-service              python-fastapi-uv-ruff-orjson-polars   smoke_tests=True, seed_data=True
+  41  arima-forecasting             backend-api-service              python-fastapi-uv-ruff-orjson-polars   smoke_tests=True, seed_data=True
+  42  semantic-search-qdrant        local-rag-system                 qdrant                                 smoke_tests=True, seed_data=True
+  43  xgboost-serving               backend-api-service              python-fastapi-uv-ruff-orjson-polars   smoke_tests=True, seed_data=True
+  44  embedding-pipeline            local-rag-system                 qdrant                                 smoke_tests=True, seed_data=True
+  45  duckdb-polars-sklearn         data-pipeline                    duckdb-trino-polars                    smoke_tests=True, seed_data=True
+  46  lightgbm-tabular              data-pipeline                    duckdb-trino-polars                    smoke_tests=True, seed_data=True
+
+CATEGORY E — Multi-Backend Coordination
+  47  go-python-ml-gateway          multi-backend-service            go-echo                                smoke_tests=True, seed_data=True
+  48  kotlin-rust-grpc              multi-backend-service            kotlin-http4k-exposed                  smoke_tests=True
+  49  elixir-go-nats                multi-backend-service            elixir-phoenix                         smoke_tests=True
+  50  clojure-go-kafka              multi-backend-service            clojure-kit-nextjdbc-hiccup            smoke_tests=True
+  51  node-go-graphql               multi-backend-service            typescript-hono-bun                    smoke_tests=True
+  52  scala-rust-grpc-streams       multi-backend-service            scala-tapir-http4s-zio                 smoke_tests=True
+  53  node-elixir-nats-bidir        multi-backend-service            typescript-hono-bun                    smoke_tests=True
+  54  rust-python-grpc-infer        multi-backend-service            rust-axum-modern                       smoke_tests=True
+  55  elixir-rust-nif               multi-backend-service            elixir-phoenix                         smoke_tests=True
+  56  elixir-clojure-rabbitmq       multi-backend-service            elixir-phoenix                         smoke_tests=True
+  57  trio-go-elixir-python         multi-backend-service            go-echo                                smoke_tests=True
+  58  trio-go-rust-python-dual      multi-backend-service            go-echo                                smoke_tests=True
+  59  trio-elixir-go-rust-nats      multi-backend-service            elixir-phoenix                         smoke_tests=True
+  60  trio-node-go-python-gql       multi-backend-service            typescript-hono-bun                    smoke_tests=True
+  61  trio-rust-nats-go-iot         multi-backend-service            rust-axum-modern                       smoke_tests=True
+  62  scala-go-python-federated     multi-backend-service            scala-tapir-http4s-zio                 smoke_tests=True
+
+CATEGORY F — Storage Experiments
+  63  duckdb-parquet-minio-lake     data-pipeline                    duckdb-trino-polars                    smoke_tests=True, seed_data=True
+  64  rag-engineering-runbooks      local-rag-system                 qdrant                                 smoke_tests=True, seed_data=True
+  65  meilisearch-fulltext          multi-storage-experiment         python-fastapi-uv-ruff-orjson-polars   smoke_tests=True, seed_data=True
+  66  timescaledb-sensors           backend-api-service              python-fastapi-uv-ruff-orjson-polars   smoke_tests=True, seed_data=True
+  67  redis-cache-ratelimit         multi-storage-experiment         python-fastapi-uv-ruff-orjson-polars   smoke_tests=True, seed_data=True
+  68  nats-event-capture-replay     multi-storage-experiment         python-fastapi-uv-ruff-orjson-polars   smoke_tests=True, seed_data=True
+  69  trino-federated-query         data-pipeline                    duckdb-trino-polars                    smoke_tests=True, seed_data=True
+  70  multi-storage-split           multi-storage-experiment         redis-keydb-mongo                      smoke_tests=True, seed_data=True
+  71  elasticsearch-search          multi-storage-experiment         python-fastapi-uv-ruff-orjson-polars   smoke_tests=True, seed_data=True
+  72  es-vs-meilisearch             multi-storage-experiment         redis-keydb-mongo                      smoke_tests=True, seed_data=True
+
+CATEGORY G — CLI Tools
+  73  data-reconciliation-cli       cli-tool                         python-fastapi-uv-ruff-orjson-polars   smoke_tests=True, seed_data=True
+  74  prompt-eval-cli               cli-tool                         python-fastapi-uv-ruff-orjson-polars   smoke_tests=True, seed_data=True
+  75  rust-batch-processor          cli-tool                         rust-axum-modern                       smoke_tests=True, seed_data=True
+  76  rust-snapshot-cli             cli-tool                         rust-axum-modern                       smoke_tests=True, seed_data=True
+  77  go-config-auditor             cli-tool                         go-echo                                smoke_tests=True, seed_data=True
+  78  python-pipeline-cli           cli-tool                         python-fastapi-uv-ruff-orjson-polars   smoke_tests=True, seed_data=True
+
+CATEGORY H — Local RAG and Semantic Search
+  79  rag-legal-docs                local-rag-system                 qdrant                                 smoke_tests=True, seed_data=True
+  80  rag-api-reference             local-rag-system                 qdrant                                 smoke_tests=True, seed_data=True
+  81  markdown-notes-indexer        local-rag-system                 qdrant                                 smoke_tests=True, seed_data=True
+  82  runbook-search                local-rag-system                 qdrant                                 smoke_tests=True, seed_data=True
+  83  hybrid-search-prototype       local-rag-system                 qdrant                                 smoke_tests=True, seed_data=True
+  84  rag-plus-structured           local-rag-system                 qdrant                                 smoke_tests=True, seed_data=True
+
+CATEGORY I — Prompt-First Repos
+  85  prompt-rubric-evaluator       prompt-first-repo                prompt-first-repo                      (none)
+  86  output-shape-compliance       prompt-first-repo                prompt-first-repo                      (none)
+  87  prompt-assertion-library      prompt-first-repo                prompt-first-repo                      (none)
+  88  model-config-comparison       prompt-first-repo                prompt-first-repo                      (none)
+  89  task-prompt-sequences         prompt-first-repo                prompt-first-repo                      (none)
+  90  living-doc-prompts            prompt-first-repo                prompt-first-repo                      (none)
+
+CATEGORY J — Dokku-Deployable Services
+  91  dokku-fastapi-analytics       dokku-deployable-service         python-fastapi-uv-ruff-orjson-polars   dokku=True, smoke_tests=True, seed_data=True
+  92  dokku-fastapi-redis-cache     dokku-deployable-service         python-fastapi-uv-ruff-orjson-polars   dokku=True, smoke_tests=True, seed_data=True
+  93  dokku-hono-bun                dokku-deployable-service         typescript-hono-bun                    dokku=True, smoke_tests=True, seed_data=True
+  94  dokku-go-echo                 dokku-deployable-service         go-echo                                dokku=True, smoke_tests=True, seed_data=True
+  95  dokku-phoenix                 dokku-deployable-service         elixir-phoenix                         dokku=True, smoke_tests=True, seed_data=True
+  96  dokku-multi-service           dokku-deployable-service         python-fastapi-uv-ruff-orjson-polars   dokku=True, smoke_tests=True, seed_data=True
+  97  dokku-rust-axum               dokku-deployable-service         rust-axum-modern                       dokku=True, smoke_tests=True, seed_data=True
+  98  dokku-kotlin-http4k           dokku-deployable-service         kotlin-http4k-exposed                  dokku=True, smoke_tests=True, seed_data=True
+
+ADDITIONAL
+  99  crystal-data-acquisition      data-acquisition-service         crystal-kemal-avram                    smoke_tests=True, seed_data=True
+  100 polyglot-seam-lab             multi-backend-service            python-fastapi-uv-ruff-orjson-polars   smoke_tests=True
+
+================================================================================
+III. ExampleProject DATACLASS AND DICT STRUCTURE
+================================================================================
+
+Add to new_repo.py (near the top, after STACKS and before DEFAULT_MANIFESTS):
+
+  @dataclass(frozen=True)
+  class ExampleProject:
+      codename: str          # short slug, e.g. "go-python-ml-gateway"
+      title: str             # human-readable title matching Section II description line
+      archetype: str
+      primary_stack: str
+      dokku: bool = False
+      smoke_tests: bool = False
+      integration_tests: bool = False
+      seed_data: bool = False
+
+  EXAMPLE_PROJECTS: dict[int, ExampleProject] = {
+      1: ExampleProject("partner-data-enrichment", "FastAPI + Polars + PostgreSQL, JSON normalization, cursor pagination", ...),
+      ...
+  }
+
+Use the exact one-line descriptions from the list in the user-facing report (e.g. for #1:
+"FastAPI + Polars + PostgreSQL, JSON normalization, cursor pagination").
+
+================================================================================
+IV. CLI CHANGES
+================================================================================
+
+In build_parser():
+
+  parser.add_argument(
+      "--use-example",
+      type=int,
+      metavar="N",
+      help="Pre-fill archetype, stack, and flags from reference project N (1-100). "
+           "repo_name defaults to NNN-codename unless supplied explicitly.",
+  )
+  parser.add_argument(
+      "--list-examples",
+      action="store_true",
+      help="Print all 100 reference project examples and exit.",
+  )
+
+In main():
+  - Before the existing --list-* checks, handle --list-examples (print and return 0).
+  - After parsing args, if --use-example is set:
+      - Look up the ExampleProject; error if not found.
+      - Populate args.archetype, args.primary_stack if not already set by the caller.
+      - Set args.dokku, args.smoke_tests, args.integration_tests, args.seed_data from the
+        entry only if the caller did not explicitly pass those flags.
+      - If args.repo_name is None (not provided), set it to f"{N:03d}-{entry.codename}".
+  - The validation checks (repo_name required, archetype required, primary_stack required)
+    run after this resolution, so a bare --use-example 47 is sufficient.
+
+Note: argparse boolean flags default to False, so there is no built-in way to distinguish
+"caller explicitly passed --smoke-tests" from "defaulted to False". The simplest correct
+approach: apply the example's flag values as defaults, then let the existing parse_args
+output override them only if the caller explicitly included the flag. Since argparse
+store_true flags are always False unless the flag appears, simply do:
+  if not args.smoke_tests:
+      args.smoke_tests = entry.smoke_tests
+  (and so on for each flag)
+
+This means: if the example has smoke_tests=True, --use-example pre-sets it; the user can
+suppress it by explicitly wiring up a --no-smoke-tests pattern if they want. For now,
+one-way defaulting (example sets True, caller can only add more, not subtract) is the
+correct minimal behavior.
+
+================================================================================
+V. NEW STACK PROFILES — CRYSTAL, RUBY, OCAML
+================================================================================
+
+Read the actual example files to get accurate details before filling in StackProfiles.
+For each new stack, use these starting points (adjust if the files show different structure):
+
+crystal-kemal-avram:
+  app_image: "84codes/crystal:latest-ubuntu-24.04"
+  app_command: 'sh -lc "shards install && crystal run src/app.cr"'
+  test_command: 'sh -lc "crystal spec"'
+  app_container_port: 3000
+  route_path: "src/routes/reports.cr"
+  smoke_path: "spec/smoke/health_spec.cr"
+  integration_path: "spec/integration/report_runs_spec.cr"
+  seed_path: "scripts/seed_data.cr"
+  directories: ("docs", "docker/volumes/dev", "docker/volumes/test", "manifests", "scripts",
+                 "src", "src/routes", "spec/smoke", "spec/integration")
+  stack_gitignore: (".crystal", "bin/")
+
+ruby-hanami:
+  app_image: "ruby:3.3-slim"
+  app_command: 'sh -lc "bundle install && bundle exec hanami server --host 0.0.0.0 --port 2300"'
+  test_command: 'sh -lc "bundle exec rspec"'
+  app_container_port: 2300
+  route_path: "app/actions/reports/index.rb"
+  smoke_path: "spec/smoke/health_spec.rb"
+  integration_path: "spec/integration/report_runs_spec.rb"
+  seed_path: "scripts/seed_data.rb"
+  directories: ("docs", "docker/volumes/dev", "docker/volumes/test", "manifests", "scripts",
+                 "app/actions/reports", "app/views/reports", "spec/smoke", "spec/integration")
+  stack_gitignore: (".bundle",)
+
+ocaml-dream-caqti-tyxml:
+  app_image: "ocaml/opam:ubuntu-24.04-ocaml-5.2"
+  app_command: 'sh -lc "opam exec -- dune exec ./bin/main.exe"'
+  test_command: 'sh -lc "opam exec -- dune runtest"'
+  app_container_port: 8080
+  route_path: "bin/routes.ml"
+  smoke_path: "test/smoke/test_health.ml"
+  integration_path: "test/integration/test_report_runs.ml"
+  seed_path: "scripts/seed_data.ml"
+  directories: ("docs", "docker/volumes/dev", "docker/volumes/test", "manifests", "scripts",
+                 "bin", "lib", "test/smoke", "test/integration")
+  stack_gitignore: ("_build",)
+
+Each new manifest (backend-api-crystal-kemal-avram.yaml, etc.) should reference the correct
+context stacks file and at least one preferred_example from examples/canonical-api/.
+
+For context/stacks references:
+  Crystal → context/stacks/crystal-kemal-avram.md        (check if it exists; if not, note it as
+  Ruby    → context/stacks/ruby-hanami.md                  a deferred gap but do not create it here)
+  OCaml   → context/stacks/ocaml-dream-caqti-tyxml.md
+
+If a context/stacks/ file does not exist for a given stack, omit it from required_context in
+the manifest rather than creating an empty file. The manifest validator only checks that listed
+paths exist.
+
+================================================================================
+VI. BATCH STRUCTURE
+================================================================================
+
+Batch 1 — Add ExampleProject + EXAMPLE_PROJECTS to new_repo.py
+  Files: scripts/new_repo.py
+  Content: dataclass + full 100-entry dict (all using existing stacks only, with placeholders
+  for the three new stacks using their intended stack keys even if not yet in STACKS)
+  Commit: [PROMPT_75] Batch 1: add EXAMPLE_PROJECTS catalog to new_repo.py
+
+Batch 2 — Add --use-example and --list-examples CLI flags
+  Files: scripts/new_repo.py
+  Content: build_parser additions + main() resolution logic
+  Commit: [PROMPT_75] Batch 2: add --use-example and --list-examples CLI flags
+
+Batch 3 — Add three new stacks and manifests
+  Files: scripts/new_repo.py (STACKS + DEFAULT_MANIFESTS additions)
+         manifests/backend-api-crystal-kemal-avram.yaml
+         manifests/backend-api-ruby-hanami.yaml
+         manifests/backend-api-ocaml-dream-caqti-tyxml.yaml
+         scripts/validate_context.py (BOOTSTRAP_CASES additions)
+  Commit: [PROMPT_75] Batch 3: add crystal-kemal-avram, ruby-hanami, ocaml-dream-caqti-tyxml stacks
+
+Batch 4 — Update docs
+  Files: docs/usage/STARTING_NEW_PROJECTS.md
+  Commit: [PROMPT_75] Batch 4: document --use-example and --list-examples in STARTING_NEW_PROJECTS
+
+================================================================================
+VII. VERIFICATION
+================================================================================
+
+After all batches, confirm:
+
+  python3.14 scripts/validate_context.py          # must print "Validated N manifests…"
+  python3.14 scripts/validate_doc_governance.py   # must print "Validated markdown links…"
+
+  # Spot-check --list-examples works
+  python3.14 scripts/new_repo.py --list-examples
+
+  # Spot-check --use-example dry-run for a few representative projects
+  python3.14 scripts/new_repo.py --use-example 1 --dry-run --target-dir /tmp/ex001
+  python3.14 scripts/new_repo.py --use-example 47 --dry-run --target-dir /tmp/ex047
+  python3.14 scripts/new_repo.py --use-example 91 --dry-run --target-dir /tmp/ex091
+
+  # Spot-check repo_name override
+  python3.14 scripts/new_repo.py my-custom-name --use-example 12 --dry-run --target-dir /tmp/ex012
+
+  # Spot-check new stacks bootstrap correctly
+  python3.14 scripts/new_repo.py test-crystal --archetype backend-api-service \
+      --primary-stack crystal-kemal-avram --dry-run --target-dir /tmp/test-crystal
