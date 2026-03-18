@@ -1243,32 +1243,98 @@ SERVICE_PRESETS = {
 }
 
 
-def _load_derived_data() -> dict[str, list[dict]]:
-    """Load derived-examples.yaml and spin-outs.yaml from examples/derived/.
+def _coerce_int_list(value: object) -> list[int]:
+    """Return a list of ints from either a list or an inline '[1, 2, 3]' string."""
+    if isinstance(value, list):
+        return [int(x) for x in value]
+    if isinstance(value, str):
+        s = value.strip()
+        if s.startswith("[") and s.endswith("]"):
+            inner = s[1:-1].strip()
+            if not inner:
+                return []
+            return [int(x.strip()) for x in inner.split(",")]
+    return []
 
-    Returns {"derived": [...], "spin_outs": [...]}.
-    Returns empty lists for any file that does not exist yet (run PROMPT_76/78 first).
-    Uses the repo's custom load_yaml_like parser (no PyYAML dependency).
+
+def _preprocess_yaml_block_scalars(text: str) -> str:
+    """Replace YAML block scalar (|) content with a single-line placeholder.
+
+    The repo's custom YAML parser does not handle multi-line block scalars.
+    Converts every ``key: |`` + indented-content block into
+    ``key: block-scalar-content`` so the parser can proceed normally.
     """
+    lines = text.splitlines()
+    result: list[str] = []
+    i = 0
+    while i < len(lines):
+        raw = lines[i]
+        rstripped = raw.rstrip()
+        stripped = rstripped.strip()
+        if stripped and not stripped.startswith("#") and rstripped.rstrip().endswith("|"):
+            if re.search(r":\s*\|$", rstripped):
+                key_indent = len(rstripped) - len(rstripped.lstrip())
+                placeholder = re.sub(r"\|\s*$", "block-scalar-content", rstripped)
+                result.append(placeholder)
+                i += 1
+                while i < len(lines):
+                    cont = lines[i].rstrip()
+                    if not cont.strip():
+                        i += 1
+                        continue
+                    cont_indent = len(cont) - len(cont.lstrip())
+                    if cont_indent > key_indent:
+                        i += 1
+                    else:
+                        break
+                continue
+        result.append(raw)
+        i += 1
+    return "\n".join(result)
+
+
+def _load_yaml_with_block_scalars_from_path(path: Path) -> object:
+    """Load a YAML file that may contain block scalar (|) strings."""
+    import json as _json
     import sys
 
     repo_root = Path(__file__).resolve().parent.parent
     verification_path = str(repo_root)
     if verification_path not in sys.path:
         sys.path.insert(0, verification_path)
-    from verification.helpers import load_yaml_like  # noqa: PLC0415
+    from verification.helpers import _prepare_yaml_lines, _parse_yaml_block  # noqa: PLC0415
 
+    text = path.read_text(encoding="utf-8")
+    cleaned = _preprocess_yaml_block_scalars(text)
+    try:
+        return _json.loads(cleaned)
+    except _json.JSONDecodeError:
+        prepared = _prepare_yaml_lines(cleaned)
+        if not prepared:
+            return {}
+        parsed, _ = _parse_yaml_block(prepared, 0, prepared[0][0])
+        return parsed
+
+
+def _load_derived_data() -> dict[str, list[dict]]:
+    """Load derived-examples.yaml and spin-outs.yaml from examples/derived/.
+
+    Returns {"derived": [...], "spin_outs": [...]}.
+    Returns empty lists for any file that does not exist yet (run PROMPT_76/78 first).
+    Uses the repo's custom YAML parser with block scalar support (no PyYAML dependency).
+    """
+    repo_root = Path(__file__).resolve().parent.parent
     derived_dir = repo_root / "examples" / "derived"
 
     derived: list[dict] = []
     spin_outs: list[dict] = []
     de_path = derived_dir / "derived-examples.yaml"
     if de_path.exists():
-        raw = load_yaml_like(de_path)
+        raw = _load_yaml_with_block_scalars_from_path(de_path)
         derived = raw.get("derived", []) if isinstance(raw, dict) else []
     so_path = derived_dir / "spin-outs.yaml"
     if so_path.exists():
-        raw = load_yaml_like(so_path)
+        raw = _load_yaml_with_block_scalars_from_path(so_path)
         spin_outs = raw.get("spin_outs", []) if isinstance(raw, dict) else []
     return {"derived": derived, "spin_outs": spin_outs}
 
@@ -2270,14 +2336,15 @@ def main(argv: list[str]) -> int:
         print("\n--- Source Examples ---")
         # EXAMPLE_PROJECTS is added by PROMPT_75; fall back to empty dict if not yet present
         example_projects = globals().get("EXAMPLE_PROJECTS", {})
-        for num in entry.get("source_examples", []):
+        source_nums = _coerce_int_list(entry.get("source_examples", []))
+        for num in source_nums:
             ex = example_projects.get(num)
             if ex is not None:
                 print(f"  #{num:>3}  --use-example {num:<4}  {ex.codename:<45}  {ex.title}")
             else:
                 print(f"  #{num:>3}  --use-example {num}")
         print("\n--- Scaffold Commands ---")
-        for num in entry.get("source_examples", []):
+        for num in source_nums:
             ex = example_projects.get(num)
             slug = f"{ex.codename}" if ex else f"example-{num:03d}"
             print(f"  python3 scripts/new_repo.py --use-example {num} --dry-run --target-dir /tmp/{num:03d}-{slug}")
