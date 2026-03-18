@@ -36,3 +36,24 @@ Prompt text in both files must not be modified without also updating the corresp
 `new_repo_args` block. The `new_repo_args` values are the authoritative record of how to
 scaffold each project; the prompt text describes the intent. If they diverge, the
 `new_repo_args` block takes precedence for verification purposes.
+
+## Second-tier derived files (PROMPT_78)
+
+Three additional files extend the derived layer with higher-order analysis:
+
+### spin-outs.yaml
+
+Ten emergent platform descriptions derived from combining 2–11 reference examples.
+Each entry names an origin team, lists source examples, describes what the combined
+services become, and records seam notes for integration points.
+
+### tier-rankings.yaml
+
+Effectiveness tier rankings (Tier 1–5) for all 100 reference examples. Scored by
+standalone value, composability, technical depth, and uniqueness. Tiers are labeled
+Foundational, High Value, Solid, Specialized, and Niche.
+
+### orchestration-strategies.yaml
+
+Five strategies for combining projects at scale: event bus backbone, gateway mesh,
+shared data layer, prompt-first regeneration, and verification mesh.

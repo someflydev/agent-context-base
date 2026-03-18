@@ -4505,3 +4505,39 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: high
+  - name: derived-spin-outs
+    path: examples/derived/spin-outs.yaml
+    language: yaml
+    stack_tags: []
+    archetype_tags: []
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - contains 10 entries
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: derived-tier-rankings
+    path: examples/derived/tier-rankings.yaml
+    language: yaml
+    stack_tags: []
+    archetype_tags: []
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - contains 5 tier entries
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: derived-orchestration-strategies
+    path: examples/derived/orchestration-strategies.yaml
+    language: yaml
+    stack_tags: []
+    archetype_tags: []
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - contains 5 entries
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium

@@ -3051,6 +3051,39 @@
       "patterns": ["test-module", "coverage-verification", "archetype-coverage", "stack-coverage"],
       "rank": 70,
       "stability": "reference"
+    },
+    {
+      "path": "examples/derived/spin-outs.yaml",
+      "category": "derived",
+      "summary": "10 emergent platform descriptions derived from combining reference examples, with seam notes and value propositions.",
+      "stacks": [],
+      "archetypes": [],
+      "workflows": ["coverage-verification"],
+      "patterns": ["reference", "derived-examples", "spin-outs", "multi-service"],
+      "rank": 75,
+      "stability": "reference"
+    },
+    {
+      "path": "examples/derived/tier-rankings.yaml",
+      "category": "derived",
+      "summary": "Effectiveness tier rankings (Tier 1-5) for all 100 reference examples, scored by standalone value, composability, technical depth, and uniqueness.",
+      "stacks": [],
+      "archetypes": [],
+      "workflows": ["coverage-verification"],
+      "patterns": ["reference", "derived-examples", "tier-rankings"],
+      "rank": 75,
+      "stability": "reference"
+    },
+    {
+      "path": "examples/derived/orchestration-strategies.yaml",
+      "category": "derived",
+      "summary": "5 orchestration strategies for combining projects at scale: event bus backbone, gateway mesh, shared data layer, prompt-first regeneration, and verification mesh.",
+      "stacks": [],
+      "archetypes": [],
+      "workflows": ["coverage-verification"],
+      "patterns": ["reference", "derived-examples", "orchestration"],
+      "rank": 75,
+      "stability": "reference"
     }
   ]
 }
