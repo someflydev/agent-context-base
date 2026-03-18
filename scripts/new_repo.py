@@ -56,6 +56,10 @@ ARCHETYPES = {
     "multi-storage-experiment": "Repo that compares multiple backing services intentionally.",
     "prompt-first-repo": "Prompt-driven repo foundation with explicit context and routing files.",
     "dokku-deployable-service": "Single deployable service with Dokku-oriented deployment notes.",
+    "polyglot-lab": "Multi-language exploratory repo with each surface clearly owned and no shared production seam.",
+    "data-acquisition-service": "Service that acquires, archives, normalizes, and persists external data behind stable boundaries.",
+    "multi-source-sync-platform": "Platform that coordinates recurring multi-source syncs with checkpoints and idempotent persistence.",
+    "multi-backend-service": "Two or three backend services in different languages coordinating over an explicit designed seam.",
 }
 
 STACKS: dict[str, StackProfile] = {
@@ -315,6 +319,103 @@ STACKS: dict[str, StackProfile] = {
         ),
         stack_gitignore=(".coverage",),
     ),
+    "nim-jester-happyx": StackProfile(
+        description="Nim backend service using Jester for routing and HappyX for HTML fragment surfaces.",
+        display_name="Nim + Jester + HappyX",
+        app_image="nimlang/nim:2.0.2",  # TODO: verify Nim Docker image tag
+        app_command='sh -lc "nimble run"',  # TODO: verify nimble task name matches project
+        test_command='sh -lc "nimble test"',
+        app_container_port=5000,  # TODO: verify Jester port matches app configuration
+        route_path="src/main.nim",
+        smoke_path="tests/smoke/health_smoke.nim",
+        integration_path="tests/integration/report_runs_integration.nim",
+        seed_path="scripts/seed_data.nim",
+        directories=(
+            "docs",
+            "docker/volumes/dev",
+            "docker/volumes/test",
+            "manifests",
+            "scripts",
+            "src/fragments",
+            "src/http",
+            "src/services",
+            "tests/smoke",
+            "tests/integration",
+        ),
+        stack_gitignore=("nimcache/", ".cache/"),
+    ),
+    "scala-tapir-http4s-zio": StackProfile(
+        description="Scala backend service using Tapir, http4s, and ZIO for typed HTTP endpoints.",
+        display_name="Scala + Tapir + http4s + ZIO",
+        app_image="sbtscala/scala-sbt:eclipse-temurin-21_1.10.0_3.4.0",  # TODO: verify SBT image tag
+        app_command='sh -lc "sbt run"',
+        test_command='sh -lc "sbt test"',
+        app_container_port=8080,
+        route_path="src/main/scala/app/Main.scala",
+        smoke_path="src/test/scala/app/HealthSmokeTest.scala",
+        integration_path="src/test/scala/app/ReportRunsIntegrationTest.scala",
+        seed_path="scripts/seed_data.sql",
+        directories=(
+            "docs",
+            "docker/volumes/dev",
+            "docker/volumes/test",
+            "manifests",
+            "modules/domain",
+            "modules/http",
+            "modules/services",
+            "project",
+            "scripts",
+            "src/main/scala/app",
+            "src/test/scala/app",
+        ),
+        stack_gitignore=(".bsp/", "target/"),
+    ),
+    "clojure-kit-nextjdbc-hiccup": StackProfile(
+        description="Clojure backend service using Kit-style wiring, next.jdbc, and Hiccup.",
+        display_name="Clojure + Kit + next.jdbc + Hiccup",
+        app_image="clojure:temurin-21-tools-deps",  # TODO: verify Clojure image tag
+        app_command='sh -lc "clojure -M:run-dev"',  # TODO: verify :run-dev alias exists in deps.edn
+        test_command='sh -lc "clojure -M:test"',
+        app_container_port=3000,
+        route_path="src/app/routes.clj",
+        smoke_path="test/app/health_smoke_test.clj",
+        integration_path="test/app/report_runs_integration_test.clj",
+        seed_path="scripts/seed_data.sql",
+        directories=(
+            "docs",
+            "docker/volumes/dev",
+            "docker/volumes/test",
+            "manifests",
+            "resources",
+            "scripts",
+            "src/app",
+            "test/app",
+        ),
+        stack_gitignore=(".cpcache/", ".clj-kondo/"),
+    ),
+    "dart-dartfrog": StackProfile(
+        description="Dart backend service using Dart Frog for JSON, fragment, and data endpoints.",
+        display_name="Dart + Dart Frog",
+        app_image="dart:3.3",  # TODO: verify Dart SDK image tag
+        app_command='sh -lc "dart pub get && dart_frog serve"',  # TODO: verify serve command for Docker context
+        test_command='sh -lc "dart test"',
+        app_container_port=8080,
+        route_path="routes/index.dart",
+        smoke_path="test/health_smoke_test.dart",
+        integration_path="test/report_runs_integration_test.dart",
+        seed_path="scripts/seed_data.dart",
+        directories=(
+            "docs",
+            "docker/volumes/dev",
+            "docker/volumes/test",
+            "lib",
+            "manifests",
+            "routes",
+            "scripts",
+            "test",
+        ),
+        stack_gitignore=(".dart_tool/", "build/"),
+    ),
 }
 
 DEFAULT_MANIFESTS = {
@@ -346,6 +447,12 @@ DEFAULT_MANIFESTS = {
         "webapp-elixir-phoenix",
         "dokku-deployable-phoenix",
     ],
+    ("backend-api-service", "nim-jester-happyx"): ["backend-api-nim-jester-happyx"],
+    ("backend-api-service", "scala-tapir-http4s-zio"): ["backend-api-scala-tapir-http4s-zio"],
+    ("backend-api-service", "clojure-kit-nextjdbc-hiccup"): ["backend-api-clojure-kit-nextjdbc-hiccup"],
+    ("backend-api-service", "dart-dartfrog"): ["backend-api-dart-dartfrog"],
+    ("data-acquisition-service", "python-fastapi-uv-ruff-orjson-polars"): ["data-acquisition-service"],
+    ("multi-source-sync-platform", "python-fastapi-uv-ruff-orjson-polars"): ["multi-source-sync-platform"],
 }
 
 DOKKU_MANIFESTS = {
@@ -603,6 +710,10 @@ def infer_support_services(archetype: str, primary_stack: str, selected_manifest
         "zig-zap-jetzig",
         "go-echo",
         "elixir-phoenix",
+        "nim-jester-happyx",
+        "scala-tapir-http4s-zio",
+        "clojure-kit-nextjdbc-hiccup",
+        "dart-dartfrog",
     }:
         return ["postgres"]
     if primary_stack == "duckdb-trino-polars":
@@ -1156,6 +1267,50 @@ def render_phoenix_starters(slug: str) -> dict[str, str]:
     }
 
 
+def render_nim_starters() -> dict[str, str]:
+    """Render Nim starter app and tests."""
+
+    return {
+        "src/main.nim": 'import jester\n\nroutes:\n  get "/healthz":\n    resp %*{"status": "ok"}\n\nwhen isMainModule:\n  let settings = newSettings(port=Port(5000))\n  var jester = initJester(router, settings=settings)\n  jester.serve()\n',
+        "tests/smoke/health_smoke.nim": 'import unittest\n\nsuite "health smoke":\n  test "placeholder":\n    check true\n',
+        "tests/integration/report_runs_integration.nim": 'import unittest\n\nsuite "report runs integration":\n  test "placeholder":\n    # Replace with docker-compose.test.yml boot plus one real round-trip assertion.\n    check true\n',
+        "scripts/seed_data.nim": 'proc main() =\n  echo "replace with deterministic seed data"\n\nwhen isMainModule:\n  main()\n',
+    }
+
+
+def render_scala_starters() -> dict[str, str]:
+    """Render Scala starter app and tests."""
+
+    return {
+        "src/main/scala/app/Main.scala": 'package app\n\nobject Main extends App {\n  println("replace with Tapir + http4s + ZIO server wiring")\n}\n',
+        "src/test/scala/app/HealthSmokeTest.scala": 'package app\n\nimport org.scalatest.flatspec.AnyFlatSpec\nimport org.scalatest.matchers.should.Matchers\n\nclass HealthSmokeTest extends AnyFlatSpec with Matchers {\n  "health" should "be a placeholder" in {\n    true shouldBe true\n  }\n}\n',
+        "src/test/scala/app/ReportRunsIntegrationTest.scala": 'package app\n\nimport org.scalatest.flatspec.AnyFlatSpec\nimport org.scalatest.matchers.should.Matchers\n\nclass ReportRunsIntegrationTest extends AnyFlatSpec with Matchers {\n  "report runs" should "placeholder" in {\n    // Replace with docker-compose.test.yml boot plus one real boundary assertion.\n    true shouldBe true\n  }\n}\n',
+        "scripts/seed_data.sql": "insert into report_runs (tenant_id, report_id, total_events) values ('acme', 'daily-signups', 42);\n",
+    }
+
+
+def render_clojure_starters() -> dict[str, str]:
+    """Render Clojure starter app and tests."""
+
+    return {
+        "src/app/routes.clj": '(ns app.routes\n  (:require [ring.util.response :as response]))\n\n(defn healthz-handler [_request]\n  (response/response {:status "ok"}))\n\n(def routes\n  [[\"/healthz\" {:get {:handler healthz-handler}}]])\n',
+        "test/app/health_smoke_test.clj": "(ns app.health-smoke-test\n  (:require [clojure.test :refer [deftest is]]))\n\n(deftest health-smoke-placeholder\n  (is true))\n",
+        "test/app/report_runs_integration_test.clj": "(ns app.report-runs-integration-test\n  (:require [clojure.test :refer [deftest is]]))\n\n(deftest report-runs-integration-placeholder\n  ;; Replace with docker-compose.test.yml boot plus one real next.jdbc query.\n  (is true))\n",
+        "scripts/seed_data.sql": "insert into report_runs (tenant_id, report_id, total_events) values ('acme', 'daily-signups', 42);\n",
+    }
+
+
+def render_dart_starters() -> dict[str, str]:
+    """Render Dart Frog starter app and tests."""
+
+    return {
+        "routes/index.dart": "import 'package:dart_frog/dart_frog.dart';\n\nResponse onRequest(RequestContext context) {\n  return Response.json(body: {'status': 'ok'});\n}\n",
+        "test/health_smoke_test.dart": "import 'package:test/test.dart';\n\nvoid main() {\n  test('health smoke placeholder', () {\n    expect(true, isTrue);\n  });\n}\n",
+        "test/report_runs_integration_test.dart": "import 'package:test/test.dart';\n\nvoid main() {\n  test('report runs integration placeholder', () {\n    // Replace with docker-compose.test.yml boot plus one real round-trip assertion.\n    expect(true, isTrue);\n  });\n}\n",
+        "scripts/seed_data.dart": "void main() {\n  print('replace with deterministic seed data');\n}\n",
+    }
+
+
 def starter_files_for_stack(primary_stack: str, slug: str) -> dict[str, str]:
     """Return the starter files for the selected primary stack."""
 
@@ -1175,6 +1330,14 @@ def starter_files_for_stack(primary_stack: str, slug: str) -> dict[str, str]:
         return render_go_starters()
     if primary_stack == "elixir-phoenix":
         return render_phoenix_starters(slug)
+    if primary_stack == "nim-jester-happyx":
+        return render_nim_starters()
+    if primary_stack == "scala-tapir-http4s-zio":
+        return render_scala_starters()
+    if primary_stack == "clojure-kit-nextjdbc-hiccup":
+        return render_clojure_starters()
+    if primary_stack == "dart-dartfrog":
+        return render_dart_starters()
     raise ValueError(f"Unsupported primary stack: {primary_stack}")
 
 
