@@ -1,0 +1,523 @@
+You are working inside the agent-context-base repository.
+
+This prompt makes derived-example generation real. PROMPT_79 stopped at
+listing and printing derived examples; this prompt turns
+`python3 scripts/new_repo.py --derived-example=... --target-dir ...`
+into an actual repo-generation workflow.
+
+The desired operator experience is:
+
+  python3 scripts/new_repo.py \
+    --derived-example=ingestion-normalization-core \
+    --target-dir /tmp
+
+which should generate:
+
+  /tmp/ingestion-normalization-core
+
+and:
+
+  python3 scripts/new_repo.py \
+    --derived-example=team-a \
+    --target-dir /tmp
+
+which should generate one repo for each Team A derived example under `/tmp/`,
+using each derived example's own default slug as the child directory name.
+
+For derived-example repos, the generator must also synthesize an initial
+ordered `.prompts/PROMPT_XX.txt` sequence that points the assistant at the
+right manifests, context, seam contracts, and canonical examples for that
+derived scenario.
+
+Output changes as commit-ready batches labeled `[PROMPT_80]`.
+
+================================================================================
+CONSTRAINTS
+================================================================================
+
+- Keep stdlib-only loading in `scripts/new_repo.py`. Do NOT add PyYAML.
+- Do not regress the existing single-example and prompt-first flows.
+- `--use-example` behavior must remain unchanged.
+- `validate_context.py` and `validate_doc_governance.py` must both pass.
+- Use `python3.14 -m unittest`, not pytest.
+- Prefer extending existing generator helpers over shelling out to `python3`.
+  Reuse the same planning/writing pipeline multiple times in-process.
+- Fail before partial writes when a team selector would hit an invalid target.
+
+Run after each batch:
+
+  python3.14 -m unittest verification.scripts.test_repo_scripts -v
+  python3.14 -m unittest verification.examples.derived.test_derived_coverage -v
+  python3.14 scripts/validate_context.py
+  python3.14 scripts/validate_doc_governance.py
+
+================================================================================
+REQUIRED READS
+================================================================================
+
+  scripts/new_repo.py
+  scripts/README.md
+  docs/usage/STARTING_NEW_PROJECTS.md
+  examples/derived/README.md
+  examples/derived/derived-examples.yaml
+  examples/derived/spin-outs.yaml
+  manifests/prompt-first-meta-repo.yaml
+  context/workflows/generate-prompt-sequence.md
+  verification/scripts/test_repo_scripts.py
+  verification/examples/derived/test_derived_coverage.py
+
+================================================================================
+I. WHAT TO BUILD
+================================================================================
+
+1. Make `--derived-example NAME --target-dir PATH` generate repos instead of only
+   printing an informational guide.
+2. Support collection selectors:
+     - `team-a`
+     - `team-b`
+     - `all-derived`
+3. Treat `/tmp` and any existing directory passed via `--target-dir` as a parent
+   directory for derived generation.
+4. Generate a prompt-first derived repo for each leaf derived example, with
+   synthesized `.prompts/PROMPT_XX.txt` files and derived metadata.
+5. Preserve and use the real YAML block-scalar text for `prompt`,
+   `what_it_becomes`, and `seam_notes`.
+6. Extend tests and docs to cover the new behavior.
+
+================================================================================
+II. CLI SEMANTICS
+================================================================================
+
+### A. Leaf derived example
+
+This command:
+
+  python3 scripts/new_repo.py \
+    --derived-example ingestion-normalization-core \
+    --target-dir /tmp
+
+must create:
+
+  /tmp/ingestion-normalization-core
+
+This command:
+
+  python3 scripts/new_repo.py \
+    --derived-example ingestion-normalization-core \
+    --target-dir /tmp/ingestion-normalization-core
+
+must create exactly that path, not nest another child directory.
+
+If `--target-dir` is omitted for a leaf selector, default to:
+
+  ./<derived-example-name>
+
+### B. Team selectors
+
+This command:
+
+  python3 scripts/new_repo.py \
+    --derived-example team-a \
+    --target-dir /tmp
+
+must create:
+
+  /tmp/ingestion-normalization-core
+  /tmp/analytics-lake-deployment
+  /tmp/ml-gateway-intelligence
+  /tmp/operator-surface
+
+Likewise `team-b` must generate one repo per Team B derived entry, and
+`all-derived` must generate all 8 derived repos.
+
+If `--target-dir` is omitted for a team selector, use the current directory as
+the parent and create `./<derived-name>` children.
+
+### C. Existing `--list-derived`
+
+Keep `--list-derived`, but extend it to print a final section:
+
+  Collection Selectors:
+    team-a
+    team-b
+    all-derived
+
+### D. `--dry-run`
+
+For leaf selectors, `--dry-run` must print the final target path and planned
+files for that one derived repo.
+
+For team selectors, `--dry-run` must print each child target path and planned
+files, clearly separated, without writing anything.
+
+================================================================================
+III. GENERATION MODEL FOR LEAF DERIVED EXAMPLES
+================================================================================
+
+A leaf derived example should generate one prompt-first orchestration repo, not
+2-3 fully implemented product repos. The output repo is a coordination and
+implementation-planning repo for the combined scenario described by the derived
+entry.
+
+Use these defaults for a leaf derived repo:
+
+  archetype: prompt-first-repo
+  primary_stack: prompt-first-repo
+  prompt_first: enabled automatically
+  manifest bundle: include `prompt-first-meta-repo`
+
+The generated repo must include at minimum:
+
+  AGENT.md
+  CLAUDE.md
+  PROMPTS.md
+  .generated-profile.yaml
+  manifests/project-profile.yaml
+  .prompts/PROMPT_01.txt
+  .prompts/PROMPT_02.txt
+  .prompts/PROMPT_03.txt
+  .prompts/PROMPT_04.txt
+
+Do not also generate the generic prompt-first starter files
+`.prompts/001-bootstrap-repo.txt` and `.prompts/002-refine-test-surface.txt`
+for derived repos. Keep those for the existing plain prompt-first path.
+
+================================================================================
+IV. TARGET RESOLUTION RULES
+================================================================================
+
+Add explicit target-resolution helpers in `scripts/new_repo.py`.
+
+For derived generation, apply these rules:
+
+1. If the selector is a leaf derived example and `--target-dir` is omitted:
+   use `Path.cwd() / selector_name`.
+
+2. If `--target-dir` points to an existing directory:
+   treat it as a parent directory and resolve to:
+     parent / selector_name
+   for a leaf selector, or:
+     parent / child_name
+   for each team-selected child.
+
+3. If `--target-dir` does not exist:
+   for a leaf selector, treat it as the exact repo path requested by the user.
+   for a team selector, require that the path either already exists as a
+   directory or is creatable as a parent directory; then create children under it.
+
+4. Handle `/tmp` and `/private/tmp` equivalently on macOS once resolved.
+
+5. For team selectors, precompute all child targets and validate them all before
+   writing anything. If one child would fail because the directory exists and is
+   non-empty without `--force`, exit non-zero before writing any child repo.
+
+================================================================================
+V. BLOCK-SCALAR BUG FIX
+================================================================================
+
+Right now `scripts/new_repo.py --derived-example ...` prints:
+
+  block-scalar-content
+
+instead of the actual prompt text. That bug must be fixed as part of this work.
+
+The derived-generation path depends on the real text from these YAML block
+scalars:
+
+  - `prompt`
+  - `what_it_becomes`
+  - `seam_notes`
+
+Implement a stdlib-only fix in `scripts/new_repo.py`.
+
+Acceptable approaches:
+
+- extend the custom loader so block scalars are preserved for these files
+- or add a narrow parser for `examples/derived/*.yaml` that preserves multi-line
+  block scalar values
+
+Unacceptable approach:
+
+- adding PyYAML
+
+After the fix:
+
+  python3.14 scripts/new_repo.py --derived-example ingestion-normalization-core
+
+must print the real prompt text, not the placeholder.
+
+================================================================================
+VI. SYNTHESIZED DERIVED PROMPT FILES
+================================================================================
+
+For generated derived repos, create `.prompts/PROMPT_01.txt` through
+`.prompts/PROMPT_04.txt`.
+
+These prompts must reference exact repo paths and actual scenario details pulled
+from the derived entry and its `source_examples`.
+
+### PROMPT_01.txt
+
+Purpose: bootstrap the repo as a combined scenario repo.
+
+Must include:
+
+- the derived example title and description
+- the full derived `prompt` text
+- the source example numbers, codenames, and titles
+- an instruction to update `manifests/project-profile.yaml`
+- an instruction to establish the repo's combined service map and seam map
+- explicit file targets such as:
+    `AGENT.md`
+    `CLAUDE.md`
+    `manifests/project-profile.yaml`
+    `PROMPTS.md`
+
+### PROMPT_02.txt
+
+Purpose: scaffold the service surfaces implied by the source examples.
+
+Must include:
+
+- a service-by-service scaffold plan derived from `new_repo_args`
+- explicit naming for each service or subsystem
+- instructions to pull implementation shape from the canonical examples named in
+  the derived entry
+- explicit references to the relevant canonical example files when available
+
+### PROMPT_03.txt
+
+Purpose: wire seams, contracts, and coordination.
+
+Must include:
+
+- the seam contracts from the derived prompt
+- any `seam_notes` text if present
+- instructions to add schemas, event names, or REST seam docs under exact paths
+- instructions to keep service boundaries explicit and testable
+
+### PROMPT_04.txt
+
+Purpose: verification and refinement.
+
+Must include:
+
+- derived-specific smoke and integration verification expectations
+- instructions to add or update verification commands in
+  `manifests/project-profile.yaml`
+- instructions for post-flight refinement and doc freshness
+- explicit reminder not to create speculative front docs
+
+### PROMPTS.md
+
+For derived repos, update `PROMPTS.md` content so it documents the `PROMPT_XX.txt`
+sequence rather than the old `001-...` filenames.
+
+================================================================================
+VII. PROJECT PROFILE METADATA
+================================================================================
+
+Extend the generated project profile for derived repos so it includes a
+derived-specific metadata block.
+
+Add fields such as:
+
+  derived_example_name:
+  derived_team:
+  derived_description:
+  source_examples:
+  source_example_commands:
+  preferred_examples:
+  selected_manifests:
+  prompt_sequence:
+
+Populate these from the derived YAML entry and the referenced `EXAMPLE_PROJECTS`
+entries where possible.
+
+The profile should make it obvious which examples and stacks informed the repo.
+
+================================================================================
+VIII. INTERNAL IMPLEMENTATION SHAPE
+================================================================================
+
+In `scripts/new_repo.py`, add small focused helpers rather than stuffing all
+logic into `main()`.
+
+Suggested helper responsibilities:
+
+- selector expansion
+- target resolution
+- derived entry lookup
+- derived repo file rendering
+- derived prompt rendering
+- multi-target preflight validation
+
+Prefer calling the existing generator pipeline in-process with a structured plan
+instead of spawning shell subprocesses.
+
+One reasonable structure is:
+
+1. resolve selector into one or more derived leaf entries
+2. resolve exact target paths
+3. preflight all targets
+4. for each leaf entry:
+   - build a derived generation plan
+   - render files
+   - write files
+
+================================================================================
+IX. VALIDATION FOR PROMPT FILE NAMING
+================================================================================
+
+The current prompt-first validation helper assumes filenames like:
+
+  001-bootstrap-repo.txt
+  002-refine-test-surface.txt
+
+Derived repos will instead use:
+
+  PROMPT_01.txt
+  PROMPT_02.txt
+  PROMPT_03.txt
+  PROMPT_04.txt
+
+Update prompt-first validation carefully so:
+
+- existing non-derived prompt-first repos using `001-...` still pass
+- derived repos using `PROMPT_XX.txt` also pass
+- mixed or malformed prompt file naming still fails clearly
+
+Keep the rule monotonic in both modes.
+
+================================================================================
+X. TESTS
+================================================================================
+
+Extend `verification/scripts/test_repo_scripts.py` with focused tests.
+
+Add at least these:
+
+1. `test_new_repo_prints_real_derived_prompt_text`
+   Run `new_repo.py --derived-example ingestion-normalization-core`
+   and assert the output contains a real phrase from the YAML prompt, not
+   `block-scalar-content`.
+
+2. `test_new_repo_generates_leaf_derived_repo_under_parent_dir`
+   Run:
+     new_repo.py --derived-example ingestion-normalization-core --target-dir <tmpdir>
+   Assert:
+     `<tmpdir>/ingestion-normalization-core` exists
+     `.prompts/PROMPT_01.txt` exists
+     `.prompts/PROMPT_04.txt` exists
+     `PROMPTS.md` exists
+     `manifests/project-profile.yaml` exists
+
+3. `test_new_repo_generates_team_a_bundle`
+   Run:
+     new_repo.py --derived-example team-a --target-dir <tmpdir>
+   Assert all four Team A child repos exist.
+
+4. `test_new_repo_dry_run_for_team_a_lists_all_child_targets`
+   Run with `--dry-run` and assert stdout includes each Team A child path.
+
+5. `test_new_repo_derived_target_dir_exact_path_is_respected`
+   Pass a non-existent exact leaf path and assert the repo is written there, not
+   nested beneath it.
+
+6. `test_new_repo_list_derived_includes_collection_selectors`
+   Assert stdout includes `team-a`, `team-b`, and `all-derived`.
+
+If the test module becomes large, keep each test short and use helpers.
+
+Also extend `verification/examples/derived/test_derived_coverage.py` with light
+structural checks for the new selector semantics if useful, but keep behavioral
+CLI tests in `verification/scripts/test_repo_scripts.py`.
+
+================================================================================
+XI. DOC UPDATES
+================================================================================
+
+Update:
+
+  docs/usage/STARTING_NEW_PROJECTS.md
+  scripts/README.md
+  examples/derived/README.md
+
+Document:
+
+- leaf derived generation
+- team selector generation
+- parent-dir semantics for `/tmp`
+- the fact that derived generation creates prompt-first orchestration repos
+- the new `PROMPT_XX.txt` prompt sequence for derived repos
+
+Include concrete command examples exactly like:
+
+  python3 scripts/new_repo.py --derived-example ingestion-normalization-core --target-dir /tmp
+  python3 scripts/new_repo.py --derived-example team-a --target-dir /tmp
+
+================================================================================
+XII. BATCHING
+================================================================================
+
+Use commit-ready batches:
+
+Batch 1:
+- block-scalar bug fix
+- selector expansion and target resolution helpers
+- leaf and team derived generation in `scripts/new_repo.py`
+
+Batch 2:
+- derived prompt rendering
+- derived profile metadata
+- validation updates for `PROMPT_XX.txt`
+
+Batch 3:
+- script tests
+- docs updates
+
+After each batch, run the required verification commands and fix failures before
+moving on.
+
+================================================================================
+XIII. DONE CRITERIA
+================================================================================
+
+All of the following must be true:
+
+1. `python3.14 scripts/new_repo.py --derived-example ingestion-normalization-core --target-dir /tmp`
+   generates `/tmp/ingestion-normalization-core`.
+
+2. `python3.14 scripts/new_repo.py --derived-example team-a --target-dir /tmp`
+   generates four Team A child repos under `/tmp`.
+
+3. A generated derived repo contains:
+   `PROMPTS.md` and `.prompts/PROMPT_01.txt` through `.prompts/PROMPT_04.txt`.
+
+4. Derived prompt output prints real YAML text, not `block-scalar-content`.
+
+5. Existing prompt-first and `--use-example` flows still pass their tests.
+
+6. `python3.14 -m unittest verification.scripts.test_repo_scripts -v` passes.
+
+7. `python3.14 -m unittest verification.examples.derived.test_derived_coverage -v` passes.
+
+8. `python3.14 scripts/validate_context.py` passes.
+
+9. `python3.14 scripts/validate_doc_governance.py` passes.
+
+================================================================================
+XIV. COMMIT MESSAGE
+================================================================================
+
+Use this Tim Pope style multi-line commit message:
+
+[NEW PROMPT_80] generate repos from derived examples
+
+Turn --derived-example into a real generation path instead of an
+informational printer. Support team selectors and parent-dir
+resolution so /tmp expands to /tmp/<derived-name>.
+
+Generate prompt-first derived repos with PROMPT_XX sequences,
+carry forward derived metadata, and preserve real block-scalar
+prompt text from examples/derived/*.yaml.
