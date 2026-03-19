@@ -61,10 +61,13 @@ python scripts/new_repo.py analytics-api \
 
 - picks the requested archetype and primary stack
 - selects default manifests for that repo shape
+- vendors the selected base manifests under `manifests/base/` inside the generated repo
 - renders `AGENT.md`, `CLAUDE.md`, `.gitignore`, and generated profile files
 - defers a substantial root `README.md` and root `docs/` by default unless you explicitly ask for them or a narrowly scoped operational need requires them
 - optionally renders prompt files, seed data, smoke tests, integration tests, and Dokku assets
 - generates isolated `docker-compose.yml` and `docker-compose.test.yml` when the profile implies local infra
+
+`manifests/project-profile.yaml` remains the generated repo's repo-local summary of actual state. The vendored files under `manifests/base/*.yaml` are snapshots of the selected base manifests so a fresh assistant session inside the generated repo can recover the original routing and bootstrap intent locally.
 
 ## Documentation Timing For Derived Repos
 
@@ -78,7 +81,7 @@ If you truly want early front docs anyway, use the generator flags that opt into
 
 ## Generating A Derived Repo
 
-Leaf derived examples generate one prompt-first orchestration repo for the combined scenario, not several fully implemented service repos. The generated repo carries derived metadata in `manifests/project-profile.yaml` and synthesizes a staged prompt sequence in `.prompts/PROMPT_01.txt` through `.prompts/PROMPT_04.txt`.
+Leaf derived examples generate one prompt-first orchestration repo for the combined scenario, not several fully implemented service repos. The generated repo carries derived metadata in `manifests/project-profile.yaml`, vendors the selected base manifests under `manifests/base/`, and synthesizes a staged prompt sequence in `.prompts/PROMPT_01.txt` through `.prompts/PROMPT_04.txt`.
 
 Examples:
 
@@ -94,7 +97,7 @@ Target resolution rules:
 - `--derived-example team-a --target-dir /tmp` treats `/tmp` as the parent and writes one child repo per Team A derived example
 - omitting `--target-dir` uses `./<derived-name>` for a leaf selector and the current directory as the parent for team selectors
 
-The derived prompt sequence replaces the generic prompt-first starter files:
+The derived prompt sequence replaces the generic prompt-first starter files and does not rely on a generated `PROMPTS.md`:
 
 - `PROMPT_01.txt` bootstraps the combined scenario repo and updates the profile/service map
 - `PROMPT_02.txt` scaffolds the service surfaces implied by the source examples
@@ -114,7 +117,7 @@ Strong first prompt for the generated repo:
 
 > Read the bootstrap context that matters for this repo, propose the implementation plan you intend to execute, wait for my approval, then carry it out with verification checkpoints.
 
-The assistant should load `AGENT.md` or `CLAUDE.md`, the generated profile, and the most relevant examples or manifests. The human should review the plan, not manually reconstruct the startup context file by file.
+The assistant should load `AGENT.md` or `CLAUDE.md`, `manifests/project-profile.yaml`, `.generated-profile.yaml`, the vendored manifests under `manifests/base/`, and the initial prompt files under `.prompts/`. The human should review the plan, not manually reconstruct the startup context file by file.
 
 ## Rules That Keep New Repos Clean
 

@@ -27,6 +27,7 @@ Capabilities:
 
 - choose an archetype and primary stack
 - select or infer manifests
+- vendor selected base manifests under `manifests/base/` in the generated repo
 - optionally enable Dokku, prompt-first prompts, smoke tests, integration tests, and seed data
 - generate isolated `docker-compose.yml` and `docker-compose.test.yml`
 - generate `AGENT.md`, `CLAUDE.md`, `.gitignore`, and generated profile files
@@ -57,7 +58,9 @@ Derived generation notes:
 - `--derived-example <leaf>` generates one prompt-first orchestration repo for that scenario
 - `--derived-example team-a`, `team-b`, or `all-derived` generates one child repo per derived example
 - when `--target-dir` points at `/tmp` or any existing directory, that directory is treated as the parent and each derived repo is written under it
-- leaf derived repos use `.prompts/PROMPT_01.txt` through `.prompts/PROMPT_04.txt` instead of the generic `001-...` prompt-first starter pair
+- generated repos keep a repo-local summary in `manifests/project-profile.yaml` and vendor the selected base manifests under `manifests/base/*.yaml`
+- new prompt-first generation writes `.prompts/` directly and does not generate `PROMPTS.md` by default
+- leaf derived repos use `.prompts/PROMPT_01.txt` through `.prompts/PROMPT_04.txt` instead of the generic `001-...` prompt-first starter pair, and those prompts explicitly tell downstream assistants to use vendored manifests plus generated profiles as the local replacement for the base repo
 
 ## `init_memory.py`
 
