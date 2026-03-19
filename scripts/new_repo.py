@@ -1703,6 +1703,19 @@ def load_available_manifests() -> dict[str, dict[str, object]]:
     return manifests
 
 
+def load_manifest_texts(selected_manifests: list[str]) -> dict[str, str]:
+    """Load raw manifest snapshots for vendoring into generated repos."""
+
+    manifest_dir = repo_root() / "manifests"
+    manifest_texts: dict[str, str] = {}
+    for manifest_name in selected_manifests:
+        path = manifest_dir / f"{manifest_name}.yaml"
+        if not path.exists():
+            raise ValueError(f"Unknown manifest: {manifest_name}")
+        manifest_texts[manifest_name] = path.read_text(encoding="utf-8")
+    return manifest_texts
+
+
 def print_catalog(title: str, entries: dict[str, str]) -> int:
     """Print one catalog and exit."""
 
@@ -2084,6 +2097,7 @@ def render_profile_summary(
     port_map: dict[str, int],
     starter_paths: dict[str, str],
     validation_commands: list[str],
+    vendored_manifest_paths: list[str],
     extra_context_entrypoints: list[str] | None = None,
     extra_metadata: dict[str, object] | None = None,
 ) -> str:
@@ -2094,6 +2108,7 @@ def render_profile_summary(
         "CLAUDE.md",
         "manifests/project-profile.yaml",
         ".generated-profile.yaml",
+        *vendored_manifest_paths,
         *(["README.md"] if include_root_readme else []),
         *(["docs/repo-purpose.md", "docs/repo-layout.md"] if include_docs_dir else []),
     ]
@@ -2111,6 +2126,7 @@ def render_profile_summary(
         "front_docs_root_readme_generated": str(include_root_readme).lower(),
         "front_docs_docs_dir_generated": str(docs_dir_generated).lower(),
         "selected_manifest_lines": format_yaml_list(manifests),
+        "vendored_manifest_lines": format_yaml_list(vendored_manifest_paths),
         "dokku_enabled": str(dokku).lower(),
         "prompt_first_enabled": str(prompt_first).lower(),
         "smoke_tests_enabled": str(smoke_tests).lower(),
@@ -2846,6 +2862,13 @@ def build_generated_files(
     generated_files: dict[str, str] = {}
     generated_files.update(render_agent_and_claude(request.archetype, request.primary_stack, request.manifests))
     generated_files[".gitignore"] = render_gitignore(profile)
+    vendored_manifest_texts = load_manifest_texts(request.manifests)
+    vendored_manifest_paths = [
+        f"manifests/base/{manifest_name}.yaml"
+        for manifest_name in request.manifests
+    ]
+    for manifest_name, manifest_text in vendored_manifest_texts.items():
+        generated_files[f"manifests/base/{manifest_name}.yaml"] = manifest_text
     if request.include_root_readme:
         generated_files["README.md"] = render_readme(
             request.repo_name,
@@ -2894,6 +2917,7 @@ def build_generated_files(
         port_map=port_map,
         starter_paths=starter_paths,
         validation_commands=validation_commands or ["echo no extra validation commands configured"],
+        vendored_manifest_paths=vendored_manifest_paths,
         extra_context_entrypoints=request.extra_context_entrypoints,
         extra_metadata=request.extra_profile_metadata,
     )

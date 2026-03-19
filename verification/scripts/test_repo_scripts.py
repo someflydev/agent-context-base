@@ -47,8 +47,34 @@ class RepoScriptTests(unittest.TestCase):
             self.assertTrue(target.exists())
             self.assertTrue((target / ".prompts/PROMPT_01.txt").exists())
             self.assertTrue((target / ".prompts/PROMPT_04.txt").exists())
-            self.assertTrue((target / "PROMPTS.md").exists())
             self.assertTrue((target / "manifests/project-profile.yaml").exists())
+            self.assertTrue((target / "manifests/base/prompt-first-meta-repo.yaml").exists())
+
+    def test_new_repo_vendors_selected_manifests_into_generated_repo(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            target = Path(temp_dir) / "analytics-api"
+            code, stdout, stderr = run_script(
+                str(SCRIPTS_DIR / "new_repo.py"),
+                "analytics-api",
+                "--target-dir",
+                str(target),
+                "--archetype",
+                "backend-api-service",
+                "--primary-stack",
+                "python-fastapi-uv-ruff-orjson-polars",
+                "--manifest",
+                "backend-api-fastapi-polars",
+                "--manifest",
+                "data-acquisition-service",
+            )
+            self.assertEqual(code, 0, stderr)
+            self.assertIn("Generated starter repo", stdout)
+            profile = (target / "manifests/project-profile.yaml").read_text(encoding="utf-8")
+            self.assertTrue((target / "manifests/base/backend-api-fastapi-polars.yaml").exists())
+            self.assertTrue((target / "manifests/base/data-acquisition-service.yaml").exists())
+            self.assertIn("vendored_base_manifests_dir: manifests/base", profile)
+            self.assertIn("- manifests/base/backend-api-fastapi-polars.yaml", profile)
+            self.assertIn("- manifests/base/data-acquisition-service.yaml", profile)
 
     def test_new_repo_generates_team_a_bundle(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -138,7 +164,7 @@ class RepoScriptTests(unittest.TestCase):
             self.assertIn("Generated starter repo", stdout)
             self.assertTrue((target / ".prompts/001-bootstrap-repo.txt").exists())
             self.assertTrue((target / "AGENT.md").exists())
-            self.assertTrue((target / "PROMPTS.md").exists())
+            self.assertTrue((target / "manifests/base/prompt-first-meta-repo.yaml").exists())
             self.assertFalse((target / "README.md").exists())
             self.assertFalse((target / "docs").exists())
 
