@@ -18,6 +18,11 @@ When routing, selecting examples, assembling context bundles, choosing a verific
 reading and writing `MEMORY.md`, prefer the repo-local guidance vendored under `context/`,
 `examples/`, and `templates/` when those paths are present.
 
+If `manifests/project-profile.yaml` records `derived_metadata.derived_context_mode: maximal`,
+the additional vendored `context/`, `examples/`, and `templates/` paths are intentional.
+Use those repo-local copies as the routing and prompt-continuation surface before assuming
+you need the source generator repo.
+
 ## Repo Profile
 
 - archetype: `{{archetype}}`
