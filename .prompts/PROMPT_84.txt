@@ -1,0 +1,201 @@
+You are still working inside the agent-context-base repository.
+
+This prompt continues PROMPT_83 and raises the bar again for the maximal
+derived-context mode.
+
+PROMPT_83 made maximal mode richer and more self-explanatory. This prompt
+changes the physical layout requirement: the vendored context/manifests/examples
+and templates should no longer spill across the generated repo root.
+
+The generated repo should keep its vendored agent-context-base payload under a
+new hidden container directory, with root entrypoints pointing into it.
+
+Output changes as commit-ready batches labeled `[PROMPT_84]`, except for the
+commit that adds prompt files in this sequence, which should use the prefix
+`[NEW PROMPT_84]`.
+
+===============================================================================
+I. TARGET LAYOUT
+===============================================================================
+
+For maximal-mode derived repos, move the vendored base-repo payload under a
+hidden top-level directory:
+
+- `.acb/manifests/base/...`
+- `.acb/context/...`
+- `.acb/examples/...`
+- `.acb/templates/...`
+- `.acb/.generated-profile.yaml`
+
+Keep these root-level files because they are the startup entrypoints for a fresh
+assistant session:
+
+- `AGENT.md`
+- `CLAUDE.md`
+- `manifests/project-profile.yaml`
+- `.prompts/PROMPT_01.txt` through `.prompts/PROMPT_04.txt`
+
+If there are a few additional root-level files that are truly generated repo
+state rather than vendored base snapshots, keep them rooted only if that choice
+is deliberate and documented.
+
+The goal is to make the generated repo feel cleaner and more product-like while
+still preserving a rich repo-local descendant of agent-context-base.
+
+===============================================================================
+II. ROOT VS VENDORED DISTINCTION
+===============================================================================
+
+The generated repo should make the distinction obvious:
+
+- root-level files are the generated repo's active startup and working surface
+- `.acb/` is the vendored agent-context-base snapshot and reference bundle
+- repo-local generated state should not masquerade as vendored base files
+- vendored base files should not masquerade as product implementation files
+
+An operator or assistant should be able to infer that `.acb/` is:
+
+1. intentional
+2. local
+3. vendored
+4. bounded
+5. safe to read as the local substitute for the source base repository
+
+===============================================================================
+III. STARTUP UX REQUIREMENTS
+===============================================================================
+
+Do not just move files and leave startup guidance stale.
+
+For a maximal-mode derived repo, the startup order should now intentionally
+surface something like:
+
+- `AGENT.md`
+- `CLAUDE.md`
+- `manifests/project-profile.yaml`
+- `.acb/.generated-profile.yaml`
+- `.acb/manifests/base/...`
+- `.acb/context/...` startup doctrine/workflows
+- `.acb/examples/...` canonical prompt/workflow examples
+- `.prompts/PROMPT_01.txt` through `.prompts/PROMPT_04.txt`
+
+The assistant should not need to guess that `.acb/` matters. The generated
+profile, prompt files, and root startup docs should explicitly say so.
+
+`AGENT.md` and `CLAUDE.md` should remain concise, but they must clearly point at
+the `.acb/` routing model and profile paths.
+
+===============================================================================
+IV. DESIGN EXPECTATIONS
+===============================================================================
+
+Implement this as an intentional layout model, not as a string replace.
+
+Good outcomes include:
+
+- a single helper that maps vendored base payload paths into `.acb/`
+- metadata that records the `.acb/` root explicitly
+- startup-order helpers that distinguish root generated state from vendored
+  `.acb/` startup references
+- comments that explain why `.acb/` exists and why certain files remain at root
+
+Avoid brittle code that sprinkles `".acb/"` concatenation logic across the file.
+Prefer a named policy or path-mapping helper with tests.
+
+===============================================================================
+V. METADATA AND DOCS
+===============================================================================
+
+Strengthen the generated metadata so the mode explains itself after this layout
+change.
+
+Good approaches include:
+
+- `vendored_base_root: .acb`
+- `generated_profile_path: .acb/.generated-profile.yaml`
+- `vendored_manifest_paths` rewritten under `.acb/manifests/base/...`
+- `repo_local_routing_model_paths` and startup-order lists that point at `.acb/`
+- a note explaining that `.acb/` is the vendored local snapshot of
+  agent-context-base materials for this generated repo
+
+Update docs so they describe the new layout consistently:
+
+- derived-generation docs
+- any generated guidance text
+- any references that currently imply vendored `context/`, `examples/`,
+  `templates/`, or base manifests live directly at repo root
+
+===============================================================================
+VI. COMPACT VS MAXIMAL
+===============================================================================
+
+Think carefully about whether this `.acb/` container should apply only to
+maximal mode or to all derived repos.
+
+You may choose either of these if you justify it coherently in code and docs:
+
+1. `.acb/` applies only to maximal mode, while compact keeps the flatter layout
+2. `.acb/` applies to all derived repos, with maximal simply adding more payload
+   beneath the same container
+
+Do not hand-wave this choice. The code, metadata, prompts, and tests must all
+agree on the rule.
+
+===============================================================================
+VII. VERIFICATION AND SMALL TEST IMPROVEMENTS
+===============================================================================
+
+In addition to adapting existing derived-repo tests, look for small,
+high-leverage testing or verification improvements exposed by this layout
+change.
+
+Good examples:
+
+- assert that root-level generated repos no longer leak vendored `context/`,
+  `examples/`, `templates/`, or base manifest files outside `.acb/` when the
+  new policy says they should not
+- assert that every path referenced by prompt startup guidance exists at the
+  rewritten `.acb/` location
+- assert that `AGENT.md` and `CLAUDE.md` reference `.acb/.generated-profile.yaml`
+  or the equivalent new vendored profile path
+- assert that team-derived generation produces children whose vendored payload is
+  contained under `.acb/`
+- strengthen any validation script that currently hard-codes
+  `.generated-profile.yaml` at repo root if that assumption is no longer valid
+- add one narrow validation that distinguishes root generated state from vendored
+  `.acb/` state so future regressions are caught early
+
+Keep this verification work small and pragmatic. The goal is to harden the new
+layout boundary, not to launch a broad testing rewrite.
+
+===============================================================================
+VIII. FAILURE MODES TO AVOID
+===============================================================================
+
+Do not ship any of these:
+
+- a layout change where prompts still point at old root-level vendored paths
+- a partially hidden bundle where some vendored files move under `.acb/` and
+  others still leak into root without a deliberate rule
+- docs that describe `.acb/` one way while the generator writes another
+- validation scripts that silently assume the old profile location
+- a maximal repo that now feels harder to navigate because the root entrypoints
+  do not point clearly into `.acb/`
+
+===============================================================================
+IX. FINISHING BAR
+===============================================================================
+
+Before concluding implementation, regenerate at least one compact derived repo
+and one maximal derived repo under `/tmp`, inspect the root layout of each, and
+verify the containment rule is obvious.
+
+Then run:
+
+  python3.14 -m unittest verification.scripts.test_repo_scripts -v
+  python3.14 -m unittest verification.examples.derived.test_derived_coverage -v
+  python3.14 scripts/validate_context.py
+  python3.14 scripts/validate_doc_governance.py
+
+Do not stop at green tests if the generated repo still leaves ambiguity about
+what is root-level repo state versus vendored `.acb/` snapshot material.
