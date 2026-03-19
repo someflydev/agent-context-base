@@ -37,7 +37,8 @@ python scripts/new_repo.py --list-manifests
 python scripts/new_repo.py --list-examples
 python scripts/new_repo.py --list-derived
 python scripts/new_repo.py --use-example 1 --dry-run --target-dir /tmp/example-001
-python scripts/new_repo.py --derived-example ingestion-normalization-core
+python3 scripts/new_repo.py --derived-example ingestion-normalization-core --target-dir /tmp
+python3 scripts/new_repo.py --derived-example team-a --target-dir /tmp
 python scripts/preview_context_bundle.py backend-api-fastapi-polars --show-weights --show-anchors
 ```
 
@@ -74,6 +75,31 @@ In a fresh derived repo, root `README.md` and root `docs/` often become stale fa
 - allow narrowly scoped operational docs when they are explicitly needed
 
 If you truly want early front docs anyway, use the generator flags that opt into them intentionally instead of treating them as mandatory boilerplate.
+
+## Generating A Derived Repo
+
+Leaf derived examples generate one prompt-first orchestration repo for the combined scenario, not several fully implemented service repos. The generated repo carries derived metadata in `manifests/project-profile.yaml` and synthesizes a staged prompt sequence in `.prompts/PROMPT_01.txt` through `.prompts/PROMPT_04.txt`.
+
+Examples:
+
+```bash
+python3 scripts/new_repo.py --derived-example ingestion-normalization-core --target-dir /tmp
+python3 scripts/new_repo.py --derived-example team-a --target-dir /tmp
+```
+
+Target resolution rules:
+
+- `--derived-example ingestion-normalization-core --target-dir /tmp` creates `/tmp/ingestion-normalization-core`
+- `--derived-example ingestion-normalization-core --target-dir /tmp/ingestion-normalization-core` writes exactly that path when it does not already exist
+- `--derived-example team-a --target-dir /tmp` treats `/tmp` as the parent and writes one child repo per Team A derived example
+- omitting `--target-dir` uses `./<derived-name>` for a leaf selector and the current directory as the parent for team selectors
+
+The derived prompt sequence replaces the generic prompt-first starter files:
+
+- `PROMPT_01.txt` bootstraps the combined scenario repo and updates the profile/service map
+- `PROMPT_02.txt` scaffolds the service surfaces implied by the source examples
+- `PROMPT_03.txt` documents seams, contracts, and coordination paths
+- `PROMPT_04.txt` records verification expectations and post-flight refinement work
 
 ## First Steps In The Generated Repo
 

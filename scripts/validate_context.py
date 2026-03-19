@@ -122,7 +122,9 @@ def _check_bootstrap_output(repo_root: Path) -> list[str]:
             prompt_first = primary_stack == "prompt-first-repo"
             if prompt_first:
                 prompt_files = sorted(path.name for path in (target_dir / ".prompts").glob("*.txt"))
-                if prompt_files != ["001-bootstrap-repo.txt", "002-refine-test-surface.txt"]:
+                classic = ["001-bootstrap-repo.txt", "002-refine-test-surface.txt"]
+                derived = [f"PROMPT_{index:02d}.txt" for index in range(1, len(prompt_files) + 1)]
+                if prompt_files and prompt_files != classic and prompt_files != derived:
                     errors.append(
                         f"{primary_stack}: prompt files must stay monotonic after bootstrap, saw {prompt_files}"
                     )

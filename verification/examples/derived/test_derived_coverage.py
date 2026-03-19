@@ -280,6 +280,12 @@ class TestDerivedCoverage(unittest.TestCase):
         self.assertEqual(len(team_a), 4, f"expected 4 Team A entries, got {len(team_a)}")
         self.assertEqual(len(team_b), 4, f"expected 4 Team B entries, got {len(team_b)}")
 
+    def test_derived_collection_selectors_expand_to_expected_counts(self) -> None:
+        data = _new_repo._load_derived_data()
+        self.assertEqual(len(_new_repo._expand_derived_selector("team-a", data)), 4)
+        self.assertEqual(len(_new_repo._expand_derived_selector("team-b", data)), 4)
+        self.assertEqual(len(_new_repo._expand_derived_selector("all-derived", data)), 8)
+
     def test_derived_examples_required_fields(self) -> None:
         derived = load_derived_examples()
         errors: list[str] = []

@@ -31,6 +31,7 @@ Capabilities:
 - generate isolated `docker-compose.yml` and `docker-compose.test.yml`
 - generate `AGENT.md`, `CLAUDE.md`, `.gitignore`, and generated profile files
 - defer root `README.md` and broad root `docs/` by default unless you explicitly opt into them
+- generate prompt-first orchestration repos from leaf derived examples or derived collections
 
 Examples:
 
@@ -46,7 +47,17 @@ python scripts/new_repo.py prompt-kit \
   --archetype prompt-first-repo \
   --primary-stack prompt-first-repo \
   --prompt-first
+
+python3 scripts/new_repo.py --derived-example ingestion-normalization-core --target-dir /tmp
+python3 scripts/new_repo.py --derived-example team-a --target-dir /tmp
 ```
+
+Derived generation notes:
+
+- `--derived-example <leaf>` generates one prompt-first orchestration repo for that scenario
+- `--derived-example team-a`, `team-b`, or `all-derived` generates one child repo per derived example
+- when `--target-dir` points at `/tmp` or any existing directory, that directory is treated as the parent and each derived repo is written under it
+- leaf derived repos use `.prompts/PROMPT_01.txt` through `.prompts/PROMPT_04.txt` instead of the generic `001-...` prompt-first starter pair
 
 ## `init_memory.py`
 

@@ -20,6 +20,96 @@ def run_script(*args: str, cwd: Path | None = None) -> tuple[int, str, str]:
 
 
 class RepoScriptTests(unittest.TestCase):
+    def test_new_repo_prints_real_derived_prompt_text(self) -> None:
+        code, stdout, stderr = run_script(
+            str(SCRIPTS_DIR / "new_repo.py"),
+            "--derived-example",
+            "ingestion-normalization-core",
+            "--dry-run",
+        )
+        self.assertEqual(code, 0, stderr)
+        self.assertIn("Build an end-to-end data ingestion and normalization core", stdout)
+        self.assertNotIn("block-scalar-content", stdout)
+
+    def test_new_repo_generates_leaf_derived_repo_under_parent_dir(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            parent = Path(temp_dir)
+            target = parent / "ingestion-normalization-core"
+            code, stdout, stderr = run_script(
+                str(SCRIPTS_DIR / "new_repo.py"),
+                "--derived-example",
+                "ingestion-normalization-core",
+                "--target-dir",
+                str(parent),
+            )
+            self.assertEqual(code, 0, stderr)
+            self.assertIn("Generated starter repo", stdout)
+            self.assertTrue(target.exists())
+            self.assertTrue((target / ".prompts/PROMPT_01.txt").exists())
+            self.assertTrue((target / ".prompts/PROMPT_04.txt").exists())
+            self.assertTrue((target / "PROMPTS.md").exists())
+            self.assertTrue((target / "manifests/project-profile.yaml").exists())
+
+    def test_new_repo_generates_team_a_bundle(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            parent = Path(temp_dir)
+            code, _, stderr = run_script(
+                str(SCRIPTS_DIR / "new_repo.py"),
+                "--derived-example",
+                "team-a",
+                "--target-dir",
+                str(parent),
+            )
+            self.assertEqual(code, 0, stderr)
+            for child in (
+                "ingestion-normalization-core",
+                "analytics-lake-deployment",
+                "ml-gateway-intelligence",
+                "operator-surface",
+            ):
+                self.assertTrue((parent / child).exists(), child)
+
+    def test_new_repo_dry_run_for_team_a_lists_all_child_targets(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            parent = Path(temp_dir).resolve()
+            code, stdout, stderr = run_script(
+                str(SCRIPTS_DIR / "new_repo.py"),
+                "--derived-example",
+                "team-a",
+                "--target-dir",
+                str(parent),
+                "--dry-run",
+            )
+            self.assertEqual(code, 0, stderr)
+            for child in (
+                "ingestion-normalization-core",
+                "analytics-lake-deployment",
+                "ml-gateway-intelligence",
+                "operator-surface",
+            ):
+                self.assertIn(str(parent / child), stdout)
+
+    def test_new_repo_derived_target_dir_exact_path_is_respected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            exact_target = Path(temp_dir) / "custom-derived-path"
+            code, _, stderr = run_script(
+                str(SCRIPTS_DIR / "new_repo.py"),
+                "--derived-example",
+                "ingestion-normalization-core",
+                "--target-dir",
+                str(exact_target),
+            )
+            self.assertEqual(code, 0, stderr)
+            self.assertTrue((exact_target / ".prompts/PROMPT_01.txt").exists())
+            self.assertFalse((exact_target / "ingestion-normalization-core").exists())
+
+    def test_new_repo_list_derived_includes_collection_selectors(self) -> None:
+        code, stdout, stderr = run_script(str(SCRIPTS_DIR / "new_repo.py"), "--list-derived")
+        self.assertEqual(code, 0, stderr)
+        self.assertIn("team-a", stdout)
+        self.assertIn("team-b", stdout)
+        self.assertIn("all-derived", stdout)
+
     def test_validate_manifests_script_passes(self) -> None:
         code, stdout, stderr = run_script(str(SCRIPTS_DIR / "validate_manifests.py"))
         self.assertEqual(code, 0, stderr)

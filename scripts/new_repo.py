@@ -22,6 +22,7 @@ Examples:
 from __future__ import annotations
 
 import argparse
+import ast
 import json
 import re
 import sys
@@ -501,6 +502,37 @@ class ExampleProject:
     smoke_tests: bool = False
     integration_tests: bool = False
     seed_data: bool = False
+
+
+@dataclass(frozen=True)
+class RepoGenerationRequest:
+    repo_name: str
+    target_dir: Path
+    archetype: str
+    primary_stack: str
+    manifests: list[str]
+    dokku: bool
+    prompt_first: bool
+    smoke_tests: bool
+    integration_tests: bool
+    seed_data: bool
+    docker_layout: bool
+    include_root_readme: bool
+    include_docs_dir: bool
+    no_profile: bool
+    force: bool
+    dry_run: bool
+    description: str | None = None
+    prompt_files_override: dict[str, str] | None = None
+    extra_profile_metadata: dict[str, object] | None = None
+    extra_context_entrypoints: list[str] | None = None
+
+
+@dataclass(frozen=True)
+class DerivedTargetPlan:
+    selector_name: str
+    entry: dict[str, object]
+    target_dir: Path
 
 
 EXAMPLE_CATEGORIES: tuple[tuple[str, range], ...] = (
@@ -1125,6 +1157,12 @@ EXAMPLE_PROJECTS: dict[int, ExampleProject] = {
     ),
 }
 
+DERIVED_COLLECTION_SELECTORS = {
+    "team-a": "A",
+    "team-b": "B",
+    "all-derived": "*",
+}
+
 
 DEFAULT_MANIFESTS = {
     ("backend-api-service", "python-fastapi-uv-ruff-orjson-polars"): ["backend-api-fastapi-polars"],
@@ -1257,63 +1295,150 @@ def _coerce_int_list(value: object) -> list[int]:
     return []
 
 
-def _preprocess_yaml_block_scalars(text: str) -> str:
-    """Replace YAML block scalar (|) content with a single-line placeholder.
+def _parse_simple_yaml_scalar(raw: str) -> object:
+    """Parse the limited scalar shapes used by examples/derived/*.yaml."""
 
-    The repo's custom YAML parser does not handle multi-line block scalars.
-    Converts every ``key: |`` + indented-content block into
-    ``key: block-scalar-content`` so the parser can proceed normally.
-    """
-    lines = text.splitlines()
-    result: list[str] = []
-    i = 0
-    while i < len(lines):
-        raw = lines[i]
-        rstripped = raw.rstrip()
-        stripped = rstripped.strip()
-        if stripped and not stripped.startswith("#") and rstripped.rstrip().endswith("|"):
-            if re.search(r":\s*\|$", rstripped):
-                key_indent = len(rstripped) - len(rstripped.lstrip())
-                placeholder = re.sub(r"\|\s*$", "block-scalar-content", rstripped)
-                result.append(placeholder)
-                i += 1
-                while i < len(lines):
-                    cont = lines[i].rstrip()
-                    if not cont.strip():
-                        i += 1
-                        continue
-                    cont_indent = len(cont) - len(cont.lstrip())
-                    if cont_indent > key_indent:
-                        i += 1
-                    else:
-                        break
-                continue
-        result.append(raw)
-        i += 1
-    return "\n".join(result)
+    value = raw.strip()
+    if not value:
+        return ""
+    lowered = value.lower()
+    if lowered == "true":
+        return True
+    if lowered == "false":
+        return False
+    if lowered == "null":
+        return None
+    if re.fullmatch(r"-?\d+", value):
+        return int(value)
+    if value.startswith("[") and value.endswith("]"):
+        parsed = ast.literal_eval(value)
+        return list(parsed) if isinstance(parsed, tuple) else parsed
+    if value.startswith(("'", '"')) and value.endswith(("'", '"')):
+        return ast.literal_eval(value)
+    return value
+
+
+def _collect_block_scalar(lines: list[str], start: int, parent_indent: int) -> tuple[str, int]:
+    """Collect YAML block-scalar text preserving its real multiline content."""
+
+    index = start
+    content: list[str] = []
+    block_indent: int | None = None
+    while index < len(lines):
+        raw_line = lines[index]
+        stripped = raw_line.strip()
+        current_indent = len(raw_line) - len(raw_line.lstrip(" "))
+        if stripped and current_indent <= parent_indent:
+            break
+        if stripped:
+            if block_indent is None:
+                block_indent = current_indent
+            content.append(raw_line[block_indent:])
+        else:
+            content.append("")
+        index += 1
+    while content and not content[-1]:
+        content.pop()
+    return "\n".join(content), index
+
+
+def _parse_yaml_mapping_block(lines: list[str], start: int, indent: int) -> tuple[dict[str, object], int]:
+    """Parse an indented YAML mapping block with optional block scalars."""
+
+    mapping: dict[str, object] = {}
+    index = start
+    while index < len(lines):
+        raw_line = lines[index]
+        stripped = raw_line.strip()
+        if not stripped or stripped.startswith("#"):
+            index += 1
+            continue
+        current_indent = len(raw_line) - len(raw_line.lstrip(" "))
+        if current_indent < indent:
+            break
+        if current_indent != indent:
+            raise ValueError(f"unexpected indentation in {raw_line!r}")
+        if ":" not in stripped:
+            raise ValueError(f"expected mapping entry in {raw_line!r}")
+        key, raw_value = stripped.split(":", 1)
+        key = key.strip()
+        raw_value = raw_value.strip()
+        index += 1
+        if raw_value == "|":
+            value, index = _collect_block_scalar(lines, index, current_indent)
+            mapping[key] = value
+            continue
+        if raw_value:
+            mapping[key] = _parse_simple_yaml_scalar(raw_value)
+            continue
+        nested, index = _parse_yaml_sequence_of_mappings(lines, index, current_indent + 2)
+        mapping[key] = nested
+    return mapping, index
+
+
+def _parse_yaml_sequence_of_mappings(
+    lines: list[str], start: int, indent: int
+) -> tuple[list[dict[str, object]], int]:
+    """Parse a YAML sequence where each item is a mapping."""
+
+    items: list[dict[str, object]] = []
+    index = start
+    while index < len(lines):
+        raw_line = lines[index]
+        stripped = raw_line.strip()
+        if not stripped or stripped.startswith("#"):
+            index += 1
+            continue
+        current_indent = len(raw_line) - len(raw_line.lstrip(" "))
+        if current_indent < indent:
+            break
+        if current_indent != indent or not stripped.startswith("- "):
+            raise ValueError(f"expected sequence entry in {raw_line!r}")
+        item_text = stripped[2:].strip()
+        item: dict[str, object] = {}
+        if item_text:
+            if ":" not in item_text:
+                raise ValueError(f"expected mapping item in {raw_line!r}")
+            key, raw_value = item_text.split(":", 1)
+            key = key.strip()
+            raw_value = raw_value.strip()
+            index += 1
+            if raw_value == "|":
+                value, index = _collect_block_scalar(lines, index, current_indent)
+                item[key] = value
+            elif raw_value:
+                item[key] = _parse_simple_yaml_scalar(raw_value)
+            else:
+                nested, index = _parse_yaml_sequence_of_mappings(lines, index, current_indent + 2)
+                item[key] = nested
+        else:
+            index += 1
+        nested_fields, index = _parse_yaml_mapping_block(lines, index, current_indent + 2)
+        item.update(nested_fields)
+        items.append(item)
+    return items, index
 
 
 def _load_yaml_with_block_scalars_from_path(path: Path) -> object:
-    """Load a YAML file that may contain block scalar (|) strings."""
-    import json as _json
-    import sys
+    """Load the limited YAML shapes used in examples/derived/*.yaml."""
 
-    repo_root = Path(__file__).resolve().parent.parent
-    verification_path = str(repo_root)
-    if verification_path not in sys.path:
-        sys.path.insert(0, verification_path)
-    from verification.helpers import _prepare_yaml_lines, _parse_yaml_block  # noqa: PLC0415
-
-    text = path.read_text(encoding="utf-8")
-    cleaned = _preprocess_yaml_block_scalars(text)
-    try:
-        return _json.loads(cleaned)
-    except _json.JSONDecodeError:
-        prepared = _prepare_yaml_lines(cleaned)
-        if not prepared:
-            return {}
-        parsed, _ = _parse_yaml_block(prepared, 0, prepared[0][0])
-        return parsed
+    lines = path.read_text(encoding="utf-8").splitlines()
+    index = 0
+    while index < len(lines):
+        stripped = lines[index].strip()
+        if not stripped or stripped.startswith("#"):
+            index += 1
+            continue
+        if ":" not in stripped:
+            raise ValueError(f"{path}: expected top-level mapping key")
+        key, raw_value = stripped.split(":", 1)
+        key = key.strip()
+        raw_value = raw_value.strip()
+        if raw_value:
+            return {key: _parse_simple_yaml_scalar(raw_value)}
+        parsed, _ = _parse_yaml_sequence_of_mappings(lines, index + 1, 2)
+        return {key: parsed}
+    return {}
 
 
 def _load_derived_data() -> dict[str, list[dict]]:
@@ -1337,6 +1462,78 @@ def _load_derived_data() -> dict[str, list[dict]]:
         raw = _load_yaml_with_block_scalars_from_path(so_path)
         spin_outs = raw.get("spin_outs", []) if isinstance(raw, dict) else []
     return {"derived": derived, "spin_outs": spin_outs}
+
+
+def _find_derived_leaf_entry(name: str, data: dict[str, list[dict]]) -> dict[str, object] | None:
+    """Return one derived leaf entry by name."""
+
+    return next((entry for entry in data["derived"] if entry.get("name") == name), None)
+
+
+def _expand_derived_selector(name: str, data: dict[str, list[dict]]) -> list[dict[str, object]]:
+    """Expand a derived selector into one or more derived leaf entries."""
+
+    if name in DERIVED_COLLECTION_SELECTORS:
+        team = DERIVED_COLLECTION_SELECTORS[name]
+        if team == "*":
+            return list(data["derived"])
+        return [entry for entry in data["derived"] if entry.get("team") == team]
+    entry = _find_derived_leaf_entry(name, data)
+    return [entry] if entry is not None else []
+
+
+def _normalize_resolved_path(path: Path) -> Path:
+    """Resolve a path while treating /tmp and /private/tmp equivalently on macOS."""
+
+    return path.expanduser().resolve()
+
+
+def _resolve_leaf_target(selector_name: str, target_dir: str | None) -> Path:
+    """Resolve the final target path for one derived leaf repo."""
+
+    if target_dir is None:
+        return _normalize_resolved_path(Path.cwd() / selector_name)
+    requested = _normalize_resolved_path(Path(target_dir))
+    if requested.exists() and requested.is_dir():
+        return _normalize_resolved_path(requested / selector_name)
+    return requested
+
+
+def _resolve_team_parent(target_dir: str | None) -> Path:
+    """Resolve the parent directory used by a collection selector."""
+
+    if target_dir is None:
+        return _normalize_resolved_path(Path.cwd())
+    return _normalize_resolved_path(Path(target_dir))
+
+
+def _resolve_derived_targets(
+    selector_name: str,
+    entries: list[dict[str, object]],
+    target_dir: str | None,
+) -> list[DerivedTargetPlan]:
+    """Resolve exact target directories for all derived leaf repos."""
+
+    if not entries:
+        return []
+    if selector_name in DERIVED_COLLECTION_SELECTORS:
+        parent = _resolve_team_parent(target_dir)
+        return [
+            DerivedTargetPlan(
+                selector_name=selector_name,
+                entry=entry,
+                target_dir=_normalize_resolved_path(parent / str(entry["name"])),
+            )
+            for entry in entries
+        ]
+    entry = entries[0]
+    return [
+        DerivedTargetPlan(
+            selector_name=selector_name,
+            entry=entry,
+            target_dir=_resolve_leaf_target(str(entry["name"]), target_dir),
+        )
+    ]
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -1563,14 +1760,40 @@ def render_template(path: Path, values: dict[str, str]) -> str:
     return rendered
 
 
-def ensure_target(target_dir: Path, force: bool, dry_run: bool) -> None:
-    """Validate that the target directory is writable."""
+def validate_target(target_dir: Path, force: bool) -> None:
+    """Validate that the target directory can be written without creating it yet."""
 
     if target_dir.exists():
+        if not target_dir.is_dir():
+            raise ValueError(f"Target path '{target_dir}' exists and is not a directory.")
         if any(target_dir.iterdir()) and not force:
             raise ValueError(
                 f"Target directory '{target_dir}' already exists and is not empty. Use --force to continue."
             )
+        return
+    parent = target_dir.parent
+    while not parent.exists() and parent != parent.parent:
+        parent = parent.parent
+    if parent.exists() and not parent.is_dir():
+        raise ValueError(f"Parent path '{parent}' exists and is not a directory.")
+
+
+def preflight_targets(targets: list[Path], force: bool) -> None:
+    """Validate every target before any repo write begins."""
+
+    seen: set[Path] = set()
+    for target in targets:
+        if target in seen:
+            raise ValueError(f"Duplicate target path resolved for derived generation: {target}")
+        seen.add(target)
+        validate_target(target, force=force)
+
+
+def ensure_target(target_dir: Path, force: bool, dry_run: bool) -> None:
+    """Validate that the target directory is writable."""
+
+    validate_target(target_dir, force=force)
+    if target_dir.exists():
         return
     if not dry_run:
         target_dir.mkdir(parents=True, exist_ok=True)
@@ -1594,6 +1817,49 @@ def format_yaml_mapping(items: dict[str, str], indent: int = 2) -> str:
 
     prefix = " " * indent
     return "\n".join(f"{prefix}{key}: {value}" for key, value in items.items())
+
+
+def _render_yaml_scalar(value: object) -> str:
+    """Render one scalar safely into yaml."""
+
+    if value is None:
+        return "null"
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, int):
+        return str(value)
+    text = str(value)
+    if re.fullmatch(r"[A-Za-z0-9_./:-]+", text):
+        return text
+    escaped = text.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
+    return f"\"{escaped}\""
+
+
+def _render_yaml_value(value: object, indent: int = 2) -> str:
+    """Render a nested yaml-like structure using spaces only."""
+
+    prefix = " " * indent
+    if isinstance(value, dict):
+        lines: list[str] = []
+        for key, child in value.items():
+            if isinstance(child, (dict, list)):
+                lines.append(f"{prefix}{key}:")
+                lines.append(_render_yaml_value(child, indent + 2))
+            else:
+                lines.append(f"{prefix}{key}: {_render_yaml_scalar(child)}")
+        return "\n".join(lines)
+    if isinstance(value, list):
+        if not value:
+            return f"{prefix}[]"
+        lines = []
+        for item in value:
+            if isinstance(item, (dict, list)):
+                lines.append(f"{prefix}-")
+                lines.append(_render_yaml_value(item, indent + 2))
+            else:
+                lines.append(f"{prefix}- {_render_yaml_scalar(item)}")
+        return "\n".join(lines)
+    return f"{prefix}{_render_yaml_scalar(value)}"
 
 
 def build_support_service_blocks(
@@ -1818,9 +2084,24 @@ def render_profile_summary(
     port_map: dict[str, int],
     starter_paths: dict[str, str],
     validation_commands: list[str],
+    extra_context_entrypoints: list[str] | None = None,
+    extra_metadata: dict[str, object] | None = None,
 ) -> str:
     """Render the generated profile summary."""
 
+    context_entrypoints = [
+        "AGENT.md",
+        "CLAUDE.md",
+        "manifests/project-profile.yaml",
+        ".generated-profile.yaml",
+        *(["README.md"] if include_root_readme else []),
+        *(["docs/repo-purpose.md", "docs/repo-layout.md"] if include_docs_dir else []),
+    ]
+    if extra_context_entrypoints:
+        context_entrypoints.extend(extra_context_entrypoints)
+    derived_metadata_lines = ""
+    if extra_metadata:
+        derived_metadata_lines = "derived_metadata:\n" + _render_yaml_value(extra_metadata, indent=2)
     values = {
         "repo_name": repo_name,
         "repo_slug": slug,
@@ -1840,16 +2121,7 @@ def render_profile_summary(
         "compose_project_name_test": compose_project_name_test,
         "port_lines": format_yaml_mapping({key: str(value) for key, value in port_map.items()}),
         "starter_path_lines": format_yaml_mapping(starter_paths),
-        "context_entrypoint_lines": format_yaml_list(
-            [
-                "AGENT.md",
-                "CLAUDE.md",
-                "manifests/project-profile.yaml",
-                ".generated-profile.yaml",
-                *(["README.md"] if include_root_readme else []),
-                *(["docs/repo-purpose.md", "docs/repo-layout.md"] if include_docs_dir else []),
-            ]
-        ),
+        "context_entrypoint_lines": format_yaml_list(context_entrypoints),
         "front_docs_guidance_lines": format_yaml_list(
             [
                 "delay root README.md until the repo has an implemented slice worth describing honestly",
@@ -1868,6 +2140,7 @@ def render_profile_summary(
                 "test data stays under docker/volumes/test",
             ]
         ),
+        "derived_metadata_block": derived_metadata_lines,
     }
     return render_template(
         repo_root() / "templates/manifest/profile-summary.template.yaml",
@@ -1925,6 +2198,235 @@ def render_prompt_files(repo_name: str, profile: StackProfile) -> dict[str, str]
             repo_root() / "templates/prompt-first/002-refine.template.txt",
             values,
         ),
+    }
+
+
+def _source_examples_for_derived(entry: dict[str, object]) -> list[tuple[int, ExampleProject]]:
+    """Return source example metadata for one derived entry."""
+
+    examples: list[tuple[int, ExampleProject]] = []
+    for number in _coerce_int_list(entry.get("source_examples", [])):
+        project = EXAMPLE_PROJECTS.get(number)
+        if project is not None:
+            examples.append((number, project))
+    return examples
+
+
+def _seam_contract_text(entry: dict[str, object]) -> str:
+    """Extract the seam-contract sentence from a derived prompt when present."""
+
+    prompt = str(entry.get("prompt", ""))
+    match = re.search(r"The seam contracts are:\s*(.+?)(?:\.\s|$)", prompt, re.DOTALL)
+    if not match:
+        return "Document the seam contracts implied by the combined scenario."
+    return " ".join(match.group(1).split())
+
+
+def _derived_service_plan_lines(entry: dict[str, object]) -> list[str]:
+    """Build service-by-service scaffold bullets from new_repo_args."""
+
+    lines: list[str] = []
+    for item in entry.get("new_repo_args", []):
+        if not isinstance(item, dict):
+            continue
+        example_number = int(item.get("example", 0))
+        example = EXAMPLE_PROJECTS.get(example_number)
+        service_name = example.codename if example is not None else f"example-{example_number:03d}"
+        title = example.title if example is not None else "reference example"
+        lines.append(
+            f"- `{service_name}` from `--use-example {example_number}`: {title} "
+            f"({item.get('archetype')} / {item.get('primary_stack')})"
+        )
+    return lines
+
+
+def _derived_preferred_examples(selected_manifests: list[str], manifests: dict[str, dict[str, object]]) -> list[str]:
+    """Collect preferred canonical example paths from selected manifests."""
+
+    paths: list[str] = []
+    for manifest_name in selected_manifests:
+        manifest = manifests.get(manifest_name, {})
+        preferred = manifest.get("preferred_examples", [])
+        if isinstance(preferred, list):
+            for path in preferred:
+                path_text = str(path)
+                if path_text not in paths:
+                    paths.append(path_text)
+    return paths
+
+
+def render_derived_prompt_files(
+    entry: dict[str, object],
+    selected_manifests: list[str],
+    manifests: dict[str, dict[str, object]],
+) -> dict[str, str]:
+    """Render the derived prompt-first prompt sequence."""
+
+    name = str(entry["name"])
+    title = str(entry.get("title") or name)
+    description = str(entry.get("description", ""))
+    prompt_text = str(entry.get("prompt", "")).strip()
+    source_examples = _source_examples_for_derived(entry)
+    source_lines = [
+        f"- `#{number}` `{project.codename}`: {project.title}"
+        for number, project in source_examples
+    ]
+    source_command_lines = [
+        f"- `python3 scripts/new_repo.py --use-example {number} --dry-run --target-dir /tmp/{project.codename}`"
+        for number, project in source_examples
+    ]
+    scaffold_lines = _derived_service_plan_lines(entry)
+    seam_contract_text = _seam_contract_text(entry)
+    seam_notes = str(entry.get("seam_notes", "")).strip()
+    preferred_examples = _derived_preferred_examples(selected_manifests, manifests)
+    canonical_lines = [f"- `{path}`" for path in preferred_examples] or [
+        "- `examples/derived/example-prompts.yaml`",
+    ]
+    prompts_md = "\n".join(
+        [
+            "# Prompt Files",
+            "",
+            "Store project prompts under `.prompts/`.",
+            "",
+            "Derived repo sequence:",
+            "",
+            "- `PROMPT_01.txt` bootstraps the combined orchestration repo and updates the profile/service map.",
+            "- `PROMPT_02.txt` scaffolds the service surfaces implied by the source examples.",
+            "- `PROMPT_03.txt` writes seams, contracts, and coordination docs under exact repo paths.",
+            "- `PROMPT_04.txt` tightens verification commands, smoke coverage, and post-flight refinement.",
+            "",
+            "Rules:",
+            "",
+            "- keep numbering strictly monotonic",
+            "- keep one dominant goal per prompt",
+            "- reference exact repo paths such as `AGENT.md` and `manifests/project-profile.yaml`",
+            "- do not generate speculative front docs before the repo earns them",
+            "",
+        ]
+    )
+    prompt_01 = "\n".join(
+        [
+            f"# PROMPT_01: Bootstrap {name}",
+            "",
+            f"Scenario: `{title}`",
+            f"Description: {description}",
+            "",
+            "Full derived prompt:",
+            prompt_text,
+            "",
+            "Source examples:",
+            *source_lines,
+            "",
+            "Update these files first:",
+            "- `AGENT.md`",
+            "- `CLAUDE.md`",
+            "- `manifests/project-profile.yaml`",
+            "- `PROMPTS.md`",
+            "",
+            "Instructions:",
+            "- Update `manifests/project-profile.yaml` so the combined scenario, source examples, and verification commands are explicit.",
+            "- Establish the repo's combined service map and seam map before writing implementation tasks.",
+            "- Keep this repo as the orchestration and implementation-planning surface for the combined scenario, not as multiple fully built product repos.",
+            "",
+        ]
+    )
+    prompt_02 = "\n".join(
+        [
+            f"# PROMPT_02: Scaffold Service Surfaces For {name}",
+            "",
+            "Service-by-service scaffold plan:",
+            *scaffold_lines,
+            "",
+            "Canonical references to pull shape from when available:",
+            *canonical_lines,
+            "",
+            "Instructions:",
+            "- Name each service or subsystem explicitly in the combined service map.",
+            "- Pull implementation shape from the listed canonical examples and manifest references instead of inventing new conventions.",
+            "- Create scaffold placeholders only where they clarify ownership and seam boundaries.",
+            "",
+        ]
+    )
+    prompt_03 = "\n".join(
+        [
+            f"# PROMPT_03: Wire Seams And Contracts For {name}",
+            "",
+            "Seam contracts:",
+            f"- {seam_contract_text}",
+            *(["", "Seam notes:", seam_notes] if seam_notes else []),
+            "",
+            "Write or update seam docs under exact paths:",
+            "- `docs/seams/README.md`",
+            "- `docs/seams/event-contracts.md`",
+            "- `docs/seams/rest-contracts.md`",
+            "- `manifests/project-profile.yaml`",
+            "",
+            "Instructions:",
+            "- Add schemas, event names, or REST seam docs under the exact paths above.",
+            "- Keep service boundaries explicit, testable, and narrow.",
+            "- Treat seam contracts as source-controlled interfaces, not prose-only suggestions.",
+            "",
+        ]
+    )
+    prompt_04 = "\n".join(
+        [
+            f"# PROMPT_04: Verify And Refine {name}",
+            "",
+            "Verification expectations:",
+            "- Keep per-service smoke checks explicit for every source example included in this derived repo.",
+            "- Add at least one combined integration or coordination check proving the main seam path for the scenario.",
+            "- Record the exact verification command set in `manifests/project-profile.yaml`.",
+            *source_command_lines,
+            "",
+            "Instructions:",
+            "- Add or update verification commands in `manifests/project-profile.yaml` for smoke checks and derived-specific integration checks.",
+            "- Define the combined scenario's smoke and integration expectations before broadening implementation.",
+            "- Run a post-flight refinement pass and a doc freshness pass after the first meaningful slice lands.",
+            "- Do not create speculative front docs or marketing-style root docs before the repo has an implemented slice worth describing.",
+            "",
+        ]
+    )
+    return {
+        "PROMPTS.md": prompts_md + "\n",
+        ".prompts/PROMPT_01.txt": prompt_01 + "\n",
+        ".prompts/PROMPT_02.txt": prompt_02 + "\n",
+        ".prompts/PROMPT_03.txt": prompt_03 + "\n",
+        ".prompts/PROMPT_04.txt": prompt_04 + "\n",
+    }
+
+
+def _build_derived_profile_metadata(
+    entry: dict[str, object],
+    selected_manifests: list[str],
+    manifests: dict[str, dict[str, object]],
+) -> dict[str, object]:
+    """Build the derived-specific metadata block for the generated profile."""
+
+    source_examples = _source_examples_for_derived(entry)
+    return {
+        "derived_example_name": entry["name"],
+        "derived_team": entry.get("team"),
+        "derived_description": entry.get("description"),
+        "source_examples": [
+            {
+                "number": number,
+                "codename": project.codename,
+                "title": project.title,
+            }
+            for number, project in source_examples
+        ],
+        "source_example_commands": [
+            f"python3 scripts/new_repo.py --use-example {number} --dry-run --target-dir /tmp/{project.codename}"
+            for number, project in source_examples
+        ],
+        "preferred_examples": _derived_preferred_examples(selected_manifests, manifests),
+        "selected_manifests": selected_manifests,
+        "prompt_sequence": [
+            "PROMPT_01.txt",
+            "PROMPT_02.txt",
+            "PROMPT_03.txt",
+            "PROMPT_04.txt",
+        ],
     }
 
 
@@ -2023,7 +2525,7 @@ def render_prompt_meta_starters() -> dict[str, str]:
     return {
         "scripts/check_repo.py": """#!/usr/bin/env python3\n\"\"\"Check the minimal prompt-first repo surface exists.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    required = [Path(\"AGENT.md\"), Path(\"CLAUDE.md\"), Path(\"PROMPTS.md\")]\n    missing = [path.as_posix() for path in required if not path.exists()]\n    if missing:\n        raise SystemExit(f\"Missing required files: {missing}\")\n    print(\"repo surface looks present\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
         "scripts/check_generated_profile.py": """#!/usr/bin/env python3\n\"\"\"Check the generated profile file exists.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    profile = Path(\".generated-profile.yaml\")\n    if not profile.exists():\n        raise SystemExit(\".generated-profile.yaml is missing\")\n    print(\"generated profile exists\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
-        "scripts/validate_repo.py": """#!/usr/bin/env python3\n\"\"\"Validate the prompt-first starter repo surface.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    required = [\n        Path(\"AGENT.md\"),\n        Path(\"CLAUDE.md\"),\n        Path(\"PROMPTS.md\"),\n        Path(\"manifests/project-profile.yaml\"),\n    ]\n    missing = [path.as_posix() for path in required if not path.exists()]\n    if missing:\n        raise SystemExit(f\"Missing required files: {missing}\")\n\n    prompt_dir = Path(\".prompts\")\n    prompt_files = sorted(path.name for path in prompt_dir.glob(\"*.txt\"))\n    expected = [f\"{index:03d}-{name.split('-', 1)[1]}\" for index, name in enumerate(prompt_files, start=1)]\n    if prompt_files and prompt_files != expected:\n        raise SystemExit(f\"Prompt files must stay monotonic: {prompt_files}\")\n\n    print(\"repo validation passed\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
+        "scripts/validate_repo.py": """#!/usr/bin/env python3\n\"\"\"Validate the prompt-first starter repo surface.\"\"\"\n\nimport re\nfrom pathlib import Path\n\n\nCLASSIC_PROMPTS = [\"001-bootstrap-repo.txt\", \"002-refine-test-surface.txt\"]\nDERIVED_PROMPT_PATTERN = re.compile(r\"^PROMPT_(\\d{2})\\.txt$\")\n\n\ndef _validate_prompt_files(prompt_files: list[str]) -> None:\n    if not prompt_files:\n        return\n    if prompt_files == CLASSIC_PROMPTS:\n        return\n    derived_numbers: list[int] = []\n    for filename in prompt_files:\n        match = DERIVED_PROMPT_PATTERN.fullmatch(filename)\n        if match is None:\n            raise SystemExit(\n                \"Prompt files must be either the classic 001/002 pair or a pure PROMPT_XX.txt sequence: \"\n                f\"{prompt_files}\"\n            )\n        derived_numbers.append(int(match.group(1)))\n    expected_numbers = list(range(1, len(derived_numbers) + 1))\n    if derived_numbers != expected_numbers:\n        raise SystemExit(f\"Derived prompt files must stay monotonic: {prompt_files}\")\n\n\ndef main() -> None:\n    required = [\n        Path(\"AGENT.md\"),\n        Path(\"CLAUDE.md\"),\n        Path(\"PROMPTS.md\"),\n        Path(\"manifests/project-profile.yaml\"),\n    ]\n    missing = [path.as_posix() for path in required if not path.exists()]\n    if missing:\n        raise SystemExit(f\"Missing required files: {missing}\")\n\n    prompt_dir = Path(\".prompts\")\n    prompt_files = sorted(path.name for path in prompt_dir.glob(\"*.txt\"))\n    _validate_prompt_files(prompt_files)\n\n    print(\"repo validation passed\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
         "scripts/seed_data.py": """#!/usr/bin/env python3\n\"\"\"Write deterministic prompt-first starter notes.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    target = Path(\"artifacts/generated-notes.txt\")\n    target.parent.mkdir(parents=True, exist_ok=True)\n    target.write_text(\"replace with deterministic repo notes\\n\", encoding=\"utf-8\")\n    print(f\"Wrote {target}\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
     }
 
@@ -2280,6 +2782,317 @@ def validate_bootstrap_plan(
         seen[port] = label
 
 
+def build_generated_files(
+    request: RepoGenerationRequest,
+    manifests: dict[str, dict[str, object]],
+) -> dict[str, str]:
+    """Build the full generated file set for one repo request."""
+
+    if request.primary_stack not in STACKS:
+        raise ValueError(f"Unsupported stack: {request.primary_stack}")
+    if request.archetype not in ARCHETYPES:
+        raise ValueError(f"Unsupported archetype: {request.archetype}")
+    for manifest_name in request.manifests:
+        if manifest_name not in manifests:
+            raise ValueError(f"Unknown manifest: {manifest_name}")
+
+    slug = slugify(request.repo_name)
+    profile = STACKS[request.primary_stack]
+    description = request.description or f"Starter repo for {request.repo_name} using {profile.display_name}."
+    docs_dir_generated = request.include_docs_dir or request.dokku
+    docker_enabled = request.docker_layout or bool(
+        infer_support_services(request.archetype, request.primary_stack, request.manifests)
+    )
+
+    selected_manifest_data = [manifests[name] for name in request.manifests]
+    if selected_manifest_data:
+        primary_manifest = selected_manifest_data[0]
+    else:
+        primary_manifest = {
+            "compose_project_name_dev": "{repo_slug}",
+            "compose_project_name_test": "{repo_slug}-test",
+            "port_band_app_dev": "14000-14099",
+            "port_band_app_test": "15000-15099",
+            "port_band_data_dev": "24000-24099",
+            "port_band_data_test": "25000-25099",
+        }
+
+    compose_project_name_dev = str(primary_manifest["compose_project_name_dev"]).replace("{repo_slug}", slug)
+    compose_project_name_test = str(primary_manifest["compose_project_name_test"]).replace("{repo_slug}", slug)
+    app_port = pick_port(str(primary_manifest["port_band_app_dev"]), slug)
+    test_app_port = pick_port(str(primary_manifest["port_band_app_test"]), slug)
+    support_services = infer_support_services(request.archetype, request.primary_stack, request.manifests)
+    dev_depends_on, dev_support_block, dev_support_ports = build_support_service_blocks(
+        support_services,
+        slug,
+        "dev",
+        str(primary_manifest["port_band_data_dev"]),
+    )
+    test_depends_on, test_support_block, test_support_ports = build_support_service_blocks(
+        support_services,
+        slug,
+        "test",
+        str(primary_manifest["port_band_data_test"]),
+    )
+    validate_bootstrap_plan(
+        compose_project_name_dev=compose_project_name_dev,
+        compose_project_name_test=compose_project_name_test,
+        app_port=app_port,
+        test_app_port=test_app_port,
+        dev_support_ports={f"{name}_dev": port for name, port in dev_support_ports.items()},
+        test_support_ports={f"{name}_test": port for name, port in test_support_ports.items()},
+    )
+
+    generated_files: dict[str, str] = {}
+    generated_files.update(render_agent_and_claude(request.archetype, request.primary_stack, request.manifests))
+    generated_files[".gitignore"] = render_gitignore(profile)
+    if request.include_root_readme:
+        generated_files["README.md"] = render_readme(
+            request.repo_name,
+            description,
+            request.archetype,
+            profile,
+            request.manifests,
+            request.dokku,
+            request.prompt_first,
+            docker_enabled,
+            app_port,
+            compose_project_name_dev,
+            compose_project_name_test,
+            dev_support_ports,
+            test_support_ports,
+        )
+    if request.include_docs_dir:
+        generated_files.update(build_docs(request.repo_name, description, request.archetype, profile, request.manifests))
+
+    starter_paths = resolved_starter_paths(request.primary_stack, slug)
+    port_map = {"app_dev": app_port, "app_test": test_app_port}
+    port_map.update({f"{name}_dev": port for name, port in dev_support_ports.items()})
+    port_map.update({f"{name}_test": port for name, port in test_support_ports.items()})
+    validation_commands = ["python scripts/validate_repo.py"] if request.primary_stack == "prompt-first-repo" else []
+    if docker_enabled:
+        validation_commands.append("docker compose -f docker-compose.test.yml config")
+    profile_summary = render_profile_summary(
+        repo_name=request.repo_name,
+        slug=slug,
+        description=description,
+        archetype=request.archetype,
+        primary_stack=request.primary_stack,
+        manifests=request.manifests,
+        docker_enabled=docker_enabled,
+        dokku=request.dokku,
+        prompt_first=request.prompt_first,
+        smoke_tests=request.smoke_tests,
+        integration_tests=request.integration_tests,
+        seed_data=request.seed_data,
+        include_root_readme=request.include_root_readme,
+        include_docs_dir=request.include_docs_dir,
+        docs_dir_generated=docs_dir_generated,
+        compose_project_name_dev=compose_project_name_dev,
+        compose_project_name_test=compose_project_name_test,
+        compose_files=["docker-compose.yml", "docker-compose.test.yml"],
+        port_map=port_map,
+        starter_paths=starter_paths,
+        validation_commands=validation_commands or ["echo no extra validation commands configured"],
+        extra_context_entrypoints=request.extra_context_entrypoints,
+        extra_metadata=request.extra_profile_metadata,
+    )
+    generated_files["manifests/project-profile.yaml"] = profile_summary
+    if not request.no_profile:
+        generated_files[".generated-profile.yaml"] = profile_summary
+
+    starter_files = starter_files_for_stack(request.primary_stack, slug)
+    route_only_keys = set()
+    if request.primary_stack == "python-fastapi-uv-ruff-orjson-polars":
+        route_only_keys.update({"app/main.py", profile.route_path, "app/__init__.py", "app/api/__init__.py"})
+    elif request.primary_stack == "typescript-hono-bun":
+        route_only_keys.update({"src/index.ts", profile.route_path})
+    elif request.primary_stack == "rust-axum-modern":
+        route_only_keys.update({"src/main.rs"})
+    elif request.primary_stack == "kotlin-http4k-exposed":
+        route_only_keys.update({"build.gradle.kts", "settings.gradle.kts", "src/main/kotlin/app/Main.kt"})
+    elif request.primary_stack == "zig-zap-jetzig":
+        route_only_keys.update({"src/main.zig"})
+    elif request.primary_stack == "go-echo":
+        route_only_keys.update({"cmd/server/main.go"})
+    elif request.primary_stack == "elixir-phoenix":
+        route_only_keys.update({starter_paths["route"], f"lib/{phoenix_app_name(slug)}_web/controllers/health_controller.ex"})
+    elif request.primary_stack == "prompt-first-repo":
+        route_only_keys.update({"scripts/validate_repo.py"})
+    elif request.primary_stack in {"crystal-kemal-avram", "ruby-hanami", "ocaml-dream-caqti-tyxml"}:
+        route_only_keys.update({starter_paths["route"]})
+    else:
+        route_only_keys.update({starter_paths["route"], "app/__init__.py"})
+    for relative_path, content in starter_files.items():
+        should_write = relative_path in route_only_keys
+        if request.smoke_tests and relative_path == starter_paths["smoke"]:
+            should_write = True
+        if request.integration_tests and relative_path == starter_paths["integration"]:
+            should_write = True
+        if request.seed_data and relative_path == starter_paths["seed"]:
+            should_write = True
+        if should_write:
+            generated_files[relative_path] = content
+
+    if docker_enabled:
+        compose_values = {
+            "compose_project_name": compose_project_name_dev,
+            "app_image": profile.app_image,
+            "app_command": profile.app_command,
+            "app_port": str(app_port),
+            "app_container_port": str(profile.app_container_port),
+            "app_depends_on_block": dev_depends_on,
+            "support_services_block": dev_support_block,
+        }
+        test_compose_values = {
+            "compose_project_name": compose_project_name_test,
+            "app_image": profile.app_image,
+            "test_command": profile.test_command,
+            "app_port": str(test_app_port),
+            "app_container_port": str(profile.app_container_port),
+            "app_depends_on_block": test_depends_on,
+            "support_services_block": test_support_block,
+        }
+        generated_files["docker-compose.yml"] = render_template(
+            repo_root() / "templates/compose/docker-compose.template.yaml",
+            compose_values,
+        )
+        generated_files["docker-compose.test.yml"] = render_template(
+            repo_root() / "templates/compose/docker-compose-test.template.yaml",
+            test_compose_values,
+        )
+        generated_files.update(build_env_files(support_services, slug, dev_support_ports, test_support_ports))
+
+    if profile.extra_template and request.include_docs_dir:
+        generated_files["docs/stack-notes.md"] = render_template(
+            repo_root() / profile.extra_template,
+            {},
+        )
+
+    if request.prompt_first:
+        generated_files.update(request.prompt_files_override or render_prompt_files(request.repo_name, profile))
+    if request.dokku:
+        generated_files.update(render_dokku_files(slug, app_port))
+
+    for directory in profile.directories:
+        if directory == "docs" and not docs_dir_generated:
+            continue
+        generated_files.setdefault(f"{directory}/.gitkeep", "")
+
+    return generated_files
+
+
+def generate_repo(request: RepoGenerationRequest, manifests: dict[str, dict[str, object]]) -> dict[str, str]:
+    """Generate one repo, printing either the dry-run plan or the final success message."""
+
+    ensure_target(request.target_dir, force=request.force, dry_run=request.dry_run)
+    generated_files = build_generated_files(request, manifests)
+    if request.dry_run:
+        print(f"Target: {request.target_dir}")
+        print("Planned files:")
+        write_files(request.target_dir, generated_files, dry_run=True)
+        return generated_files
+    write_files(request.target_dir, generated_files, dry_run=False)
+    print(f"Generated starter repo at {request.target_dir}")
+    return generated_files
+
+
+def _build_derived_request(
+    entry: dict[str, object],
+    target_dir: Path,
+    manifests: dict[str, dict[str, object]],
+    *,
+    force: bool,
+    dry_run: bool,
+) -> RepoGenerationRequest:
+    """Build the prompt-first repo request for one derived leaf entry."""
+
+    selected_manifests = ["prompt-first-meta-repo"]
+    return RepoGenerationRequest(
+        repo_name=str(entry["name"]),
+        target_dir=target_dir,
+        archetype="prompt-first-repo",
+        primary_stack="prompt-first-repo",
+        manifests=selected_manifests,
+        dokku=False,
+        prompt_first=True,
+        smoke_tests=True,
+        integration_tests=True,
+        seed_data=True,
+        docker_layout=False,
+        include_root_readme=False,
+        include_docs_dir=False,
+        no_profile=False,
+        force=force,
+        dry_run=dry_run,
+        description=f"Derived orchestration repo for {entry['name']}: {entry.get('description', '')}",
+        prompt_files_override=render_derived_prompt_files(entry, selected_manifests, manifests),
+        extra_profile_metadata=_build_derived_profile_metadata(entry, selected_manifests, manifests),
+        extra_context_entrypoints=[
+            ".prompts/PROMPT_01.txt",
+            ".prompts/PROMPT_02.txt",
+            ".prompts/PROMPT_03.txt",
+            ".prompts/PROMPT_04.txt",
+        ],
+    )
+
+
+def _print_derived_entry_summary(entry: dict[str, object], target_dir: Path) -> None:
+    """Print the derived scenario details before generation or dry-run output."""
+
+    print(f"=== {entry['name']} ===")
+    print(f"Team: {entry.get('team', '?')} — {entry.get('team_name', '')}")
+    print(f"Target: {target_dir}")
+    print(f"Description: {entry.get('description', '')}")
+    print()
+    print("--- Prompt ---")
+    print(str(entry.get("prompt", "")).strip())
+    print()
+
+
+def handle_derived_example(
+    args: argparse.Namespace,
+    manifests: dict[str, dict[str, object]],
+) -> int:
+    """Handle derived leaf generation, derived collections, and spin-out display."""
+
+    selector = args.derived_example
+    data = _load_derived_data()
+    spin_out = next((entry for entry in data["spin_outs"] if entry.get("name") == selector), None)
+    if spin_out is not None:
+        print(f"=== {spin_out['name']} ===")
+        print(f"Spin-out Platform: {spin_out.get('title', spin_out['name'])}")
+        print(f"Origin: {spin_out.get('origin', '?')}")
+        print(f"\nDescription: {spin_out['description']}")
+        print("\n--- What It Becomes ---")
+        print(str(spin_out.get("what_it_becomes", "")).strip())
+        if spin_out.get("seam_notes"):
+            print("\n--- Seam Notes ---")
+            print(str(spin_out.get("seam_notes", "")).strip())
+        return 0
+
+    entries = _expand_derived_selector(selector, data)
+    if not entries:
+        print(f"Unknown derived example: {selector!r}. Use --list-derived to see available names.")
+        return 1
+
+    target_plans = _resolve_derived_targets(selector, entries, args.target_dir)
+    preflight_targets([plan.target_dir for plan in target_plans], force=args.force)
+    for index, plan in enumerate(target_plans):
+        if index:
+            print()
+        _print_derived_entry_summary(plan.entry, plan.target_dir)
+        request = _build_derived_request(
+            plan.entry,
+            plan.target_dir,
+            manifests,
+            force=args.force,
+            dry_run=args.dry_run,
+        )
+        generate_repo(request, manifests)
+    return 0
+
+
 def main(argv: list[str]) -> int:
     parser = build_parser()
     args = parser.parse_args(argv[1:])
@@ -2310,48 +3123,14 @@ def main(argv: list[str]) -> int:
             print("Spin-out Platforms:")
             for entry in data["spin_outs"]:
                 print(f"  {entry['name']:<40}  {entry['origin']:<12}  {entry['description']}")
+        print()
+        print("Collection Selectors:")
+        for selector in DERIVED_COLLECTION_SELECTORS:
+            print(f"  {selector}")
         return 0
 
     if args.derived_example is not None:
-        name = args.derived_example
-        data = _load_derived_data()
-        entry = next(
-            (e for e in data["derived"] + data["spin_outs"] if e.get("name") == name),
-            None,
-        )
-        if entry is None:
-            print(f"Unknown derived example: {name!r}. Use --list-derived to see available names.")
-            return 1
-        is_derived = entry in data["derived"]
-        kind = "Sub-group" if is_derived else "Spin-out Platform"
-        print(f"=== {entry['name']} ===")
-        print(f"{kind}: {entry.get('title', entry['name'])}")
-        if is_derived:
-            print(f"Team: {entry.get('team', '?')} — {entry.get('team_name', '')}")
-        else:
-            print(f"Origin: {entry.get('origin', '?')}")
-        print(f"\nDescription: {entry['description']}")
-        print("\n--- Prompt ---")
-        print(entry.get("prompt", "").strip())
-        print("\n--- Source Examples ---")
-        # EXAMPLE_PROJECTS is added by PROMPT_75; fall back to empty dict if not yet present
-        example_projects = globals().get("EXAMPLE_PROJECTS", {})
-        source_nums = _coerce_int_list(entry.get("source_examples", []))
-        for num in source_nums:
-            ex = example_projects.get(num)
-            if ex is not None:
-                print(f"  #{num:>3}  --use-example {num:<4}  {ex.codename:<45}  {ex.title}")
-            else:
-                print(f"  #{num:>3}  --use-example {num}")
-        print("\n--- Scaffold Commands ---")
-        for num in source_nums:
-            ex = example_projects.get(num)
-            slug = f"{ex.codename}" if ex else f"example-{num:03d}"
-            print(f"  python3 scripts/new_repo.py --use-example {num} --dry-run --target-dir /tmp/{num:03d}-{slug}")
-        if not is_derived and entry.get("seam_notes"):
-            print("\n--- Seam Notes ---")
-            print(entry["seam_notes"].strip())
-        return 0
+        return handle_derived_example(args, manifests)
 
     if args.list_examples:
         for category_name, num_range in EXAMPLE_CATEGORIES:
@@ -2391,227 +3170,32 @@ def main(argv: list[str]) -> int:
         parser.error("--primary-stack is required")
 
     repo_name = args.repo_name
-    slug = slugify(repo_name)
-    target_dir = Path(args.target_dir or slug).expanduser().resolve()
-    ensure_target(target_dir, force=args.force, dry_run=args.dry_run)
-
-    if args.primary_stack not in STACKS:
-        raise ValueError(f"Unsupported stack: {args.primary_stack}")
-    if args.archetype not in ARCHETYPES:
-        raise ValueError(f"Unsupported archetype: {args.archetype}")
-
+    target_dir = _normalize_resolved_path(Path(args.target_dir or slugify(repo_name)))
     selected_manifests = sorted(
         set(
             args.manifest
             or default_manifests_for(args.archetype, args.primary_stack, args.dokku)
         )
     )
-    for manifest_name in selected_manifests:
-        if manifest_name not in manifests:
-            raise ValueError(f"Unknown manifest: {manifest_name}")
-
-    docker_enabled = args.docker_layout or bool(
-        infer_support_services(args.archetype, args.primary_stack, selected_manifests)
-    )
-    prompt_first = args.prompt_first or args.archetype == "prompt-first-repo"
-    profile = STACKS[args.primary_stack]
-    description = f"Starter repo for {repo_name} using {profile.display_name}."
-    include_root_readme = args.include_root_readme
-    include_docs_dir = args.include_docs_dir
-    docs_dir_generated = include_docs_dir or args.dokku
-
-    selected_manifest_data = [manifests[name] for name in selected_manifests]
-    if selected_manifest_data:
-        primary_manifest = selected_manifest_data[0]
-    else:
-        primary_manifest = {
-            "compose_project_name_dev": "{repo_slug}",
-            "compose_project_name_test": "{repo_slug}-test",
-            "port_band_app_dev": "14000-14099",
-            "port_band_app_test": "15000-15099",
-            "port_band_data_dev": "24000-24099",
-            "port_band_data_test": "25000-25099",
-        }
-
-    compose_project_name_dev = str(primary_manifest["compose_project_name_dev"]).replace(
-        "{repo_slug}", slug
-    )
-    compose_project_name_test = str(primary_manifest["compose_project_name_test"]).replace(
-        "{repo_slug}", slug
-    )
-    app_port = pick_port(str(primary_manifest["port_band_app_dev"]), slug)
-    test_app_port = pick_port(str(primary_manifest["port_band_app_test"]), slug)
-
-    support_services = infer_support_services(args.archetype, args.primary_stack, selected_manifests)
-    dev_depends_on, dev_support_block, dev_support_ports = build_support_service_blocks(
-        support_services,
-        slug,
-        "dev",
-        str(primary_manifest["port_band_data_dev"]),
-    )
-    test_depends_on, test_support_block, test_support_ports = build_support_service_blocks(
-        support_services,
-        slug,
-        "test",
-        str(primary_manifest["port_band_data_test"]),
-    )
-
-    generated_files: dict[str, str] = {}
-    generated_files.update(
-        render_agent_and_claude(args.archetype, args.primary_stack, selected_manifests)
-    )
-    generated_files[".gitignore"] = render_gitignore(profile)
-    if include_root_readme:
-        generated_files["README.md"] = render_readme(
-            repo_name,
-            description,
-            args.archetype,
-            profile,
-            selected_manifests,
-            args.dokku,
-            prompt_first,
-            docker_enabled,
-            app_port,
-            compose_project_name_dev,
-            compose_project_name_test,
-            dev_support_ports,
-            test_support_ports,
-        )
-    if include_docs_dir:
-        generated_files.update(build_docs(repo_name, description, args.archetype, profile, selected_manifests))
-
-    starter_paths = resolved_starter_paths(args.primary_stack, slug)
-    port_map = {"app_dev": app_port, "app_test": test_app_port}
-    port_map.update({f"{name}_dev": port for name, port in dev_support_ports.items()})
-    port_map.update({f"{name}_test": port for name, port in test_support_ports.items()})
-    validation_commands = ["python scripts/validate_repo.py"] if args.primary_stack == "prompt-first-repo" else []
-    if docker_enabled:
-        validation_commands.append("docker compose -f docker-compose.test.yml config")
-    validate_bootstrap_plan(
-        compose_project_name_dev=compose_project_name_dev,
-        compose_project_name_test=compose_project_name_test,
-        app_port=app_port,
-        test_app_port=test_app_port,
-        dev_support_ports={f"{name}_dev": port for name, port in dev_support_ports.items()},
-        test_support_ports={f"{name}_test": port for name, port in test_support_ports.items()},
-    )
-    profile_summary = render_profile_summary(
+    request = RepoGenerationRequest(
         repo_name=repo_name,
-        slug=slug,
-        description=description,
+        target_dir=target_dir,
         archetype=args.archetype,
         primary_stack=args.primary_stack,
         manifests=selected_manifests,
-        docker_enabled=docker_enabled,
         dokku=args.dokku,
-        prompt_first=prompt_first,
+        prompt_first=args.prompt_first or args.archetype == "prompt-first-repo",
         smoke_tests=args.smoke_tests,
         integration_tests=args.integration_tests,
         seed_data=args.seed_data,
-        include_root_readme=include_root_readme,
-        include_docs_dir=include_docs_dir,
-        docs_dir_generated=docs_dir_generated,
-        compose_project_name_dev=compose_project_name_dev,
-        compose_project_name_test=compose_project_name_test,
-        compose_files=["docker-compose.yml", "docker-compose.test.yml"],
-        port_map=port_map,
-        starter_paths=starter_paths,
-        validation_commands=validation_commands or ["echo no extra validation commands configured"],
+        docker_layout=args.docker_layout,
+        include_root_readme=args.include_root_readme,
+        include_docs_dir=args.include_docs_dir,
+        no_profile=args.no_profile,
+        force=args.force,
+        dry_run=args.dry_run,
     )
-    generated_files["manifests/project-profile.yaml"] = profile_summary
-    if not args.no_profile:
-        generated_files[".generated-profile.yaml"] = profile_summary
-
-    starter_files = starter_files_for_stack(args.primary_stack, slug)
-    route_only_keys = set()
-    if args.primary_stack == "python-fastapi-uv-ruff-orjson-polars":
-        route_only_keys.update({"app/main.py", profile.route_path, "app/__init__.py", "app/api/__init__.py"})
-    elif args.primary_stack == "typescript-hono-bun":
-        route_only_keys.update({"src/index.ts", profile.route_path})
-    elif args.primary_stack == "rust-axum-modern":
-        route_only_keys.update({"src/main.rs"})
-    elif args.primary_stack == "kotlin-http4k-exposed":
-        route_only_keys.update({"build.gradle.kts", "settings.gradle.kts", "src/main/kotlin/app/Main.kt"})
-    elif args.primary_stack == "zig-zap-jetzig":
-        route_only_keys.update({"src/main.zig"})
-    elif args.primary_stack == "go-echo":
-        route_only_keys.update({"cmd/server/main.go"})
-    elif args.primary_stack == "elixir-phoenix":
-        route_only_keys.update({starter_paths["route"], f"lib/{phoenix_app_name(slug)}_web/controllers/health_controller.ex"})
-    elif args.primary_stack == "prompt-first-repo":
-        route_only_keys.update({"scripts/validate_repo.py"})
-    elif args.primary_stack in {"crystal-kemal-avram", "ruby-hanami", "ocaml-dream-caqti-tyxml"}:
-        route_only_keys.update({starter_paths["route"]})
-    else:
-        route_only_keys.update({starter_paths["route"], "app/__init__.py"})
-    for relative_path, content in starter_files.items():
-        should_write = relative_path in route_only_keys
-        if args.smoke_tests and relative_path == starter_paths["smoke"]:
-            should_write = True
-        if args.integration_tests and relative_path == starter_paths["integration"]:
-            should_write = True
-        if args.seed_data and relative_path == starter_paths["seed"]:
-            should_write = True
-        if should_write:
-            generated_files[relative_path] = content
-
-    if docker_enabled:
-        compose_values = {
-            "compose_project_name": compose_project_name_dev,
-            "app_image": profile.app_image,
-            "app_command": profile.app_command,
-            "app_port": str(app_port),
-            "app_container_port": str(profile.app_container_port),
-            "app_depends_on_block": dev_depends_on,
-            "support_services_block": dev_support_block,
-        }
-        test_compose_values = {
-            "compose_project_name": compose_project_name_test,
-            "app_image": profile.app_image,
-            "test_command": profile.test_command,
-            "app_port": str(test_app_port),
-            "app_container_port": str(profile.app_container_port),
-            "app_depends_on_block": test_depends_on,
-            "support_services_block": test_support_block,
-        }
-        generated_files["docker-compose.yml"] = render_template(
-            repo_root() / "templates/compose/docker-compose.template.yaml",
-            compose_values,
-        )
-        generated_files["docker-compose.test.yml"] = render_template(
-            repo_root() / "templates/compose/docker-compose-test.template.yaml",
-            test_compose_values,
-        )
-        generated_files.update(build_env_files(support_services, slug, dev_support_ports, test_support_ports))
-
-    if profile.extra_template and include_docs_dir:
-        generated_files["docs/stack-notes.md"] = render_template(
-            repo_root() / profile.extra_template,
-            {},
-        )
-
-    if prompt_first:
-        generated_files.update(render_prompt_files(repo_name, profile))
-
-    if args.dokku:
-        generated_files.update(render_dokku_files(slug, profile.app_container_port))
-
-    if args.dry_run:
-        print(f"Target: {target_dir}")
-        print("Planned files:")
-    else:
-        for directory in profile.directories:
-            if directory == "docs" and not docs_dir_generated:
-                continue
-            (target_dir / directory).mkdir(parents=True, exist_ok=True)
-        if args.dokku:
-            (target_dir / "scripts/smoke").mkdir(parents=True, exist_ok=True)
-    write_files(target_dir, generated_files, args.dry_run)
-
-    if args.dry_run:
-        return 0
-
-    print(f"Generated starter repo at {target_dir}")
+    generate_repo(request, manifests)
     return 0
 
 

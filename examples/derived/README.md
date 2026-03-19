@@ -24,6 +24,24 @@ Team A — Intelligent Data Platform covers ingestion, analytics, ML routing, an
 tooling. Team B — ML-Powered Observability covers event-driven coordination, search and
 inference, time-series acquisition, and operational quality tooling.
 
+These entries are now executable inputs to `scripts/new_repo.py`. A leaf derived example
+generates one prompt-first orchestration repo with derived metadata plus
+`.prompts/PROMPT_01.txt` through `.prompts/PROMPT_04.txt`.
+
+Examples:
+
+```bash
+python3 scripts/new_repo.py --derived-example ingestion-normalization-core --target-dir /tmp
+python3 scripts/new_repo.py --derived-example team-a --target-dir /tmp
+```
+
+Parent-dir semantics:
+
+- passing `/tmp` or any existing directory via `--target-dir` treats that directory as the parent
+- leaf selectors create one child repo named after the derived example when the target is a parent directory
+- team selectors create one child repo per derived example under the parent directory
+- omitting `--target-dir` uses `./<derived-name>` for leaf selectors and `.` as the parent for team selectors
+
 ## Usage by the coverage verification layer (PROMPT_77)
 
 PROMPT_77 uses both files to verify coverage across archetypes, stacks, and categories.
