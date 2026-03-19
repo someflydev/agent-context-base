@@ -30,6 +30,7 @@ class RepoScriptTests(unittest.TestCase):
         self.assertEqual(code, 0, stderr)
         self.assertIn("Build an end-to-end data ingestion and normalization core", stdout)
         self.assertNotIn("block-scalar-content", stdout)
+        self.assertNotIn("--use-example", stdout)
 
     def test_new_repo_generates_leaf_derived_repo_under_parent_dir(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -50,16 +51,26 @@ class RepoScriptTests(unittest.TestCase):
             self.assertTrue((target / ".prompts/PROMPT_04.txt").exists())
             self.assertTrue((target / "manifests/project-profile.yaml").exists())
             self.assertTrue((target / "manifests/base/prompt-first-meta-repo.yaml").exists())
+            self.assertTrue((target / "context/doctrine/core-principles.md").exists())
+            self.assertTrue((target / "examples/canonical-prompts/001-bootstrap-repo.txt").exists())
             profile = (target / "manifests/project-profile.yaml").read_text(encoding="utf-8")
             prompt_01 = (target / ".prompts/PROMPT_01.txt").read_text(encoding="utf-8")
             prompt_04 = (target / ".prompts/PROMPT_04.txt").read_text(encoding="utf-8")
+            agent_md = (target / "AGENT.md").read_text(encoding="utf-8")
             self.assertIn("prompts_md_generated: false", profile)
             self.assertIn("prompt_directory: .prompts", profile)
             self.assertIn("- manifests/base/prompt-first-meta-repo.yaml", profile)
+            self.assertIn("- context/doctrine/core-principles.md", profile)
             self.assertIn("- .prompts/PROMPT_04.txt", profile)
+            self.assertIn("route: .prompts/PROMPT_01.txt", profile)
+            self.assertIn("source_example_lineage_note:", profile)
+            self.assertNotIn("--use-example", profile)
             self.assertIn("descendant of `agent-context-base`", prompt_01)
             self.assertIn("Treat the vendored base manifests", prompt_01)
+            self.assertNotIn("--use-example", prompt_01)
             self.assertIn("Continue creating or refining prompt files in `.prompts/`", prompt_04)
+            self.assertNotIn("--use-example", prompt_04)
+            self.assertNotIn("tool-invocation-discipline.md", agent_md)
 
     def test_new_repo_vendors_selected_manifests_into_generated_repo(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -177,6 +188,8 @@ class RepoScriptTests(unittest.TestCase):
             self.assertTrue((target / "AGENT.md").exists())
             self.assertFalse((target / "PROMPTS.md").exists())
             self.assertTrue((target / "manifests/base/prompt-first-meta-repo.yaml").exists())
+            self.assertTrue((target / "context/doctrine/core-principles.md").exists())
+            self.assertTrue((target / "examples/canonical-prompts/001-bootstrap-repo.txt").exists())
             self.assertFalse((target / "README.md").exists())
             self.assertFalse((target / "docs").exists())
 

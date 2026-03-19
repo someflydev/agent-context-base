@@ -1716,6 +1716,47 @@ def load_manifest_texts(selected_manifests: list[str]) -> dict[str, str]:
     return manifest_texts
 
 
+def _manifest_support_asset_paths(
+    selected_manifests: list[str],
+    manifests: dict[str, dict[str, object]],
+) -> list[str]:
+    """Return manifest-linked repo-relative asset paths to vendor."""
+
+    keys = (
+        "required_context",
+        "optional_context",
+        "preferred_examples",
+        "recommended_templates",
+    )
+    paths: list[str] = []
+    for manifest_name in selected_manifests:
+        manifest = manifests[manifest_name]
+        for key in keys:
+            value = manifest.get(key, [])
+            if not isinstance(value, list):
+                continue
+            for item in value:
+                path = str(item).strip()
+                if not path or path in paths:
+                    continue
+                full_path = repo_root() / path
+                if full_path.is_file():
+                    paths.append(path)
+    return paths
+
+
+def load_manifest_support_asset_texts(
+    selected_manifests: list[str],
+    manifests: dict[str, dict[str, object]],
+) -> dict[str, str]:
+    """Load manifest-linked support assets for vendoring into generated repos."""
+
+    asset_texts: dict[str, str] = {}
+    for relative_path in _manifest_support_asset_paths(selected_manifests, manifests):
+        asset_texts[relative_path] = (repo_root() / relative_path).read_text(encoding="utf-8")
+    return asset_texts
+
+
 def print_catalog(title: str, entries: dict[str, str]) -> int:
     """Print one catalog and exit."""
 
@@ -2098,6 +2139,7 @@ def render_profile_summary(
     starter_paths: dict[str, str],
     validation_commands: list[str],
     vendored_manifest_paths: list[str],
+    vendored_support_paths: list[str],
     prompt_directory: str,
     prompts_md_generated: bool,
     initial_prompt_files: list[str],
@@ -2131,6 +2173,7 @@ def render_profile_summary(
         "front_docs_docs_dir_generated": str(docs_dir_generated).lower(),
         "selected_manifest_lines": format_yaml_list(manifests),
         "vendored_manifest_lines": format_yaml_list(vendored_manifest_paths),
+        "vendored_support_lines": format_yaml_list(vendored_support_paths),
         "startup_order_lines": format_yaml_list(startup_order),
         "prompt_directory": prompt_directory,
         "prompts_md_generated": str(prompts_md_generated).lower(),
@@ -2235,6 +2278,34 @@ def _source_examples_for_derived(entry: dict[str, object]) -> list[tuple[int, Ex
     return examples
 
 
+def _source_example_specs_for_derived(entry: dict[str, object]) -> list[dict[str, object]]:
+    """Return repo-local source example metadata for one derived entry."""
+
+    args_by_number: dict[int, dict[str, object]] = {}
+    for item in entry.get("new_repo_args", []):
+        if not isinstance(item, dict):
+            continue
+        args_by_number[int(item.get("example", 0))] = item
+
+    specs: list[dict[str, object]] = []
+    for number, project in _source_examples_for_derived(entry):
+        item = args_by_number.get(number, {})
+        specs.append(
+            {
+                "number": number,
+                "codename": project.codename,
+                "title": project.title,
+                "archetype": str(item.get("archetype", project.archetype)),
+                "primary_stack": str(item.get("primary_stack", project.primary_stack)),
+                "smoke_tests": bool(item.get("smoke_tests", project.smoke_tests)),
+                "integration_tests": bool(item.get("integration_tests", project.integration_tests)),
+                "seed_data": bool(item.get("seed_data", project.seed_data)),
+                "dokku": bool(item.get("dokku", project.dokku)),
+            }
+        )
+    return specs
+
+
 def _seam_contract_text(entry: dict[str, object]) -> str:
     """Extract the seam-contract sentence from a derived prompt when present."""
 
@@ -2249,16 +2320,10 @@ def _derived_service_plan_lines(entry: dict[str, object]) -> list[str]:
     """Build service-by-service scaffold bullets from new_repo_args."""
 
     lines: list[str] = []
-    for item in entry.get("new_repo_args", []):
-        if not isinstance(item, dict):
-            continue
-        example_number = int(item.get("example", 0))
-        example = EXAMPLE_PROJECTS.get(example_number)
-        service_name = example.codename if example is not None else f"example-{example_number:03d}"
-        title = example.title if example is not None else "reference example"
+    for item in _source_example_specs_for_derived(entry):
         lines.append(
-            f"- `{service_name}` from `--use-example {example_number}`: {title} "
-            f"({item.get('archetype')} / {item.get('primary_stack')})"
+            f"- `{item['codename']}` from source example `#{item['number']}`: "
+            f"{item['title']} ({item['archetype']} / {item['primary_stack']})"
         )
     return lines
 
@@ -2290,14 +2355,18 @@ def render_derived_prompt_files(
     description = str(entry.get("description", ""))
     prompt_text = str(entry.get("prompt", "")).strip()
     vendored_manifest_paths = [f"manifests/base/{name}.yaml" for name in selected_manifests]
-    source_examples = _source_examples_for_derived(entry)
+    source_examples = _source_example_specs_for_derived(entry)
     source_lines = [
-        f"- `#{number}` `{project.codename}`: {project.title}"
-        for number, project in source_examples
+        f"- `#{item['number']}` `{item['codename']}`: {item['title']} "
+        f"({item['archetype']} / {item['primary_stack']})"
+        for item in source_examples
     ]
-    source_command_lines = [
-        f"- `python3 scripts/new_repo.py --use-example {number} --dry-run --target-dir /tmp/{project.codename}`"
-        for number, project in source_examples
+    source_detail_lines = [
+        f"- Source example `#{item['number']}` keeps the lineage for `{item['codename']}`: "
+        f"{item['title']}. Smoke tests: `{str(item['smoke_tests']).lower()}`; "
+        f"integration tests: `{str(item['integration_tests']).lower()}`; "
+        f"seed data: `{str(item['seed_data']).lower()}`; Dokku: `{str(item['dokku']).lower()}`."
+        for item in source_examples
     ]
     scaffold_lines = _derived_service_plan_lines(entry)
     seam_contract_text = _seam_contract_text(entry)
@@ -2334,6 +2403,8 @@ def render_derived_prompt_files(
             "Source examples driving this repo:",
             *source_lines,
             "",
+            "Treat the source example metadata in `manifests/project-profile.yaml` as repo-local lineage records, not as commands that must be rerun from the parent repo.",
+            "",
             "Instructions:",
             "- Treat this repo as the orchestration and implementation repo for the derived scenario, not as a blank shell and not as several unrelated repos.",
             "- Update `manifests/project-profile.yaml` and `.generated-profile.yaml` first so the startup order, vendored manifest paths, service map, seam map, and verification commands are explicit.",
@@ -2347,6 +2418,9 @@ def render_derived_prompt_files(
             "",
             "Service-by-service scaffold plan:",
             *scaffold_lines,
+            "",
+            "Repo-local source example lineage to preserve while scaffolding:",
+            *source_detail_lines,
             "",
             "Vendored manifest workflow:",
             *[f"- Load `{path}` and extract the required/optional context, preferred examples, recommended templates, warnings, and bootstrap defaults into repo-local planning." for path in vendored_manifest_paths],
@@ -2395,7 +2469,7 @@ def render_derived_prompt_files(
             "- Keep per-service smoke checks explicit for every source example included in this derived repo.",
             "- Add at least one combined integration or coordination check proving the main seam path for the scenario.",
             "- Record the exact verification command set in `manifests/project-profile.yaml`.",
-            *source_command_lines,
+            "- Use the repo-local source example metadata in `manifests/project-profile.yaml` to determine expected smoke, integration, seed-data, and deployment traits for each service.",
             "",
             "Instructions:",
             "- Add or update verification commands in `manifests/project-profile.yaml` for smoke checks and derived-specific integration checks.",
@@ -2421,7 +2495,6 @@ def _build_derived_profile_metadata(
 ) -> dict[str, object]:
     """Build the derived-specific metadata block for the generated profile."""
 
-    source_examples = _source_examples_for_derived(entry)
     return {
         "derived_example_name": entry["name"],
         "derived_team": entry.get("team"),
@@ -2435,16 +2508,23 @@ def _build_derived_profile_metadata(
         ],
         "source_examples": [
             {
-                "number": number,
-                "codename": project.codename,
-                "title": project.title,
+                "number": item["number"],
+                "codename": item["codename"],
+                "title": item["title"],
+                "archetype": item["archetype"],
+                "primary_stack": item["primary_stack"],
+                "smoke_tests": item["smoke_tests"],
+                "integration_tests": item["integration_tests"],
+                "seed_data": item["seed_data"],
+                "dokku": item["dokku"],
             }
-            for number, project in source_examples
+            for item in _source_example_specs_for_derived(entry)
         ],
-        "source_example_commands": [
-            f"python3 scripts/new_repo.py --use-example {number} --dry-run --target-dir /tmp/{project.codename}"
-            for number, project in source_examples
-        ],
+        "source_example_lineage_note": (
+            "Source example numbers and codenames are preserved here as repo-local lineage "
+            "metadata. They are descriptive startup inputs for this generated repo, not "
+            "commands that require rerunning agent-context-base generation."
+        ),
         "preferred_examples": _derived_preferred_examples(selected_manifests, manifests),
         "selected_manifests": selected_manifests,
         "vendored_manifest_paths": [f"manifests/base/{name}.yaml" for name in selected_manifests],
@@ -2887,12 +2967,15 @@ def build_generated_files(
     generated_files.update(render_agent_and_claude(request.archetype, request.primary_stack, request.manifests))
     generated_files[".gitignore"] = render_gitignore(profile)
     vendored_manifest_texts = load_manifest_texts(request.manifests)
+    vendored_support_texts = load_manifest_support_asset_texts(request.manifests, manifests)
     vendored_manifest_paths = [
         f"manifests/base/{manifest_name}.yaml"
         for manifest_name in request.manifests
     ]
     for manifest_name, manifest_text in vendored_manifest_texts.items():
         generated_files[f"manifests/base/{manifest_name}.yaml"] = manifest_text
+    for relative_path, asset_text in vendored_support_texts.items():
+        generated_files[relative_path] = asset_text
     if request.include_root_readme:
         generated_files["README.md"] = render_readme(
             request.repo_name,
@@ -2920,6 +3003,8 @@ def build_generated_files(
     )
     if request.prompt_first and not prompt_files:
         prompt_files = sorted(render_prompt_files(request.repo_name, profile).keys())
+    if request.primary_stack == "prompt-first-repo" and prompt_files:
+        starter_paths["route"] = prompt_files[0]
     port_map = {"app_dev": app_port, "app_test": test_app_port}
     port_map.update({f"{name}_dev": port for name, port in dev_support_ports.items()})
     port_map.update({f"{name}_test": port for name, port in test_support_ports.items()})
@@ -2949,6 +3034,7 @@ def build_generated_files(
         starter_paths=starter_paths,
         validation_commands=validation_commands or ["echo no extra validation commands configured"],
         vendored_manifest_paths=vendored_manifest_paths,
+        vendored_support_paths=sorted(vendored_support_texts),
         prompt_directory=".prompts" if request.prompt_first else "none",
         prompts_md_generated=False,
         initial_prompt_files=prompt_files if request.prompt_first else ["none"],

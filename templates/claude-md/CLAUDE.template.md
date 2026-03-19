@@ -19,8 +19,8 @@ Then load the smallest useful bundle from the task, repo signals, and active cha
 Treat `manifests/base/*.yaml` as the repo-local snapshots of base-repo routing and bootstrap intent when those files exist.
 
 When routing, selecting examples, assembling context bundles, choosing a verification path, or
-reading and writing `MEMORY.md`, load the relevant skill from `context/skills/` rather than
-relying on implicit judgment.
+reading and writing `MEMORY.md`, prefer the repo-local guidance vendored under `context/`,
+`examples/`, and `templates/` when those paths are present.
 
 ## Guardrails
 
@@ -38,8 +38,9 @@ relying on implicit judgment.
 ## Running Commands
 
 Tool environments are project-local. Never use system runtimes, global installs, or bare tool
-names without an explicit path. See `context/doctrine/tool-invocation-discipline.md` in the
-base repo for the full per-stack rules.
+names without an explicit path. Use the repo-local commands documented in
+`manifests/project-profile.yaml`, `.generated-profile.yaml`, and any vendored `context/`
+guidance that exists in this repo.
 
 {{tool_invocation_notes}}
 

@@ -12,6 +12,8 @@ repo_local_profile_path: manifests/project-profile.yaml
 vendored_base_manifests_dir: manifests/base
 vendored_base_manifest_paths:
 {{vendored_manifest_lines}}
+vendored_support_paths:
+{{vendored_support_lines}}
 downstream_startup_order:
 {{startup_order_lines}}
 prompt_directory: {{prompt_directory}}
