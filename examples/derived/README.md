@@ -34,6 +34,7 @@ Examples:
 ```bash
 python3 scripts/new_repo.py --derived-example ingestion-normalization-core --target-dir /tmp
 python3 scripts/new_repo.py --derived-example team-a --target-dir /tmp
+python3 scripts/new_repo.py --derived-example operator-surface --derived-context-mode maximal --target-dir /tmp
 ```
 
 Parent-dir semantics:
@@ -54,6 +55,18 @@ Generated derived repo shape:
 That shape is intentional. A fresh Codex, Claude, or Gemini session inside the generated repo
 should be able to recover the relevant capabilities of `agent-context-base` from the vendored
 manifests and generated profiles without reopening this source repo.
+
+Derived context modes:
+
+- `compact` is the default. It vendors the selected manifests plus the files named directly by those manifests.
+- `maximal` is an explicit opt-in. It vendors a larger but bounded repo-local bundle so prompt-first work can continue locally: prompt-first anchors, startup/routing skills, canonical prompt and workflow examples, prompt-governance templates, and source-example archetype/stack docs relevant to the derived scenario.
+
+The generated profile exposes the difference clearly:
+
+- `derived_metadata.derived_context_mode` records the selected mode
+- `derived_metadata.mode_vendored_paths` lists the extra paths added by maximal mode
+- `derived_metadata.repo_local_routing_model_paths` lists the repo-local substitutes for the base repo's routing and startup model
+- `derived_metadata.local_canonical_examples_available` and `derived_metadata.local_canonical_workflows_available` show which local canonical references are immediately available
 
 ## Usage by the coverage verification layer (PROMPT_77)
 

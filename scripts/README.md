@@ -51,16 +51,21 @@ python scripts/new_repo.py prompt-kit \
 
 python3 scripts/new_repo.py --derived-example ingestion-normalization-core --target-dir /tmp
 python3 scripts/new_repo.py --derived-example team-a --target-dir /tmp
+python3 scripts/new_repo.py --derived-example operator-surface --derived-context-mode maximal --target-dir /tmp
 ```
 
 Derived generation notes:
 
 - `--derived-example <leaf>` generates one prompt-first orchestration repo for that scenario
 - `--derived-example team-a`, `team-b`, or `all-derived` generates one child repo per derived example
+- `--derived-context-mode compact|maximal` controls how much prompt-first support context is vendored for derived repos; the default is `compact`
 - when `--target-dir` points at `/tmp` or any existing directory, that directory is treated as the parent and each derived repo is written under it
 - generated repos keep a repo-local summary in `manifests/project-profile.yaml` and vendor the selected base manifests under `manifests/base/*.yaml`
+- `compact` keeps the current manifest-linked vendoring behavior
+- `maximal` adds a bounded local bundle of prompt-first anchors, startup/routing skills, canonical prompt/workflow examples, prompt-governance templates, and source-example archetype/stack docs
 - new prompt-first generation writes `.prompts/` directly and does not generate `PROMPTS.md` by default
 - leaf derived repos use `.prompts/PROMPT_01.txt` through `.prompts/PROMPT_04.txt` instead of the generic `001-...` prompt-first starter pair, and those prompts explicitly tell downstream assistants to use vendored manifests plus generated profiles as the local replacement for the base repo
+- maximal derived repos also record the extra vendored path list, local canonical examples/workflows, and preferred startup order in generated profile metadata so a fresh assistant session can stay repo-local
 
 ## `init_memory.py`
 

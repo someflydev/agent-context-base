@@ -39,6 +39,7 @@ python scripts/new_repo.py --list-derived
 python scripts/new_repo.py --use-example 1 --dry-run --target-dir /tmp/example-001
 python3 scripts/new_repo.py --derived-example ingestion-normalization-core --target-dir /tmp
 python3 scripts/new_repo.py --derived-example team-a --target-dir /tmp
+python3 scripts/new_repo.py --derived-example operator-surface --derived-context-mode maximal --target-dir /tmp
 python scripts/preview_context_bundle.py backend-api-fastapi-polars --show-weights --show-anchors
 ```
 
@@ -87,8 +88,16 @@ Examples:
 
 ```bash
 python3 scripts/new_repo.py --derived-example ingestion-normalization-core --target-dir /tmp
+python3 scripts/new_repo.py --derived-example ingestion-normalization-core --derived-context-mode maximal --target-dir /tmp
 python3 scripts/new_repo.py --derived-example team-a --target-dir /tmp
 ```
+
+Derived context modes:
+
+- `compact` is the default. It vendors the selected base manifests plus the files those manifests point at.
+- `maximal` is an explicit opt-in for a richer repo-local bundle. In addition to the compact set, it vendors prompt-first anchors, startup/routing skills, canonical prompt and workflow examples, prompt-governance templates, and source-example archetype/stack docs relevant to the derived scenario.
+
+Choose `maximal` when you expect a fresh assistant session to continue prompt-first work entirely from the generated repo without relying on memory of where `agent-context-base` kept routing material.
 
 Target resolution rules:
 
@@ -103,6 +112,13 @@ The derived prompt sequence replaces the generic prompt-first starter files and 
 - `PROMPT_02.txt` scaffolds the service surfaces implied by the source examples
 - `PROMPT_03.txt` documents seams, contracts, and coordination paths
 - `PROMPT_04.txt` records verification expectations and post-flight refinement work
+
+In maximal mode, the generated repo also records the richer local bundle directly in `manifests/project-profile.yaml` and `.generated-profile.yaml`:
+
+- `derived_metadata.derived_context_mode` records whether the repo was generated in `compact` or `maximal`
+- `derived_metadata.mode_vendored_paths` lists the additional files vendored because of maximal mode
+- `derived_metadata.local_canonical_examples_available` and `derived_metadata.local_canonical_workflows_available` expose the repo-local canonical references a downstream assistant can load next
+- `derived_metadata.repo_local_routing_model_paths` identifies the repo-local substitutes for the base repo's routing model
 
 ## First Steps In The Generated Repo
 
