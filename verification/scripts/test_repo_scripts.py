@@ -20,6 +20,26 @@ def run_script(*args: str, cwd: Path | None = None) -> tuple[int, str, str]:
 
 
 class RepoScriptTests(unittest.TestCase):
+    def _generate_derived_repo(
+        self,
+        parent: Path,
+        name: str,
+        *,
+        derived_context_mode: str | None = None,
+    ) -> Path:
+        args = [
+            str(SCRIPTS_DIR / "new_repo.py"),
+            "--derived-example",
+            name,
+            "--target-dir",
+            str(parent),
+        ]
+        if derived_context_mode is not None:
+            args.extend(["--derived-context-mode", derived_context_mode])
+        code, _, stderr = run_script(*args)
+        self.assertEqual(code, 0, stderr)
+        return parent / name
+
     def test_new_repo_prints_real_derived_prompt_text(self) -> None:
         code, stdout, stderr = run_script(
             str(SCRIPTS_DIR / "new_repo.py"),
@@ -71,6 +91,96 @@ class RepoScriptTests(unittest.TestCase):
             self.assertIn("Continue creating or refining prompt files in `.prompts/`", prompt_04)
             self.assertNotIn("--use-example", prompt_04)
             self.assertNotIn("tool-invocation-discipline.md", agent_md)
+
+    def test_new_repo_maximal_leaf_records_mode_metadata(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            target = self._generate_derived_repo(
+                Path(temp_dir),
+                "operator-surface",
+                derived_context_mode="maximal",
+            )
+            profile = (target / "manifests/project-profile.yaml").read_text(encoding="utf-8")
+            self.assertIn("derived_context_mode: maximal", profile)
+            self.assertIn("mode_vendored_paths:", profile)
+            self.assertIn("- context/anchors/prompt-first.md", profile)
+            self.assertIn("- examples/canonical-workflows/README.md", profile)
+
+    def test_new_repo_maximal_leaf_vendors_larger_bundle_than_compact(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            parent = Path(temp_dir)
+            (parent / "compact-parent").mkdir()
+            (parent / "maximal-parent").mkdir()
+            compact_target = self._generate_derived_repo(parent / "compact-parent", "ml-gateway-intelligence")
+            maximal_target = self._generate_derived_repo(
+                parent / "maximal-parent",
+                "ml-gateway-intelligence",
+                derived_context_mode="maximal",
+            )
+            compact_files = [path for path in compact_target.rglob("*") if path.is_file()]
+            maximal_files = [path for path in maximal_target.rglob("*") if path.is_file()]
+            compact_profile = (compact_target / "manifests/project-profile.yaml").read_text(encoding="utf-8")
+            maximal_profile = (maximal_target / "manifests/project-profile.yaml").read_text(encoding="utf-8")
+            self.assertGreater(len(maximal_files), len(compact_files))
+            self.assertNotIn("context/anchors/prompt-first.md", compact_profile)
+            self.assertIn("context/anchors/prompt-first.md", maximal_profile)
+            self.assertTrue((maximal_target / "context/archetypes/multi-backend-service.md").exists())
+            self.assertTrue((maximal_target / "context/stacks/go-echo.md").exists())
+
+    def test_new_repo_maximal_team_selector_generates_one_child_per_leaf(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            parent = Path(temp_dir)
+            code, _, stderr = run_script(
+                str(SCRIPTS_DIR / "new_repo.py"),
+                "--derived-example",
+                "team-a",
+                "--derived-context-mode",
+                "maximal",
+                "--target-dir",
+                str(parent),
+            )
+            self.assertEqual(code, 0, stderr)
+            for child in (
+                "ingestion-normalization-core",
+                "analytics-lake-deployment",
+                "ml-gateway-intelligence",
+                "operator-surface",
+            ):
+                self.assertTrue((parent / child / "manifests/project-profile.yaml").exists(), child)
+                self.assertTrue((parent / child / "context/anchors/prompt-first.md").exists(), child)
+
+    def test_new_repo_maximal_guidance_only_points_at_present_repo_local_bundle_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            target = self._generate_derived_repo(
+                Path(temp_dir),
+                "operator-surface",
+                derived_context_mode="maximal",
+            )
+            profile = (target / "manifests/project-profile.yaml").read_text(encoding="utf-8")
+            prompt_01 = (target / ".prompts/PROMPT_01.txt").read_text(encoding="utf-8")
+            agent_md = (target / "AGENT.md").read_text(encoding="utf-8")
+            claude_md = (target / "CLAUDE.md").read_text(encoding="utf-8")
+            for relative_path in (
+                "context/anchors/prompt-first.md",
+                "context/skills/context-bundle-assembly.md",
+                "examples/canonical-prompts/README.md",
+                "examples/canonical-workflows/README.md",
+                "templates/manifest/manifest.template.yaml",
+            ):
+                self.assertTrue((target / relative_path).exists(), relative_path)
+                self.assertIn(relative_path, profile)
+            self.assertIn("Derived context mode: `maximal`.", prompt_01)
+            self.assertIn("`context/anchors/prompt-first.md`", prompt_01)
+            self.assertIn("derived_context_mode: maximal", agent_md)
+            self.assertIn("derived_context_mode: maximal", claude_md)
+
+    def test_new_repo_default_derived_context_mode_remains_compact(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            target = self._generate_derived_repo(Path(temp_dir), "operator-surface")
+            profile = (target / "manifests/project-profile.yaml").read_text(encoding="utf-8")
+            self.assertIn("derived_context_mode: compact", profile)
+            self.assertIn("mode_vendored_paths:", profile)
+            self.assertNotIn("context/anchors/prompt-first.md", profile)
+            self.assertFalse((target / "context/anchors/prompt-first.md").exists())
 
     def test_new_repo_vendors_selected_manifests_into_generated_repo(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
