@@ -1,0 +1,409 @@
+You are working inside the agent-context-base repository.
+
+This prompt closes the gap between derived-example generation and the actual
+working model for this repo.
+
+The intended behavior is:
+
+1. `scripts/new_repo.py` should vendor the selected base manifests into each
+   generated repo instead of only recording their names in
+   `manifests/project-profile.yaml`.
+2. Prompt scaffolding should support `.prompts/` without requiring a generated
+   `PROMPTS.md` file.
+3. A long prompt run for any specific Team A derived example should produce a
+   new repo whose initial prompt files are strong enough that a fresh
+   Codex/Claude/Gemini session inside that generated repo can leverage the full
+   capabilities of this base repo through the vendored manifests, generated
+   profile, exact context entrypoints, and explicit derived instructions.
+
+That means the generated derived repo must not be a thin placeholder. It must
+be a real orchestration/bootstrap surface that:
+
+- carries forward the right manifests from this base repo
+- gives the downstream assistant a concrete first working set
+- tells that assistant how to use this repo's context-selection model rather
+  than improvise from scratch
+- creates the initial prompt sequence in the generated repo itself without
+  relying on one monolithic `PROMPTS.md`
+
+Output changes as commit-ready batches. Every commit message must use a
+multi-line Tim Pope style format and every subject line must begin with:
+
+  [NEW PROMPT_81]
+
+================================================================================
+CONSTRAINTS
+================================================================================
+
+- Keep `scripts/new_repo.py` stdlib-only. Do not add PyYAML.
+- Do not regress existing `--use-example`, `--list-*`, ordinary repo bootstrap,
+  or derived-example generation behavior unless this prompt explicitly changes it.
+- Preserve monotonic prompt numbering rules.
+- Generated repos may still contain `PROMPTS.md` only if a human explicitly opts
+  into it later; this prompt changes the default generated shape so prompt files
+  do not depend on `PROMPTS.md`.
+- Do not weaken verification just to fit the new behavior. Update verification
+  to encode the new behavior.
+- Use `python3.14 -m unittest`, not pytest.
+- Run validation after every batch and fix failures before continuing.
+
+Run after each batch:
+
+  python3.14 -m unittest verification.scripts.test_repo_scripts -v
+  python3.14 -m unittest verification.examples.derived.test_derived_coverage -v
+  python3.14 scripts/validate_context.py
+  python3.14 scripts/validate_doc_governance.py
+
+================================================================================
+REQUIRED READS
+================================================================================
+
+Read these files before editing:
+
+  scripts/new_repo.py
+  scripts/README.md
+  docs/usage/STARTING_NEW_PROJECTS.md
+  examples/derived/README.md
+  examples/derived/derived-examples.yaml
+  examples/derived/spin-outs.yaml
+  manifests/prompt-first-meta-repo.yaml
+  context/doctrine/prompt-first-conventions.md
+  context/anchors/prompt-first.md
+  context/workflows/generate-prompt-sequence.md
+  verification/scripts/test_repo_scripts.py
+  verification/examples/derived/test_derived_coverage.py
+  templates/prompt-first/PROMPTS.md.template
+  templates/manifest/profile-summary.template.yaml
+
+Also inspect:
+
+  .prompts/PROMPT_79.txt
+  .prompts/PROMPT_80.txt
+
+================================================================================
+I. WHAT TO BUILD
+================================================================================
+
+Build all of the following:
+
+1. Manifest vendoring for generated repos.
+2. Prompt scaffolding that works with `.prompts/` alone.
+3. Updated derived repo generation so each generated Team A leaf repo contains
+   stronger initial prompt files that explicitly tell a downstream assistant how
+   to exploit this base repo's capabilities.
+4. Updated docs and verification to reflect the new generated shape.
+
+The target operator experience is:
+
+  python3 scripts/new_repo.py \
+    --derived-example ingestion-normalization-core \
+    --target-dir /tmp
+
+which generates a repo that includes:
+
+  AGENT.md
+  CLAUDE.md
+  .generated-profile.yaml
+  manifests/project-profile.yaml
+  vendored selected manifests from the base repo
+  .prompts/PROMPT_01.txt
+  .prompts/PROMPT_02.txt
+  .prompts/PROMPT_03.txt
+  .prompts/PROMPT_04.txt
+
+and does not require:
+
+  PROMPTS.md
+
+Then, when a new assistant session starts inside that generated repo and the
+operator runs the long prompt sequence there, that assistant should be able to:
+
+- identify the repo as prompt-first from `.prompts/`, `AGENT.md`, `CLAUDE.md`,
+  and `manifests/project-profile.yaml`
+- read the vendored manifests and generated profile to recover the base repo's
+  intended routing, stack, archetype, preferred examples, and context entrypoints
+- use the generated prompt files as the initial implementation plan for the
+  derived scenario
+- continue creating and refining prompt files in the generated repo itself
+
+================================================================================
+II. MANIFEST VENDORING MODEL
+================================================================================
+
+The current generator selects manifests but only records them in the generated
+profile. That is too weak for downstream repo-local sessions.
+
+Change the generator so every selected manifest is also copied into the
+generated repo under an explicit vendored location.
+
+Use this destination layout:
+
+  manifests/base/<manifest-name>.yaml
+
+Examples:
+
+  manifests/base/prompt-first-meta-repo.yaml
+  manifests/base/backend-api-fastapi-polars.yaml
+  manifests/base/data-acquisition-service.yaml
+
+Rules:
+
+1. `manifests/project-profile.yaml` remains the generated repo-local summary and
+   stays authoritative for the generated repo's actual state.
+2. Vendored manifests are snapshots from this base repo and exist to preserve
+   routing/context/bootstrap intent inside the generated repo.
+3. Do not overwrite `manifests/project-profile.yaml` with a vendored base
+   manifest. They are different artifacts with different responsibilities.
+4. Preserve the original manifest filename exactly.
+5. If multiple manifests are selected, vendor all of them.
+6. If a manifest is selected explicitly via repeated `--manifest`, vendor those
+   exact manifests too.
+7. Include the vendored manifest paths in generated profile context entrypoints
+   or metadata so a downstream assistant sees them immediately.
+
+Update generated profile content so it clearly distinguishes:
+
+- repo-local generated profile: `manifests/project-profile.yaml`
+- vendored base manifests: `manifests/base/*.yaml`
+
+Also update any generated guidance in `AGENT.md`, `CLAUDE.md`, profile summary,
+or docs references so they acknowledge vendored manifests as the repo-local way
+to recover base-repo intent.
+
+================================================================================
+III. PROMPT-SCAFFOLDING MODEL WITHOUT `PROMPTS.md`
+================================================================================
+
+The current generator path couples prompt scaffolding to a generated
+`PROMPTS.md`. That must change.
+
+The new default prompt-first shape is:
+
+- `.prompts/` directory with numbered prompt files
+- no generated `PROMPTS.md`
+
+Required behavior changes:
+
+1. `--prompt-first` should generate `.prompts/...` without generating
+   `PROMPTS.md`.
+2. The prompt-first stack should still be recognized and validated correctly.
+3. Verification must stop requiring `PROMPTS.md` for generated prompt-first
+   repos.
+4. Any repo-signal or analyzer logic that currently assumes prompt-first means
+   `PROMPTS.md` plus `.prompts/*.txt` must be broadened so `.prompts/*.txt`
+   alone remains sufficient, especially when combined with generated profile and
+   prompt-first manifests.
+
+Update all affected code, tests, and docs. This likely includes:
+
+  scripts/new_repo.py
+  generated validation helpers
+  verification/scripts/test_repo_scripts.py
+  prompt-first template usage
+  prompt-first repo signal hints
+  any docs that state `PROMPTS.md` is always present
+
+Important:
+
+- Do not remove support for humans manually keeping a `PROMPTS.md` file in some
+  repos. This prompt only removes the generator requirement.
+- Do not break validation for the existing base repo just because this repo
+  itself still has `PROMPTS.md`-adjacent references or older conventions.
+- The validator for generated repos should accept either:
+    a classic generated `.prompts/` sequence without `PROMPTS.md`, or
+    a repo that also has `PROMPTS.md`
+  but new generation should emit only the `.prompts/` path.
+
+================================================================================
+IV. DERIVED REPO PROMPTS MUST BOOTSTRAP REAL DOWNSTREAM WORK
+================================================================================
+
+The existing derived prompt files already stage work, but they now need to do
+more:
+
+- make the downstream assistant load vendored manifests
+- explain that the generated repo is a descendant of agent-context-base
+- tell the downstream assistant to use vendored base manifests and generated
+  profile as the local substitute for the original base repo
+- tell the downstream assistant to create or refine additional prompt files in
+  the generated repo as implementation proceeds
+
+For each leaf derived example, keep the four-prompt structure:
+
+  .prompts/PROMPT_01.txt
+  .prompts/PROMPT_02.txt
+  .prompts/PROMPT_03.txt
+  .prompts/PROMPT_04.txt
+
+But strengthen their content substantially.
+
+The downstream assistant, when reading these prompts inside the generated repo,
+must be instructed to:
+
+1. Start with:
+     AGENT.md
+     CLAUDE.md
+     manifests/project-profile.yaml
+     manifests/base/*.yaml
+     .generated-profile.yaml
+2. Reconstruct the intended context bundle from those files before coding.
+3. Use the vendored manifests to discover:
+     - required context
+     - optional context
+     - preferred examples
+     - recommended templates
+     - warnings
+     - bootstrap defaults
+4. Treat the generated repo as an orchestration and implementation repo for the
+   derived scenario, not as a blank project shell.
+5. Create the next prompt files in `.prompts/` when the initial four prompts are
+   insufficient, using strictly monotonic numbering and exact path references.
+6. Prefer exact repo-path updates and verification commands over vague planning.
+
+Do not make the prompt files generic. They should mention the exact derived
+scenario, source examples, seam contracts, and the vendored-manifest workflow.
+
+================================================================================
+V. GENERATED PROFILE AND ENTRYPOINT CHANGES
+================================================================================
+
+Strengthen `manifests/project-profile.yaml` and `.generated-profile.yaml` so
+they are better startup artifacts for downstream sessions.
+
+Add or update fields so the generated profile clearly communicates:
+
+- selected manifest names
+- vendored manifest paths
+- downstream startup order
+- prompt-directory behavior
+- whether `PROMPTS.md` is absent by design
+- exact initial prompt files present in the generated repo
+
+The startup guidance in the profile should make a downstream assistant's first
+read order obvious and repo-local.
+
+At minimum, the context entrypoints for a derived repo should include:
+
+  AGENT.md
+  CLAUDE.md
+  manifests/project-profile.yaml
+  .generated-profile.yaml
+  manifests/base/<selected manifests...>
+  .prompts/PROMPT_01.txt
+  .prompts/PROMPT_02.txt
+  .prompts/PROMPT_03.txt
+  .prompts/PROMPT_04.txt
+
+================================================================================
+VI. TESTING AND VERIFICATION CHANGES
+================================================================================
+
+Update verification to encode the new behavior.
+
+Add or update tests for all of the following:
+
+1. A standard generated repo with selected manifests vendors them under
+   `manifests/base/`.
+2. A prompt-first generated repo creates `.prompts/...` but does not require
+   `PROMPTS.md`.
+3. A derived leaf repo vendors `prompt-first-meta-repo.yaml` under
+   `manifests/base/`.
+4. A derived leaf repo generates `.prompts/PROMPT_01.txt` through
+   `.prompts/PROMPT_04.txt` without relying on `PROMPTS.md`.
+5. The generated repo validation helper accepts prompt-first repos that omit
+   `PROMPTS.md`.
+6. Any signal/analyzer behavior that infers prompt-first from `.prompts/*.txt`
+   continues to work.
+
+Prefer extending `verification/scripts/test_repo_scripts.py` and any existing
+router/analyzer tests over creating redundant new modules unless a new module is
+clearly justified.
+
+================================================================================
+VII. DOC UPDATES
+================================================================================
+
+Update docs so they match the new model exactly.
+
+At minimum, update:
+
+  scripts/README.md
+  docs/usage/STARTING_NEW_PROJECTS.md
+  examples/derived/README.md
+
+The docs should state clearly:
+
+- generated repos now vendor selected base manifests under `manifests/base/`
+- the generated profile is still repo-local and distinct from vendored manifests
+- prompt-first generation now relies on `.prompts/` directly
+- `PROMPTS.md` is no longer generated by default
+- derived repos are designed so a fresh assistant session inside the generated
+  repo can recover the relevant capabilities of this base repo from vendored
+  manifests and generated profile data
+
+================================================================================
+VIII. IMPLEMENTATION GUIDANCE
+================================================================================
+
+Prefer this implementation shape:
+
+1. Add a helper that loads the raw text of selected manifest files from the base
+   repo and returns generated file entries for:
+     `manifests/base/<name>.yaml`
+2. Extend generated-profile rendering to include vendored manifest paths.
+3. Split prompt scaffolding from `PROMPTS.md` generation. If keeping a helper for
+   `PROMPTS.md` is useful for optional/manual support, separate it from the
+   default prompt-file helper.
+4. Update generated validation helpers so `PROMPTS.md` is optional.
+5. Update derived prompt rendering so each prompt explicitly references
+   `manifests/base/*.yaml` and tells the downstream assistant to use vendored
+   manifests plus generated profile as the local replacement for the source base
+   repo's manifest-selection workflow.
+
+Avoid broad refactors unrelated to this prompt.
+
+================================================================================
+IX. BATCH PLAN
+================================================================================
+
+Use at least these batches:
+
+Batch 1: vendor selected manifests into generated repos and reflect them in the
+generated profile
+
+Batch 2: decouple prompt generation from `PROMPTS.md`, update validation logic,
+and update standard prompt-first generation/tests
+
+Batch 3: strengthen derived prompt generation so downstream sessions can use the
+vendored manifests and generated prompts as a real bootstrap workflow
+
+Batch 4: update docs and finish verification cleanup
+
+After each batch:
+
+  python3.14 -m unittest verification.scripts.test_repo_scripts -v
+  python3.14 -m unittest verification.examples.derived.test_derived_coverage -v
+  python3.14 scripts/validate_context.py
+  python3.14 scripts/validate_doc_governance.py
+
+================================================================================
+X. COMMIT FORMAT
+================================================================================
+
+Every commit must use a Tim Pope style multi-line commit message.
+
+Every subject line must start with:
+
+  [NEW PROMPT_81]
+
+Example shape:
+
+  [NEW PROMPT_81] Vendor manifests into generated repos
+
+  Copy selected base manifests into manifests/base/ so generated repos retain
+  enough routing and context metadata for downstream assistant sessions.
+
+  Update generated profile metadata and verification to treat vendored manifests
+  as first-class repo-local bootstrap inputs.
+
+Use that style for every batch in this prompt.
