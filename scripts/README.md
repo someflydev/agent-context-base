@@ -65,7 +65,7 @@ Derived generation notes:
 - `maximal` adds a bounded local bundle of prompt-first anchors, startup/routing skills, canonical prompt/workflow examples, prompt-governance templates, and source-example archetype/stack docs
 - new prompt-first generation writes `.prompts/` directly and does not generate `PROMPTS.md` by default
 - leaf derived repos use `.prompts/PROMPT_01.txt` through `.prompts/PROMPT_04.txt` instead of the generic `001-...` prompt-first starter pair, and those prompts explicitly tell downstream assistants to use vendored manifests plus generated profiles as the local replacement for the base repo
-- maximal derived repos also record the extra vendored path list, local canonical examples/workflows, and preferred startup order in generated profile metadata so a fresh assistant session can stay repo-local
+- maximal derived repos also record the named maximal bundle policy, per-path authority labels, manifest-linked and maximal startup path lists, local canonical examples/workflows, and preferred startup order in generated profile metadata so a fresh assistant session can stay repo-local
 
 ## `init_memory.py`
 

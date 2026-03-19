@@ -319,6 +319,27 @@ class TestDerivedCoverage(unittest.TestCase):
                     errors.append(f"derived '{name}': source_examples ref {num} not in example-prompts.yaml")
         self.assertEqual(errors, [], "\n".join(errors))
 
+    def test_maximal_bundle_policy_stays_rich_and_self_consistent(self) -> None:
+        manifests = _new_repo.load_available_manifests()
+        derived = load_derived_examples()
+        entry = next(item for item in derived if item["name"] == "operator-surface")
+        bundle_paths = _new_repo._derived_maximal_bundle_paths(entry, ["prompt-first-meta-repo"], manifests)
+        bundle_records = _new_repo._derived_maximal_bundle_records(entry, ["prompt-first-meta-repo"], manifests)
+        startup_paths = _new_repo._derived_manifest_startup_paths(["prompt-first-meta-repo"], manifests)
+
+        self.assertEqual(
+            _new_repo.DERIVED_MAXIMAL_BUNDLE_POLICY_NAME,
+            "derived-maximal-prompt-first-continuation-v1",
+        )
+        self.assertIn("context/anchors/prompt-first.md", bundle_paths)
+        self.assertIn("examples/canonical-workflows/README.md", bundle_paths)
+        self.assertIn("context/workflows/generate-prompt-sequence.md", startup_paths)
+        self.assertIn("examples/canonical-prompts/prompt-first-layout-example.md", startup_paths)
+        self.assertTrue(any(record["authority"] == "authoritative" for record in bundle_records))
+        self.assertTrue(any(record["authority"] == "informative" for record in bundle_records))
+        self.assertTrue(any(record["authority"] == "templating-reference" for record in bundle_records))
+        self.assertTrue(all(str(record["path"]) in bundle_paths for record in bundle_records))
+
     def test_derived_examples_valid_archetypes(self) -> None:
         derived = load_derived_examples()
         valid = set(ARCHETYPES)

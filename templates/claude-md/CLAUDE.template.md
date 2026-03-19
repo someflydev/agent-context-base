@@ -27,6 +27,11 @@ the additional vendored `context/`, `examples/`, and `templates/` paths are inte
 Use those repo-local copies as the routing and prompt-continuation surface before assuming
 you need the source generator repo.
 
+For derived repos, follow `derived_metadata.downstream_startup_order` in
+`manifests/project-profile.yaml`. If present, `derived_metadata.manifest_bundle_startup_paths`
+and `derived_metadata.maximal_bundle_startup_paths` identify the vendored doctrine,
+workflow, and canonical-example files that should be read before extending `.prompts/`.
+
 ## Guardrails
 
 - load one workflow first

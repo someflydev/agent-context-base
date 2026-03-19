@@ -64,7 +64,10 @@ Derived context modes:
 The generated profile exposes the difference clearly:
 
 - `derived_metadata.derived_context_mode` records the selected mode
-- `derived_metadata.mode_vendored_paths` lists the extra paths added by maximal mode
+- `derived_metadata.maximal_bundle_policy` names the bounded maximal-copy policy and explains why extra files were vendored
+- `derived_metadata.mode_vendored_paths` and `derived_metadata.maximal_bundle_paths` list the extra paths added by maximal mode
+- `derived_metadata.maximal_bundle_records` classifies those extra paths as authoritative guidance, informative examples, or templating references
+- `derived_metadata.manifest_bundle_startup_paths` and `derived_metadata.maximal_bundle_startup_paths` expose the vendored startup files a fresh assistant should read before extending `.prompts/`
 - `derived_metadata.repo_local_routing_model_paths` lists the repo-local substitutes for the base repo's routing and startup model
 - `derived_metadata.local_canonical_examples_available` and `derived_metadata.local_canonical_workflows_available` show which local canonical references are immediately available
 

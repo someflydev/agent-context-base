@@ -1167,6 +1167,73 @@ DERIVED_COLLECTION_SELECTORS = {
 
 DERIVED_CONTEXT_MODES = ("compact", "maximal")
 
+# Maximal derived repos intentionally vendor more than the manifest-linked compact
+# bundle. Keep the extra copy policy named and centralized so generation behavior,
+# metadata, prompts, and tests all describe the same bounded surface.
+DERIVED_MAXIMAL_BUNDLE_POLICY_NAME = "derived-maximal-prompt-first-continuation-v1"
+DERIVED_MAXIMAL_BUNDLE_POLICY_NOTE = (
+    "Maximal mode vendors a bounded repo-local continuation bundle so a fresh "
+    "assistant session can continue prompt-first work without reopening the "
+    "source generator repo. Compact mode still vendors only the selected base "
+    "manifests plus their linked support assets."
+)
+DERIVED_MAXIMAL_BUNDLE_POLICY_SECTIONS = (
+    {
+        "name": "prompt-first-routing-supplements",
+        "category": "routing-and-doctrine",
+        "authority": "authoritative",
+        "startup_priority": "startup",
+        "paths": (
+            "context/anchors/prompt-first.md",
+            "context/anchors/session-start.md",
+            "context/anchors/repo-identity.md",
+            "context/anchors/context-loading-principles.md",
+            "context/anchors/context-integrity.md",
+            "context/doctrine/canonical-examples.md",
+            "context/doctrine/commit-hygiene.md",
+            "context/doctrine/naming-and-clarity.md",
+            "context/doctrine/stop-conditions.md",
+            "context/workflows/generate-prompt-sequence.md",
+            "context/workflows/post-flight-refinement.md",
+            "context/skills/canonical-example-selection.md",
+            "context/skills/context-bundle-assembly.md",
+            "context/skills/manifest-selection.md",
+            "context/skills/memory-continuity-discipline.md",
+            "context/skills/verification-path-selection.md",
+        ),
+        "why": "Prompt-first doctrine, routing, and continuation helpers not guaranteed by manifest-linked compact vendoring.",
+    },
+    {
+        "name": "canonical-examples",
+        "category": "canonical-examples",
+        "authority": "informative",
+        "startup_priority": "startup",
+        "paths": (
+            "examples/canonical-prompts/README.md",
+            "examples/canonical-prompts/prompt-first-layout-example.md",
+            "examples/canonical-prompts/001-bootstrap-repo.txt",
+            "examples/canonical-prompts/002-refine-test-surface.txt",
+            "examples/canonical-workflows/README.md",
+            "examples/canonical-workflows/HANDOFF-SNAPSHOT.example.md",
+            "examples/canonical-workflows/MEMORY.example.md",
+        ),
+        "why": "Canonical prompt and workflow examples let the derived repo extend `.prompts/` confidently from repo-local precedents.",
+    },
+    {
+        "name": "prompt-continuation-templates",
+        "category": "templates",
+        "authority": "templating-reference",
+        "startup_priority": "supporting",
+        "paths": (
+            "templates/manifest/manifest.template.yaml",
+            "templates/prompt-first/PROMPTS.md.template",
+            "templates/prompt-first/001-bootstrap.template.txt",
+            "templates/prompt-first/002-refine.template.txt",
+        ),
+        "why": "Template references help continuation work stay aligned with prompt-first repo conventions without turning templates into live state.",
+    },
+)
+
 
 DEFAULT_MANIFESTS = {
     ("backend-api-service", "python-fastapi-uv-ruff-orjson-polars"): ["backend-api-fastapi-polars"],
@@ -1296,6 +1363,24 @@ def _coerce_int_list(value: object) -> list[int]:
             if not inner:
                 return []
             return [int(x.strip()) for x in inner.split(",")]
+    return []
+
+
+def _coerce_str_list(value: object) -> list[str]:
+    """Return a list of strings from either a list or an inline YAML list string."""
+
+    if isinstance(value, list):
+        return [str(item).strip() for item in value if str(item).strip()]
+    if isinstance(value, str):
+        text = value.strip()
+        if not text:
+            return []
+        if text.startswith("[") and text.endswith("]"):
+            inner = text[1:-1].strip()
+            if not inner:
+                return []
+            return [part.strip().strip("'\"") for part in inner.split(",") if part.strip()]
+        return [text]
     return []
 
 
@@ -1802,29 +1887,92 @@ def _derived_maximal_bundle_paths(
 
     candidate_paths = _dedupe_existing_repo_paths(
         [
-            "context/anchors/prompt-first.md",
-            "context/anchors/session-start.md",
-            "context/anchors/repo-identity.md",
-            "context/anchors/context-loading-principles.md",
-            "context/anchors/context-integrity.md",
-            "context/doctrine/canonical-examples.md",
-            "context/doctrine/commit-hygiene.md",
-            "context/doctrine/naming-and-clarity.md",
-            "context/doctrine/stop-conditions.md",
-            "context/skills/canonical-example-selection.md",
-            "context/skills/context-bundle-assembly.md",
-            "context/skills/manifest-selection.md",
-            "context/skills/memory-continuity-discipline.md",
-            "context/skills/verification-path-selection.md",
-            "examples/canonical-prompts/README.md",
-            "examples/canonical-workflows/README.md",
-            "examples/canonical-workflows/HANDOFF-SNAPSHOT.example.md",
-            "examples/canonical-workflows/MEMORY.example.md",
-            "templates/manifest/manifest.template.yaml",
+            *[
+                path
+                for section in DERIVED_MAXIMAL_BUNDLE_POLICY_SECTIONS
+                for path in section["paths"]
+            ],
             *source_context_paths,
         ]
     )
     return [path for path in candidate_paths if path not in compact_paths]
+
+
+def _derived_maximal_bundle_records(
+    entry: dict[str, object],
+    selected_manifests: list[str],
+    manifests: dict[str, dict[str, object]],
+) -> list[dict[str, object]]:
+    """Describe the extra bounded support bundle for maximal derived repos."""
+
+    mode_paths = set(_derived_maximal_bundle_paths(entry, selected_manifests, manifests))
+    records: list[dict[str, object]] = []
+    for section in DERIVED_MAXIMAL_BUNDLE_POLICY_SECTIONS:
+        for path in section["paths"]:
+            if path in mode_paths:
+                records.append(
+                    {
+                        "path": path,
+                        "section": section["name"],
+                        "category": section["category"],
+                        "authority": section["authority"],
+                        "startup_priority": section["startup_priority"],
+                        "why": section["why"],
+                        "added_by_mode": "maximal",
+                    }
+                )
+    for path in _dedupe_existing_repo_paths(
+        [
+            f"context/archetypes/{item['archetype']}.md"
+            for item in _source_example_specs_for_derived(entry)
+        ]
+        + [
+            f"context/stacks/{item['primary_stack']}.md"
+            for item in _source_example_specs_for_derived(entry)
+        ]
+    ):
+        if path in mode_paths:
+            records.append(
+                {
+                    "path": path,
+                    "section": "source-example-shape-docs",
+                    "category": "source-example-shape",
+                    "authority": "authoritative",
+                    "startup_priority": "supporting",
+                    "why": "Source-example archetype and stack docs preserve the local shape lineage for the derived scenario.",
+                    "added_by_mode": "maximal",
+                }
+            )
+    return records
+
+
+def _derived_maximal_startup_paths(bundle_records: list[dict[str, object]]) -> list[str]:
+    """Return the startup-focused maximal bundle subset in stable order."""
+
+    return [
+        str(record["path"])
+        for record in bundle_records
+        if record["startup_priority"] == "startup"
+    ]
+
+
+def _derived_manifest_startup_paths(
+    selected_manifests: list[str],
+    manifests: dict[str, dict[str, object]],
+) -> list[str]:
+    """Return the vendored manifest-linked files that should be surfaced first."""
+
+    startup_paths: list[str] = []
+    for manifest_name in selected_manifests:
+        manifest = manifests[manifest_name]
+        startup_paths.extend(_coerce_str_list(manifest.get("required_context")))
+        startup_paths.extend(
+            path
+            for path in _coerce_str_list(manifest.get("optional_context"))
+            if path.startswith("context/workflows/")
+        )
+        startup_paths.extend(_coerce_str_list(manifest.get("preferred_examples")))
+    return _dedupe_existing_repo_paths(startup_paths)
 
 
 def print_catalog(title: str, entries: dict[str, str]) -> int:
@@ -2420,6 +2568,7 @@ def render_derived_prompt_files(
     *,
     derived_context_mode: str,
     mode_bundle_paths: list[str],
+    mode_bundle_records: list[dict[str, object]],
 ) -> dict[str, str]:
     """Render the derived prompt-first prompt sequence."""
 
@@ -2428,6 +2577,7 @@ def render_derived_prompt_files(
     description = str(entry.get("description", ""))
     prompt_text = str(entry.get("prompt", "")).strip()
     vendored_manifest_paths = [f"manifests/base/{name}.yaml" for name in selected_manifests]
+    manifest_startup_paths = _derived_manifest_startup_paths(selected_manifests, manifests)
     source_examples = _source_example_specs_for_derived(entry)
     source_lines = [
         f"- `#{item['number']}` `{item['codename']}`: {item['title']} "
@@ -2448,7 +2598,14 @@ def render_derived_prompt_files(
     canonical_lines = [f"- `{path}`" for path in preferred_examples] or [
         "- `examples/derived/example-prompts.yaml`",
     ]
-    maximal_bundle_lines = [f"- `{path}`" for path in mode_bundle_paths]
+    maximal_bundle_lines = [
+        f"- `{record['path']}` ({record['authority']}; {record['category']})"
+        for record in mode_bundle_records
+    ]
+    maximal_startup_lines = [
+        f"- `{path}`"
+        for path in _derived_maximal_startup_paths(mode_bundle_records)
+    ]
     bundle_mode_lines = [
         f"Derived context mode: `{derived_context_mode}`.",
         "Compact mode keeps the vendored bundle tightly scoped to the selected manifests."
@@ -2470,6 +2627,8 @@ def render_derived_prompt_files(
             "- `manifests/project-profile.yaml`",
             "- `.generated-profile.yaml`",
             *[f"- `{path}`" for path in vendored_manifest_paths],
+            *[f"- `{path}`" for path in manifest_startup_paths],
+            *maximal_startup_lines,
             "- `.prompts/PROMPT_01.txt`",
             "- `.prompts/PROMPT_02.txt`",
             "- `.prompts/PROMPT_03.txt`",
@@ -2483,6 +2642,8 @@ def render_derived_prompt_files(
                     "",
                     "Additional local routing and continuation materials vendored by maximal mode:",
                     *maximal_bundle_lines,
+                    "",
+                    "Read the startup subset first. Treat `context/` paths as authoritative guidance, `examples/` paths as informative canonical references, and `templates/` paths as templating references rather than generated state.",
                     "",
                     "Prefer those repo-local copies over assumptions about where the source base repo kept them.",
                 ]
@@ -2613,9 +2774,12 @@ def _build_derived_profile_metadata(
     *,
     derived_context_mode: str,
     mode_bundle_paths: list[str],
+    mode_bundle_records: list[dict[str, object]],
 ) -> dict[str, object]:
     """Build the derived-specific metadata block for the generated profile."""
 
+    manifest_startup_paths = _derived_manifest_startup_paths(selected_manifests, manifests)
+    maximal_startup_paths = _derived_maximal_startup_paths(mode_bundle_records)
     return {
         "derived_example_name": entry["name"],
         "derived_team": entry.get("team"),
@@ -2623,6 +2787,12 @@ def _build_derived_profile_metadata(
         "derived_context_mode": derived_context_mode,
         "generated_repo_role": "orchestration-and-implementation",
         "descendant_of": "agent-context-base",
+        "maximal_bundle_policy": {
+            "name": DERIVED_MAXIMAL_BUNDLE_POLICY_NAME,
+            "note": DERIVED_MAXIMAL_BUNDLE_POLICY_NOTE,
+            "compact_bundle_source": "selected base manifests plus manifest-linked support assets",
+            "maximal_bundle_source": "compact bundle plus explicit prompt-first continuation supplements",
+        },
         "repo_local_substitute_for_base_repo": [
             "manifests/project-profile.yaml",
             ".generated-profile.yaml",
@@ -2669,18 +2839,24 @@ def _build_derived_profile_metadata(
         ],
         "selected_manifests": selected_manifests,
         "vendored_manifest_paths": [f"manifests/base/{name}.yaml" for name in selected_manifests],
+        "manifest_bundle_startup_paths": manifest_startup_paths,
         "mode_vendored_paths": mode_bundle_paths,
+        "maximal_bundle_paths": mode_bundle_paths,
+        "maximal_bundle_startup_paths": maximal_startup_paths,
+        "maximal_bundle_records": mode_bundle_records,
         "downstream_startup_order": [
             "AGENT.md",
             "CLAUDE.md",
             "manifests/project-profile.yaml",
             ".generated-profile.yaml",
             *[f"manifests/base/{name}.yaml" for name in selected_manifests],
-            *mode_bundle_paths,
+            *manifest_startup_paths,
+            *maximal_startup_paths,
             ".prompts/PROMPT_01.txt",
             ".prompts/PROMPT_02.txt",
             ".prompts/PROMPT_03.txt",
             ".prompts/PROMPT_04.txt",
+            *[path for path in mode_bundle_paths if path not in maximal_startup_paths],
         ],
         "prompt_directory": ".prompts",
         "prompts_md_absent_by_design": True,
@@ -2790,6 +2966,26 @@ def render_prompt_meta_starters() -> dict[str, str]:
         "scripts/check_generated_profile.py": """#!/usr/bin/env python3\n\"\"\"Check the generated profile file exists.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    profile = Path(\".generated-profile.yaml\")\n    if not profile.exists():\n        raise SystemExit(\".generated-profile.yaml is missing\")\n    print(\"generated profile exists\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
         "scripts/validate_repo.py": """#!/usr/bin/env python3\n\"\"\"Validate the prompt-first starter repo surface.\"\"\"\n\nimport re\nfrom pathlib import Path\n\n\nCLASSIC_PROMPTS = [\"001-bootstrap-repo.txt\", \"002-refine-test-surface.txt\"]\nDERIVED_PROMPT_PATTERN = re.compile(r\"^PROMPT_(\\d{2})\\.txt$\")\n\n\ndef _validate_prompt_files(prompt_files: list[str]) -> None:\n    if not prompt_files:\n        raise SystemExit(\".prompts must contain at least one prompt file\")\n    if prompt_files == CLASSIC_PROMPTS:\n        return\n    derived_numbers: list[int] = []\n    for filename in prompt_files:\n        match = DERIVED_PROMPT_PATTERN.fullmatch(filename)\n        if match is None:\n            raise SystemExit(\n                \"Prompt files must be either the classic 001/002 pair or a pure PROMPT_XX.txt sequence: \"\n                f\"{prompt_files}\"\n            )\n        derived_numbers.append(int(match.group(1)))\n    expected_numbers = list(range(1, len(derived_numbers) + 1))\n    if derived_numbers != expected_numbers:\n        raise SystemExit(f\"Derived prompt files must stay monotonic: {prompt_files}\")\n\n\ndef main() -> None:\n    required = [\n        Path(\"AGENT.md\"),\n        Path(\"CLAUDE.md\"),\n        Path(\"manifests/project-profile.yaml\"),\n    ]\n    missing = [path.as_posix() for path in required if not path.exists()]\n    if missing:\n        raise SystemExit(f\"Missing required files: {missing}\")\n\n    prompt_dir = Path(\".prompts\")\n    if not prompt_dir.exists() or not prompt_dir.is_dir():\n        raise SystemExit(\".prompts directory is missing\")\n    prompt_files = sorted(path.name for path in prompt_dir.glob(\"*.txt\"))\n    _validate_prompt_files(prompt_files)\n\n    print(\"repo validation passed\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
         "scripts/seed_data.py": """#!/usr/bin/env python3\n\"\"\"Write deterministic prompt-first starter notes.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    target = Path(\"artifacts/generated-notes.txt\")\n    target.parent.mkdir(parents=True, exist_ok=True)\n    target.write_text(\"replace with deterministic repo notes\\n\", encoding=\"utf-8\")\n    print(f\"Wrote {target}\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
+    }
+
+
+def render_derived_seam_placeholder_files(repo_name: str) -> dict[str, str]:
+    """Render initial seam docs for derived prompt-first repos."""
+
+    return {
+        "docs/seams/README.md": (
+            "# Seam Docs\n\n"
+            f"Use this directory to record the owned seams for `{repo_name}`.\n"
+            "Keep event and REST contracts explicit, versioned, and repo-local.\n"
+        ),
+        "docs/seams/event-contracts.md": (
+            "# Event Contracts\n\n"
+            "Record event names, producers, consumers, and payload fields here.\n"
+        ),
+        "docs/seams/rest-contracts.md": (
+            "# REST Contracts\n\n"
+            "Record request and response shapes for cross-service HTTP seams here.\n"
+        ),
     }
 
 
@@ -3227,6 +3423,9 @@ def build_generated_files(
         if should_write:
             generated_files[relative_path] = content
 
+    if request.derived_context_mode is not None:
+        generated_files.update(render_derived_seam_placeholder_files(request.repo_name))
+
     if docker_enabled:
         compose_values = {
             "compose_project_name": compose_project_name_dev,
@@ -3308,6 +3507,13 @@ def _build_derived_request(
         if derived_context_mode == "maximal"
         else []
     )
+    mode_bundle_records = (
+        _derived_maximal_bundle_records(entry, selected_manifests, manifests)
+        if derived_context_mode == "maximal"
+        else []
+    )
+    manifest_startup_paths = _derived_manifest_startup_paths(selected_manifests, manifests)
+    startup_mode_paths = _derived_maximal_startup_paths(mode_bundle_records)
     return RepoGenerationRequest(
         repo_name=str(entry["name"]),
         target_dir=target_dir,
@@ -3334,6 +3540,7 @@ def _build_derived_request(
             manifests,
             derived_context_mode=derived_context_mode,
             mode_bundle_paths=mode_bundle_paths,
+            mode_bundle_records=mode_bundle_records,
         ),
         extra_profile_metadata=_build_derived_profile_metadata(
             entry,
@@ -3341,13 +3548,16 @@ def _build_derived_request(
             manifests,
             derived_context_mode=derived_context_mode,
             mode_bundle_paths=mode_bundle_paths,
+            mode_bundle_records=mode_bundle_records,
         ),
         extra_context_entrypoints=[
-            *mode_bundle_paths,
+            *manifest_startup_paths,
+            *startup_mode_paths,
             ".prompts/PROMPT_01.txt",
             ".prompts/PROMPT_02.txt",
             ".prompts/PROMPT_03.txt",
             ".prompts/PROMPT_04.txt",
+            *[path for path in mode_bundle_paths if path not in startup_mode_paths],
         ],
     )
 

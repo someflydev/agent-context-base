@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import sys
 import tempfile
 import textwrap
@@ -20,6 +21,25 @@ def run_script(*args: str, cwd: Path | None = None) -> tuple[int, str, str]:
 
 
 class RepoScriptTests(unittest.TestCase):
+    def _repo_local_prompt_paths(self, text: str) -> set[str]:
+        candidates = set(re.findall(r"`([^`\n]+)`", text))
+        prefixes = (
+            ".prompts/",
+            "manifests/",
+            "context/",
+            "examples/",
+            "templates/",
+            "docs/",
+            "scripts/",
+            "tests/",
+        )
+        exact = {"AGENT.md", "CLAUDE.md", ".generated-profile.yaml", "README.md"}
+        return {
+            candidate
+            for candidate in candidates
+            if candidate.startswith(prefixes) or candidate in exact
+        }
+
     def _generate_derived_repo(
         self,
         parent: Path,
@@ -101,7 +121,10 @@ class RepoScriptTests(unittest.TestCase):
             )
             profile = (target / "manifests/project-profile.yaml").read_text(encoding="utf-8")
             self.assertIn("derived_context_mode: maximal", profile)
+            self.assertIn("maximal_bundle_policy:", profile)
+            self.assertIn("name: derived-maximal-prompt-first-continuation-v1", profile)
             self.assertIn("mode_vendored_paths:", profile)
+            self.assertIn("maximal_bundle_records:", profile)
             self.assertIn("- context/anchors/prompt-first.md", profile)
             self.assertIn("- examples/canonical-workflows/README.md", profile)
 
@@ -123,6 +146,8 @@ class RepoScriptTests(unittest.TestCase):
             self.assertGreater(len(maximal_files), len(compact_files))
             self.assertNotIn("context/anchors/prompt-first.md", compact_profile)
             self.assertIn("context/anchors/prompt-first.md", maximal_profile)
+            self.assertFalse((compact_target / "examples/canonical-workflows/README.md").exists())
+            self.assertTrue((maximal_target / "examples/canonical-workflows/README.md").exists())
             self.assertTrue((maximal_target / "context/archetypes/multi-backend-service.md").exists())
             self.assertTrue((maximal_target / "context/stacks/go-echo.md").exists())
 
@@ -145,8 +170,10 @@ class RepoScriptTests(unittest.TestCase):
                 "ml-gateway-intelligence",
                 "operator-surface",
             ):
-                self.assertTrue((parent / child / "manifests/project-profile.yaml").exists(), child)
+                profile_path = parent / child / "manifests/project-profile.yaml"
+                self.assertTrue(profile_path.exists(), child)
                 self.assertTrue((parent / child / "context/anchors/prompt-first.md").exists(), child)
+                self.assertIn("derived_context_mode: maximal", profile_path.read_text(encoding="utf-8"))
 
     def test_new_repo_maximal_guidance_only_points_at_present_repo_local_bundle_paths(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -161,8 +188,10 @@ class RepoScriptTests(unittest.TestCase):
             claude_md = (target / "CLAUDE.md").read_text(encoding="utf-8")
             for relative_path in (
                 "context/anchors/prompt-first.md",
+                "context/workflows/generate-prompt-sequence.md",
                 "context/skills/context-bundle-assembly.md",
                 "examples/canonical-prompts/README.md",
+                "examples/canonical-prompts/prompt-first-layout-example.md",
                 "examples/canonical-workflows/README.md",
                 "templates/manifest/manifest.template.yaml",
             ):
@@ -170,8 +199,22 @@ class RepoScriptTests(unittest.TestCase):
                 self.assertIn(relative_path, profile)
             self.assertIn("Derived context mode: `maximal`.", prompt_01)
             self.assertIn("`context/anchors/prompt-first.md`", prompt_01)
+            self.assertIn("`context/workflows/generate-prompt-sequence.md`", prompt_01)
+            self.assertIn("`examples/canonical-prompts/prompt-first-layout-example.md`", prompt_01)
             self.assertIn("derived_context_mode: maximal", agent_md)
             self.assertIn("derived_context_mode: maximal", claude_md)
+
+    def test_new_repo_maximal_prompt_sequence_only_references_existing_repo_local_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            target = self._generate_derived_repo(
+                Path(temp_dir),
+                "operator-surface",
+                derived_context_mode="maximal",
+            )
+            for prompt_name in ("PROMPT_01.txt", "PROMPT_02.txt", "PROMPT_03.txt", "PROMPT_04.txt"):
+                prompt_text = (target / ".prompts" / prompt_name).read_text(encoding="utf-8")
+                for relative_path in self._repo_local_prompt_paths(prompt_text):
+                    self.assertTrue((target / relative_path).exists(), f"{prompt_name}: {relative_path}")
 
     def test_new_repo_default_derived_context_mode_remains_compact(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

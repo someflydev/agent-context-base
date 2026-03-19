@@ -116,7 +116,10 @@ The derived prompt sequence replaces the generic prompt-first starter files and 
 In maximal mode, the generated repo also records the richer local bundle directly in `manifests/project-profile.yaml` and `.generated-profile.yaml`:
 
 - `derived_metadata.derived_context_mode` records whether the repo was generated in `compact` or `maximal`
-- `derived_metadata.mode_vendored_paths` lists the additional files vendored because of maximal mode
+- `derived_metadata.maximal_bundle_policy` names the bounded maximal-copy policy and explains why those extra files were vendored
+- `derived_metadata.mode_vendored_paths` and `derived_metadata.maximal_bundle_paths` list the additional files vendored because of maximal mode
+- `derived_metadata.maximal_bundle_records` classifies those extra paths as `authoritative`, `informative`, or `templating-reference`
+- `derived_metadata.manifest_bundle_startup_paths` and `derived_metadata.maximal_bundle_startup_paths` expose the vendored doctrine, workflow, and canonical-example paths a fresh assistant should read before extending `.prompts/`
 - `derived_metadata.local_canonical_examples_available` and `derived_metadata.local_canonical_workflows_available` expose the repo-local canonical references a downstream assistant can load next
 - `derived_metadata.repo_local_routing_model_paths` identifies the repo-local substitutes for the base repo's routing model
 
@@ -133,7 +136,7 @@ Strong first prompt for the generated repo:
 
 > Read the bootstrap context that matters for this repo, propose the implementation plan you intend to execute, wait for my approval, then carry it out with verification checkpoints.
 
-The assistant should load `AGENT.md` or `CLAUDE.md`, `manifests/project-profile.yaml`, `.generated-profile.yaml`, the vendored manifests under `manifests/base/`, and the initial prompt files under `.prompts/`. The human should review the plan, not manually reconstruct the startup context file by file.
+The assistant should load `AGENT.md` or `CLAUDE.md`, `manifests/project-profile.yaml`, `.generated-profile.yaml`, the vendored manifests under `manifests/base/`, the vendored prompt-first doctrine/workflow and canonical-example files listed in `derived_metadata.manifest_bundle_startup_paths` and `derived_metadata.maximal_bundle_startup_paths`, and then the initial prompt files under `.prompts/`. The human should review the plan, not manually reconstruct the startup context file by file.
 
 ## Rules That Keep New Repos Clean
 
