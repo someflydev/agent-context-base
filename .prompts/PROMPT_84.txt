@@ -12,7 +12,7 @@ new hidden container directory, with root entrypoints pointing into it.
 
 Output changes as commit-ready batches labeled `[PROMPT_84]`, except for the
 commit that adds prompt files in this sequence, which should use the prefix
-`[NEW PROMPT_84]`.
+`[PROMPT_84]`.
 
 ===============================================================================
 I. TARGET LAYOUT
