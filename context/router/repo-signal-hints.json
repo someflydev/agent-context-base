@@ -284,11 +284,11 @@
     {
       "name": "prompt-first-repo",
       "patterns": [
-        "PROMPTS.md",
         ".prompts/*.txt",
         "AGENT.md",
         "CLAUDE.md",
-        "manifests/project-profile.yaml"
+        "manifests/project-profile.yaml",
+        "manifests/base/prompt-first-meta-repo.yaml"
       ],
       "guidance": "Prompt-first repos should favor routing, prompt numbering, and profile validation guidance."
     }
@@ -371,9 +371,9 @@
         "README.md",
         "AGENT.md",
         "CLAUDE.md",
-        "PROMPTS.md",
         ".prompts/*.txt",
-        "manifests/project-profile.yaml"
+        "manifests/project-profile.yaml",
+        "manifests/base/prompt-first-meta-repo.yaml"
       ],
       "guidance": "Prompt files and generated profiles make prompt-first the leading archetype."
     },

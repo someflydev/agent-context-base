@@ -238,7 +238,7 @@ STACKS: dict[str, StackProfile] = {
         app_command='sh -lc "python -m http.server 8000"',
         test_command='sh -lc "python scripts/validate_repo.py"',
         app_container_port=8000,
-        route_path="PROMPTS.md",
+        route_path=".prompts/001-bootstrap-repo.txt",
         smoke_path="scripts/check_repo.py",
         integration_path="scripts/check_generated_profile.py",
         seed_path="scripts/seed_data.py",
@@ -2205,7 +2205,6 @@ def render_prompt_files(repo_name: str, profile: StackProfile) -> dict[str, str]
         "starter_seed_path": profile.seed_path,
     }
     return {
-        "PROMPTS.md": render_template(repo_root() / "templates/prompt-first/PROMPTS.md.template", values),
         ".prompts/001-bootstrap-repo.txt": render_template(
             repo_root() / "templates/prompt-first/001-bootstrap.template.txt",
             values,
@@ -2337,7 +2336,7 @@ def render_derived_prompt_files(
             "- `AGENT.md`",
             "- `CLAUDE.md`",
             "- `manifests/project-profile.yaml`",
-            "- `PROMPTS.md`",
+            "- `.generated-profile.yaml`",
             "",
             "Instructions:",
             "- Update `manifests/project-profile.yaml` so the combined scenario, source examples, and verification commands are explicit.",
@@ -2403,7 +2402,6 @@ def render_derived_prompt_files(
         ]
     )
     return {
-        "PROMPTS.md": prompts_md + "\n",
         ".prompts/PROMPT_01.txt": prompt_01 + "\n",
         ".prompts/PROMPT_02.txt": prompt_02 + "\n",
         ".prompts/PROMPT_03.txt": prompt_03 + "\n",
@@ -2539,9 +2537,9 @@ def render_prompt_meta_starters() -> dict[str, str]:
     """Render prompt-first validation helper files."""
 
     return {
-        "scripts/check_repo.py": """#!/usr/bin/env python3\n\"\"\"Check the minimal prompt-first repo surface exists.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    required = [Path(\"AGENT.md\"), Path(\"CLAUDE.md\"), Path(\"PROMPTS.md\")]\n    missing = [path.as_posix() for path in required if not path.exists()]\n    if missing:\n        raise SystemExit(f\"Missing required files: {missing}\")\n    print(\"repo surface looks present\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
+        "scripts/check_repo.py": """#!/usr/bin/env python3\n\"\"\"Check the minimal prompt-first repo surface exists.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    required = [Path(\"AGENT.md\"), Path(\"CLAUDE.md\"), Path(\".prompts\")]\n    missing = [path.as_posix() for path in required if not path.exists()]\n    if missing:\n        raise SystemExit(f\"Missing required files: {missing}\")\n    print(\"repo surface looks present\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
         "scripts/check_generated_profile.py": """#!/usr/bin/env python3\n\"\"\"Check the generated profile file exists.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    profile = Path(\".generated-profile.yaml\")\n    if not profile.exists():\n        raise SystemExit(\".generated-profile.yaml is missing\")\n    print(\"generated profile exists\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
-        "scripts/validate_repo.py": """#!/usr/bin/env python3\n\"\"\"Validate the prompt-first starter repo surface.\"\"\"\n\nimport re\nfrom pathlib import Path\n\n\nCLASSIC_PROMPTS = [\"001-bootstrap-repo.txt\", \"002-refine-test-surface.txt\"]\nDERIVED_PROMPT_PATTERN = re.compile(r\"^PROMPT_(\\d{2})\\.txt$\")\n\n\ndef _validate_prompt_files(prompt_files: list[str]) -> None:\n    if not prompt_files:\n        return\n    if prompt_files == CLASSIC_PROMPTS:\n        return\n    derived_numbers: list[int] = []\n    for filename in prompt_files:\n        match = DERIVED_PROMPT_PATTERN.fullmatch(filename)\n        if match is None:\n            raise SystemExit(\n                \"Prompt files must be either the classic 001/002 pair or a pure PROMPT_XX.txt sequence: \"\n                f\"{prompt_files}\"\n            )\n        derived_numbers.append(int(match.group(1)))\n    expected_numbers = list(range(1, len(derived_numbers) + 1))\n    if derived_numbers != expected_numbers:\n        raise SystemExit(f\"Derived prompt files must stay monotonic: {prompt_files}\")\n\n\ndef main() -> None:\n    required = [\n        Path(\"AGENT.md\"),\n        Path(\"CLAUDE.md\"),\n        Path(\"PROMPTS.md\"),\n        Path(\"manifests/project-profile.yaml\"),\n    ]\n    missing = [path.as_posix() for path in required if not path.exists()]\n    if missing:\n        raise SystemExit(f\"Missing required files: {missing}\")\n\n    prompt_dir = Path(\".prompts\")\n    prompt_files = sorted(path.name for path in prompt_dir.glob(\"*.txt\"))\n    _validate_prompt_files(prompt_files)\n\n    print(\"repo validation passed\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
+        "scripts/validate_repo.py": """#!/usr/bin/env python3\n\"\"\"Validate the prompt-first starter repo surface.\"\"\"\n\nimport re\nfrom pathlib import Path\n\n\nCLASSIC_PROMPTS = [\"001-bootstrap-repo.txt\", \"002-refine-test-surface.txt\"]\nDERIVED_PROMPT_PATTERN = re.compile(r\"^PROMPT_(\\d{2})\\.txt$\")\n\n\ndef _validate_prompt_files(prompt_files: list[str]) -> None:\n    if not prompt_files:\n        raise SystemExit(\".prompts must contain at least one prompt file\")\n    if prompt_files == CLASSIC_PROMPTS:\n        return\n    derived_numbers: list[int] = []\n    for filename in prompt_files:\n        match = DERIVED_PROMPT_PATTERN.fullmatch(filename)\n        if match is None:\n            raise SystemExit(\n                \"Prompt files must be either the classic 001/002 pair or a pure PROMPT_XX.txt sequence: \"\n                f\"{prompt_files}\"\n            )\n        derived_numbers.append(int(match.group(1)))\n    expected_numbers = list(range(1, len(derived_numbers) + 1))\n    if derived_numbers != expected_numbers:\n        raise SystemExit(f\"Derived prompt files must stay monotonic: {prompt_files}\")\n\n\ndef main() -> None:\n    required = [\n        Path(\"AGENT.md\"),\n        Path(\"CLAUDE.md\"),\n        Path(\"manifests/project-profile.yaml\"),\n    ]\n    missing = [path.as_posix() for path in required if not path.exists()]\n    if missing:\n        raise SystemExit(f\"Missing required files: {missing}\")\n\n    prompt_dir = Path(\".prompts\")\n    if not prompt_dir.exists() or not prompt_dir.is_dir():\n        raise SystemExit(\".prompts directory is missing\")\n    prompt_files = sorted(path.name for path in prompt_dir.glob(\"*.txt\"))\n    _validate_prompt_files(prompt_files)\n\n    print(\"repo validation passed\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
         "scripts/seed_data.py": """#!/usr/bin/env python3\n\"\"\"Write deterministic prompt-first starter notes.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    target = Path(\"artifacts/generated-notes.txt\")\n    target.parent.mkdir(parents=True, exist_ok=True)\n    target.write_text(\"replace with deterministic repo notes\\n\", encoding=\"utf-8\")\n    print(f\"Wrote {target}\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
     }
 
@@ -2757,7 +2755,7 @@ def resolved_starter_paths(primary_stack: str, slug: str) -> dict[str, str]:
         }
     if primary_stack == "prompt-first-repo":
         return {
-            "route": "PROMPTS.md",
+            "route": ".prompts/001-bootstrap-repo.txt",
             "smoke": "scripts/check_repo.py",
             "integration": "scripts/validate_repo.py",
             "seed": "scripts/seed_data.py",

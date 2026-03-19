@@ -164,9 +164,40 @@ class RepoScriptTests(unittest.TestCase):
             self.assertIn("Generated starter repo", stdout)
             self.assertTrue((target / ".prompts/001-bootstrap-repo.txt").exists())
             self.assertTrue((target / "AGENT.md").exists())
+            self.assertFalse((target / "PROMPTS.md").exists())
             self.assertTrue((target / "manifests/base/prompt-first-meta-repo.yaml").exists())
             self.assertFalse((target / "README.md").exists())
             self.assertFalse((target / "docs").exists())
+
+            code, stdout, stderr = run_script("scripts/validate_repo.py", cwd=target)
+            self.assertEqual(code, 0, stderr)
+            self.assertIn("repo validation passed", stdout)
+
+    def test_prompt_first_repo_analyzer_accepts_generated_repo_without_prompts_md(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            target = Path(temp_dir) / "prompt-kit"
+            code, _, stderr = run_script(
+                str(SCRIPTS_DIR / "new_repo.py"),
+                "prompt-kit",
+                "--target-dir",
+                str(target),
+                "--archetype",
+                "prompt-first-repo",
+                "--primary-stack",
+                "prompt-first-repo",
+                "--prompt-first",
+            )
+            self.assertEqual(code, 0, stderr)
+
+            code, stdout, stderr = run_script(
+                str(SCRIPTS_DIR / "prompt_first_repo_analyzer.py"),
+                str(target),
+                "--json",
+            )
+            self.assertEqual(code, 0, stderr)
+            payload = json.loads(stdout)
+            self.assertEqual(payload["signals"]["archetypes"][0]["name"], "prompt-first-repo")
+            self.assertEqual(payload["signals"]["stacks"][0]["name"], "prompt-first-repo")
 
     def test_new_repo_can_opt_into_front_docs(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
