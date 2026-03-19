@@ -2098,6 +2098,9 @@ def render_profile_summary(
     starter_paths: dict[str, str],
     validation_commands: list[str],
     vendored_manifest_paths: list[str],
+    prompt_directory: str,
+    prompts_md_generated: bool,
+    initial_prompt_files: list[str],
     extra_context_entrypoints: list[str] | None = None,
     extra_metadata: dict[str, object] | None = None,
 ) -> str:
@@ -2114,6 +2117,7 @@ def render_profile_summary(
     ]
     if extra_context_entrypoints:
         context_entrypoints.extend(extra_context_entrypoints)
+    startup_order = list(dict.fromkeys(context_entrypoints))
     derived_metadata_lines = ""
     if extra_metadata:
         derived_metadata_lines = "derived_metadata:\n" + _render_yaml_value(extra_metadata, indent=2)
@@ -2127,6 +2131,10 @@ def render_profile_summary(
         "front_docs_docs_dir_generated": str(docs_dir_generated).lower(),
         "selected_manifest_lines": format_yaml_list(manifests),
         "vendored_manifest_lines": format_yaml_list(vendored_manifest_paths),
+        "startup_order_lines": format_yaml_list(startup_order),
+        "prompt_directory": prompt_directory,
+        "prompts_md_generated": str(prompts_md_generated).lower(),
+        "initial_prompt_file_lines": format_yaml_list(initial_prompt_files),
         "dokku_enabled": str(dokku).lower(),
         "prompt_first_enabled": str(prompt_first).lower(),
         "smoke_tests_enabled": str(smoke_tests).lower(),
@@ -2281,6 +2289,7 @@ def render_derived_prompt_files(
     title = str(entry.get("title") or name)
     description = str(entry.get("description", ""))
     prompt_text = str(entry.get("prompt", "")).strip()
+    vendored_manifest_paths = [f"manifests/base/{name}.yaml" for name in selected_manifests]
     source_examples = _source_examples_for_derived(entry)
     source_lines = [
         f"- `#{number}` `{project.codename}`: {project.title}"
@@ -2297,51 +2306,38 @@ def render_derived_prompt_files(
     canonical_lines = [f"- `{path}`" for path in preferred_examples] or [
         "- `examples/derived/example-prompts.yaml`",
     ]
-    prompts_md = "\n".join(
-        [
-            "# Prompt Files",
-            "",
-            "Store project prompts under `.prompts/`.",
-            "",
-            "Derived repo sequence:",
-            "",
-            "- `PROMPT_01.txt` bootstraps the combined orchestration repo and updates the profile/service map.",
-            "- `PROMPT_02.txt` scaffolds the service surfaces implied by the source examples.",
-            "- `PROMPT_03.txt` writes seams, contracts, and coordination docs under exact repo paths.",
-            "- `PROMPT_04.txt` tightens verification commands, smoke coverage, and post-flight refinement.",
-            "",
-            "Rules:",
-            "",
-            "- keep numbering strictly monotonic",
-            "- keep one dominant goal per prompt",
-            "- reference exact repo paths such as `AGENT.md` and `manifests/project-profile.yaml`",
-            "- do not generate speculative front docs before the repo earns them",
-            "",
-        ]
-    )
     prompt_01 = "\n".join(
         [
             f"# PROMPT_01: Bootstrap {name}",
             "",
             f"Scenario: `{title}`",
             f"Description: {description}",
+            "This generated repo is a prompt-first descendant of `agent-context-base`.",
+            "Treat the vendored base manifests and generated profiles in this repo as the local replacement for the source base repo's manifest-selection workflow.",
             "",
-            "Full derived prompt:",
-            prompt_text,
-            "",
-            "Source examples:",
-            *source_lines,
-            "",
-            "Update these files first:",
+            "Start with these exact files in this order before coding:",
             "- `AGENT.md`",
             "- `CLAUDE.md`",
             "- `manifests/project-profile.yaml`",
             "- `.generated-profile.yaml`",
+            *[f"- `{path}`" for path in vendored_manifest_paths],
+            "- `.prompts/PROMPT_01.txt`",
+            "- `.prompts/PROMPT_02.txt`",
+            "- `.prompts/PROMPT_03.txt`",
+            "- `.prompts/PROMPT_04.txt`",
+            "",
+            "Reconstruct the intended context bundle from those files before coding. Use the vendored manifests to recover required context, optional context, preferred examples, recommended templates, warnings, and bootstrap defaults.",
+            "",
+            "Full derived scenario brief:",
+            prompt_text,
+            "",
+            "Source examples driving this repo:",
+            *source_lines,
             "",
             "Instructions:",
-            "- Update `manifests/project-profile.yaml` so the combined scenario, source examples, and verification commands are explicit.",
-            "- Establish the repo's combined service map and seam map before writing implementation tasks.",
-            "- Keep this repo as the orchestration and implementation-planning surface for the combined scenario, not as multiple fully built product repos.",
+            "- Treat this repo as the orchestration and implementation repo for the derived scenario, not as a blank shell and not as several unrelated repos.",
+            "- Update `manifests/project-profile.yaml` and `.generated-profile.yaml` first so the startup order, vendored manifest paths, service map, seam map, and verification commands are explicit.",
+            "- Prefer exact repo-path updates and concrete verification commands over vague planning notes.",
             "",
         ]
     )
@@ -2352,19 +2348,25 @@ def render_derived_prompt_files(
             "Service-by-service scaffold plan:",
             *scaffold_lines,
             "",
+            "Vendored manifest workflow:",
+            *[f"- Load `{path}` and extract the required/optional context, preferred examples, recommended templates, warnings, and bootstrap defaults into repo-local planning." for path in vendored_manifest_paths],
+            "",
             "Canonical references to pull shape from when available:",
             *canonical_lines,
             "",
             "Instructions:",
             "- Name each service or subsystem explicitly in the combined service map.",
-            "- Pull implementation shape from the listed canonical examples and manifest references instead of inventing new conventions.",
+            "- Pull implementation shape from the vendored manifest metadata and the listed canonical examples instead of inventing new conventions.",
             "- Create scaffold placeholders only where they clarify ownership and seam boundaries.",
+            "- Keep every file reference exact and repo-local.",
             "",
         ]
     )
     prompt_03 = "\n".join(
         [
             f"# PROMPT_03: Wire Seams And Contracts For {name}",
+            "",
+            "Keep the scenario-specific seam contracts grounded in the source examples and vendored manifest guidance.",
             "",
             "Seam contracts:",
             f"- {seam_contract_text}",
@@ -2375,11 +2377,13 @@ def render_derived_prompt_files(
             "- `docs/seams/event-contracts.md`",
             "- `docs/seams/rest-contracts.md`",
             "- `manifests/project-profile.yaml`",
+            "- `.generated-profile.yaml`",
             "",
             "Instructions:",
             "- Add schemas, event names, or REST seam docs under the exact paths above.",
             "- Keep service boundaries explicit, testable, and narrow.",
             "- Treat seam contracts as source-controlled interfaces, not prose-only suggestions.",
+            "- If the initial four prompts are no longer sufficient, create the next prompt file under `.prompts/` using strictly monotonic numbering and exact path references.",
             "",
         ]
     )
@@ -2396,6 +2400,7 @@ def render_derived_prompt_files(
             "Instructions:",
             "- Add or update verification commands in `manifests/project-profile.yaml` for smoke checks and derived-specific integration checks.",
             "- Define the combined scenario's smoke and integration expectations before broadening implementation.",
+            "- Continue creating or refining prompt files in `.prompts/` when more implementation batches are needed. Keep numbering strictly monotonic and reference exact repo paths in each new prompt.",
             "- Run a post-flight refinement pass and a doc freshness pass after the first meaningful slice lands.",
             "- Do not create speculative front docs or marketing-style root docs before the repo has an implemented slice worth describing.",
             "",
@@ -2421,6 +2426,13 @@ def _build_derived_profile_metadata(
         "derived_example_name": entry["name"],
         "derived_team": entry.get("team"),
         "derived_description": entry.get("description"),
+        "generated_repo_role": "orchestration-and-implementation",
+        "descendant_of": "agent-context-base",
+        "repo_local_substitute_for_base_repo": [
+            "manifests/project-profile.yaml",
+            ".generated-profile.yaml",
+            *[f"manifests/base/{name}.yaml" for name in selected_manifests],
+        ],
         "source_examples": [
             {
                 "number": number,
@@ -2435,6 +2447,20 @@ def _build_derived_profile_metadata(
         ],
         "preferred_examples": _derived_preferred_examples(selected_manifests, manifests),
         "selected_manifests": selected_manifests,
+        "vendored_manifest_paths": [f"manifests/base/{name}.yaml" for name in selected_manifests],
+        "downstream_startup_order": [
+            "AGENT.md",
+            "CLAUDE.md",
+            "manifests/project-profile.yaml",
+            ".generated-profile.yaml",
+            *[f"manifests/base/{name}.yaml" for name in selected_manifests],
+            ".prompts/PROMPT_01.txt",
+            ".prompts/PROMPT_02.txt",
+            ".prompts/PROMPT_03.txt",
+            ".prompts/PROMPT_04.txt",
+        ],
+        "prompt_directory": ".prompts",
+        "prompts_md_absent_by_design": True,
         "prompt_sequence": [
             "PROMPT_01.txt",
             "PROMPT_02.txt",
@@ -2887,6 +2913,13 @@ def build_generated_files(
         generated_files.update(build_docs(request.repo_name, description, request.archetype, profile, request.manifests))
 
     starter_paths = resolved_starter_paths(request.primary_stack, slug)
+    prompt_files = sorted(
+        path
+        for path in (request.prompt_files_override or {}).keys()
+        if path.startswith(".prompts/")
+    )
+    if request.prompt_first and not prompt_files:
+        prompt_files = sorted(render_prompt_files(request.repo_name, profile).keys())
     port_map = {"app_dev": app_port, "app_test": test_app_port}
     port_map.update({f"{name}_dev": port for name, port in dev_support_ports.items()})
     port_map.update({f"{name}_test": port for name, port in test_support_ports.items()})
@@ -2916,6 +2949,9 @@ def build_generated_files(
         starter_paths=starter_paths,
         validation_commands=validation_commands or ["echo no extra validation commands configured"],
         vendored_manifest_paths=vendored_manifest_paths,
+        prompt_directory=".prompts" if request.prompt_first else "none",
+        prompts_md_generated=False,
+        initial_prompt_files=prompt_files if request.prompt_first else ["none"],
         extra_context_entrypoints=request.extra_context_entrypoints,
         extra_metadata=request.extra_profile_metadata,
     )
@@ -2992,7 +3028,8 @@ def build_generated_files(
         )
 
     if request.prompt_first:
-        generated_files.update(request.prompt_files_override or render_prompt_files(request.repo_name, profile))
+        prompt_file_map = request.prompt_files_override or render_prompt_files(request.repo_name, profile)
+        generated_files.update(prompt_file_map)
     if request.dokku:
         generated_files.update(render_dokku_files(slug, app_port))
 

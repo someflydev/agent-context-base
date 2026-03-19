@@ -6,13 +6,17 @@ Start with:
 
 1. `manifests/project-profile.yaml`
 2. `.generated-profile.yaml`
-3. `README.md` if it exists and still matches implemented reality
-4. `docs/repo-purpose.md` if it exists
-5. `docs/repo-layout.md` if it exists
+3. `manifests/base/*.yaml` if present
+4. `.prompts/*.txt` if present
+5. `README.md` if it exists and still matches implemented reality
+6. `docs/repo-purpose.md` if it exists
+7. `docs/repo-layout.md` if it exists
 
 After that stable pass and a narrow repo-signal check, read `MEMORY.md` if it exists.
 
 Then load the smallest useful bundle from the task, repo signals, and active change surface.
+
+Treat `manifests/base/*.yaml` as the repo-local snapshots of base-repo routing and bootstrap intent when those files exist.
 
 When routing, selecting examples, assembling context bundles, choosing a verification path, or
 reading and writing `MEMORY.md`, load the relevant skill from `context/skills/` rather than

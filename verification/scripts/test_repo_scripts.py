@@ -45,10 +45,21 @@ class RepoScriptTests(unittest.TestCase):
             self.assertEqual(code, 0, stderr)
             self.assertIn("Generated starter repo", stdout)
             self.assertTrue(target.exists())
+            self.assertFalse((target / "PROMPTS.md").exists())
             self.assertTrue((target / ".prompts/PROMPT_01.txt").exists())
             self.assertTrue((target / ".prompts/PROMPT_04.txt").exists())
             self.assertTrue((target / "manifests/project-profile.yaml").exists())
             self.assertTrue((target / "manifests/base/prompt-first-meta-repo.yaml").exists())
+            profile = (target / "manifests/project-profile.yaml").read_text(encoding="utf-8")
+            prompt_01 = (target / ".prompts/PROMPT_01.txt").read_text(encoding="utf-8")
+            prompt_04 = (target / ".prompts/PROMPT_04.txt").read_text(encoding="utf-8")
+            self.assertIn("prompts_md_generated: false", profile)
+            self.assertIn("prompt_directory: .prompts", profile)
+            self.assertIn("- manifests/base/prompt-first-meta-repo.yaml", profile)
+            self.assertIn("- .prompts/PROMPT_04.txt", profile)
+            self.assertIn("descendant of `agent-context-base`", prompt_01)
+            self.assertIn("Treat the vendored base manifests", prompt_01)
+            self.assertIn("Continue creating or refining prompt files in `.prompts/`", prompt_04)
 
     def test_new_repo_vendors_selected_manifests_into_generated_repo(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

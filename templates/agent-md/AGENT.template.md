@@ -6,9 +6,11 @@ Purpose: boot the assistant into the smallest useful context bundle for this rep
 
 1. `manifests/project-profile.yaml`
 2. `.generated-profile.yaml`
-3. `README.md` if it exists and still matches implemented reality
-4. `docs/repo-purpose.md` if it exists
-5. `docs/repo-layout.md` if it exists
+3. `manifests/base/*.yaml` if present
+4. `.prompts/*.txt` if present
+5. `README.md` if it exists and still matches implemented reality
+6. `docs/repo-purpose.md` if it exists
+7. `docs/repo-layout.md` if it exists
 
 After that stable pass and a narrow repo-signal check, read `MEMORY.md` if it exists.
 
@@ -21,6 +23,7 @@ relying on implicit judgment.
 - archetype: `{{archetype}}`
 - primary stack: `{{primary_stack}}`
 - selected manifests: `{{selected_manifests}}`
+- vendored base manifests under `manifests/base/` are the repo-local snapshots of base-repo intent when present
 
 ## Bundle Discipline
 
