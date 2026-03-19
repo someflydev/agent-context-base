@@ -1,0 +1,131 @@
+You are still working inside the agent-context-base repository.
+
+This prompt continues PROMPT_82 and raises the implementation bar for the new
+maximal derived-context mode.
+
+PROMPT_82 defined the feature. This prompt makes the desired outcome more
+concrete so the implementation does not stop at a flag plus a few extra files.
+
+Output changes as commit-ready batches labeled `[PROMPT_83]`, except for the
+commit that adds prompt files in this sequence, which has already been handled.
+
+===============================================================================
+I. QUALITY BAR
+===============================================================================
+
+The maximal mode should make a generated derived repo feel like a strong local
+descendant of agent-context-base, not a compact repo with a few bonus files.
+
+When an operator starts a fresh assistant session inside a maximal-mode derived
+repo, that assistant should be able to:
+
+1. infer that the repo was intentionally generated in maximal mode
+2. locate the local doctrine, workflows, canonical prompt examples, and
+   templates without hunting
+3. continue prompt-first work inside the repo without needing to inspect the
+   original base repository
+4. extend `.prompts/` confidently using repo-local examples and workflows
+5. preserve the distinction between repo-local generated state and vendored
+   base snapshots
+
+===============================================================================
+II. STARTUP UX EXPECTATIONS
+===============================================================================
+
+The generated profile and prompt sequence should make the assistant's first
+reads obvious.
+
+For maximal mode, the startup order should intentionally surface:
+
+- `AGENT.md`
+- `CLAUDE.md`
+- `manifests/project-profile.yaml`
+- `.generated-profile.yaml`
+- vendored base manifests
+- vendored prompt-first doctrine/workflow files
+- vendored canonical prompt examples
+- `.prompts/PROMPT_01.txt` through `.prompts/PROMPT_04.txt`
+
+Do not bury the maximal bundle in a long manifest reference list with no
+startup guidance. Make the profile and prompt files explicitly tell the
+assistant which local bundle pieces matter first.
+
+===============================================================================
+III. MAKE THE MODE EXPLAIN ITSELF
+===============================================================================
+
+An operator inspecting the generated repo should be able to tell:
+
+- why there are many more vendored files than in compact mode
+- which files were added because of maximal mode
+- whether those files are authoritative, informative, or templating references
+
+Strengthen metadata and docs accordingly. Good approaches include:
+
+- a `derived_context_mode` field
+- a `maximal_bundle_paths` list
+- a `maximal_bundle_policy` note
+- a startup note explaining why canonical examples and workflow docs were
+  copied into the generated repo
+
+===============================================================================
+IV. DO NOT HAND-WAVE THE BUNDLE POLICY
+===============================================================================
+
+Be explicit in code about how maximal mode decides what to copy.
+
+For example, you may need a helper that gathers:
+
+- all manifest-linked files
+- prompt-first anchor/doctrine/workflow supplements
+- canonical prompt and workflow examples
+- repo-local templates relevant to prompt continuation
+
+If you add special-case files beyond manifest-linked references, encode that as
+a named policy with comments and tests rather than scattering path literals.
+
+===============================================================================
+V. VERIFICATION DETAILS
+===============================================================================
+
+In addition to the tests from PROMPT_82, add assertions that prove the maximal
+bundle is actually richer and self-consistent.
+
+Good examples:
+
+- a compact derived repo omits one or more files that maximal mode includes
+- a maximal derived repo's prompt files reference only files that exist
+- a maximal derived repo includes the prompt-sequence workflow and at least one
+  canonical prompt example locally
+- team-a maximal generation produces all four child repos and each child
+  advertises the maximal mode in profile metadata
+
+===============================================================================
+VI. FAILURE MODES TO AVOID
+===============================================================================
+
+Do not ship any of these:
+
+- a flag that changes metadata but not the generated bundle
+- a maximal bundle that still references missing files
+- a maximal bundle that copies unrelated repo internals wholesale
+- a mode that only works for leaf derived examples
+- docs that describe the mode differently than the code implements it
+
+===============================================================================
+VII. FINISHING BAR
+===============================================================================
+
+Before concluding implementation, regenerate at least one compact derived repo
+and one maximal derived repo under `/tmp`, compare their shapes, and verify the
+difference is both intentional and documented.
+
+Then run:
+
+  python3.14 -m unittest verification.scripts.test_repo_scripts -v
+  python3.14 -m unittest verification.examples.derived.test_derived_coverage -v
+  python3.14 scripts/validate_context.py
+  python3.14 scripts/validate_doc_governance.py
+
+Do not stop at green tests if the generated repo still feels ambiguous or
+dependent on hidden knowledge from the source repository.

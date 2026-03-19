@@ -1,0 +1,252 @@
+You are working inside the agent-context-base repository.
+
+This prompt adds a second derived-generation mode for `scripts/new_repo.py`.
+The current derived flow is intentionally selective: it vendors the chosen
+base manifests and the files those manifests point at. That is now good enough
+for a compact downstream repo, but it is not the "everything local" mode.
+
+Build a new derived-generation mode that maximally vendors the relevant
+agent-context-base context into each generated derived repo so a fresh
+assistant session inside that repo has an aggressively complete local bundle.
+
+The default mode must remain the current compact behavior. This prompt adds a
+new explicit operator opt-in for maximal vendoring.
+
+Output changes as commit-ready batches labeled `[PROMPT_82]` unless a later
+prompt in this sequence changes that instruction.
+
+===============================================================================
+CONSTRAINTS
+===============================================================================
+
+- Keep `scripts/new_repo.py` stdlib-only.
+- Do not regress the current compact derived-generation behavior.
+- Do not regress ordinary `--use-example`, prompt-first, or non-derived repo
+  generation.
+- Preserve monotonic prompt numbering.
+- The maximal mode must work for both leaf derived examples and collection
+  selectors like `team-a`, `team-b`, and `all-derived`.
+- Generated repos in maximal mode must still be valid repo-local surfaces; do
+  not dump files arbitrarily without updating profiles, prompts, and docs.
+- Use `python3.14 -m unittest`, not pytest.
+
+Run after each batch:
+
+  python3.14 -m unittest verification.scripts.test_repo_scripts -v
+  python3.14 -m unittest verification.examples.derived.test_derived_coverage -v
+  python3.14 scripts/validate_context.py
+  python3.14 scripts/validate_doc_governance.py
+
+===============================================================================
+REQUIRED READS
+===============================================================================
+
+Read these files before editing:
+
+  scripts/new_repo.py
+  scripts/README.md
+  docs/usage/STARTING_NEW_PROJECTS.md
+  examples/derived/README.md
+  examples/derived/derived-examples.yaml
+  manifests/prompt-first-meta-repo.yaml
+  context/workflows/generate-prompt-sequence.md
+  context/anchors/prompt-first.md
+  context/doctrine/prompt-first-conventions.md
+  verification/scripts/test_repo_scripts.py
+  verification/examples/derived/test_derived_coverage.py
+  .prompts/PROMPT_80.txt
+  .prompts/PROMPT_81.txt
+
+Also inspect the current generated shape of one derived repo under `/tmp` if
+needed to compare compact vs maximal outputs.
+
+===============================================================================
+I. OPERATOR EXPERIENCE
+===============================================================================
+
+Add a new explicit mode to `scripts/new_repo.py` for derived generation.
+
+Pick a clear CLI surface and use it consistently. Preferred shape:
+
+  --derived-context-mode compact
+  --derived-context-mode maximal
+
+Rules:
+
+1. The default must remain `compact`.
+2. The new option only needs to affect derived generation.
+3. Non-derived generation may ignore the option or reject it cleanly; do not
+   create ambiguous semantics.
+4. The selected mode must be recorded in generated profile metadata.
+
+Examples of the target operator experience:
+
+  python3 scripts/new_repo.py \
+    --derived-example operator-surface \
+    --derived-context-mode maximal \
+    --target-dir /tmp/operator-surface-max
+
+and:
+
+  python3 scripts/new_repo.py \
+    --derived-example team-a \
+    --derived-context-mode maximal \
+    --target-dir /tmp/team-a-max
+
+===============================================================================
+II. WHAT MAXIMAL MODE MUST INCLUDE
+===============================================================================
+
+In maximal mode, every generated derived repo should vendor a materially larger
+repo-local context bundle than compact mode.
+
+At minimum, include all of the following when they exist in the base repo and
+are relevant to the prompt-first orchestration shape:
+
+1. The selected manifests under `manifests/base/`.
+2. All files referenced by those manifests under:
+     - `required_context`
+     - `optional_context`
+     - `preferred_examples`
+     - `recommended_templates`
+3. The prompt-first doctrine, workflows, archetype docs, stack docs, and
+   anchors needed to route and continue prompt work locally.
+4. The canonical prompt examples and canonical workflow examples that a
+   downstream assistant would plausibly consult while extending `.prompts/`.
+5. The prompt-generation and prompt-governance materials needed to continue
+   prompt-first work inside the generated repo without improvising.
+
+The generated repo should not need to "remember" where agent-context-base kept
+these materials; it should have them locally.
+
+===============================================================================
+III. MAXIMAL MODE SHOULD BE THOUGHTFUL, NOT JUST BIG
+===============================================================================
+
+Do not implement maximal mode as "copy the whole repository" or "copy every
+file under context/ and examples/".
+
+Instead, define a thoughtful maximal bundle policy that is still bounded and
+defensible. The downstream repo should be rich enough to work from locally, but
+not a blind mirror of the source repository.
+
+Good candidates to include:
+
+- prompt-first doctrine and workflow anchors
+- repo-signal and task-inference guidance used during startup
+- canonical prompt examples
+- canonical workflow checklists
+- prompt-first templates and manifest/profile templates
+- any additional context explicitly needed to interpret the vendored manifest
+  metadata in a repo-local session
+
+Potentially unnecessary unless justified:
+
+- unrelated stacks not implicated by prompt-first orchestration
+- unrelated archetype docs with no derived relevance
+- verification fixtures for the base repo itself
+- unrelated example registries or policies that do not guide downstream work
+
+Make the selection model explicit in code and docs.
+
+===============================================================================
+IV. GENERATED REPO SHAPE IN MAXIMAL MODE
+===============================================================================
+
+For a maximal derived repo, the generated output should still feel coherent.
+
+At minimum:
+
+- `AGENT.md`
+- `CLAUDE.md`
+- `.generated-profile.yaml`
+- `manifests/project-profile.yaml`
+- `manifests/base/*.yaml`
+- `.prompts/PROMPT_01.txt` through `.prompts/PROMPT_04.txt`
+- the vendored context/examples/templates bundle selected by maximal mode
+
+Strengthen generated profile metadata so a downstream assistant can immediately
+tell:
+
+- this repo was generated in maximal mode
+- which paths were vendored because of the mode
+- which startup order to prefer
+- which local canonical examples and workflows are now available
+- which paths are the repo-local substitutes for the base repo's routing model
+
+The generated prompts should acknowledge the richer local bundle and steer the
+assistant to use it instead of assuming access to the original base repo.
+
+===============================================================================
+V. PROFILE, PROMPT, AND GUIDANCE CHANGES
+===============================================================================
+
+Update all generated guidance so maximal mode is visible and usable.
+
+At minimum, review:
+
+- `AGENT.md`
+- `CLAUDE.md`
+- `.generated-profile.yaml`
+- `manifests/project-profile.yaml`
+- `.prompts/PROMPT_01.txt` through `.prompts/PROMPT_04.txt`
+
+Requirements:
+
+1. Compact mode guidance should continue to work.
+2. Maximal mode guidance should explicitly say that additional local
+   `context/`, `examples/`, and `templates/` material was vendored on purpose.
+3. Do not let prompt files reference canonical or doctrine paths unless those
+   files are actually present in the generated repo under the referenced paths.
+4. The profile should expose the maximal-bundle path list clearly enough that a
+   downstream assistant can inspect it before loading more files.
+
+===============================================================================
+VI. TESTING AND VERIFICATION
+===============================================================================
+
+Add coverage for the new mode.
+
+At minimum, test:
+
+1. A leaf derived repo in maximal mode records the mode in generated profile
+   metadata.
+2. A leaf derived repo in maximal mode includes a larger local bundle than
+   compact mode.
+3. Team selectors work in maximal mode and still generate one child repo per
+   leaf derived example.
+4. Generated prompts and guidance in maximal mode do not point at missing
+   repo-local files.
+5. The current compact mode remains unchanged by default.
+
+Prefer extending `verification/scripts/test_repo_scripts.py` unless a new
+verification module is clearly justified.
+
+===============================================================================
+VII. DOC UPDATES
+===============================================================================
+
+Update:
+
+  scripts/README.md
+  docs/usage/STARTING_NEW_PROJECTS.md
+  examples/derived/README.md
+
+Document:
+
+- the new CLI option or mode selector
+- the difference between compact and maximal derived vendoring
+- when an operator should choose maximal mode
+- how the generated repo exposes the richer local context bundle
+
+===============================================================================
+VIII. BATCH PLAN
+===============================================================================
+
+Use at least these batches:
+
+Batch 1: add CLI mode selection and profile metadata plumbing
+Batch 2: implement maximal vendoring policy and generated guidance changes
+Batch 3: add verification and docs
+
+Validate after every batch using the required commands above.
