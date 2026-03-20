@@ -68,7 +68,7 @@ python scripts/new_repo.py analytics-api \
 - optionally renders prompt files, seed data, smoke tests, integration tests, and Dokku assets
 - generates isolated `docker-compose.yml` and `docker-compose.test.yml` when the profile implies local infra
 
-`manifests/project-profile.yaml` remains the generated repo's repo-local summary of actual state. The vendored files under `manifests/base/*.yaml` are snapshots of the selected base manifests so a fresh assistant session inside the generated repo can recover the original routing and bootstrap intent locally.
+`manifests/project-profile.yaml` remains the generated repo's repo-local summary of actual state for ordinary repos. Derived repos instead place their generated summary and vendored snapshot under `.acb/` so the root stays limited to the assistant boot entrypoints and hidden support directories.
 
 ## Documentation Timing For Derived Repos
 
@@ -82,7 +82,7 @@ If you truly want early front docs anyway, use the generator flags that opt into
 
 ## Generating A Derived Repo
 
-Leaf derived examples generate one prompt-first orchestration repo for the combined scenario, not several fully implemented service repos. The generated repo carries derived metadata in `manifests/project-profile.yaml`, vendors the selected base manifests under `manifests/base/`, and synthesizes a staged prompt sequence in `.prompts/PROMPT_01.txt` through `.prompts/PROMPT_04.txt`.
+Leaf derived examples generate one prompt-first orchestration repo for the combined scenario, not several fully implemented service repos. The generated repo carries derived metadata in `.acb/manifests/project-profile.yaml`, vendors the selected base manifests under `.acb/manifests/base/`, and synthesizes a staged prompt sequence in `.prompts/PROMPT_01.txt` through `.prompts/PROMPT_04.txt`.
 
 Examples:
 
@@ -94,8 +94,8 @@ python3 scripts/new_repo.py --derived-example team-a --target-dir /tmp
 
 Derived context modes:
 
-- `compact` is the default. It vendors the selected base manifests plus the files those manifests point at.
-- `maximal` is an explicit opt-in for a richer repo-local bundle. In addition to the compact set, it vendors prompt-first anchors, startup/routing skills, canonical prompt and workflow examples, prompt-governance templates, and source-example archetype/stack docs relevant to the derived scenario.
+- `compact` is the default. It uses the hidden `.acb/` root but vendors only the selected base manifests plus the files those manifests point at.
+- `maximal` is an explicit opt-in for a richer repo-local bundle. It uses the same `.acb/` root while adding prompt-first anchors, startup/routing skills, canonical prompt and workflow examples, prompt-governance templates, and source-example archetype/stack docs relevant to the derived scenario.
 
 Choose `maximal` when you expect a fresh assistant session to continue prompt-first work entirely from the generated repo without relying on memory of where `agent-context-base` kept routing material.
 
@@ -113,9 +113,11 @@ The derived prompt sequence replaces the generic prompt-first starter files and 
 - `PROMPT_03.txt` documents seams, contracts, and coordination paths
 - `PROMPT_04.txt` records verification expectations and post-flight refinement work
 
-In maximal mode, the generated repo also records the richer local bundle directly in `manifests/project-profile.yaml` and `.generated-profile.yaml`:
+In both modes, the generated repo records its startup contract under `.acb/`. Maximal mode adds the richer local continuation bundle:
 
 - `derived_metadata.derived_context_mode` records whether the repo was generated in `compact` or `maximal`
+- `derived_metadata.vendored_base_root` records the hidden `.acb` container explicitly
+- `derived_metadata.generated_profile_path` records the generated mirror profile at `.acb/.generated-profile.yaml`
 - `derived_metadata.maximal_bundle_policy` names the bounded maximal-copy policy and explains why those extra files were vendored
 - `derived_metadata.mode_vendored_paths` and `derived_metadata.maximal_bundle_paths` list the additional files vendored because of maximal mode
 - `derived_metadata.maximal_bundle_records` classifies those extra paths as `authoritative`, `informative`, or `templating-reference`
@@ -136,7 +138,7 @@ Strong first prompt for the generated repo:
 
 > Read the bootstrap context that matters for this repo, propose the implementation plan you intend to execute, wait for my approval, then carry it out with verification checkpoints.
 
-The assistant should load `AGENT.md` or `CLAUDE.md`, `manifests/project-profile.yaml`, `.generated-profile.yaml`, the vendored manifests under `manifests/base/`, the vendored prompt-first doctrine/workflow and canonical-example files listed in `derived_metadata.manifest_bundle_startup_paths` and `derived_metadata.maximal_bundle_startup_paths`, and then the initial prompt files under `.prompts/`. The human should review the plan, not manually reconstruct the startup context file by file.
+The assistant should load `AGENT.md` or `CLAUDE.md`, `.acb/manifests/project-profile.yaml`, the path recorded in `generated_profile_path`, the vendored manifests under `vendored_base_manifests_dir`, the vendored prompt-first doctrine/workflow and canonical-example files listed in `derived_metadata.manifest_bundle_startup_paths` and `derived_metadata.maximal_bundle_startup_paths`, and then the initial prompt files under `.prompts/`. The startup path intentionally crosses into `.acb/` immediately after the root entrypoints. The human should review the plan, not manually reconstruct the startup context file by file.
 
 ## Rules That Keep New Repos Clean
 

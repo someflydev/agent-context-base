@@ -60,12 +60,13 @@ Derived generation notes:
 - `--derived-example team-a`, `team-b`, or `all-derived` generates one child repo per derived example
 - `--derived-context-mode compact|maximal` controls how much prompt-first support context is vendored for derived repos; the default is `compact`
 - when `--target-dir` points at `/tmp` or any existing directory, that directory is treated as the parent and each derived repo is written under it
-- generated repos keep a repo-local summary in `manifests/project-profile.yaml` and vendor the selected base manifests under `manifests/base/*.yaml`
-- `compact` keeps the current manifest-linked vendoring behavior
-- `maximal` adds a bounded local bundle of prompt-first anchors, startup/routing skills, canonical prompt/workflow examples, prompt-governance templates, and source-example archetype/stack docs
+- derived repos keep their repo-local summary in `.acb/manifests/project-profile.yaml` and vendor selected base manifests under `.acb/manifests/base/*.yaml`
+- `compact` and `maximal` both use the hidden `.acb/` container so only `AGENT.md` and `CLAUDE.md` remain as non-hidden root entrypoints
+- `compact` vendors the selected manifests plus manifest-linked support assets into `.acb/`
+- `maximal` uses the same `.acb/` root while adding a bounded local bundle of prompt-first anchors, startup/routing skills, canonical prompt/workflow examples, prompt-governance templates, and source-example archetype/stack docs
 - new prompt-first generation writes `.prompts/` directly and does not generate `PROMPTS.md` by default
 - leaf derived repos use `.prompts/PROMPT_01.txt` through `.prompts/PROMPT_04.txt` instead of the generic `001-...` prompt-first starter pair, and those prompts explicitly tell downstream assistants to use vendored manifests plus generated profiles as the local replacement for the base repo
-- maximal derived repos also record the named maximal bundle policy, per-path authority labels, manifest-linked and maximal startup path lists, local canonical examples/workflows, and preferred startup order in generated profile metadata so a fresh assistant session can stay repo-local
+- derived repos also record `.acb` root metadata, manifest-linked and maximal startup path lists, local canonical examples/workflows, and preferred startup order in generated profile metadata so a fresh assistant session can stay repo-local
 
 ## `init_memory.py`
 
@@ -178,7 +179,18 @@ python scripts/preview_context_bundle.py manifests/local-rag-base.yaml --show-we
 python scripts/preview_context_bundle.py dokku-deployable-go-echo --show-templates
 python scripts/prompt_first_repo_analyzer.py .
 python scripts/pattern_diff.py examples/canonical-api examples/canonical-smoke-tests
+scripts/smoke/new_repo_acb_smoke.sh
 ```
+
+## `scripts/smoke/new_repo_acb_smoke.sh`
+
+Runs a small derived-repo smoke matrix for the hidden `.acb/` layout.
+
+- uses `/tmp/smoke-acb-<git-short-sha>/` as the parent output root
+- uses `/tmp/smoke-acb-<YYYYMMDD-HHMMSS>-<git-short-sha>/` as the parent output root
+- exercises `operator-surface` in `compact` and `maximal`
+- exercises `team-a` in `compact` and `maximal`
+- prints the root layout for a few generated repos so the hidden-container rule is easy to inspect
 
 ## `manifest_tools.py`
 
