@@ -340,6 +340,22 @@ class TestDerivedCoverage(unittest.TestCase):
         self.assertTrue(any(record["authority"] == "templating-reference" for record in bundle_records))
         self.assertTrue(all(str(record["path"]) in bundle_paths for record in bundle_records))
 
+    def test_derived_vendored_root_policy_is_explicit(self) -> None:
+        self.assertEqual(_new_repo._vendored_base_root_for_derived_mode("compact"), ".acb")
+        self.assertEqual(_new_repo._vendored_base_root_for_derived_mode("maximal"), ".acb")
+        self.assertEqual(
+            _new_repo._map_vendored_repo_path("context/anchors/prompt-first.md", ".acb"),
+            ".acb/context/anchors/prompt-first.md",
+        )
+        self.assertEqual(
+            _new_repo._map_derived_repo_state_path("manifests/project-profile.yaml", "compact"),
+            ".acb/manifests/project-profile.yaml",
+        )
+        self.assertEqual(
+            _new_repo._vendored_manifest_paths(["prompt-first-meta-repo"], ".acb"),
+            [".acb/manifests/base/prompt-first-meta-repo.yaml"],
+        )
+
     def test_derived_examples_valid_archetypes(self) -> None:
         derived = load_derived_examples()
         valid = set(ARCHETYPES)

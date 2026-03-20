@@ -199,6 +199,59 @@ def _check_bootstrap_output(repo_root: Path) -> list[str]:
     return errors
 
 
+def _check_derived_layout_output() -> list[str]:
+    """Generate compact and maximal derived repos and verify their layout boundary."""
+
+    errors: list[str] = []
+    for mode in ("compact", "maximal"):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            parent = Path(temp_dir)
+            argv = [
+                "new_repo.py",
+                "--derived-example",
+                "operator-surface",
+                "--target-dir",
+                str(parent),
+            ]
+            if mode == "maximal":
+                argv.extend(["--derived-context-mode", "maximal"])
+            with Path(devnull).open("w", encoding="utf-8") as sink, redirect_stdout(sink):
+                exit_code = new_repo.main(argv)
+            if exit_code != 0:
+                errors.append(f"derived bootstrap check failed for mode={mode}: exit code {exit_code}")
+                continue
+
+            target_dir = parent / "operator-surface"
+            profile_path = target_dir / ".acb" / "manifests" / "project-profile.yaml"
+            if not profile_path.exists():
+                errors.append(f"derived mode={mode}: missing .acb/manifests/project-profile.yaml")
+                continue
+            profile_text = profile_path.read_text(encoding="utf-8")
+            required = (
+                ".acb/.generated-profile.yaml",
+                ".acb/manifests/base/prompt-first-meta-repo.yaml",
+                ".acb/context/doctrine/core-principles.md",
+                ".acb/scripts/validate_repo.py",
+                ".acb/docs/seams/README.md",
+            )
+            for relative_path in required:
+                if not (target_dir / relative_path).exists():
+                    errors.append(f"derived mode={mode}: missing {relative_path}")
+            for leaked_root in ("context", "examples", "templates", "docs", "scripts", "manifests"):
+                if (target_dir / leaked_root).exists():
+                    errors.append(f"derived mode={mode}: root {leaked_root}/ must stay hidden under .acb/")
+            public_root = {path.name for path in target_dir.iterdir() if not path.name.startswith(".")}
+            if public_root != {"AGENT.md", "CLAUDE.md"}:
+                errors.append(f"derived mode={mode}: public root entries must be only AGENT.md and CLAUDE.md, saw {sorted(public_root)}")
+            if "generated_profile_path: .acb/.generated-profile.yaml" not in profile_text:
+                errors.append(f"derived mode={mode}: profile must record .acb/.generated-profile.yaml")
+            if "repo_local_profile_path: .acb/manifests/project-profile.yaml" not in profile_text:
+                errors.append(f"derived mode={mode}: profile must record .acb/manifests/project-profile.yaml")
+            if "vendored_base_root: .acb" not in profile_text:
+                errors.append(f"derived mode={mode}: profile must record vendored_base_root: .acb")
+    return errors
+
+
 def main() -> int:
     """Run full context validation."""
 
@@ -217,6 +270,7 @@ def main() -> int:
     errors.extend(validate_markdown_cross_references(repo_root))
     errors.extend(validate_mermaid_reference_hints(repo_root))
     errors.extend(_check_bootstrap_output(repo_root))
+    errors.extend(_check_derived_layout_output())
 
     if errors:
         print("Context validation failed:", file=sys.stderr)
