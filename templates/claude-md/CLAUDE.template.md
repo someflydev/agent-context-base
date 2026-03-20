@@ -4,31 +4,31 @@ Use this file as the assistant boot entrypoint.
 
 Start with:
 
-1. `manifests/project-profile.yaml`
-2. `.generated-profile.yaml`
-3. `manifests/base/*.yaml` if present
+1. `{{repo_local_profile_path}}`
+2. `{{generated_profile_path}}`
+3. `{{vendored_base_manifests_dir}}/*.yaml` if present
 4. `.prompts/*.txt` if present
 5. `README.md` if it exists and still matches implemented reality
-6. `docs/repo-purpose.md` if it exists
-7. `docs/repo-layout.md` if it exists
+6. `{{repo_local_purpose_doc_path}}` if it exists
+7. `{{repo_local_layout_doc_path}}` if it exists
 
 After that stable pass and a narrow repo-signal check, read `MEMORY.md` if it exists.
 
 Then load the smallest useful bundle from the task, repo signals, and active change surface.
 
-Treat `manifests/base/*.yaml` as the repo-local snapshots of base-repo routing and bootstrap intent when those files exist.
+Treat `{{vendored_base_manifests_dir}}/*.yaml` as the repo-local snapshots of base-repo routing and bootstrap intent when those files exist.
 
 When routing, selecting examples, assembling context bundles, choosing a verification path, or
-reading and writing `MEMORY.md`, prefer the repo-local guidance vendored under `context/`,
-`examples/`, and `templates/` when those paths are present.
+reading and writing `MEMORY.md`, prefer the repo-local guidance vendored under
+`{{vendored_base_root}}/context/`, `{{vendored_base_root}}/examples/`, and
+`{{vendored_base_root}}/templates/` when those paths are present.
 
-If `manifests/project-profile.yaml` records `derived_metadata.derived_context_mode: maximal`,
-the additional vendored `context/`, `examples/`, and `templates/` paths are intentional.
-Use those repo-local copies as the routing and prompt-continuation surface before assuming
-you need the source generator repo.
+If `{{repo_local_profile_path}}` records `derived_metadata.derived_context_mode: maximal`,
+the additional vendored bundle under `.acb/` is intentional. Use those repo-local copies as
+the routing and prompt-continuation surface before assuming you need the source generator repo.
 
 For derived repos, follow `derived_metadata.downstream_startup_order` in
-`manifests/project-profile.yaml`. If present, `derived_metadata.manifest_bundle_startup_paths`
+`{{repo_local_profile_path}}`. If present, `derived_metadata.manifest_bundle_startup_paths`
 and `derived_metadata.maximal_bundle_startup_paths` identify the vendored doctrine,
 workflow, and canonical-example files that should be read before extending `.prompts/`.
 
@@ -49,7 +49,8 @@ workflow, and canonical-example files that should be read before extending `.pro
 
 Tool environments are project-local. Never use system runtimes, global installs, or bare tool
 names without an explicit path. Use the repo-local commands documented in
-`manifests/project-profile.yaml`, `.generated-profile.yaml`, and any vendored `context/`
+`{{repo_local_profile_path}}`, `{{generated_profile_path}}`, and any vendored
+`{{vendored_base_root}}/context/`
 guidance that exists in this repo.
 
 {{tool_invocation_notes}}

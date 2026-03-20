@@ -8,8 +8,10 @@ front_docs_root_readme_generated: {{front_docs_root_readme_generated}}
 front_docs_docs_dir_generated: {{front_docs_docs_dir_generated}}
 selected_manifests:
 {{selected_manifest_lines}}
-repo_local_profile_path: manifests/project-profile.yaml
-vendored_base_manifests_dir: manifests/base
+repo_local_profile_path: {{repo_local_profile_path}}
+generated_profile_path: {{generated_profile_path}}
+vendored_base_root: {{vendored_base_root}}
+vendored_base_manifests_dir: {{vendored_base_manifests_dir}}
 vendored_base_manifest_paths:
 {{vendored_manifest_lines}}
 vendored_support_paths:

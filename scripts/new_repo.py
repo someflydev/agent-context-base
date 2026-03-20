@@ -528,6 +528,11 @@ class RepoGenerationRequest:
     extra_context_entrypoints: list[str] | None = None
     derived_context_mode: str | None = None
     extra_vendored_paths: list[str] | None = None
+    repo_local_profile_path: str = "manifests/project-profile.yaml"
+    repo_local_scripts_root: str = "scripts"
+    repo_local_docs_root: str = "docs"
+    vendored_base_root: str = ""
+    generated_profile_path: str = ".generated-profile.yaml"
 
 
 @dataclass(frozen=True)
@@ -1788,6 +1793,56 @@ def repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
 
 
+DERIVED_HIDDEN_REPO_ROOT = ".acb"
+
+
+def _vendored_base_root_for_derived_mode(derived_context_mode: str | None) -> str:
+    """Return the hidden repo-local state root for derived repos."""
+
+    return DERIVED_HIDDEN_REPO_ROOT if derived_context_mode is not None else ""
+
+
+def _map_vendored_repo_path(relative_path: str, vendored_base_root: str) -> str:
+    """Map one vendored repo-relative path through the active vendored root."""
+
+    normalized = relative_path.strip().lstrip("/")
+    if not normalized:
+        return normalized
+    if not vendored_base_root:
+        return normalized
+    return f"{vendored_base_root.rstrip('/')}/{normalized}"
+
+
+def _map_derived_repo_state_path(relative_path: str, derived_context_mode: str | None) -> str:
+    """Map derived repo-local state behind the hidden `.acb/` boundary."""
+
+    normalized = relative_path.strip().lstrip("/")
+    if not normalized:
+        return normalized
+    if derived_context_mode is None:
+        return normalized
+    if normalized in {"AGENT.md", "CLAUDE.md", ".gitignore"}:
+        return normalized
+    if normalized == ".prompts" or normalized.startswith(".prompts/"):
+        return normalized
+    return _map_vendored_repo_path(normalized, _vendored_base_root_for_derived_mode(derived_context_mode))
+
+
+def _map_vendored_repo_paths(paths: list[str], vendored_base_root: str) -> list[str]:
+    """Map vendored paths through the active vendored root, preserving order."""
+
+    return [_map_vendored_repo_path(path, vendored_base_root) for path in paths]
+
+
+def _vendored_manifest_paths(selected_manifests: list[str], vendored_base_root: str) -> list[str]:
+    """Return manifest snapshot destinations for the generated repo."""
+
+    return _map_vendored_repo_paths(
+        [f"manifests/base/{manifest_name}.yaml" for manifest_name in selected_manifests],
+        vendored_base_root,
+    )
+
+
 def load_available_manifests() -> dict[str, dict[str, object]]:
     """Load all manifest files in the base repo."""
 
@@ -2310,13 +2365,29 @@ def render_readme(
     return render_template(template_path, values)
 
 
-def render_agent_and_claude(archetype: str, primary_stack: str, manifests: list[str]) -> dict[str, str]:
+def render_agent_and_claude(
+    archetype: str,
+    primary_stack: str,
+    manifests: list[str],
+    *,
+    repo_local_profile_path: str,
+    repo_local_docs_root: str,
+    generated_profile_path: str,
+    vendored_base_manifests_dir: str,
+    vendored_base_root: str,
+) -> dict[str, str]:
     """Render AGENT.md and CLAUDE.md."""
 
     values = {
         "archetype": archetype,
         "primary_stack": primary_stack,
         "selected_manifests": ", ".join(manifests),
+        "repo_local_profile_path": repo_local_profile_path,
+        "repo_local_purpose_doc_path": f"{repo_local_docs_root}/repo-purpose.md",
+        "repo_local_layout_doc_path": f"{repo_local_docs_root}/repo-layout.md",
+        "generated_profile_path": generated_profile_path,
+        "vendored_base_manifests_dir": vendored_base_manifests_dir,
+        "vendored_base_root": vendored_base_root or ".",
     }
     return {
         "AGENT.md": render_template(repo_root() / "templates/agent-md/AGENT.template.md", values),
@@ -2356,6 +2427,10 @@ def render_profile_summary(
     port_map: dict[str, int],
     starter_paths: dict[str, str],
     validation_commands: list[str],
+    repo_local_profile_path: str,
+    generated_profile_path: str,
+    vendored_base_root: str,
+    vendored_base_manifests_dir: str,
     vendored_manifest_paths: list[str],
     vendored_support_paths: list[str],
     prompt_directory: str,
@@ -2369,8 +2444,8 @@ def render_profile_summary(
     context_entrypoints = [
         "AGENT.md",
         "CLAUDE.md",
-        "manifests/project-profile.yaml",
-        ".generated-profile.yaml",
+        repo_local_profile_path,
+        generated_profile_path,
         *vendored_manifest_paths,
         *(["README.md"] if include_root_readme else []),
         *(["docs/repo-purpose.md", "docs/repo-layout.md"] if include_docs_dir else []),
@@ -2387,9 +2462,13 @@ def render_profile_summary(
         "description": description,
         "archetype": archetype,
         "primary_stack": primary_stack,
+        "repo_local_profile_path": repo_local_profile_path,
         "front_docs_root_readme_generated": str(include_root_readme).lower(),
         "front_docs_docs_dir_generated": str(docs_dir_generated).lower(),
         "selected_manifest_lines": format_yaml_list(manifests),
+        "generated_profile_path": generated_profile_path,
+        "vendored_base_root": vendored_base_root or ".",
+        "vendored_base_manifests_dir": vendored_base_manifests_dir,
         "vendored_manifest_lines": format_yaml_list(vendored_manifest_paths),
         "vendored_support_lines": format_yaml_list(vendored_support_paths),
         "startup_order_lines": format_yaml_list(startup_order),
@@ -2567,6 +2646,10 @@ def render_derived_prompt_files(
     manifests: dict[str, dict[str, object]],
     *,
     derived_context_mode: str,
+    repo_local_profile_path: str,
+    repo_local_docs_root: str,
+    vendored_base_root: str,
+    generated_profile_path: str,
     mode_bundle_paths: list[str],
     mode_bundle_records: list[dict[str, object]],
 ) -> dict[str, str]:
@@ -2576,8 +2659,11 @@ def render_derived_prompt_files(
     title = str(entry.get("title") or name)
     description = str(entry.get("description", ""))
     prompt_text = str(entry.get("prompt", "")).strip()
-    vendored_manifest_paths = [f"manifests/base/{name}.yaml" for name in selected_manifests]
-    manifest_startup_paths = _derived_manifest_startup_paths(selected_manifests, manifests)
+    vendored_manifest_paths = _vendored_manifest_paths(selected_manifests, vendored_base_root)
+    manifest_startup_paths = _map_vendored_repo_paths(
+        _derived_manifest_startup_paths(selected_manifests, manifests),
+        vendored_base_root,
+    )
     source_examples = _source_example_specs_for_derived(entry)
     source_lines = [
         f"- `#{item['number']}` `{item['codename']}`: {item['title']} "
@@ -2594,9 +2680,12 @@ def render_derived_prompt_files(
     scaffold_lines = _derived_service_plan_lines(entry)
     seam_contract_text = _seam_contract_text(entry)
     seam_notes = str(entry.get("seam_notes", "")).strip()
-    preferred_examples = _derived_preferred_examples(selected_manifests, manifests)
+    preferred_examples = _map_vendored_repo_paths(
+        _derived_preferred_examples(selected_manifests, manifests),
+        vendored_base_root,
+    )
     canonical_lines = [f"- `{path}`" for path in preferred_examples] or [
-        "- `examples/derived/example-prompts.yaml`",
+        f"- `{_map_vendored_repo_path('examples/canonical-prompts/001-bootstrap-repo.txt', vendored_base_root)}`",
     ]
     maximal_bundle_lines = [
         f"- `{record['path']}` ({record['authority']}; {record['category']})"
@@ -2611,6 +2700,7 @@ def render_derived_prompt_files(
         "Compact mode keeps the vendored bundle tightly scoped to the selected manifests."
         if derived_context_mode == "compact"
         else "Maximal mode intentionally vendors additional repo-local `context/`, `examples/`, and `templates/` material so prompt-first work can continue locally without assuming access to the source base repo.",
+        f"The derived repo's generated and vendored support surface is intentionally contained under `{vendored_base_root}/`.",
     ]
     prompt_01 = "\n".join(
         [
@@ -2624,8 +2714,8 @@ def render_derived_prompt_files(
             "Start with these exact files in this order before coding:",
             "- `AGENT.md`",
             "- `CLAUDE.md`",
-            "- `manifests/project-profile.yaml`",
-            "- `.generated-profile.yaml`",
+            f"- `{repo_local_profile_path}`",
+            f"- `{generated_profile_path}`",
             *[f"- `{path}`" for path in vendored_manifest_paths],
             *[f"- `{path}`" for path in manifest_startup_paths],
             *maximal_startup_lines,
@@ -2643,9 +2733,9 @@ def render_derived_prompt_files(
                     "Additional local routing and continuation materials vendored by maximal mode:",
                     *maximal_bundle_lines,
                     "",
-                    "Read the startup subset first. Treat `context/` paths as authoritative guidance, `examples/` paths as informative canonical references, and `templates/` paths as templating references rather than generated state.",
+                    f"Read the startup subset first. Treat `{vendored_base_root}/context/` paths as authoritative guidance, `{vendored_base_root}/examples/` paths as informative canonical references, and `{vendored_base_root}/templates/` paths as templating references rather than generated state.",
                     "",
-                    "Prefer those repo-local copies over assumptions about where the source base repo kept them.",
+                    f"Prefer those repo-local copies under `{vendored_base_root}/` over assumptions about where the source base repo kept them.",
                 ]
                 if derived_context_mode == "maximal" and maximal_bundle_lines
                 else []
@@ -2657,11 +2747,11 @@ def render_derived_prompt_files(
             "Source examples driving this repo:",
             *source_lines,
             "",
-            "Treat the source example metadata in `manifests/project-profile.yaml` as repo-local lineage records, not as commands that must be rerun from the parent repo.",
+            f"Treat the source example metadata in `{repo_local_profile_path}` as repo-local lineage records, not as commands that must be rerun from the parent repo.",
             "",
             "Instructions:",
             "- Treat this repo as the orchestration and implementation repo for the derived scenario, not as a blank shell and not as several unrelated repos.",
-            "- Update `manifests/project-profile.yaml` and `.generated-profile.yaml` first so the startup order, vendored manifest paths, service map, seam map, and verification commands are explicit.",
+            f"- Update `{repo_local_profile_path}` and `{generated_profile_path}` first so the startup order, vendored manifest paths, service map, seam map, and verification commands are explicit.",
             "- Prefer exact repo-path updates and concrete verification commands over vague planning notes.",
             "",
         ]
@@ -2710,11 +2800,11 @@ def render_derived_prompt_files(
             *(["", "Seam notes:", seam_notes] if seam_notes else []),
             "",
             "Write or update seam docs under exact paths:",
-            "- `docs/seams/README.md`",
-            "- `docs/seams/event-contracts.md`",
-            "- `docs/seams/rest-contracts.md`",
-            "- `manifests/project-profile.yaml`",
-            "- `.generated-profile.yaml`",
+            f"- `{repo_local_docs_root}/seams/README.md`",
+            f"- `{repo_local_docs_root}/seams/event-contracts.md`",
+            f"- `{repo_local_docs_root}/seams/rest-contracts.md`",
+            f"- `{repo_local_profile_path}`",
+            f"- `{generated_profile_path}`",
             *(
                 [
                     "",
@@ -2740,8 +2830,8 @@ def render_derived_prompt_files(
             "Verification expectations:",
             "- Keep per-service smoke checks explicit for every source example included in this derived repo.",
             "- Add at least one combined integration or coordination check proving the main seam path for the scenario.",
-            "- Record the exact verification command set in `manifests/project-profile.yaml`.",
-            "- Use the repo-local source example metadata in `manifests/project-profile.yaml` to determine expected smoke, integration, seed-data, and deployment traits for each service.",
+            f"- Record the exact verification command set in `{repo_local_profile_path}`.",
+            f"- Use the repo-local source example metadata in `{repo_local_profile_path}` to determine expected smoke, integration, seed-data, and deployment traits for each service.",
             *(
                 [
                     "- Use the maximal-mode vendored local bundle for additional prompt-first doctrine, canonical examples, and workflow continuation material before inventing new repo conventions."
@@ -2751,7 +2841,7 @@ def render_derived_prompt_files(
             ),
             "",
             "Instructions:",
-            "- Add or update verification commands in `manifests/project-profile.yaml` for smoke checks and derived-specific integration checks.",
+            f"- Add or update verification commands in `{repo_local_profile_path}` for smoke checks and derived-specific integration checks.",
             "- Define the combined scenario's smoke and integration expectations before broadening implementation.",
             "- Continue creating or refining prompt files in `.prompts/` when more implementation batches are needed. Keep numbering strictly monotonic and reference exact repo paths in each new prompt.",
             "- Run a post-flight refinement pass and a doc freshness pass after the first meaningful slice lands.",
@@ -2773,13 +2863,20 @@ def _build_derived_profile_metadata(
     manifests: dict[str, dict[str, object]],
     *,
     derived_context_mode: str,
+    repo_local_profile_path: str,
+    vendored_base_root: str,
+    generated_profile_path: str,
     mode_bundle_paths: list[str],
     mode_bundle_records: list[dict[str, object]],
 ) -> dict[str, object]:
     """Build the derived-specific metadata block for the generated profile."""
 
-    manifest_startup_paths = _derived_manifest_startup_paths(selected_manifests, manifests)
+    manifest_startup_paths = _map_vendored_repo_paths(
+        _derived_manifest_startup_paths(selected_manifests, manifests),
+        vendored_base_root,
+    )
     maximal_startup_paths = _derived_maximal_startup_paths(mode_bundle_records)
+    vendored_manifest_paths = _vendored_manifest_paths(selected_manifests, vendored_base_root)
     return {
         "derived_example_name": entry["name"],
         "derived_team": entry.get("team"),
@@ -2787,24 +2884,32 @@ def _build_derived_profile_metadata(
         "derived_context_mode": derived_context_mode,
         "generated_repo_role": "orchestration-and-implementation",
         "descendant_of": "agent-context-base",
+        "vendored_base_root": vendored_base_root or ".",
+        "generated_profile_path": generated_profile_path,
+        "vendored_layout_note": (
+            f"`{vendored_base_root}/` is the hidden repo-local container for generated and vendored agent-context-base materials in this derived repo."
+            if vendored_base_root
+            else "Derived repos are expected to use a hidden repo-local container for generated and vendored state."
+        ),
         "maximal_bundle_policy": {
             "name": DERIVED_MAXIMAL_BUNDLE_POLICY_NAME,
             "note": DERIVED_MAXIMAL_BUNDLE_POLICY_NOTE,
             "compact_bundle_source": "selected base manifests plus manifest-linked support assets",
             "maximal_bundle_source": "compact bundle plus explicit prompt-first continuation supplements",
+            "vendored_root_rule": f"all derived repo-local and vendored base payload lives under `{vendored_base_root}/`; only `AGENT.md` and `CLAUDE.md` remain as non-hidden root entrypoints",
         },
         "repo_local_substitute_for_base_repo": [
-            "manifests/project-profile.yaml",
-            ".generated-profile.yaml",
-            *[f"manifests/base/{name}.yaml" for name in selected_manifests],
+            repo_local_profile_path,
+            generated_profile_path,
+            *vendored_manifest_paths,
             *mode_bundle_paths,
         ],
         "repo_local_routing_model_paths": [
             "AGENT.md",
             "CLAUDE.md",
-            "manifests/project-profile.yaml",
-            ".generated-profile.yaml",
-            *[f"manifests/base/{name}.yaml" for name in selected_manifests],
+            repo_local_profile_path,
+            generated_profile_path,
+            *vendored_manifest_paths,
             *mode_bundle_paths,
         ],
         "source_examples": [
@@ -2826,19 +2931,24 @@ def _build_derived_profile_metadata(
             "metadata. They are descriptive startup inputs for this generated repo, not "
             "commands that require rerunning agent-context-base generation."
         ),
-        "preferred_examples": _derived_preferred_examples(selected_manifests, manifests),
+        "preferred_examples": _map_vendored_repo_paths(
+            _derived_preferred_examples(selected_manifests, manifests),
+            vendored_base_root,
+        ),
         "local_canonical_examples_available": [
             path
             for path in (
-                _derived_preferred_examples(selected_manifests, manifests)
-                + [item for item in mode_bundle_paths if item.startswith("examples/")]
+                _map_vendored_repo_paths(_derived_preferred_examples(selected_manifests, manifests), vendored_base_root)
+                + [item for item in mode_bundle_paths if item.startswith(_map_vendored_repo_path("examples/", vendored_base_root))]
             )
         ],
         "local_canonical_workflows_available": [
-            path for path in mode_bundle_paths if path.startswith("examples/canonical-workflows/")
+            path
+            for path in mode_bundle_paths
+            if path.startswith(_map_vendored_repo_path("examples/canonical-workflows/", vendored_base_root))
         ],
         "selected_manifests": selected_manifests,
-        "vendored_manifest_paths": [f"manifests/base/{name}.yaml" for name in selected_manifests],
+        "vendored_manifest_paths": vendored_manifest_paths,
         "manifest_bundle_startup_paths": manifest_startup_paths,
         "mode_vendored_paths": mode_bundle_paths,
         "maximal_bundle_paths": mode_bundle_paths,
@@ -2847,9 +2957,9 @@ def _build_derived_profile_metadata(
         "downstream_startup_order": [
             "AGENT.md",
             "CLAUDE.md",
-            "manifests/project-profile.yaml",
-            ".generated-profile.yaml",
-            *[f"manifests/base/{name}.yaml" for name in selected_manifests],
+            repo_local_profile_path,
+            generated_profile_path,
+            *vendored_manifest_paths,
             *manifest_startup_paths,
             *maximal_startup_paths,
             ".prompts/PROMPT_01.txt",
@@ -2958,31 +3068,37 @@ if __name__ == "__main__":
     return files
 
 
-def render_prompt_meta_starters() -> dict[str, str]:
+def render_prompt_meta_starters(
+    *,
+    scripts_root: str,
+    repo_local_profile_path: str,
+    generated_profile_path: str,
+    prompt_directory: str,
+) -> dict[str, str]:
     """Render prompt-first validation helper files."""
 
     return {
-        "scripts/check_repo.py": """#!/usr/bin/env python3\n\"\"\"Check the minimal prompt-first repo surface exists.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    required = [Path(\"AGENT.md\"), Path(\"CLAUDE.md\"), Path(\".prompts\")]\n    missing = [path.as_posix() for path in required if not path.exists()]\n    if missing:\n        raise SystemExit(f\"Missing required files: {missing}\")\n    print(\"repo surface looks present\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
-        "scripts/check_generated_profile.py": """#!/usr/bin/env python3\n\"\"\"Check the generated profile file exists.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    profile = Path(\".generated-profile.yaml\")\n    if not profile.exists():\n        raise SystemExit(\".generated-profile.yaml is missing\")\n    print(\"generated profile exists\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
-        "scripts/validate_repo.py": """#!/usr/bin/env python3\n\"\"\"Validate the prompt-first starter repo surface.\"\"\"\n\nimport re\nfrom pathlib import Path\n\n\nCLASSIC_PROMPTS = [\"001-bootstrap-repo.txt\", \"002-refine-test-surface.txt\"]\nDERIVED_PROMPT_PATTERN = re.compile(r\"^PROMPT_(\\d{2})\\.txt$\")\n\n\ndef _validate_prompt_files(prompt_files: list[str]) -> None:\n    if not prompt_files:\n        raise SystemExit(\".prompts must contain at least one prompt file\")\n    if prompt_files == CLASSIC_PROMPTS:\n        return\n    derived_numbers: list[int] = []\n    for filename in prompt_files:\n        match = DERIVED_PROMPT_PATTERN.fullmatch(filename)\n        if match is None:\n            raise SystemExit(\n                \"Prompt files must be either the classic 001/002 pair or a pure PROMPT_XX.txt sequence: \"\n                f\"{prompt_files}\"\n            )\n        derived_numbers.append(int(match.group(1)))\n    expected_numbers = list(range(1, len(derived_numbers) + 1))\n    if derived_numbers != expected_numbers:\n        raise SystemExit(f\"Derived prompt files must stay monotonic: {prompt_files}\")\n\n\ndef main() -> None:\n    required = [\n        Path(\"AGENT.md\"),\n        Path(\"CLAUDE.md\"),\n        Path(\"manifests/project-profile.yaml\"),\n    ]\n    missing = [path.as_posix() for path in required if not path.exists()]\n    if missing:\n        raise SystemExit(f\"Missing required files: {missing}\")\n\n    prompt_dir = Path(\".prompts\")\n    if not prompt_dir.exists() or not prompt_dir.is_dir():\n        raise SystemExit(\".prompts directory is missing\")\n    prompt_files = sorted(path.name for path in prompt_dir.glob(\"*.txt\"))\n    _validate_prompt_files(prompt_files)\n\n    print(\"repo validation passed\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
-        "scripts/seed_data.py": """#!/usr/bin/env python3\n\"\"\"Write deterministic prompt-first starter notes.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    target = Path(\"artifacts/generated-notes.txt\")\n    target.parent.mkdir(parents=True, exist_ok=True)\n    target.write_text(\"replace with deterministic repo notes\\n\", encoding=\"utf-8\")\n    print(f\"Wrote {target}\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
+        f"{scripts_root}/check_repo.py": f"""#!/usr/bin/env python3\n\"\"\"Check the minimal prompt-first repo surface exists.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    required = [Path(\"AGENT.md\"), Path(\"CLAUDE.md\"), Path(\"{prompt_directory}\")]\n    missing = [path.as_posix() for path in required if not path.exists()]\n    if missing:\n        raise SystemExit(f\"Missing required files: {{missing}}\")\n    print(\"repo surface looks present\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
+        f"{scripts_root}/check_generated_profile.py": f"""#!/usr/bin/env python3\n\"\"\"Check the generated profile file exists.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    profile = Path(\"{generated_profile_path}\")\n    if not profile.exists():\n        raise SystemExit(\"{generated_profile_path} is missing\")\n    print(\"generated profile exists\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
+        f"{scripts_root}/validate_repo.py": f"""#!/usr/bin/env python3\n\"\"\"Validate the prompt-first starter repo surface.\"\"\"\n\nimport re\nfrom pathlib import Path\n\n\nCLASSIC_PROMPTS = [\"001-bootstrap-repo.txt\", \"002-refine-test-surface.txt\"]\nDERIVED_PROMPT_PATTERN = re.compile(r\"^PROMPT_(\\d{{2}})\\.txt$\")\n\n\ndef _validate_prompt_files(prompt_files: list[str]) -> None:\n    if not prompt_files:\n        raise SystemExit(\"{prompt_directory} must contain at least one prompt file\")\n    if prompt_files == CLASSIC_PROMPTS:\n        return\n    derived_numbers: list[int] = []\n    for filename in prompt_files:\n        match = DERIVED_PROMPT_PATTERN.fullmatch(filename)\n        if match is None:\n            raise SystemExit(\n                \"Prompt files must be either the classic 001/002 pair or a pure PROMPT_XX.txt sequence: \"\n                f\"{{prompt_files}}\"\n            )\n        derived_numbers.append(int(match.group(1)))\n    expected_numbers = list(range(1, len(derived_numbers) + 1))\n    if derived_numbers != expected_numbers:\n        raise SystemExit(f\"Derived prompt files must stay monotonic: {{prompt_files}}\")\n\n\ndef main() -> None:\n    required = [\n        Path(\"AGENT.md\"),\n        Path(\"CLAUDE.md\"),\n        Path(\"{repo_local_profile_path}\"),\n    ]\n    missing = [path.as_posix() for path in required if not path.exists()]\n    if missing:\n        raise SystemExit(f\"Missing required files: {{missing}}\")\n\n    prompt_dir = Path(\"{prompt_directory}\")\n    if not prompt_dir.exists() or not prompt_dir.is_dir():\n        raise SystemExit(\"{prompt_directory} directory is missing\")\n    prompt_files = sorted(path.name for path in prompt_dir.glob(\"*.txt\"))\n    _validate_prompt_files(prompt_files)\n\n    print(\"repo validation passed\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
+        f"{scripts_root}/seed_data.py": """#!/usr/bin/env python3\n\"\"\"Write deterministic prompt-first starter notes.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    target = Path(\"artifacts/generated-notes.txt\")\n    target.parent.mkdir(parents=True, exist_ok=True)\n    target.write_text(\"replace with deterministic repo notes\\n\", encoding=\"utf-8\")\n    print(f\"Wrote {target}\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
     }
 
 
-def render_derived_seam_placeholder_files(repo_name: str) -> dict[str, str]:
+def render_derived_seam_placeholder_files(repo_name: str, *, docs_root: str) -> dict[str, str]:
     """Render initial seam docs for derived prompt-first repos."""
 
     return {
-        "docs/seams/README.md": (
+        f"{docs_root}/seams/README.md": (
             "# Seam Docs\n\n"
             f"Use this directory to record the owned seams for `{repo_name}`.\n"
             "Keep event and REST contracts explicit, versioned, and repo-local.\n"
         ),
-        "docs/seams/event-contracts.md": (
+        f"{docs_root}/seams/event-contracts.md": (
             "# Event Contracts\n\n"
             "Record event names, producers, consumers, and payload fields here.\n"
         ),
-        "docs/seams/rest-contracts.md": (
+        f"{docs_root}/seams/rest-contracts.md": (
             "# REST Contracts\n\n"
             "Record request and response shapes for cross-service HTTP seams here.\n"
         ),
@@ -3138,11 +3254,24 @@ def render_ocaml_starters() -> dict[str, str]:
     }
 
 
-def starter_files_for_stack(primary_stack: str, slug: str) -> dict[str, str]:
+def starter_files_for_stack(
+    primary_stack: str,
+    slug: str,
+    *,
+    scripts_root: str = "scripts",
+    repo_local_profile_path: str = "manifests/project-profile.yaml",
+    generated_profile_path: str = ".generated-profile.yaml",
+    prompt_directory: str = ".prompts",
+) -> dict[str, str]:
     """Return the starter files for the selected primary stack."""
 
     if primary_stack == "prompt-first-repo":
-        return render_prompt_meta_starters()
+        return render_prompt_meta_starters(
+            scripts_root=scripts_root,
+            repo_local_profile_path=repo_local_profile_path,
+            generated_profile_path=generated_profile_path,
+            prompt_directory=prompt_directory,
+        )
     if primary_stack in {"python-fastapi-uv-ruff-orjson-polars", "qdrant", "duckdb-trino-polars", "redis-keydb-mongo"}:
         return render_python_starters(python_package_name(slug), STACKS[primary_stack])
     if primary_stack == "typescript-hono-bun":
@@ -3186,7 +3315,7 @@ def write_files(target_dir: Path, files: dict[str, str], dry_run: bool) -> None:
         destination.write_text(content, encoding="utf-8")
 
 
-def resolved_starter_paths(primary_stack: str, slug: str) -> dict[str, str]:
+def resolved_starter_paths(primary_stack: str, slug: str, *, scripts_root: str = "scripts") -> dict[str, str]:
     """Return the starter file paths visible in the generated profile."""
 
     profile = STACKS[primary_stack]
@@ -3201,9 +3330,9 @@ def resolved_starter_paths(primary_stack: str, slug: str) -> dict[str, str]:
     if primary_stack == "prompt-first-repo":
         return {
             "route": ".prompts/001-bootstrap-repo.txt",
-            "smoke": "scripts/check_repo.py",
-            "integration": "scripts/validate_repo.py",
-            "seed": "scripts/seed_data.py",
+            "smoke": f"{scripts_root}/check_repo.py",
+            "integration": f"{scripts_root}/validate_repo.py",
+            "seed": f"{scripts_root}/seed_data.py",
         }
     return {
         "route": profile.route_path,
@@ -3303,7 +3432,20 @@ def build_generated_files(
     )
 
     generated_files: dict[str, str] = {}
-    generated_files.update(render_agent_and_claude(request.archetype, request.primary_stack, request.manifests))
+    vendored_manifest_paths = _vendored_manifest_paths(request.manifests, request.vendored_base_root)
+    vendored_base_manifests_dir = _map_vendored_repo_path("manifests/base", request.vendored_base_root)
+    generated_files.update(
+        render_agent_and_claude(
+            request.archetype,
+            request.primary_stack,
+            request.manifests,
+            repo_local_profile_path=request.repo_local_profile_path,
+            repo_local_docs_root=request.repo_local_docs_root,
+            generated_profile_path=request.generated_profile_path,
+            vendored_base_manifests_dir=vendored_base_manifests_dir,
+            vendored_base_root=request.vendored_base_root,
+        )
+    )
     generated_files[".gitignore"] = render_gitignore(profile)
     vendored_manifest_texts = load_manifest_texts(request.manifests)
     vendored_support_texts = load_manifest_support_asset_texts(request.manifests, manifests)
@@ -3313,14 +3455,10 @@ def build_generated_files(
             relative_path,
             (repo_root() / relative_path).read_text(encoding="utf-8"),
         )
-    vendored_manifest_paths = [
-        f"manifests/base/{manifest_name}.yaml"
-        for manifest_name in request.manifests
-    ]
     for manifest_name, manifest_text in vendored_manifest_texts.items():
-        generated_files[f"manifests/base/{manifest_name}.yaml"] = manifest_text
+        generated_files[_map_vendored_repo_path(f"manifests/base/{manifest_name}.yaml", request.vendored_base_root)] = manifest_text
     for relative_path, asset_text in vendored_support_texts.items():
-        generated_files[relative_path] = asset_text
+        generated_files[_map_vendored_repo_path(relative_path, request.vendored_base_root)] = asset_text
     if request.include_root_readme:
         generated_files["README.md"] = render_readme(
             request.repo_name,
@@ -3340,7 +3478,11 @@ def build_generated_files(
     if request.include_docs_dir:
         generated_files.update(build_docs(request.repo_name, description, request.archetype, profile, request.manifests))
 
-    starter_paths = resolved_starter_paths(request.primary_stack, slug)
+    starter_paths = resolved_starter_paths(
+        request.primary_stack,
+        slug,
+        scripts_root=request.repo_local_scripts_root,
+    )
     prompt_files = sorted(
         path
         for path in (request.prompt_files_override or {}).keys()
@@ -3353,7 +3495,11 @@ def build_generated_files(
     port_map = {"app_dev": app_port, "app_test": test_app_port}
     port_map.update({f"{name}_dev": port for name, port in dev_support_ports.items()})
     port_map.update({f"{name}_test": port for name, port in test_support_ports.items()})
-    validation_commands = ["python scripts/validate_repo.py"] if request.primary_stack == "prompt-first-repo" else []
+    validation_commands = (
+        [f"python {request.repo_local_scripts_root}/validate_repo.py"]
+        if request.primary_stack == "prompt-first-repo"
+        else []
+    )
     if docker_enabled:
         validation_commands.append("docker compose -f docker-compose.test.yml config")
     profile_summary = render_profile_summary(
@@ -3378,19 +3524,30 @@ def build_generated_files(
         port_map=port_map,
         starter_paths=starter_paths,
         validation_commands=validation_commands or ["echo no extra validation commands configured"],
+        repo_local_profile_path=request.repo_local_profile_path,
+        generated_profile_path=request.generated_profile_path,
+        vendored_base_root=request.vendored_base_root,
+        vendored_base_manifests_dir=vendored_base_manifests_dir,
         vendored_manifest_paths=vendored_manifest_paths,
-        vendored_support_paths=sorted(vendored_support_texts),
+        vendored_support_paths=sorted(_map_vendored_repo_paths(list(vendored_support_texts), request.vendored_base_root)),
         prompt_directory=".prompts" if request.prompt_first else "none",
         prompts_md_generated=False,
         initial_prompt_files=prompt_files if request.prompt_first else ["none"],
         extra_context_entrypoints=request.extra_context_entrypoints,
         extra_metadata=request.extra_profile_metadata,
     )
-    generated_files["manifests/project-profile.yaml"] = profile_summary
+    generated_files[request.repo_local_profile_path] = profile_summary
     if not request.no_profile:
-        generated_files[".generated-profile.yaml"] = profile_summary
+        generated_files[request.generated_profile_path] = profile_summary
 
-    starter_files = starter_files_for_stack(request.primary_stack, slug)
+    starter_files = starter_files_for_stack(
+        request.primary_stack,
+        slug,
+        scripts_root=request.repo_local_scripts_root,
+        repo_local_profile_path=request.repo_local_profile_path,
+        generated_profile_path=request.generated_profile_path,
+        prompt_directory=".prompts",
+    )
     route_only_keys = set()
     if request.primary_stack == "python-fastapi-uv-ruff-orjson-polars":
         route_only_keys.update({"app/main.py", profile.route_path, "app/__init__.py", "app/api/__init__.py"})
@@ -3407,7 +3564,7 @@ def build_generated_files(
     elif request.primary_stack == "elixir-phoenix":
         route_only_keys.update({starter_paths["route"], f"lib/{phoenix_app_name(slug)}_web/controllers/health_controller.ex"})
     elif request.primary_stack == "prompt-first-repo":
-        route_only_keys.update({"scripts/validate_repo.py"})
+        route_only_keys.update({f"{request.repo_local_scripts_root}/validate_repo.py"})
     elif request.primary_stack in {"crystal-kemal-avram", "ruby-hanami", "ocaml-dream-caqti-tyxml"}:
         route_only_keys.update({starter_paths["route"]})
     else:
@@ -3424,7 +3581,12 @@ def build_generated_files(
             generated_files[relative_path] = content
 
     if request.derived_context_mode is not None:
-        generated_files.update(render_derived_seam_placeholder_files(request.repo_name))
+        generated_files.update(
+            render_derived_seam_placeholder_files(
+                request.repo_name,
+                docs_root=request.repo_local_docs_root,
+            )
+        )
 
     if docker_enabled:
         compose_values = {
@@ -3470,7 +3632,10 @@ def build_generated_files(
     for directory in profile.directories:
         if directory == "docs" and not docs_dir_generated:
             continue
-        generated_files.setdefault(f"{directory}/.gitkeep", "")
+        directory_path = directory
+        if request.derived_context_mode is not None:
+            directory_path = _map_derived_repo_state_path(directory, request.derived_context_mode)
+        generated_files.setdefault(f"{directory_path}/.gitkeep", "")
 
     return generated_files
 
@@ -3502,17 +3667,30 @@ def _build_derived_request(
     """Build the prompt-first repo request for one derived leaf entry."""
 
     selected_manifests = ["prompt-first-meta-repo"]
-    mode_bundle_paths = (
+    vendored_base_root = _vendored_base_root_for_derived_mode(derived_context_mode)
+    repo_local_profile_path = _map_derived_repo_state_path("manifests/project-profile.yaml", derived_context_mode)
+    generated_profile_path = _map_derived_repo_state_path(".generated-profile.yaml", derived_context_mode)
+    repo_local_scripts_root = _map_derived_repo_state_path("scripts", derived_context_mode)
+    repo_local_docs_root = _map_derived_repo_state_path("docs", derived_context_mode)
+    raw_mode_bundle_paths = (
         _derived_maximal_bundle_paths(entry, selected_manifests, manifests)
         if derived_context_mode == "maximal"
         else []
     )
-    mode_bundle_records = (
+    raw_mode_bundle_records = (
         _derived_maximal_bundle_records(entry, selected_manifests, manifests)
         if derived_context_mode == "maximal"
         else []
     )
-    manifest_startup_paths = _derived_manifest_startup_paths(selected_manifests, manifests)
+    manifest_startup_paths = _map_vendored_repo_paths(
+        _derived_manifest_startup_paths(selected_manifests, manifests),
+        vendored_base_root,
+    )
+    mode_bundle_paths = _map_vendored_repo_paths(raw_mode_bundle_paths, vendored_base_root)
+    mode_bundle_records = [
+        {**record, "path": _map_vendored_repo_path(str(record["path"]), vendored_base_root)}
+        for record in raw_mode_bundle_records
+    ]
     startup_mode_paths = _derived_maximal_startup_paths(mode_bundle_records)
     return RepoGenerationRequest(
         repo_name=str(entry["name"]),
@@ -3532,13 +3710,22 @@ def _build_derived_request(
         force=force,
         dry_run=dry_run,
         derived_context_mode=derived_context_mode,
-        extra_vendored_paths=mode_bundle_paths,
+        extra_vendored_paths=raw_mode_bundle_paths,
+        repo_local_profile_path=repo_local_profile_path,
+        repo_local_scripts_root=repo_local_scripts_root,
+        repo_local_docs_root=repo_local_docs_root,
+        vendored_base_root=vendored_base_root,
+        generated_profile_path=generated_profile_path,
         description=f"Derived orchestration repo for {entry['name']}: {entry.get('description', '')}",
         prompt_files_override=render_derived_prompt_files(
             entry,
             selected_manifests,
             manifests,
             derived_context_mode=derived_context_mode,
+            repo_local_profile_path=repo_local_profile_path,
+            repo_local_docs_root=repo_local_docs_root,
+            vendored_base_root=vendored_base_root,
+            generated_profile_path=generated_profile_path,
             mode_bundle_paths=mode_bundle_paths,
             mode_bundle_records=mode_bundle_records,
         ),
@@ -3547,6 +3734,9 @@ def _build_derived_request(
             selected_manifests,
             manifests,
             derived_context_mode=derived_context_mode,
+            repo_local_profile_path=repo_local_profile_path,
+            vendored_base_root=vendored_base_root,
+            generated_profile_path=generated_profile_path,
             mode_bundle_paths=mode_bundle_paths,
             mode_bundle_records=mode_bundle_records,
         ),
