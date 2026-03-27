@@ -144,8 +144,21 @@ def _check_bootstrap_output(repo_root: Path) -> list[str]:
                 continue
             profile_text = acb_profile.read_text(encoding="utf-8")
             required_acb_paths = (
+                ".acb/README.md",
+                ".acb/SESSION_BOOT.md",
+                ".acb/INDEX.json",
+                ".acb/profile/selection.json",
                 ".acb/.generated-profile.yaml",
                 ".acb/generation-report.json",
+                ".acb/specs/PRODUCT.md",
+                ".acb/specs/ARCHITECTURE.md",
+                ".acb/specs/AGENT_RULES.md",
+                ".acb/specs/VALIDATION.md",
+                ".acb/specs/EVOLUTION.md",
+                ".acb/validation/CHECKLIST.md",
+                ".acb/validation/MATRIX.json",
+                ".acb/doctrines/ACTIVE_DOCTRINES.md",
+                ".acb/routers/README.md",
                 ".acb/docs/session-start.md",
                 ".acb/scripts/init_memory.py",
                 ".acb/scripts/check_memory_freshness.py",
@@ -164,6 +177,7 @@ def _check_bootstrap_output(repo_root: Path) -> list[str]:
                 "local_canonical_examples_available:",
                 "local_templates_available:",
                 "local_continuity_tools_available:",
+                "acb_payload:",
             ):
                 if field_name not in profile_text:
                     errors.append(f"{primary_stack}: profile must record {field_name.rstrip(':')}")
