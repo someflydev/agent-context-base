@@ -341,6 +341,12 @@ class TestDerivedCoverage(unittest.TestCase):
         self.assertTrue(all(str(record["path"]) in bundle_paths for record in bundle_records))
 
     def test_derived_vendored_root_policy_is_explicit(self) -> None:
+        self.assertEqual(_new_repo._hidden_repo_root_for_state_mode("root"), "")
+        self.assertEqual(_new_repo._hidden_repo_root_for_state_mode("hidden-acb"), ".acb")
+        self.assertEqual(
+            _new_repo._map_repo_state_path("manifests/project-profile.yaml", "hidden-acb"),
+            ".acb/manifests/project-profile.yaml",
+        )
         self.assertEqual(_new_repo._vendored_base_root_for_derived_mode("compact"), ".acb")
         self.assertEqual(_new_repo._vendored_base_root_for_derived_mode("maximal"), ".acb")
         self.assertEqual(
