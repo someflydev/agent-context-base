@@ -1,0 +1,287 @@
+You are working inside the agent-context-base repository.
+
+A spec-driven + validation-driven system has already been introduced, including:
+- canonical spec and validation components
+- composition logic
+- `.acb/` payload generation for child repos
+- documentation describing usage
+
+Your task is to HARDEN this system and then perform a FULL DOCUMENTATION, DIAGRAM, AND README FRESHNESS PASS so the repository becomes:
+
+- operationally trustworthy for long-running autonomous sessions
+- internally consistent and self-explanatory
+- easy for new assistants to load and follow
+- resilient to drift, misuse, or partial understanding
+- visually and structurally clear through diagrams and guides
+
+You must not rebuild the system from scratch. You must evolve and reinforce what exists.
+
+======================================================================
+PRIMARY OBJECTIVES
+======================================================================
+
+1. HARDEN SPEC + VALIDATION SYSTEM
+2. ADD ORIGIN METADATA + DRIFT DETECTION HOOKS
+3. ADD COVERAGE + COMPLETENESS THINKING
+4. INTRODUCE LIGHTWEIGHT TOOLING (NOT OVERENGINEERED)
+5. PERFORM FULL DOCUMENTATION CONSISTENCY PASS
+6. ADD DIAGRAMS THAT MATCH REAL STRUCTURE
+7. UPDATE ALL RELEVANT READMEs FOR CLARITY + ACCURACY
+
+======================================================================
+PART 1 — HARDENING THE SYSTEM
+======================================================================
+
+A. ORIGIN METADATA
+
+All spec/validation files that can be included in `.acb/` must clearly declare:
+- their canonical source location
+- their role (product, architecture, agent, validation, evolution)
+- applicable archetypes/stacks/doctrines (if relevant)
+
+Add a lightweight header convention to these files.
+
+Example format (adapt as needed):
+
+---
+acb_origin: canonical
+acb_source_path: context/specs/architecture/backend_api.md
+acb_role: architecture
+acb_archetypes: [backend_api]
+acb_stacks: [python_fastapi, go_chi]
+acb_version: 1
+---
+
+For files copied into `.acb/`, ensure:
+- origin is preserved
+- any transformation is documented if applicable
+
+B. DRIFT DETECTION (LIGHTWEIGHT)
+
+Introduce a simple, inspectable mechanism to detect drift between:
+- canonical source assets
+- `.acb/` copies in generated repos
+
+Do NOT overengineer.
+
+Possible approach:
+- include a small INDEX.json or MANIFEST.json in `.acb/`
+- record:
+  - file name
+  - original canonical path
+  - checksum or hash
+  - version
+- provide a simple script or documented method to compare hashes
+
+You may implement:
+- a minimal CLI or script (e.g., acb-verify)
+- or a documented manual workflow with helper functions
+
+Goal: make drift *visible*, not perfectly enforced.
+
+C. COVERAGE / COMPLETENESS THINKING
+
+Introduce a concept of "coverage" for spec-driven repos.
+
+Examples:
+- does this repo have:
+  - a product spec?
+  - an architecture spec?
+  - a validation spec?
+- does its validation cover:
+  - API (if API exists)?
+  - CLI (if CLI exists)?
+  - storage/persistence (if applicable)?
+  - UI (if applicable)?
+
+Implement one or more of:
+- a simple checklist file
+- a machine-readable coverage summary
+- a CLI command or script that prints coverage gaps
+
+Do NOT require perfection. Provide visibility.
+
+D. VALIDATION HARDENING
+
+Ensure validation specs are:
+- concrete
+- actionable
+- not vague
+
+Improve any weak validation guidance.
+
+Where appropriate:
+- add examples of commands/tests
+- clarify success/failure conditions
+- ensure validation can realistically be executed in unattended sessions
+
+E. SAFE AUTONOMY GUARDRAILS
+
+Strengthen agent behavior specs so assistants:
+- must re-read `.acb/` on session start
+- must validate before claiming completion
+- must not bypass validation unless explicitly instructed
+- must detect when they are blocked vs incomplete vs done
+
+Ensure these rules are consistent across:
+- canonical docs
+- `.acb/` payload guidance
+
+======================================================================
+PART 2 — LIGHTWEIGHT TOOLING
+======================================================================
+
+Add minimal tooling to support the system.
+
+Possible tools (choose what fits best, keep it simple):
+
+- acb-compose (if not already present or needs refinement)
+- acb-verify (drift + coverage summary)
+- acb-inspect (prints included modules and roles)
+
+Requirements:
+- must be readable and maintainable
+- must include help text
+- must not introduce heavy dependencies
+- must print useful, human-readable output
+- must fail clearly when something is wrong
+
+Do NOT build a giant framework.
+
+======================================================================
+PART 3 — DOCUMENTATION + DIAGRAM PASS
+======================================================================
+
+Now perform a comprehensive documentation pass.
+
+A. GLOBAL README
+
+Update the root README so it clearly explains:
+
+- what agent-context-base is
+- what problem it solves
+- what “context-first” means
+- what `.acb/` is and why it exists
+- how spec-driven + validation-driven development works here
+- how generated repos benefit
+- how to get started quickly
+
+Ensure:
+- it matches the actual repo structure
+- it references real files that exist
+- it includes a short “first 10 minutes” workflow
+
+B. `.acb` CONCEPT DOCUMENTATION
+
+Create or refine a document explaining:
+
+- purpose of `.acb/`
+- what files live there
+- how assistants should use it in sessions
+- how it relates to canonical sources
+- how drift detection works
+- how to regenerate or refresh it
+
+C. DIAGRAMS (MERMAID)
+
+Add diagrams that reflect reality (not aspirational fluff).
+
+At minimum include:
+
+1. Spec + Validation Flow
+
+Example idea:
+- canonical specs → composition → `.acb/` → agent session → validation → commit
+
+2. `.acb` Composition Flow
+
+- archetype + stack + doctrine + router → selection → `.acb/` payload
+
+3. Session Execution Loop
+
+- read `.acb/` → plan → implement → validate → fix → commit
+
+4. Optional: future spec graph / DAG direction (clearly labeled as future)
+
+Ensure diagrams:
+- match actual files and structure
+- use consistent naming
+- are readable and not overly dense
+
+D. PROMPTS / OPERATORS / ASSISTANTS DOC ALIGNMENT
+
+Update any:
+- AGENT.md
+- CLAUDE.md
+- operator guides
+- prompt-related docs
+
+So they:
+- reference `.acb/`
+- reference spec + validation expectations
+- align with hardened behavior rules
+
+E. EXAMPLES REVISITED
+
+Revisit examples created earlier and:
+- ensure they match current structure
+- update if necessary
+- ensure they demonstrate spec + validation clearly
+
+======================================================================
+PART 4 — README FRESHNESS SWEEP
+======================================================================
+
+Perform a repo-wide sweep:
+
+- ensure all READMEs:
+  - reference existing files
+  - do not reference removed concepts
+  - align terminology (spec, validation, `.acb`, etc.)
+  - are concise but informative
+
+- remove or update outdated sections
+
+- ensure no contradictions between:
+  - root README
+  - subdirectory READMEs
+  - spec/validation docs
+  - agent behavior docs
+
+======================================================================
+PART 5 — VERIFICATION
+======================================================================
+
+Before finishing:
+
+- ensure `.acb/` generation still works
+- ensure new metadata headers are present where expected
+- ensure any scripts/CLIs run without obvious errors
+- ensure diagrams render correctly
+- ensure docs reflect reality
+
+======================================================================
+FINAL OUTPUT
+======================================================================
+
+Provide a final report that includes:
+
+1. Summary of hardening changes
+2. Description of drift detection approach
+3. Description of coverage/completeness approach
+4. List of any new tools/scripts added
+5. Updated `.acb/` structure (example)
+6. Recommended “first read” order for assistants entering a generated repo
+7. Summary of documentation improvements
+8. Notes on what was intentionally left lightweight for future expansion
+
+Be concise but complete.
+
+Do not skip steps. Do not leave TODO placeholders where real implementation is expected.
+
+Make thoughtful decisions consistent with the spirit of agent-context-base:
+- explicit over implicit
+- composable over monolithic
+- readable over clever
+- autonomy with guardrails
+- context-first design

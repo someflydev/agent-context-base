@@ -1,0 +1,312 @@
+You are still working inside the agent-context-base repository.
+
+This prompt continues the `.acb/` startup-contract work by improving what
+ordinary generated repos vendor under `.acb/`.
+
+PROMPT_84 hid derived repo state under `.acb/`. PROMPT_85 made the hidden-state
+contract universal, preserved the operator prompt, and added generation audit
+support. This prompt raises the quality bar for ordinary generated repos so
+their `.acb/` payload is actually useful for future assistant sessions rather
+than containing only profile files and audit metadata.
+
+Output changes as commit-ready batches labeled `[PROMPT_86]`, except for the
+commit that adds prompt files in this sequence, which should use the prefix
+`[PROMPT_86]`.
+
+===============================================================================
+I. OBJECTIVE
+===============================================================================
+
+Make `.acb/` a durable repo-local startup bundle for ordinary generated repos,
+not just a hidden place to stash profile files.
+
+After this prompt, an assistant starting inside a newly generated ordinary repo
+should be able to stay mostly inside that repo while understanding:
+
+1. why the repo was generated the way it was
+2. which manifests and context files define the intended startup path
+3. which canonical examples are locally available as implementation references
+4. which templates and continuity tools are available locally
+5. which `.acb/` files are startup-critical versus optional continuation aids
+
+Do not make `.acb/` huge. The goal is a compact, high-signal bundle that is
+good enough for downstream implementation, verification, and prompt
+continuation without copying the whole base repo.
+
+===============================================================================
+II. CURRENT GAP
+===============================================================================
+
+The repo already does part of this work:
+
+- ordinary repos get `.acb/manifests/project-profile.yaml`
+- ordinary repos get `.acb/.generated-profile.yaml`
+- ordinary repos get `.acb/generation-report.json`
+- derived repos already vendor a richer bounded continuation bundle
+
+The remaining gap is that ordinary repos still lack most of the repo-local
+context that would let a future assistant work from local `.acb/` materials
+instead of reopening `agent-context-base`.
+
+Fix that gap directly.
+
+===============================================================================
+III. BUNDLE POLICY
+===============================================================================
+
+Implement a named bundle policy for ordinary generated repos. Do not scatter
+copy rules throughout the generator.
+
+The policy should follow these principles:
+
+- do not copy the whole base repo
+- copy startup-critical files first
+- copy optional continuation material only when it is high-signal and small
+- prefer manifest-selected files over broad directory copies
+- every copied file should be discoverable from generated metadata
+- keep root minimal: `AGENT.md`, `CLAUDE.md`, `.prompts/`, product code, and
+  public docs only when justified
+
+Ordinary repos should remain on a compact vendored mode by default. If you add
+structure for a future richer mode, keep it dormant and do not let it expand
+scope unless there is a concrete operator need.
+
+===============================================================================
+IV. REQUIRED `.acb/` CONTENTS FOR ORDINARY REPOS
+===============================================================================
+
+Strengthen ordinary generation so `.acb/` can contain a bounded support bundle
+ like this:
+
+1. Vendored manifest snapshots
+
+- `.acb/manifests/base/*.yaml`
+
+These are the selected manifest snapshots that explain generator intent and
+startup routing. Keep this part explicit and complete for the manifests actually
+chosen during generation.
+
+2. Manifest-selected context
+
+- `.acb/context/...`
+
+Copy only the doctrine, workflow, stack, archetype, and similarly high-signal
+context files named by the selected manifests or their startup subsets. Do not
+vendor unrelated context trees wholesale.
+
+3. Preferred canonical examples
+
+- `.acb/examples/...`
+
+Copy only:
+
+- the manifest-preferred canonical examples
+- one small README for the relevant example family when that README materially
+  helps local navigation
+
+Do not copy the full examples tree.
+
+4. High-value templates
+
+- `.acb/templates/...`
+
+Vendor only templates that a future assistant is realistically likely to extend
+or consult locally. A good baseline set is:
+
+- `templates/agent-md/AGENT.template.md`
+- `templates/claude-md/CLAUDE.template.md`
+- `templates/memory/MEMORY.template.md`
+- `templates/memory/HANDOFF-SNAPSHOT.template.md`
+- `templates/compose/docker-compose.template.yaml`
+- `templates/compose/docker-compose-test.template.yaml`
+
+If the existing repo uses a slightly different template set, keep the spirit of
+the rule: vendor the small, high-leverage templates that help local continuity
+and startup, not everything.
+
+5. Continuity helper scripts
+
+- `.acb/scripts/...`
+
+Vendor a small set of repo-local helper scripts that support continuity and
+validation in generated repos, especially the memory/handoff flow. Good
+candidates include:
+
+- `scripts/init_memory.py`
+- `scripts/check_memory_freshness.py`
+- `scripts/create_handoff_snapshot.py`
+
+Keep this list tight.
+
+6. Optional compact doc aid
+
+- `.acb/docs/...`
+
+At most one small startup explainer from base docs may be vendored when it
+materially helps downstream sessions. Prefer a compact session-start or
+memory-layer guide over large architecture whitepapers.
+
+===============================================================================
+V. GENERATION LOGIC
+===============================================================================
+
+Reuse the derived vendoring approach where that helps, but keep ordinary repo
+bundles tighter by default.
+
+Add a named helper for resolving the ordinary repo vendored support bundle.
+That helper should make the policy visible in code and testable. It should
+roughly assemble:
+
+- required context from selected manifests
+- optional context only when it matches a narrow allowlist
+- preferred canonical examples
+- recommended templates
+- continuity helper scripts
+- the optional compact doc aid, if selected
+
+Avoid brittle logic that relies on ad hoc string checks spread across the
+generator.
+
+The result should make it obvious why each file was copied.
+
+===============================================================================
+VI. METADATA AND AUDIT CHANGES
+===============================================================================
+
+Extend generation metadata so ordinary repos expose their local `.acb/` bundle
+clearly.
+
+Good fields include:
+
+- `manifest_bundle_startup_paths`
+- `repo_local_routing_model_paths`
+- `local_canonical_examples_available`
+- `local_templates_available`
+- `local_continuity_tools_available`
+
+Add an explicit ordinary bundle/mode field such as:
+
+- `ordinary_context_mode`
+
+or another similarly clear name that makes the ordinary-repo bundle policy
+visible and testable.
+
+Record the exact vendored ordinary-repo files in `.acb/generation-report.json`,
+not just the broad directories.
+
+A future assistant should be able to inspect the generated profile or audit and
+answer:
+
+- which local context files are startup-critical
+- which examples are locally available
+- which templates are available for extension
+- which continuity tools are available locally
+
+===============================================================================
+VII. STARTUP UX REQUIREMENTS
+===============================================================================
+
+Do not improve the vendored bundle while leaving startup guidance vague.
+
+For ordinary generated repos, generated docs and metadata should clearly surface
+the local `.acb/` bundle as the repo-local startup model. A fresh assistant
+should not need to guess whether `.acb/context/`, `.acb/examples/`,
+`.acb/templates/`, or `.acb/scripts/` matter.
+
+The startup guidance should make the distinction clear:
+
+- root files are the active entrypoints and product working surface
+- `.acb/` is the bounded repo-local assistant support bundle
+- `.acb/manifests/base/...` explains generator intent
+- `.acb/context/...` explains local doctrine/workflows/stacks/archetypes
+- `.acb/examples/...` provides local canonical references
+- `.acb/templates/...` provides local extension/reference templates
+- `.acb/scripts/...` provides continuity helpers when present
+
+Do not turn `.acb/` into a second public docs surface. Keep it clearly framed
+as generator-owned support material.
+
+===============================================================================
+VIII. TESTING AND VERIFICATION
+===============================================================================
+
+Add or extend tests so the ordinary `.acb/` bundle is enforced.
+
+Good coverage includes:
+
+1. Generator tests proving ordinary repos vendor:
+
+- selected manifest snapshots
+- required context files
+- preferred canonical examples
+- memory/handoff templates when included
+- continuity helper scripts when included
+
+2. Metadata integrity tests:
+
+- every startup metadata path named in `.acb/manifests/project-profile.yaml`
+  exists in the generated repo
+- the ordinary bundle/mode field is present and coherent
+- the generation audit records the vendored ordinary bundle contents
+
+3. Smoke coverage:
+
+- add a smoke script or smoke-like generator check for one ordinary repo path
+- add one explicit `--use-example` ordinary generation path
+- do not limit `.acb` smoke coverage to derived repos only
+
+Keep the test work focused on proving the policy is real and stable.
+
+===============================================================================
+IX. NON-GOALS
+===============================================================================
+
+Do not do any of these:
+
+- vendor giant architecture docs by default
+- copy the full `examples/`, `context/`, `templates/`, `docs/`, or `scripts/`
+  trees into ordinary repos
+- make `.acb/` feel like a shadow clone of the base repository
+- expand ordinary repos into a maximal-mode feature unless there is a concrete
+  operator requirement
+- dilute the root-vs-hidden distinction that earlier prompts established
+
+===============================================================================
+X. FAILURE MODES TO AVOID
+===============================================================================
+
+Do not ship any of these:
+
+- an ordinary `.acb/` bundle that still only contains profile/audit files and no
+  useful local continuation material
+- broad directory-copy logic that vendors large unrelated swaths of the base
+  repo
+- metadata that advertises local bundle paths that were not actually copied
+- tests that check only file counts instead of the presence of the right kinds
+  of files
+- docs that imply `.acb/` is either optional noise or a second public
+  documentation tree
+
+===============================================================================
+XI. FINISHING BAR
+===============================================================================
+
+Before concluding implementation, generate at least:
+
+- one ordinary prompt-first repo
+- one ordinary repo created through an explicit `--use-example` path
+
+Inspect each generated repo under `/tmp` and confirm that:
+
+- the root remains minimal
+- `.acb/` contains a bounded but genuinely useful support bundle
+- the startup metadata points at files that exist locally
+- the vendored examples/templates/scripts are obviously helpful rather than
+  ornamental
+
+Then run the relevant verification commands, including generator tests, prompt
+tree checks if touched, and the repo's context/doc governance validators.
+
+Do not stop at green tests if a future assistant inside an ordinary generated
+repo would still need to reopen `agent-context-base` for routine startup,
+continuation, or continuity tasks that should have been satisfied locally.

@@ -1,0 +1,409 @@
+You are working inside the agent-context-base repository.
+
+Your task is to design and implement a robust, extensible, doctrine-aligned system for SPEC-DRIVEN DEVELOPMENT and VALIDATION-DRIVEN AUTONOMY that integrates cleanly with the existing agent-context-base philosophy.
+
+The goal is not merely to add a few markdown files. The goal is to evolve agent-context-base so that generated repos can inherit the correct spec, validation, and agent-execution context into their own local `.acb` directory, in a way that meaningfully improves long-running unattended coding sessions, bounded autonomy, safe-ish yolo mode, resumability, and consistency across stacks and archetypes.
+
+This implementation must feel native to agent-context-base. It must respect the existing concepts of context layering, routers, doctrines, archetypes, stacks, examples, manifests, templates, assistant operating guidance, and context complexity budgets. It must not feel bolted on.
+
+High-level objective:
+
+Build a system such that when a new repo is generated from or through agent-context-base, the repo can contain a local `.acb/` directory with the appropriate spec and validation files selected and composed from agent-context-base according to:
+- repo archetype
+- stack / language path
+- doctrinal rules
+- selected routers
+- chosen operating model for agents
+- optional capabilities like APIs, CLI, pipelines, workers, frontends, scraping, eventing, storage, RAG, or cloud deployment
+
+The `.acb/` directory in generated repos should serve as the operational context payload for future assistant sessions inside that generated repo.
+
+Important philosophy:
+
+1. Specs define what must be true.
+2. Validation defines how truth is checked.
+3. Agents may act autonomously only within clearly stated constraints.
+4. The system must support different repo shapes without forcing one giant universal spec.
+5. The selected `.acb/` payload must be composable, understandable, and easy for assistants to reload during future sessions.
+6. Validation is not optional decoration; it is the main safety rail for unattended work.
+7. The implementation must support future growth into graph-aware orchestration, drift detection, coverage checks, and multi-agent worktree execution.
+
+Your job is to design and implement this in a way that is realistic, coherent, modular, and future-friendly.
+
+======================================================================
+PRIMARY OUTCOMES
+======================================================================
+
+Produce and implement a system that introduces first-class support for:
+
+1. Spec components
+2. Validation components
+3. Selection/composition rules
+4. `.acb` payload generation for child/generated repos
+5. Clear assistant instructions for how these files are used during sessions
+6. Documentation and examples
+7. Optional machine-readable manifests or indexes so future tooling can reason over them
+
+The output should make agent-context-base better at producing generated repos that are easier for autonomous coding agents to work on safely and efficiently for long unattended sessions.
+
+======================================================================
+DESIGN REQUIREMENTS
+======================================================================
+
+A. SPEC LAYERS
+
+Design a layered spec model. At minimum support these conceptual layers:
+
+- Product / capability spec
+  Describes what the system or repo is intended to do.
+
+- Architecture spec
+  Describes structural boundaries, allowed patterns, forbidden patterns, core dependencies, service boundaries, storage choices, transport choices, data flow expectations, and deployment assumptions.
+
+- Agent behavior spec
+  Describes how assistants should behave while working in the repo, including planning, execution, commit gating, when to stop, when to escalate, when to re-read context, and how to handle ambiguity.
+
+- Validation spec
+  Describes the required checks, smoke tests, contract checks, UI checks, data checks, lint/style gates, and stack-specific validation patterns required before considering work complete.
+
+- Evolution / change-control spec
+  Describes how new features should be added safely, how not to break existing behavior, how prompt/session additions should be handled, and how drift is identified.
+
+Do not assume every generated repo needs exactly the same wording or depth. Support composition.
+
+B. VALIDATION MODEL
+
+Validation must be treated as a first-class part of the system. Design validation so it can describe:
+- fast smoke checks
+- local service readiness checks
+- CLI behavior checks
+- API contract checks
+- schema/data integrity checks
+- frontend behavior checks (including potential Playwright hooks later)
+- ingestion/pipeline checks
+- event flow checks
+- persistence checks
+- portability/replay/idempotency checks
+- documentation or operator-facing sanity checks if appropriate
+
+Validation should be stack-aware and archetype-aware.
+
+C. ARCHETYPE / STACK / DOCTRINE / ROUTER AWARENESS
+
+Your implementation must explicitly account for the existing and future agent-context-base concepts:
+- archetypes
+- stacks
+- doctrines
+- routers
+- examples
+- templates
+- manifests
+
+You must decide how spec/validation assets map into those concepts.
+
+Possible examples:
+- A “single-service backend API” archetype may pull in product, architecture, validation, and operations files different from a “CLI tool” archetype.
+- A Python/FastAPI stack may pull in different validation guidance than a Rust/axum stack.
+- A doctrine about explicitness, small scripts, or README-first development may affect agent behavior and evolution specs.
+- Routers may influence which context files are loaded or recommended first for a given kind of task.
+
+Design a coherent mapping rather than a one-off hack.
+
+D. GENERATED REPO `.acb/` PAYLOAD
+
+The system must support generated repos receiving a local `.acb/` directory containing a useful subset of the relevant materials.
+
+Design the `.acb/` payload structure carefully.
+
+At minimum, consider whether `.acb/` should contain some combination of:
+- session bootstrap files
+- selected spec files
+- selected validation files
+- indexes or manifests
+- router hints
+- doctrine summaries
+- assistant operating notes
+- repo-local overlays or extension points
+
+The payload should help future sessions inside the generated repo answer:
+- What kind of repo is this?
+- What constraints apply here?
+- What validation gates matter?
+- What should assistants read first?
+- How should work be planned and verified?
+- What is the expected operator rhythm?
+
+The payload should be concise enough to be practical but rich enough to be powerful.
+
+E. COMPOSABILITY AND FUTURE TOOLING
+
+Design for future CLI/tooling support, even if you do not fully build all tooling now.
+
+Examples of future-friendly capabilities:
+- compose `.acb` payload from selected modules
+- generate a machine-readable manifest of included spec/validation components
+- show which files were included and why
+- detect missing validation coverage for a chosen archetype
+- compare repo-local overlays to parent canonical templates
+- support drift detection between canonical source assets and copied/generated `.acb` assets
+- support future spec graph compilation or coverage reporting
+
+Implement enough structure now that these future paths are natural.
+
+======================================================================
+IMPLEMENTATION TASKS
+======================================================================
+
+1. STUDY THE REPO FIRST
+
+Before making changes:
+- inspect existing directory structure
+- inspect any current context, doctrine, archetype, stack, router, manifest, template, example, AGENT, CLAUDE, or operator-related files
+- infer the current philosophy and where this new system should live
+- avoid introducing duplicate concepts if equivalent structures already exist
+- prefer extending existing patterns over inventing parallel systems
+
+2. DESIGN THE CANONICAL SOURCE STRUCTURE
+
+Create or evolve a canonical location in agent-context-base for spec and validation source materials.
+
+You must decide the best structure. It may be something like:
+- context/specs/
+- doctrines/specs/
+- archetypes/*/specs/
+- stacks/*/validation/
+- templates/acb_payload/
+- manifests/spec_modules/
+or another structure that better matches the repo.
+
+The structure must make it obvious:
+- what is canonical
+- what is reusable
+- what is stack-specific
+- what is archetype-specific
+- what is doctrine-level
+- what can be copied/generated into child repos
+
+3. DEFINE THE `.acb/` TARGET STRUCTURE FOR GENERATED REPOS
+
+Design the target `.acb/` layout that generated repos should receive.
+
+Be thoughtful. Possible example only, not a requirement:
+
+.acb/
+  README.md
+  SESSION_BOOT.md
+  INDEX.json
+  profile/
+  specs/
+    PRODUCT.md
+    ARCHITECTURE.md
+    AGENT_RULES.md
+    VALIDATION.md
+    EVOLUTION.md
+  routers/
+  doctrines/
+  manifests/
+  overlays/
+
+If you choose a different structure, explain why through docs and make it coherent.
+
+4. CREATE CANONICAL SPEC / VALIDATION FILE TEMPLATES OR MODULES
+
+Author high-quality canonical files and/or templates that can be used to build `.acb` payloads.
+
+These should be genuinely useful, not placeholder fluff.
+
+At minimum create strong content for:
+- product/capability intent
+- architecture constraints
+- agent behavior / session operating rules
+- validation expectations
+- safe evolution / drift prevention
+
+Where appropriate, create both generic/base versions and specialized versions for common archetypes or stacks.
+
+Examples:
+- backend API archetype
+- CLI archetype
+- data pipeline archetype
+- multi-service/evented archetype
+- HTMX/Tailwind/Plotly frontend-backed system archetype
+- scraping/sync worker archetype
+
+If the repo already uses “doctrines” or “archetypes” in a formal way, integrate with those structures rather than creating a shadow taxonomy.
+
+5. DEFINE A COMPOSITION / SELECTION MODEL
+
+Implement a clear model for deciding which canonical assets flow into a generated repo’s `.acb/`.
+
+This can be done with manifests, indexes, metadata comments, JSON/YAML/TOML files, or another repo-native method.
+
+The model should be able to express things like:
+- include these base files for all repos
+- include these files for archetype X
+- include these overlays for stack Y
+- include these doctrine summaries when doctrine Z is chosen
+- include these validation gates when capability Q is present
+- recommend these session boot files when router R is selected
+
+Keep it understandable and hackable.
+
+6. CREATE AT LEAST ONE PAYLOAD GENERATION PATH
+
+Implement at least one real path for producing a `.acb/` payload from canonical sources.
+
+This does not need to be production-perfect, but it must be real.
+
+Examples:
+- a script that assembles `.acb/` from manifests
+- a template copy system with profile selection
+- a documented manual generation workflow plus helper script
+- a small CLI or make target
+
+The generation path should be deterministic and inspectable.
+
+If you build a script/CLI:
+- keep it clear and maintainable
+- include help text
+- do not overengineer
+- prefer explicit composition rules
+- print which assets were included
+- fail clearly on invalid input
+
+7. DOCUMENT HOW ASSISTANTS SHOULD USE `.acb/` IN FUTURE SESSIONS
+
+Create documentation that explains how future assistant sessions inside generated repos should use the `.acb/` directory.
+
+This should answer things like:
+- what files to read first
+- how to rehydrate context after a long break
+- how specs and validation constrain implementation
+- how to do plan-only / dry-run / execute with these files
+- how to avoid drift
+- how to decide when work is actually complete
+- how to handle repo-local overlays or exceptions
+
+8. PROVIDE EXAMPLES
+
+Add at least a few realistic examples showing how `.acb/` payload selection would differ across repo types.
+
+For example:
+- a Python backend API repo
+- a CLI-heavy utility repo
+- a sync/scrape/classify data repo
+- an evented multi-service lab repo
+
+The examples can be docs, manifests, or sample generated payloads.
+
+9. MAKE THE SYSTEM READY FOR LONG-RUNNING AUTONOMOUS SESSIONS
+
+Throughout the implementation, optimize for assistants that may work unattended for long stretches.
+
+The system should help such assistants:
+- re-read the right files after context drift
+- understand what not to violate
+- validate before claiming success
+- know the operator rhythm
+- avoid shallow “done” states
+- remain within context complexity budgets as much as possible
+
+10. ADD LIGHTWEIGHT DRIFT / COVERAGE THINKING
+
+You do not need to build a full drift engine, but the design should make future drift checks and coverage checks possible.
+
+Examples:
+- manifest fields identifying source canonical asset and copied target
+- file headers with origin metadata
+- indexes recording selected modules
+- docs describing how to detect missing validation for a repo profile
+
+======================================================================
+QUALITY BAR
+======================================================================
+
+Your implementation must:
+- feel like a natural extension of agent-context-base
+- improve practical repo generation and future sessions
+- be modular and comprehensible
+- avoid overengineering
+- avoid vague placeholders
+- provide genuinely useful content in the spec/validation files
+- support autonomy through validation and constraint clarity
+- leave the repo in a cleaner, more powerful state than before
+
+Prefer:
+- simple explicit composition over magical abstraction
+- readable files over clever indirection
+- machine-readable manifests where helpful
+- excellent docs
+- examples that teach the pattern
+
+Avoid:
+- giant monolithic universal spec documents with no composition
+- hardcoding everything to a single stack
+- empty templates with no practical guidance
+- adding a huge framework when a small script and manifest model would do
+- burying the key ideas in too many nested directories unless that matches the repo’s established structure
+- vague “future work” in place of real implementation
+
+======================================================================
+WORKFLOW REQUIREMENTS
+======================================================================
+
+Follow this execution pattern:
+
+PHASE 1: RECON
+- inspect repo structure
+- identify relevant current directories/files/concepts
+- summarize the inferred architecture of agent-context-base
+- identify where this feature should live
+
+PHASE 2: DESIGN
+- propose the canonical source structure
+- propose the target `.acb/` payload structure
+- propose the composition model
+- propose generation workflow
+- sanity-check against current repo philosophy before implementing
+
+PHASE 3: IMPLEMENT
+- create directories/files/scripts/docs/examples
+- keep changes coherent and incremental
+- prefer strong defaults and clear naming
+
+PHASE 4: VERIFY
+- review all created artifacts
+- ensure examples and docs agree with actual structure
+- ensure generation path is real and documented
+- ensure the `.acb/` concept is usable by future sessions
+
+PHASE 5: FINAL REPORT
+Provide a final concise-but-complete report that includes:
+- what was added
+- why the structure was chosen
+- how `.acb/` payload generation works
+- what future sessions in generated repos should read first
+- what remains intentionally lightweight / future-facing
+
+======================================================================
+OUTPUT EXPECTATIONS
+======================================================================
+
+You must actually implement the files and structure in the repo, not merely describe them.
+
+When done, provide:
+1. a tree or summarized structure of what changed
+2. a short explanation of the composition model
+3. an example of how a generated repo would receive `.acb/`
+4. the recommended first-read order for assistants entering such a generated repo
+5. any commands needed to exercise the generation flow
+
+If there is ambiguity in the current repo structure, make grounded decisions that preserve the spirit of agent-context-base:
+- context-first
+- doctrine-aware
+- explicit
+- modular
+- operator-friendly
+- autonomy with guardrails
+
+Do not wait for further clarification. Make strong, thoughtful decisions and implement them.
