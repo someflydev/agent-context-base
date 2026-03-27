@@ -29,6 +29,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+from acb_payload import build_payload as build_acb_payload
 from manifest_tools import parse_manifest
 
 
@@ -3867,6 +3868,15 @@ def build_generated_files(
         request
     )
     docker_enabled = request.docker_layout or bool(support_services)
+    acb_payload_files, acb_payload_metadata = build_acb_payload(
+        archetype=request.archetype,
+        primary_stack=request.primary_stack,
+        selected_manifests=request.manifests,
+        manifests=manifests,
+        support_services=support_services,
+        prompt_first=request.prompt_first,
+        dokku=request.dokku,
+    )
 
     selected_manifest_data = [manifests[name] for name in request.manifests]
     if selected_manifest_data:
@@ -3907,6 +3917,7 @@ def build_generated_files(
     )
 
     generated_files: dict[str, str] = {}
+    generated_files.update(acb_payload_files)
     if request.repo_state_mode not in ORDINARY_REPO_STATE_MODES:
         raise ValueError(f"Unsupported repo_state_mode: {request.repo_state_mode}")
     vendored_manifest_paths = _vendored_manifest_paths(request.manifests, request.vendored_base_root)
@@ -3955,6 +3966,7 @@ def build_generated_files(
                 ],
             )
         )
+        ordinary_bundle_metadata["acb_payload"] = acb_payload_metadata
         extra_context_entrypoints.extend(ordinary_entrypoints)
         vendored_support_texts = {
             path: (repo_root() / path).read_text(encoding="utf-8")
@@ -4017,6 +4029,17 @@ def build_generated_files(
         )
     if request.primary_stack == "prompt-first-repo" and prompt_files:
         starter_paths["route"] = prompt_files[0]
+    extra_context_entrypoints.extend(
+        [
+            acb_payload_metadata["session_boot_path"],
+            acb_payload_metadata["selection_manifest_path"],
+            *acb_payload_metadata["spec_paths"],
+            *acb_payload_metadata["validation_paths"],
+            *acb_payload_metadata["router_paths"],
+            *acb_payload_metadata["doctrine_paths"],
+            acb_payload_metadata["index_path"],
+        ]
+    )
     port_map = {"app_dev": app_port, "app_test": test_app_port}
     port_map.update({f"{name}_dev": port for name, port in dev_support_ports.items()})
     port_map.update({f"{name}_test": port for name, port in test_support_ports.items()})
@@ -4027,6 +4050,10 @@ def build_generated_files(
     )
     if docker_enabled:
         validation_commands.append("docker compose -f docker-compose.test.yml config")
+    profile_extra_metadata = dict(request.extra_profile_metadata or {})
+    if request.derived_context_mode is not None:
+        profile_extra_metadata["acb_payload"] = acb_payload_metadata
+
     profile_summary = render_profile_summary(
         repo_name=request.repo_name,
         slug=slug,
@@ -4068,7 +4095,7 @@ def build_generated_files(
         ),
         extra_context_entrypoints=extra_context_entrypoints,
         startup_bundle_metadata=ordinary_bundle_metadata,
-        extra_metadata=request.extra_profile_metadata,
+        extra_metadata=profile_extra_metadata or None,
     )
     generated_files[request.repo_local_profile_path] = profile_summary
     if not request.no_profile:
@@ -4187,7 +4214,7 @@ def build_generated_files(
         generated_file_paths=audit_generated_files,
         vendored_manifest_paths=vendored_manifest_paths,
         vendored_support_paths=sorted(_map_vendored_repo_paths(list(vendored_support_texts), request.vendored_base_root)),
-        startup_bundle_metadata=ordinary_bundle_metadata or request.extra_profile_metadata,
+        startup_bundle_metadata=ordinary_bundle_metadata or profile_extra_metadata,
     )
 
     return generated_files

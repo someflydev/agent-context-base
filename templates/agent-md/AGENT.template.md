@@ -6,12 +6,16 @@ Purpose: boot the assistant into the smallest useful context bundle for this rep
 
 1. `{{repo_local_profile_path}}`
 2. `{{generated_profile_path}}`
-3. `.acb/generation-report.json` if it exists
-4. `{{vendored_base_manifests_dir}}/*.yaml` if present
-5. `.prompts/*.txt` if present
-6. `README.md` if it exists and still matches implemented reality
-7. `{{repo_local_purpose_doc_path}}` if it exists
-8. `{{repo_local_layout_doc_path}}` if it exists
+3. `.acb/SESSION_BOOT.md` if it exists
+4. `.acb/profile/selection.json` if it exists
+5. `.acb/specs/AGENT_RULES.md` and `.acb/specs/VALIDATION.md` if they exist
+6. `.acb/validation/CHECKLIST.md` if it exists
+7. `.acb/generation-report.json` if it exists
+8. `{{vendored_base_manifests_dir}}/*.yaml` if present
+9. `.prompts/*.txt` if present
+10. `README.md` if it exists and still matches implemented reality
+11. `{{repo_local_purpose_doc_path}}` if it exists
+12. `{{repo_local_layout_doc_path}}` if it exists
 
 After that stable pass and a narrow repo-signal check, read `MEMORY.md` if it exists.
 
@@ -20,7 +24,8 @@ generator-owned assistant support bundle for this repo, not as a second public d
 
 When present, use `.acb/manifests/base/` to recover generator intent, `.acb/context/` for doctrine and workflow
 guidance, `.acb/examples/` for repo-local canonical references, `.acb/templates/` for extension/reference
-templates, and `.acb/scripts/` for continuity helpers.
+templates, `.acb/specs/` for synthesized truth statements, `.acb/validation/` for proof obligations,
+and `.acb/scripts/` for continuity helpers.
 
 When routing, selecting examples, assembling context bundles, choosing a verification path, or
 reading and writing `MEMORY.md`, prefer the repo-local guidance vendored under
