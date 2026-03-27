@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -9,6 +10,14 @@ from verification.helpers import REPO_ROOT
 
 PROMPT_PATTERN = re.compile(r"^PROMPT_(\d{2})(?:_([str]+))?\.txt$")
 REFERENCE_PATTERN = re.compile(r"PROMPT_\d{2}(?:_[str]+)?\.txt")
+# The base repo intentionally keeps a few authoring and operator helper prompts
+# outside the generated-repo PROMPT_XX sequence. Generated repos should normally
+# only add initial-prompt.txt outside that sequence.
+ALLOWED_NON_SEQUENTIAL_PROMPT_FILES = {
+    "initial-prompt.txt",
+    "PROMPT_META_RUNNER.txt",
+    "improvements-before-initial-run.txt",
+}
 
 
 def validate_prompt_tree(root: Path) -> list[str]:
@@ -26,6 +35,10 @@ def validate_prompt_tree(root: Path) -> list[str]:
     for path in prompt_files:
         match = PROMPT_PATTERN.match(path.name)
         if match is None:
+            if path.name not in ALLOWED_NON_SEQUENTIAL_PROMPT_FILES:
+                errors.append(
+                    "only initial-prompt.txt may exist outside the PROMPT_XX.txt sequence"
+                )
             for ref in REFERENCE_PATTERN.findall(path.read_text(encoding="utf-8")):
                 if not (prompt_dir / ref).exists():
                     errors.append(f"{path.name} references missing prompt file {ref}")
@@ -71,6 +84,21 @@ class PromptRuleTests(unittest.TestCase):
         self.assertTrue(errors)
         self.assertTrue(any("duplicate prompt number" in error for error in errors))
         self.assertTrue(any("references missing prompt file" in error for error in errors))
+
+    def test_initial_prompt_is_the_only_allowed_non_sequence_prompt_file(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            prompt_dir = root / ".prompts"
+            prompt_dir.mkdir()
+            (prompt_dir / "PROMPT_01.txt").write_text("first\n", encoding="utf-8")
+            (prompt_dir / "initial-prompt.txt").write_text("operator brief\n", encoding="utf-8")
+            self.assertEqual(validate_prompt_tree(root), [])
+
+            (prompt_dir / "notes.txt").write_text("not allowed\n", encoding="utf-8")
+            errors = validate_prompt_tree(root)
+            self.assertTrue(
+                any("only initial-prompt.txt may exist outside the PROMPT_XX.txt sequence" in error for error in errors)
+            )
 
 
 if __name__ == "__main__":

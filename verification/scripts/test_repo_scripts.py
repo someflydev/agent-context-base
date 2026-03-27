@@ -374,21 +374,63 @@ class RepoScriptTests(unittest.TestCase):
                 "--primary-stack",
                 "prompt-first-repo",
                 "--prompt-first",
+                "--initial-prompt-text",
+                "Build a prompt-first repo for evaluating prompt variants against a small rubric.",
             )
             self.assertEqual(code, 0, stderr)
             self.assertIn("Generated starter repo", stdout)
             self.assertTrue((target / ".prompts/001-bootstrap-repo.txt").exists())
+            self.assertTrue((target / ".prompts/initial-prompt.txt").exists())
             self.assertTrue((target / "AGENT.md").exists())
             self.assertFalse((target / "PROMPTS.md").exists())
             self.assertTrue((target / "manifests/base/prompt-first-meta-repo.yaml").exists())
             self.assertTrue((target / "context/doctrine/core-principles.md").exists())
             self.assertTrue((target / "examples/canonical-prompts/001-bootstrap-repo.txt").exists())
+            self.assertTrue((target / ".acb/generation-report.json").exists())
             self.assertFalse((target / "README.md").exists())
             self.assertFalse((target / "docs").exists())
 
             code, stdout, stderr = run_script("scripts/validate_repo.py", cwd=target)
             self.assertEqual(code, 0, stderr)
             self.assertIn("repo validation passed", stdout)
+
+    def test_new_repo_snapshots_initial_prompt_and_audit_for_standard_repo(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            target = Path(temp_dir) / "ml-gateway"
+            code, stdout, stderr = run_script(
+                str(SCRIPTS_DIR / "new_repo.py"),
+                "ml-gateway",
+                "--target-dir",
+                str(target),
+                "--archetype",
+                "multi-backend-service",
+                "--primary-stack",
+                "go-echo",
+                "--storage-service",
+                "postgres",
+                "--storage-service",
+                "nats",
+                "--initial-prompt-text",
+                "Build a Go gateway and Python ML scorer with NATS for emitted events and PostgreSQL for durable request state.",
+            )
+            self.assertEqual(code, 0, stderr)
+            self.assertIn("Generated starter repo", stdout)
+            self.assertTrue((target / ".prompts/001-bootstrap-repo.txt").exists())
+            self.assertTrue((target / ".prompts/002-refine-test-surface.txt").exists())
+            self.assertTrue((target / ".prompts/initial-prompt.txt").exists())
+            self.assertTrue((target / ".acb/generation-report.json").exists())
+
+            audit = json.loads((target / ".acb/generation-report.json").read_text(encoding="utf-8"))
+            self.assertEqual(audit["support_services"]["selected"], ["postgres", "nats"])
+            self.assertEqual(audit["initial_prompt"]["path"], ".prompts/initial-prompt.txt")
+            self.assertIn(".prompts/initial-prompt.txt", audit["prompt_files"])
+
+            profile = (target / "manifests/project-profile.yaml").read_text(encoding="utf-8")
+            env_text = (target / ".env").read_text(encoding="utf-8")
+            self.assertIn("generation_audit_path: .acb/generation-report.json", profile)
+            self.assertIn("prompt_directory: .prompts", profile)
+            self.assertIn("DATABASE_URL=postgresql://app:app@127.0.0.1:", env_text)
+            self.assertIn("NATS_URL=nats://127.0.0.1:", env_text)
 
     def test_prompt_first_repo_analyzer_accepts_generated_repo_without_prompts_md(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
