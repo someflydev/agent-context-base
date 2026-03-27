@@ -532,6 +532,7 @@ class RepoGenerationRequest:
     support_services_override: list[str] | None = None
     initial_prompt_text: str | None = None
     initial_prompt_source: str | None = None
+    repo_state_mode: str = "root"
     repo_local_profile_path: str = "manifests/project-profile.yaml"
     repo_local_scripts_root: str = "scripts"
     repo_local_docs_root: str = "docs"
@@ -1831,12 +1832,22 @@ def repo_root() -> Path:
 
 
 DERIVED_HIDDEN_REPO_ROOT = ".acb"
+ORDINARY_REPO_STATE_MODES = ("root", "hidden-acb")
+
+def _hidden_repo_root_for_state_mode(repo_state_mode: str) -> str:
+    """Return the hidden repo-local state root for the selected layout mode."""
+
+    if repo_state_mode == "root":
+        return ""
+    if repo_state_mode == "hidden-acb":
+        return DERIVED_HIDDEN_REPO_ROOT
+    raise ValueError(f"Unsupported repo_state_mode: {repo_state_mode}")
 
 
 def _vendored_base_root_for_derived_mode(derived_context_mode: str | None) -> str:
     """Return the hidden repo-local state root for derived repos."""
 
-    return DERIVED_HIDDEN_REPO_ROOT if derived_context_mode is not None else ""
+    return _hidden_repo_root_for_state_mode("hidden-acb") if derived_context_mode is not None else ""
 
 
 def _map_vendored_repo_path(relative_path: str, vendored_base_root: str) -> str:
@@ -1850,19 +1861,25 @@ def _map_vendored_repo_path(relative_path: str, vendored_base_root: str) -> str:
     return f"{vendored_base_root.rstrip('/')}/{normalized}"
 
 
-def _map_derived_repo_state_path(relative_path: str, derived_context_mode: str | None) -> str:
-    """Map derived repo-local state behind the hidden `.acb/` boundary."""
+def _map_repo_state_path(relative_path: str, repo_state_mode: str) -> str:
+    """Map repo-local generator state through the active layout mode."""
 
     normalized = relative_path.strip().lstrip("/")
     if not normalized:
         return normalized
-    if derived_context_mode is None:
+    if repo_state_mode == "root":
         return normalized
     if normalized in {"AGENT.md", "CLAUDE.md", ".gitignore"}:
         return normalized
     if normalized == ".prompts" or normalized.startswith(".prompts/"):
         return normalized
-    return _map_vendored_repo_path(normalized, _vendored_base_root_for_derived_mode(derived_context_mode))
+    return _map_vendored_repo_path(normalized, _hidden_repo_root_for_state_mode(repo_state_mode))
+
+
+def _map_derived_repo_state_path(relative_path: str, derived_context_mode: str | None) -> str:
+    """Map derived repo-local state behind the hidden `.acb/` boundary."""
+
+    return _map_repo_state_path(relative_path, "hidden-acb" if derived_context_mode is not None else "root")
 
 
 def _map_vendored_repo_paths(paths: list[str], vendored_base_root: str) -> list[str]:
@@ -2350,7 +2367,15 @@ def build_env_files(services: list[str], slug: str, ports: dict[str, int], test_
     }
 
 
-def build_docs(repo_name: str, description: str, archetype: str, profile: StackProfile, manifests: list[str]) -> dict[str, str]:
+def build_docs(
+    repo_name: str,
+    description: str,
+    archetype: str,
+    profile: StackProfile,
+    manifests: list[str],
+    *,
+    repo_local_profile_path: str,
+) -> dict[str, str]:
     """Return repo-purpose and repo-layout docs."""
 
     repo_purpose = f"""# Repo Purpose
@@ -2373,7 +2398,7 @@ Selected manifest hints:
 - `README.md`: repo entrypoint
 - `AGENT.md` and `CLAUDE.md`: assistant routing entrypoints
 - `docs/`: repo-level purpose, layout, and deployment notes
-- `manifests/project-profile.yaml`: generated project profile
+- `{repo_local_profile_path}`: generated project profile
 - `{profile.route_path}`: primary route or entrypoint surface
 - `tests/smoke/`: smallest happy-path checks
 - `tests/integration/`: real boundary checks when needed
@@ -2399,6 +2424,8 @@ def render_readme(
     compose_project_name_test: str,
     support_ports: dict[str, int],
     test_support_ports: dict[str, int],
+    repo_local_profile_path: str,
+    generated_profile_path: str,
 ) -> str:
     """Render the top-level README from template."""
 
@@ -2444,6 +2471,8 @@ def render_readme(
                 "add a real integration test when a feature crosses a storage or service boundary",
             ]
         ),
+        "repo_local_profile_path": repo_local_profile_path,
+        "generated_profile_path": generated_profile_path,
         "compose_section": compose_section,
         "dokku_section": dokku_section,
     }
@@ -2630,7 +2659,7 @@ def render_dokku_files(slug: str, app_port: int) -> dict[str, str]:
     }
 
 
-def render_prompt_files(repo_name: str, profile: StackProfile) -> dict[str, str]:
+def render_prompt_files(repo_name: str, profile: StackProfile, *, repo_local_profile_path: str) -> dict[str, str]:
     """Render prompt-first starter files."""
 
     values = {
@@ -2639,6 +2668,7 @@ def render_prompt_files(repo_name: str, profile: StackProfile) -> dict[str, str]
         "starter_test_path": profile.smoke_path,
         "starter_integration_test_path": profile.integration_path,
         "starter_seed_path": profile.seed_path,
+        "repo_local_profile_path": repo_local_profile_path,
     }
     return {
         ".prompts/001-bootstrap-repo.txt": render_template(
@@ -3582,6 +3612,8 @@ def build_generated_files(
     )
 
     generated_files: dict[str, str] = {}
+    if request.repo_state_mode not in ORDINARY_REPO_STATE_MODES:
+        raise ValueError(f"Unsupported repo_state_mode: {request.repo_state_mode}")
     vendored_manifest_paths = _vendored_manifest_paths(request.manifests, request.vendored_base_root)
     vendored_base_manifests_dir = _map_vendored_repo_path("manifests/base", request.vendored_base_root)
     generated_files.update(
@@ -3624,9 +3656,20 @@ def build_generated_files(
             compose_project_name_test,
             dev_support_ports,
             test_support_ports,
+            repo_local_profile_path=request.repo_local_profile_path,
+            generated_profile_path=request.generated_profile_path,
         )
     if request.include_docs_dir:
-        generated_files.update(build_docs(request.repo_name, description, request.archetype, profile, request.manifests))
+        generated_files.update(
+            build_docs(
+                request.repo_name,
+                description,
+                request.archetype,
+                profile,
+                request.manifests,
+                repo_local_profile_path=request.repo_local_profile_path,
+            )
+        )
 
     starter_paths = resolved_starter_paths(
         request.primary_stack,
@@ -3639,7 +3682,13 @@ def build_generated_files(
         if path.startswith(".prompts/")
     )
     if request.prompt_first and not prompt_files:
-        prompt_files = sorted(render_prompt_files(request.repo_name, profile).keys())
+        prompt_files = sorted(
+            render_prompt_files(
+                request.repo_name,
+                profile,
+                repo_local_profile_path=request.repo_local_profile_path,
+            ).keys()
+        )
     if request.primary_stack == "prompt-first-repo" and prompt_files:
         starter_paths["route"] = prompt_files[0]
     port_map = {"app_dev": app_port, "app_test": test_app_port}
@@ -3782,7 +3831,11 @@ def build_generated_files(
         )
 
     if request.prompt_first:
-        prompt_file_map = request.prompt_files_override or render_prompt_files(request.repo_name, profile)
+        prompt_file_map = request.prompt_files_override or render_prompt_files(
+            request.repo_name,
+            profile,
+            repo_local_profile_path=request.repo_local_profile_path,
+        )
         if request.initial_prompt_text:
             prompt_file_map = {**prompt_file_map, **render_initial_prompt_file(request.initial_prompt_text)}
         generated_files.update(prompt_file_map)
@@ -3886,6 +3939,7 @@ def _build_derived_request(
         dry_run=dry_run,
         derived_context_mode=derived_context_mode,
         extra_vendored_paths=raw_mode_bundle_paths,
+        repo_state_mode="hidden-acb",
         repo_local_profile_path=repo_local_profile_path,
         repo_local_scripts_root=repo_local_scripts_root,
         repo_local_docs_root=repo_local_docs_root,
@@ -4092,6 +4146,8 @@ def main(argv: list[str]) -> int:
             or default_manifests_for(args.archetype, args.primary_stack, args.dokku)
         )
     )
+    prompt_first_enabled = args.prompt_first or args.archetype == "prompt-first-repo" or bool(initial_prompt_text)
+    ordinary_repo_state_mode = "hidden-acb" if prompt_first_enabled else "root"
     request = RepoGenerationRequest(
         repo_name=repo_name,
         target_dir=target_dir,
@@ -4099,7 +4155,7 @@ def main(argv: list[str]) -> int:
         primary_stack=args.primary_stack,
         manifests=selected_manifests,
         dokku=args.dokku,
-        prompt_first=args.prompt_first or args.archetype == "prompt-first-repo" or bool(initial_prompt_text),
+        prompt_first=prompt_first_enabled,
         smoke_tests=args.smoke_tests,
         integration_tests=args.integration_tests,
         seed_data=args.seed_data,
@@ -4112,6 +4168,10 @@ def main(argv: list[str]) -> int:
         support_services_override=list(dict.fromkeys(args.storage_service)) or None,
         initial_prompt_text=initial_prompt_text,
         initial_prompt_source=initial_prompt_source,
+        repo_state_mode=ordinary_repo_state_mode,
+        repo_local_profile_path=_map_repo_state_path("manifests/project-profile.yaml", ordinary_repo_state_mode),
+        vendored_base_root=_hidden_repo_root_for_state_mode(ordinary_repo_state_mode),
+        generated_profile_path=_map_repo_state_path(".generated-profile.yaml", ordinary_repo_state_mode),
     )
     generate_repo(request, manifests)
     return 0
