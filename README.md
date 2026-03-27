@@ -71,6 +71,7 @@ First-class stacks include FastAPI, Hono/Bun, Rust/Axum, Go/Echo, Phoenix, Scala
 | `docs/usage/STARTING_NEW_PROJECTS.md` | Practical guide for using this base to classify an idea, generate a repo, and start implementation. |
 | `docs/usage/ASSISTANT_BEHAVIOR_SPEC.md` | Normative behavior contract for assistants operating in repos derived from this system. |
 | `docs/usage/ADVANCED_ASSISTANT_OPERATIONS.md` | Guidance for long-running sessions, multi-agent work, cross-repo coordination, and higher-autonomy workflows. |
+| `docs/usage/SPEC_DRIVEN_ACB_PAYLOADS.md` | How generated repos receive `.acb/` specs, validation plans, selection manifests, and session boot guidance. |
 | `docs/CONTRIBUTOR_PLAYBOOK.md` | Rules and checklists for extending the repo: new stacks, examples, archetypes, and verification coverage. |
 | `docs/memory-layer-overview.md` | How `MEMORY.md`, stop hooks, and handoff snapshots fit into the runtime. |
 | `docs/deployment-readiness-checklists.md` | Concise deployment and release-readiness checks for service and prompt-first repos. |

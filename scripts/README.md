@@ -7,6 +7,7 @@ In the normal workflow, a coding assistant runs most of these scripts on your be
 Common assistant-invoked scripts:
 
 - `new_repo.py` to generate a new repo once the project shape and stack are clear
+- `acb_payload.py` to compose the repo-local `.acb/` spec and validation payload for a chosen profile
 - `preview_context_bundle.py` to inspect which context should load first for a given manifest
 - `prompt_first_repo_analyzer.py` to classify an existing repo by file signals
 - `validate_manifests.py` and `validate_context.py` to verify the base after changes
@@ -30,6 +31,7 @@ Capabilities:
 - select or infer manifests
 - vendor selected base manifests under `.acb/manifests/base/` in the generated repo
 - always generate root `AGENT.md`, root `CLAUDE.md`, visible `.prompts/`, and hidden generator-owned state under `.acb/`; optionally add Dokku, smoke tests, integration tests, and seed data
+- always synthesize `.acb/specs/`, `.acb/validation/`, `.acb/profile/selection.json`, `.acb/SESSION_BOOT.md`, and `.acb/INDEX.json` for repo-local autonomy and resumability
 - generate isolated `docker-compose.yml` and `docker-compose.test.yml`
 - generate `AGENT.md`, `CLAUDE.md`, `.gitignore`, and generated profile files
 - snapshot the operator prompt into `.prompts/initial-prompt.txt` when provided
@@ -167,6 +169,35 @@ Use this after changing docs, diagrams, templates, or generated bootstrap guidan
 Accepts a manifest name or manifest path and prints the ordered context bundle that should be loaded first.
 
 Assistants use this to keep startup context small and explicit. Humans usually run it only when they want to inspect or challenge the assistant's context-loading choice.
+
+## `acb_payload.py`
+
+Composes the repo-local `.acb/` payload used by generated repos for spec-driven development and validation-driven autonomy.
+
+Capabilities:
+
+- infer doctrines, routers, and capabilities from archetype, stack, manifests, and support services
+- synthesize repo-local product, architecture, agent, validation, and evolution specs
+- emit a validation checklist and machine-readable validation matrix
+- emit `.acb/INDEX.json` with canonical source lineage for future drift tooling
+
+Examples:
+
+```bash
+python scripts/acb_payload.py \
+  --archetype backend-api-service \
+  --primary-stack python-fastapi-uv-ruff-orjson-polars \
+  --manifest backend-api-fastapi-polars \
+  --support-service postgres \
+  --output-dir /tmp/analytics-api
+
+python scripts/acb_payload.py \
+  --archetype cli-tool \
+  --primary-stack prompt-first-repo \
+  --manifest cli-python \
+  --output-dir /tmp/cli-kit \
+  --dry-run
+```
 
 ## `prompt_first_repo_analyzer.py`
 
