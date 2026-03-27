@@ -1,3 +1,11 @@
+---
+acb_origin: canonical
+acb_source_path: context/specs/architecture/archetypes/cli-tool.md
+acb_role: architecture
+acb_archetypes: [cli-tool]
+acb_version: 1
+---
+
 ## CLI Architecture
 
 Keep argument parsing, command execution, and side-effecting integrations separate. Commands should be thin wrappers around explicit operations so validation can prove behavior without scraping terminal state by hand.

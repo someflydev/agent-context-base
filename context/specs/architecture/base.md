@@ -1,3 +1,10 @@
+---
+acb_origin: canonical
+acb_source_path: context/specs/architecture/base.md
+acb_role: architecture
+acb_version: 1
+---
+
 ## Baseline Architecture Constraints
 
 Structure must stay explicit enough that an assistant can identify the changed boundary, the owning module, and the correct validation path without broad repo scanning.

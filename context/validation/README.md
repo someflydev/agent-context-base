@@ -1,10 +1,12 @@
 # Validation Modules
 
-These files are the canonical validation narratives used to compose `.acb/specs/VALIDATION.md`.
+These are the canonical validation narratives used to compose `.acb/specs/VALIDATION.md`.
 
-They are intentionally separate from `context/specs/` because validation is not decorative prose. It is the main autonomy rail for generated repos.
+Generated repos also receive:
 
-The repo-local `.acb/validation/` directory then adds two generated artifacts:
+- `.acb/validation/CHECKLIST.md`
+- `.acb/validation/MATRIX.json`
+- `.acb/validation/COVERAGE.md`
+- `.acb/validation/COVERAGE.json`
 
-- `CHECKLIST.md` for session-useful proof obligations
-- `MATRIX.json` for future machine reasoning about coverage, drift, and orchestration
+Validation is the main autonomy rail. Coverage is a visibility aid showing which proof dimensions are expected and whether the generated gates cover them.
