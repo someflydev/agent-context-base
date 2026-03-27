@@ -17,16 +17,29 @@ Start a coding assistant inside `agent-context-base` and give it a short 2-5 sen
 
 The assistant should do the repo loading and synthesis. You are not expected to manually read `AGENT.md`, `CLAUDE.md`, manifests, or examples line by line before work starts. Your job is to validate direction, constraints, priorities, and the generated repo location.
 
+Default intent rule while working inside `agent-context-base`:
+
+- if the operator explicitly says they want to modify the base repo, treat it as base-repo work
+- otherwise assume the prompt is asking for a new generated repo, not direct edits to `agent-context-base`
+
 Normal flow:
 
 1. Start in `agent-context-base`.
 2. Launch Codex, Claude, or Gemini there.
 3. Give a short 2-5 sentence initial prompt.
 4. Let the assistant inspect this repo and propose the `scripts/new_repo.py` arguments.
-5. Review the proposed archetype, primary stack, optional flags, and target directory.
+5. Review the proposed archetype, primary stack, storage or broker choices, optional flags, and target directory.
 6. Generate the repo.
 
 The `new_repo.py` arguments are usually produced after the assistant has inspected the base repo. They are not meant to be manually guessed first.
+
+During that inspection pass, the assistant should make storage choices explicit:
+
+- if the prompt already names storage, queue, search, or vector systems, carry those through into the proposed generator arguments
+- if the prompt implies persistence, eventing, or search but leaves the backing systems unstated, the assistant should ask you to confirm the intended storage set before generation
+- if no storage is detected, the assistant should suggest a narrow supported default based on the project shape instead of silently accepting generic infra
+- when an operator prompt exists, pass it to `new_repo.py` with `--initial-prompt-text` or `--initial-prompt-file` so the generated repo preserves `.prompts/initial-prompt.txt` and the audit snapshot under `.acb/`
+- when `.prompts/` exists in a generated repo, keep executable prompts in strict `PROMPT_XX.txt` order; `.prompts/initial-prompt.txt` is the only allowed non-sequence prompt filename
 
 Useful commands:
 
@@ -34,6 +47,7 @@ Useful commands:
 python scripts/new_repo.py --list-archetypes
 python scripts/new_repo.py --list-stacks
 python scripts/new_repo.py --list-manifests
+python scripts/new_repo.py --list-storage-services
 python scripts/new_repo.py --list-examples
 python scripts/new_repo.py --list-derived
 python scripts/new_repo.py --use-example 1 --dry-run --target-dir /tmp/example-001
@@ -54,6 +68,7 @@ python scripts/new_repo.py analytics-api \
   --smoke-tests \
   --integration-tests \
   --seed-data \
+  --initial-prompt-file /tmp/operator-brief.txt \
   --dokku \
   --target-dir /tmp/analytics-api
 ```
@@ -67,8 +82,10 @@ python scripts/new_repo.py analytics-api \
 - defers a substantial root `README.md` and root `docs/` by default unless you explicitly ask for them or a narrowly scoped operational need requires them
 - optionally renders prompt files, seed data, smoke tests, integration tests, and Dokku assets
 - generates isolated `docker-compose.yml` and `docker-compose.test.yml` when the profile implies local infra
+- records a hidden generation audit under `.acb/generation-report.json` for every generated repo
+- snapshots the operator prompt into `.prompts/initial-prompt.txt` when provided and keeps starter implementation prompts alongside it
 
-`manifests/project-profile.yaml` remains the generated repo's repo-local summary of actual state for ordinary repos. Derived repos instead place their generated summary and vendored snapshot under `.acb/` so the root stays limited to the assistant boot entrypoints and hidden support directories.
+`manifests/project-profile.yaml` remains the generated repo's repo-local summary of actual state for ordinary repos. All generated repos now reserve `.acb/` as the hidden audit root. Derived repos additionally place their generated summary and vendored snapshot under `.acb/` so the root stays limited to the assistant boot entrypoints and hidden support directories.
 
 ## Documentation Timing For Derived Repos
 

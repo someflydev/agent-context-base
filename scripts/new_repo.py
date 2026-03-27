@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+import hashlib
 import json
 import re
 import sys
@@ -528,11 +529,15 @@ class RepoGenerationRequest:
     extra_context_entrypoints: list[str] | None = None
     derived_context_mode: str | None = None
     extra_vendored_paths: list[str] | None = None
+    support_services_override: list[str] | None = None
+    initial_prompt_text: str | None = None
+    initial_prompt_source: str | None = None
     repo_local_profile_path: str = "manifests/project-profile.yaml"
     repo_local_scripts_root: str = "scripts"
     repo_local_docs_root: str = "docs"
     vendored_base_root: str = ""
     generated_profile_path: str = ".generated-profile.yaml"
+    generation_audit_path: str = ".acb/generation-report.json"
 
 
 @dataclass(frozen=True)
@@ -1356,6 +1361,18 @@ SERVICE_PRESETS = {
     },
 }
 
+STORAGE_PROMPT_HINTS: dict[str, tuple[str, ...]] = {
+    "postgres": ("postgres", "postgresql", "pg ", "relational database", "sql database"),
+    "timescaledb": ("timescaledb", "hypertable", "time-series postgres", "time series postgres"),
+    "redis": ("redis", "keydb", "redis streams"),
+    "mongo": ("mongo", "mongodb", "document store"),
+    "meilisearch": ("meilisearch",),
+    "elasticsearch": ("elasticsearch", "elastic search", "es index", "search index"),
+    "qdrant": ("qdrant", "vector store", "semantic search", "rag"),
+    "nats": ("nats", "jetstream", "event bus", "subject", "pubsub", "publish/subscribe"),
+    "trino": ("trino", "federated query"),
+}
+
 
 def _coerce_int_list(value: object) -> list[int]:
     """Return a list of ints from either a list or an inline '[1, 2, 3]' string."""
@@ -1644,6 +1661,21 @@ def build_parser() -> argparse.ArgumentParser:
         default=[],
         help="Manifest name to include. May be repeated.",
     )
+    parser.add_argument(
+        "--storage-service",
+        action="append",
+        choices=sorted(SERVICE_PRESETS),
+        default=[],
+        help="Explicit support service to include in generated Compose/env files. May be repeated.",
+    )
+    parser.add_argument(
+        "--initial-prompt-text",
+        help="Operator prompt text to snapshot into .prompts/initial-prompt.txt and use for storage suggestions.",
+    )
+    parser.add_argument(
+        "--initial-prompt-file",
+        help="Path to a file containing the operator prompt text to snapshot into .prompts/initial-prompt.txt.",
+    )
     parser.add_argument("--dokku", action="store_true", help="Generate Dokku starter files.")
     parser.add_argument(
         "--prompt-first",
@@ -1709,6 +1741,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--list-manifests",
         action="store_true",
         help="Print available manifests and exit.",
+    )
+    parser.add_argument(
+        "--list-storage-services",
+        action="store_true",
+        help="Print supported storage/broker services for generated Compose layouts and exit.",
     )
     parser.add_argument(
         "--list-derived",
@@ -2048,6 +2085,51 @@ def default_manifests_for(archetype: str, primary_stack: str, dokku: bool) -> li
     return selected
 
 
+def infer_support_services_from_prompt(initial_prompt_text: str | None) -> list[str]:
+    """Infer likely support services from the operator's initial prompt text."""
+
+    if not initial_prompt_text:
+        return []
+    lowered = f" {initial_prompt_text.lower()} "
+    selected: list[str] = []
+    for service_name, hints in STORAGE_PROMPT_HINTS.items():
+        if any(hint in lowered for hint in hints):
+            selected.append(service_name)
+    return selected
+
+
+def suggest_support_services(archetype: str, primary_stack: str, selected_manifests: list[str]) -> list[str]:
+    """Suggest likely support services when the prompt is silent or ambiguous."""
+
+    defaults = infer_support_services(archetype, primary_stack, selected_manifests)
+    if defaults:
+        suggestions = list(defaults)
+    elif archetype == "multi-backend-service":
+        suggestions = ["postgres", "nats"]
+    elif archetype in {"backend-api-service", "data-acquisition-service", "multi-source-sync-platform"}:
+        suggestions = ["postgres"]
+    elif archetype == "local-rag-system":
+        suggestions = ["qdrant"]
+    else:
+        suggestions = []
+    return list(dict.fromkeys(suggestions))
+
+
+def resolve_support_services(
+    request: RepoGenerationRequest,
+) -> tuple[list[str], list[str], list[str], list[str]]:
+    """Resolve final support services plus defaults and prompt-based hints."""
+
+    default_services = infer_support_services(request.archetype, request.primary_stack, request.manifests)
+    prompt_detected = infer_support_services_from_prompt(request.initial_prompt_text)
+    suggested = suggest_support_services(request.archetype, request.primary_stack, request.manifests)
+    if request.support_services_override:
+        final_services = list(dict.fromkeys(request.support_services_override))
+    else:
+        final_services = list(dict.fromkeys([*default_services, *prompt_detected]))
+    return final_services, default_services, prompt_detected, suggested
+
+
 def infer_support_services(archetype: str, primary_stack: str, selected_manifests: list[str]) -> list[str]:
     """Infer which backing services belong in the generated compose files."""
 
@@ -2253,6 +2335,9 @@ def build_env_files(services: list[str], slug: str, ports: dict[str, int], test_
     if "qdrant" in services:
         lines.append(f"QDRANT_URL=http://127.0.0.1:{ports['qdrant']}")
         test_lines.append(f"TEST_QDRANT_URL=http://127.0.0.1:{test_ports['qdrant']}")
+    if "nats" in services:
+        lines.append(f"NATS_URL=nats://127.0.0.1:{ports['nats']}")
+        test_lines.append(f"TEST_NATS_URL=nats://127.0.0.1:{test_ports['nats']}")
     if "trino" in services:
         lines.append(f"TRINO_URL=http://127.0.0.1:{ports['trino']}")
         test_lines.append(f"TEST_TRINO_URL=http://127.0.0.1:{test_ports['trino']}")
@@ -2433,6 +2518,7 @@ def render_profile_summary(
     vendored_base_manifests_dir: str,
     vendored_manifest_paths: list[str],
     vendored_support_paths: list[str],
+    generation_audit_path: str,
     prompt_directory: str,
     prompts_md_generated: bool,
     initial_prompt_files: list[str],
@@ -2446,6 +2532,7 @@ def render_profile_summary(
         "CLAUDE.md",
         repo_local_profile_path,
         generated_profile_path,
+        generation_audit_path,
         *vendored_manifest_paths,
         *(["README.md"] if include_root_readme else []),
         *(["docs/repo-purpose.md", "docs/repo-layout.md"] if include_docs_dir else []),
@@ -2471,6 +2558,7 @@ def render_profile_summary(
         "vendored_base_manifests_dir": vendored_base_manifests_dir,
         "vendored_manifest_lines": format_yaml_list(vendored_manifest_paths),
         "vendored_support_lines": format_yaml_list(vendored_support_paths),
+        "generation_audit_path": generation_audit_path,
         "startup_order_lines": format_yaml_list(startup_order),
         "prompt_directory": prompt_directory,
         "prompts_md_generated": str(prompts_md_generated).lower(),
@@ -2561,6 +2649,15 @@ def render_prompt_files(repo_name: str, profile: StackProfile) -> dict[str, str]
             repo_root() / "templates/prompt-first/002-refine.template.txt",
             values,
         ),
+    }
+
+
+def render_initial_prompt_file(initial_prompt_text: str) -> dict[str, str]:
+    """Render the operator-supplied prompt snapshot."""
+
+    text = initial_prompt_text.rstrip() + "\n"
+    return {
+        ".prompts/initial-prompt.txt": text,
     }
 
 
@@ -3080,7 +3177,7 @@ def render_prompt_meta_starters(
     return {
         f"{scripts_root}/check_repo.py": f"""#!/usr/bin/env python3\n\"\"\"Check the minimal prompt-first repo surface exists.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    required = [Path(\"AGENT.md\"), Path(\"CLAUDE.md\"), Path(\"{prompt_directory}\")]\n    missing = [path.as_posix() for path in required if not path.exists()]\n    if missing:\n        raise SystemExit(f\"Missing required files: {{missing}}\")\n    print(\"repo surface looks present\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
         f"{scripts_root}/check_generated_profile.py": f"""#!/usr/bin/env python3\n\"\"\"Check the generated profile file exists.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    profile = Path(\"{generated_profile_path}\")\n    if not profile.exists():\n        raise SystemExit(\"{generated_profile_path} is missing\")\n    print(\"generated profile exists\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
-        f"{scripts_root}/validate_repo.py": f"""#!/usr/bin/env python3\n\"\"\"Validate the prompt-first starter repo surface.\"\"\"\n\nimport re\nfrom pathlib import Path\n\n\nCLASSIC_PROMPTS = [\"001-bootstrap-repo.txt\", \"002-refine-test-surface.txt\"]\nDERIVED_PROMPT_PATTERN = re.compile(r\"^PROMPT_(\\d{{2}})\\.txt$\")\n\n\ndef _validate_prompt_files(prompt_files: list[str]) -> None:\n    if not prompt_files:\n        raise SystemExit(\"{prompt_directory} must contain at least one prompt file\")\n    if prompt_files == CLASSIC_PROMPTS:\n        return\n    derived_numbers: list[int] = []\n    for filename in prompt_files:\n        match = DERIVED_PROMPT_PATTERN.fullmatch(filename)\n        if match is None:\n            raise SystemExit(\n                \"Prompt files must be either the classic 001/002 pair or a pure PROMPT_XX.txt sequence: \"\n                f\"{{prompt_files}}\"\n            )\n        derived_numbers.append(int(match.group(1)))\n    expected_numbers = list(range(1, len(derived_numbers) + 1))\n    if derived_numbers != expected_numbers:\n        raise SystemExit(f\"Derived prompt files must stay monotonic: {{prompt_files}}\")\n\n\ndef main() -> None:\n    required = [\n        Path(\"AGENT.md\"),\n        Path(\"CLAUDE.md\"),\n        Path(\"{repo_local_profile_path}\"),\n    ]\n    missing = [path.as_posix() for path in required if not path.exists()]\n    if missing:\n        raise SystemExit(f\"Missing required files: {{missing}}\")\n\n    prompt_dir = Path(\"{prompt_directory}\")\n    if not prompt_dir.exists() or not prompt_dir.is_dir():\n        raise SystemExit(\"{prompt_directory} directory is missing\")\n    prompt_files = sorted(path.name for path in prompt_dir.glob(\"*.txt\"))\n    _validate_prompt_files(prompt_files)\n\n    print(\"repo validation passed\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
+        f"{scripts_root}/validate_repo.py": f"""#!/usr/bin/env python3\n\"\"\"Validate the prompt-first starter repo surface.\"\"\"\n\nimport re\nfrom pathlib import Path\n\n\nCLASSIC_PROMPTS = [\"001-bootstrap-repo.txt\", \"002-refine-test-surface.txt\"]\nOPTIONAL_PROMPT_FILES = {{\"initial-prompt.txt\"}}\nDERIVED_PROMPT_PATTERN = re.compile(r\"^PROMPT_(\\d{{2}})\\.txt$\")\n\n\ndef _validate_prompt_files(prompt_files: list[str]) -> None:\n    if not prompt_files:\n        raise SystemExit(\"{prompt_directory} must contain at least one prompt file\")\n    numbered_files = [filename for filename in prompt_files if filename not in OPTIONAL_PROMPT_FILES]\n    if numbered_files == CLASSIC_PROMPTS:\n        return\n    derived_numbers: list[int] = []\n    for filename in numbered_files:\n        match = DERIVED_PROMPT_PATTERN.fullmatch(filename)\n        if match is None:\n            raise SystemExit(\n                \"Prompt files must be either the classic 001/002 pair or a pure PROMPT_XX.txt sequence, with optional supplemental files such as initial-prompt.txt: \"\n                f\"{{prompt_files}}\"\n            )\n        derived_numbers.append(int(match.group(1)))\n    expected_numbers = list(range(1, len(derived_numbers) + 1))\n    if derived_numbers != expected_numbers:\n        raise SystemExit(f\"Derived prompt files must stay monotonic: {{prompt_files}}\")\n\n\ndef main() -> None:\n    required = [\n        Path(\"AGENT.md\"),\n        Path(\"CLAUDE.md\"),\n        Path(\"{repo_local_profile_path}\"),\n    ]\n    missing = [path.as_posix() for path in required if not path.exists()]\n    if missing:\n        raise SystemExit(f\"Missing required files: {{missing}}\")\n\n    prompt_dir = Path(\"{prompt_directory}\")\n    if not prompt_dir.exists() or not prompt_dir.is_dir():\n        raise SystemExit(\"{prompt_directory} directory is missing\")\n    prompt_files = sorted(path.name for path in prompt_dir.glob(\"*.txt\"))\n    _validate_prompt_files(prompt_files)\n\n    print(\"repo validation passed\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
         f"{scripts_root}/seed_data.py": """#!/usr/bin/env python3\n\"\"\"Write deterministic prompt-first starter notes.\"\"\"\n\nfrom pathlib import Path\n\n\ndef main() -> None:\n    target = Path(\"artifacts/generated-notes.txt\")\n    target.parent.mkdir(parents=True, exist_ok=True)\n    target.write_text(\"replace with deterministic repo notes\\n\", encoding=\"utf-8\")\n    print(f\"Wrote {target}\")\n\n\nif __name__ == \"__main__\":\n    main()\n""",
     }
 
@@ -3342,6 +3439,59 @@ def resolved_starter_paths(primary_stack: str, slug: str, *, scripts_root: str =
     }
 
 
+def render_generation_audit(
+    request: RepoGenerationRequest,
+    *,
+    slug: str,
+    description: str,
+    support_services: list[str],
+    default_support_services: list[str],
+    prompt_detected_services: list[str],
+    suggested_support_services: list[str],
+    docker_enabled: bool,
+    prompt_files: list[str],
+    generated_file_paths: list[str],
+) -> str:
+    """Render a machine-readable generation audit report for the generated repo."""
+
+    prompt_text = request.initial_prompt_text or ""
+    report = {
+        "schema_version": 1,
+        "repo_name": request.repo_name,
+        "repo_slug": slug,
+        "description": description,
+        "target_dir": str(request.target_dir),
+        "archetype": request.archetype,
+        "primary_stack": request.primary_stack,
+        "selected_manifests": request.manifests,
+        "prompt_first_enabled": request.prompt_first,
+        "docker_layout_enabled": docker_enabled,
+        "generation_audit_path": request.generation_audit_path,
+        "repo_local_profile_path": request.repo_local_profile_path,
+        "generated_profile_path": request.generated_profile_path,
+        "hidden_state_root": ".acb",
+        "initial_prompt": {
+            "present": bool(prompt_text),
+            "path": ".prompts/initial-prompt.txt" if prompt_text else None,
+            "source": request.initial_prompt_source or "not-supplied",
+            "sha256": hashlib.sha256(prompt_text.encode("utf-8")).hexdigest() if prompt_text else None,
+            "char_count": len(prompt_text),
+            "preview": prompt_text[:280] if prompt_text else "",
+        },
+        "support_services": {
+            "default_for_shape": default_support_services,
+            "detected_from_prompt": prompt_detected_services,
+            "suggested_when_ambiguous": suggested_support_services,
+            "override_used": request.support_services_override or [],
+            "selected": support_services,
+        },
+        "prompt_files": prompt_files,
+        "generated_file_count": len(generated_file_paths),
+        "generated_files": generated_file_paths,
+    }
+    return json.dumps(report, indent=2) + "\n"
+
+
 def validate_bootstrap_plan(
     *,
     compose_project_name_dev: str,
@@ -3388,9 +3538,10 @@ def build_generated_files(
     profile = STACKS[request.primary_stack]
     description = request.description or f"Starter repo for {request.repo_name} using {profile.display_name}."
     docs_dir_generated = request.include_docs_dir or request.dokku
-    docker_enabled = request.docker_layout or bool(
-        infer_support_services(request.archetype, request.primary_stack, request.manifests)
+    support_services, default_support_services, prompt_detected_services, suggested_services = resolve_support_services(
+        request
     )
+    docker_enabled = request.docker_layout or bool(support_services)
 
     selected_manifest_data = [manifests[name] for name in request.manifests]
     if selected_manifest_data:
@@ -3409,7 +3560,6 @@ def build_generated_files(
     compose_project_name_test = str(primary_manifest["compose_project_name_test"]).replace("{repo_slug}", slug)
     app_port = pick_port(str(primary_manifest["port_band_app_dev"]), slug)
     test_app_port = pick_port(str(primary_manifest["port_band_app_test"]), slug)
-    support_services = infer_support_services(request.archetype, request.primary_stack, request.manifests)
     dev_depends_on, dev_support_block, dev_support_ports = build_support_service_blocks(
         support_services,
         slug,
@@ -3530,9 +3680,17 @@ def build_generated_files(
         vendored_base_manifests_dir=vendored_base_manifests_dir,
         vendored_manifest_paths=vendored_manifest_paths,
         vendored_support_paths=sorted(_map_vendored_repo_paths(list(vendored_support_texts), request.vendored_base_root)),
+        generation_audit_path=request.generation_audit_path,
         prompt_directory=".prompts" if request.prompt_first else "none",
         prompts_md_generated=False,
-        initial_prompt_files=prompt_files if request.prompt_first else ["none"],
+        initial_prompt_files=(
+            [
+                *prompt_files,
+                *([".prompts/initial-prompt.txt"] if request.initial_prompt_text else []),
+            ]
+            if request.prompt_first
+            else ["none"]
+        ),
         extra_context_entrypoints=request.extra_context_entrypoints,
         extra_metadata=request.extra_profile_metadata,
     )
@@ -3625,6 +3783,8 @@ def build_generated_files(
 
     if request.prompt_first:
         prompt_file_map = request.prompt_files_override or render_prompt_files(request.repo_name, profile)
+        if request.initial_prompt_text:
+            prompt_file_map = {**prompt_file_map, **render_initial_prompt_file(request.initial_prompt_text)}
         generated_files.update(prompt_file_map)
     if request.dokku:
         generated_files.update(render_dokku_files(slug, app_port))
@@ -3636,6 +3796,21 @@ def build_generated_files(
         if request.derived_context_mode is not None:
             directory_path = _map_derived_repo_state_path(directory, request.derived_context_mode)
         generated_files.setdefault(f"{directory_path}/.gitkeep", "")
+
+    audit_generated_files = sorted(set(generated_files) | {request.generation_audit_path})
+    generated_files[request.generation_audit_path] = render_generation_audit(
+        request,
+        slug=slug,
+        description=description,
+        support_services=support_services,
+        default_support_services=default_support_services,
+        prompt_detected_services=prompt_detected_services,
+        suggested_support_services=suggested_services,
+        docker_enabled=docker_enabled,
+        prompt_files=sorted(path for path in prompt_files if path.startswith(".prompts/"))
+        + ([".prompts/initial-prompt.txt"] if request.initial_prompt_text else []),
+        generated_file_paths=audit_generated_files,
+    )
 
     return generated_files
 
@@ -3824,6 +3999,14 @@ def main(argv: list[str]) -> int:
             "Manifests",
             {name: str(data.get("description", "")) for name, data in manifests.items()},
         )
+    if args.list_storage_services:
+        return print_catalog(
+            "Storage and Broker Services",
+            {
+                name: f"{spec['image']} ({spec['container_port']})"
+                for name, spec in SERVICE_PRESETS.items()
+            },
+        )
 
     if args.list_derived:
         data = _load_derived_data()
@@ -3850,6 +4033,9 @@ def main(argv: list[str]) -> int:
 
     if args.derived_context_mode != "compact":
         parser.error("--derived-context-mode only applies with --derived-example")
+
+    if args.initial_prompt_text and args.initial_prompt_file:
+        parser.error("--initial-prompt-text and --initial-prompt-file are mutually exclusive")
 
     if args.list_examples:
         for category_name, num_range in EXAMPLE_CATEGORIES:
@@ -3888,6 +4074,16 @@ def main(argv: list[str]) -> int:
     if not args.primary_stack:
         parser.error("--primary-stack is required")
 
+    initial_prompt_text: str | None = None
+    initial_prompt_source: str | None = None
+    if args.initial_prompt_file:
+        prompt_path = Path(args.initial_prompt_file)
+        initial_prompt_text = prompt_path.read_text(encoding="utf-8")
+        initial_prompt_source = str(prompt_path)
+    elif args.initial_prompt_text:
+        initial_prompt_text = args.initial_prompt_text
+        initial_prompt_source = "cli-inline"
+
     repo_name = args.repo_name
     target_dir = _normalize_resolved_path(Path(args.target_dir or slugify(repo_name)))
     selected_manifests = sorted(
@@ -3903,7 +4099,7 @@ def main(argv: list[str]) -> int:
         primary_stack=args.primary_stack,
         manifests=selected_manifests,
         dokku=args.dokku,
-        prompt_first=args.prompt_first or args.archetype == "prompt-first-repo",
+        prompt_first=args.prompt_first or args.archetype == "prompt-first-repo" or bool(initial_prompt_text),
         smoke_tests=args.smoke_tests,
         integration_tests=args.integration_tests,
         seed_data=args.seed_data,
@@ -3913,6 +4109,9 @@ def main(argv: list[str]) -> int:
         no_profile=args.no_profile,
         force=args.force,
         dry_run=args.dry_run,
+        support_services_override=list(dict.fromkeys(args.storage_service)) or None,
+        initial_prompt_text=initial_prompt_text,
+        initial_prompt_source=initial_prompt_source,
     )
     generate_repo(request, manifests)
     return 0

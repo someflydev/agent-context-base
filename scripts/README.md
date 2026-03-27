@@ -26,11 +26,14 @@ This is usually invoked by the assistant after it has translated a short project
 Capabilities:
 
 - choose an archetype and primary stack
+- optionally override or confirm storage and broker services explicitly
 - select or infer manifests
 - vendor selected base manifests under `manifests/base/` in the generated repo
 - optionally enable Dokku, prompt-first prompts, smoke tests, integration tests, and seed data
 - generate isolated `docker-compose.yml` and `docker-compose.test.yml`
 - generate `AGENT.md`, `CLAUDE.md`, `.gitignore`, and generated profile files
+- snapshot the operator prompt into `.prompts/initial-prompt.txt` when provided
+- emit `.acb/generation-report.json` for generation auditability
 - defer root `README.md` and broad root `docs/` by default unless you explicitly opt into them
 - generate prompt-first orchestration repos from leaf derived examples or derived collections
 
@@ -42,12 +45,22 @@ python scripts/new_repo.py analytics-api \
   --primary-stack python-fastapi-uv-ruff-orjson-polars \
   --smoke-tests \
   --integration-tests \
-  --seed-data
+  --seed-data \
+  --initial-prompt-file /tmp/operator-brief.txt
 
 python scripts/new_repo.py prompt-kit \
   --archetype prompt-first-repo \
   --primary-stack prompt-first-repo \
   --prompt-first
+
+python scripts/new_repo.py --list-storage-services
+
+python scripts/new_repo.py 047-go-python-ml-gateway \
+  --use-example 47 \
+  --storage-service postgres \
+  --storage-service nats \
+  --initial-prompt-file /tmp/ml-gateway-brief.txt \
+  --target-dir /tmp/047-go-python-ml-gateway
 
 python3 scripts/new_repo.py --derived-example ingestion-normalization-core --target-dir /tmp
 python3 scripts/new_repo.py --derived-example team-a --target-dir /tmp
@@ -61,6 +74,7 @@ Derived generation notes:
 - `--derived-context-mode compact|maximal` controls how much prompt-first support context is vendored for derived repos; the default is `compact`
 - when `--target-dir` points at `/tmp` or any existing directory, that directory is treated as the parent and each derived repo is written under it
 - derived repos keep their repo-local summary in `.acb/manifests/project-profile.yaml` and vendor selected base manifests under `.acb/manifests/base/*.yaml`
+- ordinary generated repos also reserve `.acb/` for generator audit artifacts such as `.acb/generation-report.json`
 - `compact` and `maximal` both use the hidden `.acb/` container so only `AGENT.md` and `CLAUDE.md` remain as non-hidden root entrypoints
 - `compact` vendors the selected manifests plus manifest-linked support assets into `.acb/`
 - `maximal` uses the same `.acb/` root while adding a bounded local bundle of prompt-first anchors, startup/routing skills, canonical prompt/workflow examples, prompt-governance templates, and source-example archetype/stack docs

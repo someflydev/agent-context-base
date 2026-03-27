@@ -16,6 +16,7 @@ vendored_base_manifest_paths:
 {{vendored_manifest_lines}}
 vendored_support_paths:
 {{vendored_support_lines}}
+generation_audit_path: {{generation_audit_path}}
 downstream_startup_order:
 {{startup_order_lines}}
 prompt_directory: {{prompt_directory}}

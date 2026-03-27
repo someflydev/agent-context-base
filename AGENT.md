@@ -34,6 +34,10 @@ Do not bulk-load `context/`, `examples/`, `templates/`, or `manifests/`.
 - Infer intent from normal language, not internal filenames.
 - Prefer manifest-defined bundles over improvised loading.
 - Treat templates as scaffolds and examples as the preferred pattern source.
+- During new-project classification, surface storage, queue, search, and broker choices explicitly.
+- If the prompt implies data movement or persistence but does not name the backing systems, ask the operator to confirm the storage/broker set before running `scripts/new_repo.py`.
+- When the operator already supplied an initial prompt, preserve it in the generated repo and use it to justify storage suggestions rather than inventing domain-specific defaults.
+- When started in `agent-context-base`, assume the operator wants a new generated repo unless they explicitly say they want to modify the base repo itself.
 - Use `MEMORY.md` only for continuity, never as doctrine.
 - Update `MEMORY.md` at meaningful stop points and create a handoff snapshot when a later session is likely.
 

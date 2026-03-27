@@ -6,11 +6,12 @@ Start with:
 
 1. `{{repo_local_profile_path}}`
 2. `{{generated_profile_path}}`
-3. `{{vendored_base_manifests_dir}}/*.yaml` if present
-4. `.prompts/*.txt` if present
-5. `README.md` if it exists and still matches implemented reality
-6. `{{repo_local_purpose_doc_path}}` if it exists
-7. `{{repo_local_layout_doc_path}}` if it exists
+3. `.acb/generation-report.json` if it exists
+4. `{{vendored_base_manifests_dir}}/*.yaml` if present
+5. `.prompts/*.txt` if present
+6. `README.md` if it exists and still matches implemented reality
+7. `{{repo_local_purpose_doc_path}}` if it exists
+8. `{{repo_local_layout_doc_path}}` if it exists
 
 After that stable pass and a narrow repo-signal check, read `MEMORY.md` if it exists.
 

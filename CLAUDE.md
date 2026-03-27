@@ -45,6 +45,10 @@ Use dotted module paths from the repo root. Never invoke `pytest`.
 - Infer intent from normal language and repo signals.
 - Prefer manifests and canonical examples over improvisation.
 - Treat templates as starter scaffolds, not authoritative patterns.
+- During new-project classification, make storage and broker choices explicit instead of silently accepting generic defaults.
+- If the prompt implies persistence, queues, search, or eventing but leaves the backing systems unstated, ask the operator to confirm the intended storage/broker set before generation.
+- Preserve the operator's initial prompt in the generated repo and use it to justify storage suggestions.
+- When running inside `agent-context-base`, assume the task is to generate a new repo unless the operator explicitly says the base repo itself should be changed.
 - Use `MEMORY.md` only as continuity state.
 - Keep `docker-compose.yml` and `docker-compose.test.yml` distinct and isolated.
 - Stop when stack choice, archetype choice, or verification posture is still ambiguous.
