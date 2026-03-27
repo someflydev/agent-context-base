@@ -15,10 +15,21 @@ Purpose: boot the assistant into the smallest useful context bundle for this rep
 
 After that stable pass and a narrow repo-signal check, read `MEMORY.md` if it exists.
 
+Treat the visible root as the active entrypoint and product working surface. Treat `.acb/` as the bounded
+generator-owned assistant support bundle for this repo, not as a second public docs tree.
+
+When present, use `.acb/manifests/base/` to recover generator intent, `.acb/context/` for doctrine and workflow
+guidance, `.acb/examples/` for repo-local canonical references, `.acb/templates/` for extension/reference
+templates, and `.acb/scripts/` for continuity helpers.
+
 When routing, selecting examples, assembling context bundles, choosing a verification path, or
 reading and writing `MEMORY.md`, prefer the repo-local guidance vendored under
 `{{vendored_base_root}}/context/`, `{{vendored_base_root}}/examples/`, and
 `{{vendored_base_root}}/templates/` when those paths are present.
+
+If `ordinary_context_mode` is present in `{{repo_local_profile_path}}`, treat the listed
+`manifest_bundle_startup_paths`, `repo_local_routing_model_paths`, `local_canonical_examples_available`,
+`local_templates_available`, and `local_continuity_tools_available` fields as the explicit repo-local startup model.
 
 If `{{repo_local_profile_path}}` records `derived_metadata.derived_context_mode: maximal`,
 the additional vendored bundle under `.acb/` is intentional. Use those repo-local copies as
@@ -37,6 +48,7 @@ workflow, and canonical-example files that should be read before extending `.pro
 - repo-local profile path: `{{repo_local_profile_path}}`
 - generated profile path: `{{generated_profile_path}}`
 - vendored base manifests under `{{vendored_base_manifests_dir}}/` are the repo-local snapshots of base-repo intent when present
+- `.acb/` is the bounded repo-local assistant support bundle when present; root files remain the active execution and implementation surface
 
 ## Bundle Discipline
 

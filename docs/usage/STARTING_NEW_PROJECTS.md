@@ -85,7 +85,18 @@ python scripts/new_repo.py analytics-api \
 - records a hidden generation audit under `.acb/generation-report.json` for every generated repo
 - snapshots the operator prompt into `.prompts/initial-prompt.txt` when provided and keeps starter implementation prompts alongside it
 
-All generated repos now keep generator-owned state under `.acb/`, including `.acb/manifests/project-profile.yaml`, `.acb/.generated-profile.yaml`, vendored manifest snapshots, and `.acb/generation-report.json`. Derived repos use the same hidden root for their richer continuation bundle, and ordinary repos use the same startup contract so downstream sessions do not need to branch on repo type.
+All generated repos now keep generator-owned state under `.acb/`, including `.acb/manifests/project-profile.yaml`, `.acb/.generated-profile.yaml`, vendored manifest snapshots, and `.acb/generation-report.json`.
+
+For ordinary repos, `.acb/` is the compact repo-local assistant support bundle:
+
+- `.acb/manifests/base/*.yaml` records the selected manifest snapshots and generator intent
+- `.acb/context/` vendors only the selected high-signal doctrine, workflow, stack, archetype, anchor, and skill files
+- `.acb/examples/` vendors the preferred canonical examples plus at most one small README per active example family
+- `.acb/templates/` vendors only a tight set of continuity and startup templates
+- `.acb/scripts/` vendors the small continuity helpers for memory and handoff work
+- `.acb/docs/` may vendor one compact startup explainer
+
+The root stays minimal by default: active entrypoints, product code, `.prompts/`, and public docs only when explicitly justified. `.acb/` is support material owned by the generator, not a second public documentation surface.
 
 ## Documentation Timing For Derived Repos
 
@@ -155,7 +166,7 @@ Strong first prompt for the generated repo:
 
 > Read the bootstrap context that matters for this repo, propose the implementation plan you intend to execute, wait for my approval, then carry it out with verification checkpoints.
 
-The assistant should load `AGENT.md` or `CLAUDE.md`, `.acb/manifests/project-profile.yaml`, the path recorded in `generated_profile_path`, the vendored manifests under `vendored_base_manifests_dir`, the vendored prompt-first doctrine/workflow and canonical-example files listed in `derived_metadata.manifest_bundle_startup_paths` and `derived_metadata.maximal_bundle_startup_paths`, and then the initial prompt files under `.prompts/`. The startup path intentionally crosses into `.acb/` immediately after the root entrypoints. The human should review the plan, not manually reconstruct the startup context file by file.
+The assistant should load `AGENT.md` or `CLAUDE.md`, `.acb/manifests/project-profile.yaml`, the path recorded in `generated_profile_path`, the vendored manifests under `vendored_base_manifests_dir`, and then the startup bundle paths listed in either `manifest_bundle_startup_paths` for ordinary repos or `derived_metadata.manifest_bundle_startup_paths` and `derived_metadata.maximal_bundle_startup_paths` for derived repos before continuing into `.prompts/`. The startup path intentionally crosses into `.acb/` immediately after the root entrypoints. The human should review the plan, not manually reconstruct the startup context file by file.
 
 ## Rules That Keep New Repos Clean
 
