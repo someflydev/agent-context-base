@@ -1,0 +1,262 @@
+{
+  "schema_version": 1,
+  "default_doctrines": [
+    "core-principles",
+    "testing-philosophy",
+    "context-loading-rules",
+    "context-complexity-budget",
+    "stop-conditions"
+  ],
+  "default_routers": [
+    "task-router",
+    "stack-router",
+    "archetype-router",
+    "repo-signal-hints"
+  ],
+  "doctrine_module_map": {
+    "core-principles": "validation-first-autonomy",
+    "testing-philosophy": "testing-philosophy",
+    "context-loading-rules": "startup-rehydration",
+    "context-complexity-budget": "context-budget-discipline",
+    "stop-conditions": "stop-conditions",
+    "compose-port-and-data-isolation": "context-budget-discipline",
+    "playwright-verification-philosophy": "testing-philosophy",
+    "documentation-timing-discipline": "startup-rehydration"
+  },
+  "archetype_capabilities": {
+    "backend-api-service": ["api", "storage"],
+    "cli-tool": ["cli"],
+    "data-pipeline": ["pipelines", "storage"],
+    "data-acquisition-service": ["api", "workers", "pipelines", "scraping", "storage"],
+    "multi-source-sync-platform": ["api", "workers", "pipelines", "eventing", "storage"],
+    "multi-backend-service": ["api", "eventing", "storage"],
+    "local-rag-system": ["rag", "storage"],
+    "multi-storage-experiment": ["storage"],
+    "dokku-deployable-service": ["api", "storage", "cloud-deployment"],
+    "prompt-first-repo": [],
+    "polyglot-lab": ["eventing", "storage"]
+  },
+  "manifest_capabilities": {
+    "backend-api-fastapi-polars": ["frontend", "storage"],
+    "backend-api-typescript-hono-bun": ["frontend", "storage"],
+    "cli-python": ["cli"],
+    "data-pipeline-polars": ["pipelines", "storage"],
+    "data-acquisition-service": ["workers", "pipelines", "scraping", "storage"],
+    "multi-source-sync-platform": ["workers", "pipelines", "eventing", "storage"],
+    "local-rag-base": ["rag", "storage"],
+    "dokku-deployable-fastapi": ["cloud-deployment"],
+    "dokku-deployable-go-echo": ["cloud-deployment"],
+    "dokku-deployable-phoenix": ["cloud-deployment"],
+    "dokku-deployable-typescript-hono-bun": ["cloud-deployment"]
+  },
+  "support_service_capabilities": {
+    "postgres": ["storage"],
+    "postgresql": ["storage"],
+    "redis": ["storage"],
+    "keydb": ["storage"],
+    "mongo": ["storage"],
+    "mongodb": ["storage"],
+    "duckdb": ["storage"],
+    "trino": ["storage"],
+    "minio": ["storage"],
+    "qdrant": ["storage", "rag"],
+    "meilisearch": ["storage"],
+    "elasticsearch": ["storage"],
+    "timescaledb": ["storage"],
+    "rabbitmq": ["eventing"],
+    "nats": ["eventing"],
+    "jetstream": ["eventing"],
+    "nats-jetstream": ["eventing"],
+    "kafka": ["eventing"]
+  },
+  "default_validation_gates": [
+    {
+      "id": "changed-boundary-proof",
+      "category": "completion",
+      "summary": "Do not claim completion until the changed boundary was exercised by a real check.",
+      "command_hint": "Run at least one direct proof command for the touched boundary."
+    },
+    {
+      "id": "startup-rehydration",
+      "category": "operations",
+      "summary": "Update repo-local operating context when work changes startup order, constraints, or verification commands.",
+      "command_hint": "Refresh `.acb/profile/selection.json`, project profile, or startup docs when truth changed."
+    }
+  ],
+  "archetype_validation_gates": {
+    "backend-api-service": [
+      {
+        "id": "api-smoke",
+        "category": "smoke",
+        "summary": "Boot the service and prove the health endpoint plus one representative route.",
+        "command_hint": "Exercise the health route and one non-trivial handler."
+      },
+      {
+        "id": "storage-roundtrip",
+        "category": "persistence",
+        "summary": "When handlers touch storage, prove at least one real round-trip through the storage boundary.",
+        "command_hint": "Use the repo-local test stack and avoid fake-only persistence checks."
+      }
+    ],
+    "cli-tool": [
+      {
+        "id": "cli-contract",
+        "category": "cli",
+        "summary": "Validate help output, one happy-path command, and one failure-path command.",
+        "command_hint": "Prove exit code and output shape explicitly."
+      }
+    ],
+    "data-acquisition-service": [
+      {
+        "id": "ingestion-smoke",
+        "category": "ingestion",
+        "summary": "Prove one end-to-end acquisition path from fetch through normalize and persist.",
+        "command_hint": "Use small deterministic fixtures when the upstream source is unstable."
+      },
+      {
+        "id": "idempotent-replay",
+        "category": "replay",
+        "summary": "Re-run the same acquisition step and prove replay or dedupe behavior is safe.",
+        "command_hint": "The second run must not silently duplicate or corrupt persisted state."
+      }
+    ],
+    "multi-source-sync-platform": [
+      {
+        "id": "cross-source-sync",
+        "category": "orchestration",
+        "summary": "Prove a representative multi-source sync path and checkpoint progression.",
+        "command_hint": "Show one combined sync or coordination test, not only isolated unit checks."
+      },
+      {
+        "id": "event-or-checkpoint-durability",
+        "category": "eventing",
+        "summary": "Validate checkpoint, offset, or event durability behavior for interrupted runs.",
+        "command_hint": "Replay or resume must leave state coherent."
+      }
+    ],
+    "multi-backend-service": [
+      {
+        "id": "seam-contract",
+        "category": "contract",
+        "summary": "Prove one real seam contract across services, not only isolated service-local tests.",
+        "command_hint": "Use HTTP, gRPC, or event-contract checks against the actual seam."
+      }
+    ]
+  },
+  "stack_validation_gates": {
+    "python-fastapi-uv-ruff-orjson-polars": [
+      {
+        "id": "fastapi-health-and-shape",
+        "category": "api",
+        "summary": "Validate JSON response shape and status semantics at the FastAPI surface.",
+        "command_hint": "Use the app factory or running server to prove route contracts."
+      }
+    ],
+    "typescript-hono-bun": [
+      {
+        "id": "hono-route-behavior",
+        "category": "api",
+        "summary": "Validate route behavior with Bun tests or an equivalent request harness.",
+        "command_hint": "Prove the exact route path and payload contract."
+      }
+    ],
+    "go-echo": [
+      {
+        "id": "echo-handler-behavior",
+        "category": "api",
+        "summary": "Validate Echo handler status codes and response serialization.",
+        "command_hint": "Prove at least one handler using a real request path."
+      }
+    ],
+    "prompt-first-repo": [
+      {
+        "id": "prompt-sequence-integrity",
+        "category": "prompting",
+        "summary": "Validate prompt numbering, startup files, and generated profile integrity.",
+        "command_hint": "Run the repo-local validation script for prompt-first repos."
+      }
+    ]
+  },
+  "capability_validation_gates": {
+    "api": [
+      {
+        "id": "api-contract-check",
+        "category": "contract",
+        "summary": "Prove request and response contracts for one representative endpoint.",
+        "command_hint": "Use exact payload and status assertions."
+      }
+    ],
+    "cli": [
+      {
+        "id": "cli-operator-sanity",
+        "category": "cli",
+        "summary": "Check the operator-facing command path, flags, and failure messaging.",
+        "command_hint": "Capture stderr and exit code for at least one invalid invocation."
+      }
+    ],
+    "pipelines": [
+      {
+        "id": "pipeline-fixture-run",
+        "category": "pipeline",
+        "summary": "Run one deterministic pipeline path on a small fixture and check output shape.",
+        "command_hint": "Prefer replayable sample data over broad production inputs."
+      }
+    ],
+    "workers": [
+      {
+        "id": "worker-readiness",
+        "category": "workers",
+        "summary": "Validate worker startup, work claim behavior, and one bounded work item.",
+        "command_hint": "Do not treat process boot alone as sufficient proof."
+      }
+    ],
+    "frontend": [
+      {
+        "id": "frontend-behavior",
+        "category": "ui",
+        "summary": "When the repo serves UI fragments or pages, validate one representative behavior path.",
+        "command_hint": "Prefer browser-level or fragment-level proof when the change affects interaction."
+      }
+    ],
+    "scraping": [
+      {
+        "id": "source-normalization",
+        "category": "ingestion",
+        "summary": "Validate source fetch, parse, and normalization behavior against a stable sample.",
+        "command_hint": "Record how retries, throttling, and source quirks are handled."
+      }
+    ],
+    "eventing": [
+      {
+        "id": "event-flow",
+        "category": "eventing",
+        "summary": "Validate publish/consume flow or explicit queue semantics for one representative event.",
+        "command_hint": "Prove ack, retry, or dead-letter behavior when relevant."
+      }
+    ],
+    "storage": [
+      {
+        "id": "schema-and-data-integrity",
+        "category": "data",
+        "summary": "Validate schema assumptions, key invariants, and one persisted-state assertion.",
+        "command_hint": "Check shape, uniqueness, and lifecycle assumptions explicitly."
+      }
+    ],
+    "rag": [
+      {
+        "id": "retrieval-sanity",
+        "category": "retrieval",
+        "summary": "Validate one indexing path and one retrieval query over a deterministic corpus.",
+        "command_hint": "Use fixed fixtures and stable embeddings assumptions when possible."
+      }
+    ],
+    "cloud-deployment": [
+      {
+        "id": "deploy-readiness",
+        "category": "deployment",
+        "summary": "Validate deployment-facing files, runtime assumptions, and a readiness check path.",
+        "command_hint": "Do not mark deployable until build, runtime, and health assumptions are explicit."
+      }
+    ]
+  }
+}
