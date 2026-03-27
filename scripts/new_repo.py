@@ -15,7 +15,6 @@ Examples:
     python scripts/new_repo.py prompt-kit \
         --archetype prompt-first-repo \
         --primary-stack prompt-first-repo \
-        --prompt-first \
         --target-dir /tmp/prompt-kit
 """
 
@@ -1681,7 +1680,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--prompt-first",
         action="store_true",
-        help="Generate prompt directory starter files.",
+        help="Force prompt directory starter files. This is now the default for all generated repos.",
     )
     parser.add_argument(
         "--smoke-tests",
@@ -4146,8 +4145,11 @@ def main(argv: list[str]) -> int:
             or default_manifests_for(args.archetype, args.primary_stack, args.dokku)
         )
     )
-    prompt_first_enabled = args.prompt_first or args.archetype == "prompt-first-repo" or bool(initial_prompt_text)
-    ordinary_repo_state_mode = "hidden-acb" if prompt_first_enabled else "root"
+    # All generated repos now keep generator-owned state under .acb/ and
+    # expose a visible .prompts/ sequence, so downstream sessions have a
+    # consistent startup contract regardless of archetype or entry path.
+    prompt_first_enabled = True
+    ordinary_repo_state_mode = "hidden-acb"
     request = RepoGenerationRequest(
         repo_name=repo_name,
         target_dir=target_dir,
