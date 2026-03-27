@@ -1,0 +1,316 @@
+You are still working inside the agent-context-base repository.
+
+This is a retroactively-added prompt that captures the work completed after
+PROMPT_84 and turns it into a repeatable implementation brief for similar repos
+that have not executed this prompt sequence yet.
+
+PROMPT_84 established the hidden `.acb/` containment model for derived repos.
+This prompt finishes the job by making the startup contract universal across
+generated repos, preserving the operator's original prompt, recording an audit
+trail, and tightening verification so the hidden-state model cannot drift.
+
+Output changes as commit-ready batches labeled `[NEW (retroactive) PROMPT_85]`.
+
+===============================================================================
+I. OBJECTIVE
+===============================================================================
+
+Make generated repos behave like real repo-local descendants of the base system,
+not thin scaffolds that forget how they were created.
+
+After this prompt:
+
+- generated repos preserve the operator's initial brief locally
+- generated repos record a machine-readable generation audit
+- generator-owned state lives under a hidden `.acb/` container by default
+- startup docs and prompt scaffolding read paths from generator metadata instead
+  of assuming old root-level locations
+- ordinary repos and derived repos share one coherent startup contract
+- prompt sequencing rules are explicit and verified
+
+The goal is not merely to move files. The goal is to make a fresh assistant
+session inside a generated repo able to recover:
+
+1. what was generated
+2. where generator-owned state lives
+3. what the operator originally asked for
+4. which local prompt files are executable next
+5. which repo-local manifests and vendored references should be read first
+
+===============================================================================
+II. UNIVERSAL `.acb/` STARTUP CONTRACT
+===============================================================================
+
+PROMPT_84 already hid derived repo state under `.acb/`. Generalize that model
+so it becomes the default for generated repos broadly, not a special case that
+only derived generation understands.
+
+Implement a named repo-state policy, not ad hoc string replacement.
+
+The generator should have an explicit concept similar to:
+
+- `repo_state_mode`
+- a helper that maps repo-owned generated state paths
+- a helper that maps vendored base payload paths
+- metadata fields that expose the chosen state layout to templates and docs
+
+The default end state should be:
+
+- generator-owned manifests and generated profile files live under `.acb/`
+- vendored manifest snapshots live under `.acb/manifests/base/`
+- generation audit output lives under `.acb/`
+- prompt scaffolding remains visible under `.prompts/`
+- assistant entrypoints such as `AGENT.md` and `CLAUDE.md` remain visible at
+  repo root
+- product implementation files still live where product repos expect them to
+  live; do not hide real app code or user-authored surfaces merely because the
+  generator touched the repo
+
+If the repo currently has an intermediate split where some ordinary repos still
+use root-level generator state, remove that ambiguity. The final rule should be
+coherent and documented as the default generation contract.
+
+===============================================================================
+III. PRESERVE THE OPERATOR PROMPT
+===============================================================================
+
+Generated repos should not lose the original request that caused their
+creation.
+
+Add generator support for preserving the operator prompt via explicit input
+paths such as:
+
+- `--initial-prompt-text`
+- `--initial-prompt-file`
+
+When one of those inputs is provided:
+
+- snapshot the prompt into `.prompts/initial-prompt.txt`
+- record that path in generation metadata/audit output
+- make generated docs and startup guidance acknowledge that the operator brief
+  exists and should be read early when present
+
+This is not a replacement for the executable prompt sequence. It is a preserved
+operator artifact.
+
+The prompt directory rules should remain clear:
+
+- executable generated prompts stay in strict `PROMPT_XX.txt` order
+- `initial-prompt.txt` is allowed as a non-sequential supplemental prompt file
+- generated repos should not quietly accumulate arbitrary extra `.txt` files in
+  `.prompts/`
+
+If the base repo intentionally keeps authoring helpers outside that sequence,
+keep that repo-level distinction explicit in validation logic and comments.
+
+===============================================================================
+IV. RECORD A GENERATION AUDIT
+===============================================================================
+
+Every generated repo should carry a hidden audit artifact such as:
+
+- `.acb/generation-report.json`
+
+This audit should be machine-readable and useful, not ceremonial. Include the
+highest-signal facts needed to reconstruct how generation happened locally.
+
+Good audit content includes:
+
+- repo name and target path
+- selected archetype and stack
+- selected manifests
+- chosen repo-state mode
+- chosen support-service overrides
+- prompt directory path
+- generated prompt file list
+- whether an initial prompt was provided
+- the repo-local profile path
+- the generated-profile path
+- vendored base root
+
+If the generator already assembles richer metadata, keep it. The important
+thing is that a future assistant or operator can inspect one local JSON file and
+understand the generation outcome without reverse engineering the repo.
+
+Expose the audit path in the generated profile metadata so templates and docs
+can mention it without hard-coding.
+
+===============================================================================
+V. MAKE CLASSIFICATION EXPLICIT
+===============================================================================
+
+When the generator is used from the base repo as the default answer to
+"start a new repo", do not silently guess persistence or queueing choices when
+the operator request leaves them vague.
+
+Strengthen classification and operator-facing guidance so:
+
+- storage-service choices can be selected explicitly
+- listing supported storage choices is easy
+- broker and persistence decisions are called out as explicit choices during
+  new-repo routing
+- the assistant is guided to use `scripts/new_repo.py` unless the operator
+  explicitly asked to modify the base repo itself
+
+If the generator already infers support services, add a narrow override path so
+an operator can say exactly which storage service(s) to use without fighting the
+default inference.
+
+===============================================================================
+VI. TEMPLATE AND STARTUP DOC CHANGES
+===============================================================================
+
+Do not leave generated templates frozen to the pre-`.acb/` world.
+
+Update generated repo templates so they read startup-critical paths from
+generator metadata, especially for prompt-first repos.
+
+The generated guidance should reference metadata-driven values similar to:
+
+- `repo_local_profile_path`
+- `generated_profile_path`
+- `vendored_base_root`
+- `generation_audit_path`
+
+Apply this to the main generated entrypoints and prompt-continuation surfaces,
+including:
+
+- `AGENT.md`
+- `CLAUDE.md`
+- generated `README.md`
+- prompt/refinement templates
+
+The startup flow should explicitly tell a fresh assistant to read, in roughly
+this order when present:
+
+1. `AGENT.md` or `CLAUDE.md`
+2. the repo-local project profile path recorded by metadata
+3. the generated-profile path recorded by metadata
+4. the generation audit path if it exists
+5. vendored manifests and vendored context/examples/templates under `.acb/`
+6. `.prompts/initial-prompt.txt` if present
+7. the executable `PROMPT_XX.txt` sequence
+
+Do not hard-code root-level `manifests/project-profile.yaml` or
+`.generated-profile.yaml` in generated templates if those files now live under
+`.acb/`.
+
+===============================================================================
+VII. DOCS AND ROUTERS
+===============================================================================
+
+Update the base repo's own assistant-facing and operator-facing docs so they
+describe the final startup contract consistently.
+
+At minimum, align:
+
+- top-level `AGENT.md`
+- top-level `CLAUDE.md`
+- top-level `README.md`
+- task routing docs for new-repo requests
+- stack/archetype guidance for prompt-first repos
+- generator usage docs
+- session-start / context-boot docs that mention generated repo startup
+- script docs for `new_repo.py`
+
+The docs should make these points concrete:
+
+- new-repo requests should normally route through `scripts/new_repo.py`
+- preserve the operator prompt when available
+- generator-owned state now lives under hidden `.acb/`
+- `.prompts/` remains the visible prompt execution surface
+- `.acb/` is the repo-local container for generated/vendored assistant context
+- ordinary repos and derived repos now share this startup model
+
+If there was an intermediate transitional rule during implementation, the final
+docs should describe the final rule, not the temporary one.
+
+===============================================================================
+VIII. VERIFICATION REQUIREMENTS
+===============================================================================
+
+Add or extend tests so the behavior is enforced instead of merely described.
+
+1. Prompt rules
+
+Add or strengthen a prompt-tree validator that:
+
+- accepts the generated `PROMPT_XX.txt` sequence
+- accepts `initial-prompt.txt` as the only generated non-sequential exception
+- rejects arbitrary extra prompt files
+- validates prompt-number monotonicity
+- validates prompt-to-prompt references when prompt files mention one another
+
+If the base repo keeps authoring-only helper prompt files outside the generated
+sequence, encode that exception explicitly for the base repo without weakening
+the generated-repo rule.
+
+2. Generator coverage
+
+Extend generator script tests to cover both derived and ordinary generation.
+Good assertions include:
+
+- derived repos still keep their hidden `.acb/` contract intact
+- ordinary repos now generate `.acb/manifests/project-profile.yaml`
+- ordinary repos now generate `.acb/.generated-profile.yaml`
+- ordinary repos vendor selected base manifests under `.acb/manifests/base/`
+- `.prompts/initial-prompt.txt` is created when the operator prompt is provided
+- `.acb/generation-report.json` is created and records the expected fields
+- storage-service overrides survive into metadata/audit output
+- prompt files in generated repos remain a strict `PROMPT_XX` sequence with
+  `initial-prompt.txt` as the sole supplemental exception
+- path-mapping helpers for repo-state and vendored-base routing are covered by
+  narrow assertions so future layout changes do not regress silently
+
+3. Startup-path integrity
+
+Where generated prompt files or startup docs mention repo-local paths, add
+assertions that those paths actually exist in the generated repo.
+
+4. Scope
+
+Keep the verification work pragmatic and targeted. This prompt is about making
+the startup contract durable, not about launching an unrelated test rewrite.
+
+===============================================================================
+IX. FAILURE MODES TO AVOID
+===============================================================================
+
+Do not ship any of these:
+
+- preserving the operator prompt in docs but not writing `initial-prompt.txt`
+- writing the audit file for some generation paths but not others
+- moving ordinary repos to `.acb/` while templates still reference old root
+  paths
+- adding `.acb/` logic through scattered string concatenation with no named path
+  policy
+- allowing arbitrary prompt `.txt` files to accumulate in generated repos
+- docs that still imply new-repo requests should be handled manually instead of
+  routing through `scripts/new_repo.py`
+- a state model that differs between ordinary and derived repos without a
+  deliberate, documented reason
+
+===============================================================================
+X. FINISHING BAR
+===============================================================================
+
+Before concluding implementation, generate at least:
+
+- one ordinary prompt-first repo
+- one leaf derived repo
+
+Inspect their startup surfaces under `/tmp` and verify that:
+
+- `.prompts/` is visible and usable
+- `.acb/` clearly contains generator-owned manifests, generated profile state,
+  vendored snapshots, and the audit file
+- entry docs point to the correct metadata-driven paths
+- the operator brief is preserved when provided
+
+Then run the relevant verification commands, including the generator script
+tests, the prompt-rule validator tests, and the existing context/doc governance
+checks for the repo.
+
+Do not stop at green tests if a fresh assistant session inside a generated repo
+would still have to guess where startup state lives or what the operator
+originally asked for.
