@@ -28,6 +28,8 @@ class AcbPayloadTests(unittest.TestCase):
         self.assertIn(".acb/specs/PRODUCT.md", files)
         self.assertIn(".acb/specs/VALIDATION.md", files)
         self.assertIn(".acb/validation/CHECKLIST.md", files)
+        self.assertIn(".acb/validation/COVERAGE.md", files)
+        self.assertIn(".acb/validation/COVERAGE.json", files)
         self.assertIn(".acb/profile/selection.json", files)
         self.assertEqual(metadata["selection_manifest_path"], ".acb/profile/selection.json")
 
@@ -38,7 +40,12 @@ class AcbPayloadTests(unittest.TestCase):
 
         index = json.loads(files[".acb/INDEX.json"])
         self.assertIn("product", index["layer_sources"])
+        self.assertIn("product", index["source_modules"])
         self.assertTrue(index["layer_sources"]["architecture"])
+        self.assertIn("generated_file_hashes", index)
+        coverage = json.loads(files[".acb/validation/COVERAGE.json"])
+        self.assertIn("validation_dimensions", coverage)
+        self.assertGreaterEqual(coverage["summary"]["covered_validation_dimensions"], 1)
 
     def test_cli_payload_surfaces_cli_contracts(self) -> None:
         files, _metadata = build_payload(
@@ -52,9 +59,13 @@ class AcbPayloadTests(unittest.TestCase):
         )
         self.assertIn("CLI Tool Intent", files[".acb/specs/PRODUCT.md"])
         self.assertIn("CLI Validation", files[".acb/specs/VALIDATION.md"])
+        self.assertIn("Canonical Module", files[".acb/specs/VALIDATION.md"])
         checklist = files[".acb/validation/CHECKLIST.md"]
         self.assertIn("cli-contract", checklist)
         self.assertIn("cli-operator-sanity", checklist)
+        coverage = json.loads(files[".acb/validation/COVERAGE.json"])
+        dimension_ids = {item["id"] for item in coverage["validation_dimensions"]}
+        self.assertIn("cli", dimension_ids)
 
 
 if __name__ == "__main__":

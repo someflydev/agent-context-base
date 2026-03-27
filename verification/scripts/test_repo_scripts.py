@@ -397,6 +397,10 @@ class RepoScriptTests(unittest.TestCase):
             self.assertTrue((target / ".acb/scripts/init_memory.py").exists())
             self.assertTrue((target / ".acb/scripts/check_memory_freshness.py").exists())
             self.assertTrue((target / ".acb/scripts/create_handoff_snapshot.py").exists())
+            self.assertTrue((target / ".acb/scripts/acb_inspect.py").exists())
+            self.assertTrue((target / ".acb/scripts/acb_verify.py").exists())
+            self.assertTrue((target / ".acb/validation/COVERAGE.md").exists())
+            self.assertTrue((target / ".acb/validation/COVERAGE.json").exists())
             self.assertTrue((target / ".acb/docs/session-start.md").exists())
             self.assertTrue((target / ".acb/generation-report.json").exists())
             self.assertFalse((target / "README.md").exists())
@@ -418,6 +422,7 @@ class RepoScriptTests(unittest.TestCase):
             self.assertIn("- .acb/docs/session-start.md", profile)
             self.assertIn(".acb/templates/memory/MEMORY.template.md", audit["vendored_support_paths"])
             self.assertIn(".acb/scripts/create_handoff_snapshot.py", audit["vendored_support_paths"])
+            self.assertIn(".acb/scripts/acb_verify.py", audit["vendored_support_paths"])
             self.assertEqual(audit["startup_bundle_metadata"]["ordinary_context_mode"], "compact-vendored-support-bundle")
 
             code, stdout, stderr = run_script("scripts/validate_repo.py", cwd=target)
@@ -444,6 +449,7 @@ class RepoScriptTests(unittest.TestCase):
             self.assertTrue((target / ".acb/templates/memory/MEMORY.template.md").exists())
             self.assertTrue((target / ".acb/templates/compose/docker-compose.template.yaml").exists())
             self.assertTrue((target / ".acb/scripts/init_memory.py").exists())
+            self.assertTrue((target / ".acb/scripts/acb_verify.py").exists())
             self.assertTrue((target / ".acb/docs/session-start.md").exists())
 
             profile = (target / ".acb/manifests/project-profile.yaml").read_text(encoding="utf-8")
@@ -460,9 +466,19 @@ class RepoScriptTests(unittest.TestCase):
             self.assertIn("ordinary_context_mode: compact-vendored-support-bundle", profile)
             self.assertIn(".acb/examples/canonical-api/fastapi-endpoint-example.py", audit["vendored_support_paths"])
             self.assertIn(".acb/scripts/init_memory.py", audit["vendored_support_paths"])
+            self.assertIn(".acb/scripts/acb_verify.py", audit["vendored_support_paths"])
             routing_model = audit["startup_bundle_metadata"]["repo_local_routing_model_paths"]
             self.assertIn(".acb/manifests/project-profile.yaml", routing_model)
             self.assertIn(".prompts/001-bootstrap-repo.txt", routing_model)
+
+            code, stdout, stderr = run_script(".acb/scripts/acb_inspect.py", cwd=target)
+            self.assertEqual(code, 0, stderr)
+            self.assertIn("ACB payload summary", stdout)
+            self.assertIn("Canonical source modules", stdout)
+
+            code, stdout, stderr = run_script(".acb/scripts/acb_verify.py", cwd=target)
+            self.assertEqual(code, 0, stderr)
+            self.assertIn("local payload drift: none", stdout)
 
     def test_new_repo_snapshots_initial_prompt_and_audit_for_standard_repo(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

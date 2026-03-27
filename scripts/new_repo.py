@@ -1279,6 +1279,8 @@ ORDINARY_CONTINUITY_TOOL_PATHS = (
     "scripts/init_memory.py",
     "scripts/check_memory_freshness.py",
     "scripts/create_handoff_snapshot.py",
+    "scripts/acb_inspect.py",
+    "scripts/acb_verify.py",
 )
 ORDINARY_DOC_AID_PATH = "docs/session-start.md"
 
@@ -3974,6 +3976,11 @@ def build_generated_files(
         }
     else:
         vendored_support_texts = load_manifest_support_asset_texts(request.manifests, manifests)
+    for relative_path in ("scripts/acb_inspect.py", "scripts/acb_verify.py"):
+        vendored_support_texts.setdefault(
+            relative_path,
+            (repo_root() / relative_path).read_text(encoding="utf-8"),
+        )
     extra_vendored_paths = _dedupe_existing_repo_paths(request.extra_vendored_paths or [])
     for relative_path in extra_vendored_paths:
         vendored_support_texts.setdefault(

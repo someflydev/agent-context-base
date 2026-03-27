@@ -17,6 +17,7 @@ import verify_examples  # noqa: E402
 
 
 FAST_MODULES = [
+    "verification.unit.test_acb_payload",
     "verification.unit.test_repo_integrity",
     "verification.unit.test_prompt_rules",
     "verification.unit.test_manifests",
