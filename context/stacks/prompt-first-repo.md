@@ -2,10 +2,14 @@
 
 Use this pack when the repo itself is organized around prompts, routing docs, manifests, examples, and bootstrap-friendly structure.
 
+This pack also governs descendant repo generation now that all generated repos keep a visible `.prompts/` sequence and hidden generator-owned state under `.acb/`.
+
 ## Typical Repo Surface
 
 - `AGENT.md`
 - `CLAUDE.md`
+- `.prompts/`
+- `.acb/`
 - `context/`
 - `manifests/`
 - `examples/`
@@ -30,4 +34,3 @@ Use this pack when the repo itself is organized around prompts, routing docs, ma
 - turning routers into philosophy dumps
 - adding duplicate guidance in multiple layers
 - introducing prompt filenames that are not monotonic or not explicit
-

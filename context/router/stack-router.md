@@ -180,6 +180,7 @@ Infer the active stack from repo signals, touched files, and user language.
   - `context/stacks/duckdb-trino-polars.md` if the change also touches analytical storage
 - "Generate a new repo from this base"
   - `context/stacks/prompt-first-repo.md`
+  - prefer `scripts/new_repo.py` with the operator prompt preserved into `.prompts/initial-prompt.txt`
 - "Don’t give me Python-only guidance for this sync pipeline"
   - dominant app stack
   - `examples/canonical-data-acquisition/README.md`

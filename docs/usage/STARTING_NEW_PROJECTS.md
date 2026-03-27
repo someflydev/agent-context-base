@@ -80,12 +80,12 @@ python scripts/new_repo.py analytics-api \
 - vendors the selected base manifests under the active repo-local state root inside the generated repo
 - renders `AGENT.md`, `CLAUDE.md`, `.gitignore`, and generated profile files
 - defers a substantial root `README.md` and root `docs/` by default unless you explicitly ask for them or a narrowly scoped operational need requires them
-- optionally renders prompt files, seed data, smoke tests, integration tests, and Dokku assets
+- renders prompt files for every generated repo, plus optional seed data, smoke tests, integration tests, and Dokku assets
 - generates isolated `docker-compose.yml` and `docker-compose.test.yml` when the profile implies local infra
 - records a hidden generation audit under `.acb/generation-report.json` for every generated repo
 - snapshots the operator prompt into `.prompts/initial-prompt.txt` when provided and keeps starter implementation prompts alongside it
 
-Prompt-first generated repos keep generator-owned state under `.acb/`, including `.acb/manifests/project-profile.yaml`, `.acb/.generated-profile.yaml`, vendored manifest snapshots, and `.acb/generation-report.json`. Derived repos use the same hidden root for their richer continuation bundle, while non-prompt-first ordinary repos still keep their repo-local summary at `manifests/project-profile.yaml` for now.
+All generated repos now keep generator-owned state under `.acb/`, including `.acb/manifests/project-profile.yaml`, `.acb/.generated-profile.yaml`, vendored manifest snapshots, and `.acb/generation-report.json`. Derived repos use the same hidden root for their richer continuation bundle, and ordinary repos use the same startup contract so downstream sessions do not need to branch on repo type.
 
 ## Documentation Timing For Derived Repos
 

@@ -27,6 +27,8 @@ Route from what the user is trying to do, not from internal file names.
 - "bootstrap a repo", "new repo from base", "starter repo"
   - load `context/workflows/bootstrap-repo.md`
   - prefer `scripts/new_repo.py` when the task is repo generation instead of a manual copy pass
+  - preserve the operator prompt via `--initial-prompt-text` or `--initial-prompt-file`
+  - generated repos should keep visible `.prompts/` plus hidden generator-owned state under `.acb/`
 - "naming conventions", "how to name things in this repo", "naming clarity rules", "naming discipline"
   - load `context/doctrine/naming-and-clarity.md`
 - "commit hygiene", "how to write commit messages", "commit message format rules"

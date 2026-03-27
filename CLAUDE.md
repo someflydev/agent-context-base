@@ -49,6 +49,8 @@ Use dotted module paths from the repo root. Never invoke `pytest`.
 - If the prompt implies persistence, queues, search, or eventing but leaves the backing systems unstated, ask the operator to confirm the intended storage/broker set before generation.
 - Preserve the operator's initial prompt in the generated repo and use it to justify storage suggestions.
 - When running inside `agent-context-base`, assume the task is to generate a new repo unless the operator explicitly says the base repo itself should be changed.
+- For any new generated repo, prefer `scripts/new_repo.py` over manual scaffolding and assume the generated startup surface should include root `AGENT.md`, root `CLAUDE.md`, `.prompts/`, and hidden generator-owned state under `.acb/`.
+- When routing a new-repo request, load only the manifest/archetype/stack/canonical-example bundle needed to choose generator arguments, then pass the operator prompt through `--initial-prompt-text` or `--initial-prompt-file`.
 - Use `MEMORY.md` only as continuity state.
 - Keep `docker-compose.yml` and `docker-compose.test.yml` distinct and isolated.
 - Stop when stack choice, archetype choice, or verification posture is still ambiguous.

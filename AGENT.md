@@ -38,6 +38,8 @@ Do not bulk-load `context/`, `examples/`, `templates/`, or `manifests/`.
 - If the prompt implies data movement or persistence but does not name the backing systems, ask the operator to confirm the storage/broker set before running `scripts/new_repo.py`.
 - When the operator already supplied an initial prompt, preserve it in the generated repo and use it to justify storage suggestions rather than inventing domain-specific defaults.
 - When started in `agent-context-base`, assume the operator wants a new generated repo unless they explicitly say they want to modify the base repo itself.
+- For any new generated repo, prefer `scripts/new_repo.py` over manual scaffolding and assume the generated startup surface should include root `AGENT.md`, root `CLAUDE.md`, `.prompts/`, and hidden generator-owned state under `.acb/`.
+- When routing a new-repo request, load the narrow manifest/archetype/stack/canonical-example bundle needed to choose the generator arguments, then pass the operator prompt through `--initial-prompt-text` or `--initial-prompt-file`.
 - Use `MEMORY.md` only for continuity, never as doctrine.
 - Update `MEMORY.md` at meaningful stop points and create a handoff snapshot when a later session is likely.
 
