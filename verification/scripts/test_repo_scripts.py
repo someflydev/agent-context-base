@@ -273,12 +273,12 @@ class RepoScriptTests(unittest.TestCase):
             )
             self.assertEqual(code, 0, stderr)
             self.assertIn("Generated starter repo", stdout)
-            profile = (target / "manifests/project-profile.yaml").read_text(encoding="utf-8")
-            self.assertTrue((target / "manifests/base/backend-api-fastapi-polars.yaml").exists())
-            self.assertTrue((target / "manifests/base/data-acquisition-service.yaml").exists())
-            self.assertIn("vendored_base_manifests_dir: manifests/base", profile)
-            self.assertIn("- manifests/base/backend-api-fastapi-polars.yaml", profile)
-            self.assertIn("- manifests/base/data-acquisition-service.yaml", profile)
+            profile = (target / ".acb/manifests/project-profile.yaml").read_text(encoding="utf-8")
+            self.assertTrue((target / ".acb/manifests/base/backend-api-fastapi-polars.yaml").exists())
+            self.assertTrue((target / ".acb/manifests/base/data-acquisition-service.yaml").exists())
+            self.assertIn("vendored_base_manifests_dir: .acb/manifests/base", profile)
+            self.assertIn("- .acb/manifests/base/backend-api-fastapi-polars.yaml", profile)
+            self.assertIn("- .acb/manifests/base/data-acquisition-service.yaml", profile)
 
     def test_new_repo_generates_team_a_bundle(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -486,6 +486,12 @@ class RepoScriptTests(unittest.TestCase):
             self.assertTrue((target / "README.md").exists())
             self.assertTrue((target / "docs/repo-purpose.md").exists())
             self.assertTrue((target / "docs/repo-layout.md").exists())
+            self.assertTrue((target / "AGENT.md").exists())
+            self.assertTrue((target / "CLAUDE.md").exists())
+            self.assertTrue((target / ".prompts/001-bootstrap-repo.txt").exists())
+            self.assertTrue((target / ".acb/manifests/project-profile.yaml").exists())
+            self.assertTrue((target / ".acb/.generated-profile.yaml").exists())
+            self.assertTrue((target / ".acb/generation-report.json").exists())
 
     def test_memory_utilities_cover_init_check_and_handoff(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
