@@ -1,38 +1,39 @@
 # Spec-Driven `.acb` Payloads
 
-Generated repos now receive a repo-local `.acb/` payload that makes spec-driven development and validation-driven autonomy concrete instead of implied.
+Generated repos receive a repo-local `.acb/` payload so future assistant sessions can operate from explicit local specs, validation rules, and startup guidance instead of rediscovering intent from scratch.
 
-## Why This Exists
+## Purpose
 
-The generated repo should be able to answer these questions without reaching back into the source base repo:
+`.acb/` answers these questions locally inside a generated repo:
 
 - what kind of repo is this
-- what constraints apply here
-- what must be validated before a task is complete
-- what should an assistant read first after a long break
-- how should work be extended safely without drifting from the intended shape
+- which canonical rules were composed into it
+- what must be validated before a slice is complete
+- what should a fresh assistant read first
+- whether the local payload or upstream canonical sources have drifted
+- which validation dimensions are covered and which are still gaps
 
-That is the job of the local `.acb/` payload.
+## Canonical Sources
 
-## Canonical Source Layout
+Canonical inputs live here:
 
-Canonical source material lives in three places:
+- [`context/specs/`](../../context/specs/README.md)
+- [`context/validation/`](../../context/validation/README.md)
+- [`context/acb/profile-rules.json`](../../context/acb/profile-rules.json)
 
-- `context/specs/`: layered narrative modules for product, architecture, agent behavior, and evolution
-- `context/validation/`: layered narrative modules for validation expectations
-- `context/acb/profile-rules.json`: machine-readable composition rules, inferred capabilities, doctrine mappings, and validation gates
+Every spec and validation module that can be composed into `.acb/` now carries lightweight origin metadata:
 
-This matches the existing `agent-context-base` philosophy:
+```yaml
+---
+acb_origin: canonical
+acb_source_path: context/specs/architecture/stacks/go-echo.md
+acb_role: architecture
+acb_stacks: [go-echo]
+acb_version: 1
+---
+```
 
-- context stays layered
-- manifests still select repo shape
-- doctrine still constrains behavior
-- routers still narrow startup
-- validation remains the main safety rail
-
-## Generated Repo Layout
-
-The synthesized repo-local payload is written under `.acb/`:
+## Generated `.acb/` Layout
 
 ```text
 .acb/
@@ -50,28 +51,77 @@ The synthesized repo-local payload is written under `.acb/`:
   validation/
     CHECKLIST.md
     MATRIX.json
+    COVERAGE.md
+    COVERAGE.json
   doctrines/
     ACTIVE_DOCTRINES.md
   routers/
     README.md
+  scripts/
+    acb_inspect.py
+    acb_verify.py
 ```
 
-The generated repo may also keep vendored `.acb/context/`, `.acb/examples/`, `.acb/templates/`, `.acb/scripts/`, and `.acb/manifests/base/` paths when the manifest-selected support bundle calls for them.
+## Real Flow
 
-## Composition Model
+```mermaid
+flowchart LR
+    A[context/specs + context/validation + profile-rules.json] --> B[scripts/acb_payload.py]
+    B --> C[.acb/specs/*.md]
+    B --> D[.acb/validation/CHECKLIST.md]
+    B --> E[.acb/validation/MATRIX.json]
+    B --> F[.acb/validation/COVERAGE.json]
+    B --> G[.acb/INDEX.json]
+    C --> H[assistant session]
+    D --> H
+    F --> H
+    H --> I[implement]
+    I --> J[validate]
+    J --> K[done or incomplete or blocked]
+```
 
-Composition is explicit and inspectable.
+## Composition Rules
 
-1. Manifests still pick the repo shape and vendored support context.
-2. `scripts/acb_payload.py` infers active doctrines, routers, and capabilities from archetype, stack, selected manifests, support services, and deployment mode.
-3. Canonical modules from `context/specs/` and `context/validation/` are selected by convention.
-4. Those modules are composed into a small set of synthesized repo-local specs under `.acb/specs/`.
-5. Machine-readable validation gates are emitted to `.acb/validation/MATRIX.json`, with a session-usable checklist in `.acb/validation/CHECKLIST.md`.
-6. `.acb/INDEX.json` records the canonical source files and hashes so future drift or coverage tooling has a stable starting point.
+1. `scripts/new_repo.py` or `scripts/acb_payload.py` selects archetype, primary stack, manifests, and support services.
+2. `context/acb/profile-rules.json` infers doctrines, routers, capabilities, and validation gates.
+3. Canonical modules are selected from `context/specs/` and `context/validation/`.
+4. The selected modules are concatenated into `.acb/specs/*.md`.
+5. Origin metadata is preserved per canonical module inside the composed output and in `.acb/INDEX.json`.
+6. Validation gates become `.acb/validation/CHECKLIST.md` and `.acb/validation/MATRIX.json`.
+7. Coverage expectations become `.acb/validation/COVERAGE.md` and `.acb/validation/COVERAGE.json`.
 
-## First-Read Order For Future Sessions
+## Drift Detection
 
-Inside a generated repo, assistants should read in this order:
+Drift detection is intentionally lightweight and inspectable.
+
+`.acb/INDEX.json` records:
+
+- generated file hashes for repo-local payload files
+- canonical source paths and canonical source hashes
+- the composition target for each source module
+
+`python .acb/scripts/acb_verify.py` reports:
+
+- local payload drift: `.acb/` files changed since generation
+- canonical source drift: current canonical files no longer match recorded source hashes, when the base repo is available
+- coverage gaps: required validation dimensions not covered by the generated validation gates
+
+This is visibility tooling, not a full enforcement framework.
+
+## Coverage Model
+
+Coverage is profile-aware, not perfectionist. The generated coverage summary answers:
+
+- are the expected spec documents present
+- if the repo has `api`, `cli`, `storage`, `frontend`, `workers`, `pipelines`, `eventing`, `scraping`, `rag`, or deployment capabilities, do validation gates cover them
+- do archetype-specific concerns such as ingestion replay, service seams, or sync orchestration appear
+
+That summary lives in:
+
+- `.acb/validation/COVERAGE.md`
+- `.acb/validation/COVERAGE.json`
+
+## Assistant First-Read Order In A Generated Repo
 
 1. `AGENT.md`
 2. `CLAUDE.md`
@@ -80,29 +130,13 @@ Inside a generated repo, assistants should read in this order:
 5. `.acb/specs/AGENT_RULES.md`
 6. `.acb/specs/VALIDATION.md`
 7. `.acb/validation/CHECKLIST.md`
-8. `.acb/generation-report.json`
-9. `.prompts/*.txt` if present
-10. vendored manifests and support docs if the current task needs them
+8. `.acb/validation/COVERAGE.md`
+9. `.acb/generation-report.json`
+10. vendored manifests or support docs only when the task activates them
 
-This keeps startup narrow while still making autonomy bounded and resumable.
+## Commands
 
-## Exercise The Flow
-
-Generate a repo and inspect the local payload:
-
-```bash
-python scripts/new_repo.py analytics-api \
-  --archetype backend-api-service \
-  --primary-stack python-fastapi-uv-ruff-orjson-polars \
-  --smoke-tests \
-  --integration-tests \
-  --seed-data \
-  --target-dir /tmp/analytics-api
-
-find /tmp/analytics-api/.acb -maxdepth 2 -type f | sort
-```
-
-Compose a payload directly without generating a whole repo:
+Compose directly:
 
 ```bash
 python scripts/acb_payload.py \
@@ -113,43 +147,35 @@ python scripts/acb_payload.py \
   --output-dir /tmp/analytics-api
 ```
 
-## Selection Examples
+Inspect the payload in a generated repo:
 
-Backend API + FastAPI:
+```bash
+python .acb/scripts/acb_inspect.py
+python .acb/scripts/acb_verify.py
+```
 
-- archetype: `backend-api-service`
-- primary stack: `python-fastapi-uv-ruff-orjson-polars`
-- typical capabilities: `api`, `storage`, `frontend`
-- validation pressure: route contracts, readiness, storage round-trips, UI-fragment correctness when present
+## Composition Diagram
 
-CLI-heavy utility:
+```mermaid
+flowchart TD
+    A[archetype] --> E[selection]
+    B[primary stack] --> E
+    C[manifests] --> E
+    D[support services] --> E
+    E --> F[profile-rules.json]
+    F --> G[doctrines]
+    F --> H[routers]
+    F --> I[capabilities]
+    F --> J[validation gates]
+    G --> K[.acb payload]
+    H --> K
+    I --> K
+    J --> K
+```
 
-- archetype: `cli-tool`
-- primary stack: `prompt-first-repo` or a future CLI-native stack
-- typical capabilities: `cli`
-- validation pressure: help output, exit codes, error-path behavior, prompt/profile integrity when prompt-first
+## What Is Intentionally Lightweight
 
-Scrape/sync/classify data repo:
-
-- archetype: `data-acquisition-service`
-- primary stack: often `python-fastapi-uv-ruff-orjson-polars`
-- typical capabilities: `api`, `workers`, `pipelines`, `scraping`, `storage`
-- validation pressure: fetch-to-persist proof, replay safety, normalization fidelity, worker readiness
-
-Evented multi-service lab or sync platform:
-
-- archetype: `multi-source-sync-platform` or `multi-backend-service`
-- primary stack: stack-specific service surfaces plus broker/storage support
-- typical capabilities: `api`, `workers`, `pipelines`, `eventing`, `storage`
-- validation pressure: seam contracts, checkpoint durability, event flow, cross-service or cross-source coordination proof
-
-## Lightweight By Design
-
-This system intentionally does not yet implement:
-
-- full drift reconciliation
-- spec graph compilation
-- validation coverage scoring
-- worktree-aware multi-agent orchestration
-
-But the generated `.acb/INDEX.json`, `.acb/profile/selection.json`, and `.acb/validation/MATRIX.json` are structured so those capabilities can be added later without redesigning the payload model.
+- drift is reported, not auto-reconciled
+- coverage reports expectations, not full semantic completeness
+- composition is a readable script, not a framework
+- canonical drift checks are optional when the base repo is unavailable

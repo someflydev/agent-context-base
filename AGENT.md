@@ -1,53 +1,36 @@
 # AGENT.md
 
-Purpose: boot the assistant into the smallest useful context bundle for this repo.
+Purpose: boot an assistant into the smallest useful context bundle for this repo.
 
-Use `docs/context-boot-sequence.md` as the startup contract. Durable rules live under `context/doctrine/`.
+Read [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md) first. This repo now has a canonical spec/validation layer for `.acb/` generation, so do not treat older context docs as the only source of truth.
 
 ## First Reads
 
-1. `README.md`
-2. `docs/context-boot-sequence.md`
-3. `docs/repo-purpose.md`
-4. `docs/repo-layout.md`
-5. `docs/session-start.md`
-6. `context/router/task-router.md`
-
-After those reads and a narrow repo-signal check, read `MEMORY.md` if it exists. Load stack and archetype routers only when the task still needs narrowing.
-
-## Bundle Discipline
-
-Default first-pass bundle:
-
-1. one router
-2. one anchor if helpful
-3. only the doctrine files the task activates
-4. one workflow
-5. one archetype if repo shape matters
-6. only the active stack packs
-7. one canonical example
-
-Do not bulk-load `context/`, `examples/`, `templates/`, or `manifests/`.
+1. [`README.md`](README.md)
+2. [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md)
+3. [`docs/usage/SPEC_DRIVEN_ACB_PAYLOADS.md`](docs/usage/SPEC_DRIVEN_ACB_PAYLOADS.md)
+4. [`docs/usage/ASSISTANT_BEHAVIOR_SPEC.md`](docs/usage/ASSISTANT_BEHAVIOR_SPEC.md)
+5. [`docs/repo-layout.md`](docs/repo-layout.md)
+6. one router, one workflow, one stack, and one example only if the task still needs narrowing
 
 ## Operating Rules
 
-- Infer intent from normal language, not internal filenames.
+- Treat `.acb/` as the generated repo-local operating boundary.
+- When working in a generated repo, re-read `.acb/SESSION_BOOT.md`, `.acb/profile/selection.json`, `.acb/specs/AGENT_RULES.md`, and `.acb/specs/VALIDATION.md` at session start.
 - Prefer manifest-defined bundles over improvised loading.
-- Treat templates as scaffolds and examples as the preferred pattern source.
-- During new-project classification, surface storage, queue, search, and broker choices explicitly.
-- If the prompt implies data movement or persistence but does not name the backing systems, ask the operator to confirm the storage/broker set before running `scripts/new_repo.py`.
-- When the operator already supplied an initial prompt, preserve it in the generated repo and use it to justify storage suggestions rather than inventing domain-specific defaults.
-- When started in `agent-context-base`, assume the operator wants a new generated repo unless they explicitly say they want to modify the base repo itself.
-- For any new generated repo, prefer `scripts/new_repo.py` over manual scaffolding and assume the generated startup surface should include root `AGENT.md`, root `CLAUDE.md`, `.prompts/`, and hidden generator-owned state under `.acb/`.
-- When routing a new-repo request, load the narrow manifest/archetype/stack/canonical-example bundle needed to choose the generator arguments, then pass the operator prompt through `--initial-prompt-text` or `--initial-prompt-file`.
+- Validation is mandatory before claiming completion unless the operator explicitly waives it.
+- Use `blocked`, `incomplete`, and `done` precisely.
 - Use `MEMORY.md` only for continuity, never as doctrine.
-- Update `MEMORY.md` at meaningful stop points and create a handoff snapshot when a later session is likely.
 
-## Stop When
+## New Repo Routing
 
-- more than one workflow, stack, or archetype still looks primary
-- storage, queue, search, deployment, or Compose isolation changes lack a minimal verification path
-- prompt numbering or generated-profile references would become ambiguous
-- the next step would require loading broad adjacent context "just in case"
+- When started in `agent-context-base`, assume the operator wants a new generated repo unless they explicitly say they want to modify the base repo itself.
+- For new generated repos, prefer `scripts/new_repo.py` over manual scaffolding.
+- Make storage, queue, search, and deployment assumptions explicit before generation.
+- Pass the operator prompt through `--initial-prompt-text` or `--initial-prompt-file` whenever possible.
 
-For deeper runtime behavior, see `docs/usage/ASSISTANT_BEHAVIOR_SPEC.md` and `context/doctrine/stop-conditions.md`.
+## Verification
+
+- Base repo: `python scripts/validate_context.py`
+- Generated repo: `python .acb/scripts/acb_verify.py`
+- Inspect payload: `python .acb/scripts/acb_inspect.py`

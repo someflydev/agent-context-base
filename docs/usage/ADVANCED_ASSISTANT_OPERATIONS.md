@@ -10,6 +10,7 @@ The safest rhythm is:
 
 Rules:
 
+- re-read the generated `.acb/` startup surface before resuming after a long pause
 - define the verification path before coding
 - prefer vertical slices over broad horizontal rewrites
 - checkpoint after each meaningful slice

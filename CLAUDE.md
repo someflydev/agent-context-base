@@ -1,58 +1,44 @@
 # CLAUDE.md
 
-Use this file as the assistant boot entrypoint, not as the full source of truth.
+Use this file as a boot entrypoint, not as the full source of truth.
 
-Follow `docs/context-boot-sequence.md` before loading deeper context.
+Follow [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md) before broad exploration.
 
 ## First Reads
 
-1. `README.md`
-2. `docs/context-boot-sequence.md`
-3. `docs/repo-purpose.md`
-4. `docs/repo-layout.md`
-5. `docs/session-start.md`
-6. `context/router/task-router.md`
-
-After those reads and a narrow repo-signal check, read `MEMORY.md` if it exists.
+1. [`README.md`](README.md)
+2. [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md)
+3. [`docs/usage/SPEC_DRIVEN_ACB_PAYLOADS.md`](docs/usage/SPEC_DRIVEN_ACB_PAYLOADS.md)
+4. [`docs/usage/ASSISTANT_BEHAVIOR_SPEC.md`](docs/usage/ASSISTANT_BEHAVIOR_SPEC.md)
+5. [`docs/repo-layout.md`](docs/repo-layout.md)
 
 ## Minimal Context Policy
 
 Prefer this order:
 
-1. router
-2. anchor
-3. doctrine
-4. workflow
-5. archetype
-6. stack
-7. canonical example
-8. template only if scaffolding is required
+1. one router
+2. one workflow
+3. one active stack surface
+4. one archetype if the repo shape matters
+5. one canonical example
+6. spec/validation modules only when working on `.acb/` composition or hardening
 
 Load one dominant path, not a broad survey.
 
-## Running Verifications
-
-Verification scripts use `unittest`, not pytest. Run them with:
-
-```
-python3.14 -m unittest verification.examples.data.test_storage_examples -v
-```
-
-Use dotted module paths from the repo root. Never invoke `pytest`.
-
 ## Guardrails
 
-- Infer intent from normal language and repo signals.
-- Prefer manifests and canonical examples over improvisation.
-- Treat templates as starter scaffolds, not authoritative patterns.
-- During new-project classification, make storage and broker choices explicit instead of silently accepting generic defaults.
-- If the prompt implies persistence, queues, search, or eventing but leaves the backing systems unstated, ask the operator to confirm the intended storage/broker set before generation.
-- Preserve the operator's initial prompt in the generated repo and use it to justify storage suggestions.
-- When running inside `agent-context-base`, assume the task is to generate a new repo unless the operator explicitly says the base repo itself should be changed.
-- For any new generated repo, prefer `scripts/new_repo.py` over manual scaffolding and assume the generated startup surface should include root `AGENT.md`, root `CLAUDE.md`, `.prompts/`, and hidden generator-owned state under `.acb/`.
-- When routing a new-repo request, load only the manifest/archetype/stack/canonical-example bundle needed to choose generator arguments, then pass the operator prompt through `--initial-prompt-text` or `--initial-prompt-file`.
-- Use `MEMORY.md` only as continuity state.
-- Keep `docker-compose.yml` and `docker-compose.test.yml` distinct and isolated.
-- Stop when stack choice, archetype choice, or verification posture is still ambiguous.
+- Re-read generated `.acb/` boot files at session start.
+- Prefer manifests, canonical examples, and validation gates over improvisation.
+- Treat templates as scaffolds, not canonical truth.
+- Do not claim completion without running the stated proof path.
+- If proof is unavailable, report the work as `blocked` or `incomplete` instead of `done`.
 
-For deeper operating rules, see `docs/usage/ASSISTANT_BEHAVIOR_SPEC.md`.
+## Verification
+
+Verification scripts use `unittest`, not `pytest`.
+
+```bash
+python scripts/run_verification.py --tier fast
+python scripts/validate_context.py
+python .acb/scripts/acb_verify.py
+```

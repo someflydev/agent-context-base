@@ -1,50 +1,17 @@
 # Repo Layout
 
-The repository is organized so assistants can route first, load later, and avoid scanning broad directories by default.
+The repository is organized so assistants can route first, compose or generate `.acb/` payloads, and verify that the system still matches its own documentation.
 
 | Path | Role |
 | --- | --- |
-| `README.md` | Front-facing overview and entrypoint for humans. |
-| `AGENT.md`, `CLAUDE.md` | Minimal assistant boot docs. |
-| `docs/` | Short orientation, architecture, and usage guides. |
-| `context/doctrine/` | Durable rules: loading discipline, testing posture, prompt-first rules, deployment guardrails, and stop conditions. |
-| `context/router/` | Task, stack, archetype, and alias routing logic. |
-| `context/workflows/` | Task playbooks such as adding features, bootstrapping repos, or refining before commit. |
-| `context/stacks/` | Framework and infra guidance for active implementation surfaces. |
-| `context/archetypes/` | Repo-shape guidance such as backend service, CLI, local RAG, or prompt-first repo. |
-| `context/anchors/` | Very small reminder docs for startup, isolation, and integrity work. |
-| `context/skills/` | Cognitive procedure guides for selection decisions (manifest choice, verification path, context bundle assembly, continuity discipline). |
-| `context/memory/` | Rules and templates for `MEMORY.md`, stop hooks, and handoff snapshots. |
-| `manifests/` | Machine-readable context bundles, triggers, repo signals, examples, and bootstrap defaults. |
-| `examples/` | Canonical examples that should shape implementation after routing is narrow. |
-| `templates/` | Generated-repo scaffolds. Useful for bootstrap, but lower authority than canonical examples. |
-| `scripts/` | Bootstrap, preview, validation, repo-signal analysis, and continuity utilities. |
-| `verification/` | Example registry, support matrix, tests, fixtures, and scenario harnesses. |
-
-## Reading Order
-
-1. `README.md`
-2. `docs/context-boot-sequence.md`
-3. `docs/repo-purpose.md`
-4. `docs/repo-layout.md`
-5. `docs/session-start.md`
-6. one router, one workflow, one stack, and one example as needed
-
-## Practical Rules
-
-- Load doctrine only when the task activates a durable constraint.
-- Load one workflow before mixing several.
-- Load only the stacks on the active change surface.
-- Prefer one canonical example over several near-matches.
-- Treat templates as scaffolding, not proof of a canonical pattern.
-- In newly derived repos, missing root `README.md` or `docs/` can be intentional until the implementation earns front-facing docs.
-
-## Extension Rule
-
-When promoting a new stack or repo shape, keep the same pattern:
-
-1. add or refine the router signals
-2. add the focused stack or archetype guidance
-3. add or update a manifest
-4. add a canonical example only when the pattern is stable
-5. add verification coverage so the example can stay trusted
+| [`README.md`](../README.md) | Front door for humans and assistants. |
+| [`AGENT.md`](../AGENT.md), [`CLAUDE.md`](../CLAUDE.md) | Minimal assistant boot docs. |
+| [`context/specs/`](../context/specs/README.md) | Canonical product, architecture, agent, and evolution modules. |
+| [`context/validation/`](../context/validation/README.md) | Canonical validation modules. |
+| [`context/acb/`](../context/acb/README.md) | Payload composition rules. |
+| `context/router/`, `context/doctrine/`, `context/workflows/`, `context/stacks/`, `context/archetypes/`, `context/anchors/`, `context/skills/` | Broader routing and support guidance used by manifests and startup flows. |
+| [`manifests/`](../manifests) | Machine-readable context bundles and generation defaults. |
+| [`examples/`](../examples/README.md) | Canonical examples. |
+| [`templates/`](../templates/README.md) | Bootstrap scaffolds. |
+| [`scripts/`](../scripts/README.md) | Generation, composition, inspection, and verification tools. |
+| [`verification/`](../verification/README.md) | Verification suites and fixtures. |

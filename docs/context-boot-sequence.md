@@ -1,53 +1,33 @@
 # Context Boot Sequence
 
-This is the deterministic startup contract for assistants working in `agent-context-base` or a repo generated from it.
+This is the deterministic startup contract for assistants working in `agent-context-base` or a generated repo.
 
 ## Boot Order
 
-1. Read the stable entrypoints:
-   `AGENT.md`, `CLAUDE.md`, `.acb/manifests/project-profile.yaml` when present otherwise `manifests/project-profile.yaml`, `.acb/.generated-profile.yaml` when present otherwise `.generated-profile.yaml`, plus `README.md` and `docs/...` only when they exist and are clearly maintained.
-2. Inspect narrow repo signals:
-   lockfiles, root manifests, source entrypoints, Compose files, prompt files, and deployment artifacts.
-3. Recover continuity:
-   read `MEMORY.md` if it exists, then the latest relevant handoff snapshot only when clearly resuming a transfer.
-4. Route the task:
-   choose one workflow first, then the active stack and archetype only if needed.
-5. Select a manifest:
-   prefer the manifest with the strongest repo-signal and router match.
-6. Assemble the minimal bundle:
-   required context first, optional context only when activated by the task.
-7. Choose one canonical example:
-   add one support example only for an orthogonal concern such as smoke testing.
-8. Implement, verify, and update continuity artifacts at meaningful stop points.
-
-## Runtime Flow
-
-```mermaid
-flowchart TD
-    A[Stable entrypoints<br/>boot docs plus README/docs when present] --> B[Repo-signal check]
-    B --> C[MEMORY.md or handoff if relevant]
-    C --> D[Task router]
-    D --> E[Stack and archetype routers]
-    E --> F[Manifest selection]
-    F --> G[Minimal context bundle]
-    G --> H[Canonical example]
-    H --> I[Implement and verify]
-    I --> J[Update MEMORY.md or handoff]
-```
+1. Read stable entrypoints: `AGENT.md`, `CLAUDE.md`, and `README.md` when present.
+2. In generated repos, read `.acb/SESSION_BOOT.md`, `.acb/profile/selection.json`, `.acb/specs/AGENT_RULES.md`, and `.acb/specs/VALIDATION.md`.
+3. Read `.acb/validation/CHECKLIST.md` and `.acb/validation/COVERAGE.md` when `.acb/` exists.
+4. Inspect narrow repo signals: lockfiles, root manifests, source entrypoints, Compose files, prompt files, deployment artifacts.
+5. Read `MEMORY.md` only after the stable startup surface was rehydrated.
+6. Route the task and load only the active workflow, stack surface, archetype, and canonical example.
 
 ## Rules
 
 - Do not start by scanning whole directories.
-- In newly derived repos, missing root `README.md` or `docs/` can be intentional when front-facing docs are being deferred until the implementation has substance.
-- Treat `MEMORY.md` as operational state, not doctrine.
-- Stop if more than one workflow, stack, archetype, or manifest still looks primary.
-- Do not merge several near-match manifests.
-- Do not load templates when a canonical example already answers the implementation question.
+- Re-read `.acb/` at the beginning of every new session.
+- Prefer one active boundary and one validation path.
+- Treat validation as required before claiming completion.
+- Use `blocked`, `incomplete`, and `done` precisely.
 
-## Helpful Commands
+## Diagram
 
-```bash
-python scripts/prompt_first_repo_analyzer.py .
-python scripts/preview_context_bundle.py <manifest> --show-weights --show-anchors
-python scripts/validate_context.py
+```mermaid
+flowchart TD
+    A[AGENT.md / CLAUDE.md / README.md] --> B[.acb/SESSION_BOOT.md]
+    B --> C[selection.json + AGENT_RULES.md + VALIDATION.md]
+    C --> D[CHECKLIST.md + COVERAGE.md]
+    D --> E[narrow repo signals]
+    E --> F[MEMORY.md if needed]
+    F --> G[route one task]
+    G --> H[implement and validate]
 ```
