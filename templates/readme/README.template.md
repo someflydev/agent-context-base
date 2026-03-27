@@ -7,8 +7,8 @@ This README should stay factual and small. Expand it only when the repo has enou
 ## Start Here
 
 1. Read `AGENT.md` or `CLAUDE.md`
-2. Read `manifests/project-profile.yaml`
-3. Read `.generated-profile.yaml`
+2. Read `{{repo_local_profile_path}}`
+3. Read `{{generated_profile_path}}`
 4. Read `docs/repo-purpose.md` if it exists
 5. Read `docs/repo-layout.md` if it exists
 
