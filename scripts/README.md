@@ -74,7 +74,7 @@ Derived generation notes:
 - `--derived-context-mode compact|maximal` controls how much prompt-first support context is vendored for derived repos; the default is `compact`
 - when `--target-dir` points at `/tmp` or any existing directory, that directory is treated as the parent and each derived repo is written under it
 - derived repos keep their repo-local summary in `.acb/manifests/project-profile.yaml` and vendor selected base manifests under `.acb/manifests/base/*.yaml`
-- ordinary generated repos also reserve `.acb/` for generator audit artifacts such as `.acb/generation-report.json`
+- ordinary prompt-first repos keep generator-owned state under `.acb/`, including `.acb/manifests/project-profile.yaml`, `.acb/.generated-profile.yaml`, vendored manifest snapshots, and `.acb/generation-report.json`
 - `compact` and `maximal` both use the hidden `.acb/` container so only `AGENT.md` and `CLAUDE.md` remain as non-hidden root entrypoints
 - `compact` vendors the selected manifests plus manifest-linked support assets into `.acb/`
 - `maximal` uses the same `.acb/` root while adding a bounded local bundle of prompt-first anchors, startup/routing skills, canonical prompt/workflow examples, prompt-governance templates, and source-example archetype/stack docs

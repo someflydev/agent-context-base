@@ -77,7 +77,7 @@ python scripts/new_repo.py analytics-api \
 
 - picks the requested archetype and primary stack
 - selects default manifests for that repo shape
-- vendors the selected base manifests under `manifests/base/` inside the generated repo
+- vendors the selected base manifests under the active repo-local state root inside the generated repo
 - renders `AGENT.md`, `CLAUDE.md`, `.gitignore`, and generated profile files
 - defers a substantial root `README.md` and root `docs/` by default unless you explicitly ask for them or a narrowly scoped operational need requires them
 - optionally renders prompt files, seed data, smoke tests, integration tests, and Dokku assets
@@ -85,7 +85,7 @@ python scripts/new_repo.py analytics-api \
 - records a hidden generation audit under `.acb/generation-report.json` for every generated repo
 - snapshots the operator prompt into `.prompts/initial-prompt.txt` when provided and keeps starter implementation prompts alongside it
 
-`manifests/project-profile.yaml` remains the generated repo's repo-local summary of actual state for ordinary repos. All generated repos now reserve `.acb/` as the hidden audit root. Derived repos additionally place their generated summary and vendored snapshot under `.acb/` so the root stays limited to the assistant boot entrypoints and hidden support directories.
+Prompt-first generated repos keep generator-owned state under `.acb/`, including `.acb/manifests/project-profile.yaml`, `.acb/.generated-profile.yaml`, vendored manifest snapshots, and `.acb/generation-report.json`. Derived repos use the same hidden root for their richer continuation bundle, while non-prompt-first ordinary repos still keep their repo-local summary at `manifests/project-profile.yaml` for now.
 
 ## Documentation Timing For Derived Repos
 

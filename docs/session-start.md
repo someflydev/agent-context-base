@@ -5,8 +5,8 @@ Use this checklist when starting a task or resuming after context drift.
 ## Read First
 
 1. `AGENT.md` or `CLAUDE.md`
-2. `manifests/project-profile.yaml`
-3. `.generated-profile.yaml`
+2. `.acb/manifests/project-profile.yaml` when present, otherwise `manifests/project-profile.yaml`
+3. `.acb/.generated-profile.yaml` when present, otherwise `.generated-profile.yaml`
 4. `README.md` if it exists and is current
 5. `docs/context-boot-sequence.md`
 6. `docs/repo-purpose.md` if it exists

@@ -5,7 +5,7 @@ This is the deterministic startup contract for assistants working in `agent-cont
 ## Boot Order
 
 1. Read the stable entrypoints:
-   `AGENT.md`, `CLAUDE.md`, `manifests/project-profile.yaml`, `.generated-profile.yaml`, plus `README.md` and `docs/...` only when they exist and are clearly maintained.
+   `AGENT.md`, `CLAUDE.md`, `.acb/manifests/project-profile.yaml` when present otherwise `manifests/project-profile.yaml`, `.acb/.generated-profile.yaml` when present otherwise `.generated-profile.yaml`, plus `README.md` and `docs/...` only when they exist and are clearly maintained.
 2. Inspect narrow repo signals:
    lockfiles, root manifests, source entrypoints, Compose files, prompt files, and deployment artifacts.
 3. Recover continuity:
