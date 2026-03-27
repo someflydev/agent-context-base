@@ -1244,6 +1244,43 @@ DERIVED_MAXIMAL_BUNDLE_POLICY_SECTIONS = (
     },
 )
 
+# Ordinary generated repos should keep `.acb/` compact, but still useful enough
+# for downstream startup, implementation, and continuity work without reopening
+# the source base repo.
+ORDINARY_SUPPORT_BUNDLE_POLICY_NAME = "ordinary-compact-repo-local-startup-bundle-v1"
+ORDINARY_SUPPORT_BUNDLE_POLICY_NOTE = (
+    "Ordinary repos vendor a compact repo-local startup bundle under `.acb/`: "
+    "selected manifest snapshots, manifest-selected high-signal context, preferred "
+    "canonical examples, a tight template allowlist, continuity helpers, and one "
+    "small startup explainer."
+)
+ORDINARY_CONTEXT_MODE = "compact-vendored-support-bundle"
+ORDINARY_OPTIONAL_CONTEXT_PREFIXES = (
+    "context/doctrine/",
+    "context/workflows/",
+    "context/stacks/",
+    "context/archetypes/",
+    "context/skills/",
+    "context/anchors/",
+)
+ORDINARY_TEMPLATE_ALLOWLIST = (
+    "templates/agent-md/AGENT.template.md",
+    "templates/claude-md/CLAUDE.template.md",
+    "templates/memory/MEMORY.template.md",
+    "templates/memory/HANDOFF-SNAPSHOT.template.md",
+    "templates/compose/docker-compose.template.yaml",
+    "templates/compose/docker-compose-test.template.yaml",
+    "templates/prompt-first/PROMPTS.md.template",
+    "templates/prompt-first/001-bootstrap.template.txt",
+    "templates/prompt-first/002-refine.template.txt",
+)
+ORDINARY_CONTINUITY_TOOL_PATHS = (
+    "scripts/init_memory.py",
+    "scripts/check_memory_freshness.py",
+    "scripts/create_handoff_snapshot.py",
+)
+ORDINARY_DOC_AID_PATH = "docs/session-start.md"
+
 
 DEFAULT_MANIFESTS = {
     ("backend-api-service", "python-fastapi-uv-ruff-orjson-polars"): ["backend-api-fastapi-polars"],
@@ -1948,6 +1985,28 @@ def _manifest_support_asset_paths(
     return paths
 
 
+def _manifest_paths_for_key(
+    selected_manifests: list[str],
+    manifests: dict[str, dict[str, object]],
+    key: str,
+) -> list[str]:
+    """Return one manifest path list in stable deduplicated order."""
+
+    paths: list[str] = []
+    for manifest_name in selected_manifests:
+        manifest = manifests[manifest_name]
+        value = manifest.get(key, [])
+        if not isinstance(value, list):
+            continue
+        for item in value:
+            path = str(item).strip()
+            if not path or path in paths:
+                continue
+            if (repo_root() / path).is_file():
+                paths.append(path)
+    return paths
+
+
 def load_manifest_support_asset_texts(
     selected_manifests: list[str],
     manifests: dict[str, dict[str, object]],
@@ -1973,6 +2032,219 @@ def _dedupe_existing_repo_paths(paths: list[str]) -> list[str]:
             seen.add(normalized)
             filtered.append(normalized)
     return filtered
+
+
+def _preferred_example_family_readmes(example_paths: list[str]) -> list[str]:
+    """Return one helpful README per preferred example family when present."""
+
+    readmes: list[str] = []
+    seen: set[str] = set()
+    for path in example_paths:
+        parts = Path(path).parts
+        if len(parts) < 3 or parts[0] != "examples":
+            continue
+        family_root = Path(parts[0]) / parts[1]
+        readme_path = (family_root / "README.md").as_posix()
+        if readme_path in seen or readme_path == path:
+            continue
+        if (repo_root() / readme_path).is_file():
+            seen.add(readme_path)
+            readmes.append(readme_path)
+    return readmes
+
+
+def _ordinary_support_bundle_records(
+    selected_manifests: list[str],
+    manifests: dict[str, dict[str, object]],
+) -> list[dict[str, object]]:
+    """Describe the bounded repo-local `.acb/` support bundle for ordinary repos."""
+
+    records: list[dict[str, object]] = []
+    seen: set[str] = set()
+
+    def add_record(
+        path: str,
+        *,
+        section: str,
+        category: str,
+        authority: str,
+        startup_priority: str,
+        selected_by: str,
+        why: str,
+    ) -> None:
+        if path in seen or not (repo_root() / path).is_file():
+            return
+        seen.add(path)
+        records.append(
+            {
+                "path": path,
+                "section": section,
+                "category": category,
+                "authority": authority,
+                "startup_priority": startup_priority,
+                "selected_by": selected_by,
+                "why": why,
+            }
+        )
+
+    for path in _manifest_paths_for_key(selected_manifests, manifests, "required_context"):
+        add_record(
+            path,
+            section="manifest-required-context",
+            category="context",
+            authority="authoritative",
+            startup_priority="startup",
+            selected_by="manifest.required_context",
+            why="Required context is startup-critical guidance named directly by the selected manifests.",
+        )
+
+    for path in _manifest_paths_for_key(selected_manifests, manifests, "optional_context"):
+        if not path.startswith(ORDINARY_OPTIONAL_CONTEXT_PREFIXES):
+            continue
+        add_record(
+            path,
+            section="manifest-optional-context",
+            category="context",
+            authority="authoritative",
+            startup_priority="startup",
+            selected_by="manifest.optional_context",
+            why="High-signal optional doctrine, workflow, stack, archetype, anchor, or skill guidance is kept local when a selected manifest names it.",
+        )
+
+    preferred_examples = _manifest_paths_for_key(selected_manifests, manifests, "preferred_examples")
+    for path in preferred_examples:
+        add_record(
+            path,
+            section="manifest-preferred-examples",
+            category="canonical-example",
+            authority="informative",
+            startup_priority="startup",
+            selected_by="manifest.preferred_examples",
+            why="Preferred canonical examples are vendored so downstream implementation can reference repo-local precedents.",
+        )
+    for path in _preferred_example_family_readmes(preferred_examples):
+        add_record(
+            path,
+            section="example-family-readme",
+            category="canonical-example-navigation",
+            authority="informative",
+            startup_priority="supporting",
+            selected_by="example-family-readme",
+            why="A single README for each active example family keeps local example navigation legible without copying whole example trees.",
+        )
+
+    manifest_templates = set(_manifest_paths_for_key(selected_manifests, manifests, "recommended_templates"))
+    for path in ORDINARY_TEMPLATE_ALLOWLIST:
+        if path not in manifest_templates and not path.startswith("templates/memory/"):
+            continue
+        add_record(
+            path,
+            section="high-value-templates",
+            category="template",
+            authority="templating-reference",
+            startup_priority="supporting",
+            selected_by="template-allowlist",
+            why="Small high-leverage templates stay local so future sessions can extend continuity and startup surfaces from repo-local references.",
+        )
+
+    for path in ORDINARY_CONTINUITY_TOOL_PATHS:
+        add_record(
+            path,
+            section="continuity-tools",
+            category="continuity-tool",
+            authority="operational-tool",
+            startup_priority="supporting",
+            selected_by="continuity-tool-allowlist",
+            why="Continuity helpers support repo-local memory and handoff flows without vendoring the full scripts tree.",
+        )
+
+    add_record(
+        ORDINARY_DOC_AID_PATH,
+        section="startup-doc-aid",
+        category="startup-doc",
+        authority="authoritative",
+        startup_priority="startup",
+        selected_by="compact-doc-aid",
+        why="A single compact startup explainer makes the repo-local startup path legible without vendoring large docs.",
+    )
+    return records
+
+
+def _ordinary_bundle_startup_paths(bundle_records: list[dict[str, object]]) -> list[str]:
+    """Return startup-critical ordinary bundle paths in stable order."""
+
+    return [
+        str(record["path"])
+        for record in bundle_records
+        if record["startup_priority"] == "startup"
+    ]
+
+
+def _build_ordinary_profile_metadata(
+    *,
+    selected_manifests: list[str],
+    manifests: dict[str, dict[str, object]],
+    repo_local_profile_path: str,
+    generated_profile_path: str,
+    generation_audit_path: str,
+    vendored_base_root: str,
+    prompt_files: list[str],
+) -> tuple[dict[str, object], list[str], list[dict[str, object]], list[str], list[str]]:
+    """Build ordinary repo-local bundle metadata and surfaced startup paths."""
+
+    raw_bundle_records = _ordinary_support_bundle_records(selected_manifests, manifests)
+    raw_bundle_paths = [str(record["path"]) for record in raw_bundle_records]
+    bundle_records = [
+        {**record, "path": _map_vendored_repo_path(str(record["path"]), vendored_base_root)}
+        for record in raw_bundle_records
+    ]
+    bundle_paths = [str(record["path"]) for record in bundle_records]
+    startup_paths = _ordinary_bundle_startup_paths(bundle_records)
+    vendored_manifest_paths = _vendored_manifest_paths(selected_manifests, vendored_base_root)
+    local_examples = [
+        str(record["path"])
+        for record in bundle_records
+        if str(record["path"]).startswith(_map_vendored_repo_path("examples/", vendored_base_root))
+    ]
+    local_templates = [
+        str(record["path"])
+        for record in bundle_records
+        if str(record["path"]).startswith(_map_vendored_repo_path("templates/", vendored_base_root))
+    ]
+    local_tools = [
+        str(record["path"])
+        for record in bundle_records
+        if str(record["path"]).startswith(_map_vendored_repo_path("scripts/", vendored_base_root))
+    ]
+    metadata = {
+        "ordinary_context_mode": ORDINARY_CONTEXT_MODE,
+        "ordinary_bundle_policy": {
+            "name": ORDINARY_SUPPORT_BUNDLE_POLICY_NAME,
+            "note": ORDINARY_SUPPORT_BUNDLE_POLICY_NOTE,
+            "vendored_root_rule": f"ordinary repo-local assistant support lives under `{vendored_base_root}/`; root remains the active product work surface",
+            "manifest_snapshot_source": "selected manifests copied under `.acb/manifests/base/`",
+            "copy_policy": "manifest-selected high-signal context plus tight example/template/script/doc allowlists",
+        },
+        "manifest_bundle_startup_paths": startup_paths,
+        "repo_local_routing_model_paths": [
+            "AGENT.md",
+            "CLAUDE.md",
+            repo_local_profile_path,
+            generated_profile_path,
+            generation_audit_path,
+            *vendored_manifest_paths,
+            *startup_paths,
+            *prompt_files,
+        ],
+        "local_canonical_examples_available": local_examples,
+        "local_templates_available": local_templates,
+        "local_continuity_tools_available": local_tools,
+        "startup_critical_bundle_paths": startup_paths,
+        "continuation_bundle_paths": [path for path in bundle_paths if path not in startup_paths],
+        "ordinary_bundle_records": bundle_records,
+    }
+    extra_context_entrypoints = [*startup_paths, *[path for path in bundle_paths if path not in startup_paths], *prompt_files]
+    return metadata, bundle_paths, bundle_records, extra_context_entrypoints, raw_bundle_paths
 
 
 def _derived_maximal_bundle_paths(
@@ -2287,6 +2559,19 @@ def _render_yaml_value(value: object, indent: int = 2) -> str:
     return f"{prefix}{_render_yaml_scalar(value)}"
 
 
+def _render_top_level_yaml_block(items: dict[str, object]) -> str:
+    """Render a yaml block for multiple top-level keys."""
+
+    lines: list[str] = []
+    for key, value in items.items():
+        if isinstance(value, (dict, list)):
+            lines.append(f"{key}:")
+            lines.append(_render_yaml_value(value, indent=2))
+        else:
+            lines.append(f"{key}: {_render_yaml_scalar(value)}")
+    return "\n".join(lines) + ("\n" if lines else "")
+
+
 def build_support_service_blocks(
     services: list[str],
     slug: str,
@@ -2551,6 +2836,7 @@ def render_profile_summary(
     prompts_md_generated: bool,
     initial_prompt_files: list[str],
     extra_context_entrypoints: list[str] | None = None,
+    startup_bundle_metadata: dict[str, object] | None = None,
     extra_metadata: dict[str, object] | None = None,
 ) -> str:
     """Render the generated profile summary."""
@@ -2568,6 +2854,9 @@ def render_profile_summary(
     if extra_context_entrypoints:
         context_entrypoints.extend(extra_context_entrypoints)
     startup_order = list(dict.fromkeys(context_entrypoints))
+    startup_bundle_lines = ""
+    if startup_bundle_metadata:
+        startup_bundle_lines = _render_top_level_yaml_block(startup_bundle_metadata)
     derived_metadata_lines = ""
     if extra_metadata:
         derived_metadata_lines = "derived_metadata:\n" + _render_yaml_value(extra_metadata, indent=2)
@@ -2586,6 +2875,7 @@ def render_profile_summary(
         "vendored_base_manifests_dir": vendored_base_manifests_dir,
         "vendored_manifest_lines": format_yaml_list(vendored_manifest_paths),
         "vendored_support_lines": format_yaml_list(vendored_support_paths),
+        "startup_bundle_metadata_block": startup_bundle_lines,
         "generation_audit_path": generation_audit_path,
         "startup_order_lines": format_yaml_list(startup_order),
         "prompt_directory": prompt_directory,
@@ -3480,6 +3770,9 @@ def render_generation_audit(
     docker_enabled: bool,
     prompt_files: list[str],
     generated_file_paths: list[str],
+    vendored_manifest_paths: list[str],
+    vendored_support_paths: list[str],
+    startup_bundle_metadata: dict[str, object] | None = None,
 ) -> str:
     """Render a machine-readable generation audit report for the generated repo."""
 
@@ -3499,6 +3792,9 @@ def render_generation_audit(
         "repo_local_profile_path": request.repo_local_profile_path,
         "generated_profile_path": request.generated_profile_path,
         "hidden_state_root": ".acb",
+        "vendored_manifest_paths": vendored_manifest_paths,
+        "vendored_support_paths": vendored_support_paths,
+        "startup_bundle_metadata": startup_bundle_metadata or {},
         "initial_prompt": {
             "present": bool(prompt_text),
             "path": ".prompts/initial-prompt.txt" if prompt_text else None,
@@ -3629,7 +3925,43 @@ def build_generated_files(
     )
     generated_files[".gitignore"] = render_gitignore(profile)
     vendored_manifest_texts = load_manifest_texts(request.manifests)
-    vendored_support_texts = load_manifest_support_asset_texts(request.manifests, manifests)
+    ordinary_bundle_metadata: dict[str, object] | None = None
+    ordinary_bundle_paths: list[str] = []
+    ordinary_bundle_records: list[dict[str, object]] = []
+    ordinary_raw_bundle_paths: list[str] = []
+    extra_context_entrypoints = list(request.extra_context_entrypoints or [])
+    prompt_file_map = request.prompt_files_override or render_prompt_files(
+        request.repo_name,
+        profile,
+        repo_local_profile_path=request.repo_local_profile_path,
+    )
+    prompt_files = sorted(
+        path
+        for path in prompt_file_map
+        if path.startswith(".prompts/")
+    )
+    if request.derived_context_mode is None and request.vendored_base_root:
+        ordinary_bundle_metadata, ordinary_bundle_paths, ordinary_bundle_records, ordinary_entrypoints, ordinary_raw_bundle_paths = (
+            _build_ordinary_profile_metadata(
+                selected_manifests=request.manifests,
+                manifests=manifests,
+                repo_local_profile_path=request.repo_local_profile_path,
+                generated_profile_path=request.generated_profile_path,
+                generation_audit_path=request.generation_audit_path,
+                vendored_base_root=request.vendored_base_root,
+                prompt_files=[
+                    *prompt_files,
+                    *([".prompts/initial-prompt.txt"] if request.initial_prompt_text else []),
+                ],
+            )
+        )
+        extra_context_entrypoints.extend(ordinary_entrypoints)
+        vendored_support_texts = {
+            path: (repo_root() / path).read_text(encoding="utf-8")
+            for path in ordinary_raw_bundle_paths
+        }
+    else:
+        vendored_support_texts = load_manifest_support_asset_texts(request.manifests, manifests)
     extra_vendored_paths = _dedupe_existing_repo_paths(request.extra_vendored_paths or [])
     for relative_path in extra_vendored_paths:
         vendored_support_texts.setdefault(
@@ -3674,11 +4006,6 @@ def build_generated_files(
         request.primary_stack,
         slug,
         scripts_root=request.repo_local_scripts_root,
-    )
-    prompt_files = sorted(
-        path
-        for path in (request.prompt_files_override or {}).keys()
-        if path.startswith(".prompts/")
     )
     if request.prompt_first and not prompt_files:
         prompt_files = sorted(
@@ -3739,7 +4066,8 @@ def build_generated_files(
             if request.prompt_first
             else ["none"]
         ),
-        extra_context_entrypoints=request.extra_context_entrypoints,
+        extra_context_entrypoints=extra_context_entrypoints,
+        startup_bundle_metadata=ordinary_bundle_metadata,
         extra_metadata=request.extra_profile_metadata,
     )
     generated_files[request.repo_local_profile_path] = profile_summary
@@ -3830,11 +4158,6 @@ def build_generated_files(
         )
 
     if request.prompt_first:
-        prompt_file_map = request.prompt_files_override or render_prompt_files(
-            request.repo_name,
-            profile,
-            repo_local_profile_path=request.repo_local_profile_path,
-        )
         if request.initial_prompt_text:
             prompt_file_map = {**prompt_file_map, **render_initial_prompt_file(request.initial_prompt_text)}
         generated_files.update(prompt_file_map)
@@ -3862,6 +4185,9 @@ def build_generated_files(
         prompt_files=sorted(path for path in prompt_files if path.startswith(".prompts/"))
         + ([".prompts/initial-prompt.txt"] if request.initial_prompt_text else []),
         generated_file_paths=audit_generated_files,
+        vendored_manifest_paths=vendored_manifest_paths,
+        vendored_support_paths=sorted(_map_vendored_repo_paths(list(vendored_support_texts), request.vendored_base_root)),
+        startup_bundle_metadata=ordinary_bundle_metadata or request.extra_profile_metadata,
     )
 
     return generated_files
