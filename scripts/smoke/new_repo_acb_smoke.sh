@@ -25,6 +25,19 @@ rm -rf "$SMOKE_ROOT"
 mkdir -p "$SMOKE_ROOT"
 
 run_case \
+  "prompt-kit ordinary" \
+  prompt-kit \
+  --target-dir "$SMOKE_ROOT/prompt-kit" \
+  --archetype prompt-first-repo \
+  --primary-stack prompt-first-repo \
+  --initial-prompt-text "Bootstrap a prompt-first repo with a compact repo-local .acb support bundle."
+
+run_case \
+  "example-001 ordinary" \
+  --use-example 1 \
+  --target-dir "$SMOKE_ROOT/example-001"
+
+run_case \
   "operator-surface compact" \
   --derived-example operator-surface \
   --target-dir "$SMOKE_ROOT/operator-surface-compact"
@@ -50,6 +63,8 @@ show_root "$SMOKE_ROOT/operator-surface-compact"
 show_root "$SMOKE_ROOT/operator-surface-maximal"
 show_root "$SMOKE_ROOT/team-a-compact/ingestion-normalization-core"
 show_root "$SMOKE_ROOT/team-a-maximal/ingestion-normalization-core"
+show_root "$SMOKE_ROOT/prompt-kit"
+show_root "$SMOKE_ROOT/example-001"
 
 echo
 echo "Smoke output written under: $SMOKE_ROOT"

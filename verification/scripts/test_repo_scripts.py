@@ -347,6 +347,8 @@ class RepoScriptTests(unittest.TestCase):
         self.assertIn('TIMESTAMP="$(date "+%Y%m%d-%H%M%S")"', script_text)
         self.assertIn("/tmp/smoke-acb-${TIMESTAMP}-${COMMIT_ID}", script_text)
         self.assertIn("git -C \"$REPO_ROOT\" rev-parse --short HEAD", script_text)
+        self.assertIn("prompt-kit ordinary", script_text)
+        self.assertIn("--use-example 1", script_text)
         self.assertIn("--derived-example operator-surface", script_text)
         self.assertIn("--derived-example team-a", script_text)
         self.assertIn("--derived-context-mode maximal", script_text)
@@ -388,17 +390,79 @@ class RepoScriptTests(unittest.TestCase):
             self.assertTrue((target / ".acb/manifests/base/prompt-first-meta-repo.yaml").exists())
             self.assertTrue((target / ".acb/context/doctrine/core-principles.md").exists())
             self.assertTrue((target / ".acb/examples/canonical-prompts/001-bootstrap-repo.txt").exists())
+            self.assertTrue((target / ".acb/examples/canonical-prompts/README.md").exists())
+            self.assertTrue((target / ".acb/templates/memory/MEMORY.template.md").exists())
+            self.assertTrue((target / ".acb/templates/memory/HANDOFF-SNAPSHOT.template.md").exists())
+            self.assertTrue((target / ".acb/templates/prompt-first/001-bootstrap.template.txt").exists())
+            self.assertTrue((target / ".acb/scripts/init_memory.py").exists())
+            self.assertTrue((target / ".acb/scripts/check_memory_freshness.py").exists())
+            self.assertTrue((target / ".acb/scripts/create_handoff_snapshot.py").exists())
+            self.assertTrue((target / ".acb/docs/session-start.md").exists())
             self.assertTrue((target / ".acb/generation-report.json").exists())
             self.assertFalse((target / "README.md").exists())
             self.assertFalse((target / "docs").exists())
             profile = (target / ".acb/manifests/project-profile.yaml").read_text(encoding="utf-8")
+            audit = json.loads((target / ".acb/generation-report.json").read_text(encoding="utf-8"))
             self.assertIn("repo_local_profile_path: .acb/manifests/project-profile.yaml", profile)
             self.assertIn("generated_profile_path: .acb/.generated-profile.yaml", profile)
             self.assertIn("vendored_base_root: .acb", profile)
+            self.assertIn("ordinary_context_mode: compact-vendored-support-bundle", profile)
+            self.assertIn("manifest_bundle_startup_paths:", profile)
+            self.assertIn("repo_local_routing_model_paths:", profile)
+            self.assertIn("local_canonical_examples_available:", profile)
+            self.assertIn("local_templates_available:", profile)
+            self.assertIn("local_continuity_tools_available:", profile)
+            self.assertIn("- .acb/examples/canonical-prompts/001-bootstrap-repo.txt", profile)
+            self.assertIn("- .acb/templates/memory/MEMORY.template.md", profile)
+            self.assertIn("- .acb/scripts/init_memory.py", profile)
+            self.assertIn("- .acb/docs/session-start.md", profile)
+            self.assertIn(".acb/templates/memory/MEMORY.template.md", audit["vendored_support_paths"])
+            self.assertIn(".acb/scripts/create_handoff_snapshot.py", audit["vendored_support_paths"])
+            self.assertEqual(audit["startup_bundle_metadata"]["ordinary_context_mode"], "compact-vendored-support-bundle")
 
             code, stdout, stderr = run_script("scripts/validate_repo.py", cwd=target)
             self.assertEqual(code, 0, stderr)
             self.assertIn("repo validation passed", stdout)
+
+    def test_new_repo_use_example_vendors_compact_ordinary_support_bundle(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            target = Path(temp_dir) / "001-partner-data-enrichment"
+            code, stdout, stderr = run_script(
+                str(SCRIPTS_DIR / "new_repo.py"),
+                "--use-example",
+                "1",
+                "--target-dir",
+                str(target),
+            )
+            self.assertEqual(code, 0, stderr)
+            self.assertIn("Generated starter repo", stdout)
+            self.assertTrue((target / ".acb/manifests/base/backend-api-fastapi-polars.yaml").exists())
+            self.assertTrue((target / ".acb/context/doctrine/core-principles.md").exists())
+            self.assertTrue((target / ".acb/context/workflows/add-api-endpoint.md").exists())
+            self.assertTrue((target / ".acb/examples/canonical-api/fastapi-endpoint-example.py").exists())
+            self.assertTrue((target / ".acb/examples/canonical-api/README.md").exists())
+            self.assertTrue((target / ".acb/templates/memory/MEMORY.template.md").exists())
+            self.assertTrue((target / ".acb/templates/compose/docker-compose.template.yaml").exists())
+            self.assertTrue((target / ".acb/scripts/init_memory.py").exists())
+            self.assertTrue((target / ".acb/docs/session-start.md").exists())
+
+            profile = (target / ".acb/manifests/project-profile.yaml").read_text(encoding="utf-8")
+            audit = json.loads((target / ".acb/generation-report.json").read_text(encoding="utf-8"))
+            for relative_path in (
+                ".acb/context/doctrine/core-principles.md",
+                ".acb/context/stacks/python-fastapi-uv-ruff-orjson-polars.md",
+                ".acb/examples/canonical-api/fastapi-endpoint-example.py",
+                ".acb/templates/compose/docker-compose.template.yaml",
+                ".acb/scripts/init_memory.py",
+            ):
+                self.assertIn(relative_path, profile)
+                self.assertTrue((target / relative_path).exists(), relative_path)
+            self.assertIn("ordinary_context_mode: compact-vendored-support-bundle", profile)
+            self.assertIn(".acb/examples/canonical-api/fastapi-endpoint-example.py", audit["vendored_support_paths"])
+            self.assertIn(".acb/scripts/init_memory.py", audit["vendored_support_paths"])
+            routing_model = audit["startup_bundle_metadata"]["repo_local_routing_model_paths"]
+            self.assertIn(".acb/manifests/project-profile.yaml", routing_model)
+            self.assertIn(".prompts/001-bootstrap-repo.txt", routing_model)
 
     def test_new_repo_snapshots_initial_prompt_and_audit_for_standard_repo(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

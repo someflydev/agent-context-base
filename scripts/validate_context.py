@@ -138,6 +138,35 @@ def _check_bootstrap_output(repo_root: Path) -> list[str]:
             docs_dir_generated = include_docs_dir or dokku
             readme_path = target_dir / "README.md"
             docs_dir = target_dir / "docs"
+            acb_profile = target_dir / ".acb" / "manifests" / "project-profile.yaml"
+            if not acb_profile.exists():
+                errors.append(f"{primary_stack}: missing .acb/manifests/project-profile.yaml")
+                continue
+            profile_text = acb_profile.read_text(encoding="utf-8")
+            required_acb_paths = (
+                ".acb/.generated-profile.yaml",
+                ".acb/generation-report.json",
+                ".acb/docs/session-start.md",
+                ".acb/scripts/init_memory.py",
+                ".acb/scripts/check_memory_freshness.py",
+                ".acb/scripts/create_handoff_snapshot.py",
+                ".acb/templates/memory/MEMORY.template.md",
+                ".acb/templates/memory/HANDOFF-SNAPSHOT.template.md",
+            )
+            for relative_path in required_acb_paths:
+                if not (target_dir / relative_path).exists():
+                    errors.append(f"{primary_stack}: missing ordinary .acb support file '{relative_path}'")
+            if "ordinary_context_mode: compact-vendored-support-bundle" not in profile_text:
+                errors.append(f"{primary_stack}: profile must record ordinary_context_mode")
+            for field_name in (
+                "manifest_bundle_startup_paths:",
+                "repo_local_routing_model_paths:",
+                "local_canonical_examples_available:",
+                "local_templates_available:",
+                "local_continuity_tools_available:",
+            ):
+                if field_name not in profile_text:
+                    errors.append(f"{primary_stack}: profile must record {field_name.rstrip(':')}")
             if include_root_readme and not readme_path.exists():
                 errors.append(f"{primary_stack}: --include-root-readme must generate README.md")
             if not include_root_readme and readme_path.exists():
