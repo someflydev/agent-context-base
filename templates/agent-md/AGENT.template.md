@@ -17,7 +17,14 @@ Purpose: boot the assistant into the smallest useful context bundle for this rep
 11. `{{repo_local_purpose_doc_path}}` if it exists
 12. `{{repo_local_layout_doc_path}}` if it exists
 
-After that stable pass and a narrow repo-signal check, read `MEMORY.md` if it exists.
+After that stable pass:
+
+1. run `python3 scripts/work.py resume` when the repo has a root `scripts/` directory
+2. otherwise run `python3 .acb/scripts/work.py resume` in compact derived repos
+3. read `context/TASK.md` if it exists
+4. read `context/SESSION.md` if it exists
+5. read `context/MEMORY.md` only if durable repo-local truths matter
+6. read `PLAN.md` when milestone context matters
 
 Treat the visible root as the active entrypoint and product working surface. Treat `.acb/` as the bounded
 generator-owned assistant support bundle for this repo, not as a second public docs tree.
@@ -67,8 +74,12 @@ Load only:
 ## Guardrails
 
 - keep this file concise
-- treat `MEMORY.md` as continuity only
-- update `MEMORY.md` at meaningful stop points
+- treat `PLAN.md`, `context/TASK.md`, `context/SESSION.md`, and `context/MEMORY.md` as repo-local runtime state
+- keep `context/SESSION.md` concise and action-oriented
+- keep `context/TASK.md` focused on the current slice
+- keep `context/MEMORY.md` durable and clean
+- use `python3 scripts/work.py checkpoint` at meaningful stop points when the root script exists; otherwise use `python3 .acb/scripts/work.py checkpoint`
+- update `PLAN.md` only when a `.prompts` megaprompt or major decision materially reshapes phases or milestones
 - create a handoff snapshot when another session is likely
 - do not create a substantial root `README.md` or root `docs/` too early; wait until implementation can support them honestly
 - stop when stack, archetype, or Compose isolation ambiguity would cause context sprawl

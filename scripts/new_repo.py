@@ -1276,6 +1276,7 @@ ORDINARY_TEMPLATE_ALLOWLIST = (
     "templates/prompt-first/002-refine.template.txt",
 )
 ORDINARY_CONTINUITY_TOOL_PATHS = (
+    "scripts/work.py",
     "scripts/init_memory.py",
     "scripts/check_memory_freshness.py",
     "scripts/create_handoff_snapshot.py",
@@ -3937,6 +3938,8 @@ def build_generated_files(
         )
     )
     generated_files[".gitignore"] = render_gitignore(profile)
+    if request.derived_context_mode is None:
+        generated_files["scripts/work.py"] = (repo_root() / "scripts/work.py").read_text(encoding="utf-8")
     vendored_manifest_texts = load_manifest_texts(request.manifests)
     ordinary_bundle_metadata: dict[str, object] | None = None
     ordinary_bundle_paths: list[str] = []
@@ -3976,7 +3979,7 @@ def build_generated_files(
         }
     else:
         vendored_support_texts = load_manifest_support_asset_texts(request.manifests, manifests)
-    for relative_path in ("scripts/acb_inspect.py", "scripts/acb_verify.py"):
+    for relative_path in ("scripts/work.py", "scripts/acb_inspect.py", "scripts/acb_verify.py"):
         vendored_support_texts.setdefault(
             relative_path,
             (repo_root() / relative_path).read_text(encoding="utf-8"),

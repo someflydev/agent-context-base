@@ -9,10 +9,11 @@ This README should stay factual and small. Expand it only when the repo has enou
 1. Read `AGENT.md` or `CLAUDE.md`
 2. Read `{{repo_local_profile_path}}`
 3. Read `{{generated_profile_path}}`
-4. Read `docs/repo-purpose.md` if it exists
-5. Read `docs/repo-layout.md` if it exists
+4. Run `python3 scripts/work.py resume` when the repo has a root `scripts/` directory; otherwise use `python3 .acb/scripts/work.py resume`
+5. Read `docs/repo-purpose.md` if it exists
+6. Read `docs/repo-layout.md` if it exists
 
-If `MEMORY.md` exists, read it after the stable startup files and a narrow repo-signal check.
+Read `context/TASK.md` and `context/SESSION.md` after the stable startup files. Read `context/MEMORY.md` only when durable repo-local truths matter. Read `PLAN.md` when milestone context matters.
 
 ## Repo Profile
 
@@ -34,7 +35,8 @@ If `MEMORY.md` exists, read it after the stable startup files and a narrow repo-
 
 ## Continuity
 
-- use `MEMORY.md` when work will span sessions
+- use `python3 scripts/work.py checkpoint` at natural boundaries when the root script exists; otherwise use `python3 .acb/scripts/work.py checkpoint`
+- keep `PLAN.md` for roadmap-level phase changes, `context/TASK.md` for the active slice, `context/SESSION.md` for compact handoff state, and `context/MEMORY.md` for durable local truths
 - use handoff snapshots for durable transfer points
 - keep front-facing docs earned by implementation, not speculation
 

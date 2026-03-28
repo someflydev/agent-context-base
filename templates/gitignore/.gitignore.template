@@ -52,5 +52,10 @@ docker/volumes/
 .env.test
 .env.local
 
-{{stack_gitignore}}
+# Repo-local runtime state
+PLAN.md
+context/TASK.md
+context/SESSION.md
+context/MEMORY.md
 
+{{stack_gitignore}}

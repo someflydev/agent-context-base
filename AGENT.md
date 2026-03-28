@@ -2,25 +2,31 @@
 
 Purpose: boot an assistant into the smallest useful context bundle for this repo.
 
-Read [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md) first. This repo now has a canonical spec/validation layer for `.acb/` generation, so do not treat older context docs as the only source of truth.
+Read [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md) first. This repo now has a canonical spec/validation layer for `.acb/` generation, plus a repo-local runtime-state workflow for session restart and checkpointing.
 
 ## First Reads
 
 1. [`README.md`](README.md)
 2. [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md)
-3. [`docs/usage/SPEC_DRIVEN_ACB_PAYLOADS.md`](docs/usage/SPEC_DRIVEN_ACB_PAYLOADS.md)
-4. [`docs/usage/ASSISTANT_BEHAVIOR_SPEC.md`](docs/usage/ASSISTANT_BEHAVIOR_SPEC.md)
-5. [`docs/repo-layout.md`](docs/repo-layout.md)
-6. one router, one workflow, one stack, and one example only if the task still needs narrowing
+3. [`docs/runtime-state-workflow.md`](docs/runtime-state-workflow.md)
+4. run `python3 scripts/work.py resume`
+5. [`docs/usage/SPEC_DRIVEN_ACB_PAYLOADS.md`](docs/usage/SPEC_DRIVEN_ACB_PAYLOADS.md)
+6. [`docs/usage/ASSISTANT_BEHAVIOR_SPEC.md`](docs/usage/ASSISTANT_BEHAVIOR_SPEC.md)
+7. [`docs/repo-layout.md`](docs/repo-layout.md)
+8. one router, one workflow, one stack, and one example only if the task still needs narrowing
 
 ## Operating Rules
 
 - Treat `.acb/` as the generated repo-local operating boundary.
+- Treat `PLAN.md`, `context/TASK.md`, `context/SESSION.md`, and `context/MEMORY.md` as local runtime state, not doctrine.
+- After `work.py resume`, read `context/TASK.md` and `context/SESSION.md`; read `context/MEMORY.md` only when durable repo-local truths matter; read `PLAN.md` only when milestone context matters.
 - When working in a generated repo, re-read `.acb/SESSION_BOOT.md`, `.acb/profile/selection.json`, `.acb/specs/AGENT_RULES.md`, and `.acb/specs/VALIDATION.md` at session start.
 - Prefer manifest-defined bundles over improvised loading.
 - Validation is mandatory before claiming completion unless the operator explicitly waives it.
 - Use `blocked`, `incomplete`, and `done` precisely.
-- Use `MEMORY.md` only for continuity, never as doctrine.
+- Use `python3 scripts/work.py checkpoint` at natural boundaries.
+- Update `PLAN.md` only when a `.prompts` megaprompt or a major decision materially reshapes phases, milestones, or the near-to-mid-term roadmap.
+- Keep `context/MEMORY.md` durable and clean; keep active-step detail in `context/TASK.md` and `context/SESSION.md`.
 
 ## New Repo Routing
 

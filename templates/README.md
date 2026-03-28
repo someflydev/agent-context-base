@@ -19,7 +19,7 @@ Use them when `scripts/new_repo.py` or a focused manual change needs a short, ad
 - `gitignore/` for stack-aware ignore rules
 - `compose/` for primary/dev and test Docker layouts
 - `prompt-first/` for monotonic prompt-file starters
-- `memory/` for `MEMORY.md` and handoff snapshot starter scaffolds
+- `memory/` for legacy continuity starter scaffolds and handoff snapshots
 - `smoke-tests/`, `integration-tests/`, and `seed-data/` for starter verification scripts
 - `dokku/` for deployment notes
 

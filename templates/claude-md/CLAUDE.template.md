@@ -17,7 +17,14 @@ Start with:
 11. `{{repo_local_purpose_doc_path}}` if it exists
 12. `{{repo_local_layout_doc_path}}` if it exists
 
-After that stable pass and a narrow repo-signal check, read `MEMORY.md` if it exists.
+After that stable pass:
+
+1. run `python3 scripts/work.py resume` when the repo has a root `scripts/` directory
+2. otherwise run `python3 .acb/scripts/work.py resume` in compact derived repos
+3. read `context/TASK.md` if it exists
+4. read `context/SESSION.md` if it exists
+5. read `context/MEMORY.md` only if durable repo-local truths matter
+6. read `PLAN.md` when milestone context matters
 
 Then load the smallest useful bundle from the task, repo signals, and active change surface.
 
@@ -53,8 +60,12 @@ workflow, and canonical-example files that should be read before extending `.pro
 
 - load one workflow first
 - prefer one canonical example over several near-matches
-- use `MEMORY.md` only as continuity state
-- refresh `MEMORY.md` at meaningful stop points
+- treat `PLAN.md`, `context/TASK.md`, `context/SESSION.md`, and `context/MEMORY.md` as repo-local runtime state
+- keep `context/SESSION.md` concise and action-oriented
+- keep `context/TASK.md` focused on the active slice
+- keep `context/MEMORY.md` durable and clean
+- use `python3 scripts/work.py checkpoint` at meaningful stop points when the root script exists; otherwise use `python3 .acb/scripts/work.py checkpoint`
+- update `PLAN.md` only when a `.prompts` megaprompt or major decision materially reshapes phases or milestones
 - create a handoff snapshot when another session is likely
 - keep root `README.md`, `docs/`, and Mermaid diagrams deferred until the repo has enough real structure to describe honestly
 - keep dev and test infrastructure isolated

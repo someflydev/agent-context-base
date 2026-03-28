@@ -47,6 +47,12 @@ docker/fixtures/
 .env.*
 !.env.example
 
+# Repo-local runtime state
+PLAN.md
+context/TASK.md
+context/SESSION.md
+context/MEMORY.md
+
 # Search and local indexes
 data/
 !verification/examples/data/
