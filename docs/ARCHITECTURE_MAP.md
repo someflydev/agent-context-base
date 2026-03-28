@@ -6,6 +6,7 @@ This is the shortest accurate map of how `agent-context-base` currently works.
 
 - canonical context and validation source files live under `context/`
 - manifests and composition rules decide what should be loaded or generated
+- `scripts/work.py` manages repo-local runtime state and checkpoint heuristics
 - `scripts/new_repo.py` generates descendant repos
 - `scripts/acb_payload.py` composes the repo-local `.acb/` payload
 - verification keeps examples, scripts, docs, and generation assumptions aligned
@@ -53,17 +54,18 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    A[read AGENT.md and CLAUDE.md] --> B[read .acb/SESSION_BOOT.md]
-    B --> C[read .acb/profile/selection.json]
-    C --> D[read .acb/specs/AGENT_RULES.md and VALIDATION.md]
-    D --> E[check CHECKLIST.md and COVERAGE.md]
+    A[read AGENT.md and CLAUDE.md] --> B[run work.py resume]
+    B --> C[read TASK.md and SESSION.md]
+    C --> D[read runtime memory if needed and PLAN.md if roadmap matters]
+    D --> E[read .acb startup and validation surfaces]
     E --> F[plan one slice]
     F --> G[implement]
-    G --> H[run validation]
-    H --> I{proof passed?}
-    I -->|yes| J[done]
-    I -->|no, blocked| K[blocked]
-    I -->|no, more work| L[incomplete]
+    G --> H[run work.py checkpoint]
+    H --> I[run validation]
+    I --> J{proof passed?}
+    J -->|yes| K[done]
+    J -->|no, blocked| L[blocked]
+    J -->|no, more work| M[incomplete]
 ```
 
 ## Future Direction
@@ -86,11 +88,12 @@ flowchart TD
 | [`context/validation/`](../context/validation/README.md) | Canonical validation narratives. |
 | [`context/acb/`](../context/acb/README.md) | Machine-readable profile composition rules. |
 | [`manifests/`](../manifests) | Bundle selection for routing and generation. |
-| [`scripts/`](../scripts/README.md) | Generation, composition, inspection, and verification entrypoints. |
+| [`scripts/`](../scripts/README.md) | Runtime continuity, generation, composition, inspection, and verification entrypoints. |
 | [`verification/`](../verification/README.md) | Repository and example verification. |
 
 ## Recommended Follow-On Reads
 
 1. [`docs/usage/SPEC_DRIVEN_ACB_PAYLOADS.md`](usage/SPEC_DRIVEN_ACB_PAYLOADS.md)
-2. [`docs/usage/ASSISTANT_BEHAVIOR_SPEC.md`](usage/ASSISTANT_BEHAVIOR_SPEC.md)
-3. [`scripts/README.md`](../scripts/README.md)
+2. [`docs/runtime-state-workflow.md`](runtime-state-workflow.md)
+3. [`docs/usage/ASSISTANT_BEHAVIOR_SPEC.md`](usage/ASSISTANT_BEHAVIOR_SPEC.md)
+4. [`scripts/README.md`](../scripts/README.md)

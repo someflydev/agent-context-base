@@ -9,6 +9,7 @@ Assistant-led development drifts when context is loaded loosely, validation is i
 - canonical specs under [`context/specs/`](context/specs/README.md)
 - canonical validation narratives under [`context/validation/`](context/validation/README.md)
 - machine-readable composition rules under [`context/acb/profile-rules.json`](context/acb/profile-rules.json)
+- repo-local runtime continuity under [`docs/runtime-state-workflow.md`](docs/runtime-state-workflow.md) and [`scripts/work.py`](scripts/work.py)
 - generation and inspection tooling under [`scripts/README.md`](scripts/README.md)
 - verification coverage under [`verification/README.md`](verification/README.md)
 
@@ -22,6 +23,17 @@ Context-first means assistants should read the smallest stable context surface t
 - what proof is required before claiming completion
 
 The goal is explicit over implicit: route first, then load only the active workflow, stack surface, archetype, examples, and validation path.
+
+## Repo-Local Runtime State
+
+This repo now treats session continuity as visible repo-local state instead of hidden assistant memory.
+
+- `PLAN.md` holds milestone-level roadmap state
+- `context/TASK.md` holds the current active slice
+- `context/SESSION.md` holds compact working state and the next safe step
+- `context/MEMORY.md` holds durable repo-local truths
+
+Those files are local runtime artifacts, not committed doctrine. `scripts/work.py` manages their startup and checkpoint loop with grounded heuristics such as line counts, changed-file breadth, staleness relative to active repo changes, and whether `context/SESSION.md` still points at a safe next move. It does not pretend to know live token-window usage.
 
 ## `.acb/` In Generated Repos
 
@@ -52,6 +64,7 @@ Typical generated layout:
   routers/
     README.md
   scripts/
+    work.py
     acb_inspect.py
     acb_verify.py
 ```
@@ -72,6 +85,7 @@ Current hardening features:
 - canonical source headers on spec and validation modules
 - `.acb/INDEX.json` with source metadata and hashes
 - `.acb/validation/COVERAGE.json` and `.acb/validation/COVERAGE.md`
+- `.acb/scripts/work.py` for compact derived repos that do not expose a root `scripts/` directory
 - `.acb/scripts/acb_inspect.py` for visibility
 - `.acb/scripts/acb_verify.py` for local payload drift, optional canonical drift, and coverage gaps
 
@@ -79,10 +93,11 @@ Current hardening features:
 
 1. Read [`AGENT.md`](AGENT.md) or [`CLAUDE.md`](CLAUDE.md).
 2. Read [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md).
-3. Read [`docs/usage/SPEC_DRIVEN_ACB_PAYLOADS.md`](docs/usage/SPEC_DRIVEN_ACB_PAYLOADS.md).
-4. Inspect available shapes with `python scripts/new_repo.py --list-archetypes` and `python scripts/new_repo.py --list-stacks`.
-5. Preview a bundle with `python scripts/preview_context_bundle.py backend-api-fastapi-polars --show-weights --show-anchors`.
-6. Generate a repo and start a fresh session inside that generated repo.
+3. Read [`docs/runtime-state-workflow.md`](docs/runtime-state-workflow.md).
+4. Run `python3 scripts/work.py resume`.
+5. Inspect available shapes with `python scripts/new_repo.py --list-archetypes` and `python scripts/new_repo.py --list-stacks`.
+6. Preview a bundle with `python scripts/preview_context_bundle.py backend-api-fastapi-polars --show-weights --show-anchors`.
+7. Generate a repo and start a fresh session inside that generated repo.
 
 Example:
 
@@ -101,18 +116,23 @@ python scripts/new_repo.py analytics-api \
 Inside the generated repo, the recommended first read order is:
 
 1. `AGENT.md`
-2. `CLAUDE.md`
-3. `.acb/SESSION_BOOT.md`
-4. `.acb/profile/selection.json`
-5. `.acb/specs/AGENT_RULES.md`
-6. `.acb/specs/VALIDATION.md`
-7. `.acb/validation/CHECKLIST.md`
-8. `.acb/validation/COVERAGE.md`
-9. `.acb/generation-report.json`
+2. `python3 scripts/work.py resume` when the repo has a root `scripts/` directory, or `python3 .acb/scripts/work.py resume` in compact derived repos
+3. `context/TASK.md`
+4. `context/SESSION.md`
+5. `context/MEMORY.md` only if needed
+6. `PLAN.md` when milestone context matters
+7. `.acb/SESSION_BOOT.md`
+8. `.acb/profile/selection.json`
+9. `.acb/specs/AGENT_RULES.md`
+10. `.acb/specs/VALIDATION.md`
+11. `.acb/validation/CHECKLIST.md`
+12. `.acb/validation/COVERAGE.md`
+13. `.acb/generation-report.json`
 
 ## Diagrams And Deeper Docs
 
 - [`docs/ARCHITECTURE_MAP.md`](docs/ARCHITECTURE_MAP.md)
+- [`docs/runtime-state-workflow.md`](docs/runtime-state-workflow.md)
 - [`docs/usage/SPEC_DRIVEN_ACB_PAYLOADS.md`](docs/usage/SPEC_DRIVEN_ACB_PAYLOADS.md)
 - [`docs/usage/ASSISTANT_BEHAVIOR_SPEC.md`](docs/usage/ASSISTANT_BEHAVIOR_SPEC.md)
 - [`docs/usage/STARTING_NEW_PROJECTS.md`](docs/usage/STARTING_NEW_PROJECTS.md)

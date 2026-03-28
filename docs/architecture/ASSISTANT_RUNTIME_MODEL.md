@@ -1,18 +1,19 @@
 # Assistant Runtime Model
 
-`agent-context-base` is a runtime for AI-assisted development. It turns a user request into a bounded context bundle, a preferred implementation pattern, a verification path, and a continuity checkpoint.
+`agent-context-base` is a runtime for AI-assisted development. It turns a user request into a bounded context bundle, a preferred implementation pattern, a verification path, and a visible repo-local continuity checkpoint.
 
 ## Core Pipeline
 
 1. Interpret the task.
-2. Inspect narrow repo signals.
-3. Route to one workflow, stack surface, and archetype.
-4. Select the best-fit manifest.
-5. Load the smallest justified context bundle.
-6. Prefer one canonical example.
-7. Implement in a reviewable slice.
-8. Verify the changed boundary.
-9. Update `MEMORY.md` or a handoff snapshot if the work will continue.
+2. Rehydrate repo-local runtime state with `scripts/work.py resume`.
+3. Inspect narrow repo signals.
+4. Route to one workflow, stack surface, and archetype.
+5. Select the best-fit manifest.
+6. Load the smallest justified context bundle.
+7. Prefer one canonical example.
+8. Implement in a reviewable slice.
+9. Run `scripts/work.py checkpoint`.
+10. Verify the changed boundary.
 
 ## Architectural Subsystems
 
@@ -25,7 +26,7 @@
 | Example layer | `examples/` and `examples/catalog.json` provide canonical implementation patterns and ranking metadata. |
 | Generation layer | `scripts/new_repo.py` and `templates/` create derived repos with generated profiles, boot docs, and optional Compose, prompt, seed, smoke, and integration assets. |
 | Verification layer | `verification/`, `scripts/validate_context.py`, and `scripts/run_verification.py` keep manifests, examples, scripts, and generated repo shapes aligned. |
-| Continuity layer | `context/memory/`, `MEMORY.md`, and handoff snapshots preserve current working state across sessions. |
+| Continuity layer | `scripts/work.py`, `PLAN.md`, `context/TASK.md`, `context/SESSION.md`, `context/MEMORY.md`, and handoff snapshots preserve current working state across sessions. |
 
 ## Source-of-Truth Order
 
@@ -34,7 +35,7 @@
 3. Manifests define the intended context bundle.
 4. Canonical examples define the preferred implementation shape.
 5. Templates provide scaffolding only.
-6. `MEMORY.md` and handoff snapshots preserve operational state, not policy.
+6. `PLAN.md`, `context/TASK.md`, `context/SESSION.md`, `context/MEMORY.md`, and handoff snapshots preserve operational state, not policy.
 
 ## Why The Model Stays Narrow
 
@@ -45,6 +46,7 @@ The repo assumes large context is usually harmful. Reliability comes from:
 - one manifest instead of merged near-matches
 - one canonical example instead of a hybrid pattern
 - explicit verification instead of plausible-looking output
+- heuristic runtime-state compaction instead of fake token introspection
 
 ## Derived Repo Generation
 
@@ -52,7 +54,7 @@ New repositories are generated from the same runtime model:
 
 - choose an archetype and primary stack
 - select manifests and optional repo features
-- render templates and generated profiles
+- render templates, generated profiles, and runtime continuity tooling
 - defer substantial root README/docs content by default until implementation has real structure
 - preserve Compose names, port bands, and data-isolation defaults from the chosen manifests
 - start work in the generated repo with the same boot sequence and continuity rules

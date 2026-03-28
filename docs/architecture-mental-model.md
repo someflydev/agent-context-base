@@ -7,16 +7,18 @@ This document is the visual companion to `docs/architecture/ASSISTANT_RUNTIME_MO
 ```mermaid
 flowchart LR
     A[User request] --> B[Repo signals and boot docs]
-    B --> C[Routers]
-    C --> D[Manifest]
-    D --> E[Minimal context bundle]
-    E --> F[Canonical example]
-    F --> G[Implementation slice]
-    G --> H[Verification]
-    H --> I[MEMORY.md or handoff]
+    B --> C[work.py resume]
+    C --> D[TASK.md + SESSION.md + optional runtime memory / PLAN.md]
+    D --> E[Routers]
+    E --> F[Manifest]
+    F --> G[Minimal context bundle]
+    G --> H[Canonical example]
+    H --> I[Implementation slice]
+    I --> J[work.py checkpoint]
+    J --> K[Verification]
 ```
 
-The assistant does not jump from request to code. Routing and manifest selection happen first.
+The assistant does not jump from request to code. Runtime-state rehydration, routing, and manifest selection happen first.
 
 ## Repo Generation
 
@@ -25,7 +27,7 @@ flowchart LR
     A[Operator picks archetype and stack] --> B[scripts/new_repo.py]
     B --> C[Selected manifests]
     B --> D[Templates]
-    C --> E[Generated profiles and defaults]
+    C --> E[Generated profiles, work.py, and defaults]
     D --> E
     E --> F[Derived repo with AGENT.md, CLAUDE.md,<br/>generated profiles, code, Compose,<br/>optional tests, and later-earned front docs]
 ```
@@ -54,7 +56,7 @@ flowchart LR
     B --> C[Feature worktree]
     B --> D[Verification worktree]
     B --> E[Docs worktree]
-    C --> F[Shared MEMORY.md or handoff]
+    C --> F[Shared TASK.md / SESSION.md / runtime memory or handoff]
     D --> F
     E --> F
     F --> G[Merge and rerun verification]

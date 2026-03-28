@@ -94,7 +94,9 @@ class RepoScriptTests(unittest.TestCase):
             self.assertTrue((target / ".prompts/PROMPT_01.txt").exists())
             self.assertTrue((target / ".prompts/PROMPT_04.txt").exists())
             self.assertEqual(self._public_root_entries(target), {"AGENT.md", "CLAUDE.md"})
+            self.assertFalse((target / "scripts").exists())
             self.assertTrue((target / ".acb/manifests/project-profile.yaml").exists())
+            self.assertTrue((target / ".acb/scripts/work.py").exists())
             self.assertTrue((target / ".acb/manifests/base/prompt-first-meta-repo.yaml").exists())
             self.assertTrue((target / ".acb/context/doctrine/core-principles.md").exists())
             self.assertTrue((target / ".acb/examples/canonical-prompts/001-bootstrap-repo.txt").exists())
@@ -394,6 +396,8 @@ class RepoScriptTests(unittest.TestCase):
             self.assertTrue((target / ".acb/templates/memory/MEMORY.template.md").exists())
             self.assertTrue((target / ".acb/templates/memory/HANDOFF-SNAPSHOT.template.md").exists())
             self.assertTrue((target / ".acb/templates/prompt-first/001-bootstrap.template.txt").exists())
+            self.assertTrue((target / "scripts/work.py").exists())
+            self.assertTrue((target / ".acb/scripts/work.py").exists())
             self.assertTrue((target / ".acb/scripts/init_memory.py").exists())
             self.assertTrue((target / ".acb/scripts/check_memory_freshness.py").exists())
             self.assertTrue((target / ".acb/scripts/create_handoff_snapshot.py").exists())
@@ -568,10 +572,16 @@ class RepoScriptTests(unittest.TestCase):
             self.assertTrue((target / "docs/repo-layout.md").exists())
             self.assertTrue((target / "AGENT.md").exists())
             self.assertTrue((target / "CLAUDE.md").exists())
+            self.assertTrue((target / "scripts/work.py").exists())
             self.assertTrue((target / ".prompts/001-bootstrap-repo.txt").exists())
             self.assertTrue((target / ".acb/manifests/project-profile.yaml").exists())
             self.assertTrue((target / ".acb/.generated-profile.yaml").exists())
             self.assertTrue((target / ".acb/generation-report.json").exists())
+            gitignore = (target / ".gitignore").read_text(encoding="utf-8")
+            self.assertIn("PLAN.md", gitignore)
+            self.assertIn("context/TASK.md", gitignore)
+            self.assertIn("context/SESSION.md", gitignore)
+            self.assertIn("context/MEMORY.md", gitignore)
 
     def test_memory_utilities_cover_init_check_and_handoff(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -609,9 +619,9 @@ class RepoScriptTests(unittest.TestCase):
 
             code, _, stderr = run_script(str(SCRIPTS_DIR / "init_memory.py"), str(repo))
             self.assertEqual(code, 0, stderr)
-            self.assertTrue((repo / "MEMORY.md").exists())
+            self.assertTrue((repo / "context/MEMORY.md").exists())
 
-            (repo / "MEMORY.md").write_text(valid_memory + "\n", encoding="utf-8")
+            (repo / "context/MEMORY.md").write_text(valid_memory + "\n", encoding="utf-8")
             code, stdout, stderr = run_script(
                 str(SCRIPTS_DIR / "check_memory_freshness.py"),
                 str(repo),
@@ -630,6 +640,29 @@ class RepoScriptTests(unittest.TestCase):
             self.assertEqual(code, 0, stderr)
             self.assertIn("Created ", stdout)
             self.assertIn("fixture-handoff", stdout)
+
+    def test_work_script_scaffolds_and_resumes_runtime_state(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo = Path(temp_dir) / "repo"
+            scripts_dir = repo / "scripts"
+            scripts_dir.mkdir(parents=True)
+            (repo / "AGENT.md").write_text("# AGENT.md\n", encoding="utf-8")
+            (repo / ".git").mkdir()
+            (scripts_dir / "work.py").write_text((SCRIPTS_DIR / "work.py").read_text(encoding="utf-8"), encoding="utf-8")
+
+            code, stdout, stderr = run_script(str(repo / "scripts/work.py"), "checkpoint", cwd=repo)
+            self.assertEqual(code, 0, stderr)
+            self.assertIn("Created PLAN.md", stdout)
+            self.assertTrue((repo / "PLAN.md").exists())
+            self.assertTrue((repo / "context/TASK.md").exists())
+            self.assertTrue((repo / "context/SESSION.md").exists())
+            self.assertTrue((repo / "context/MEMORY.md").exists())
+
+            code, stdout, stderr = run_script(str(repo / "scripts/work.py"), "resume", cwd=repo)
+            self.assertEqual(code, 0, stderr)
+            self.assertIn("Runtime Resume", stdout)
+            self.assertIn("context/TASK.md", stdout)
+            self.assertIn("context/SESSION.md", stdout)
 
     def test_preview_context_bundle_emits_verification_metadata(self) -> None:
         code, stdout, stderr = run_script(

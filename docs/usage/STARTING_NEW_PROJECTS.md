@@ -9,7 +9,7 @@ Use this base in two phases:
 
 `agent-context-base` is the planning and generation repo. It helps you choose the project shape, stack, manifests, and starter assets.
 
-The generated repo is the product repo. That is where the real application code, repo-local examples, and project-specific verification should live.
+The generated repo is the product repo. That is where the real application code, repo-local examples, project-specific verification, and repo-local runtime state should live.
 
 ## From Idea To Generated Repo
 
@@ -79,6 +79,7 @@ python scripts/new_repo.py analytics-api \
 - selects default manifests for that repo shape
 - vendors the selected base manifests under the active repo-local state root inside the generated repo
 - renders `AGENT.md`, `CLAUDE.md`, `.gitignore`, and generated profile files
+- renders `scripts/work.py` into ordinary generated repos and vendors `.acb/scripts/work.py` into compact derived repos
 - defers a substantial root `README.md` and root `docs/` by default unless you explicitly ask for them or a narrowly scoped operational need requires them
 - renders prompt files for every generated repo, plus optional seed data, smoke tests, integration tests, and Dokku assets
 - generates isolated `docker-compose.yml` and `docker-compose.test.yml` when the profile implies local infra
@@ -86,6 +87,13 @@ python scripts/new_repo.py analytics-api \
 - snapshots the operator prompt into `.prompts/initial-prompt.txt` when provided and keeps starter implementation prompts alongside it
 
 All generated repos now keep generator-owned state under `.acb/`, including `.acb/manifests/project-profile.yaml`, `.acb/.generated-profile.yaml`, vendored manifest snapshots, and `.acb/generation-report.json`.
+
+Generated repos also inherit ignore rules for local runtime state:
+
+- `PLAN.md`
+- `context/TASK.md`
+- `context/SESSION.md`
+- `context/MEMORY.md`
 
 For ordinary repos, `.acb/` is the compact repo-local assistant support bundle:
 
@@ -157,16 +165,17 @@ In both modes, the generated repo records its startup contract under `.acb/`. Ma
 
 1. Change into the generated repo.
 2. Start a fresh assistant session there.
-3. Ask the assistant to inspect the generated bootstrap context and propose the implementation plan.
-4. Review that plan and correct scope, constraints, or priorities before coding starts.
-5. Let the assistant execute incrementally, verify each changed boundary, and keep you informed.
-6. Create or update `MEMORY.md` if the work will continue later.
+3. Run `python3 scripts/work.py resume` when the repo has a root `scripts/` directory, or `python3 .acb/scripts/work.py resume` in compact derived repos.
+4. Ask the assistant to inspect the generated bootstrap context and propose the implementation plan.
+5. Review that plan and correct scope, constraints, or priorities before coding starts.
+6. Let the assistant execute incrementally, verify each changed boundary, and keep `PLAN.md`, `context/TASK.md`, `context/SESSION.md`, and `context/MEMORY.md` aligned with real work.
+7. Run `work.py checkpoint` before ending the session or after a meaningful milestone.
 
 Strong first prompt for the generated repo:
 
 > Read the bootstrap context that matters for this repo, propose the implementation plan you intend to execute, wait for my approval, then carry it out with verification checkpoints.
 
-The assistant should load `AGENT.md` or `CLAUDE.md`, `.acb/manifests/project-profile.yaml`, the path recorded in `generated_profile_path`, the vendored manifests under `vendored_base_manifests_dir`, and then the startup bundle paths listed in either `manifest_bundle_startup_paths` for ordinary repos or `derived_metadata.manifest_bundle_startup_paths` and `derived_metadata.maximal_bundle_startup_paths` for derived repos before continuing into `.prompts/`. The startup path intentionally crosses into `.acb/` immediately after the root entrypoints. The human should review the plan, not manually reconstruct the startup context file by file.
+The assistant should load `AGENT.md` or `CLAUDE.md`, run the repo-local `work.py resume` command, inspect `context/TASK.md` and `context/SESSION.md`, then read `.acb/manifests/project-profile.yaml`, the path recorded in `generated_profile_path`, the vendored manifests under `vendored_base_manifests_dir`, and the startup bundle paths listed in either `manifest_bundle_startup_paths` for ordinary repos or `derived_metadata.manifest_bundle_startup_paths` and `derived_metadata.maximal_bundle_startup_paths` for derived repos before continuing into `.prompts/`. The startup path intentionally crosses into `.acb/` only after the root entrypoints and runtime-state layer are rehydrated. The human should review the plan, not manually reconstruct the startup context file by file.
 
 ## Rules That Keep New Repos Clean
 
