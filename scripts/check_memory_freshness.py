@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check whether MEMORY.md still looks small, current, and operational."""
+"""Check whether context/MEMORY.md still looks small, current, and operational."""
 
 from __future__ import annotations
 
@@ -42,7 +42,7 @@ def build_parser() -> argparse.ArgumentParser:
     """Create the CLI parser."""
 
     parser = argparse.ArgumentParser(
-        description="Warn when MEMORY.md is missing key sections, stale, or overly large.",
+        description="Warn when context/MEMORY.md is missing key sections, stale, or overly large.",
     )
     parser.add_argument(
         "repo",
@@ -52,20 +52,20 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--memory-path",
-        default="MEMORY.md",
-        help="Path to inspect relative to the repo root. Defaults to MEMORY.md.",
+        default="context/MEMORY.md",
+        help="Path to inspect relative to the repo root. Defaults to context/MEMORY.md.",
     )
     parser.add_argument(
         "--max-lines",
         type=int,
         default=140,
-        help="Warn when MEMORY.md exceeds this many lines. Defaults to 140.",
+        help="Warn when context/MEMORY.md exceeds this many lines. Defaults to 140.",
     )
     parser.add_argument(
         "--max-words",
         type=int,
         default=1500,
-        help="Warn when MEMORY.md exceeds this many words. Defaults to 1500.",
+        help="Warn when context/MEMORY.md exceeds this many words. Defaults to 1500.",
     )
     parser.add_argument(
         "--max-age-hours",
@@ -150,11 +150,11 @@ def main(argv: list[str]) -> int:
         word_count = len(re.findall(r"\S+", text))
         if line_count > args.max_lines:
             warnings.append(
-                f"MEMORY.md is getting large: {line_count} lines exceeds the {args.max_lines} line guideline"
+                f"context/MEMORY.md is getting large: {line_count} lines exceeds the {args.max_lines} line guideline"
             )
         if word_count > args.max_words:
             warnings.append(
-                f"MEMORY.md is getting large: {word_count} words exceeds the {args.max_words} word guideline"
+                f"context/MEMORY.md is getting large: {word_count} words exceeds the {args.max_words} word guideline"
             )
 
         for pattern in PLACEHOLDER_PATTERNS:

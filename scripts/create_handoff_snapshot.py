@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create a timestamped handoff snapshot with optional carry-forward from MEMORY.md."""
+"""Create a timestamped handoff snapshot with optional carry-forward from context/MEMORY.md."""
 
 from __future__ import annotations
 
@@ -88,13 +88,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--memory-path",
-        default="MEMORY.md",
-        help="Path to MEMORY.md relative to the repo root.",
+        default="context/MEMORY.md",
+        help="Path to context/MEMORY.md relative to the repo root.",
     )
     parser.add_argument(
         "--from-memory",
         action="store_true",
-        help="Carry forward relevant sections from the current MEMORY.md when present.",
+        help="Carry forward relevant sections from the current context/MEMORY.md when present.",
     )
     parser.add_argument(
         "--timestamp",
@@ -338,7 +338,7 @@ def main(argv: list[str]) -> int:
     elif normalized_last_updated:
         validation_block = "\n".join(
             [
-                f"- Continuity source: MEMORY.md ({normalized_last_updated})",
+                f"- Continuity source: context/MEMORY.md ({normalized_last_updated})",
                 "- Re-run the relevant smoke or integration checks before continuing.",
             ]
         )

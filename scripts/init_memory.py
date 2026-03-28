@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Initialize a repo-local MEMORY.md from the starter template."""
+"""Initialize a repo-local context/MEMORY.md from the starter template."""
 
 from __future__ import annotations
 
@@ -54,7 +54,7 @@ def build_parser() -> argparse.ArgumentParser:
     """Create the CLI parser."""
 
     parser = argparse.ArgumentParser(
-        description="Create a repo-local MEMORY.md from the starter template if it is missing.",
+        description="Create a repo-local context/MEMORY.md from the starter template if it is missing.",
     )
     parser.add_argument(
         "repo",
@@ -64,8 +64,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--memory-path",
-        default="MEMORY.md",
-        help="Path to write relative to the repo root. Defaults to MEMORY.md.",
+        default="context/MEMORY.md",
+        help="Path to write relative to the repo root. Defaults to context/MEMORY.md.",
     )
     parser.add_argument(
         "--template",
@@ -84,7 +84,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--force",
         action="store_true",
-        help="Overwrite an existing MEMORY.md.",
+        help="Overwrite an existing context/MEMORY.md.",
     )
     return parser
 
