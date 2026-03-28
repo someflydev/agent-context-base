@@ -1,0 +1,350 @@
+You are working inside the `agent-context-base` repository.
+
+Your task is to design and implement a minimal, assistant-friendly repo-local workflow centered around a single `work.py` tool that lives in the existing `scripts/` directory, plus canonical markdown runtime state files. Then integrate that workflow cleanly into the existing `agent-context-base` system, including its templates, generated-repo behavior, docs, and diagrams.
+
+This is foundational workflow/runtime infrastructure for `agent-context-base`. Treat it as a real integration task, not a toy scaffold.
+
+--------------------------------------------------------------------------------
+PRIMARY OBJECTIVE
+--------------------------------------------------------------------------------
+
+Create a repo-local workflow for `agent-context-base` with:
+
+1. one primary runtime command:
+   - `python3 scripts/work.py ...`
+   and/or any existing repo-native invocation pattern that fits the current architecture
+
+2. canonical runtime/planning markdown files:
+   - `PLAN.md`
+   - `context/TASK.md`
+   - `context/SESSION.md`
+   - `context/MEMORY.md`
+
+3. updates to AGENT.md / CLAUDE.md templates and related doctrine so that the workflow is clearly teachable to coding assistants like Codex / Claude / Gemini
+
+4. generated repos created from `agent-context-base` should inherit the workflow appropriately, including `.gitignore` rules that ignore:
+   - `PLAN.md`
+   - `context/TASK.md`
+   - `context/SESSION.md`
+   - `context/MEMORY.md`
+
+5. updated README/docs/diagrams so the workflow fits naturally into the existing `agent-context-base` philosophy and structure
+
+This should be designed for subscription coding assistants, not raw API metering. Do not rely on token introspection. Use visible repo-local state and heuristics.
+
+--------------------------------------------------------------------------------
+IMPORTANT SCOPE BOUNDARIES
+--------------------------------------------------------------------------------
+
+Do this for `agent-context-base` only.
+
+Do NOT:
+- update cloud spinoff base repos yet
+- create cross-repo automation
+- add new `.prompts` files in this task
+- create a sprawling framework with many commands
+- rely on undocumented vendor-specific coding assistant internals
+
+You may inspect how the repo is organized and how generated repos are scaffolded, but your implementation target is `agent-context-base`.
+
+--------------------------------------------------------------------------------
+CORE DESIGN PRINCIPLES
+--------------------------------------------------------------------------------
+
+The design must:
+
+- minimize cognitive burden
+- reduce the need to remember many commands
+- improve fresh-session restart quality
+- separate short-term working state from durable doctrine
+- integrate into the repo’s existing context-boot / assistant-operating philosophy
+- remain simple enough that assistants will actually follow it
+- avoid ceremony and command sprawl
+
+This workflow should feel like a natural extension of `agent-context-base`, not an unrelated subsystem.
+
+--------------------------------------------------------------------------------
+CANONICAL FILE ROLES
+--------------------------------------------------------------------------------
+
+Implement and document the roles of these files carefully:
+
+1. `PLAN.md`
+   - milestone-level roadmap
+   - larger phases, subtracks, or multi-session plan
+   - should be updated when a specific megaprompt from `.prompts` materially reshapes the current plan, introduces a new phase, or changes milestone structure
+   - should NOT be updated for every tiny implementation step
+
+2. `context/TASK.md`
+   - current active slice of work
+   - concrete scope, success criteria, immediate steps, blockers
+   - should reflect the current subtask or active implementation unit
+
+3. `context/SESSION.md`
+   - compact current working state
+   - recent decisions, relevant files, current status, next safe step, what not to reload
+   - must stay concise and action-oriented
+
+4. `context/MEMORY.md`
+   - durable repo-local truths
+   - assistant behavior expectations, stable conventions, recurring guardrails, known pitfalls
+   - should NOT accumulate temporary task sludge
+
+Design the workflow and docs so these distinctions are explicit and easy to follow.
+
+--------------------------------------------------------------------------------
+WORK TOOL REQUIREMENTS
+--------------------------------------------------------------------------------
+
+Implement a new tool in the existing scripts directory:
+
+- `scripts/work.py`
+
+Prefer Python consistent with repo conventions.
+
+This tool should be the single primary entry point for runtime context management in this workflow.
+
+It should support a minimal interface such as:
+
+- `python3 scripts/work.py resume`
+- `python3 scripts/work.py checkpoint`
+- optionally:
+  - `python3 scripts/work.py init`
+  - `python3 scripts/work.py status`
+
+Choose a small, coherent interface. Do not overbuild.
+
+If the repo already has script conventions or helper patterns for script entry points, follow them.
+
+--------------------------------------------------------------------------------
+EXPECTED `work.py` BEHAVIOR
+--------------------------------------------------------------------------------
+
+`resume`
+- detect repo root safely
+- inspect whether canonical files exist
+- determine whether state appears stale relative to repo changes
+- summarize the current working situation in a concise, useful way
+- guide a fresh assistant session toward the correct next reads/actions
+- help humans and assistants quickly answer: “where are we and what should happen next?”
+
+`checkpoint`
+- inspect repo state
+- determine whether TASK / SESSION / MEMORY / PLAN likely need refresh or not
+- update or scaffold runtime files appropriately
+- use simple, grounded heuristics to warn when active context appears too large, stale, or drifting
+- produce a better continuation surface for the next session
+
+`init` (optional, if appropriate)
+- scaffold the expected local runtime files from templates/examples if missing
+- be safe and idempotent
+
+`status` (optional)
+- summarize current workflow state without mutating files
+
+You do not need to implement every imaginable feature. Favor minimal usefulness over elaborate machinery.
+
+--------------------------------------------------------------------------------
+STATE DETECTION + COMPACTION HEURISTICS
+--------------------------------------------------------------------------------
+
+This is a central part of the design.
+
+Because subscription coding assistants generally cannot reliably expose precise context-window usage, define “active context too large” operationally using visible proxies.
+
+Use practical heuristics such as:
+- line counts
+- byte size
+- staleness relative to git changes
+- number of changed files since last checkpoint
+- whether `context/SESSION.md` lacks a clear next safe step
+- whether `context/TASK.md` looks empty/stale compared to active work
+- whether `PLAN.md` likely needs update after a major `.prompts`-driven phase shift
+- whether `context/MEMORY.md` appears polluted with short-lived details
+- whether current working state is too broad or too verbose for a clean assistant boot sequence
+
+Do not fake token counts. Do not pretend to know model internals. Use grounded repo-local measurements.
+
+--------------------------------------------------------------------------------
+CHECKPOINT DOCTRINE
+--------------------------------------------------------------------------------
+
+Integrate clear doctrine into the repo so assistants know when checkpoints happen.
+
+Checkpoint moments should include things like:
+- after meaningful code or doc changes
+- after a completed subtask
+- before ending an assistant session
+- before switching branches or worktrees
+- after a major test milestone
+- when `context/SESSION.md` is stale or bloated
+- before a likely handoff to a fresh assistant session
+- when a specific megaprompt from `.prompts` materially changes the active phase or plan
+
+This doctrine should be reflected in AGENT.md / CLAUDE.md and any related docs.
+
+--------------------------------------------------------------------------------
+PLAN UPDATE RULES
+--------------------------------------------------------------------------------
+
+Define and integrate a crisp rule for when `PLAN.md` is updated.
+
+Required distinction:
+- if a `.prompts` megaprompt introduces or materially reshapes phases, milestones, or the near-to-mid-term roadmap, update `PLAN.md`
+- if work is simply progressing within an already-defined phase, update `context/TASK.md` and `context/SESSION.md` without necessarily changing `PLAN.md`
+
+Make this distinction explicit in:
+- AGENT.md / CLAUDE.md guidance
+- docs
+- the behavior and/or output of `work.py checkpoint`, if useful
+
+--------------------------------------------------------------------------------
+AGENT / CLAUDE TEMPLATE INTEGRATION
+--------------------------------------------------------------------------------
+
+Inspect the existing AGENT.md / CLAUDE.md files and any template/scaffolding equivalents in `agent-context-base`.
+
+Update them so the new workflow integrates seamlessly into the current system.
+
+The result should teach assistants something like:
+
+Session start:
+1. read `AGENT.md`
+2. run `python3 scripts/work.py resume`
+3. read `context/TASK.md`
+4. read `context/SESSION.md`
+5. read `context/MEMORY.md` only if needed
+6. read `PLAN.md` when milestone context matters
+
+During work:
+- use `python3 scripts/work.py checkpoint` at natural boundaries
+- keep `SESSION.md` concise
+- keep `TASK.md` focused on the current slice
+- update `PLAN.md` only when the broader plan changes
+- keep `MEMORY.md` durable and clean
+
+Do not bloat AGENT.md. Keep it crisp, actionable, and aligned with existing assistant boot-entry philosophy.
+
+--------------------------------------------------------------------------------
+GENERATED REPO BEHAVIOR
+--------------------------------------------------------------------------------
+
+Inspect how `agent-context-base` currently generates or scaffolds downstream repos/projects.
+
+Integrate this new workflow appropriately so generated repos inherit:
+- correct `.gitignore` entries for:
+  - `PLAN.md`
+  - `context/TASK.md`
+  - `context/SESSION.md`
+  - `context/MEMORY.md`
+- any necessary templates/examples/scaffolding
+- updated AGENT.md / CLAUDE.md guidance if those are part of generation
+- a clean explanation of the runtime-state-vs-committed-doctrine distinction
+
+Be careful:
+- runtime files should generally be ignored, not committed
+- but committed templates/examples/scaffolding may be appropriate
+- do not break existing generation patterns or philosophy
+
+--------------------------------------------------------------------------------
+REPO INSPECTION EXPECTATIONS
+--------------------------------------------------------------------------------
+
+Before implementing, inspect the actual repo and determine:
+
+- current `scripts/` conventions
+- current AGENT.md / CLAUDE.md structure and intent
+- whether there are committed templates or scaffold sources
+- how generated repos inherit docs / ignores / assistant files
+- where README/docs/diagrams should be updated
+- whether there are existing boot-sequence, context-layer, operator-guide, or handoff docs that should integrate this workflow
+
+Make grounded decisions based on what you actually find.
+
+--------------------------------------------------------------------------------
+DOCUMENTATION / README / DIAGRAM UPDATES
+--------------------------------------------------------------------------------
+
+After implementing the workflow, update outward-facing and internal documentation as appropriate.
+
+At minimum, update the relevant README/docs/diagrams to explain:
+
+- what `scripts/work.py` is for
+- why this workflow exists
+- the mental model:
+  - `PLAN.md` = roadmap
+  - `context/TASK.md` = current slice
+  - `context/SESSION.md` = compact working state
+  - `context/MEMORY.md` = durable local truths
+- why this is based on heuristics rather than token introspection
+- how it fits prompt-first repo creation and fresh-session resume
+- when checkpoints happen
+- when `.prompts` megaprompts should trigger `PLAN.md` updates
+- what is committed doctrine vs ignored runtime state
+- how generated repos inherit the workflow
+
+If diagrams exist or would materially help, update or add simple, clear diagrams (Mermaid or repo-native diagram style) to show:
+- assistant boot sequence
+- checkpoint flow
+- relationship between `.prompts`, `PLAN.md`, `TASK.md`, `SESSION.md`, `MEMORY.md`
+- how `work.py` fits into the loop
+
+Do not create noisy or excessive docs. Prefer a small number of useful updates over sprawling documentation.
+
+--------------------------------------------------------------------------------
+IMPLEMENTATION QUALITY BAR
+--------------------------------------------------------------------------------
+
+The final result should:
+- feel native to `agent-context-base`
+- reduce cognitive burden
+- improve fresh-session reliability
+- remain simple enough that assistants will really use it
+- avoid command zoo / feature sprawl
+- avoid pretending to know actual context-window usage
+- be well integrated across scripts, doctrine, templates, generation behavior, docs, and diagrams
+
+This is about making session continuity cheap, reliable, and grounded in repo truth.
+
+--------------------------------------------------------------------------------
+TESTING / VALIDATION
+--------------------------------------------------------------------------------
+
+Validate your work in a grounded way.
+
+At minimum:
+- confirm `scripts/work.py` runs sensibly in `agent-context-base`
+- confirm init/checkpoint/resume behavior is safe and coherent
+- confirm `.gitignore` behavior for generated repos is correct
+- confirm AGENT.md / CLAUDE.md guidance is aligned with the actual implementation
+- confirm docs and diagrams match reality
+- confirm changes do not break existing generation/scaffolding paths
+- add/update tests if there is an existing repo-native place/pattern for doing so
+
+Favor practical validation over elaborate test theater.
+
+--------------------------------------------------------------------------------
+OUTPUT / REPORTING REQUIREMENTS
+--------------------------------------------------------------------------------
+
+When complete, provide:
+
+1. a concise summary of what you changed
+2. where `scripts/work.py` was added and how it works
+3. how AGENT.md / CLAUDE.md were updated
+4. how generated repos now inherit the ignore rules and workflow
+5. how checkpoint doctrine is defined
+6. how `.prompts` megaprompt usage relates to `PLAN.md` updates
+7. what README/docs/diagrams were updated
+8. any important tradeoffs, limitations, or obvious next steps
+
+--------------------------------------------------------------------------------
+EXECUTION STYLE
+--------------------------------------------------------------------------------
+
+- Be thorough, but avoid framework-building instincts.
+- Prefer coherent minimalism over ambitious sprawl.
+- Make decisions from the repo’s real structure.
+- Integrate fully rather than leaving placeholder text.
+- Keep the workflow simple, teachable, and durable.
+- Build this as something humans and assistants will actually use.
