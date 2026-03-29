@@ -19,7 +19,7 @@ Read [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md) first. Thi
 
 - Treat `.acb/` as the generated repo-local operating boundary.
 - Treat `PLAN.md`, `context/TASK.md`, `context/SESSION.md`, and `context/MEMORY.md` as local runtime state, not doctrine.
-- After `work.py resume`, read `context/TASK.md` and `context/SESSION.md`; read `context/MEMORY.md` only when durable repo-local truths matter; read `PLAN.md` only when milestone context matters.
+- After `work.py resume`, use its git anchor, recent-change clues, next-step signal, and plan-review signal to decide what to read next. Then read `context/TASK.md` and `context/SESSION.md`; read `context/MEMORY.md` only when durable repo-local truths matter; read `PLAN.md` only when milestone context matters.
 - When working in a generated repo, re-read `.acb/SESSION_BOOT.md`, `.acb/profile/selection.json`, `.acb/specs/AGENT_RULES.md`, and `.acb/specs/VALIDATION.md` at session start.
 - Prefer manifest-defined bundles over improvised loading.
 - Validation is mandatory before claiming completion unless the operator explicitly waives it.
@@ -27,6 +27,7 @@ Read [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md) first. Thi
 - Use `python3 scripts/work.py checkpoint` at natural boundaries.
 - Update `PLAN.md` only when a `.prompts` megaprompt or a major decision materially reshapes phases, milestones, or the near-to-mid-term roadmap.
 - Keep `context/MEMORY.md` durable and clean; keep active-step detail in `context/TASK.md` and `context/SESSION.md`.
+- If a repo provides `PLAN.example.md`, `context/TASK.example.md`, `context/SESSION.example.md`, or `context/MEMORY.example.md`, `init` and `checkpoint` will use those as scaffold sources for missing runtime files.
 
 ## New Repo Routing
 

@@ -37,6 +37,7 @@ Read `context/TASK.md` and `context/SESSION.md` after the stable startup files. 
 
 - use `python3 scripts/work.py checkpoint` at natural boundaries when the root script exists; otherwise use `python3 .acb/scripts/work.py checkpoint`
 - keep `PLAN.md` for roadmap-level phase changes, `context/TASK.md` for the active slice, `context/SESSION.md` for compact handoff state, and `context/MEMORY.md` for durable local truths
+- repos may customize missing runtime-note scaffolds with `PLAN.example.md`, `context/TASK.example.md`, `context/SESSION.example.md`, and `context/MEMORY.example.md`
 - use handoff snapshots for durable transfer points
 - keep front-facing docs earned by implementation, not speculation
 

@@ -5,9 +5,9 @@ This directory contains lightweight tooling for repo-local runtime continuity, g
 ## Primary Commands
 
 - `python3 scripts/work.py resume`
-  Summarizes repo-local runtime state, staleness signals, and the next useful reads for a fresh session.
+  Summarizes repo-local runtime state, git-anchor clues, staleness signals, the best visible next step, and the next useful reads for a fresh session.
 - `python3 scripts/work.py checkpoint`
-  Scaffolds missing runtime files and reports when `PLAN.md`, `context/TASK.md`, `context/SESSION.md`, or `context/MEMORY.md` likely need refresh.
+  Scaffolds missing runtime files from repo-local `*.example.md` files when present, otherwise from built-in defaults, and reports when `PLAN.md`, `context/TASK.md`, `context/SESSION.md`, or `context/MEMORY.md` likely need refresh.
 - `python scripts/new_repo.py ...`
   Generates a descendant repo with `.acb/`, prompts, startup docs, and optional starter assets.
 - `python scripts/acb_payload.py ...`

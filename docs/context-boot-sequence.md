@@ -17,6 +17,7 @@ This is the deterministic startup contract for assistants working in `agent-cont
 - Do not start by scanning whole directories.
 - Re-read `.acb/` at the beginning of every new session.
 - Use repo-local runtime markdown files for continuation state, not doctrine.
+- Let `work.py resume` drive triage with its commit anchor, recent-change clues, next-step signal, and plan-review signal before broad reads.
 - Keep `context/SESSION.md` concise and action-oriented.
 - Update `PLAN.md` only when phases or milestones changed materially.
 - Prefer one active boundary and one validation path.

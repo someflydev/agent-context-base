@@ -26,6 +26,8 @@ python .acb/scripts/acb_inspect.py
 python .acb/scripts/acb_verify.py
 ```
 
+`resume` and `status` now surface recent git anchors, changed-file clues, a best-effort next step from runtime notes, and modest plan-review or memory-promotion hints. Use those signals to decide whether runtime files need review before reading deeper.
+
 ## Stop Early When
 
 - more than one workflow or stack still looks primary

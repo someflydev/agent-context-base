@@ -31,11 +31,12 @@ Load one dominant path, not a broad survey.
 
 - Re-read generated `.acb/` boot files at session start.
 - Treat `PLAN.md`, `context/TASK.md`, `context/SESSION.md`, and `context/MEMORY.md` as local runtime state, not doctrine.
-- After `work.py resume`, read `context/TASK.md`, then `context/SESSION.md`, then `context/MEMORY.md` only if durable repo-local truths matter.
+- After `work.py resume`, use its git anchor, recent-change clues, next-step signal, and plan-review signal to decide what to read next. Then read `context/TASK.md`, then `context/SESSION.md`, then `context/MEMORY.md` only if durable repo-local truths matter.
 - Prefer manifests, canonical examples, and validation gates over improvisation.
 - Treat templates as scaffolds, not canonical truth.
 - Use `python3 scripts/work.py checkpoint` after meaningful changes, before ending a session, and before a likely handoff.
 - Update `PLAN.md` only when a `.prompts` megaprompt or major decision materially changes phases or milestones.
+- If a repo provides `PLAN.example.md`, `context/TASK.example.md`, `context/SESSION.example.md`, or `context/MEMORY.example.md`, `init` and `checkpoint` will scaffold missing runtime files from those examples.
 - Do not claim completion without running the stated proof path.
 - If proof is unavailable, report the work as `blocked` or `incomplete` instead of `done`.
 

@@ -65,6 +65,7 @@ workflow, and canonical-example files that should be read before extending `.pro
 - keep `context/TASK.md` focused on the active slice
 - keep `context/MEMORY.md` durable and clean
 - use `python3 scripts/work.py checkpoint` at meaningful stop points when the root script exists; otherwise use `python3 .acb/scripts/work.py checkpoint`
+- if the repo adds `PLAN.example.md`, `context/TASK.example.md`, `context/SESSION.example.md`, or `context/MEMORY.example.md`, expect `init` and `checkpoint` to scaffold missing runtime files from those examples
 - update `PLAN.md` only when a `.prompts` megaprompt or major decision materially reshapes phases or milestones
 - create a handoff snapshot when another session is likely
 - keep root `README.md`, `docs/`, and Mermaid diagrams deferred until the repo has enough real structure to describe honestly

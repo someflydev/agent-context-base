@@ -24,6 +24,8 @@ python3 scripts/work.py status
 python3 scripts/work.py checkpoint
 ```
 
+`resume` and `status` stay read-only. `checkpoint` and `init` may scaffold missing files, but they do not silently replace existing runtime notes unless `--force` is used.
+
 ## Canonical Runtime Files
 
 - `PLAN.md`: milestone-level roadmap, major phases, and near-to-mid-term structure. Update it when a `.prompts` megaprompt or major decision materially reshapes milestones or phases. Do not touch it for normal progress inside an already-defined phase.
@@ -32,6 +34,17 @@ python3 scripts/work.py checkpoint
 - `context/MEMORY.md`: durable repo-local truths, recurring guardrails, stable commands, and known pitfalls. Do not let it accumulate temporary task sludge.
 
 These files are runtime state, not doctrine. They should normally stay ignored and local to the working copy.
+
+## Repo-Local Scaffold Examples
+
+When scaffolding a missing runtime file, `scripts/work.py` now prefers a repo-local example file with the matching `*.example.md` name:
+
+- `PLAN.example.md` -> `PLAN.md`
+- `context/TASK.example.md` -> `context/TASK.md`
+- `context/SESSION.example.md` -> `context/SESSION.md`
+- `context/MEMORY.example.md` -> `context/MEMORY.md`
+
+If the example file is absent, the tool falls back to its built-in default scaffold. This keeps the workflow deterministic while still letting a repo customize its own runtime-note starting shape.
 
 ## Boot Sequence
 
@@ -43,16 +56,20 @@ These files are runtime state, not doctrine. They should normally stay ignored a
 6. Read `PLAN.md` when milestone context matters.
 7. Continue into `.acb/` startup files in generated repos when the task needs manifest, spec, or validation context.
 
+`resume` should give a fresh assistant a grounded snapshot first: current branch and working-tree breadth, the latest commit anchor, recent changed-file clues, the best visible next step from `context/SESSION.md` or `context/TASK.md`, whether `PLAN.md` likely deserves review, and whether recent work looks like it may deserve promotion into `context/MEMORY.md`.
+
 ## Why Heuristics, Not Token Introspection
 
 Subscription coding assistants usually do not expose trustworthy live context-window usage. This workflow treats "active context is too large" as a repo-local, visible condition instead:
 
 - runtime files are too long in lines or words
 - `context/SESSION.md` has no clear next safe step
+- `context/TASK.md` or `context/SESSION.md` simply aged long enough to deserve review
 - `context/TASK.md` is stale relative to the active changed-file surface
 - too many files changed since the last useful checkpoint
 - `context/MEMORY.md` contains temporary, task-local notes
 - `.prompts/` changed after `PLAN.md`, so the roadmap may need review
+- recent changed paths suggest a durable-memory promotion may be warranted
 
 `scripts/work.py` reports those conditions; it does not pretend to know model internals.
 
@@ -70,6 +87,8 @@ Run `python3 scripts/work.py checkpoint`:
 - when a `.prompts` megaprompt materially changes the phase structure
 
 `checkpoint` is intentionally conservative. It scaffolds missing runtime files and reports drift or compaction pressure, but it does not invent task content or rewrite human notes.
+
+When `checkpoint` or `status` hints that `context/MEMORY.md` may need promotion, treat that as a prompt to review whether the change introduced a stable new rule, repo truth, pitfall, or reusable command. Do not copy active task notes into memory just because files changed.
 
 ## Relationship To Doctrine
 

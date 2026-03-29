@@ -33,7 +33,7 @@ This repo now treats session continuity as visible repo-local state instead of h
 - `context/SESSION.md` holds compact working state and the next safe step
 - `context/MEMORY.md` holds durable repo-local truths
 
-Those files are local runtime artifacts, not committed doctrine. `scripts/work.py` manages their startup and checkpoint loop with grounded heuristics such as line counts, changed-file breadth, staleness relative to active repo changes, and whether `context/SESSION.md` still points at a safe next move. It does not pretend to know live token-window usage.
+Those files are local runtime artifacts, not committed doctrine. `scripts/work.py` manages their startup and checkpoint loop with grounded heuristics such as line counts, changed-file breadth, elapsed-time staleness, recent git anchors, inferred next-step cues from `context/TASK.md` and `context/SESSION.md`, and whether recent work likely deserves a `context/MEMORY.md` promotion review. It also prefers repo-local `PLAN.example.md`, `context/TASK.example.md`, `context/SESSION.example.md`, and `context/MEMORY.example.md` scaffold files when a repo chooses to provide them. It does not pretend to know live token-window usage.
 
 ## `.acb/` In Generated Repos
 
