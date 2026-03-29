@@ -1,0 +1,232 @@
+You are working inside the `agent-context-base` repository.
+
+Previous prompt runs established:
+
+PROMPT_01-89
+
+`scripts/work.py` already exists and is the canonical repo-local runtime workflow tool for:
+
+- `PLAN.md`
+- `context/TASK.md`
+- `context/SESSION.md`
+- `context/MEMORY.md`
+
+Your task is to strengthen that tool and its surrounding doctrine in a measured way, while preserving its role as a simple, assistant-friendly runtime entrypoint.
+
+This is an enhancement pass on the existing workflow, not a redesign from scratch.
+
+--------------------------------------------------------------------------------
+PRIMARY OBJECTIVE
+--------------------------------------------------------------------------------
+
+Improve `scripts/work.py` so it gives better practical guidance during fresh-session resume and checkpoint review, while staying grounded, predictable, and low-ceremony.
+
+Then update any docs, README sections, templates, or diagrams that should reflect the improved behavior.
+
+The result should make the runtime workflow more useful to assistants without turning it into a large state-management framework.
+
+--------------------------------------------------------------------------------
+IMPORTANT CONSTRAINTS
+--------------------------------------------------------------------------------
+
+Keep the workflow centered on:
+
+- `python3 scripts/work.py resume`
+- `python3 scripts/work.py checkpoint`
+- `python3 scripts/work.py status`
+- `python3 scripts/work.py init`
+
+Do NOT:
+
+- replace the existing workflow model
+- add many new subcommands
+- introduce hidden metadata stores
+- depend on token introspection or model-specific internals
+- make the script aggressively rewrite runtime files during normal usage
+
+Favor additive improvements that make the current tool more informative and more adaptable to repo-local use.
+
+--------------------------------------------------------------------------------
+WORK TOOL ENHANCEMENT GOALS
+--------------------------------------------------------------------------------
+
+Enhance `scripts/work.py` in thoughtful ways that improve practical session management.
+
+Focus especially on these capabilities:
+
+1. Repo-local example-template scaffolding
+
+`init` and `checkpoint` should remain able to scaffold missing runtime files, but the tool should prefer repo-local example templates when they exist.
+
+Desired behavior:
+
+- if repo-local example files exist, use them as the scaffold source for the matching runtime files
+- otherwise fall back to the current built-in defaults
+- keep this deterministic and simple
+- do not require example files to exist
+
+If you choose naming or lookup conventions, make them clear and documented.
+
+2. Better resume/status signal quality
+
+Improve `resume` and `status` so they surface more useful runtime signals such as:
+
+- last commit timestamp or equivalent recent git anchor
+- stronger “what changed recently” clues
+- better inference of the next concrete step when `TASK.md` already contains one
+- clearer indication of whether `PLAN.md` likely deserves review
+
+Do this without pretending to know more than the repo can actually observe.
+
+3. Durable-memory promotion hints
+
+Add grounded heuristics that help assistants notice when a change may deserve promotion into `context/MEMORY.md`, such as when changes touch:
+
+- assistant-facing docs
+- templates
+- repo-factory or generator behavior
+- prompt-sequence or standing workflow doctrine
+
+These should be suggestions, not forced actions.
+
+4. Time-aware staleness signals
+
+The current script already compares runtime files to changed files.
+
+Enhance it with a modest elapsed-time staleness signal as well, so assistants can see when session notes have simply aged enough to deserve review even if the working tree is quiet.
+
+Keep this heuristic modest and explainable.
+
+--------------------------------------------------------------------------------
+BEHAVIORAL BOUNDARY
+--------------------------------------------------------------------------------
+
+Preserve the current design principle that `scripts/work.py` should not aggressively overwrite active runtime notes.
+
+In particular:
+
+- `resume` should remain read-only
+- `status` should remain read-only
+- `checkpoint` may scaffold missing files and report warnings
+- do not silently replace an assistant’s manually maintained `context/SESSION.md` or other runtime notes as a normal default behavior
+
+If you believe some write-path enhancement would be beneficial, it must be:
+
+- optional
+- explicit
+- conservative
+- well-justified in docs
+
+Do not introduce such a mode unless it clearly improves the workflow and remains aligned with the repo’s simplicity goals.
+
+--------------------------------------------------------------------------------
+ENHANCEMENT DESIGN PRINCIPLES
+--------------------------------------------------------------------------------
+
+The improved tool should:
+
+- stay easy to teach from `AGENT.md` / `CLAUDE.md`
+- provide better signal without becoming noisy
+- avoid brittle magic
+- be useful in repos with and without custom example templates
+- distinguish active task state from durable memory cleanly
+- help a fresh assistant restart work with less rediscovery
+
+Prefer a few strong improvements over many tiny features.
+
+--------------------------------------------------------------------------------
+DOCS + TEMPLATE INTEGRATION
+--------------------------------------------------------------------------------
+
+After improving the tool, inspect the relevant repo surfaces and update them where needed so the documented workflow matches reality.
+
+This may include, if appropriate:
+
+- `README.md`
+- `AGENT.md`
+- `CLAUDE.md`
+- docs that explain the workflow or checkpoint doctrine
+- generated-repo inheritance docs or templates, if the enhanced behavior affects what downstream repos should inherit
+- diagrams if the workflow depiction is materially clearer with the enhancement
+
+Do not update docs mechanically. Only change the surfaces that should actually teach or reflect the improved behavior.
+
+Examples of likely doc changes:
+
+- explaining that runtime files can be scaffolded from repo-local examples when present
+- clarifying what new resume/status signals mean
+- clarifying when memory-promotion hints should lead to `context/MEMORY.md` updates
+
+--------------------------------------------------------------------------------
+PLAN UPDATE RULE
+--------------------------------------------------------------------------------
+
+Preserve the existing plan doctrine:
+
+- update `PLAN.md` when a `.prompts` megaprompt or major decision materially reshapes phases, milestones, or the roadmap
+- do not update `PLAN.md` for ordinary progress inside an already-defined phase
+- use `context/TASK.md` and `context/SESSION.md` for the active slice instead
+
+If docs mention this workflow, keep that distinction crisp.
+
+--------------------------------------------------------------------------------
+IMPLEMENTATION EXPECTATIONS
+--------------------------------------------------------------------------------
+
+Inspect the current `scripts/work.py` implementation and keep what is already good:
+
+- repo-root detection
+- canonical file-role separation
+- grounded warning heuristics
+- minimal command surface
+
+Then enhance it carefully.
+
+Design choices should remain coherent and maintainable. Avoid introducing scattered special cases if a small central abstraction would keep the script clearer.
+
+--------------------------------------------------------------------------------
+VERIFICATION
+--------------------------------------------------------------------------------
+
+Verify the improved tool in a grounded way.
+
+At minimum:
+
+- run the relevant `scripts/work.py` commands from the repo root
+- verify behavior when runtime files are missing versus present
+- verify example-template fallback if you add or use that mechanism
+- verify warnings and signal output still make sense
+- verify docs, templates, or diagrams remain aligned with the implemented behavior
+
+If some verification path is impractical, record the exact limitation.
+
+--------------------------------------------------------------------------------
+SCOPE BOUNDARIES
+--------------------------------------------------------------------------------
+
+Do this for `agent-context-base` only.
+
+Do NOT:
+
+- update the cloud base repos in this task
+- create cross-repo automation
+- add a large workflow framework around `work.py`
+- turn runtime notes into an auto-generated logging system
+
+--------------------------------------------------------------------------------
+COMMIT GUIDANCE
+--------------------------------------------------------------------------------
+
+Use cohesive commits prefixed with `[PROMPT_90]`.
+
+Suggested grouping:
+
+1. `scripts/work.py` enhancement
+2. workflow docs / README / templates alignment
+3. verification-driven cleanup
+
+--------------------------------------------------------------------------------
+COMPLETION CONDITION
+--------------------------------------------------------------------------------
+
+`agent-context-base` has an improved `scripts/work.py` that gives better resume, status, and checkpoint guidance through grounded signals such as repo-local template scaffolding, better next-step inference, memory-promotion hints, and modest time-aware staleness warnings, and the surrounding docs reflect the enhanced workflow where appropriate.
