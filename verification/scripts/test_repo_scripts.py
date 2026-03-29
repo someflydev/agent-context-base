@@ -21,6 +21,16 @@ def run_script(*args: str, cwd: Path | None = None) -> tuple[int, str, str]:
 
 
 class RepoScriptTests(unittest.TestCase):
+    def _run_checked_command(self, args: list[str], cwd: Path) -> str:
+        result = run_command(args, cwd=cwd, timeout=240)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        return result.stdout
+
+    def _init_git_repo(self, repo: Path) -> None:
+        self._run_checked_command(["git", "init"], cwd=repo)
+        self._run_checked_command(["git", "config", "user.name", "ACB Test"], cwd=repo)
+        self._run_checked_command(["git", "config", "user.email", "acb-test@example.com"], cwd=repo)
+
     def _public_root_entries(self, target: Path) -> set[str]:
         return {path.name for path in target.iterdir() if not path.name.startswith(".")}
 
@@ -663,6 +673,122 @@ class RepoScriptTests(unittest.TestCase):
             self.assertIn("Runtime Resume", stdout)
             self.assertIn("context/TASK.md", stdout)
             self.assertIn("context/SESSION.md", stdout)
+            self.assertIn("Git signals:", stdout)
+            self.assertIn("Working signals:", stdout)
+
+    def test_work_script_prefers_repo_local_example_templates(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo = Path(temp_dir) / "repo"
+            scripts_dir = repo / "scripts"
+            context_dir = repo / "context"
+            scripts_dir.mkdir(parents=True)
+            context_dir.mkdir(parents=True)
+            (repo / "AGENT.md").write_text("# AGENT.md\n", encoding="utf-8")
+            (repo / ".git").mkdir()
+            (scripts_dir / "work.py").write_text((SCRIPTS_DIR / "work.py").read_text(encoding="utf-8"), encoding="utf-8")
+            (repo / "PLAN.example.md").write_text("# custom plan\n", encoding="utf-8")
+            (context_dir / "TASK.example.md").write_text("# custom task\n", encoding="utf-8")
+
+            code, stdout, stderr = run_script(str(repo / "scripts/work.py"), "checkpoint", cwd=repo)
+            self.assertEqual(code, 0, stderr)
+            self.assertIn("Created PLAN.md from PLAN.example.md", stdout)
+            self.assertIn("Created context/TASK.md from context/TASK.example.md", stdout)
+            self.assertEqual((repo / "PLAN.md").read_text(encoding="utf-8"), "# custom plan\n")
+            self.assertEqual((context_dir / "TASK.md").read_text(encoding="utf-8"), "# custom task\n")
+            self.assertTrue((context_dir / "SESSION.md").exists())
+            self.assertTrue((context_dir / "MEMORY.md").exists())
+
+    def test_work_script_reports_git_anchor_and_resume_signals(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo = Path(temp_dir) / "repo"
+            scripts_dir = repo / "scripts"
+            context_dir = repo / "context"
+            prompts_dir = repo / ".prompts"
+            templates_dir = repo / "templates" / "readme"
+            scripts_dir.mkdir(parents=True)
+            context_dir.mkdir(parents=True)
+            prompts_dir.mkdir(parents=True)
+            templates_dir.mkdir(parents=True)
+            (repo / "AGENT.md").write_text("# AGENT.md\n", encoding="utf-8")
+            (scripts_dir / "work.py").write_text((SCRIPTS_DIR / "work.py").read_text(encoding="utf-8"), encoding="utf-8")
+            (repo / "PLAN.md").write_text(
+                textwrap.dedent(
+                    """\
+                    # PLAN.md
+
+                    ## Active Phase
+                    - Runtime hardening
+
+                    ## Milestones
+                    - Improve fresh-session signals.
+
+                    ## Near-Term Focus
+                    - Keep the tool small.
+                    """
+                ),
+                encoding="utf-8",
+            )
+            (context_dir / "TASK.md").write_text(
+                textwrap.dedent(
+                    """\
+                    # TASK.md
+
+                    ## Current Slice
+                    - Improve resume output.
+
+                    ## Success Criteria
+                    - Fresh sessions restart cleanly.
+
+                    ## Immediate Steps
+                    - Review the runtime workflow docs after validating the command output.
+                    """
+                ),
+                encoding="utf-8",
+            )
+            (context_dir / "SESSION.md").write_text(
+                textwrap.dedent(
+                    """\
+                    # SESSION.md
+
+                    ## Current Status
+                    - The runtime workflow is mid-hardening.
+
+                    ## Next Safe Step
+                    - Run the focused verification path.
+                    """
+                ),
+                encoding="utf-8",
+            )
+            (context_dir / "MEMORY.md").write_text(
+                textwrap.dedent(
+                    """\
+                    # MEMORY.md
+
+                    ## Durable Rules
+                    - Keep runtime notes local.
+                    """
+                ),
+                encoding="utf-8",
+            )
+            (prompts_dir / "PROMPT_01.txt").write_text("bootstrap\n", encoding="utf-8")
+
+            self._init_git_repo(repo)
+            self._run_checked_command(["git", "add", "."], cwd=repo)
+            self._run_checked_command(["git", "commit", "-m", "initial runtime state"], cwd=repo)
+
+            (prompts_dir / "PROMPT_02.txt").write_text("follow-up\n", encoding="utf-8")
+            (templates_dir / "README.template.md").write_text("# template\n", encoding="utf-8")
+            self._run_checked_command(["git", "add", "."], cwd=repo)
+            self._run_checked_command(["git", "commit", "-m", "touch prompt and template surfaces"], cwd=repo)
+
+            code, stdout, stderr = run_script(str(repo / "scripts/work.py"), "resume", cwd=repo)
+            self.assertEqual(code, 0, stderr)
+            self.assertIn("Last commit:", stdout)
+            self.assertIn("Next concrete step: Run the focused verification path.", stdout)
+            self.assertIn("TASK fallback step: Review the runtime workflow docs after validating the command output.", stdout)
+            self.assertIn("PLAN review:", stdout)
+            self.assertIn("prompt-sequence files changed", stdout)
+            self.assertIn("Memory promotion hint:", stdout)
 
     def test_preview_context_bundle_emits_verification_metadata(self) -> None:
         code, stdout, stderr = run_script(
