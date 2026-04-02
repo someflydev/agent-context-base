@@ -133,3 +133,34 @@ When the pause is meaningful and likely to cross sessions, create a handoff snap
 Use `MEMORY.md` for live continuity.
 
 Use handoff snapshots for durable transfer.
+
+## 3-Tier Memory Base
+
+The committed `memory/` directory is the structured knowledge base for this repo. It
+holds durable findings, session notes, and prompt-boundary summaries that survive across
+sessions and are visible to any future assistant. Unlike `context/MEMORY.md`, everything
+here is committed and version-controlled.
+
+**Load order:**
+
+1. `memory/INDEX.md` first — orientation only, after `work.py resume`
+2. `memory/summaries/PROMPT_XX_resume.md` or `PROMPT_XX_completion.md` — for the specific
+   prompt being resumed or continued
+3. `memory/concepts/<slug>.md` — when working in a known problem domain
+
+**When to prefer `memory/` over `context/MEMORY.md`:**
+
+- Use `memory/summaries/` when you need a prompt-boundary checkpoint that will survive
+  beyond the current session
+- Use `memory/concepts/` when a finding is durable and likely to recur across prompts
+- Use `context/MEMORY.md` for live, current-task state that changes constantly
+
+**When to add to `memory/concepts/` vs update `context/MEMORY.md`:**
+
+- Add to `memory/concepts/` after the second time you look something up and wish it were
+  written down, or after resolving a non-obvious confusion that affected implementation
+- Update `context/MEMORY.md` for active-task continuity that will be pruned when the task
+  is done
+
+For the full compaction model, see
+`context/doctrine/memory-compaction-discipline.md`.
