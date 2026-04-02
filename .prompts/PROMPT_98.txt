@@ -1,0 +1,491 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that new AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one fresh
+coding-assistant session with commit prefixes like `[PROMPT_98]`.
+
+PROMPT_91: 3-tier memory structure + memory-compaction doctrine
+PROMPT_92: work.py operator-console commands + work/ data model
+PROMPT_93: PROMPT_META_RUNNER repositioned + doctrine/workflows updated
+PROMPT_94: Session Context Briefing in work.py resume + startup visibility docs
+PROMPT_95: Tests, verification hardening, future-workstream readiness, arc completion
+PROMPT_96: Executable context-complexity-budget model + work.py budget-report
+PROMPT_97: Startup trace protocol + work.py startup-trace
+
+This prompt (PROMPT_98) adds heuristic prompt routing and capability validation:
+`work.py route-check` and canonical juicy-prompt scenario fixtures. Do NOT proceed
+to PROMPT_99.
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume        (run; study output)
+  4. AGENT.md
+  5. memory/INDEX.md
+  6. memory/summaries/PROMPT_97_completion.md  (if exists; else continue)
+  7. context/acb/profile-rules.json       (READ CAREFULLY — capability maps are the
+                                           foundation for routing heuristics)
+  8. context/router/task-router.md        (READ CAREFULLY)
+  9. context/router/stack-router.md       (skim — understand stack selection logic)
+ 10. context/router/archetype-router.md   (skim)
+ 11. scripts/context_budget.py            (skim — you will call score_bundle from route-check)
+ 12. scripts/work.py                      (skim — understand subcommand pattern)
+
+Understanding profile-rules.json and task-router.md is essential for writing a routing
+heuristic that produces sensible output. Read them before designing the implementation.
+
+Note on alias-catalog.yaml: at ~46KB this file is large. Do NOT read it in full as
+part of boot. Instead, design the heuristic around profile-rules.json and path-based
+keyword matching (explained below). If you determine that alias-catalog.yaml contains
+compact signal structures worth including, read only the first 100 lines.
+
+================================================================================
+BACKGROUND: WHY HEURISTIC ROUTING
+================================================================================
+
+The repo already has routers (task-router.md, stack-router.md, archetype-router.md)
+that an ASSISTANT reads during boot to decide what to load. Those are normative docs —
+guidance for humans and assistants.
+
+What's missing is an executable tool that can take a prompt text and produce a
+structured report of:
+  - what archetype(s) the prompt likely implies
+  - what primary stack it suggests
+  - what capabilities are implicated (from profile-rules.json)
+  - what budget profile the implied context would require
+  - warnings if the prompt is likely "juicy" (multi-stack, multi-capability)
+
+This tool (`work.py route-check`) does NOT replace the routers. It is a heuristic
+assistant that helps operators ask "is this repo well-configured to handle this prompt,
+and what should the assistant load?" It is useful for:
+  1. Pre-session planning: what will this prompt actually require?
+  2. Post-session validation: did the session declare loading what route-check expected?
+  3. Repo evaluation: is the repo actually leveraging its capabilities when given
+     complex prompts that should activate multiple stacks/workflows?
+  4. Testing the routing infrastructure: do the canonical juicy-prompt scenarios produce
+     stable routing suggestions?
+
+ALL output must be labeled HEURISTIC. The tool never claims certainty. It proposes.
+
+================================================================================
+PART 1: scripts/context_router.py (heuristic routing library)
+================================================================================
+
+Create: `scripts/context_router.py`
+
+Pure library. No main(). Imported by work.py.
+
+------------------------------------------------------------------------
+1.1 Keyword-to-capability matching
+------------------------------------------------------------------------
+
+Define a keyword catalog mapping prompt keywords to capability tags
+(using the same capability tag vocabulary as profile-rules.json):
+
+  "fastapi", "flask", "django", "api", "endpoint", "route"         -> api
+  "postgres", "postgresql", "mysql", "sqlite", "database", "schema" -> storage
+  "redis", "keydb", "cache", "caching"                              -> storage
+  "duckdb", "polars", "parquet", "dataframe"                        -> storage
+  "qdrant", "meilisearch", "vector", "embedding", "rag", "search"   -> rag, search
+  "celery", "worker", "queue", "background task", "scheduler"       -> workers
+  "kafka", "rabbitmq", "event", "stream", "pubsub"                  -> eventing
+  "pipeline", "etl", "transform", "ingest"                          -> pipelines
+  "scrape", "scraping", "crawler", "crawl", "fetch"                 -> scraping
+  "dokku", "deploy", "deployment", "heroku", "production"           -> cloud-deployment
+  "cli", "command line", "typer", "click", "argparse"               -> cli
+  "tui", "textual", "rich", "terminal ui"                           -> cli
+  "smoke test", "integration test", "pytest", "test"                -> verification
+
+This catalog must be expressed as a data structure (not inline if/else chains) so it
+can be inspected and extended.
+
+------------------------------------------------------------------------
+1.2 Capability-to-archetype mapping
+------------------------------------------------------------------------
+
+Read the `archetype_capabilities` mapping from `profile-rules.json` at runtime.
+Invert it: for each capability tag, which archetypes support it?
+
+  capability -> [archetype1, archetype2, ...]
+
+Use this to infer candidate archetypes from the prompt's implied capabilities.
+
+Expose: `load_capability_to_archetype_map(repo_root: Path) -> dict[str, list[str]]`
+
+------------------------------------------------------------------------
+1.3 Capability-to-manifest mapping
+------------------------------------------------------------------------
+
+Similarly, invert `manifest_capabilities` from profile-rules.json:
+
+  capability -> [manifest1, manifest2, ...]
+
+Expose: `load_capability_to_manifest_map(repo_root: Path) -> dict[str, list[str]]`
+
+------------------------------------------------------------------------
+1.4 Route inference
+------------------------------------------------------------------------
+
+  @dataclass
+  class RouteInference:
+      implied_capabilities: tuple[str, ...]     # deduplicated, sorted
+      candidate_archetypes: tuple[str, ...]      # ranked by match count
+      candidate_manifests: tuple[str, ...]       # ranked by match count
+      primary_archetype: str | None              # highest-ranked archetype
+      primary_manifest: str | None               # highest-ranked manifest
+      is_multi_capability: bool                  # True if >= 3 capability tags
+      is_likely_juicy: bool                      # True if capabilities span 3+ domains
+      suggested_budget_profile: str              # tiny/small/medium/large/cross-system
+      confidence: float                          # 0.0-1.0 (based on keyword match density)
+      warnings: tuple[str, ...]                  # routing concerns
+      keyword_hits: dict[str, list[str]]         # keyword -> [capability tags] for transparency
+
+Profile suggestion heuristic:
+  1 capability tag  → tiny or small
+  2 capability tags → small or medium
+  3 capability tags → medium or large
+  4+ capability tags or is_likely_juicy → large or cross-system
+
+Domain categories for is_likely_juicy:
+  data-domain:       storage, rag, pipelines
+  infra-domain:      workers, eventing, cloud-deployment
+  interface-domain:  api, cli
+  quality-domain:    verification
+
+is_likely_juicy = True if capabilities span 3+ domains OR include both data-domain and
+interface-domain and cloud-deployment.
+
+Confidence heuristic:
+  strong (0.85-1.0):    >= 5 keyword hits with consistent capability signals
+  usable (0.70-0.84):   3-4 keyword hits, mild diversity
+  weak (0.55-0.69):     1-2 keyword hits or high diversity
+  very weak (< 0.55):   0 keyword hits or highly ambiguous
+
+Expose: `infer_route(prompt_text: str, repo_root: Path) -> RouteInference`
+
+------------------------------------------------------------------------
+1.5 Suggested context files (heuristic)
+------------------------------------------------------------------------
+
+Given a RouteInference, suggest a minimal context bundle to load. This is the core of
+"capability validation" — comparing what an assistant declared it loaded against what
+route-check suggests it should have loaded.
+
+  def suggest_context_bundle(
+      inference: RouteInference,
+      repo_root: Path,
+  ) -> list[str]:
+      """Return a heuristic list of recommended file paths for this route."""
+
+Logic:
+  - Always include: AGENT.md
+  - Include primary manifest file if it exists in manifests/
+  - Include archetype file if it exists in context/archetypes/
+  - Include primary workflow file(s) implied by capability (use a small
+    capability-to-workflow map: api -> add-api-endpoint, storage -> add-storage-layer,
+    pipelines -> add-data-pipeline, cli -> add-cli-command, etc.)
+  - Include at most 2 stack files from context/stacks/ matching primary manifest/stack
+  - Include core doctrine: context/doctrine/context-complexity-budget.md always
+  - If cloud-deployment in capabilities: include deployment doctrine
+  Only suggest files that actually exist in the repo (check Path.exists()).
+
+================================================================================
+PART 2: work.py route-check subcommand
+================================================================================
+
+Add `route-check` to `scripts/work.py`.
+
+  python3 scripts/work.py route-check "<prompt text>"
+  python3 scripts/work.py route-check @path/to/prompt.txt
+  python3 scripts/work.py route-check --json "<prompt text>"
+  python3 scripts/work.py route-check --compare-bundle path1 path2 ... "<prompt text>"
+
+Argument handling:
+  - If first positional arg starts with @: read prompt text from that file path
+  - Otherwise: use the positional string as prompt text directly
+  - --json: output JSON instead of human-readable
+  - --compare-bundle: after routing, score the provided bundle and compare against
+    the suggested bundle (useful for validating that a declared trace loaded what
+    was recommended)
+
+Human-readable output format:
+
+  Route Check (HEURISTIC)
+  =======================
+  Prompt:          "<first 80 chars of prompt>..."
+
+  Implied Capabilities:
+    api, storage, verification  (from keywords: endpoint, postgres, smoke test)
+
+  Candidate Archetypes:
+    1. backend-api-service    (matches: api, storage)
+    2. data-pipeline          (matches: storage)
+
+  Candidate Manifests:
+    1. backend-api-fastapi-polars  (matches: api, storage)
+
+  Routing Decision (HEURISTIC):
+    Primary Archetype:  backend-api-service
+    Primary Manifest:   backend-api-fastapi-polars
+    Budget Profile:     medium
+    Confidence:         strong (0.90)
+
+  Suggested Context Bundle:
+    - AGENT.md
+    - manifests/backend-api-fastapi-polars.yaml
+    - context/archetypes/backend-api-service.md
+    - context/workflows/add-api-endpoint.md
+    - context/doctrine/context-complexity-budget.md
+    (+ 2 more stack files)
+
+  [if --compare-bundle provided:]
+  Bundle Comparison:
+    Declared bundle score:   <N> points (<profile>)
+    Suggested bundle score:  <N> points (<profile>)
+    Files in suggested not in declared: <list | none>
+    Files in declared not in suggested: <list | none>
+    Verdict: <"declared bundle aligns with routing" | "declared bundle under-loaded"
+              | "declared bundle over-loaded for this route">
+
+  Warnings:
+    - [none | e.g., "cross-domain: deployment capability implied but no trigger detected"]
+    - [HEURISTIC: this is not a verified route, only a keyword-based suggestion]
+
+JSON output must include all the same fields in a structured format.
+
+Always include "HEURISTIC" prominently in both output formats.
+
+================================================================================
+PART 3: JUICY PROMPT SCENARIO FIXTURES
+================================================================================
+
+Create: `context/validation/juicy-prompt-scenarios.md`
+
+This file contains 3 canonical routing scenarios that demonstrate the expected behavior
+of `work.py route-check` for non-trivial prompts. These are fixtures for:
+  - Testing route-check output stability
+  - Demonstrating the "capability validation" use case
+  - Showing when a prompt should trigger a large or cross-system profile
+
+------------------------------------------------------------------------
+Scenario 1: Simple single-stack API task
+------------------------------------------------------------------------
+
+  Prompt: "Add a paginated GET /products endpoint to the FastAPI service that queries
+  a Postgres table and returns results with next_cursor for keyset pagination."
+
+  Expected routing:
+    Implied capabilities: api, storage
+    Primary archetype: backend-api-service
+    Primary manifest: backend-api-fastapi-polars (or closest)
+    Budget profile: small or medium
+    Confidence: strong
+    Warnings: none significant
+
+------------------------------------------------------------------------
+Scenario 2: Multi-stack RAG comparison
+------------------------------------------------------------------------
+
+  Prompt: "Compare Qdrant versus Meilisearch for semantic search latency over 50K
+  product documents. Index the same dataset in both, run 20 queries, measure p50 and
+  p95 latency, and produce a short report."
+
+  Expected routing:
+    Implied capabilities: rag, storage
+    Primary archetype: local-rag-system or multi-storage-experiment
+    Budget profile: large or cross-system
+    Confidence: usable (multi-backend is ambiguous)
+    Warnings: "multi-backend comparison; cross-system profile may be appropriate"
+    is_likely_juicy: True
+
+------------------------------------------------------------------------
+Scenario 3: Full-stack new service bootstrap
+------------------------------------------------------------------------
+
+  Prompt: "Bootstrap a new data acquisition service that scrapes product prices from
+  3 e-commerce sites on a daily schedule, stores raw HTML in S3-compatible storage,
+  transforms prices into a Polars dataframe stored in DuckDB, exposes a FastAPI
+  /prices endpoint with Postgres persistence, and deploys to Dokku."
+
+  Expected routing:
+    Implied capabilities: api, storage, scraping, pipelines, workers, cloud-deployment
+    Primary archetype: data-acquisition-service
+    Budget profile: cross-system
+    Confidence: strong (many consistent signals)
+    Warnings: "6 capabilities implied — expect large context budget",
+              "cloud-deployment capability requires explicit trigger"
+    is_likely_juicy: True
+
+For each scenario, include:
+  - The full prompt text
+  - The expected RouteInference fields
+  - The expected suggested context bundle (approximate)
+  - A note on what would make this prompt "healthy" vs "over-loaded" from a budget perspective
+
+Format: use clear headers, code blocks for prompt text, bullet lists for expected fields.
+Target: 80–120 lines.
+
+Also create: `context/validation/routing-examples.md`
+
+This shows sample `work.py route-check` output for each scenario, formatted as if
+the command was run. Use realistic but approximate output (does not need to be the
+exact output the command would produce, just indicative). Label everything HEURISTIC.
+Target: 60–80 lines.
+
+================================================================================
+PART 4: TESTS
+================================================================================
+
+Create: `verification/unit/test_context_router.py`
+
+Use unittest, class-based, match test_repo_scripts.py style.
+
+------------------------------------------------------------------------
+Test class: TestKeywordCapabilityMatching
+------------------------------------------------------------------------
+
+  test_api_keywords_match_api_capability:
+    assert "api" in infer_route("Add a REST API endpoint for user login", repo_root).implied_capabilities
+  test_storage_keywords_match_storage:
+    assert "storage" in infer_route("Store results in Postgres and DuckDB", repo_root).implied_capabilities
+  test_rag_keywords_match_rag:
+    assert "rag" in infer_route("Index documents into Qdrant for semantic search", repo_root).implied_capabilities
+  test_empty_prompt_low_confidence:
+    result = infer_route("", repo_root); assert result.confidence < 0.55
+  test_multi_capability_detection:
+    result = infer_route("scrape prices, store in postgres, expose API, deploy to dokku", repo_root)
+    assert result.is_multi_capability == True
+
+------------------------------------------------------------------------
+Test class: TestRouteInference
+------------------------------------------------------------------------
+
+  test_scenario_1_simple_api:
+    Use scenario 1 prompt; assert primary_archetype == "backend-api-service" (or similar)
+    assert suggested_budget_profile in ("small", "medium")
+    assert result.confidence >= 0.70
+
+  test_scenario_2_rag_comparison:
+    Use scenario 2 prompt; assert "rag" in implied_capabilities
+    assert result.is_likely_juicy == True
+    assert result.suggested_budget_profile in ("large", "cross-system")
+
+  test_scenario_3_full_stack:
+    Use scenario 3 prompt; assert len(result.implied_capabilities) >= 4
+    assert result.suggested_budget_profile == "cross-system"
+    assert result.is_likely_juicy == True
+
+------------------------------------------------------------------------
+Test class: TestRouteCheckCommand
+------------------------------------------------------------------------
+
+  test_route_check_produces_output:
+    run work.py route-check "add an API endpoint" and assert output contains
+    "Route Check" and "HEURISTIC"
+
+  test_route_check_json_flag:
+    run work.py route-check --json "add an API endpoint"; parse as JSON;
+    assert "implied_capabilities" and "primary_archetype" in result
+
+  test_route_check_file_input:
+    write a temp file with "add an API endpoint"; run work.py route-check @<path>;
+    assert "Route Check" in output
+
+  test_route_check_compare_bundle:
+    run work.py route-check --compare-bundle AGENT.md "add an API endpoint"
+    assert "Bundle Comparison" in output
+
+  test_route_check_juicy_prompt_warning:
+    run with scenario 3 prompt; assert "HEURISTIC" in output and output contains
+    capability list of length >= 4
+
+================================================================================
+VERIFICATION
+================================================================================
+
+After all changes:
+
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+  python -m unittest discover -s verification/unit -p "test_*.py" -v
+    → All tests must pass.
+
+Also verify manually:
+
+  python3 scripts/work.py route-check "Add a paginated FastAPI endpoint that queries Postgres"
+  → Should show Route Check output with api, storage capabilities, backend-api-service archetype
+
+  python3 scripts/work.py route-check \
+    "scrape prices, store in postgres and duckdb, expose API, deploy to dokku" \
+    --json
+  → Should show JSON with multiple capabilities, cross-system profile, is_likely_juicy: true
+
+  python3 scripts/work.py route-check \
+    --compare-bundle AGENT.md context/doctrine/core-principles.md \
+    "Add a paginated FastAPI endpoint"
+  → Should show Bundle Comparison section
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+Use grouped commits prefixed with [PROMPT_98]. Use `git add -p`.
+
+Suggested groupings:
+
+  1. [PROMPT_98] add context_router.py: heuristic prompt routing library
+     Stage: scripts/context_router.py
+
+  2. [PROMPT_98] add route-check subcommand to work.py
+     Stage: scripts/work.py
+
+  3. [PROMPT_98] add juicy-prompt scenario fixtures
+     Stage: context/validation/juicy-prompt-scenarios.md,
+            context/validation/routing-examples.md
+
+  4. [PROMPT_98] add tests for heuristic routing
+     Stage: verification/unit/test_context_router.py
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Implement scripts/context_router.py
+  - Add work.py route-check subcommand with --json and --compare-bundle flags
+  - Create context/validation/juicy-prompt-scenarios.md
+  - Create context/validation/routing-examples.md
+  - Write and pass the described tests
+  - Label all heuristic output clearly
+
+DO NOT:
+  - Claim the routing is deterministic or certain — it is always heuristic
+  - Parse alias-catalog.yaml in full (it is 46KB; too large for boot context)
+  - Change AGENT.md or CLAUDE.md (only if strictly necessary for a one-line reference)
+  - Change profile-rules.json schema (adding toggleability is PROMPT_99)
+  - Implement derived-repo toggleability (that is PROMPT_99)
+  - Change any manifests, stacks, archetypes, or existing doctrine files
+  - Make route-check depend on network calls or external services
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+
+  - scripts/context_router.py exists with infer_route, suggest_context_bundle,
+    RouteInference, and the keyword/capability maps
+  - work.py route-check works with text input, @file input, --json, --compare-bundle
+  - All route-check output contains "HEURISTIC" prominently
+  - context/validation/juicy-prompt-scenarios.md exists with 3 canonical scenarios
+  - context/validation/routing-examples.md exists with sample outputs
+  - All tests pass
+  - validate_context.py passes
+  - run_verification.py --tier fast passes
+
+STOP HERE. Do not implement PROMPT_99 in this session.

@@ -1,0 +1,409 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that new AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one fresh
+coding-assistant session with commit prefixes like `[PROMPT_97]`.
+
+PROMPT_91: 3-tier memory structure + memory-compaction doctrine
+PROMPT_92: work.py operator-console commands + work/ data model
+PROMPT_93: PROMPT_META_RUNNER repositioned + doctrine/workflows updated
+PROMPT_94: Session Context Briefing in work.py resume + startup visibility docs
+PROMPT_95: Tests, verification hardening, future-workstream readiness, arc completion
+PROMPT_96: Executable context-complexity-budget model + work.py budget-report
+
+This prompt (PROMPT_97) adds the startup trace protocol: a structured self-declaration
+format that makes boot sequences inspectable. Do NOT proceed to PROMPT_98.
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md       (READ CAREFULLY — you will update this)
+  3. docs/startup-context-visibility.md  (READ CAREFULLY — you will update this)
+  4. python3 scripts/work.py resume      (run; study the Session Context Briefing format)
+  5. AGENT.md                            (READ CAREFULLY — you will add one step)
+  6. CLAUDE.md                           (READ CAREFULLY — you will add one bullet)
+  7. memory/INDEX.md
+  8. memory/summaries/PROMPT_96_completion.md  (if exists; else continue)
+  9. context/doctrine/context-loading-rules.md (skim — understand current load order)
+ 10. scripts/work.py                     (skim — focus on handle_resume and the
+                                          --write-startup-log implementation from PROMPT_94)
+ 11. .gitignore                          (confirm logs/ is gitignored)
+
+Understanding the current Session Context Briefing and the existing --write-startup-log
+behavior is essential. The startup trace is a complement to the briefing, not a
+replacement for it.
+
+================================================================================
+BACKGROUND: WHAT THE STARTUP TRACE IS
+================================================================================
+
+The Session Context Briefing (added in PROMPT_94) reports the OBJECTIVE STATE of the
+repo at the moment `work.py resume` is run: files present, git state, memory base,
+operator queue, complexity posture. It is generated automatically from file system state.
+
+The startup trace is different: it records what the ASSISTANT DECLARES it loaded during
+boot. This is NOT automatic logging of internal model reads — that is not observable.
+It IS a structured self-declaration that the assistant fills in at the end of its boot
+sequence when it follows the protocol defined here.
+
+Why both?
+  - The Session Context Briefing answers: "what was the state of the repo at session start?"
+  - The startup trace answers: "what did the assistant say it loaded and why?"
+
+The trace enables:
+  - Post-session review of what context was declared (and comparing against expected)
+  - Budget validation: run budget-report against declared files to score the session
+  - Pattern analysis: over many sessions, do traces show consistent loading discipline?
+  - Debugging: when a session goes wrong, what did the assistant say it had loaded?
+
+Important constraint: the trace is self-reported and cannot be proven. Document this
+clearly. The value is in the discipline of declaration, not in verified truth.
+
+================================================================================
+PART 1: DEFINE THE STARTUP TRACE FORMAT
+================================================================================
+
+Create: `context/doctrine/startup-trace-protocol.md`
+
+This is the normative specification for the startup trace format. Cover:
+
+1. What a startup trace is
+   A structured self-declaration written by the assistant at the end of its boot sequence.
+   Not automated. Not verified. Valuable because it makes loading decisions inspectable
+   and forces intentional declaration.
+
+2. When to write one
+   Write a startup trace when:
+   - The session loads a substantial context bundle (medium profile or larger)
+   - The task spans multiple stacks or workflows
+   - The operator is debugging a previous session's context load
+   - startup_trace_enabled is true in the repo's .acb/ config (if that flag exists)
+
+   Do not write one for:
+   - Tiny prompt-only sessions with minimal context
+   - Quick status queries or one-file fixes
+   - When the Session Context Briefing already captures everything needed
+
+3. Trace file format
+   Plain text with clearly delimited sections (no YAML frontmatter — keep it simple).
+   Stored as: logs/startup/<YYYY-MM-DD-HHMMSS>-trace.md
+   Distinguish from the Session Context Briefing logs which end in -resume.log
+
+4. Required sections
+   The format is:
+
+   ================================================================
+   Startup Trace
+   ================================================================
+   Created:         <ISO datetime>
+   Session:         <short description of the task or prompt being started>
+   Entry Point:     <AGENT.md | CLAUDE.md>
+
+   Declared Files Read:
+     1. <path> — <why loaded: e.g., "boot anchor", "active workflow", "primary stack">
+     2. <path> — <why>
+     ...
+
+   Routers Consulted:
+     - <none | router name(s) and what they resolved>
+
+   Doctrines Loaded:
+     - <doctrine file names, or "none beyond boot sequence">
+
+   Memory Artifacts Seen:
+     - <memory/summaries/PROMPT_XX_completion.md: present | not present>
+     - <context/MEMORY.md: present | missing>
+
+   Budget Estimate:
+     Files: <N>   Estimated Profile: <tiny|small|medium|large|cross-system|unknown>
+     Note: run `work.py budget-report --bundle <files>` for a scored evaluation.
+
+   Router Decision:
+     Archetype:      <inferred | not applicable>
+     Primary Stack:  <inferred | not applicable>
+     Workflow:       <selected | not applicable>
+     Confidence:     <strong (>= 0.85) | usable | weak | not routed>
+
+   Warnings:
+     - <none | list any loading concerns, drift, or missing expected files>
+   ================================================================
+
+5. Anti-patterns
+   - Writing a trace that just copies the Session Context Briefing (they serve different purposes)
+   - Listing files not actually loaded (false declarations are worse than no trace)
+   - Omitting files that were loaded (incomplete traces undermine their value)
+   - Inventing "Routers Consulted" entries without actually consulting them
+
+6. Relationship to the budget model
+   The "Declared Files Read" section is the input to `work.py budget-report`.
+   After writing a trace, an operator can run:
+     `work.py budget-report --bundle <declared-files...>`
+   to score the declared bundle against the budget profiles.
+
+Keep this file tight: 60–90 lines. It is doctrine, not a tutorial.
+
+================================================================================
+PART 2: work.py startup-trace SUBCOMMAND
+================================================================================
+
+Add a `startup-trace` command to `scripts/work.py` with two subsubcommands:
+
+  python3 scripts/work.py startup-trace write [options]
+  python3 scripts/work.py startup-trace show
+
+------------------------------------------------------------------------
+2a. startup-trace write
+------------------------------------------------------------------------
+
+  python3 scripts/work.py startup-trace write \
+      --session "brief description" \
+      --files path1 path2 ... \
+      [--entry-point AGENT.md] \
+      [--routers "task-router resolved to add-api-endpoint workflow"] \
+      [--doctrines doctrine1 doctrine2 ...] \
+      [--archetype backend-api-service] \
+      [--primary-stack python-fastapi] \
+      [--workflow add-api-endpoint] \
+      [--confidence 0.9] \
+      [--warnings "cross-domain file loaded without explicit trigger"]
+
+Behavior:
+  - Assembles the trace format from arguments
+  - Writes to: logs/startup/<YYYY-MM-DD-HHMMSS>-trace.md
+  - Creates logs/startup/ if it does not exist
+  - Prints the output path on success
+  - Exits 0 on success, 1 on error
+
+All flags except --session are optional. When --files is omitted, the trace is written
+with "Declared Files Read: none declared" (a valid minimal trace).
+
+For "Budget Estimate": compute it automatically using context_budget.py.
+If --files is provided, score the bundle (with --primary-stack and --archetype as
+ModifierContext if supplied) and include the profile in the estimate. If --files is not
+provided, write "Files: 0   Estimated Profile: unknown".
+
+The --confidence flag accepts a float 0.0-1.0. Map to the text labels:
+  >= 0.85: "strong (>= 0.85)"
+  0.70-0.84: "usable (0.70–0.84)"
+  0.55-0.69: "weak (0.55–0.69)"
+  < 0.55: "very weak (< 0.55)"
+  not provided: "not declared"
+
+------------------------------------------------------------------------
+2b. startup-trace show
+------------------------------------------------------------------------
+
+  python3 scripts/work.py startup-trace show [--last N]
+
+Behavior:
+  - Lists the N most recent trace files in logs/startup/ that end in -trace.md
+    (distinct from -resume.log files written by --write-startup-log)
+  - Default N=1: shows the content of the most recent trace file
+  - If no trace files exist: prints "No startup traces found in logs/startup/"
+  - If N > 1: prints just the filenames and their Created: date, not full content
+
+------------------------------------------------------------------------
+2c. Parser integration
+------------------------------------------------------------------------
+
+`startup-trace` is a subcommand of work.py. The subsubcommands `write` and `show`
+should be implemented using argparse subparsers nested under startup-trace.
+
+Match the style of other subcommands in work.py. Avoid adding a third level of nesting
+if argparse makes it awkward — a flat `startup-trace-write` and `startup-trace-show`
+pair is acceptable if nested subparsers complicate the parser structure significantly.
+Use your judgment but document the chosen approach in a comment.
+
+================================================================================
+PART 3: UPDATE Session Context Briefing (work.py)
+================================================================================
+
+In `print_session_context_briefing()` (added in PROMPT_94), add one line to the
+"Memory Base:" section:
+
+  Last Startup Trace: <YYYY-MM-DD HH:MM> | logs/startup/<filename>
+                  OR: none found in logs/startup/
+
+Detect this by scanning logs/startup/ for files ending in -trace.md and returning
+the most recent one by mtime. Keep this fast — do not read the file content.
+
+This makes the briefing the unified session-start entry point: it shows both the
+auto-generated state AND whether a self-declared trace from the prior session exists.
+
+================================================================================
+PART 4: UPDATE docs/startup-context-visibility.md
+================================================================================
+
+The file was created in PROMPT_94 describing the two-level model (Session Context
+Briefing + startup log). Update it to describe the three-level model:
+
+  Level 1 — Session Context Briefing (auto-generated by `work.py resume`)
+    Objective: reflects actual repo state at session start. Shows git, runtime files,
+    memory base, operator queue, complexity posture.
+
+  Level 2 — Startup Log (written by `work.py resume --write-startup-log`)
+    Auto-captured: same content as the briefing, persisted to logs/startup/ for
+    after-the-fact review.
+
+  Level 3 — Startup Trace (written by assistant via `work.py startup-trace write`)
+    Self-declared: records what the assistant says it loaded and why. Feeds into
+    `work.py budget-report` for scored evaluation. Not automated, not verified.
+
+Add a section explaining when to use Level 3:
+  - Medium or larger sessions
+  - Multi-stack tasks
+  - Debugging a problematic session
+  - When the operator wants a scored audit of loading discipline
+
+Keep the file under 100 lines total.
+
+================================================================================
+PART 5: UPDATE docs/context-boot-sequence.md
+================================================================================
+
+At the end of the existing `## Boot Order` steps, add:
+
+  After completing the boot sequence:
+  Optionally run `python3 scripts/work.py startup-trace write --session "<task>" --files <files-read>`
+  to record a self-declared startup trace for this session.
+
+Also add a brief note explaining this is optional and when it is useful (medium+ sessions,
+multi-stack tasks, debugging). Two to three sentences only.
+
+Keep all existing content intact.
+
+================================================================================
+PART 6: UPDATE AGENT.md AND CLAUDE.md
+================================================================================
+
+AGENT.md — add one line to the Operating Rules section:
+
+  - When starting a medium or larger session, optionally write a startup trace with
+    `work.py startup-trace write` to record declared context loads for later audit.
+
+CLAUDE.md — add one bullet to the Guardrails section:
+
+  - For medium or larger sessions, use `work.py startup-trace write` to self-declare
+    what was loaded. This feeds into `work.py budget-report` for context scoring.
+
+Keep both additions minimal — one line each.
+
+================================================================================
+VERIFICATION
+================================================================================
+
+After all changes:
+
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+  python -m unittest discover -s verification/unit -p "test_*.py" -v
+    → All existing tests must pass. New tests (if any) must pass.
+
+Also verify manually:
+
+  python3 scripts/work.py startup-trace write \
+      --session "test trace" \
+      --files AGENT.md context/doctrine/core-principles.md \
+      --primary-stack python-fastapi \
+      --archetype backend-api-service \
+      --confidence 0.9
+  → Should create a file in logs/startup/ ending in -trace.md
+  → File should contain all required sections
+
+  python3 scripts/work.py startup-trace show
+  → Should print the trace content
+
+  python3 scripts/work.py resume
+  → Session Context Briefing should now show "Last Startup Trace: <timestamp> | <file>"
+
+================================================================================
+TESTS (if adding new test file)
+================================================================================
+
+If you add a new test file, create `verification/unit/test_startup_trace.py`.
+
+If the tests for this prompt fit naturally in `test_work_commands.py` (from PROMPT_95),
+add them there instead.
+
+Test class: TestStartupTraceWrite
+  - test_write_creates_file: verify a file ending in -trace.md is created in logs/startup/
+  - test_write_output_contains_sections: verify the written file contains "Startup Trace",
+    "Declared Files Read", "Budget Estimate", "Router Decision"
+  - test_write_with_files_scores_budget: when --files are provided, verify "Estimated Profile"
+    is not "unknown" (it should be a real profile name)
+  - test_write_minimal_trace: run with --session only; verify file is created without error
+
+Test class: TestStartupTraceShow
+  - test_show_no_files: when logs/startup/ has no -trace.md files, output contains
+    "No startup traces found"
+  - test_show_after_write: write a trace then show it; verify the session description appears
+
+Test class: TestSessionBriefingTraceSection (extend existing TestSessionContextBriefing)
+  - test_briefing_shows_last_trace: write a trace, then run work.py resume; verify
+    "Last Startup Trace:" appears in the output
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+Use grouped commits prefixed with [PROMPT_97]. Use `git add -p`.
+
+Suggested groupings:
+
+  1. [PROMPT_97] add startup-trace-protocol.md doctrine
+     Stage: context/doctrine/startup-trace-protocol.md
+
+  2. [PROMPT_97] add startup-trace subcommand to work.py + update Session Context Briefing
+     Stage: scripts/work.py
+
+  3. [PROMPT_97] update startup-context-visibility.md for 3-level model
+     Stage: docs/startup-context-visibility.md
+
+  4. [PROMPT_97] update context-boot-sequence.md, AGENT.md, CLAUDE.md
+     Stage: docs/context-boot-sequence.md, AGENT.md, CLAUDE.md
+
+  5. [PROMPT_97] add startup trace tests
+     Stage: verification/unit/test_startup_trace.py or test_work_commands.py
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Create context/doctrine/startup-trace-protocol.md
+  - Add work.py startup-trace write and show subcommands
+  - Update print_session_context_briefing to show last trace
+  - Update docs/startup-context-visibility.md, docs/context-boot-sequence.md
+  - Update AGENT.md and CLAUDE.md minimally
+  - Write the described tests
+
+DO NOT:
+  - Change context_budget.py (that was PROMPT_96)
+  - Add prompt routing or route-check (that is PROMPT_98)
+  - Change profile-rules.json
+  - Add derived-repo toggleability (that is PROMPT_99)
+  - Change any manifests, stacks, archetypes, or doctrine beyond startup-trace-protocol.md
+    and the one-sentence additions to context-loading-rules context if naturally warranted
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+
+  - context/doctrine/startup-trace-protocol.md exists (60–90 lines)
+  - work.py startup-trace write creates a correctly formatted trace file
+  - work.py startup-trace show displays the most recent trace
+  - work.py resume Session Context Briefing shows "Last Startup Trace:" line
+  - docs/startup-context-visibility.md describes the 3-level model (under 100 lines)
+  - docs/context-boot-sequence.md has the optional trace note
+  - AGENT.md and CLAUDE.md have the minimal one-line additions
+  - All tests pass
+  - validate_context.py passes
+  - run_verification.py --tier fast passes
+
+STOP HERE. Do not implement PROMPT_98 in this session.

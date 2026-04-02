@@ -1,0 +1,512 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that new AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one fresh
+coding-assistant session with commit prefixes like `[PROMPT_96]`.
+
+PROMPT_91: 3-tier memory structure + memory-compaction doctrine
+PROMPT_92: work.py operator-console commands + work/ data model
+PROMPT_93: PROMPT_META_RUNNER repositioned + doctrine/workflows updated
+PROMPT_94: Session Context Briefing in work.py resume + startup visibility docs
+PROMPT_95: Tests, verification hardening, future-workstream readiness, arc completion
+
+This prompt (PROMPT_96) begins a new arc: STARTUP TRACE / PSEUDO-LOGGING / CONTEXT
+COMPLEXITY VALIDATION. Your sole task this session is to implement the executable context
+complexity budget model. Do NOT proceed to PROMPT_97.
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. docs/runtime-state-workflow.md
+  4. python3 scripts/work.py resume        (run; study Session Context Briefing)
+  5. AGENT.md
+  6. memory/INDEX.md
+  7. memory/summaries/PROMPT_95_completion.md  (if exists; else read PROMPT_91_through_95_arc_summary.md)
+  8. context/doctrine/context-complexity-budget.md   (READ THE FULL FILE — this is the spec)
+  9. context/acb/profile-rules.json
+ 10. scripts/work.py                       (skim — understand subcommand structure and build_parser)
+ 11. verification/unit/test_repo_scripts.py (skim — match test style)
+
+Reading context-complexity-budget.md in full is mandatory. The implementation must match
+the cost model defined there exactly. Do not improvise a different model.
+
+================================================================================
+BACKGROUND: WHY AN EXECUTABLE BUDGET MODEL
+================================================================================
+
+`context/doctrine/context-complexity-budget.md` contains a complete, well-specified
+cost model for context bundles: artifact types with base costs, size cost formula,
+modifiers (direct-match discount, cross-domain penalty, etc.), diversity penalty,
+bundle formula, hard caps, and six named profiles (tiny through cross-system).
+
+This doctrine is 100% normative today — there is no code that executes it.
+
+The Session Context Briefing added in PROMPT_94 includes a "Complexity Budget" section,
+but it only reports a line-count heuristic (lean / moderate / heavy). That is useful
+but it is not the same thing as evaluating a declared bundle against the actual cost
+model.
+
+The gap: an assistant can declare "I loaded these 7 files for this task" and currently
+there is no way to score that bundle, check it against a profile, or print why each file
+was included or excluded.
+
+This prompt closes that gap with:
+1. A pure Python budget library: `scripts/context_budget.py`
+2. A `work.py budget-report` subcommand that scores a declared bundle
+3. Tests in `verification/unit/test_context_budget.py`
+4. A small update to `context-complexity-budget.md` noting the executable companion
+
+The library is convention-based where it must be (artifact type is inferred from file
+path, not from a hidden registry; routing modifiers require declared context) and
+deterministic where it can be (scoring formula, profile matching, hard-cap checking).
+
+================================================================================
+PART 1: scripts/context_budget.py
+================================================================================
+
+Create: `scripts/context_budget.py`
+
+This is a pure library — no main() entry point. It is imported by work.py and can
+also be imported directly from tests.
+
+------------------------------------------------------------------------
+1.1 Artifact type inference
+------------------------------------------------------------------------
+
+Infer artifact type from file path using this precedence table (first match wins):
+
+  Path pattern                         -> Artifact type
+  --------------------------------------------------
+  manifests/*.yaml                     -> manifest
+  context/doctrine/*.md                -> doctrine
+  context/workflows/*.md               -> workflow
+  context/stacks/*.md                  -> stack_pack
+  context/archetypes/*.md              -> archetype_pack
+  context/router/*.md, *.yaml, *.json  -> anchor
+  examples/**                          -> canonical_example  (if file > 8KB: large_example)
+  verification/**                      -> validation_script_reference
+  .acb/specs/*.md                      -> doctrine          (treat as doctrine-weight)
+  AGENT.md, CLAUDE.md                  -> anchor
+  README.md                            -> anchor
+  context/MEMORY.md, context/TASK.md,
+    context/SESSION.md, PLAN.md        -> anchor
+  docs/usage/SPEC_DRIVEN*.md           -> doctrine
+  docs/*.md                            -> doctrine          (default for other docs)
+  (any other .md)                      -> doctrine          (safe fallback)
+
+Expose this as: `infer_artifact_type(path: str) -> str`
+
+The type names must match the base-cost table exactly (anchor, manifest, doctrine,
+workflow, stack_pack, archetype_pack, canonical_example, large_example,
+validation_script_reference, deployment_doctrine).
+
+Special case: if a file's path contains "dokku" or "deploy" and it is a doctrine-type
+file, override the type to "deployment_doctrine".
+
+------------------------------------------------------------------------
+1.2 Base cost table
+------------------------------------------------------------------------
+
+Implement the exact base costs from context-complexity-budget.md Section 6.1:
+
+  anchor:                        1
+  manifest:                      2
+  doctrine:                      3
+  workflow:                      3
+  stack_pack:                    4
+  archetype_pack:                4
+  canonical_example:             4
+  large_example:                 7
+  validation_script_reference:   2
+  deployment_doctrine:           4
+
+------------------------------------------------------------------------
+1.3 Size cost
+------------------------------------------------------------------------
+
+Implement the formula from Section 6.2:
+
+  estimated_tokens = ceil(file_byte_size / 4)
+  size_cost = min(4, max(0, ceil(estimated_tokens / 400) - 1))
+
+When a file does not exist on disk, use size_cost = 0 and log a warning.
+
+------------------------------------------------------------------------
+1.4 Modifier context
+------------------------------------------------------------------------
+
+Modifiers from Section 6.3 that can be applied:
+
+  direct_match_discount:          -1  (artifact explicitly matches declared primary stack/archetype/workflow)
+  preferred_example_discount:     -1  (artifact is declared as preferred example)
+  direct_manifest_required_discount: -1  (artifact is in required_context)
+  cross_domain_penalty:           +2  (artifact introduces concepts outside dominant route)
+  secondary_stack_penalty:        +2  (artifact belongs to first supporting stack)
+  third_stack_penalty:            +4  (artifact belongs to stack beyond first support)
+  extra_archetype_penalty:        +3  (artifact implies second archetype in first pass)
+  deployment_without_trigger_penalty: +4  (deployment doctrine without explicit trigger)
+  large_example_penalty:          +2  (large_example that is not primary example)
+
+Design a `ModifierContext` dataclass:
+
+  @dataclass
+  class ModifierContext:
+      primary_stack: str | None = None       # e.g., "python-fastapi"
+      primary_archetype: str | None = None   # e.g., "backend-api-service"
+      active_workflow: str | None = None     # e.g., "add-api-endpoint"
+      required_files: tuple[str, ...] = ()   # declared required context
+      preferred_example: str | None = None   # the one preferred example path
+      deployment_trigger: bool = False       # whether a deployment trigger was declared
+      secondary_stacks: tuple[str, ...] = () # supporting stacks (for penalty calc)
+      declared_primary_example: str | None = None  # for large_example_penalty check
+
+All modifier context is optional. When not provided, only base + size cost is computed
+(conservative — no discounts applied). This is correct behavior for an undeclared bundle.
+
+Expose: `compute_modifiers(path: str, artifact_type: str, ctx: ModifierContext) -> int`
+
+------------------------------------------------------------------------
+1.5 Artifact cost
+------------------------------------------------------------------------
+
+  artifact_cost(a) = base_cost(type(a)) + size_cost(a) + compute_modifiers(a, type(a), ctx)
+
+Expose: `ArtifactScore` dataclass:
+
+  @dataclass
+  class ArtifactScore:
+      path: str
+      artifact_type: str
+      base_cost: int
+      size_cost: int
+      modifier_cost: int
+      total_cost: int
+      modifier_notes: tuple[str, ...]   # human-readable explanation of each modifier applied
+
+------------------------------------------------------------------------
+1.6 Bundle cost + diversity penalty
+------------------------------------------------------------------------
+
+  diversity_penalty(B) = max(0, distinct_concept_tags(B) - 4)
+
+For concept tags: use a simple path-based tag classifier:
+  - paths containing "storage" or "database" → tag: storage
+  - paths containing "deploy" or "dokku" → tag: deployment
+  - paths containing "workflow" or "smoke" or "test" → tag: verification
+  - paths containing "stack" → tag: stack
+  - paths containing "rag" or "vector" or "search" → tag: search
+  - paths containing "prompt" or "memory" or "session" → tag: session-management
+  - all others → tag: general
+
+  bundle_cost(B) = sum(artifact_cost(a) for a in B) + diversity_penalty(B)
+                  + ambiguity_penalty (passed in by caller, default 0)
+                  + confidence_penalty (passed in by caller, default 0)
+                  + change_surface_penalty (passed in by caller, default 0)
+
+Task-level penalty inputs:
+  ambiguity_penalty = 2 * ambiguity_level  (level 0-3, default 0)
+  confidence_penalty = 0 | 2 | 4 based on confidence (>= 0.85 = 0, 0.70-0.84 = 2, < 0.70 = 4)
+  change_surface_penalty = max(0, change_surface_area - 1)  (area 1-4, default 0)
+
+Expose: `BundleScore` dataclass:
+  @dataclass
+  class BundleScore:
+      artifacts: tuple[ArtifactScore, ...]
+      subtotal: int                    # sum of artifact costs
+      diversity_penalty: int
+      ambiguity_penalty: int
+      confidence_penalty: int
+      change_surface_penalty: int
+      total: int
+      distinct_concept_tags: int
+      stack_count: int                 # inferred from stack_pack artifacts
+      archetype_count: int             # inferred from archetype_pack artifacts
+      workflow_count: int
+      example_count: int
+      large_example_count: int
+
+------------------------------------------------------------------------
+1.7 Profile definitions and matching
+------------------------------------------------------------------------
+
+Implement the six profiles from Section 8 as a tuple of frozen dataclasses:
+
+  PROFILES: tuple[BudgetProfile, ...]
+
+Each profile: tiny, small, medium, large, cross-system (also include agent-session if
+it exists in the doc — inspect the full file).
+
+  @dataclass(frozen=True)
+  class BudgetProfile:
+      name: str
+      max_points: int
+      max_files: int
+      max_stacks: int
+      max_archetypes: int
+      max_workflows: int
+      max_examples: int
+      max_large_examples: int
+
+Expose:
+  `select_profile(bundle_score: BundleScore) -> BudgetProfile | None`
+  Returns the tightest profile that the bundle fits. Returns None if the bundle
+  exceeds all profiles.
+
+  `check_hard_caps(bundle_score: BundleScore, profile: BudgetProfile) -> list[str]`
+  Returns a list of cap violations (empty list if none).
+
+------------------------------------------------------------------------
+1.8 Scoring entry point
+------------------------------------------------------------------------
+
+Expose the main entry point:
+
+  def score_bundle(
+      paths: list[str],
+      repo_root: Path,
+      ctx: ModifierContext | None = None,
+      ambiguity_level: int = 0,
+      confidence: float = 1.0,
+      change_surface_area: int = 1,
+  ) -> tuple[BundleScore, BudgetProfile | None, list[str]]:
+      """
+      Score a declared bundle.
+      Returns: (bundle_score, selected_profile, cap_violations)
+      """
+
+================================================================================
+PART 2: work.py budget-report subcommand
+================================================================================
+
+Add `budget-report` to `scripts/work.py`.
+
+Command signature:
+
+  python3 scripts/work.py budget-report \
+      [--bundle path1 path2 ...] \
+      [--bundle-file bundle.json] \
+      [--primary-stack <stack>] \
+      [--archetype <archetype>] \
+      [--workflow <workflow>] \
+      [--ambiguity 0-3] \
+      [--confidence 0.0-1.0] \
+      [--change-surface 1-4] \
+      [--json]
+
+Input:
+  --bundle path1 path2 ...   explicit file paths (space-separated)
+  --bundle-file FILE          path to a JSON file containing {"files": ["path1", ...],
+                              "primary_stack": "...", "archetype": "..."}
+  (if neither: print usage and exit 1)
+
+Output (default — human-readable markdown):
+
+  Budget Report
+  =============
+  Bundle: <N files>  Context: <primary_stack | unspecified> / <archetype | unspecified>
+
+  Artifact Scores:
+    path/to/file.md        doctrine           base=3  size=0  mods=-1  total=2  [direct match]
+    path/to/stack.md       stack_pack         base=4  size=1  mods=+2  total=7  [secondary stack]
+    ...
+
+  Bundle Summary:
+    Artifact subtotal:     <N>
+    Diversity penalty:     <N>  (<K> distinct tags: storage, verification, ...)
+    Task-level penalties:  <N>  (ambiguity=<N>, confidence=<N>, change_surface=<N>)
+    Total cost:            <N>
+
+  Profile Fit:
+    Selected profile:      <name> (max_points=<N>, max_files=<N>)
+    Cap violations:        none  |  <violation1>, <violation2>, ...
+    Recommendation:        <"fits <profile>" | "exceeds all profiles — split or reduce">
+
+Output (--json):
+
+  {
+    "bundle_cost": <int>,
+    "artifact_count": <int>,
+    "selected_profile": "<name>" | null,
+    "cap_violations": [],
+    "diversity_penalty": <int>,
+    "distinct_concept_tags": <int>,
+    "artifacts": [
+      {"path": "...", "type": "...", "total_cost": <int>},
+      ...
+    ]
+  }
+
+Implementation notes:
+  - Import `context_budget` from the scripts/ directory (already on sys.path via work.py's
+    own path manipulation, or add explicit sys.path manipulation if needed)
+  - When files in --bundle do not exist relative to repo_root, warn but still score
+    (size_cost = 0 for missing files)
+  - The subcommand does NOT mutate any runtime files — it is read-only
+
+Add budget-report to `build_parser()`. Use subparser pattern consistent with existing commands.
+
+================================================================================
+PART 3: UPDATE context-complexity-budget.md
+================================================================================
+
+In `context/doctrine/context-complexity-budget.md`, after the opening paragraph in
+SECTION 1, add a short note:
+
+  > **Executable companion:** `scripts/context_budget.py` implements this cost model
+  > as executable Python. Use `python3 scripts/work.py budget-report --bundle <files>`
+  > to score a declared bundle against the profiles defined here.
+
+Do NOT change the normative content of the doctrine. One short callout only.
+
+================================================================================
+PART 4: TESTS
+================================================================================
+
+Create: `verification/unit/test_context_budget.py`
+
+Use `unittest`, class-based, setUp/tearDown pattern. Match `test_repo_scripts.py` style.
+
+------------------------------------------------------------------------
+Test class: TestArtifactTypeInference
+------------------------------------------------------------------------
+
+  test_manifest_path: infer_artifact_type("manifests/cli-python.yaml") == "manifest"
+  test_doctrine_path: infer_artifact_type("context/doctrine/core-principles.md") == "doctrine"
+  test_workflow_path: infer_artifact_type("context/workflows/add-api-endpoint.md") == "workflow"
+  test_stack_pack_path: infer_artifact_type("context/stacks/python-fastapi.md") == "stack_pack"
+  test_archetype_path: infer_artifact_type("context/archetypes/backend-api-service.md") == "archetype_pack"
+  test_anchor_agent_md: infer_artifact_type("AGENT.md") == "anchor"
+  test_deployment_doctrine: infer_artifact_type("context/doctrine/deployment-philosophy-dokku.md") == "deployment_doctrine"
+  test_example_large: use a temp file > 8KB to verify large_example classification
+
+------------------------------------------------------------------------
+Test class: TestArtifactScoring
+------------------------------------------------------------------------
+
+Use repo_root = Path of the actual repo for path resolution where needed.
+
+  test_doctrine_base_cost: score a known doctrine file; assert base_cost == 3
+  test_manifest_base_cost: score manifests/cli-python.yaml; assert base_cost == 2
+  test_size_cost_zero_small_file: create temp file < 1600 bytes; size_cost == 0
+  test_size_cost_nonzero_large_file: create temp file ~5000 bytes; verify size_cost > 0
+  test_direct_match_discount_applied: score with ModifierContext(active_workflow="add-api-endpoint")
+    for context/workflows/add-api-endpoint.md; modifier_cost should be -1
+  test_no_modifiers_without_context: score without ModifierContext; modifier_cost == 0
+  test_deployment_without_trigger_penalty: score a deployment_doctrine file with
+    deployment_trigger=False; penalty == +4
+
+------------------------------------------------------------------------
+Test class: TestBundleScoring
+------------------------------------------------------------------------
+
+  test_empty_bundle: score_bundle([], repo_root) → BundleScore with total == 0
+  test_single_file_bundle: score one doctrine file; verify total matches base+size
+  test_diversity_penalty_applied: build a bundle with files across 6+ concept tags;
+    verify diversity_penalty > 0
+  test_diversity_penalty_absent: build a 3-file bundle all with same tag; penalty == 0
+  test_profile_selection_tiny: build a minimal 2-file bundle; assert profile.name == "tiny"
+  test_profile_selection_medium: build a bundle that exceeds small but fits medium; verify
+  test_cap_violation_reported: build a bundle with 4 stack_pack files; assert
+    cap_violations is non-empty
+
+------------------------------------------------------------------------
+Test class: TestBudgetReportCommand (integration)
+------------------------------------------------------------------------
+
+  test_budget_report_requires_bundle: run work.py budget-report without --bundle;
+    assert exit code 1
+  test_budget_report_produces_output: run work.py budget-report --bundle AGENT.md README.md
+    context/doctrine/core-principles.md; assert output contains "Budget Report",
+    "Bundle Summary", "Profile Fit"
+  test_budget_report_json_flag: run work.py budget-report --bundle AGENT.md --json;
+    parse output as JSON; assert "bundle_cost" in result
+  test_budget_report_missing_file_warns: run with a nonexistent path; assert "Warning" or
+    similar appears, no crash
+
+================================================================================
+VERIFICATION
+================================================================================
+
+After all changes:
+
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+  python -m unittest discover -s verification/unit -p "test_*.py" -v
+    → All tests must pass.
+
+Also run manually:
+
+  python3 scripts/work.py budget-report --bundle AGENT.md README.md \
+    context/doctrine/core-principles.md \
+    context/doctrine/context-complexity-budget.md
+  → Should print a formatted report with per-artifact costs and a profile fit.
+
+  python3 scripts/work.py budget-report --bundle AGENT.md README.md \
+    context/doctrine/core-principles.md --json
+  → Should print valid JSON.
+
+  python3 scripts/work.py budget-report
+  → Should print usage and exit 1.
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+Use grouped commits prefixed with [PROMPT_96]. Use `git add -p`.
+
+Suggested groupings:
+
+  1. [PROMPT_96] add context_budget.py: executable budget scoring model
+     Stage: scripts/context_budget.py
+
+  2. [PROMPT_96] add budget-report subcommand to work.py
+     Stage: scripts/work.py
+
+  3. [PROMPT_96] note executable companion in context-complexity-budget.md
+     Stage: context/doctrine/context-complexity-budget.md
+
+  4. [PROMPT_96] add tests for context budget model and budget-report command
+     Stage: verification/unit/test_context_budget.py
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Implement scripts/context_budget.py as a pure library
+  - Add work.py budget-report subcommand
+  - Add the one-line callout to context-complexity-budget.md
+  - Write the tests described above
+  - Run the full verification suite
+
+DO NOT:
+  - Add startup trace functionality (that is PROMPT_97)
+  - Add prompt routing / route-check (that is PROMPT_98)
+  - Change AGENT.md or CLAUDE.md (beyond what tests require)
+  - Change profile-rules.json
+  - Change any manifests, stacks, archetypes, or workflows
+  - Implement agent-session profile if not present in context-complexity-budget.md
+    (check the doc; only implement profiles that are defined there)
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+
+  - scripts/context_budget.py exists with: infer_artifact_type, ArtifactScore,
+    BundleScore, BudgetProfile, PROFILES, ModifierContext, score_bundle, select_profile,
+    check_hard_caps
+  - work.py budget-report command works with --bundle, --json, and optional context flags
+  - context-complexity-budget.md has the short executable-companion callout
+  - verification/unit/test_context_budget.py exists and all tests pass
+  - validate_context.py passes
+  - run_verification.py --tier fast passes (the existing pre-existing failures are acceptable
+    if they predated this prompt — do not introduce new failures)
+
+STOP HERE. Do not implement PROMPT_97 in this session.

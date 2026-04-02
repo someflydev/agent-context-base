@@ -1,0 +1,432 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that new AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one fresh
+coding-assistant session with commit prefixes like `[PROMPT_99]`.
+
+PROMPT_91: 3-tier memory structure + memory-compaction doctrine
+PROMPT_92: work.py operator-console commands + work/ data model
+PROMPT_93: PROMPT_META_RUNNER repositioned + doctrine/workflows updated
+PROMPT_94: Session Context Briefing in work.py resume + startup visibility docs
+PROMPT_95: Tests, verification hardening, future-workstream readiness, arc completion
+PROMPT_96: Executable context-complexity-budget model + work.py budget-report
+PROMPT_97: Startup trace protocol + work.py startup-trace
+PROMPT_98: Heuristic prompt routing + work.py route-check + juicy-prompt scenarios
+
+This prompt (PROMPT_99) closes the STARTUP TRACE / PSEUDO-LOGGING / CONTEXT COMPLEXITY
+VALIDATION arc. It adds derived-repo toggleability, a holistic doc pass, and arc
+completion summaries. This is the final prompt in the PROMPT_96–99 arc.
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume        (run; study output)
+  4. AGENT.md
+  5. CLAUDE.md
+  6. memory/INDEX.md
+  7. memory/summaries/PROMPT_98_completion.md  (if exists; else continue)
+  8. context/acb/profile-rules.json       (READ CAREFULLY — you will add to this)
+  9. scripts/acb_payload.py               (READ the section that writes .acb/profile/
+                                           selection.json — you will update it)
+ 10. templates/agent-md/AGENT.template.md and templates/claude-md/CLAUDE.template.md
+                                          (skim — update if PROMPT_96-98 added doc changes)
+ 11. docs/ARCHITECTURE_MAP.md             (READ CAREFULLY — you will add one section)
+ 12. docs/startup-context-visibility.md   (read current state)
+ 13. verification/README.md               (skim — understand what verification covers)
+
+Understanding how acb_payload.py writes selection.json is essential for implementing
+the toggleability correctly. Read that section before designing the config propagation.
+
+================================================================================
+BACKGROUND: WHY TOGGLEABILITY
+================================================================================
+
+The three new capabilities added in PROMPT_96–98 are powerful but not universally
+appropriate:
+
+  - `budget-report` is always available but derived repos may not want it surfaced
+    by default in their session context
+  - `startup-trace write` is useful for large sessions but adds ceremony to small ones
+  - `route-check` is useful for complex repos with many stacks but unnecessary for
+    simple single-purpose repos
+
+Derived repos should be able to:
+  1. Disable all three capabilities (quiet mode — the default for simple repos)
+  2. Enable them selectively per capability
+  3. Have the Session Context Briefing reflect which capabilities are available
+
+The toggleability mechanism must:
+  - Be explicit and inspectable (in a version-controlled config file)
+  - Propagate cleanly from the base repo's profile-rules.json through acb_payload.py
+    into the generated repo's .acb/profile/selection.json
+  - Not break any existing behavior when disabled
+
+================================================================================
+PART 1: ADD startup_features TO profile-rules.json
+================================================================================
+
+In `context/acb/profile-rules.json`, add a new top-level key:
+
+  "startup_features": {
+    "budget_report_enabled": false,
+    "startup_trace_enabled": false,
+    "route_check_enabled": false
+  }
+
+Rationale for defaults being false:
+  - Generated repos should be quiet by default
+  - The features are opt-in for repos that want context validation
+  - `agent-context-base` itself is a meta-repo where these features are expected;
+    simple derived repos should not have them thrust upon them
+
+Note: `agent-context-base` should behave as if all three are enabled (since the commands
+exist). The defaults in profile-rules.json are for what gets propagated to derived repos.
+A derived repo operator can set them to true in their local profile-rules.json before
+running acb_payload.py to regenerate.
+
+================================================================================
+PART 2: PROPAGATE startup_features IN acb_payload.py
+================================================================================
+
+In `scripts/acb_payload.py`, find the section that generates or writes
+`.acb/profile/selection.json`.
+
+Add propagation of the `startup_features` block:
+  - Read `startup_features` from the source profile-rules.json (default all-false if absent)
+  - Write it into `.acb/profile/selection.json` under the key `startup_features`
+
+Also update `.acb/SESSION_BOOT.md` template generation (if acb_payload.py generates or
+templates this file) to include a "Context Tools" section that lists which startup
+features are enabled. If no tools are enabled, omit the section entirely (quiet repos
+stay quiet).
+
+If acb_payload.py uses a Jinja2 template or string template for SESSION_BOOT.md, add
+a conditional block:
+  {% if startup_features.budget_report_enabled or startup_features.startup_trace_enabled
+        or startup_features.route_check_enabled %}
+  ## Context Tools
+  {% if startup_features.budget_report_enabled %}
+  - Budget scoring: `python3 scripts/work.py budget-report --bundle <files>`
+  {% endif %}
+  {% if startup_features.startup_trace_enabled %}
+  - Startup trace: `python3 scripts/work.py startup-trace write --session "<task>" --files <files>`
+  {% endif %}
+  {% if startup_features.route_check_enabled %}
+  - Route check: `python3 scripts/work.py route-check "<prompt>"`
+  {% endif %}
+  {% endif %}
+
+If SESSION_BOOT.md is generated differently in the actual acb_payload.py, adapt
+this approach to match the actual generation mechanism. Do not break existing generation.
+
+================================================================================
+PART 3: REFLECT ENABLED FEATURES IN Session Context Briefing
+================================================================================
+
+In `print_session_context_briefing()` (in work.py), add an optional "Context Tools"
+line to the briefing:
+
+  Context Tools:
+    budget-report:     available  |  n/a (not enabled in .acb/profile/selection.json)
+    startup-trace:     available  |  n/a
+    route-check:       available  |  n/a
+
+Logic:
+  - In `agent-context-base` itself (no .acb/ directory): show all as "available"
+  - In a derived repo with .acb/profile/selection.json:
+      - read startup_features from that file
+      - show "available" for enabled ones, "n/a (disabled)" for disabled ones
+  - If .acb/profile/selection.json does not exist: show all as "available" (same as base)
+
+This makes the briefing a complete orientation point: operators can immediately see
+which context tools are usable in the current repo.
+
+Keep the Context Tools section compact: three lines. Place it after "Complexity Budget:"
+and before "Operator Queue:".
+
+================================================================================
+PART 4: HOLISTIC DOC PASS
+================================================================================
+
+After PROMPT_96–98, several docs need updating to reflect the new capabilities.
+Make targeted, minimal updates to each.
+
+------------------------------------------------------------------------
+4a. docs/ARCHITECTURE_MAP.md
+------------------------------------------------------------------------
+
+Add a new section: `## Context Validation Layer`
+
+Content (concise — this is an architecture map, not a tutorial):
+
+```
+## Context Validation Layer
+
+Three executable tools for context visibility and validation:
+
+| Tool | Command | What it does |
+|------|---------|--------------|
+| Budget model | `work.py budget-report --bundle <files>` | Scores a declared bundle against the cost model in context-complexity-budget.md |
+| Startup trace | `work.py startup-trace write` | Records what the assistant declares it loaded (self-reported, not verified) |
+| Route check | `work.py route-check "<prompt>"` | Heuristic capability inference from prompt text (always labeled HEURISTIC) |
+
+These tools are optional. Derived repos enable them via `startup_features` in
+`.acb/profile/selection.json`.
+```
+
+Mermaid diagram addition (add to the existing "Session Execution Loop" section or
+after it as a new diagram):
+
+```mermaid
+flowchart LR
+    A[work.py resume] --> B[Session Context Briefing]
+    B --> C{Context tools enabled?}
+    C -- budget-report --> D[score declared bundle]
+    C -- startup-trace --> E[write self-declared trace]
+    C -- route-check --> F[heuristic capability routing]
+    D --> G[validate against profiles]
+    E --> H[store in logs/startup/]
+    F --> I[suggest load + compare vs declared]
+```
+
+Keep the diagram simple. Add it only if it fits naturally without pushing the file
+over 120 lines.
+
+------------------------------------------------------------------------
+4b. docs/runtime-state-workflow.md
+------------------------------------------------------------------------
+
+In the "Primary Command" section, after the existing work.py commands, add a short
+note:
+
+  Additional validation commands (when enabled):
+
+    python3 scripts/work.py budget-report --bundle <files>
+    python3 scripts/work.py startup-trace write --session "<task>" --files <files>
+    python3 scripts/work.py route-check "<prompt>"
+
+  See docs/startup-context-visibility.md for when and how to use these.
+
+Keep this note to 6-8 lines.
+
+------------------------------------------------------------------------
+4c. docs/startup-context-visibility.md
+------------------------------------------------------------------------
+
+Add a "Derived Repo Configuration" section at the end:
+
+  ## Derived Repo Configuration
+
+  In generated repos, startup features are enabled via `.acb/profile/selection.json`:
+
+    "startup_features": {
+      "budget_report_enabled": true,
+      "startup_trace_enabled": true,
+      "route_check_enabled": false
+    }
+
+  By default all three are disabled in new generated repos. Enable selectively based
+  on repo complexity and operator preferences. The Session Context Briefing reflects
+  which tools are available.
+
+------------------------------------------------------------------------
+4d. AGENT.md and CLAUDE.md
+------------------------------------------------------------------------
+
+In AGENT.md's `## Verification` section, add:
+
+  Context tools (when available):
+  - `python3 scripts/work.py budget-report --bundle <files>` — scored bundle evaluation
+  - `python3 scripts/work.py route-check "<prompt>"` — heuristic capability routing
+
+In CLAUDE.md's `## Verification` block, add the same two commands.
+
+Keep additions to 2-3 lines each. Match existing formatting.
+
+------------------------------------------------------------------------
+4e. Update templates to propagate doc changes
+------------------------------------------------------------------------
+
+Check if the following template files exist. If they do, propagate any doc changes
+that affect generated-repo behavior:
+
+  - templates/agent-md/AGENT.template.md
+  - templates/claude-md/CLAUDE.template.md
+  - templates/session-boot/SESSION_BOOT.template.md (if it exists)
+
+For each: only add lines if the template should reflect the new capabilities.
+Keep changes minimal. Do not add content that will be inappropriate for simple
+derived repos that have startup_features all-false.
+
+================================================================================
+PART 5: TESTS FOR TOGGLEABILITY
+================================================================================
+
+Add tests to `verification/unit/test_context_budget.py` or a new
+`verification/unit/test_startup_features.py`.
+
+Test class: TestStartupFeaturesConfig
+  - test_profile_rules_has_startup_features:
+    Load context/acb/profile-rules.json; assert "startup_features" key exists;
+    assert it contains the three expected keys.
+  - test_startup_features_defaults_false:
+    Assert all three default values are false.
+  - test_session_briefing_shows_context_tools:
+    Run work.py resume and assert "Context Tools" or "budget-report" appears in output.
+    (In agent-context-base, all tools are available since the commands exist.)
+
+Test class: TestDerivedRepoToggleability (integration, uses temp dir)
+  - test_selection_json_propagates_startup_features:
+    Create a minimal temp directory simulating a generated repo with a
+    .acb/profile/selection.json containing startup_features. Run work.py resume in that
+    context (or test print_session_context_briefing directly). Verify the Context Tools
+    section reflects the config.
+    Note: this test may be partial if full acb_payload.py execution is complex. At minimum
+    verify that print_session_context_briefing correctly reads startup_features from
+    a .acb/profile/selection.json file when it exists.
+
+================================================================================
+PART 6: ARC COMPLETION SUMMARIES
+================================================================================
+
+Create: `memory/summaries/PROMPT_99_completion.md`
+
+Use the standard summary format (Objective, Completed, Remaining, Tests Status,
+Files Touched, Key Commits, Pitfalls and Caveats, Next Recommended Action, Created At).
+Use real data from this session.
+
+Create: `memory/summaries/PROMPT_96_through_99_arc_summary.md`
+
+Arc summary format:
+  ## Arc: Startup Trace / Pseudo-Logging / Context Complexity Validation
+  ## Prompts Covered: PROMPT_96 through PROMPT_99
+  ## Problem Solved
+  ## Key Artifacts Added
+  ## Architecture Changes
+  ## Test Coverage Added
+  ## Convention vs Computed (what is automated vs what requires self-declaration)
+  ## Known Limitations and Future Work
+  ## Created At
+
+For "Convention vs Computed": this is a key insight from the arc. Be explicit:
+  - Budget calculation: COMPUTED for declared bundles (file path → cost). Routing
+    modifiers (direct_match, cross_domain) require declared context.
+  - Startup trace: CONVENTION (self-declaration, not intercepted). The value is in
+    the discipline of declaration and the ability to feed it into budget-report.
+  - Route check: COMPUTED HEURISTIC (keyword matching, not routing oracle). Always
+    labeled as heuristic.
+  - Feature toggleability: COMPUTED (reads .acb/profile/selection.json).
+
+Also update `memory/INDEX.md` — Current Contents section to reflect new concept files
+or summaries added in this arc.
+
+================================================================================
+VERIFICATION
+================================================================================
+
+Final verification (all must pass):
+
+  python -m unittest discover -s verification/unit -p "test_*.py" -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Also run:
+  python3 scripts/work.py resume
+  → Context Tools section should appear in Session Context Briefing
+
+  python3 scripts/work.py budget-report \
+    --bundle AGENT.md context/doctrine/core-principles.md \
+    context/workflows/add-api-endpoint.md
+  → Scored bundle report with profile fit
+
+  python3 scripts/work.py startup-trace write \
+    --session "PROMPT_99 final session" \
+    --files AGENT.md context/doctrine/context-complexity-budget.md \
+    --archetype backend-api-service --confidence 0.9
+  → Creates trace file in logs/startup/
+
+  python3 scripts/work.py route-check \
+    "scrape prices, store in postgres, expose FastAPI endpoint, deploy to dokku"
+  → Cross-system profile, is_likely_juicy, multiple capabilities
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+Use grouped commits prefixed with [PROMPT_99]. Use `git add -p`.
+
+Suggested groupings:
+
+  1. [PROMPT_99] add startup_features toggleability to profile-rules.json and acb_payload.py
+     Stage: context/acb/profile-rules.json, scripts/acb_payload.py
+
+  2. [PROMPT_99] reflect startup features in Session Context Briefing
+     Stage: scripts/work.py
+
+  3. [PROMPT_99] holistic doc pass: ARCHITECTURE_MAP, runtime-state-workflow, startup-context-visibility
+     Stage: docs/ARCHITECTURE_MAP.md, docs/runtime-state-workflow.md,
+            docs/startup-context-visibility.md
+
+  4. [PROMPT_99] update AGENT.md, CLAUDE.md, and templates
+     Stage: AGENT.md, CLAUDE.md, relevant templates
+
+  5. [PROMPT_99] add toggleability tests
+     Stage: verification/unit/test_startup_features.py or test_context_budget.py
+
+  6. [PROMPT_99] add arc completion summaries and update memory INDEX
+     Stage: memory/summaries/PROMPT_99_completion.md,
+            memory/summaries/PROMPT_96_through_99_arc_summary.md,
+            memory/INDEX.md
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Add startup_features to profile-rules.json
+  - Propagate startup_features in acb_payload.py
+  - Update print_session_context_briefing with Context Tools section
+  - Make targeted updates to ARCHITECTURE_MAP.md, runtime-state-workflow.md,
+    startup-context-visibility.md, AGENT.md, CLAUDE.md, and templates
+  - Write and pass the described tests
+  - Create the two arc summaries and update memory/INDEX.md
+
+DO NOT:
+  - Change context_budget.py or context_router.py (those are done)
+  - Rewrite large sections of any doc — only targeted additions
+  - Add features not described here (no PROMPT_100 scope creep)
+  - Change manifests, stacks, archetypes, or existing validation fixtures
+  - Create speculative concept files beyond what PROMPT_95 already added
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+
+  - context/acb/profile-rules.json has startup_features block (defaults all false)
+  - acb_payload.py propagates startup_features to .acb/profile/selection.json
+  - work.py resume Session Context Briefing shows Context Tools section
+  - docs/ARCHITECTURE_MAP.md has Context Validation Layer section
+  - docs/runtime-state-workflow.md has the validation commands note
+  - docs/startup-context-visibility.md has Derived Repo Configuration section
+  - AGENT.md and CLAUDE.md have the context tools in Verification section
+  - Templates updated where appropriate
+  - All new tests pass
+  - validate_context.py passes
+  - run_verification.py --tier fast passes
+  - memory/summaries/PROMPT_99_completion.md exists (accurate)
+  - memory/summaries/PROMPT_96_through_99_arc_summary.md exists
+  - memory/INDEX.md updated
+
+The PROMPT_96–99 arc is complete. The repo now has: an executable context budget
+model, a startup trace protocol for self-declared context loads, heuristic prompt
+routing for capability validation, and derived-repo toggleability for all three.
+The distinction between what is automated (budget scoring of declared bundles,
+route heuristics) and what is convention (startup trace self-declaration) is
+documented clearly throughout.
