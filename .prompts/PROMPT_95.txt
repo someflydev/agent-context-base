@@ -1,0 +1,435 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that new AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one fresh
+coding-assistant session with commit prefixes like `[PROMPT_95]`.
+
+PROMPT_91: 3-tier memory structure + memory-compaction doctrine
+PROMPT_92: work.py operator-console commands + work/ data model
+PROMPT_93: PROMPT_META_RUNNER repositioned + doctrine/workflows updated
+PROMPT_94: Session Context Briefing in work.py resume + startup visibility docs
+
+This prompt (PROMPT_95) closes the upgrade arc with tests, verification hardening,
+and future-workstream readiness scaffolding. It is the final prompt in the PROMPT_91–95
+arc and should leave the repo in a clean, well-tested, forward-looking state.
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. docs/runtime-state-workflow.md
+  4. python3 scripts/work.py resume        (run; study the Session Context Briefing)
+  5. AGENT.md
+  6. memory/INDEX.md
+  7. memory/summaries/PROMPT_94_completion.md   (if it exists; else continue)
+  8. verification/README.md                (READ CAREFULLY)
+  9. verification/unit/test_repo_scripts.py  (READ THE FULL FILE)
+ 10. scripts/work.py                       (skim — focus on new command handlers)
+ 11. context/acb/profile-rules.json        (skim — focus on validation_gates structure)
+ 12. CONTRIBUTOR_PLAYBOOK.md               (READ CAREFULLY — you will update this)
+
+Understanding the existing test structure and verification philosophy is mandatory before
+writing new tests. The existing test_repo_scripts.py tests work.py commands. Match
+that style.
+
+================================================================================
+BACKGROUND: WHY TESTS AND FUTURE READINESS TOGETHER
+================================================================================
+
+This final prompt in the arc has two concerns:
+
+1. Tests + verification
+   The PROMPT_91–94 changes added significant new behavior (new work.py commands, new
+   memory/ structure, new docs). This behavior is not yet tested. A mature prompt-first
+   repo must not leave major capability additions without test coverage.
+
+2. Future workstream readiness
+   The user has additional planned workstreams after this arc:
+   - logging setup
+   - RBAC / JWT / multi-tenant canonical examples
+   - Plotly chart construction
+   - faker / synthetic seed data examples
+   - TUI / CLI tools
+   - schema validation / contracts / runtime validation
+
+   This prompt does NOT implement those workstreams. It prepares the repo to receive
+   them cleanly by:
+   - Adding archetype and manifest stubs for any that have obvious homes
+   - Ensuring memory/concepts/ has the right orientation entries
+   - Ensuring the operator queue model is demonstrated with a real queue example
+
+Both concerns share one session because they are bounded enough to fit, and because
+the test runs needed to verify the tests also serve as the final validation of the
+full arc.
+
+================================================================================
+PART 1: TESTS FOR NEW work.py COMMANDS
+================================================================================
+
+File to create or extend: verification/unit/test_work_commands.py
+
+If a file named test_work_commands.py or test_work_py_commands.py already exists,
+extend it rather than creating a new one. If test_repo_scripts.py covers work.py
+and the new commands fit there, add the tests there instead. Match the existing
+organization.
+
+IMPORTANT: This repo uses `unittest`, not pytest. Match the style of test_repo_scripts.py
+exactly (class-based, setUp/tearDown, no pytest fixtures, no conftest.py).
+
+Write tests for:
+
+------------------------------------------------------------------------
+Test class: TestWorkStateJSON
+------------------------------------------------------------------------
+
+Test the WORK_STATE.json data model:
+  - test_work_state_schema: verify a fresh init-project creates a valid WORK_STATE.json
+    with all required fields and correct types
+  - test_work_state_prompt_queue_structure: verify a queue entry has all required fields
+    (prompt_file, status, priority, theme, depends_on, notes)
+  - test_work_state_status_values: verify that status values are from the allowed set
+    (pending, in_progress, paused, done, skipped)
+
+------------------------------------------------------------------------
+Test class: TestWorkCommands (integration-style, using a temp directory)
+------------------------------------------------------------------------
+
+Use tempfile.mkdtemp() to create a temporary repo-like directory for tests.
+Create a minimal WORK_STATE.json before each test that needs it.
+
+  - test_init_project_creates_expected_files: verify that init-project creates
+    work/projects/<slug>/ with WORK_STATE.json, RATE_LIMITS.json, SESSION_QUEUE.md,
+    COMMIT_LOG.md, RUN_HISTORY.md, PLAN.md
+
+  - test_init_project_idempotent: running init-project twice should not overwrite
+    existing files (unless --force)
+
+  - test_verify_output_contains_expected_sections: run verify and check the output
+    contains "Repo cleanliness:", "Commit discipline:", "Validation commands to run:"
+
+  - test_recent_commits_output_format: run recent-commits and check the output contains
+    "Recent Commits (prompt-aware)" and "Prompt coverage:"
+
+  - test_log_quota_updates_rate_limits: run log-quota --assistant claude --used-pct-5h 50
+    and verify RATE_LIMITS.json has the updated field
+
+  - test_start_updates_work_state: run start PROMPT_91.txt and verify WORK_STATE.json
+    has current_prompt = "PROMPT_91.txt" and status = "in_progress"
+
+  - test_pause_updates_work_state: after start, run pause PROMPT_91.txt --reason "test"
+    and verify status = "paused" and RUN_HISTORY.md has a pause entry
+
+  - test_done_updates_work_state: after start + pause + start again, run done
+    PROMPT_91.txt and verify status = "done" and COMMIT_LOG.md is updated
+
+------------------------------------------------------------------------
+Test class: TestSessionContextBriefing
+------------------------------------------------------------------------
+
+Test the enhanced work.py resume output:
+
+  - test_resume_output_contains_briefing_header: run work.py resume and check that
+    "Session Context Briefing" appears in stdout
+
+  - test_resume_briefing_sections_present: verify that the briefing contains the
+    key sections: "Runtime State:", "Memory Base:", "Complexity Budget:",
+    "Recommended Next Action:"
+
+  - test_resume_write_startup_log_creates_file: run work.py resume --write-startup-log
+    and verify that a file is created under logs/startup/
+
+------------------------------------------------------------------------
+Test class: TestMemoryStructure
+------------------------------------------------------------------------
+
+Test the memory/ directory structure:
+
+  - test_memory_index_exists: verify memory/INDEX.md exists and is non-empty
+  - test_memory_tier_dirs_exist: verify memory/concepts/, memory/sessions/,
+    memory/summaries/ all exist
+  - test_memory_tier_readmes_exist: verify README.md exists in each tier directory
+  - test_memory_summaries_example_exists: verify memory/summaries/ contains at least
+    one .md file (the PROMPT_90_completion.md from PROMPT_91)
+
+Note: These tests check the actual repo structure, not a temp dir.
+Skip gracefully if the directory is missing (with an informative message) so that
+repos that inherit this test suite can run it before the memory/ structure exists.
+
+------------------------------------------------------------------------
+Test class: TestWorkCompactionDoctrine
+------------------------------------------------------------------------
+
+Test that the doctrine files added in this arc exist:
+
+  - test_memory_compaction_discipline_exists: verify context/doctrine/memory-compaction-discipline.md
+    exists and contains expected sections ("Compaction Defined", "3-Tier", "Triggers")
+  - test_manage_work_queue_workflow_exists: verify context/workflows/manage-work-queue.md exists
+  - test_checkpoint_and_resume_workflow_exists: verify context/workflows/checkpoint-and-resume.md exists
+  - test_startup_context_visibility_doc_exists: verify docs/startup-context-visibility.md exists
+
+================================================================================
+PART 2: RUN ALL VERIFICATION GATES
+================================================================================
+
+After writing the tests, run the full suite:
+
+  python -m unittest discover -s verification/unit -p "test_*.py" -v
+    → All tests must pass. Fix any failures before committing.
+
+  python scripts/validate_context.py
+    → Must pass.
+
+  python scripts/run_verification.py --tier fast
+    → Must pass.
+
+If any test reveals a genuine defect in PROMPT_91–94 work (not just a test gap),
+fix the defect. Document the fix in the commit message.
+
+If any test cannot be run because a command requires a real git repo or filesystem
+state that is difficult to mock, use the pattern from test_repo_scripts.py for
+isolating side effects (skip, or use a minimal real-repo temp dir).
+
+================================================================================
+PART 3: CONTRIBUTOR_PLAYBOOK.MD UPDATE
+================================================================================
+
+File: CONTRIBUTOR_PLAYBOOK.md
+
+Read the current file. Add a section titled `## Working with the Operator Console`
+(or update an equivalent section if one exists).
+
+The section should cover:
+  1. What work.py operator commands do (next, start, pause, done, verify, etc.)
+  2. The expected workflow before, during, and after a prompt session
+  3. When to write memory/summaries/ artifacts and what they contain
+  4. The distinction between local runtime state (work/, context/MEMORY.md, PLAN.md)
+     and committed knowledge (memory/concepts/, memory/summaries/, context/doctrine/)
+  5. How to run the verification suite
+
+Keep the section concise. The playbook is for human contributors, not assistants.
+Use imperative steps, not explanatory prose.
+
+================================================================================
+PART 4: FUTURE WORKSTREAM READINESS
+================================================================================
+
+The user has planned workstreams that will generate new canonical examples and stacks.
+This section does lightweight scaffolding to ensure those workstreams can land cleanly.
+
+------------------------------------------------------------------------
+4a. Memory concepts stubs
+------------------------------------------------------------------------
+
+Create these stub concept files in memory/concepts/:
+
+  memory/concepts/canonical-example-selection.md
+  Title: `# Concept: Canonical Example Selection`
+  Body: short note pointing to context/skills/canonical-example-selection.md for the
+  full rules, plus a brief summary of how canonical examples are selected in this repo.
+
+  memory/concepts/prompt-numbering-discipline.md
+  Title: `# Concept: Prompt Numbering Discipline`
+  Body: key rules — strict monotonic, never reuse, always check highest number first,
+  use exact filenames not descriptions, how to find the current highest number.
+
+  memory/concepts/verification-gate-overview.md
+  Title: `# Concept: Verification Gate Overview`
+  Body: brief summary of the three verification commands, when each is appropriate,
+  and the tier-fast/full distinction.
+
+These concept files should be SHORT (20–40 lines each). They exist to orient a fresh
+session quickly, not to duplicate existing doctrine.
+
+------------------------------------------------------------------------
+4b. Stack and archetype stubs for planned workstreams
+------------------------------------------------------------------------
+
+Check which of these stacks and archetypes already have files in context/stacks/
+and context/archetypes/. For each that is MISSING, create a minimal stub:
+
+  Planned stacks to check:
+  - python logging / structured logging (may not exist; check for logging-related stack files)
+  - TUI/CLI tools beyond basic python CLI (check context/stacks/ for tui or rich-related files)
+  - schema validation patterns (pydantic, jsonschema, etc.)
+
+  Planned archetypes to check:
+  - cli-tool (likely exists)
+  - tui-tool (may not exist)
+
+If a file already exists: note it in the commit message, do not create a duplicate.
+If a file is missing: create a minimal stub with frontmatter-style header indicating
+it is a stub awaiting expansion.
+
+Stub format for missing stack files:
+  # <Stack Name>
+  Status: stub — awaiting expansion
+  Purpose: <one sentence>
+  Planned for: <workstream name>
+
+  See context/doctrine/naming-and-clarity.md for final format conventions.
+
+Stub format for missing archetype files:
+  # <Archetype Name>
+  Status: stub — awaiting expansion
+  Purpose: <one sentence>
+
+Do NOT create stubs for stacks/archetypes that do not clearly fit a planned workstream.
+Fewer stubs are better than speculative ones.
+
+------------------------------------------------------------------------
+4c. Manifest stub for future-workstream canonical examples
+------------------------------------------------------------------------
+
+Check if a manifest exists for: cli-python (should exist per the explore agent).
+
+If it exists: skip. If not, create a minimal stub at manifests/cli-python.yaml using
+the manifest schema (schema_version: 2).
+
+Check if a manifest for a TUI/Rich Python tool exists. If not, note this as a future
+item (do NOT create a speculative manifest — only create if clearly justified).
+
+Check if a manifest for schema-validation-python or similar exists. Same rule.
+
+------------------------------------------------------------------------
+4d. Update memory/INDEX.md — Current Contents section
+------------------------------------------------------------------------
+
+Update the `## Current Contents` section in memory/INDEX.md to reflect what is now
+actually present:
+  - concepts/: list the new concept files added in this prompt
+  - sessions/: empty (no session files yet)
+  - summaries/: list the PROMPT_90 completion example plus any new summaries added
+    in PROMPT_91–94
+
+This is a factual update, not a planning section.
+
+================================================================================
+PART 5: FINAL ARC SUMMARY
+================================================================================
+
+Create: memory/summaries/PROMPT_95_completion.md
+
+This is the completion summary for this session's work. Use the standard format:
+  ## Objective
+  ## Completed
+  ## Remaining
+  ## Tests Status
+  ## Files Touched
+  ## Key Commits
+  ## Pitfalls and Caveats
+  ## Next Recommended Action
+  ## Created At
+
+For "Next Recommended Action": name the first prompt in the NEXT arc (likely the
+logging or RBAC workstream, or whatever the operator has queued next). If no specific
+next prompt is known, say "Run `work.py next` to view the current queue."
+
+Also create: memory/summaries/PROMPT_91_through_95_arc_summary.md
+
+This is a higher-level arc summary covering PROMPT_91–95 as a unit. Use this structure:
+  ## Arc: Explicit Memory + Operator Console Upgrade
+  ## Prompts Covered: PROMPT_91 through PROMPT_95
+  ## Problem Solved
+  ## Key Artifacts Added
+  ## Architecture Changes (what was repositioned or evolved)
+  ## Test Coverage Added
+  ## Known Limitations or Future Work
+  ## Created At
+
+This arc summary is valuable for a future session that asks "what was this upgrade arc
+about?" without needing to read all five prompts.
+
+================================================================================
+VERIFICATION
+================================================================================
+
+Final verification run (all must pass):
+
+  python -m unittest discover -s verification/unit -p "test_*.py" -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Also run:
+  python3 scripts/work.py resume
+    → Session Context Briefing should now show memory/INDEX.md as present, relevant
+      summaries if present, and a meaningful Recommended Next Action.
+
+  python3 scripts/work.py verify
+    → Should show the verification commands to run.
+
+  python3 scripts/work.py recent-commits
+    → Should show [PROMPT_91] through [PROMPT_95] commits in a prompt-aware digest.
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+Use grouped commits prefixed with [PROMPT_95]. Use `git add -p`.
+
+Suggested groupings:
+
+  1. [PROMPT_95] add verification tests for new work.py commands and memory structure
+     Stage: verification/unit/test_work_commands.py (or equivalent)
+
+  2. [PROMPT_95] add memory concept stubs for orientation
+     Stage: memory/concepts/canonical-example-selection.md,
+            memory/concepts/prompt-numbering-discipline.md,
+            memory/concepts/verification-gate-overview.md
+
+  3. [PROMPT_95] update memory/INDEX.md current contents section
+     Stage: memory/INDEX.md
+
+  4. [PROMPT_95] add future-workstream stack/archetype stubs if any were needed
+     Stage: (whatever stubs were created, if any)
+
+  5. [PROMPT_95] update CONTRIBUTOR_PLAYBOOK.md with operator-console section
+     Stage: CONTRIBUTOR_PLAYBOOK.md
+
+  6. [PROMPT_95] add arc completion summaries
+     Stage: memory/summaries/PROMPT_95_completion.md,
+            memory/summaries/PROMPT_91_through_95_arc_summary.md
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Write the tests described above
+  - Run the full verification suite and fix failures
+  - Add the three memory concept stubs
+  - Update memory/INDEX.md
+  - Add arc summaries (PROMPT_95 and PROMPT_91–95)
+  - Update CONTRIBUTOR_PLAYBOOK.md
+  - Add minimal future-workstream stubs only where clearly justified
+
+DO NOT:
+  - Implement any future-workstream feature (logging, RBAC, Plotly, faker, TUI, schema)
+  - Rewrite PROMPT_META_RUNNER.txt (done in PROMPT_93)
+  - Change scripts/work.py beyond what test fixes require
+  - Create speculative manifests, stacks, or archetypes not clearly justified
+  - Expand tests beyond what is described (no test-for-test's-sake coverage)
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+
+  - All tests in the new test file pass
+  - python -m unittest discover passes across all verification/unit/ tests
+  - validate_context.py passes
+  - run_verification.py --tier fast passes
+  - memory/concepts/ has the three new concept files
+  - memory/INDEX.md has an updated Current Contents section
+  - CONTRIBUTOR_PLAYBOOK.md has the operator-console section
+  - memory/summaries/PROMPT_95_completion.md exists (accurate)
+  - memory/summaries/PROMPT_91_through_95_arc_summary.md exists
+
+The PROMPT_91–95 upgrade arc is complete. The operator-console model, 3-tier memory,
+session context briefing, and behavioral contract are all in place, tested, and
+documented. Future workstreams can be queued via work.py and will land into a more
+explicit, resumable, inspectable system.

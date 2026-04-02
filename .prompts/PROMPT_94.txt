@@ -1,0 +1,335 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that new AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one fresh
+coding-assistant session with commit prefixes like `[PROMPT_94]`.
+
+PROMPT_91: 3-tier memory structure + memory-compaction doctrine
+PROMPT_92: work.py operator-console commands + work/ data model
+PROMPT_93: PROMPT_META_RUNNER repositioned + doctrine/workflows updated
+
+This prompt (PROMPT_94) hardens startup logging and context visibility. It makes the
+session-start experience more explicit and informative without adding complexity.
+Do NOT proceed to PROMPT_95.
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md         (READ CAREFULLY — you will update this)
+  3. docs/runtime-state-workflow.md
+  4. python3 scripts/work.py resume        (run this; study the current output format)
+  5. python3 scripts/work.py status        (run this too)
+  6. AGENT.md                              (READ CAREFULLY — you will update this)
+  7. CLAUDE.md                             (READ CAREFULLY — you will update this)
+  8. memory/INDEX.md
+  9. memory/summaries/PROMPT_93_completion.md   (if it exists; else continue)
+ 10. scripts/work.py                       (READ FULL FILE — focus on handle_resume,
+                                            handle_status, print_resume_guidance,
+                                            and the new handle_next function from PROMPT_92)
+
+Understanding the current resume/status output and the full context-boot-sequence.md
+is mandatory before making changes. You are improving a well-functioning system;
+avoid breaking what already works.
+
+================================================================================
+BACKGROUND: STARTUP VISIBILITY PROBLEM
+================================================================================
+
+After PROMPT_91-93, the system has strong foundations: 3-tier memory, operator console,
+behavioral contract. But a subtle gap remains: there is no explicit record of what context
+a session loaded, and no single place that tells a fresh assistant "here is exactly what
+you should load and what the current state is" in a standardized, readable format.
+
+The existing `work.py resume` output is good but assistant-focused. It shows git state,
+runtime file health, next-step hints, and checkpoint reminders. What it lacks is a
+clear, structured "Session Context Briefing" that answers these questions upfront:
+
+  - What is the current repo state (cleanliness, branch, HEAD)?
+  - What context files are present and loaded?
+  - What is the complexity budget / memory posture?
+  - What is the operator queue state (next prompt, quota readiness)?
+  - What memory summaries exist that are relevant to the current work?
+  - What is the single recommended next action?
+
+This briefing should be:
+  - Printed by `work.py resume` (and optionally stored as a startup log artifact)
+  - Inspectable after the fact
+  - Not a hallucination — it reflects actual file presence, not assumed loading
+
+================================================================================
+PART 1: ENHANCE work.py resume — SESSION CONTEXT BRIEFING
+================================================================================
+
+Read the current `handle_resume` function. Currently it calls:
+  print_state_summary()
+  print_git_signals()
+  print_inferred_signals()
+  print_warnings()
+  print_resume_guidance()
+
+Enhance `handle_resume` to also call a new function: `print_session_context_briefing()`.
+Place this call BEFORE the existing output (it is an overview, not an appendix).
+
+The new function should print:
+
+  ================================================================
+  Session Context Briefing
+  ================================================================
+  Date:            <current local datetime>
+  Repo:            <repo_root>
+  Branch:          <branch>
+  Head:            <short_hash> — <subject>
+  Working Tree:    <clean | N changed files (M staged, N unstaged)>
+
+  Runtime State:
+    PLAN.md:          <present (N lines) | missing>
+    context/TASK.md:  <present (N lines) | missing>
+    context/SESSION.md: <present (N lines) | missing>
+    context/MEMORY.md:  <present (N lines) | missing>
+
+  Memory Base:
+    memory/INDEX.md:      <present | missing>
+    memory/summaries/:    <N files>
+    Relevant summary:     <PROMPT_XX_resume.md if found | none>
+
+  Complexity Budget:
+    Runtime file total:   <sum of lines across present runtime files>
+    Posture:              <lean (< 200 total lines) | moderate (200–400) | heavy (> 400)>
+    Recommendation:       <no action | review TASK.md/SESSION.md for pruning if heavy>
+
+  Operator Queue (work/ state):
+    Project:       <slug | "not initialized — run work.py init-project">
+    Next Prompt:   <PROMPT_XX.txt | "none" | "work/ not initialized">
+    Quota Ready:   <yes | no — <reason> | "unknown — run work.py log-quota">
+
+  Recommended Next Action:
+    <one clear sentence: what to read, run, or implement next>
+  ================================================================
+
+Implementation notes:
+
+- `print_session_context_briefing` receives the RepoInspection object (already available)
+  plus the repo_root path. Detect memory/ files by checking the filesystem.
+
+- For "Operator Queue": check if work/projects/<slug>/WORK_STATE.json exists.
+  If yes, load it and extract next_prompt. If no, say "not initialized".
+  Use the same `get_project_dir` helper from PROMPT_92. (If that helper does not exist,
+  implement a minimal version inline.)
+
+- For "Complexity Budget": sum the line_count of present runtime files. The thresholds
+  (lean/moderate/heavy) are heuristics, not hard limits. Show the number, not just a label.
+
+- For "Memory Base / Relevant summary": check memory/summaries/ for files matching
+  PROMPT_XX_resume.md or PROMPT_XX_completion.md where XX is the most recent prompt
+  prefix found in git history.
+
+- Keep the function deterministic and fast. Do not shell out to additional git commands
+  beyond what inspect_repo() already runs.
+
+- The briefing is printed as a clearly delimited block so it is easy to find in a long
+  terminal session.
+
+================================================================================
+PART 2: OPTIONAL STARTUP LOG ARTIFACT
+================================================================================
+
+Add an optional flag to `work.py resume`:
+
+  work.py resume --write-startup-log
+
+When this flag is passed, after printing the Session Context Briefing, also write it
+to: `logs/startup/<YYYY-MM-DD-HHMMSS>-resume.log`
+
+The logs/ directory is already gitignored. The startup log is a plain text file
+(same content as printed to stdout).
+
+This is useful for operators who want to review session starts after the fact, or for
+debugging context-loading issues. It is NOT written by default.
+
+If logs/startup/ does not exist, create it when writing.
+
+================================================================================
+PART 3: ENHANCE work.py next — QUOTA CONTEXT IN BRIEFING
+================================================================================
+
+The `work.py next` command (from PROMPT_92) already shows quota state. Enhance it to
+also show the complexity budget for the pending prompt if it can be inferred:
+
+  Complexity Note:
+  - The last session's runtime files were <lean|moderate|heavy> (N total lines).
+  - If heavy: consider pruning context/SESSION.md before starting the next session.
+
+This is a small addition. Read the current `handle_next` output and add 2-3 lines after
+the quota section.
+
+================================================================================
+PART 4: UPDATE docs/context-boot-sequence.md
+================================================================================
+
+Read the current file carefully. It defines the canonical startup sequence for assistants.
+
+Add a section titled `## Session Context Briefing` (near the top, after the primary
+boot steps) that explains:
+
+  1. The purpose of the Session Context Briefing output from `work.py resume`
+  2. What each section of the briefing means
+  3. How to use the briefing to decide what to load next (e.g., if complexity budget
+     is heavy, prioritize pruning; if relevant summary exists, load it)
+  4. That the briefing is informational — the assistant still decides what to load
+
+Keep the existing content intact. Only add this new section. Target: under 40 lines.
+
+================================================================================
+PART 5: UPDATE docs/startup-context-visibility.md (NEW FILE)
+================================================================================
+
+Create: docs/startup-context-visibility.md
+
+This file documents the startup visibility model for the repo. Cover:
+
+1. The problem it solves
+   Without explicit startup logging, sessions are opaque: it is unclear what was loaded,
+   what the complexity posture was, or what the operator queue said at start.
+
+2. The two-level visibility model
+   Level 1 — Session Context Briefing (printed by `work.py resume`)
+     Available in every session; shows current state at the moment resume is run.
+   Level 2 — Startup Log (written by `work.py resume --write-startup-log`)
+     Optional; persists to logs/startup/ for after-the-fact review.
+
+3. How to use it
+   - Always run `work.py resume` first in a fresh session
+   - Read the briefing before loading task-specific context
+   - If complexity budget is heavy, prune before starting
+   - If quota is not ready, wait or use a different assistant
+   - If a relevant memory summary exists, load it
+
+4. Interpretation guide
+   Brief table or bullet list: what lean/moderate/heavy means and what to do
+
+5. Integration with memory/ and work/
+   The briefing reads from both. It is the synthesis point for the session start.
+
+Target: 60–90 lines. Concise and actionable.
+
+================================================================================
+PART 6: UPDATE AGENT.MD
+================================================================================
+
+In AGENT.md, the First Reads section currently has step 4 as `work.py resume`.
+
+After PROMPT_92 added operator-console references, the boot sequence is:
+  run work.py resume → read the Session Context Briefing → proceed
+
+Add a brief note to step 4 clarifying that `work.py resume` now prints a Session Context
+Briefing first. Operators should read it before proceeding to the file-read steps.
+
+Something like:
+
+  4. run `python3 scripts/work.py resume`
+     Read the Session Context Briefing it prints. Use it to decide what to load next:
+     if a relevant memory/summaries/ file is shown, load it; if complexity budget
+     is heavy, prune before starting; if quota is not ready, consult work.py next.
+
+Keep this to 3–4 lines. Do not restructure the rest of AGENT.md.
+
+================================================================================
+PART 7: UPDATE CLAUDE.MD
+================================================================================
+
+In CLAUDE.md, update the `## Guardrails` section to include one bullet about the
+Session Context Briefing:
+
+  - After `work.py resume`, read the Session Context Briefing before loading
+    task-specific context. Use it to gauge complexity posture and quota readiness.
+
+================================================================================
+VERIFICATION
+================================================================================
+
+After all changes:
+
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Also run the enhanced commands manually and verify the output:
+
+  python3 scripts/work.py resume
+    → Should print Session Context Briefing at the top, followed by existing output
+    → Verify all sections of the briefing are populated (some may show "not initialized"
+      or "unknown" for work/ and quota if not set up, but they should not error)
+
+  python3 scripts/work.py resume --write-startup-log
+    → Should write a file to logs/startup/
+    → Verify the file exists and contains the briefing
+
+  python3 scripts/work.py next
+    → Should show the complexity note addition
+
+Verify manually:
+  - docs/startup-context-visibility.md exists and is coherent
+  - docs/context-boot-sequence.md has the new section
+  - AGENT.md step 4 has the briefing note
+  - CLAUDE.md has the new guardrail bullet
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+Use grouped commits prefixed with [PROMPT_94]. Use `git add -p`.
+
+Suggested groupings:
+
+  1. [PROMPT_94] add Session Context Briefing to work.py resume
+     Stage: scripts/work.py  (print_session_context_briefing + --write-startup-log)
+
+  2. [PROMPT_94] add startup-context-visibility.md doc
+     Stage: docs/startup-context-visibility.md
+
+  3. [PROMPT_94] update context-boot-sequence.md with Session Context Briefing section
+     Stage: docs/context-boot-sequence.md
+
+  4. [PROMPT_94] update AGENT.md and CLAUDE.md for Session Context Briefing guidance
+     Stage: AGENT.md, CLAUDE.md
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Enhance work.py resume with Session Context Briefing
+  - Add --write-startup-log flag
+  - Create docs/startup-context-visibility.md
+  - Update docs/context-boot-sequence.md minimally
+  - Update AGENT.md and CLAUDE.md minimally
+  - Enhance work.py next with complexity note
+
+DO NOT:
+  - Rewrite the existing resume/status output (only prepend the new briefing section)
+  - Add external service calls or token introspection
+  - Change the behavioral contract of existing commands
+  - Write tests (that is PROMPT_95)
+  - Update manifests, stacks, or archetypes
+  - Change context/doctrine/ or context/workflows/ beyond what is necessary
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+
+  - `work.py resume` prints a Session Context Briefing block at the top
+  - `work.py resume --write-startup-log` writes to logs/startup/
+  - `work.py next` shows a complexity note
+  - docs/startup-context-visibility.md exists (60–90 lines)
+  - docs/context-boot-sequence.md has the new briefing section
+  - AGENT.md step 4 references the Session Context Briefing
+  - CLAUDE.md has the new guardrail bullet
+  - validate_context.py passes
+  - run_verification.py --tier fast passes
+
+STOP HERE. Do not implement PROMPT_95 in this session.

@@ -1,0 +1,426 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that new AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one fresh
+coding-assistant session with commit prefixes like `[PROMPT_93]`.
+
+PROMPT_91 created the 3-tier memory structure and memory-compaction doctrine.
+PROMPT_92 extended scripts/work.py with the operator-console command set (next, start,
+pause, done, verify, recent-commits, log-quota) and the work/ data model.
+
+This prompt (PROMPT_93) repositions PROMPT_META_RUNNER.txt, updates doctrine and
+workflows to reflect the two-layer model (work.py as operator console + PROMPT_META_RUNNER
+as behavioral contract), and adds two new workflows. Do NOT proceed to PROMPT_94.
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. docs/runtime-state-workflow.md
+  4. python3 scripts/work.py resume       (run this; read the output carefully)
+  5. python3 scripts/work.py next         (run this if work/ data exists)
+  6. AGENT.md
+  7. memory/INDEX.md
+  8. memory/summaries/PROMPT_92_completion.md   (if it exists; else continue)
+  9. .prompts/PROMPT_META_RUNNER.txt       (READ THE FULL FILE — it is long)
+ 10. context/doctrine/prompt-first-conventions.md
+ 11. context/skills/memory-continuity-discipline.md
+ 12. context/router/task-router.md
+ 13. docs/runtime-state-workflow.md        (re-read after the above)
+
+Understanding the current PROMPT_META_RUNNER.txt and doctrine files thoroughly before
+touching them is mandatory. They are the primary surfaces you are evolving.
+
+================================================================================
+BACKGROUND: THE TWO-LAYER MODEL
+================================================================================
+
+The current PROMPT_META_RUNNER.txt was generated at an early stage to describe how to
+run this repo's own prompt sequence. It is sophisticated — it defines subagent roles
+(AGENT_MAIN, AGENT_ARCHITECT, AGENT_BUILDER, AGENT_AUDITOR, AGENT_REFACTOR), execution
+loops, artifact gates, testing discipline, commit discipline, and a "Start Procedure."
+
+That sophistication was appropriate when the repo needed a detailed runtime guide. But
+it has an implicit assumption that PROMPT_META_RUNNER is the controller — that pasting
+it into an assistant session makes the assistant manage its own execution lifecycle,
+multi-prompt sequencing, quota awareness, and commit discipline automatically.
+
+This assumption does not hold cleanly:
+- Assistants cannot truly enforce fresh-session boundaries
+- They cannot observe real quota state
+- They cannot guarantee commit discipline without operator oversight
+- Multi-prompt sequencing from within a single session is drift-prone
+
+The upgrade introduced in PROMPT_92 provides a better answer for the orchestration layer:
+`work.py` (init-project, next, start, pause, done, verify) is the durable local operator
+console. It tracks state between sessions across the real filesystem.
+
+The repositioning to make in this prompt:
+
+  PROMPT_META_RUNNER.txt becomes:
+  - A behavioral contract for ONE bounded assistant session
+  - Not an automation layer that sequences multiple prompts
+  - Not a quota-awareness tool
+  - A clear, principled guide to how an assistant should behave during a single session
+
+  scripts/work.py becomes:
+  - The local operator console for managing prompt-to-prompt progression
+  - The durable truth layer between sessions
+  - The tool the OPERATOR uses (not the assistant)
+
+This distinction must be reflected in PROMPT_META_RUNNER.txt, doctrine, and docs.
+
+================================================================================
+PART 1: REWRITE PROMPT_META_RUNNER.TXT
+================================================================================
+
+Rewrite `.prompts/PROMPT_META_RUNNER.txt` to be a behavioral contract.
+
+The current file is ~380 lines with 11 sections covering subagent roles, execution modes,
+artifact gates, commit discipline, drift stop conditions, and an execution loop. Much of
+this is valuable. Retain what genuinely governs single-session behavior. Remove or
+reframe what assumes multi-session orchestration.
+
+The new PROMPT_META_RUNNER.txt must cover:
+
+--- SECTION 1: Purpose ---
+
+Clearly state what this file is and what it is NOT:
+
+  This is a behavioral contract for a single bounded assistant session executing one
+  `.prompts/` file. It is NOT a multi-session scheduler, a quota tracker, or a
+  test runner. The operator uses `scripts/work.py` for lifecycle management between
+  sessions. This file governs what happens INSIDE a session.
+
+--- SECTION 2: Single-Session Invariants ---
+
+Rules that apply to every prompt session, regardless of which prompt is being executed:
+
+  1. One prompt per session
+     A session executes exactly one `.prompts/` file. The session ends when that prompt's
+     completion condition is met. Do not begin the next prompt in the same session.
+
+  2. Boot before work
+     Every session must boot via the sequence in AGENT.md/CLAUDE.md before any
+     implementation starts. Check `work.py resume` output early.
+
+  3. Commit discipline
+     All commits during a session must begin with [PROMPT_XX] matching the active prompt.
+     Use `git add -p` for logical groupings. Never batch changes from different prompts.
+
+  4. Validation before done
+     A prompt is not complete until its stated verification steps pass. Report `blocked`
+     or `incomplete` if they cannot be run or do not pass.
+
+  5. Explicit scope
+     Stay within the scope of the active prompt. Improvements to adjacent files are only
+     allowed if they are required for the prompt's stated completion condition.
+
+  6. No auto-sequencing
+     When a prompt's completion condition is met, stop and report. Do not move to the
+     next prompt. The operator runs `work.py done` and `work.py next` to manage queue.
+
+--- SECTION 3: Operator Console Integration ---
+
+Explain the two-layer model:
+
+  - The OPERATOR uses `work.py` commands to manage the prompt queue and session lifecycle.
+  - The ASSISTANT uses boot docs, work.py resume, memory/, and prompt content to do the work.
+  - These layers are separate. The assistant does not run `work.py start/pause/done` — the
+    operator does.
+
+Provide the expected operator workflow around a session:
+  Before:   work.py next (check readiness), work.py start PROMPT_XX.txt
+  During:   assistant works; operator may run work.py verify at any point
+  After:    operator runs work.py done PROMPT_XX.txt, writes completion summary if needed
+
+--- SECTION 4: Artifact Gates ---
+
+A condensed but complete list of what must be true before a prompt is declared done:
+
+  - Promised files exist with correct content (no unfilled placeholders)
+  - Committed artifacts match what the prompt described
+  - Smoke tests or stated verification steps pass (or are documented as blocked/N/A)
+  - Commit prefixes match [PROMPT_XX]
+  - No unintended template overwrites
+  - Completion condition as stated in the prompt is met
+
+--- SECTION 5: Commit and File Conventions ---
+
+Brief but complete rules:
+  - Use Tim Pope style multi-line commit messages
+  - [PROMPT_XX] prefix on every commit subject
+  - git add -p for logical groupings
+  - No empty commits
+  - Do not rename prompt files
+
+--- SECTION 6: Drift Stop Conditions ---
+
+Retain the key stop conditions from the current file, adapted for single-session scope:
+  - Missing artifacts required by this prompt
+  - Smoke or integration test failure with no documented justification
+  - Template overwritten without explicit intent
+  - Scope drift beyond the prompt's stated completion condition
+  - Context window approaching limit (>70% used) without natural stopping point —
+    write a PROMPT_XX_resume.md, mark incomplete, and stop
+
+--- SECTION 7: Subagent and Role Conventions (condensed) ---
+
+Keep the essential role taxonomy but simplify. The goal is recognizable role names that
+help assistants self-organize, not a bureaucratic protocol:
+
+  AGENT_ARCHITECT  – interprets architecture prompts; declares artifact targets
+  AGENT_BUILDER    – implements repo changes; creates/modifies files and tests
+  AGENT_AUDITOR    – verifies artifacts; confirms pass/fail; validates commit scope
+  AGENT_REFACTOR   – resolves drift or incoherence within a completed prompt's scope
+
+Most sessions use one role. Role-switching mid-session is allowed but must be noted.
+
+--- SECTION 8: Testing Discipline (condensed) ---
+
+Retain the core principle from the current file:
+
+  When a prompt introduces or changes runtime systems, Docker stacks, APIs, CLIs,
+  data flows, or significant features, smoke tests are required before committing.
+  Minimal integration tests against real services are required when the prompt
+  explicitly states or obviously implies them.
+
+  Testing is not applicable for documentation-only or doctrine-only prompts.
+
+--- SECTION 9: How This File Is Used ---
+
+Instructions for operators and assistants on how to use this file:
+
+  For operators: paste into a fresh session before the active prompt when you want the
+  assistant to follow these behavioral conventions explicitly. Not required for every
+  session — it is most useful when executing complex implementation prompts.
+
+  For assistants: treat this file as standing operating procedure for the current session.
+  Its rules apply to every action you take from the moment you read it.
+
+TARGET LENGTH: 150–220 lines. Current file is ~380 lines.
+Remove verbose narrative, redundant explanations, and early-stage repo-state evidence
+(the table showing all prompts as "pending" was accurate when generated but is now stale).
+Keep every rule that governs single-session behavior concisely and precisely.
+
+================================================================================
+PART 2: UPDATE DOCTRINE
+================================================================================
+
+File: context/doctrine/prompt-first-conventions.md
+
+The current file is thin (~40 lines) covering only monotonic numbering, explicit filenames,
+sequence design, and assistant behavior.
+
+Extend it with these new sections:
+
+--- Section: Operator Console Workflow ---
+
+Add a concise section explaining the two-layer model:
+  - The `.prompts/` directory defines what each session does
+  - `scripts/work.py` manages the operator workflow between sessions
+  - These layers are deliberately separate and complementary
+  - The operator drives sequencing; the assistant drives execution
+
+Include the minimal operator loop:
+  1. `work.py next`         — check what to run and whether conditions are ready
+  2. `work.py start PROMPT_XX.txt`  — mark session as started
+  3. Paste prompt into fresh session + run AGENT.md boot sequence
+  4. Execute session; operator may run `work.py verify` at checkpoints
+  5. `work.py done PROMPT_XX.txt`   — mark complete, log commits
+  6. Write memory/summaries/PROMPT_XX_completion.md before moving on
+
+--- Section: Fresh-Session Boundaries ---
+
+State clearly that prompt files are designed for fresh sessions. Each prompt must:
+  - Include enough context to boot without a separate system prompt
+  - Reference exact files by path, not by description
+  - State its own completion condition explicitly
+
+--- Section: Pausing and Resuming ---
+
+When a session is interrupted before completion:
+  - Operator runs `work.py pause PROMPT_XX.txt --reason "..."`
+  - Assistant writes memory/summaries/PROMPT_XX_resume.md
+  - Next session reads that resume summary at boot
+  - No re-reading of the full repo is needed if the resume summary is complete
+
+Keep all existing sections. Only add the new sections.
+
+================================================================================
+PART 3: UPDATE MEMORY-CONTINUITY-DISCIPLINE.MD
+================================================================================
+
+File: context/skills/memory-continuity-discipline.md
+
+Read the current file first.
+
+Add or update to reflect:
+  - The 3-tier memory base (created in PROMPT_91) as the durable layer
+  - memory/summaries/ as the primary resumption point for prompt-first work
+  - The distinction between: memory/INDEX.md orientation (committed), context/MEMORY.md
+    live state (local), and handoff snapshots (general purpose)
+  - When to create each type of artifact and in what order
+
+Do not rewrite the existing structure if it is well-organized. Add what is missing.
+
+================================================================================
+PART 4: ADD TWO NEW WORKFLOWS
+================================================================================
+
+Create:
+
+  context/workflows/manage-work-queue.md
+  context/workflows/checkpoint-and-resume.md
+
+------------------------------------------------------------------------
+context/workflows/manage-work-queue.md
+------------------------------------------------------------------------
+
+A workflow guide for managing the `work.py` operator-console queue.
+
+Cover:
+1. Initializing a project: `work.py init-project`
+2. Viewing the queue: `work.py next` and `work.py verify`
+3. Adding prompts to the queue: via editing WORK_STATE.json directly or `work.py init-project`
+   (note: a queue add command is a future improvement)
+4. Starting a session: `work.py start PROMPT_XX.txt --assistant ASSISTANT`
+5. Pausing a session: `work.py pause PROMPT_XX.txt --reason "..."`
+6. Completing a session: `work.py done PROMPT_XX.txt`
+7. Logging quota: `work.py log-quota --assistant claude --used-pct-5h 45`
+8. Viewing commit history: `work.py recent-commits`
+9. Queue health: what WORK_STATE.json looks like in good state vs. degraded state
+
+------------------------------------------------------------------------
+context/workflows/checkpoint-and-resume.md
+------------------------------------------------------------------------
+
+A workflow guide for creating and using checkpoints and resume summaries.
+
+Cover:
+1. When to write a resume summary (mid-prompt pause or prompt completion)
+2. How to write memory/summaries/PROMPT_XX_resume.md (required sections)
+3. How to write memory/summaries/PROMPT_XX_completion.md (required sections)
+4. How a fresh session uses a resume summary (read at boot, before task context)
+5. When to promote findings to memory/concepts/
+6. When to create a general artifacts/handoffs/ snapshot instead
+7. Pruning old summaries (when safe to remove)
+
+Format these as practical step-by-step workflows, not as abstract doctrine.
+Each step should be an action, not a concept.
+
+================================================================================
+PART 5: UPDATE TASK-ROUTER.MD
+================================================================================
+
+File: context/router/task-router.md
+
+Add a section at the bottom (or a relevant existing section if one fits) for work.py
+operator commands. Map natural-language operator requests to the correct work.py command:
+
+  "what should I work on next" → `work.py next`
+  "start this prompt session" → `work.py start PROMPT_XX.txt --assistant ...`
+  "pause the current session" → `work.py pause PROMPT_XX.txt --reason "..."`
+  "mark this prompt done" → `work.py done PROMPT_XX.txt`
+  "log my quota usage" → `work.py log-quota --assistant claude --used-pct-5h N`
+  "is the repo consistent" → `work.py verify`
+  "show recent commits" → `work.py recent-commits`
+  "initialize the operator console" → `work.py init-project`
+
+Keep the addition concise and consistent with the existing router format.
+
+================================================================================
+PART 6: UPDATE docs/runtime-state-workflow.md
+================================================================================
+
+Read the current file. Add a section (or update the existing structure) to cover:
+
+  - The work/ data model and its relationship to the existing runtime state files
+  - The operator-console layer (work.py commands for lifecycle management)
+  - The two-layer model: operator uses work.py, assistant uses boot docs + work.py resume
+  - Where work/ fits relative to PLAN.md / context/TASK.md / context/SESSION.md / context/MEMORY.md
+
+Do not rewrite the whole file. Add what is genuinely new and missing. Keep the
+existing content intact unless something is now demonstrably incorrect.
+
+================================================================================
+VERIFICATION
+================================================================================
+
+After all changes:
+
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Also verify manually:
+  - PROMPT_META_RUNNER.txt is 150–220 lines and reads as a behavioral contract, not a runner
+  - context/doctrine/prompt-first-conventions.md has the new sections
+  - Both new workflow files exist and are practical guides
+  - context/skills/memory-continuity-discipline.md reflects the 3-tier model
+  - context/router/task-router.md has the work.py operator mappings
+  - docs/runtime-state-workflow.md mentions the work/ layer
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+Use grouped commits prefixed with [PROMPT_93]. Use `git add -p`.
+
+Suggested groupings:
+
+  1. [PROMPT_93] rewrite PROMPT_META_RUNNER.txt as single-session behavioral contract
+     Stage: .prompts/PROMPT_META_RUNNER.txt
+
+  2. [PROMPT_93] extend prompt-first-conventions.md with operator-console workflow
+     Stage: context/doctrine/prompt-first-conventions.md
+
+  3. [PROMPT_93] add manage-work-queue.md and checkpoint-and-resume.md workflows
+     Stage: context/workflows/manage-work-queue.md,
+            context/workflows/checkpoint-and-resume.md
+
+  4. [PROMPT_93] update memory-continuity-discipline.md for 3-tier model
+     Stage: context/skills/memory-continuity-discipline.md
+
+  5. [PROMPT_93] update task-router.md and runtime-state-workflow.md
+     Stage: context/router/task-router.md, docs/runtime-state-workflow.md
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Rewrite PROMPT_META_RUNNER.txt as a behavioral contract (condensed, principled)
+  - Add operator-console sections to prompt-first-conventions.md
+  - Create the two new workflows
+  - Update memory-continuity-discipline.md for 3-tier awareness
+  - Update task-router.md and runtime-state-workflow.md minimally
+
+DO NOT:
+  - Touch scripts/work.py (done in PROMPT_92)
+  - Touch memory/ structure (done in PROMPT_91)
+  - Change manifests, stacks, archetypes, validation gates, or .acb/ scripts
+  - Update AGENT.md or CLAUDE.md beyond what PROMPT_91/92 already handled
+  - Add new doctrine files beyond what is described here
+  - Write tests (that is PROMPT_95)
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+
+  - PROMPT_META_RUNNER.txt is 150–220 lines and reads as a single-session behavioral contract
+  - context/doctrine/prompt-first-conventions.md has operator-console and resume sections
+  - context/workflows/manage-work-queue.md exists and covers the full operator loop
+  - context/workflows/checkpoint-and-resume.md exists and covers pause/resume conventions
+  - context/skills/memory-continuity-discipline.md reflects the 3-tier memory model
+  - context/router/task-router.md maps work.py operator commands to natural-language triggers
+  - docs/runtime-state-workflow.md mentions the work/ operator-console layer
+  - validate_context.py passes
+  - run_verification.py --tier fast passes
+
+STOP HERE. Do not implement PROMPT_94 in this session.

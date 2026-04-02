@@ -1,0 +1,678 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that new AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one fresh
+coding-assistant session with commit prefixes like `[PROMPT_92]`.
+
+PROMPT_91 created the 3-tier memory structure (memory/INDEX.md, memory/concepts/,
+memory/sessions/, memory/summaries/) and the memory-compaction-discipline doctrine.
+
+This prompt (PROMPT_92) extends `scripts/work.py` with a full operator-console command
+set and creates the `work/` project data model. Your sole task in this session is to
+implement exactly that. Do NOT proceed to PROMPT_93.
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. docs/runtime-state-workflow.md
+  4. python3 scripts/work.py resume       (run this; read the output carefully)
+  5. AGENT.md
+  6. CLAUDE.md
+  7. memory/INDEX.md                      (created in PROMPT_91)
+  8. memory/summaries/PROMPT_91_completion.md  (if it exists; if not, continue)
+  9. scripts/work.py                      (READ THE FULL FILE before writing any code)
+ 10. context/doctrine/memory-compaction-discipline.md
+ 11. .gitignore
+
+Reading the full scripts/work.py before touching it is mandatory. The existing 868-line
+implementation is carefully designed. Understand the dataclass model, inspection pipeline,
+and output functions before adding to them.
+
+================================================================================
+BACKGROUND: OPERATOR CONSOLE
+================================================================================
+
+The current work.py has four commands that serve ASSISTANTS well:
+  init        scaffold missing runtime files
+  status      read-only health check
+  resume      read-only session start briefing
+  checkpoint  scaffold + report drift/compaction pressure
+
+These commands treat the assistant as the active agent and the human as the observer.
+
+This prompt introduces an additional layer: commands that serve the OPERATOR (the human
+running the prompt-first workflow) as the active agent. The operator needs to:
+
+  - know which prompt to run next and whether conditions are right to start
+  - mark a session as started, paused, or done
+  - log quota state when approaching rate limits
+  - verify the repo is in a consistent state before starting a new session
+  - review a concise prompt-aware commit digest
+
+This is NOT a framework replacement. The existing four commands remain unchanged.
+The new commands add an explicit operator-console layer on top of the existing model.
+
+The data they read and write lives in `work/projects/<slug>/` — a gitignored directory
+that holds local operator state (analogous to the gitignored PLAN.md / context/MEMORY.md).
+
+================================================================================
+ARCHITECTURAL PRINCIPLES FOR THIS EXTENSION
+================================================================================
+
+Follow these principles throughout the implementation:
+
+1. Explicit over magic
+   Every state transition writes a real file. No hidden databases, no opaque registries.
+   The entire work/ tree is readable with a text editor.
+
+2. Backward compatible
+   Existing commands (init, status, resume, checkpoint) must remain identical in behavior.
+   Do not modify their output format or exit codes.
+
+3. Graceful degradation
+   If work/projects/<slug>/WORK_STATE.json does not exist, new commands print a helpful
+   message and exit cleanly rather than crashing. `work.py init-project` creates it.
+
+4. Read-only and write-only separation
+   `status`, `resume`, `next`, `recent-commits`, and `verify` are read-only.
+   `start`, `pause`, `done`, `log-quota`, and `init-project` are write commands.
+   Never surprise the operator by mutating state during a read command.
+
+5. Work state truth
+   WORK_STATE.json is the single machine-readable truth for operator state.
+   SESSION_QUEUE.md, COMMIT_LOG.md, RUN_HISTORY.md, and RATE_LIMITS.json are
+   human-friendly views derived from or complementary to WORK_STATE.json.
+
+6. No auto-running prompts
+   work.py never reads, interprets, or executes .prompts/ files. It only tracks filenames
+   as opaque strings. The operator and the coding assistant execute the prompts.
+
+================================================================================
+PART 1: work/ DIRECTORY STRUCTURE AND DATA MODEL
+================================================================================
+
+The work/ directory holds local operator-console state. It is gitignored.
+
+Structure created by `work.py init-project`:
+
+  work/
+    projects/
+      <slug>/
+        WORK_STATE.json
+        PLAN.md
+        SESSION_QUEUE.md
+        COMMIT_LOG.md
+        RATE_LIMITS.json
+        RUN_HISTORY.md
+
+The `<slug>` is the project identifier, defaulting to the repo root directory name
+(e.g., `agent-context-base`). Operators can also pass --slug explicitly.
+
+------------------------------------------------------------------------
+WORK_STATE.json — canonical machine-readable operator state
+------------------------------------------------------------------------
+
+Schema (implement this exactly, do not abbreviate):
+
+{
+  "project_slug": "agent-context-base",
+  "repo_root": "/absolute/path/to/repo",
+  "active_branch": "main",
+  "current_prompt": null,
+  "prompt_queue": [
+    {
+      "prompt_file": "PROMPT_XX.txt",
+      "status": "pending",
+      "priority": 50,
+      "theme": "",
+      "depends_on": [],
+      "notes": ""
+    }
+  ],
+  "last_completed_prompt": null,
+  "last_started_prompt": null,
+  "last_paused_prompt": null,
+  "last_resume_summary": null,
+  "repo_dirty": false,
+  "last_known_head": null,
+  "last_known_head_subject": null,
+  "checkpoint_required": false,
+  "validation_state": {
+    "last_smoke_test_status": null,
+    "last_smoke_test_at": null,
+    "last_verify_status": null,
+    "last_verify_at": null
+  },
+  "complexity_budget": {
+    "status": "unknown",
+    "score": 0,
+    "notes": "",
+    "measured_at": null
+  },
+  "quota_state": {
+    "ready_for_next_prompt": true,
+    "notes": ""
+  },
+  "updated_at": null
+}
+
+status values for prompt_queue entries: "pending" | "in_progress" | "paused" | "done" | "skipped"
+
+Use ISO 8601 datetime strings for all timestamp fields (e.g., "2026-04-02T14:30:00+00:00").
+Serialize with json.dumps(..., indent=2, ensure_ascii=False).
+
+------------------------------------------------------------------------
+RATE_LIMITS.json — assistant quota tracking
+------------------------------------------------------------------------
+
+Schema:
+
+{
+  "assistants": {
+    "claude": {
+      "plan": "",
+      "five_hour_used_pct": null,
+      "five_hour_reset_at": null,
+      "seven_day_used_pct": null,
+      "seven_day_reset_at": null,
+      "last_checked_at": null,
+      "source": "manual",
+      "notes": ""
+    },
+    "codex": {
+      "plan": "",
+      "session_status": null,
+      "last_checked_at": null,
+      "source": "manual",
+      "notes": ""
+    },
+    "gemini": {
+      "plan": "",
+      "last_checked_at": null,
+      "source": "manual",
+      "notes": ""
+    }
+  },
+  "policy": {
+    "do_not_start_if_claude_five_hour_used_pct_gte": 72,
+    "do_not_start_if_claude_seven_day_used_pct_gte": 85,
+    "prefer_pause_if_near_limit": true
+  },
+  "updated_at": null
+}
+
+source values: "manual" | "inferred"
+
+------------------------------------------------------------------------
+SESSION_QUEUE.md — human-readable prompt queue
+------------------------------------------------------------------------
+
+A markdown table that the operator can glance at before opening a fresh session.
+
+Scaffold template:
+
+# Session Queue
+
+Generated from WORK_STATE.json. Do not edit directly — use `work.py` commands.
+
+| # | Prompt File | Status | Priority | Theme | Notes |
+|---|-------------|--------|----------|-------|-------|
+
+Last updated: <timestamp>
+
+------------------------------------------------------------------------
+COMMIT_LOG.md — prompt-boundary commit record
+------------------------------------------------------------------------
+
+A chronological list of completed prompts and their commits. Updated by `work.py done`.
+
+Scaffold template:
+
+# Commit Log
+
+Prompt-boundary commit record. Updated by `work.py done`.
+
+## <PROMPT_FILE> — <status> — <timestamp>
+- Commits: <comma-separated short hashes>
+- Notes: <optional>
+
+------------------------------------------------------------------------
+RUN_HISTORY.md — chronological session event log
+------------------------------------------------------------------------
+
+Every start/pause/resume/done event. Updated by write commands.
+
+Scaffold template:
+
+# Run History
+
+| Datetime | Prompt | Event | Assistant | Notes | Head Before | Head After |
+|----------|--------|-------|-----------|-------|-------------|------------|
+
+------------------------------------------------------------------------
+PLAN.md (inside work/projects/<slug>/)
+------------------------------------------------------------------------
+
+Human-readable high-level plan connecting the prompt queue to longer-term goals.
+This is distinct from the repo-root PLAN.md (which is gitignored runtime state).
+The work/projects/<slug>/PLAN.md is also gitignored (inside work/).
+
+Scaffold template:
+
+# Work Plan: <slug>
+
+## Active Phase
+-
+
+## Prompt Queue Summary
+See SESSION_QUEUE.md for the full queue.
+
+## Near-Term Goals
+-
+
+## Last Updated
+-
+
+================================================================================
+PART 2: NEW COMMANDS
+================================================================================
+
+Implement the following new subcommands. Each must follow the architectural principles
+above. Each read-only command calls inspect_repo() to get git state. Each write command
+loads and saves WORK_STATE.json.
+
+Add a helper: `load_work_state(repo_root)` and `save_work_state(repo_root, state_dict)`.
+Add a helper: `get_project_dir(repo_root, slug=None)` that returns the Path to
+work/projects/<slug>/ (defaulting slug to repo root dirname if not specified).
+
+------------------------------------------------------------------------
+work.py init-project [--slug SLUG]
+------------------------------------------------------------------------
+
+Creates work/projects/<slug>/ with all scaffold files if they do not exist.
+Never overwrites existing files unless --force is passed.
+
+Output:
+  Work Project Init: <slug>
+  - Created: <file>   (one line per created file)
+  - Skipped (exists): <file>   (one line per skipped file)
+  - Project dir: <absolute path>
+
+Note in AGENT.md / output: point operators to `work.py init-project` to initialize
+the operator console for a project.
+
+------------------------------------------------------------------------
+work.py next [--slug SLUG]
+------------------------------------------------------------------------
+
+Read-only. Shows the next session briefing for the operator.
+
+Steps:
+1. Load WORK_STATE.json. If missing, print guidance to run init-project and exit.
+2. Run inspect_repo() for git state.
+3. Print a structured "Next Session Briefing":
+
+Output format:
+
+  Next Session Briefing
+  =====================
+  Project: <slug>
+  Branch:  <branch>
+  Head:    <short hash> <subject>
+
+  Repo:    <clean | N changed files>
+
+  Next Prompt:   <prompt_file or "none pending">
+  Theme:         <theme if set>
+  Depends On:    <depends_on list or "none">
+
+  Quota Check:
+  - Ready:       <yes/no based on RATE_LIMITS.json policy>
+  - Claude 5h:   <five_hour_used_pct>% (threshold: <policy pct>%)
+  - Claude 7d:   <seven_day_used_pct>% (threshold: <policy pct>%)
+  - Notes:       <quota_state.notes if set>
+
+  Resume Summary:  <memory/summaries/PROMPT_XX_resume.md if it exists, else "none">
+
+  Recommended Action:
+  - <"Safe to start PROMPT_XX.txt" or "Wait: <reason>" or "No pending prompts">
+
+  Run History:     <last 3 events from RUN_HISTORY.md, or "none">
+
+If RATE_LIMITS.json has null quota values, say "quota unknown — consider logging with
+`work.py log-quota`" rather than blocking.
+
+------------------------------------------------------------------------
+work.py start <PROMPT_FILE> [--assistant ASSISTANT] [--slug SLUG]
+------------------------------------------------------------------------
+
+Write command. Marks a prompt as started.
+
+Steps:
+1. Load WORK_STATE.json. Error if missing.
+2. Find PROMPT_FILE in prompt_queue or add it if not present.
+3. Set status to "in_progress", set current_prompt, last_started_prompt.
+4. Record git HEAD at start time.
+5. Append to RUN_HISTORY.md.
+6. Save WORK_STATE.json.
+
+Output:
+
+  Started: <PROMPT_FILE>
+  Assistant: <assistant or "unspecified">
+  Head at start: <short hash> <subject>
+  RUN_HISTORY.md: updated
+  WORK_STATE.json: updated
+
+  Next: Open a fresh assistant session and paste the prompt.
+  Boot: Run `python3 scripts/work.py resume` in that session.
+  Checkpoint: When pausing, run `work.py pause <PROMPT_FILE> --reason "..."`.
+
+------------------------------------------------------------------------
+work.py pause <PROMPT_FILE> [--reason TEXT] [--slug SLUG]
+------------------------------------------------------------------------
+
+Write command. Marks a prompt as paused.
+
+Steps:
+1. Load WORK_STATE.json. Error if missing.
+2. Update prompt status to "paused", set last_paused_prompt.
+3. Append to RUN_HISTORY.md with reason.
+4. Save WORK_STATE.json.
+5. Print a reminder about the resume summary artifact.
+
+Output:
+
+  Paused: <PROMPT_FILE>
+  Reason: <reason or "not specified">
+  RUN_HISTORY.md: updated
+
+  IMPORTANT: Write a resume summary before ending this session.
+  Expected path: memory/summaries/PROMPT_XX_resume.md
+  This file is the primary handoff for the next fresh session.
+
+------------------------------------------------------------------------
+work.py done <PROMPT_FILE> [--slug SLUG]
+------------------------------------------------------------------------
+
+Write command. Marks a prompt as done.
+
+Steps:
+1. Load WORK_STATE.json. Error if missing.
+2. Update prompt status to "done", set last_completed_prompt, clear current_prompt.
+3. Run `git log` to find the most recent [PROMPT_XX] commits and record them.
+4. Update COMMIT_LOG.md with the prompt and its commits.
+5. Append to RUN_HISTORY.md.
+6. Save WORK_STATE.json.
+7. Check: does memory/summaries/PROMPT_XX_completion.md exist? If not, warn.
+
+Output:
+
+  Done: <PROMPT_FILE>
+  Commits found: <comma-separated short hashes with [PROMPT_XX] in subject>
+  COMMIT_LOG.md: updated
+  RUN_HISTORY.md: updated
+
+  <WARNING if completion summary is missing>:
+  No memory/summaries/PROMPT_XX_completion.md found.
+  Consider writing one before starting the next prompt.
+
+  Next prompt in queue: <file or "none">
+  Run `work.py next` for the full briefing.
+
+------------------------------------------------------------------------
+work.py verify [--slug SLUG]
+------------------------------------------------------------------------
+
+Read-only. Runs a structured consistency check.
+
+Checks to perform:
+
+1. Repo cleanliness
+   - Report number of staged/unstaged changes
+   - Warn if more than 10 changed files (broad surface)
+
+2. Last commit prefix discipline
+   - Check the last 5 commits for [PROMPT_XX] subject prefix pattern
+   - Report which have it and which do not
+   - Warn if none of the last 3 commits follow the convention
+
+3. WORK_STATE.json consistency (if work/ exists)
+   - current_prompt matches a queue entry with status "in_progress" or null
+   - no queue entry has status "in_progress" and does not match current_prompt
+
+4. Memory summary artifacts
+   - For each "done" prompt in the queue, check if a completion summary exists
+   - Report missing summaries as warnings
+
+5. Validation readiness
+   - Does python scripts/validate_context.py exist? Report its path.
+   - Does python scripts/run_verification.py exist? Report its path.
+   - Print the commands the operator should run before starting a new prompt.
+
+Output format:
+
+  Verify Report
+  =============
+  Repo cleanliness:   <clean | N changes (M staged, N unstaged)>
+  Commit discipline:  <N/5 recent commits follow [PROMPT_XX] convention>
+  Work state:         <consistent | warning: ...>
+  Memory summaries:   <complete | missing: PROMPT_XX, PROMPT_YY, ...>
+
+  Validation commands to run:
+    python scripts/validate_context.py
+    python scripts/run_verification.py --tier fast
+
+  Overall: <OK | WARNINGS (see above)>
+
+------------------------------------------------------------------------
+work.py recent-commits [--count N] [--slug SLUG]
+------------------------------------------------------------------------
+
+Read-only. Shows recent commits formatted in a prompt-aware way.
+
+Default: last 15 commits.
+
+Output format:
+
+  Recent Commits (prompt-aware)
+  =============================
+  <short_hash>  <date>  <subject>
+  [PROMPT_91]   ...
+  [PROMPT_90]   ...
+  (no prefix)   ...
+
+  Prompt coverage:
+  - [PROMPT_91]: 3 commits
+  - [PROMPT_90]: 4 commits
+  - (no prefix): 2 commits
+
+Use `git log --oneline --date=short` style. Highlight [PROMPT_XX] prefixes visually.
+Parse the commit subject to group by prompt prefix.
+
+------------------------------------------------------------------------
+work.py log-quota --assistant ASSISTANT [--used-pct-5h N] [--reset-at-5h DATETIME]
+                  [--used-pct-7d N] [--reset-at-7d DATETIME]
+                  [--session-status STATUS] [--notes TEXT] [--slug SLUG]
+------------------------------------------------------------------------
+
+Write command. Updates RATE_LIMITS.json.
+
+Steps:
+1. Load RATE_LIMITS.json. Create from default schema if missing.
+2. Update the named assistant's fields from provided arguments.
+3. Set last_checked_at to now. Set source to "manual".
+4. Evaluate policy: update quota_state.ready_for_next_prompt in WORK_STATE.json
+   based on the new values and policy thresholds.
+5. Save both RATE_LIMITS.json and WORK_STATE.json.
+
+Output:
+
+  Quota updated: <assistant>
+  5h used: <pct>%   reset: <datetime or "unknown">
+  7d used: <pct>%   reset: <datetime or "unknown">
+  Policy check: <ready | not ready — reason>
+  RATE_LIMITS.json: updated
+  WORK_STATE.json: quota_state updated
+
+================================================================================
+PART 3: GITIGNORE UPDATE
+================================================================================
+
+Add this block to .gitignore (with a comment):
+
+  # Operator console state (local only)
+  work/
+
+This gitignores the entire work/ tree since it holds local operator state only.
+
+================================================================================
+PART 4: ENHANCED resume OUTPUT (STARTUP BRIEFING)
+================================================================================
+
+The existing `handle_resume` function produces a good session briefing. Enhance it to
+also check for a relevant memory/summaries/ file.
+
+After the existing "Next reads:" section, add:
+
+  Memory summaries:
+  - <path> exists and may contain checkpoint context  (if a PROMPT_XX_resume.md
+    or PROMPT_XX_completion.md exists that matches the most recent prompt prefix
+    in git history)
+  - none found                                         (if no match)
+
+Detect the relevant summary by:
+1. Looking at the last [PROMPT_XX] commit subject to get the prompt number.
+2. Checking if memory/summaries/PROMPT_XX_resume.md exists.
+3. Falling back to memory/summaries/PROMPT_XX_completion.md.
+
+Keep this addition short (2-3 lines). Do not change the existing output format.
+
+================================================================================
+PART 5: AGENT.MD AND CLAUDE.MD UPDATES
+================================================================================
+
+In AGENT.md, add one line to the `## Operating Rules` section:
+
+  - Use `python3 scripts/work.py init-project` to initialize the operator console
+    for a project. Use `work.py next` before starting a fresh session to check
+    queue state and quota readiness.
+
+In CLAUDE.md, add one guardrail bullet:
+
+  - Before starting a new prompt session, run `python3 scripts/work.py next` to
+    check the queue, quota state, and whether a resume summary exists.
+
+Keep both changes minimal.
+
+================================================================================
+PART 6: CODE QUALITY REQUIREMENTS
+================================================================================
+
+The existing work.py has clean dataclasses, pure functions, and well-structured output
+functions. Match that quality:
+
+- Use dataclasses for any new composite state
+- Keep handler functions (`handle_*`) thin — parse args, call helpers, print output
+- Keep output format functions separate from logic functions
+- Add new argument parsers under `build_parser()` for each new subcommand
+- Keep the file size reasonable — if it grows beyond ~1500 lines, consider whether
+  some helpers belong in a separate module (but prefer a single file if feasible)
+- Type-annotate all new functions to match the existing style
+- Use `datetime.now(timezone.utc).isoformat()` for all timestamps
+- Handle missing files gracefully (check existence before loading JSON)
+
+================================================================================
+VERIFICATION
+================================================================================
+
+After implementation, verify:
+
+1. Existing commands still work correctly:
+   python3 scripts/work.py resume
+   python3 scripts/work.py status
+   python3 scripts/work.py checkpoint
+   python3 scripts/work.py init
+
+2. New commands work from the repo root:
+   python3 scripts/work.py init-project
+   python3 scripts/work.py next
+   python3 scripts/work.py verify
+   python3 scripts/work.py recent-commits
+
+3. Verify that work/ is not accidentally committed:
+   git status (should show work/ as ignored)
+
+4. Run repo validation:
+   python scripts/validate_context.py
+   python scripts/run_verification.py --tier fast
+
+5. Verify .gitignore has the work/ entry.
+
+If any existing test under verification/ references work.py command output, update it
+to match the enhanced resume output (the new memory summaries section).
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+Use grouped commits prefixed with [PROMPT_92]. Use `git add -p`.
+
+Suggested groupings:
+
+  1. [PROMPT_92] add work/ data model schema files and gitignore entry
+     Stage: .gitignore, any schema docs if created
+
+  2. [PROMPT_92] extend work.py with operator-console command set
+     Stage: scripts/work.py  (may need multiple commits if large)
+
+  3. [PROMPT_92] update AGENT.md and CLAUDE.md for operator-console guidance
+     Stage: AGENT.md, CLAUDE.md
+
+If the work.py changes are large, split into multiple commits by logical group:
+  - data model helpers (load_work_state, save_work_state, init-project)
+  - lifecycle commands (start, pause, done)
+  - read-only commands (next, verify, recent-commits)
+  - quota tracking (log-quota, enhanced resume)
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Implement all new commands described above
+  - Create the work/ scaffold via init-project
+  - Update .gitignore
+  - Enhance resume output minimally
+  - Update AGENT.md and CLAUDE.md minimally
+
+DO NOT:
+  - Rewrite or change existing command behavior (init, status, resume, checkpoint)
+  - Add automatic prompt execution or parsing
+  - Integrate with external APIs or services
+  - Create tests in this session (that is PROMPT_95)
+  - Update PROMPT_META_RUNNER.txt (that is PROMPT_93)
+  - Update doctrine beyond the minimal AGENT.md/CLAUDE.md additions
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+
+  - scripts/work.py has all new commands: init-project, next, start, pause, done,
+    verify, recent-commits, log-quota
+  - Each command produces the specified output format
+  - work/ is gitignored
+  - Enhanced resume shows memory/summaries/ hint
+  - AGENT.md and CLAUDE.md have minimal operator-console references
+  - Existing commands are unchanged
+  - validate_context.py passes
+  - run_verification.py --tier fast passes
+
+STOP HERE. Do not implement PROMPT_93 in this session.

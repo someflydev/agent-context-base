@@ -1,0 +1,426 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that new AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: changes flow through numbered `.prompts/` files, each
+executed in one fresh coding-assistant session, with commit prefixes like `[PROMPT_91]`.
+
+PROMPT_01 through PROMPT_90 established: context/doctrine, workflows, manifests, routers,
+skills, .acb/ spec/validation generation, and `scripts/work.py` (init/status/resume/checkpoint).
+PROMPT_90 enhanced work.py with better resume signals, staleness detection, memory-promotion
+hints, and repo-local example-template scaffolding.
+
+This prompt (PROMPT_91) begins a new upgrade arc focused on explicit memory architecture,
+operator-console orchestration, and stronger long-session resumability. Your sole task in this
+session is to create the 3-tier memory structure described below. Do NOT proceed to PROMPT_92.
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting any implementation:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. docs/runtime-state-workflow.md
+  4. python3 scripts/work.py resume       (run this; read the output carefully)
+  5. AGENT.md
+  6. CLAUDE.md
+  7. context/memory/memory-operating-rules.md
+  8. context/memory/handoff-snapshots.md
+  9. docs/memory-layer-overview.md
+ 10. .gitignore                            (check what is committed vs local)
+
+Also check: does a `memory/` directory already exist at the repo root? If so, read its
+contents before making any changes.
+
+================================================================================
+BACKGROUND: WHY THIS UPGRADE
+================================================================================
+
+The current memory model has one local layer: context/MEMORY.md (gitignored, per-machine,
+ephemeral). It handles within-session and short-term across-session continuity well. However:
+
+- There is no committed place for durable conceptual knowledge that outlives a session
+- Prompt-boundary compaction artifacts have no committed structural home
+- `artifacts/handoffs/` snapshots are useful but general-purpose, not prompt-aware
+- The work.py resume/checkpoint cycle is strong but produces no persisted artifacts
+- Fresh sessions must re-discover things that previous sessions already resolved
+
+This prompt creates a committed `memory/` directory at the repo root — the Structured Knowledge
+Base. It works alongside the existing model:
+
+  context/MEMORY.md          local runtime state, gitignored, mutable, task-scoped
+  artifacts/handoffs/        general timestamped handoff snapshots (existing, unchanged)
+  memory/                    committed, structured, tiered knowledge base (NEW)
+
+The committed memory base is NOT:
+- a log of every action
+- a replacement for doctrine (that stays in context/doctrine/)
+- a replacement for MEMORY.md (that stays local and current-task focused)
+- hidden state (everything here is committed, inspectable, version-controlled)
+
+It IS:
+- explicit
+- version-controlled
+- structured by purpose (concepts vs sessions vs summaries)
+- a durable index point for fresh sessions
+
+================================================================================
+ARCHITECTURE SPECIFICATION
+================================================================================
+
+Create this committed directory structure:
+
+  memory/
+    INDEX.md
+    concepts/
+      README.md
+    sessions/
+      README.md
+    summaries/
+      README.md
+
+Everything under memory/ is committed to the repo.
+
+--------------------------------------------------------------------------------
+memory/INDEX.md
+--------------------------------------------------------------------------------
+
+The top-level navigation hub for the committed memory base. Write it to be genuinely
+useful for a fresh assistant session. It must contain:
+
+1. Purpose
+   One clear paragraph explaining what this directory is, what it is NOT, and how it
+   relates to context/MEMORY.md and artifacts/handoffs/.
+
+2. When To Read This
+   Precise guidance: read memory/INDEX.md after `work.py resume` output and before
+   starting task-specific context loading. Not before — that would waste context on
+   orientation before routing.
+
+3. Tier Map
+   A short table or bullet list describing each directory:
+   - concepts/     durable knowledge: stable conventions, recurring patterns, known pitfalls
+   - sessions/     session notes: exploration logs, prompt execution notes, decision records
+   - summaries/    compacted artifacts: prompt-boundary checkpoints, resume handoffs
+
+4. Load Priority
+   Which tiers to consult in which order and under what conditions:
+   - summaries/ first when resuming a specific prompt or after a recent pause
+   - concepts/ when working on a known problem domain
+   - sessions/ rarely unless tracing a specific past decision
+
+5. Current Contents (stub)
+   A brief section that can be updated as content accumulates. Initially it should note
+   what is present (just the READMEs and the PROMPT_90 summary from this prompt run).
+
+6. Contributing
+   One-paragraph rule: when to add here vs context/MEMORY.md vs artifacts/handoffs/.
+
+--------------------------------------------------------------------------------
+memory/concepts/README.md
+--------------------------------------------------------------------------------
+
+Write a concise guide to this directory. Include:
+
+- What belongs here:
+  Durable knowledge unlikely to change with each session. Stable conventions not obvious
+  from reading code. Architectural decisions whose rationale is not in comments. Known
+  recurring pitfalls. Patterns that have come up in multiple sessions.
+
+- What does NOT belong here:
+  Active task state (context/TASK.md), session logs (memory/sessions/), checkpoint
+  summaries (memory/summaries/), doctrine (context/doctrine/), ephemeral working notes.
+
+- File format convention:
+  Filename: kebab-case descriptive slug, e.g., prompt-numbering-discipline.md
+  Header: `# Concept: <Title>`
+  Body: dense, fact-first, no padding
+  Last Updated: date stamp at bottom
+
+- When to create a new concept file:
+  After the second time you look something up and wish it were written down.
+  After resolving a non-obvious confusion that affected implementation.
+  After a session that produced a durable finding worth preserving across prompts.
+
+--------------------------------------------------------------------------------
+memory/sessions/README.md
+--------------------------------------------------------------------------------
+
+Write a concise guide. Include:
+
+- What belongs here:
+  Session logs for meaningful work sessions. Prompt execution notes when the execution
+  produced non-obvious findings. Exploration results that should not be re-discovered.
+  Decision rationale that is too specific to be a concept.
+
+- File format convention:
+  Filename: YYYY-MM-DD-<slug>.md  OR  PROMPT_XX-session.md
+  Header: `# Session: <description>`
+  Required sections: Date, Prompt Context, Key Findings, Decisions Made, Open Questions
+
+- Pruning convention:
+  Sessions older than ~30 days whose findings have been promoted to concepts/ or
+  summaries/ may be removed. Never prune a session that is the sole record of a
+  decision not captured elsewhere.
+
+- Relationship to artifacts/handoffs/:
+  memory/sessions/ holds prompt-first session notes. artifacts/handoffs/ holds
+  general-purpose timestamped transfer snapshots. Both can coexist.
+
+--------------------------------------------------------------------------------
+memory/summaries/README.md
+--------------------------------------------------------------------------------
+
+Write a concise guide. Include:
+
+- What belongs here:
+  Prompt-boundary compaction artifacts. Checkpoint summaries created when pausing
+  mid-prompt or completing a prompt. Resume handoffs for fresh sessions.
+
+- Standard filename patterns:
+  PROMPT_XX_completion.md    written when a prompt is fully done
+  PROMPT_XX_resume.md        written when a prompt is paused mid-execution
+
+- Required sections for summary files:
+  ## Objective
+  ## Completed
+  ## Remaining                (omit or mark "none" if fully done)
+  ## Tests Status
+  ## Files Touched
+  ## Key Commits
+  ## Pitfalls and Caveats
+  ## Next Recommended Action
+  ## Created At
+
+- Relationship to context/MEMORY.md:
+  Summaries are immutable once written. MEMORY.md is mutable live state. After
+  writing a summary, MEMORY.md should be pruned to stay current, not archival.
+
+--------------------------------------------------------------------------------
+memory/summaries/PROMPT_90_completion.md
+--------------------------------------------------------------------------------
+
+Create a REAL summary for PROMPT_90 (the last completed prompt). Populate it accurately
+based on what you observe in the repo — read git log for recent commits, read the
+PROMPT_90.txt prompt file, inspect scripts/work.py to understand what changed.
+
+This file is the canonical example of the summary format. It must be accurate, not
+template-filled placeholder text.
+
+Use the section structure defined above.
+
+For Tests Status: report what you actually verified (run_verification.py output, etc.).
+For Key Commits: use real git commit hashes/subjects from git log.
+
+================================================================================
+DOCTRINE UPDATE
+================================================================================
+
+Create this new doctrine file:
+
+  context/doctrine/memory-compaction-discipline.md
+
+The file must cover:
+
+1. Compaction Defined
+   Compaction in this repo is explicit, file-based, and inspectable. It is NOT hidden
+   automation. It means deliberately summarizing session state into a persistent artifact
+   at a meaningful boundary.
+
+2. The 3-Tier Memory Structure
+   Describe the memory/ directory hierarchy and when each tier serves which purpose.
+   Contrast with context/MEMORY.md (local, mutable, task-scoped).
+
+3. Compaction Triggers
+   Conditions that should cause an assistant to write a summary or concept:
+   - A prompt is paused mid-execution (write PROMPT_XX_resume.md)
+   - A prompt completes (write PROMPT_XX_completion.md)
+   - A non-obvious finding was resolved that will come up again
+   - The context/MEMORY.md is getting bloated and sections are stale
+
+4. Prompt-Boundary Convention
+   After every completed or paused prompt, a summary artifact should be placed in
+   memory/summaries/. This is the primary source for fresh sessions resuming that work.
+
+5. Anti-Patterns
+   - Writing summaries that are just MEMORY.md copies with different names
+   - Growing sessions/ without ever promoting findings to concepts/
+   - Treating memory/ as a backup of context/MEMORY.md
+   - Creating summaries that reference placeholder text or <TODO> markers
+
+6. Integration with work.py
+   work.py checkpoint and work.py resume should reference memory/summaries/ when
+   relevant. (Full integration comes in PROMPT_92. This doctrine establishes the
+   conceptual contract.)
+
+Keep this file tight. It is doctrine, not a tutorial. Target: 80–150 lines.
+
+================================================================================
+UPDATE MEMORY-OPERATING-RULES.MD
+================================================================================
+
+File: context/memory/memory-operating-rules.md
+
+Add a new section titled `## 3-Tier Memory Base` after the existing `## Handoff Rule`
+section. The new section should cover:
+
+- What the committed memory/ directory is and when to use it
+- Load order: INDEX.md first, then summaries/ for prompt-specific context, then
+  concepts/ for durable knowledge
+- When to prefer memory/ over context/MEMORY.md and vice versa
+- When to add to concepts/ vs update context/MEMORY.md
+- Brief pointer to context/doctrine/memory-compaction-discipline.md for the full model
+
+Do not rewrite the existing sections. Only add the new section.
+
+================================================================================
+UPDATE docs/memory-layer-overview.md
+================================================================================
+
+The current docs/memory-layer-overview.md describes the two-tier model (MEMORY.md +
+handoff snapshots). Update it to include the new 3-tier committed memory base.
+
+Keep the existing structure. Add a section or update the existing `## Artifact Roles`
+to include memory/ as the committed structured knowledge base. Update the mermaid
+diagram if it is still present and update it to show the decision between:
+- context/MEMORY.md (local, mutable, current task)
+- memory/summaries/ (committed, immutable, prompt boundaries)
+- memory/concepts/ (committed, durable knowledge)
+- artifacts/handoffs/ (committed, general timestamped snapshots)
+
+Do not bloat the file. The overview should remain concise. Target: under 80 lines.
+
+================================================================================
+UPDATE AGENT.MD
+================================================================================
+
+In AGENT.md, under the `## First Reads` section, after step 4 (`run work.py resume`),
+add one step:
+
+  5. Check `memory/INDEX.md` for orientation; if a relevant `memory/summaries/PROMPT_XX_resume.md`
+     exists for the work being resumed, read it.
+
+Then renumber the subsequent steps accordingly (current steps 5-8 become 6-9).
+
+In the `## Operating Rules` section, add one rule after the `context/MEMORY.md` line:
+
+  - Read `memory/INDEX.md` after `work.py resume` when resuming interrupted work or
+    starting a new prompt. Consult `memory/summaries/` for the relevant prompt's context.
+
+Keep the changes minimal. Do not add explanatory prose beyond what the operating rules
+require.
+
+================================================================================
+UPDATE CLAUDE.MD
+================================================================================
+
+In CLAUDE.md, under `## First Reads`, insert:
+
+  After step 4 (`run python3 scripts/work.py resume`), add:
+  5. `memory/INDEX.md` (if resuming work or starting a new prompt)
+
+Renumber steps 5-7 to 6-8.
+
+In `## Guardrails`, add one bullet:
+  - After `work.py resume`, check `memory/INDEX.md` and load any `memory/summaries/`
+    artifact relevant to the current work before starting task-specific context loading.
+
+================================================================================
+GITIGNORE CHECK
+================================================================================
+
+Review .gitignore. The existing entries correctly gitignore:
+  PLAN.md, context/TASK.md, context/SESSION.md, context/MEMORY.md
+
+The new memory/ directory is committed. No new gitignore entries are needed for it
+unless you determine that a specific class of file under memory/ should be local-only.
+
+If you judge that raw personal session notes should be excludable (e.g., a convention
+like memory/sessions/local-*.md), add that with a comment. Otherwise leave .gitignore
+as-is. In either case, note your decision in the commit message.
+
+================================================================================
+VERIFICATION
+================================================================================
+
+Run these after all changes:
+
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Expect both to pass. If either produces warnings about the new memory/ files, fix
+them or document clearly why the warning is expected/acceptable.
+
+Manually verify:
+  - memory/INDEX.md reads naturally and would orient a fresh assistant
+  - Each README.md is concise and actionable
+  - memory/summaries/PROMPT_90_completion.md uses real data, not placeholders
+  - context/doctrine/memory-compaction-discipline.md is tight and principled
+  - AGENT.md and CLAUDE.md changes are minimal, unnested, correct
+  - docs/memory-layer-overview.md integrates the 3-tier model cleanly
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+Use grouped commits prefixed with [PROMPT_91]. Use `git add -p` for each commit.
+Write Tim Pope style multi-line commit messages (subject line + blank line + body).
+
+Suggested groupings:
+
+  1. [PROMPT_91] add 3-tier memory structure with INDEX.md and tier READMEs
+     Stage: memory/INDEX.md, memory/concepts/README.md, memory/sessions/README.md,
+            memory/summaries/README.md
+
+  2. [PROMPT_91] add PROMPT_90_completion.md as canonical summary example
+     Stage: memory/summaries/PROMPT_90_completion.md
+
+  3. [PROMPT_91] add memory-compaction-discipline doctrine
+     Stage: context/doctrine/memory-compaction-discipline.md
+
+  4. [PROMPT_91] extend memory-operating-rules.md with 3-tier base guidance
+     Stage: context/memory/memory-operating-rules.md
+
+  5. [PROMPT_91] update memory-layer-overview.md for 3-tier model
+     Stage: docs/memory-layer-overview.md
+
+  6. [PROMPT_91] update AGENT.md and CLAUDE.md with memory/INDEX.md reference
+     Stage: AGENT.md, CLAUDE.md
+
+If some groups are too small to justify a separate commit, combine them sensibly.
+Never batch changes from logically different concerns into one commit.
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Create the memory/ directory structure
+  - Write the 3-tier doctrine and operating rules update
+  - Update AGENT.md and CLAUDE.md minimally
+  - Create the PROMPT_90_completion.md example from real data
+
+DO NOT:
+  - Extend scripts/work.py with new commands (that is PROMPT_92)
+  - Create work/ directories or data model files (that is PROMPT_92)
+  - Rewrite existing doctrine beyond the targeted additions
+  - Change manifests, stacks, archetypes, or validation gates
+  - Update PROMPT_META_RUNNER.txt (that is PROMPT_93)
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+
+  - memory/ exists with INDEX.md and three subdirectories each with README.md
+  - memory/summaries/PROMPT_90_completion.md exists with real data
+  - context/doctrine/memory-compaction-discipline.md exists and is principled
+  - context/memory/memory-operating-rules.md has the new 3-tier section
+  - docs/memory-layer-overview.md reflects the 3-tier model
+  - AGENT.md and CLAUDE.md reference memory/INDEX.md
+  - validate_context.py passes
+  - run_verification.py --tier fast passes
+
+STOP HERE. Do not implement PROMPT_92 in this session.
