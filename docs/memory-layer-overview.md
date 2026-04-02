@@ -1,6 +1,7 @@
 # Memory Layer Overview
 
-The memory layer exists to preserve live task state without turning continuity artifacts into another source of architectural truth.
+The memory layer exists to preserve live task state without turning continuity artifacts
+into another source of architectural truth.
 
 ## What It Solves
 
@@ -13,38 +14,39 @@ Without a continuity layer, assistants tend to:
 
 ## Artifact Roles
 
-- `MEMORY.md`: mutable current-task state
-- handoff snapshot: durable point-in-time transfer artifact
-- `context/memory/`: stable rules and templates for using both safely
+| Artifact | Scope | Mutability | Purpose |
+|----------|-------|------------|---------|
+| `context/MEMORY.md` | local, gitignored | mutable | current-task live state |
+| `memory/summaries/` | committed | immutable once written | prompt-boundary checkpoints |
+| `memory/concepts/` | committed | slow-changing | durable recurring knowledge |
+| `memory/sessions/` | committed | append-only | session logs and exploration traces |
+| `artifacts/handoffs/` | committed | immutable once written | general timestamped transfer snapshots |
 
-## What `MEMORY.md` Should Contain
-
-- current objective
-- active working set
-- important findings and decisions
-- explicit non-goals when scope control matters
-- validation status
-- next concrete step
-
-## What It Must Not Become
-
-- doctrine
-- a manifest replacement
-- a codebase summary dump
-- a full transcript
-- a backlog of unrelated future ideas
-
-## Operating Rule
-
-Update `MEMORY.md` at meaningful pause points. Create a handoff snapshot when the work is likely to continue in a fresh session, prompt run, or by another person or assistant.
+## Decision Flow
 
 ```mermaid
 flowchart TD
-    A[Reach a meaningful pause point] --> B{Another session or<br/>assistant will continue?}
-    B -- No --> C[Update MEMORY.md]
-    B -- Yes --> D[Create handoff snapshot]
+    A[Reach a meaningful pause point] --> B{Is this a prompt boundary\nor a cross-session transfer?}
+    B -- No --> C[Update MEMORY.md local state]
+    B -- Yes --> D{What type of artifact?}
+    D -- Prompt completed or paused --> E[Write memory/summaries/PROMPT_XX_completion.md]
+    D -- General transfer snapshot --> F[Write artifacts/handoffs/timestamp-slug.md]
+    D -- Durable recurring finding --> G[Write memory/concepts/slug.md]
+    E --> H[Prune MEMORY.md to stay current]
 ```
 
-The decision turns on whether the next session is a continuation by the same assistant or a transfer to a new one.
+## Load Priority For Fresh Sessions
 
-Used well, the memory layer reduces reload cost. It does not increase authority.
+1. `memory/INDEX.md` — orientation, after `work.py resume`
+2. `memory/summaries/PROMPT_XX_*.md` — context for the specific prompt being resumed
+3. `memory/concepts/` — when working in a known domain
+4. `artifacts/handoffs/` — when the task involves a general cross-session transfer
+5. `context/MEMORY.md` — live state if present
+
+## Operating Rule
+
+Update `context/MEMORY.md` at meaningful pause points during active work. Write a summary
+to `memory/summaries/` at each prompt boundary. Promote durable findings to
+`memory/concepts/` when they will recur.
+
+See `context/doctrine/memory-compaction-discipline.md` for the full compaction model.
