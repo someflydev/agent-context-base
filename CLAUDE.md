@@ -10,9 +10,10 @@ Follow [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md) before b
 2. [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md)
 3. [`docs/runtime-state-workflow.md`](docs/runtime-state-workflow.md)
 4. run `python3 scripts/work.py resume`
-5. [`docs/usage/SPEC_DRIVEN_ACB_PAYLOADS.md`](docs/usage/SPEC_DRIVEN_ACB_PAYLOADS.md)
-6. [`docs/usage/ASSISTANT_BEHAVIOR_SPEC.md`](docs/usage/ASSISTANT_BEHAVIOR_SPEC.md)
-7. [`docs/repo-layout.md`](docs/repo-layout.md)
+5. `memory/INDEX.md` (if resuming work or starting a new prompt)
+6. [`docs/usage/SPEC_DRIVEN_ACB_PAYLOADS.md`](docs/usage/SPEC_DRIVEN_ACB_PAYLOADS.md)
+7. [`docs/usage/ASSISTANT_BEHAVIOR_SPEC.md`](docs/usage/ASSISTANT_BEHAVIOR_SPEC.md)
+8. [`docs/repo-layout.md`](docs/repo-layout.md)
 
 ## Minimal Context Policy
 
@@ -32,6 +33,7 @@ Load one dominant path, not a broad survey.
 - Re-read generated `.acb/` boot files at session start.
 - Treat `PLAN.md`, `context/TASK.md`, `context/SESSION.md`, and `context/MEMORY.md` as local runtime state, not doctrine.
 - After `work.py resume`, use its git anchor, recent-change clues, next-step signal, and plan-review signal to decide what to read next. Then read `context/TASK.md`, then `context/SESSION.md`, then `context/MEMORY.md` only if durable repo-local truths matter.
+- After `work.py resume`, check `memory/INDEX.md` and load any `memory/summaries/` artifact relevant to the current work before starting task-specific context loading.
 - Prefer manifests, canonical examples, and validation gates over improvisation.
 - Treat templates as scaffolds, not canonical truth.
 - Use `python3 scripts/work.py checkpoint` after meaningful changes, before ending a session, and before a likely handoff.

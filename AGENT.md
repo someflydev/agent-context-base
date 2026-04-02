@@ -10,16 +10,19 @@ Read [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md) first. Thi
 2. [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md)
 3. [`docs/runtime-state-workflow.md`](docs/runtime-state-workflow.md)
 4. run `python3 scripts/work.py resume`
-5. [`docs/usage/SPEC_DRIVEN_ACB_PAYLOADS.md`](docs/usage/SPEC_DRIVEN_ACB_PAYLOADS.md)
-6. [`docs/usage/ASSISTANT_BEHAVIOR_SPEC.md`](docs/usage/ASSISTANT_BEHAVIOR_SPEC.md)
-7. [`docs/repo-layout.md`](docs/repo-layout.md)
-8. one router, one workflow, one stack, and one example only if the task still needs narrowing
+5. Check `memory/INDEX.md` for orientation; if a relevant `memory/summaries/PROMPT_XX_resume.md`
+   exists for the work being resumed, read it.
+6. [`docs/usage/SPEC_DRIVEN_ACB_PAYLOADS.md`](docs/usage/SPEC_DRIVEN_ACB_PAYLOADS.md)
+7. [`docs/usage/ASSISTANT_BEHAVIOR_SPEC.md`](docs/usage/ASSISTANT_BEHAVIOR_SPEC.md)
+8. [`docs/repo-layout.md`](docs/repo-layout.md)
+9. one router, one workflow, one stack, and one example only if the task still needs narrowing
 
 ## Operating Rules
 
 - Treat `.acb/` as the generated repo-local operating boundary.
 - Treat `PLAN.md`, `context/TASK.md`, `context/SESSION.md`, and `context/MEMORY.md` as local runtime state, not doctrine.
 - After `work.py resume`, use its git anchor, recent-change clues, next-step signal, and plan-review signal to decide what to read next. Then read `context/TASK.md` and `context/SESSION.md`; read `context/MEMORY.md` only when durable repo-local truths matter; read `PLAN.md` only when milestone context matters.
+- Read `memory/INDEX.md` after `work.py resume` when resuming interrupted work or starting a new prompt. Consult `memory/summaries/` for the relevant prompt's context.
 - When working in a generated repo, re-read `.acb/SESSION_BOOT.md`, `.acb/profile/selection.json`, `.acb/specs/AGENT_RULES.md`, and `.acb/specs/VALIDATION.md` at session start.
 - Prefer manifest-defined bundles over improvised loading.
 - Validation is mandatory before claiming completion unless the operator explicitly waives it.
