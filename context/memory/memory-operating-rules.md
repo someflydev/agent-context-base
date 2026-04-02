@@ -148,19 +148,24 @@ here is committed and version-controlled.
    prompt being resumed or continued
 3. `memory/concepts/<slug>.md` — when working in a known problem domain
 
+**Commit status of each tier:**
+
+- `memory/concepts/` — committed; the only tier in memory/ that belongs in version control
+- `memory/sessions/` — gitignored; local-only, generated freely during a session
+- `memory/summaries/` — gitignored; local-only, prompt-boundary checkpoints
+
 **When to prefer `memory/` over `context/MEMORY.md`:**
 
-- Use `memory/summaries/` when you need a prompt-boundary checkpoint that will survive
-  beyond the current session
-- Use `memory/concepts/` when a finding is durable and likely to recur across prompts
-- Use `context/MEMORY.md` for live, current-task state that changes constantly
+- Use `memory/summaries/` for a prompt-boundary checkpoint (local, not committed)
+- Use `memory/concepts/` when a finding is durable, curated, and worth committing
+- Use `context/MEMORY.md` for live current-task state that changes constantly
 
 **When to add to `memory/concepts/` vs update `context/MEMORY.md`:**
 
 - Add to `memory/concepts/` after the second time you look something up and wish it were
-  written down, or after resolving a non-obvious confusion that affected implementation
-- Update `context/MEMORY.md` for active-task continuity that will be pruned when the task
-  is done
+  written down, or after resolving a non-obvious confusion that affected implementation;
+  these will be committed and visible to future sessions
+- Update `context/MEMORY.md` for active-task continuity that will be pruned when done
 
 For the full compaction model, see
 `context/doctrine/memory-compaction-discipline.md`.

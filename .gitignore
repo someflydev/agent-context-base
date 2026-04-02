@@ -53,6 +53,12 @@ context/TASK.md
 context/SESSION.md
 context/MEMORY.md
 
+# memory/ tiers: generated artifacts are local-only; curated knowledge is committed
+# memory/concepts/ is committed (curated, slow-changing, deliberately added)
+# memory/sessions/ and memory/summaries/ are local-only (generated per session)
+memory/sessions/
+memory/summaries/
+
 # Search and local indexes
 data/
 !verification/examples/data/

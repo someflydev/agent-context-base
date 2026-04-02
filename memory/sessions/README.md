@@ -2,6 +2,10 @@
 
 Session logs for meaningful work sessions that produced non-obvious findings.
 
+**This directory is gitignored.** Files here are local-only and will not be committed.
+Write session logs freely; promote durable findings to `memory/concepts/` when they
+are stable enough to commit.
+
 ## What Belongs Here
 
 - Session logs for substantial work sessions (not trivial one-file edits)

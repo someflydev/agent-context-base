@@ -11,9 +11,9 @@ The result is a committed file, not a side-effect.
 
 ```
 context/MEMORY.md          local, gitignored, mutable, current-task-scoped
-memory/concepts/           committed, durable knowledge, grows slowly
-memory/sessions/           committed, session logs, prompt execution notes
-memory/summaries/          committed, prompt-boundary checkpoints, resume handoffs
+memory/concepts/           committed, curated durable knowledge, grows slowly
+memory/sessions/           local, gitignored, session logs, prompt execution notes
+memory/summaries/          local, gitignored, prompt-boundary checkpoints, resume handoffs
 artifacts/handoffs/        committed, general timestamped transfer snapshots (unchanged)
 ```
 
@@ -21,12 +21,15 @@ Each tier serves a different consumer and lifespan:
 
 - `context/MEMORY.md`: the live layer — updated constantly during a session, pruned
   aggressively, never archival
-- `memory/summaries/`: the checkpoint layer — written at prompt boundaries, immutable once
-  committed, primary resume artifact for fresh sessions
-- `memory/concepts/`: the durable-knowledge layer — written when a finding will recur,
-  rarely changed, fact-first
-- `memory/sessions/`: the trace layer — written when exploration produced non-obvious
-  results not suited for concepts
+- `memory/summaries/`: the checkpoint layer — written at prompt boundaries, local-only,
+  primary resume artifact for fresh sessions picking up the same machine
+- `memory/concepts/`: the durable-knowledge layer — the only committed tier in memory/;
+  written when a finding will recur, rarely changed, fact-first
+- `memory/sessions/`: the trace layer — local-only, written when exploration produced
+  non-obvious results not suited for concepts; promote to concepts/ when durable
+
+The commit split is intentional: generated artifacts accumulate quickly and are not
+reviewed before commit. Only curated, deliberate knowledge belongs in version control.
 
 ## Compaction Triggers
 

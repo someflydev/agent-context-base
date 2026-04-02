@@ -2,13 +2,19 @@
 
 ## Purpose
 
-`memory/` is the committed, structured knowledge base for `agent-context-base`. It holds
-durable findings, session notes, and prompt-boundary summaries that should survive across
-sessions and be visible to any assistant picking up this work. It is NOT a replacement for
-`context/MEMORY.md` (which is local, mutable, and task-scoped), NOT a replacement for
-doctrine files in `context/doctrine/` (which define policy and rules), and NOT an archive
-of `artifacts/handoffs/` snapshots (which are general-purpose transfer artifacts). Everything
-here is committed, version-controlled, and structured by purpose.
+`memory/` is the structured knowledge base for `agent-context-base`. It is NOT a
+replacement for `context/MEMORY.md` (local, mutable, task-scoped), NOT a replacement for
+doctrine in `context/doctrine/` (policy and rules), and NOT `artifacts/handoffs/`
+(general-purpose timestamped snapshots).
+
+The tiers have different commit profiles:
+
+- `memory/concepts/` — **committed**. Curated, durable, slow-changing facts deliberately
+  added after multiple sessions.
+- `memory/sessions/` — **gitignored**. Local session logs generated during a session.
+  Raw, ephemeral, not reviewed before commit.
+- `memory/summaries/` — **gitignored**. Local prompt-boundary checkpoints. Generated
+  per session; accumulate quickly; not commit-worthy by default.
 
 ## When To Read This
 
@@ -20,11 +26,11 @@ Read `memory/INDEX.md` after `work.py resume` output and after reading `context/
 
 ## Tier Map
 
-| Directory      | Purpose                                                                 |
-|----------------|-------------------------------------------------------------------------|
-| `concepts/`    | Durable knowledge: stable conventions, recurring patterns, known pitfalls |
-| `sessions/`    | Session notes: exploration logs, prompt execution notes, decision records |
-| `summaries/`   | Compacted artifacts: prompt-boundary checkpoints, resume handoffs        |
+| Directory      | Committed? | Purpose                                                          |
+|----------------|------------|------------------------------------------------------------------|
+| `concepts/`    | yes        | Durable knowledge: stable conventions, recurring patterns, pitfalls |
+| `sessions/`    | no         | Session logs: exploration traces, prompt execution notes          |
+| `summaries/`   | no         | Prompt-boundary checkpoints and resume handoffs                   |
 
 ## Load Priority
 
@@ -38,16 +44,14 @@ Read `memory/INDEX.md` after `work.py resume` output and after reading `context/
 ## Current Contents
 
 - `memory/concepts/README.md` — guide to the concepts tier (no concept files yet)
-- `memory/sessions/README.md` — guide to the sessions tier (no session files yet)
-- `memory/summaries/README.md` — guide to the summaries tier
-- `memory/summaries/PROMPT_90_completion.md` — canonical example of a completion summary
+- `memory/sessions/README.md` — guide to the sessions tier (gitignored; no files yet)
+- `memory/summaries/README.md` — guide to the summaries tier (gitignored)
+- `memory/summaries/PROMPT_90_completion.md` — committed format example (tracked before gitignore was added)
 
 ## Contributing
 
-Add to `memory/` rather than `context/MEMORY.md` when: the finding is durable across
-sessions, the content should be version-controlled and visible to any future assistant, or
-you are at a prompt boundary and want to preserve a compaction artifact. Keep
-`context/MEMORY.md` for live, current-task state. Keep `artifacts/handoffs/` for
-general-purpose timestamped transfer snapshots. Use `memory/summaries/` for
-prompt-boundary checkpoints and `memory/concepts/` for stable knowledge that will be
-relevant to future prompts.
+Add to `memory/concepts/` when a finding is durable, curated, and worth committing for
+future assistants. Write to `memory/summaries/` and `memory/sessions/` freely during a
+session — they are local-only and will not be committed automatically. Keep
+`context/MEMORY.md` for live current-task state. Use `artifacts/handoffs/` for
+general-purpose timestamped transfer snapshots you want committed.

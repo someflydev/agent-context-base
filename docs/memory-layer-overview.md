@@ -14,13 +14,13 @@ Without a continuity layer, assistants tend to:
 
 ## Artifact Roles
 
-| Artifact | Scope | Mutability | Purpose |
-|----------|-------|------------|---------|
-| `context/MEMORY.md` | local, gitignored | mutable | current-task live state |
-| `memory/summaries/` | committed | immutable once written | prompt-boundary checkpoints |
-| `memory/concepts/` | committed | slow-changing | durable recurring knowledge |
-| `memory/sessions/` | committed | append-only | session logs and exploration traces |
-| `artifacts/handoffs/` | committed | immutable once written | general timestamped transfer snapshots |
+| Artifact | Committed? | Purpose |
+|----------|------------|---------|
+| `context/MEMORY.md` | no | current-task live state |
+| `memory/summaries/` | no | prompt-boundary checkpoints, resume handoffs |
+| `memory/sessions/` | no | session logs and exploration traces |
+| `memory/concepts/` | yes | curated durable recurring knowledge |
+| `artifacts/handoffs/` | yes | general timestamped transfer snapshots |
 
 ## Decision Flow
 

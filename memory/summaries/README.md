@@ -3,6 +3,10 @@
 Prompt-boundary compaction artifacts. The primary source for fresh sessions resuming a
 specific prompt.
 
+**This directory is gitignored.** Files here are local-only and will not be committed
+automatically. `PROMPT_90_completion.md` is a committed format example (tracked before the
+gitignore was added); new summary files remain local.
+
 ## What Belongs Here
 
 - Prompt-boundary compaction artifacts written when pausing or completing a prompt
