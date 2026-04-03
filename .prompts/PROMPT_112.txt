@@ -1,0 +1,410 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one fresh
+coding-assistant session with commit prefixes like `[PROMPT_112]`.
+
+PROMPT_100–107: Terminal Tooling Arc Phase 1 — doctrine, archetypes, stacks, routing,
+               validation contract, 14 canonical examples (7 languages), cross-language
+               index and decision guide, Phase 1 hardening.
+PROMPT_108–110: Terminal Tooling Arc Phase 2 — cross-language test harness, transcript
+               normalization, PTY harness, extended fixture corpus, event-stream replay,
+               terminal ↔ web parity, comparison harness.
+PROMPT_111:    Terminal Tooling Arc — full arc hardening and completion.
+               [TERMINAL TOOLING ARC: Prompt 13 of 13 — Skills Layer Closure]
+
+This prompt (PROMPT_112) adds the terminal skills layer — the one element from the
+original arc specification that PROMPT_100 left out of scope. The `context/skills/`
+directory has seven skills that guide assistant decision-making, but none are
+terminal-aware. This prompt adds two new terminal skills and makes targeted additions
+to two existing skills to close this gap.
+
+Skills added here:
+  context/skills/terminal-example-selection.md       (new)
+  context/skills/terminal-validation-path-selection.md  (new)
+
+Skills updated here (minimal targeted additions only):
+  context/skills/canonical-example-selection.md      (add terminal cross-reference)
+  context/skills/verification-path-selection.md      (add terminal validation branch)
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                          (run; study output)
+  4. memory/INDEX.md
+  5. memory/summaries/PROMPT_100_through_111_arc_summary.md  (read if it exists)
+
+Read ALL existing skill files before writing a single line:
+  6. context/skills/canonical-example-selection.md   (READ CAREFULLY — you will update)
+  7. context/skills/verification-path-selection.md   (READ CAREFULLY — you will update)
+  8. context/skills/manifest-selection.md            (READ — model the format exactly)
+  9. context/skills/task-inference.md                (READ — note tone and length norms)
+ 10. context/skills/repo-signal-detection.md         (READ — note "Good Triggers" format)
+
+Read the terminal foundation:
+ 11. context/doctrine/terminal-ux-first-class.md     (READ — 11 rules; encode rules 4,5,6)
+ 12. docs/terminal-validation-contract.md            (READ — validation surfaces to encode)
+ 13. examples/canonical-terminal/CATALOG.md          (READ — flagship/secondary splits)
+ 14. examples/canonical-terminal/DECISION_GUIDE.md   (READ — decision logic to encode in skills)
+ 15. context/archetypes/terminal-tui.md              (SKIM — archetype paths to reference)
+ 16. context/archetypes/terminal-dual-mode.md        (SKIM)
+
+Run verification before touching any file:
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Do NOT begin writing until you have read all of the above.
+
+================================================================================
+BACKGROUND: WHY SKILLS WERE DEFERRED
+================================================================================
+
+PROMPT_100 intentionally scoped the foundation to: doctrine, archetypes, stacks,
+routing, manifests, and workflows. Skills were explicitly left out to keep that
+prompt focused on the structural layer.
+
+Skills are a different kind of artifact — they encode "how to decide" rather than
+"what to build." They are short procedural guides (30–90 lines each) that the
+assistant applies during task inference, routing, and verification selection.
+
+Without terminal-aware skills, two decision gaps remain:
+
+  Gap 1 — Example selection:
+    canonical-example-selection.md does not distinguish CLI, TUI, and dual-mode
+    surfaces. An assistant handling a Go TUI request might select a Python CLI
+    example, or load examples/canonical-cli/ instead of examples/canonical-terminal/.
+
+  Gap 2 — Validation path selection:
+    verification-path-selection.md has no entry for PTY-based or marker-based
+    terminal assertions. Its decision tree covers storage writes, UI state (HTMX),
+    pure logic, and smoke tests — nothing terminal-specific. An assistant could
+    apply a plain smoke-test verdict to a TUI change that requires PTY validation.
+
+Both gaps are closed by this prompt.
+
+================================================================================
+PART 1: CREATE context/skills/terminal-example-selection.md
+================================================================================
+
+Create: context/skills/terminal-example-selection.md
+
+This skill guides selection of the right terminal canonical example when adding,
+extending, or referencing one. Read the existing skill files first to calibrate
+tone (direct, lowercase headings, short bullets, no filler prose).
+
+Required sections and content direction (write actual content, not placeholders):
+
+  # Terminal Example Selection
+
+  (one-sentence description: what this skill is for)
+
+  ## Procedure
+
+  Numbered steps covering:
+    1. Identify the terminal tier from task signals:
+         - Tier 1 CLI: subcommands, flags, --output json, scriptable, headless
+         - Tier 2 TUI: full-screen keyboard-driven UI, rich rendering, interactive
+         - Tier 3 dual-mode: shared core, both CLI and TUI surfaces via --interactive
+    2. Identify language and flagship/secondary split:
+         Flagship (prefer for new tasks):
+           python-typer-textual, rust-clap-ratatui, go-cobra-bubbletea,
+           typescript-commander-ink, java-picocli-lanterna, ruby-thor-tty,
+           elixir-optimus-ratatouille
+         Secondary (use only when the stack explicitly matches the secondary library):
+           python-click-blessed, rust-argh-tui-realm, go-urfave-tview,
+           typescript-yargs-blessed, java-jcommander-jline, ruby-clamp-tty,
+           elixir-optionparser-owl
+    3. Load DECISION_GUIDE.md for language-vs-tier guidance
+    4. Confirm the example exists in CATALOG.md before recommending it
+    5. If no exact-language match exists for the requested tier:
+         state the gap explicitly; do not silently substitute a different language
+    6. Prefer implemented examples over stubs; if using a stub, flag its status
+
+  ## Priority
+
+  Ranking: exact language + exact tier (flagship first), then exact language +
+  adjacent tier (note the difference), then same language family with gap noted.
+
+  ## Good Triggers
+
+  Phrases that indicate this skill applies — e.g., "add a terminal example for Go",
+  "which Rust TUI example should I follow", "what is the canonical reference for
+  Elixir CLIs", "how do I validate a dual-mode operator console".
+
+  ## Avoid
+
+  Specific anti-patterns: selecting canonical-cli/ for a terminal tooling task,
+  mixing tier levels silently, using a web/API example for a terminal task,
+  presenting stubs as canonical references.
+
+  ## Reference Files
+
+  - examples/canonical-terminal/CATALOG.md
+  - examples/canonical-terminal/DECISION_GUIDE.md
+  - context/archetypes/terminal-tui.md
+  - context/archetypes/terminal-dual-mode.md
+  - context/archetypes/cli-tool.md
+
+Target length: 60–80 lines. Match the voice of canonical-example-selection.md.
+Do not add sections beyond the structure above.
+
+================================================================================
+PART 2: CREATE context/skills/terminal-validation-path-selection.md
+================================================================================
+
+Create: context/skills/terminal-validation-path-selection.md
+
+This skill guides selection of the right validation approach for a terminal tooling
+change. Read verification-path-selection.md first to match its format precisely.
+
+Required sections and content direction:
+
+  # Terminal Validation Path Selection
+
+  (one-sentence description)
+
+  ## Procedure
+
+  Numbered steps:
+    1. Identify the change surface:
+         - CLI output, flags, subcommands  → non-interactive smoke test + marker assertion
+         - TUI rendering, keyboard flow    → PTY harness
+         - JSON output structure           → smoke test + --output json assertion
+         - cross-language consistency      → comparison harness
+         - fixture corpus schema or count  → fixture validation tests
+    2. Apply the decision tree (one entry per surface type):
+         - CLI smoke test: run in non-interactive mode, fixture-backed, assert at least
+           one ## BEGIN_JOBS ## / ## END_JOBS ## marker or --output json field; must
+           pass without a TTY
+         - marker assertion: assert markers are present and entry count matches expectation
+         - JSON output assertion: parse with json.loads(); assert top-level fields and count;
+           do not diff raw text
+         - PTY harness: use verification/terminal/pty_harness.py; script keystrokes;
+           assert on normalized (ANSI-stripped) transcript; run after smoke test, not instead
+         - comparison harness: run scripts/run_terminal_comparison.py; assert count
+           and field matches across all implemented (non-stub) examples
+    3. Escalation rule: a TUI change requires BOTH a non-interactive smoke test AND
+       PTY validation; one is not a substitute for the other
+    4. A fixture corpus change also requires fixture validation tests
+    5. Verification is not complete until the test was actually run
+
+  ## Good Triggers
+
+  Phrases indicating this skill applies — e.g., "what test for this terminal change",
+  "do I need a PTY test or a smoke test", "how do I validate TUI rendering",
+  "is a smoke test enough for a new --output json flag".
+
+  ## Avoid
+
+  Anti-patterns: skipping smoke test for TUI changes, asserting raw ANSI output,
+  treating JSON generation as equivalent to asserting JSON schema, running comparison
+  harness on stubs and reporting results as failures, using PTY for CLI-only changes.
+
+  ## Reference Files
+
+  - docs/terminal-validation-contract.md
+  - verification/terminal/pty_harness.py
+  - verification/terminal/harness.py
+  - scripts/run_terminal_comparison.py
+  - context/doctrine/terminal-ux-first-class.md  (Rules 4, 5, 6)
+
+Target length: 65–90 lines. Match the voice of verification-path-selection.md.
+
+================================================================================
+PART 3: UPDATE context/skills/canonical-example-selection.md
+================================================================================
+
+Read the current file in full. Make the MINIMUM additions required to make it
+terminal-aware. Do not restructure, rewrite, or reformat anything existing.
+
+Exactly two additions:
+
+  A. In the "Avoid" section, add ONE new bullet:
+       - treating examples/canonical-cli/ as equivalent to examples/canonical-terminal/
+         when the task explicitly targets CLI tooling, TUI, or dual-mode patterns —
+         use context/skills/terminal-example-selection.md for terminal tasks
+
+  B. At the end of the file, add a "See Also" section (if one does not exist) or
+     append to it (if one does):
+       ## See Also
+       - terminal-example-selection.md — for CLI, TUI, and dual-mode terminal examples
+
+If either of these points is already present in substance, skip that addition.
+
+================================================================================
+PART 4: UPDATE context/skills/verification-path-selection.md
+================================================================================
+
+Read the current file in full. Make the MINIMUM additions required to give the
+decision tree a terminal-aware branch. Do not restructure anything existing.
+
+Exactly two additions:
+
+  A. In the decision tree in the "Procedure" section (item 2), add ONE new branch
+     AFTER the existing branches:
+       - **terminal output (CLI, TUI, or dual-mode)** → terminal validation path
+         → load context/skills/terminal-validation-path-selection.md
+
+  B. In "Good Triggers", add TWO new entries:
+       - "which test level for a terminal tool"
+       - "do I need a PTY test or a smoke test"
+
+  C. At the end of the file, add or append a "See Also" section:
+       ## See Also
+       - terminal-validation-path-selection.md — full decision tree for terminal changes
+
+If any of these points is already present in substance, skip that addition.
+
+================================================================================
+PART 5: TESTS
+================================================================================
+
+Create (or update if it exists): verification/unit/test_skills.py
+
+Read at least one existing test file in verification/unit/ before writing to
+match the import style, unittest setup, and assertion conventions used in this repo.
+
+Test class: TestTerminalSkillsExist
+  - test_terminal_example_selection_exists
+    Assert context/skills/terminal-example-selection.md exists and has content.
+  - test_terminal_validation_path_selection_exists
+    Assert context/skills/terminal-validation-path-selection.md exists and has content.
+  - test_existing_skills_reference_terminal
+    Assert context/skills/canonical-example-selection.md contains "terminal".
+    Assert context/skills/verification-path-selection.md contains "terminal".
+
+Test class: TestTerminalSkillContent
+  - test_terminal_example_selection_has_required_sections
+    Assert the file contains all of: "## Procedure", "## Priority",
+    "## Good Triggers", "## Avoid", "## Reference Files".
+  - test_terminal_validation_path_selection_has_required_sections
+    Assert the file contains all of: "## Procedure", "## Good Triggers",
+    "## Avoid", "## Reference Files".
+  - test_terminal_example_selection_names_all_flagships
+    Read the file; assert it contains all 7 flagship example names:
+    python-typer-textual, rust-clap-ratatui, go-cobra-bubbletea,
+    typescript-commander-ink, java-picocli-lanterna, ruby-thor-tty,
+    elixir-optimus-ratatouille.
+  - test_terminal_validation_path_references_pty_harness
+    Assert context/skills/terminal-validation-path-selection.md contains "pty_harness".
+  - test_terminal_validation_path_references_comparison_runner
+    Assert context/skills/terminal-validation-path-selection.md contains
+    "run_terminal_comparison".
+
+Use unittest only (not pytest). All tests must pass before committing.
+
+================================================================================
+PART 6: UPDATE docs/ARCHITECTURE_MAP.md
+================================================================================
+
+Read docs/ARCHITECTURE_MAP.md.
+
+Locate the terminal tooling section (added by PROMPT_106/PROMPT_111).
+If a table of terminal artifacts exists, add a row for the skills layer:
+
+  | Skills | context/skills/terminal-example-selection.md, terminal-validation-path-selection.md | Route assistant decisions for terminal task/validation surfaces |
+
+If no table exists, add a one-line note under the terminal section:
+  Skills: context/skills/terminal-example-selection.md, terminal-validation-path-selection.md
+
+Keep the addition to 1–3 lines. Do not restructure ARCHITECTURE_MAP.md.
+
+================================================================================
+PART 7: UPDATE memory/INDEX.md
+================================================================================
+
+Read memory/INDEX.md. Locate the terminal tooling section (if any).
+Add two lines referencing the new skill files:
+
+  - [Terminal Example Selection](../context/skills/terminal-example-selection.md) — select CLI/TUI/dual-mode examples
+  - [Terminal Validation Path Selection](../context/skills/terminal-validation-path-selection.md) — choose terminal test approach
+
+If a terminal section does not exist, add the lines under a new "Terminal Tooling"
+heading. Keep the addition minimal.
+
+================================================================================
+VERIFICATION
+================================================================================
+
+Final gate (all must pass):
+
+  python -m unittest discover -s verification/unit -p "test_*.py" -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Manual checks:
+  - context/skills/ contains terminal-example-selection.md and terminal-validation-path-selection.md
+  - Each new skill file has all required sections and is under 100 lines
+  - canonical-example-selection.md references terminal tooling
+  - verification-path-selection.md has a terminal branch in its decision tree
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+Use grouped commits prefixed with [PROMPT_112]. Use `git add -p`.
+
+  1. [PROMPT_112] add terminal-example-selection skill
+     Stage: context/skills/terminal-example-selection.md
+
+  2. [PROMPT_112] add terminal-validation-path-selection skill
+     Stage: context/skills/terminal-validation-path-selection.md
+
+  3. [PROMPT_112] update canonical-example-selection and verification-path-selection for terminal awareness
+     Stage: context/skills/canonical-example-selection.md,
+            context/skills/verification-path-selection.md
+
+  4. [PROMPT_112] add terminal skills tests
+     Stage: verification/unit/test_skills.py
+
+  5. [PROMPT_112] update ARCHITECTURE_MAP and memory INDEX for skills layer
+     Stage: docs/ARCHITECTURE_MAP.md, memory/INDEX.md
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Create context/skills/terminal-example-selection.md (full content)
+  - Create context/skills/terminal-validation-path-selection.md (full content)
+  - Make minimal targeted additions to canonical-example-selection.md and
+    verification-path-selection.md (no restructuring, no rewriting)
+  - Write TestTerminalSkillsExist and TestTerminalSkillContent tests
+  - Add 1–3 lines to ARCHITECTURE_MAP.md and memory/INDEX.md
+
+DO NOT:
+  - Restructure or rewrite any existing skill file
+  - Change doctrine, archetypes, stacks, router files, or manifests
+  - Modify verification/terminal/ or any canonical example code
+  - Add skills for topics other than terminal tooling
+  - Create speculative future skills not defined in this prompt
+  - Create new PROMPT files
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+
+  - context/skills/terminal-example-selection.md exists, has 5 required sections,
+    names all 7 flagship examples, is under 100 lines
+  - context/skills/terminal-validation-path-selection.md exists, has required
+    sections, references pty_harness and run_terminal_comparison, is under 100 lines
+  - context/skills/canonical-example-selection.md contains "terminal" and "See Also"
+  - context/skills/verification-path-selection.md has a terminal branch in its
+    decision tree
+  - All TestTerminalSkillsExist and TestTerminalSkillContent tests pass
+  - python scripts/validate_context.py passes
+  - python scripts/run_verification.py --tier fast passes
+  - docs/ARCHITECTURE_MAP.md references the skills layer
+  - memory/INDEX.md has entries for both new skill files
+
+The terminal tooling arc now has a complete skills layer. The "skills foundation"
+element from the original arc specification is fully satisfied. Future assistants
+can select the right terminal example and the right validation approach without
+guessing or improvising.
