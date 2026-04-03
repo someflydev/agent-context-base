@@ -1,0 +1,815 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one
+fresh coding-assistant session with commit prefixes like `[PROMPT_118]`.
+
+PROMPT_113: Schema Validation Arc — Foundation (doctrine, archetype, 7 stacks,
+            routing, manifest, 2 skills, workflow).
+PROMPT_114: Schema Validation Arc — Shared corpus (WorkspaceSyncContext domain,
+            23 fixtures, CATALOG.md, PARITY.md, fixture validation tests).
+PROMPT_115: Schema Validation Arc — Python (Pydantic, marshmallow) + TypeScript
+            (Zod, Valibot, io-ts, TypeBox+Ajv). 6 examples implemented.
+PROMPT_116: Schema Validation Arc — Go (go-playground/validator, ozzo-validation,
+            OpenAPI gen) + Rust (validator, garde, serde+schemars). 6 examples.
+PROMPT_117: Schema Validation Arc — Kotlin (Konform, Hibernate Validator), Ruby
+            (dry-validation, dry-schema), Elixir (Ecto.Changeset, Norm,
+            ex_json_schema). 7 examples. All 18 examples implemented [x].
+
+This prompt (PROMPT_118) completes the arc:
+
+  - Arc overview documentation
+  - Cross-language navigation docs and atlas entry
+  - Drift detection guide (how to catch schema drift in CI)
+  - Parity matrix runner (automated cross-language fixture parity check)
+  - Router polish (routing questions the arc must be able to answer)
+  - memory/concepts/ entry for durable arc knowledge
+  - Final arc summary and completion documentation
+
+              [SCHEMA VALIDATION ARC: Prompt 6 of 6 — Hardening and Completion]
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                    (run; study output)
+  4. memory/INDEX.md
+
+Read the full arc state before writing anything:
+  5. context/doctrine/schema-validation-contracts.md   (READ — 8 rules; audit them)
+  6. context/skills/schema-validation-lane-selection.md (READ — audit completeness)
+  7. context/skills/contract-generation-path-selection.md (READ — audit completeness)
+  8. examples/canonical-schema-validation/CATALOG.md   (READ — all 18 should be [x])
+  9. examples/canonical-schema-validation/PARITY.md    (READ — you will extend this)
+ 10. examples/canonical-schema-validation/domain/models.md (READ — the domain spec)
+ 11. docs/ARCHITECTURE_MAP.md                          (READ — you will update this)
+ 12. memory/INDEX.md                                   (READ — you will update this)
+ 13. context/router/task-router.md                     (READ — verify routing completeness)
+
+Read recent arc docs for format reference:
+ 14. docs/terminal-validation-contract.md              (READ — if it exists; format model)
+ 15. memory/summaries/PROMPT_100_through_111_arc_summary.md (READ — if it exists; format model)
+
+Run full verification audit before touching anything:
+  python -m unittest discover -s verification/schema-validation -p "test_*.py" -v
+  python -m unittest discover -s verification/unit -p "test_*.py" -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Do NOT begin writing until you have read all of the above and resolved any
+failing tests from earlier prompts. This prompt does not fix PROMPT_115–117
+implementation gaps — those must be resolved before PROMPT_118 begins.
+
+================================================================================
+BACKGROUND: WHY HARDENING IS A SEPARATE PROMPT
+================================================================================
+
+After six substantial implementation prompts, the arc has:
+  - 8 doctrine rules
+  - 1 archetype (polyglot-validation-lab)
+  - 7 stacks (one per language)
+  - 18 canonical examples across 7 languages and 3 lanes
+  - 23 shared fixtures (valid/invalid/edge)
+  - Cross-language parity rules (PARITY.md)
+  - Routing entries in archetype-router, stack-router, task-router
+  - 2 skills and 1 workflow
+
+What is still missing:
+  A. A human-readable arc overview that future assistants can load in a single read
+  B. A docs/atlas entry so the arc appears in top-level navigation
+  C. A drift detection guide that codifies how to detect schema drift in CI
+  D. A parity matrix runner — an automated script that checks the same fixture
+     against all Lane A implementations and reports divergences
+  E. Router polish — verifying that the most common routing questions are answerable
+     from the existing routing artifacts
+  F. memory/concepts/ entry — a durable piece of knowledge that does not belong
+     in sessions or summaries
+  G. Arc completion documentation — the handoff artifact for future sessions
+
+================================================================================
+PART 1: CREATE docs/schema-validation-arc-overview.md
+================================================================================
+
+Create: docs/schema-validation-arc-overview.md
+
+This is the single-read document that a future assistant can load to understand
+the entire arc without reading all 18 example directories. It must be good enough
+to answer "what is this arc?" in one reading.
+
+Required sections:
+
+  # Schema Validation and Contract Generation Arc
+
+  ## Purpose
+  (4–5 sentences) What problem this arc solves. Why cross-language validation
+  comparison requires a shared domain and shared fixtures. Why the three-lane
+  model (A/B/C) matters. What question a developer should be able to answer
+  after working through these examples.
+
+  ## The Three Lanes
+
+  ### Lane A — Runtime Validation
+  (3–4 sentences) What Lane A means. Validating values against constraints at
+  execution time. Does not produce a machine-readable schema. Error output is
+  language-defined.
+
+  Libraries by language:
+  | Language   | Primary                         | Secondary                   |
+  |------------|---------------------------------|-----------------------------|
+  | Python     | Pydantic                        | marshmallow                 |
+  | TypeScript | Zod                             | Valibot, io-ts              |
+  | Go         | go-playground/validator         | ozzo-validation             |
+  | Rust       | validator                       | garde                       |
+  | Kotlin     | Konform                         | Hibernate Validator         |
+  | Ruby       | dry-validation                  | dry-schema                  |
+  | Elixir     | Ecto.Changeset                  | Norm                        |
+
+  ### Lane B — Contract Generation
+  (3–4 sentences) Producing machine-readable schema artifacts for interoperability.
+  The contract may or may not be generated by the same code that runs validation.
+  In Rust, it is an entirely separate library (schemars vs validator).
+
+  Libraries by language:
+  | Language   | Approach                                            |
+  |------------|-----------------------------------------------------|
+  | Python     | Pydantic model_json_schema()                        |
+  | TypeScript | TypeBox + Ajv (schema IS JSON Schema natively)      |
+  | Go         | swaggo annotations / external tooling (ergonomic gap)|
+  | Rust       | serde + schemars (NOT a validator — contract lane)  |
+  | Kotlin     | SpringDoc / kotlinx.serialization + tooling         |
+  | Ruby       | dry-schema JSON Schema output                       |
+  | Elixir     | ex_json_schema                                      |
+
+  ### Lane C — Hybrid Type-Driven Flows
+  (3–4 sentences) Libraries where the type definition IS the validator IS the
+  schema source. One construct, three behaviors. Strongest in TypeScript and Python.
+
+  | Language   | Library          | Notes                                       |
+  |------------|------------------|---------------------------------------------|
+  | Python     | Pydantic         | BaseModel: type = validator = schema source |
+  | TypeScript | Zod              | z.schema → z.infer<> + .parse() + toJsonSchema() |
+  | TypeScript | io-ts            | Codec: type + decode/encode (FP approach)   |
+  | Others     | —                | No mainstream hybrid lane                   |
+
+  ## The WorkspaceSyncContext Domain
+
+  (3–4 sentences) What the shared domain is. Why it was chosen.
+  List the five models with one-line descriptions. Note which validation
+  scenarios each model exercises.
+
+  ## Key Distinctions to Preserve
+
+  A bulleted list of the distinctions that are easiest to lose:
+
+    - serde + schemars in Rust is Lane B (contract), not Lane A (validation).
+      serde: shape. schemars: schema export. validator/garde: constraints.
+    - io-ts is not a simpler Zod. It is a codec-based FP approach.
+    - Konform is not "Kotlin's Hibernate Validator." Different design: DSL vs annotations.
+    - marshmallow is not "Python's Pydantic." Explicit schema objects, not type-first.
+    - Go's contract generation is externalized — acknowledge the ergonomic gap.
+    - dry-schema and dry-validation are a layered pair, not interchangeable alternatives.
+
+  ## Navigation
+
+  - examples/canonical-schema-validation/CATALOG.md — all examples by language, library, lane
+  - examples/canonical-schema-validation/PARITY.md — cross-language consistency rules
+  - examples/canonical-schema-validation/domain/models.md — the domain spec
+  - context/doctrine/schema-validation-contracts.md — 8 rules governing the arc
+  - context/skills/schema-validation-lane-selection.md — routing decisions by lane
+  - context/skills/contract-generation-path-selection.md — schema export and drift
+  - context/stacks/schema-validation-{language}.yaml — per-language library choices
+
+  ## Routing Questions This Arc Can Answer
+
+  A bulleted list:
+    - "Show me Rust contract generation examples" → rust/serde-schemars/ (Lane B)
+    - "Show me Python runtime validation" → python/pydantic/ or python/marshmallow/ (Lane A)
+    - "Compare Zod vs Pydantic" → typescript/zod/ vs python/pydantic/ (both Lane C)
+    - "Compare Konform vs Hibernate Validator" → kotlin/konform/ vs kotlin/hibernate-validator/
+    - "Why is serde+schemars not a validator?" → context/doctrine Rule 2, rust/serde-schemars/README.md
+    - "Show interoperability-oriented examples" → Lane B: rust/serde-schemars/, typescript/typebox-ajv/, elixir/ex-json-schema/
+    - "Show teaching-oriented examples" → Lane C: python/pydantic/, typescript/zod/
+    - "Detect drift between schema and runtime" → docs/schema-validation-drift-detection.md (created in PROMPT_118)
+
+Target length: 100–130 lines. Voice: direct, informational, same tone as
+docs/terminal-validation-contract.md or docs/ARCHITECTURE_MAP.md.
+
+================================================================================
+PART 2: CREATE docs/schema-validation-drift-detection.md
+================================================================================
+
+Create: docs/schema-validation-drift-detection.md
+
+This guide explains how to detect drift between a library's runtime validation
+behavior and its exported JSON Schema. This is doctrine Rule 7 made operational.
+
+Required sections:
+
+  # Schema Drift Detection Guide
+
+  ## What Is Drift?
+  (3–4 sentences) When the runtime validation behavior and the exported JSON Schema
+  diverge, consumers of the schema receive incorrect expectations. Drift can happen
+  when a field is added but the schema is not regenerated, or when a serde attribute
+  changes and shifts the wire representation without updating the schema.
+
+  ## When Drift Matters
+  Bullet list:
+    - When a JSON Schema or OpenAPI spec is published for external consumers
+    - When cross-language teams share a contract and one side changes independently
+    - When the schema is committed to version control as a baseline artifact
+    - When the contract is used to generate client code in another language
+
+  ## Detection Strategies
+
+  ### 1. Round-Trip Fixture Check (simplest, always applicable)
+  Procedure:
+    a. Serialize a known-valid domain object to JSON
+    b. Validate the JSON against the exported schema using a JSON Schema validator
+    c. Assert it passes
+    d. Take a known-invalid domain object (from fixtures/invalid/)
+    e. Validate against the exported schema
+    f. Assert it fails
+
+  This catches gross drift (missing fields, wrong types, wrong required fields).
+  It does NOT catch cross-field rule drift (the schema cannot express all rules).
+
+  ### 2. Committed Schema Baseline + Regeneration Diff (for CI)
+  Procedure:
+    a. Commit the exported schema to version control (e.g., workspace_config.schema.json)
+    b. Add a CI step that regenerates the schema (e.g., cargo run --bin schema_export)
+    c. Diff the freshly generated schema against the committed baseline
+    d. Fail CI if they differ
+
+  This catches: serde attribute changes, field additions/removals, type changes.
+  Shown in: rust/serde-schemars/ (the committed workspace_config.schema.json)
+             go/openapi-generation/ (the committed JSON Schema document)
+
+  ### 3. Parity Matrix Runner (cross-language drift)
+  When the same fixture corpus is used across multiple language implementations,
+  the parity matrix runner catches behavioral drift between languages. See
+  verification/schema-validation/run_parity_check.py (created in PROMPT_118).
+
+  ## Per-Language Notes
+
+  PYTHON (Pydantic):
+    model_json_schema() is always in sync with the model — it derives from the
+    same class definition. The only drift risk is if you hand-edit the schema after
+    generation. Use the committed baseline strategy if publishing externally.
+
+  TYPESCRIPT (TypeBox):
+    TypeBox schemas ARE JSON Schema. Drift risk is minimal within a single codebase.
+    Risk increases if you hand-modify the schema or if the Ajv version changes
+    schema interpretation behavior. Pin your Ajv version.
+
+  GO:
+    High drift risk because the contract is typically maintained separately from
+    the struct definitions. Commit the schema baseline and add CI regeneration.
+    Swaggo annotations are comments — the compiler does not verify them.
+
+  RUST (serde + schemars):
+    Moderate drift risk. schemars reads serde attributes — if you change
+    #[serde(rename = "...")] or #[serde(skip_serializing_if = "...")], the
+    generated schema changes. Commit the schema baseline. Run cargo test
+    with a test that regenerates and compares.
+
+  ELIXIR (ex_json_schema):
+    The schema is external (a committed JSON file). Drift occurs when the Ecto
+    changeset changes but the schema is not updated. Round-trip fixture check is
+    the primary strategy.
+
+  ## The Cross-Field Rule Gap
+  (3–4 sentences) JSON Schema (draft 7 and later) can express some cross-field
+  rules using if/then/else. However, many domain rules cannot be expressed in
+  JSON Schema at all (e.g., "if plan == free then max_sync_runs <= 10"). For these
+  rules, the schema exports a relaxed constraint, and runtime validation enforces
+  the stricter rule. This is expected and should be documented in the schema's
+  $comment field.
+
+Target length: 80–110 lines.
+
+================================================================================
+PART 3: CREATE verification/schema-validation/run_parity_check.py
+================================================================================
+
+Create: verification/schema-validation/run_parity_check.py
+
+This is the parity matrix runner. It checks whether the Python implementations
+(the ones that run without a separate toolchain) accept and reject the expected
+fixtures according to PARITY.md's universally-required rules.
+
+Note: Only Python-based checks run here. Go, Rust, Kotlin, Ruby, and Elixir
+implementations are checked via their toolchain-specific test runners. Document
+this scope boundary explicitly in the script.
+
+Implementation:
+
+  #!/usr/bin/env python3
+  """
+  Parity matrix runner for the schema-validation arc.
+
+  Checks universally-required behavior (PARITY.md rules 1-7) against Python
+  implementations (Pydantic, marshmallow). These run without a separate toolchain.
+
+  For Go/Rust/Kotlin/Ruby/Elixir parity checks, see the toolchain-specific test
+  runners in verification/schema-validation/{language}/.
+
+  Exit code 0: all checks pass.
+  Exit code 1: one or more checks failed.
+  """
+
+  import sys
+  import json
+  import pathlib
+  import importlib
+
+  FIXTURES_DIR = pathlib.Path(__file__).parent.parent.parent / \
+      "examples" / "canonical-schema-validation" / "domain" / "fixtures"
+
+  VALID_FIXTURES = list((FIXTURES_DIR / "valid").glob("*.json"))
+  INVALID_FIXTURES = list((FIXTURES_DIR / "invalid").glob("*.json"))
+
+  results = []
+
+  def load_fixture(path):
+      with open(path) as f:
+          return json.load(f)
+
+  def check_pydantic():
+      """Rule 1: all valid fixtures must be accepted. Rule 2: all invalid rejected."""
+      try:
+          from examples.canonical_schema_validation.python.pydantic.models import (
+              WorkspaceConfig, SyncRun, WebhookPayload, IngestionSource, ReviewRequest
+          )
+      except ImportError:
+          results.append(("pydantic", "SKIP", "pydantic not importable"))
+          return
+
+      MODEL_MAP = {
+          "workspace_config": WorkspaceConfig,
+          "sync_run": SyncRun,
+          "webhook_payload": WebhookPayload,
+          "ingestion_source": IngestionSource,
+          "review_request": ReviewRequest,
+      }
+
+      for fixture_path in VALID_FIXTURES:
+          data = load_fixture(fixture_path)
+          model_name = next((k for k in MODEL_MAP if k in fixture_path.stem), None)
+          if model_name is None:
+              continue
+          model_cls = MODEL_MAP[model_name]
+          try:
+              model_cls.model_validate(data)
+              results.append(("pydantic", "PASS", f"valid/{fixture_path.name}"))
+          except Exception as e:
+              results.append(("pydantic", "FAIL",
+                  f"valid/{fixture_path.name} rejected: {e}"))
+
+      for fixture_path in INVALID_FIXTURES:
+          data = load_fixture(fixture_path)
+          model_name = next((k for k in MODEL_MAP if k in fixture_path.stem), None)
+          if model_name is None:
+              continue
+          model_cls = MODEL_MAP[model_name]
+          try:
+              model_cls.model_validate(data)
+              results.append(("pydantic", "FAIL",
+                  f"invalid/{fixture_path.name} was accepted (should be rejected)"))
+          except Exception:
+              results.append(("pydantic", "PASS", f"invalid/{fixture_path.name} rejected"))
+
+  def check_marshmallow():
+      """Same checks for marshmallow schemas."""
+      try:
+          from examples.canonical_schema_validation.python.marshmallow.schemas import (
+              WorkspaceConfigSchema, SyncRunSchema
+          )
+      except ImportError:
+          results.append(("marshmallow", "SKIP", "marshmallow not importable"))
+          return
+
+      # Run workspace_config and sync_run fixtures only
+      for fixture_path in VALID_FIXTURES:
+          if "workspace_config" in fixture_path.stem:
+              data = load_fixture(fixture_path)
+              errors = WorkspaceConfigSchema().validate(data)
+              if errors:
+                  results.append(("marshmallow", "FAIL",
+                      f"valid/{fixture_path.name}: {errors}"))
+              else:
+                  results.append(("marshmallow", "PASS", f"valid/{fixture_path.name}"))
+
+      for fixture_path in INVALID_FIXTURES:
+          if "workspace_config" in fixture_path.stem:
+              data = load_fixture(fixture_path)
+              errors = WorkspaceConfigSchema().validate(data)
+              if errors:
+                  results.append(("marshmallow", "PASS", f"invalid/{fixture_path.name} rejected"))
+              else:
+                  results.append(("marshmallow", "FAIL",
+                      f"invalid/{fixture_path.name} accepted (should be rejected)"))
+
+  if __name__ == "__main__":
+      check_pydantic()
+      check_marshmallow()
+
+      passes = [r for r in results if r[1] == "PASS"]
+      fails  = [r for r in results if r[1] == "FAIL"]
+      skips  = [r for r in results if r[1] == "SKIP"]
+
+      print(f"\nParity Check Results: {len(passes)} PASS, {len(fails)} FAIL, {len(skips)} SKIP\n")
+      for impl, status, msg in results:
+          print(f"  [{status}] {impl}: {msg}")
+
+      if fails:
+          print(f"\n{len(fails)} parity check(s) FAILED.")
+          sys.exit(1)
+      else:
+          print("\nAll parity checks PASSED.")
+          sys.exit(0)
+
+This file is executable (add a shebang line). Do not write the import paths
+until you have confirmed the actual Python module paths from PROMPT_115's
+output. Adjust the import paths to match what was actually created.
+
+Also create a unittest wrapper:
+
+  verification/schema-validation/test_parity_runner.py
+
+  Test class: TestParityRunnerExists
+    - test_parity_runner_script_exists
+      Assert verification/schema-validation/run_parity_check.py exists.
+    - test_parity_runner_is_executable
+      Read the file; assert it contains a shebang or __main__ block.
+    - test_parity_runner_documents_scope_boundary
+      Assert the file contains "toolchain" or "SKIP" (proving it handles
+      the non-Python toolchain gracefully).
+
+================================================================================
+PART 4: ARC DOCTRINE AUDIT
+================================================================================
+
+Read context/doctrine/schema-validation-contracts.md.
+
+Perform a completeness audit. Check each of the 8 rules against the actual
+implemented examples:
+
+  Rule 1 (do not conflate lanes): verified by structural test in PROMPT_113 and
+    by rust/serde-schemars README explicitly saying "NOT A VALIDATOR".
+    Status: assess whether it holds.
+
+  Rule 2 (serde + schemars as contract lane): verified by test_serde_schemars.py
+    checking that models.rs has no #[validate] attribute.
+    Status: assess.
+
+  Rule 3 (Konform vs Hibernate Validator): verified by test_konform.py checking
+    no @field: annotations in Konform models.
+    Status: assess.
+
+  Rule 4 (marshmallow vs Pydantic): verified by the structural difference between
+    python/pydantic/ (BaseModel) and python/marshmallow/ (Schema class).
+    Status: assess.
+
+  Rule 5 (preserve io-ts): verified by test_io_ts.py checking README distinguishes from Zod.
+    Status: assess.
+
+  Rule 6 (shared fixture corpus): all 23 fixtures exist; all examples use them.
+    Status: assess.
+
+  Rule 7 (drift detection): partially addressed by the committed schema files in
+    rust/serde-schemars/ and go/openapi-generation/. Fully addressed by
+    docs/schema-validation-drift-detection.md (created in this prompt).
+    Status: assess.
+
+  Rule 8 (smoke tests cover valid AND invalid): assess whether all test files
+    include both valid and invalid fixture tests.
+
+For each rule:
+  - If fully satisfied: document "SATISFIED: <evidence>" in a brief audit note.
+  - If partially satisfied: add one targeted fix (a test, a README update, or a
+    code comment) to close the gap. Do not rewrite whole files.
+  - If a rule is missing: add it to the doctrine file only if truly absent.
+
+Write the audit results to: memory/summaries/PROMPT_118_doctrine_audit.md
+(This file is gitignored — local only.)
+
+================================================================================
+PART 5: ROUTER POLISH — VERIFY ROUTING COMPLETENESS
+================================================================================
+
+Read context/router/task-router.md. Verify that the following routing questions
+are answerable from the current state of the routing artifacts:
+
+  Q1: "Show me Rust contract-generation examples"
+      Expected route: → rust/serde-schemars/ (Lane B), via task-router "generate JSON Schema"
+      or "contract generation" → schema-validation-rust stack → Lane B entry
+
+  Q2: "Show me Python runtime-validation examples"
+      Expected: → python/pydantic/ or python/marshmallow/ (Lane A)
+
+  Q3: "Compare Zod vs Pydantic"
+      Expected: → polyglot-validation-lab archetype, schema-validation-lane-selection skill
+
+  Q4: "Compare Konform vs Hibernate Validator"
+      Expected: → polyglot-validation-lab archetype, schema-validation-kotlin stack
+
+  Q5: "Explain why serde + schemars is a contract lane instead of just a validator"
+      Expected: → schema-validation-rust stack (contract_generation notes),
+                   doctrine Rule 2, rust/serde-schemars/README.md
+
+  Q6: "Show the best interoperability-oriented examples"
+      Expected: → Lane B examples (rust/serde-schemars/, typescript/typebox-ajv/,
+                   elixir/ex-json-schema/, go/openapi-generation/)
+
+  Q7: "Show the best teaching-oriented examples"
+      Expected: → Lane C examples (python/pydantic/, typescript/zod/),
+                   because one definition yields three behaviors
+
+  Q8: "Detect drift between runtime behavior and exported contract"
+      Expected: → docs/schema-validation-drift-detection.md,
+                   contract-generation-path-selection.md skill
+
+For each routing question:
+  - If the route is already clear from current routing artifacts: note it as "CLEAR".
+  - If the route requires a new task-router entry: add one (minimal addition,
+    do not restructure the router file).
+  - If the route requires a docs/atlas update: add it.
+
+Add any missing entries now. Keep additions minimal. Do not restructure the
+router files — append only.
+
+================================================================================
+PART 6: UPDATE docs/ARCHITECTURE_MAP.md
+================================================================================
+
+Read docs/ARCHITECTURE_MAP.md. The PROMPT_113 entry should already exist.
+Add or expand it with the final arc status:
+
+  Schema Validation and Contract Generation Arc (PROMPT_113–118):
+  - Doctrine:   context/doctrine/schema-validation-contracts.md (8 rules, 3 lanes)
+  - Archetype:  context/archetypes/polyglot-validation-lab.md
+  - Stacks:     context/stacks/schema-validation-{python,typescript,go,rust,kotlin,ruby,elixir}.yaml
+  - Skills:     context/skills/schema-validation-lane-selection.md,
+                context/skills/contract-generation-path-selection.md
+  - Manifest:   manifests/schema-validation-polyglot.yaml
+  - Workflow:   context/workflows/add-schema-validation-example.md
+  - Examples:   examples/canonical-schema-validation/ (18 examples, 7 languages, 3 lanes)
+  - Corpus:     examples/canonical-schema-validation/domain/ (5 models, 23 fixtures)
+  - Docs:       docs/schema-validation-arc-overview.md,
+                docs/schema-validation-drift-detection.md
+  - Tests:      verification/schema-validation/ (fixture tests, parity runner)
+  - Status:     COMPLETE (PROMPT_118)
+
+Keep the entry to 10–14 lines. Do not restructure the existing ARCHITECTURE_MAP.
+
+================================================================================
+PART 7: ADD memory/concepts/ ENTRY FOR DURABLE ARC KNOWLEDGE
+================================================================================
+
+Read memory/concepts/README.md (if it exists) for format.
+
+Create: memory/concepts/schema-validation-arc.md
+
+This is a committed, curated knowledge artifact. Write it for future assistants
+who have never seen this arc and need to understand the key durable truths.
+
+Required sections:
+
+  # Schema Validation and Contract Generation Arc
+
+  ## Durable Facts
+
+  Bullet list of facts that will not change even if libraries are updated:
+
+    - The three-lane model (A: runtime, B: contract, C: hybrid) is the organizing
+      principle. Do not conflate lanes.
+    - Rust's serde + schemars is Lane B (contract generation), not Lane A (validation).
+      validator and garde are the Lane A libraries in Rust.
+    - io-ts is NOT a simpler Zod. It is a codec-based FP approach with a different
+      design philosophy. Decode returns Either<Errors, T>, not a thrown exception.
+    - Konform and Hibernate Validator represent distinct Kotlin validation philosophies.
+      Do not reduce Kotlin to "JVM annotation-based."
+    - marshmallow and Pydantic represent distinct Python validation philosophies.
+      Pydantic: type-first hybrid. marshmallow: explicit schema objects.
+    - dry-schema and dry-validation are a layered pair. dry-schema is structural;
+      dry-validation adds semantic rules.
+    - Go lacks a unified library for type + validation + schema. The contract lane
+      is externalized. This is an architectural gap, not a gap in this repo.
+
+  ## Key Files
+
+  A table:
+  | Artifact | Path | Purpose |
+  |----------|------|---------|
+  | Doctrine | context/doctrine/schema-validation-contracts.md | 8 rules, 3-lane model |
+  | Archetype | context/archetypes/polyglot-validation-lab.md | project shape |
+  | Skills | context/skills/schema-validation-lane-selection.md | routing by lane |
+  | Overview | docs/schema-validation-arc-overview.md | human-readable summary |
+  | Domain | examples/canonical-schema-validation/domain/models.md | 5 models spec |
+  | Catalog | examples/canonical-schema-validation/CATALOG.md | all 18 examples |
+
+Target length: 50–70 lines. Voice: factual, terse, no filler.
+
+================================================================================
+PART 8: UPDATE memory/INDEX.md
+================================================================================
+
+Read memory/INDEX.md. The Schema Validation Arc section (added in PROMPT_113)
+should already have several entries. Add or update to reflect completion:
+
+  Final entries for the Schema Validation Arc section:
+    - [Arc Overview](../docs/schema-validation-arc-overview.md) — single-read arc summary for future sessions
+    - [Drift Detection Guide](../docs/schema-validation-drift-detection.md) — CI strategies for schema drift
+    - [Arc Durable Knowledge](../memory/concepts/schema-validation-arc.md) — committed facts about the arc
+    - Update the CATALOG entry to note "18 examples [x] (PROMPT_117)"
+
+Do not duplicate entries that PROMPT_113 already added. Only add what is new.
+
+================================================================================
+PART 9: WRITE THE ARC COMPLETION SUMMARY
+================================================================================
+
+Create: memory/summaries/PROMPT_113_through_118_arc_summary.md
+(This file is gitignored — local only, for prompt-boundary resume handoffs.)
+
+Required sections:
+
+  # Schema Validation Arc — PROMPT_113–118 Completion Summary
+
+  ## Arc Identity
+  Name: Schema Validation and Contract Generation Arc
+  Prompts: PROMPT_113 (foundation) through PROMPT_118 (hardening)
+  Status: COMPLETE
+
+  ## What Was Built
+
+  ### Foundation (PROMPT_113)
+  List of artifacts created. One line each.
+
+  ### Shared Corpus (PROMPT_114)
+  List of artifacts. Note: 23 fixtures, 5 models, CATALOG, PARITY.
+
+  ### Python + TypeScript Examples (PROMPT_115)
+  List: Pydantic (Lane C), marshmallow (Lane A), Zod (Lane C), Valibot (Lane A),
+  io-ts (Lane A codec), TypeBox+Ajv (Lane B). Note the io-ts distinction.
+
+  ### Go + Rust Examples (PROMPT_116)
+  List: go-playground/validator, ozzo-validation, OpenAPI gen (Lane B gap noted),
+  validator, garde, serde+schemars (Lane B — NOT a validator).
+
+  ### Kotlin + Ruby + Elixir Examples (PROMPT_117)
+  List: Konform (DSL), Hibernate Validator (annotation), dry-validation, dry-schema,
+  Ecto.Changeset, Norm, ex_json_schema.
+
+  ### Hardening (PROMPT_118)
+  List: arc overview doc, drift detection guide, parity runner, doctrine audit,
+  router polish, ARCHITECTURE_MAP update, memory/concepts entry, arc summary.
+
+  ## Key Distinctions Preserved
+
+  A bulleted list of the critical distinctions that must not be lost:
+    (copy the "Key Distinctions to Preserve" section from PART 1)
+
+  ## Routing Guide
+
+  Where to send common routing questions (copy from PART 5 router audit results).
+
+  ## Proof Path (all must pass for the arc to be considered complete)
+
+  A checkable list:
+    [ ] python -m unittest discover -s verification/unit -p "test_*.py" -v
+    [ ] python -m unittest discover -s verification/schema-validation -p "test_*.py" -v
+    [ ] python scripts/validate_context.py
+    [ ] python scripts/run_verification.py --tier fast
+    [ ] examples/canonical-schema-validation/CATALOG.md shows all 18 as [x]
+    [ ] memory/concepts/schema-validation-arc.md exists and is committed
+    [ ] docs/schema-validation-arc-overview.md exists
+
+  ## Resume Instructions for Future Sessions
+  (3–5 sentences on how to resume work in this arc)
+    Load docs/schema-validation-arc-overview.md first.
+    Then load the relevant stack file (context/stacks/schema-validation-{language}.yaml).
+    Then load CATALOG.md to see current example status.
+    Use context/skills/schema-validation-lane-selection.md for any routing decision.
+    Do not add examples until you have read domain/models.md and PARITY.md.
+
+================================================================================
+PART 10: FINAL VERIFICATION SWEEP
+================================================================================
+
+Run the full verification suite in sequence. Record and fix any failures.
+
+  Step 1: python -m unittest discover -s verification/unit -p "test_*.py" -v
+    Fix any failures from PROMPT_113 structural tests before proceeding.
+
+  Step 2: python -m unittest discover -s verification/schema-validation -p "test_*.py" -v
+    Fix any failures from PROMPT_114 fixture tests or PROMPT_115-117 smoke tests.
+
+  Step 3: python scripts/validate_context.py
+    Fix any context structural issues.
+
+  Step 4: python scripts/run_verification.py --tier fast
+    Fix any fast-tier failures.
+
+  Step 5: python verification/schema-validation/run_parity_check.py
+    Review output. Document any SKIP entries as expected (non-Python toolchains).
+    Investigate any FAIL entries.
+
+Do NOT claim completion until all 5 steps pass or have documented acceptable
+SKIP entries (toolchain-dependent tests skipped gracefully).
+
+================================================================================
+VERIFICATION
+================================================================================
+
+Final gate (all must pass):
+
+  python -m unittest discover -s verification/unit -p "test_*.py" -v
+  python -m unittest discover -s verification/schema-validation -p "test_*.py" -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+  python verification/schema-validation/run_parity_check.py
+
+Manual checks:
+  - docs/schema-validation-arc-overview.md exists and covers all 3 lanes
+  - docs/schema-validation-drift-detection.md exists with 3 detection strategies
+  - memory/concepts/schema-validation-arc.md is committed (NOT gitignored)
+  - CATALOG.md shows all 18 examples as [x]
+  - ARCHITECTURE_MAP.md shows arc status as COMPLETE (PROMPT_118)
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+Use grouped commits prefixed with [PROMPT_118]. Use `git add -p`.
+
+  1. [PROMPT_118] add schema-validation arc overview doc
+     Stage: docs/schema-validation-arc-overview.md
+
+  2. [PROMPT_118] add schema-validation drift detection guide
+     Stage: docs/schema-validation-drift-detection.md
+
+  3. [PROMPT_118] add parity matrix runner and test wrapper
+     Stage: verification/schema-validation/run_parity_check.py,
+            verification/schema-validation/test_parity_runner.py
+
+  4. [PROMPT_118] add schema-validation-arc durable knowledge concept
+     Stage: memory/concepts/schema-validation-arc.md
+
+  5. [PROMPT_118] update routing for arc completion (router polish)
+     Stage: context/router/task-router.md  (only if new entries were needed)
+
+  6. [PROMPT_118] update ARCHITECTURE_MAP and memory INDEX for arc completion
+     Stage: docs/ARCHITECTURE_MAP.md, memory/INDEX.md
+
+  7. [PROMPT_118] write arc completion doctrine audit (local only)
+     Note: memory/summaries/ is gitignored — do not stage this file
+
+  Do NOT commit memory/summaries/ files. They are gitignored by design.
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Create docs/schema-validation-arc-overview.md as a single-read summary
+  - Create docs/schema-validation-drift-detection.md with CI-actionable strategies
+  - Create run_parity_check.py that runs Python-based parity checks and skips others
+  - Create memory/concepts/schema-validation-arc.md as a committed artifact
+  - Perform the doctrine audit and fix any small gaps found
+  - Verify routing for the 8 key questions and add missing entries if needed
+
+DO NOT:
+  - Rewrite any PROMPT_115–117 implementation files (fix gaps; don't rewrite)
+  - Add new examples beyond the 18 already implemented
+  - Restructure the router files — append or patch only
+  - Commit memory/summaries/ files (they are gitignored)
+  - Skip the final verification sweep — the arc is not complete without it
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+
+  - docs/schema-validation-arc-overview.md exists, covers all 3 lanes and 7 languages,
+    includes routing question guide
+  - docs/schema-validation-drift-detection.md exists with 3 named strategies and
+    per-language notes
+  - verification/schema-validation/run_parity_check.py exists, runs, exits 0
+  - memory/concepts/schema-validation-arc.md is committed and covers the
+    7 durable distinctions
+  - All 8 routing questions from PART 5 are answerable from existing routing artifacts
+  - ARCHITECTURE_MAP.md lists arc as COMPLETE (PROMPT_118)
+  - memory/INDEX.md has final arc entries including arc-overview and drift-detection
+  - All verification gates pass (or have documented acceptable SKIP entries)
+
+The schema validation and contract generation arc is complete. Future assistants
+can navigate the entire arc from docs/schema-validation-arc-overview.md in a
+single read and use context/skills/schema-validation-lane-selection.md for any
+routing decision.

@@ -1,0 +1,1055 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one
+fresh coding-assistant session with commit prefixes like `[PROMPT_117]`.
+
+PROMPT_113: Schema Validation Arc — Foundation.
+PROMPT_114: Schema Validation Arc — Shared corpus (WorkspaceSyncContext, 23 fixtures,
+            CATALOG.md, PARITY.md).
+PROMPT_115: Schema Validation Arc — Python + TypeScript (Pydantic, marshmallow, Zod,
+            Valibot, io-ts, TypeBox+Ajv).
+PROMPT_116: Schema Validation Arc — Go + Rust (go-playground/validator, ozzo-validation,
+            OpenAPI gen, validator, garde, serde+schemars contract lane).
+
+This prompt (PROMPT_117) implements canonical examples for Kotlin/JVM, Ruby, and
+Elixir — three distinct ecosystems that each demonstrate a serious, well-designed
+approach to validation and contract generation.
+
+                [SCHEMA VALIDATION ARC: Prompt 5 of 6 — Kotlin + Ruby + Elixir]
+
+Kotlin libraries:
+  Konform                              (Lane A: Kotlin-first DSL validation)
+  Hibernate Validator / Jakarta Bean   (Lane A: JVM annotation-based standard)
+
+Ruby libraries:
+  dry-validation                       (Lane A: rich rule-based validation contracts)
+  dry-schema                           (Lane A/B: schema layer + JSON Schema output)
+
+Elixir libraries:
+  Ecto.Changeset                       (Lane A: dominant boundary validator in Elixir apps)
+  Norm                                 (Lane A: declarative spec-oriented alternative)
+  ex_json_schema                       (Lane B: JSON Schema contract workflows)
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                    (run; study output)
+  4. memory/INDEX.md
+
+Read the arc foundation:
+  5. context/doctrine/schema-validation-contracts.md   (READ — Rules 3, 4, 5 apply here)
+  6. context/skills/schema-validation-lane-selection.md (READ — lane assignments)
+  7. context/stacks/schema-validation-kotlin.yaml      (READ — Konform vs Hibernate)
+  8. context/stacks/schema-validation-ruby.yaml        (READ — dry-rb ecosystem)
+  9. context/stacks/schema-validation-elixir.yaml      (READ — Ecto separation of concerns)
+ 10. context/workflows/add-schema-validation-example.md (READ — follow this)
+ 11. examples/canonical-schema-validation/domain/models.md (READ — implement THESE models)
+ 12. examples/canonical-schema-validation/PARITY.md    (READ — parity rules)
+ 13. examples/canonical-schema-validation/CATALOG.md   (READ — current status)
+
+Read existing Kotlin, Ruby, or Elixir canonical examples if present:
+ 14. examples/canonical-api/ or examples/canonical-terminal/ (SKIM any Kotlin/Ruby/Elixir
+     example for code style norms)
+
+Run verification before touching any code:
+  python -m unittest discover -s verification/schema-validation -p "test_*.py" -v
+  python -m unittest discover -s verification/unit -p "test_*.py" -v
+  python scripts/validate_context.py
+
+Do NOT begin writing until you have read all of the above.
+
+================================================================================
+BACKGROUND: KOTLIN, RUBY, AND ELIXIR FRAMING
+================================================================================
+
+KOTLIN — Two Design Philosophies on the JVM
+
+Kotlin's position in this arc is unique because it has two distinct validation
+approaches with meaningfully different designs:
+
+  Konform — a Kotlin-first DSL. You define validation rules as a lambda using
+  an infix DSL. The rules live in your code, not in annotations. You can compose
+  validators, reference complex conditions, and return structured error objects.
+  This is idiomatic Kotlin: expressive, null-safe, no reflection.
+
+    val validateWorkspace = Validation<WorkspaceConfig> {
+        WorkspaceConfig::name {
+            minLength(3); maxLength(100)
+        }
+        WorkspaceConfig::ownerEmail {
+            pattern(".+@.+\\..+")
+        }
+    }
+
+  Hibernate Validator / Jakarta Bean Validation — the JVM ecosystem standard.
+  Rules live in annotations on data class fields. This integrates with Spring,
+  Quarkus, Jakarta EE. Framework-driven, reflection-based, familiar to Java devs.
+
+    data class WorkspaceConfig(
+        @field:NotBlank @field:Size(min = 3, max = 100) val name: String,
+        @field:Email val ownerEmail: String,
+        @field:Min(1) @field:Max(1000) val maxSyncRuns: Int
+    )
+
+  Neither replaces the other. Choose Konform for pure Kotlin code with complex
+  rules; choose Hibernate Validator for framework-integrated Spring/Jakarta apps.
+  The examples must make this tradeoff explicit — do not reduce Kotlin to
+  "just JVM annotation-based."
+
+RUBY — The dry-rb Ecosystem's Intentional Separation
+
+dry-schema and dry-validation are designed to separate two concerns that other
+libraries conflate:
+
+  dry-schema: defines the structure and basic type coercion of data. It handles
+  "is this field present, what type is it, can it be coerced to the right type?"
+  It can also export a JSON Schema-like description of the schema.
+
+  dry-validation: adds semantic business rules on top of a dry-schema. It handles
+  "is this email actually valid, is this value within range, does this cross-field
+  rule hold?" dry-validation uses a Contract class that wraps a schema.
+
+Using dry-validation without understanding dry-schema misses the intentional
+layering. The examples must show both and explain why the separation exists.
+
+ELIXIR — Ecto.Changeset's Cast-Then-Validate Pipeline
+
+Elixir's approach is fundamentally different from all the above:
+
+  Ecto.Changeset is not a schema library. It is a pipeline for casting, changing,
+  and validating structured data. A Changeset holds the data, the changes, and
+  the accumulated errors. You chain operations:
+    |> cast(params, [:name, :slug, :owner_email])
+    |> validate_required([:name, :slug])
+    |> validate_format(:slug, ~r/^[a-z][a-z0-9-]{1,48}[a-z0-9]$/)
+    |> validate_inclusion(:plan, ["free", "pro", "enterprise"])
+
+  Norm is a different design: instead of a pipeline, you define a spec (similar
+  to Clojure's spec) and conform data against it. More declarative, less stateful.
+
+  ex_json_schema is the JSON Schema library in Elixir. It validates data against
+  a JSON Schema document. This is the contract-first / Lane B path in Elixir:
+  you have a schema (possibly generated elsewhere), and you validate data against it.
+
+The Elixir examples must treat all three as serious, well-chosen tools with
+distinct design philosophies — not as a tier list of "good → better → best."
+
+================================================================================
+PART 1: KOTLIN — KONFORM (Lane A: Kotlin-First DSL)
+================================================================================
+
+Create: examples/canonical-schema-validation/kotlin/konform/
+
+Required files:
+  examples/canonical-schema-validation/kotlin/konform/build.gradle.kts
+  examples/canonical-schema-validation/kotlin/konform/src/main/kotlin/models/Models.kt
+  examples/canonical-schema-validation/kotlin/konform/src/main/kotlin/validation/Validators.kt
+  examples/canonical-schema-validation/kotlin/konform/src/main/kotlin/Main.kt
+  examples/canonical-schema-validation/kotlin/konform/README.md
+
+--- src/main/kotlin/models/Models.kt ---
+
+Define all five WorkspaceSyncContext models as Kotlin data classes. Use sealed
+classes for discriminated unions and enum classes for simple enums.
+
+Requirements:
+  - package models
+  - PlanType, SyncStatus, TriggerType, WebhookEventType, SourceType as enum class
+  - SettingsBlock: data class with webhookUrl: String? = null
+  - WorkspaceConfig: data class with all fields from domain/models.md
+      createdAt: String (ISO 8601)
+      suspendedUntil: String? = null
+  - SyncRun: data class with nullable fields as String? for timestamps,
+    Long? for duration_ms and records_ingested, String? for error_code
+  - WebhookPayload: use a sealed class for the data field:
+      sealed class WebhookData
+      data class SyncCompletedData(...) : WebhookData()
+      data class SyncFailedData(...) : WebhookData()
+      data class WorkspaceSuspendedData(...) : WebhookData()
+    This is Kotlin's idiomatic discriminated union.
+  - IngestionSource: use a sealed class for config (HttpPollConfig, WebhookPushConfig,
+    FileWatchConfig, DatabaseCdcConfig). source_type field drives which config type.
+  - ReviewRequest: standard data class
+
+Add a KDoc comment on each class noting "Kotlin data class — no annotations.
+Validation rules are defined externally in Validators.kt using Konform DSL."
+
+--- src/main/kotlin/validation/Validators.kt ---
+
+  - import io.konform.validation.*
+  - Define validators using the Validation<T> { ... } DSL for all five models.
+
+For WorkspaceConfig:
+  val validateWorkspaceConfig = Validation<WorkspaceConfig> {
+      WorkspaceConfig::name {
+          minLength(3)
+          maxLength(100)
+      }
+      WorkspaceConfig::slug {
+          pattern(Regex("^[a-z][a-z0-9-]{1,48}[a-z0-9]\$"), "must be lowercase slug format")
+      }
+      WorkspaceConfig::ownerEmail {
+          pattern(Regex(".+@.+\\..+"), "must be a valid email")
+      }
+      WorkspaceConfig::maxSyncRuns {
+          minimum(1)
+          maximum(1000)
+      }
+      WorkspaceConfig::tags {
+          maxItems(20)
+      }
+  }
+
+  // Cross-field rule: plan vs maxSyncRuns
+  // Konform validates individual fields well. Cross-field rules can be added
+  // via a custom validator or a second Validation block:
+  val validateWorkspaceConfigCrossField = Validation<WorkspaceConfig> {
+      addConstraint("maxSyncRuns must respect plan tier limits") { config ->
+          when (config.plan) {
+              PlanType.FREE -> config.maxSyncRuns <= 10
+              PlanType.PRO -> config.maxSyncRuns <= 100
+              PlanType.ENTERPRISE -> true
+          }
+      }
+  }
+
+  // Combine both validators:
+  fun validateConfig(config: WorkspaceConfig): ValidationResult<WorkspaceConfig> {
+      val result = validateWorkspaceConfig(config)
+      return if (result is Valid) validateWorkspaceConfigCrossField(config) else result
+  }
+
+Show validators for SyncRun (cross-field timestamp and error_code rules) and
+ReviewRequest (critical + due_at). Use addConstraint for cross-field logic.
+
+Add a file-level KDoc comment:
+  "Konform validation DSL — rules defined in code using the Validation<T> { } block.
+   No annotations on data classes. This is Kotlin-idiomatic: explicit, composable,
+   null-safe. Cross-field rules use addConstraint with a predicate lambda."
+
+--- src/main/kotlin/Main.kt ---
+
+Load valid/workspace_config_basic.json from the fixture corpus using kotlinx.serialization
+or Gson. Validate with validateConfig(). Print PASS or FAIL with error details.
+Repeat for invalid/workspace_config_plan_too_many_runs.json and
+invalid/review_request_critical_no_due_date.json.
+
+--- build.gradle.kts ---
+
+dependencies:
+  implementation("io.konform:konform:0.6.1") (or latest stable)
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.0")
+
+--- README.md ---
+
+  # Kotlin — Konform (Lane A: Kotlin-First DSL Validation)
+
+  ## Lane
+  Lane A: rules defined in a Kotlin DSL, not in annotations. Data classes are clean.
+
+  ## The Konform DSL
+  4–5 sentences. Validation<T> { } is the entry point. Inside, reference properties
+  using WorkspaceConfig::name { ... }. Chain constraint functions: minLength,
+  maxLength, pattern, minimum, maximum, maxItems. For cross-field rules, use
+  addConstraint with a predicate lambda. Results are ValidationResult<T> — either
+  Valid or Invalid with a list of ValidationError.
+
+  ## Comparison with Hibernate Validator
+  5–6 sentences. Konform: rules in code, composable validators, Kotlin-idiomatic,
+  no reflection overhead, no framework dependency. Hibernate Validator: rules in
+  annotations, integrates with Spring/Jakarta EE, familiar to Java developers,
+  framework-managed lifecycle. Choose Konform for pure Kotlin codebases and complex
+  business rules. Choose Hibernate Validator when using Spring Boot or Jakarta EE.
+
+  ## Cross-Field Rules
+  Shown using addConstraint. Konform does not have a native "watch two fields"
+  primitive — addConstraint with a predicate that accesses both fields is the
+  idiomatic approach.
+
+================================================================================
+PART 2: KOTLIN — HIBERNATE VALIDATOR (Lane A: JVM Annotation Standard)
+================================================================================
+
+Create: examples/canonical-schema-validation/kotlin/hibernate-validator/
+
+Required files:
+  examples/canonical-schema-validation/kotlin/hibernate-validator/build.gradle.kts
+  examples/canonical-schema-validation/kotlin/hibernate-validator/src/main/kotlin/models/Models.kt
+  examples/canonical-schema-validation/kotlin/hibernate-validator/src/main/kotlin/Main.kt
+  examples/canonical-schema-validation/kotlin/hibernate-validator/README.md
+
+--- src/main/kotlin/models/Models.kt ---
+
+Define WorkspaceConfig and SyncRun (at minimum) with Jakarta Bean Validation
+annotations. These are the annotation-driven approach.
+
+Requirements:
+  - import jakarta.validation.constraints.*
+  - import jakarta.validation.Valid
+  - WorkspaceConfig:
+      data class WorkspaceConfig(
+          @field:NotBlank @field:Size(min = 3, max = 100) val name: String,
+          @field:Pattern(regexp = "^[a-z][a-z0-9-]{1,48}[a-z0-9]\$")
+          val slug: String,
+          @field:Email val ownerEmail: String,
+          @field:NotNull val plan: PlanType,
+          @field:Min(1) @field:Max(1000) val maxSyncRuns: Int,
+          @field:Valid val settings: SettingsBlock,
+          @field:Size(max = 20) val tags: List<String> = emptyList(),
+          val createdAt: String,
+          val suspendedUntil: String? = null
+      )
+
+  - Cross-field rule (plan vs maxSyncRuns): cannot be expressed with standard
+    Jakarta annotations on fields. Options:
+      a) @ValidWorkspaceConfig (custom class-level constraint annotation) — show this
+      b) Application-level check after validation passes
+    Implement option (a): define a @ValidWorkspaceConfig annotation and a
+    WorkspaceConfigValidator : ConstraintValidator<ValidWorkspaceConfig, WorkspaceConfig>
+    that checks the plan vs maxSyncRuns rule. Document why this is more verbose
+    than Konform's addConstraint approach.
+
+  - SyncRun: annotate all fields appropriately. Cross-field rules require a
+    similar custom class-level annotation — document but may stub the implementation.
+
+Add a KDoc comment: "Annotation-driven validation using Jakarta Bean Validation.
+The annotations live on the data class fields. Validation is performed by a
+Validator instance (from the Jakarta Validation factory). This is the JVM
+ecosystem standard — integrates with Spring Boot @Validated, Quarkus, Jakarta EE."
+
+--- src/main/kotlin/Main.kt ---
+
+  val factory = Validation.buildDefaultValidatorFactory()
+  val validator = factory.validator
+  val violations: Set<ConstraintViolation<WorkspaceConfig>> = validator.validate(config)
+  if (violations.isEmpty()) println("PASS") else violations.forEach { println("FAIL: $it") }
+
+Load and validate the same fixtures as the Konform example.
+
+--- build.gradle.kts ---
+
+dependencies:
+  implementation("jakarta.validation:jakarta.validation-api:3.0.2")
+  implementation("org.hibernate.validator:hibernate-validator:8.0.1.Final")
+  implementation("org.glassfish:jakarta.el:4.0.2")  // required by HV
+
+--- README.md ---
+
+  # Kotlin — Hibernate Validator (Lane A: JVM Annotation-Based)
+
+  ## Lane
+  Lane A: annotation-driven struct validation. The Jakarta Bean Validation standard.
+
+  ## When to Use This Approach
+  2–3 sentences: framework-integrated applications (Spring Boot, Quarkus, Jakarta EE),
+  teams coming from a Java background, when @Validated on controllers is wanted.
+
+  ## Cross-Field Rules Require Custom Annotations
+  Show the contrast with Konform. In Konform, addConstraint is 3 lines.
+  In Hibernate Validator, you need a custom @interface annotation, a
+  ConstraintValidator implementation class, and the annotation on the class.
+  This is more verbose but is the idiomatic JVM approach.
+
+  ## Comparison with Konform
+  See kotlin/konform/README.md. Key difference: annotations are co-located with
+  the data class definition (visible, but intrusive); Konform rules are separate
+  (clean data class, explicit validator object).
+
+================================================================================
+PART 3: RUBY — DRY-VALIDATION (Lane A: Rich Rule Contracts)
+================================================================================
+
+Create: examples/canonical-schema-validation/ruby/dry-validation/
+
+Required files:
+  examples/canonical-schema-validation/ruby/dry-validation/Gemfile
+  examples/canonical-schema-validation/ruby/dry-validation/contracts/workspace_config_contract.rb
+  examples/canonical-schema-validation/ruby/dry-validation/contracts/sync_run_contract.rb
+  examples/canonical-schema-validation/ruby/dry-validation/contracts/webhook_payload_contract.rb
+  examples/canonical-schema-validation/ruby/dry-validation/contracts/ingestion_source_contract.rb
+  examples/canonical-schema-validation/ruby/dry-validation/contracts/review_request_contract.rb
+  examples/canonical-schema-validation/ruby/dry-validation/main.rb
+  examples/canonical-schema-validation/ruby/dry-validation/README.md
+
+--- workspace_config_contract.rb ---
+
+  require 'dry-validation'
+  require 'dry/validation/contract'
+
+  class WorkspaceConfigContract < Dry::Validation::Contract
+    params do
+      required(:id).filled(:string)
+      required(:name).filled(:string)
+      required(:slug).filled(:string)
+      required(:owner_email).filled(:string)
+      required(:plan).filled(:string, included_in?: %w[free pro enterprise])
+      required(:max_sync_runs).filled(:integer)
+      required(:settings).hash do
+        required(:retry_max).filled(:integer)
+        required(:timeout_seconds).filled(:integer)
+        required(:notify_on_failure).filled(:bool)
+        optional(:webhook_url).maybe(:string)
+      end
+      optional(:tags).array(:string)
+      required(:created_at).filled(:string)
+      optional(:suspended_until).maybe(:string)
+    end
+
+    rule(:slug) do
+      key.failure('must be a valid slug (lowercase, hyphens, digits)') unless
+        value.match?(/\A[a-z][a-z0-9-]{1,48}[a-z0-9]\z/)
+    end
+
+    rule(:owner_email) do
+      key.failure('must be a valid email') unless value.match?(URI::MailTo::EMAIL_REGEXP)
+    end
+
+    rule(:max_sync_runs) do
+      key.failure('must be between 1 and 1000') unless value.between?(1, 1000)
+    end
+
+    rule(:tags) do
+      if values[:tags]
+        key.failure('must have at most 20 tags') if values[:tags].length > 20
+        values[:tags].each_with_index do |tag, i|
+          key([:tags, i]).failure('each tag must be 1..50 chars') unless tag.length.between?(1, 50)
+        end
+      end
+    end
+
+    # Cross-field: plan vs max_sync_runs
+    rule(:max_sync_runs, :plan) do
+      limit = case values[:plan]
+              when 'free' then 10
+              when 'pro'  then 100
+              else 1000
+              end
+      key(:max_sync_runs).failure("must be <= #{limit} for #{values[:plan]} plan") if
+        values[:max_sync_runs] > limit
+    end
+  end
+
+Use this as the template style. Implement all five contracts.
+For WebhookPayloadContract: handle the discriminated union in the `data` field
+using a rule block that reads event_type and validates data structure manually.
+Document: "dry-validation does not have native discriminated union support.
+The rule block on :data checks event_type and validates the nested hash manually."
+
+--- sync_run_contract.rb ---
+
+Include cross-field rules:
+  rule(:finished_at, :started_at) do
+    if values[:finished_at]
+      key(:started_at).failure('must be present when finished_at is set') unless values[:started_at]
+      if values[:started_at]
+        key(:finished_at).failure('must be after started_at') if
+          values[:finished_at] < values[:started_at]
+      end
+    end
+  end
+
+  rule(:duration_ms, :finished_at) do
+    if values[:finished_at] && values[:duration_ms].nil?
+      key(:duration_ms).failure('is required when finished_at is set')
+    end
+  end
+
+--- main.rb ---
+
+Load fixture files from the corpus (relative path from this file). Instantiate
+each contract, call .call(fixture_data). Print PASS or "FAIL: #{result.errors.to_h}".
+Test at minimum:
+  workspace_config_basic.json (expect PASS)
+  workspace_config_bad_slug.json (expect FAIL)
+  workspace_config_plan_too_many_runs.json (expect FAIL)
+  sync_run_pending.json (expect PASS)
+  sync_run_timestamps_inverted.json (expect FAIL)
+  review_request_critical_no_due_date.json (expect FAIL)
+
+--- Gemfile ---
+
+source 'https://rubygems.org'
+gem 'dry-validation', '~> 1.10'
+gem 'dry-schema', '~> 1.13'
+
+--- README.md ---
+
+  # Ruby — dry-validation (Lane A: Rich Rule Contracts)
+
+  ## Lane
+  Lane A: runtime validation using a Contract class that wraps a dry-schema.
+
+  ## The dry-rb Ecosystem Design
+  4–5 sentences. dry-validation uses dry-schema as its foundation. dry-schema
+  handles type coercion and structure: "is this field present, is it the right
+  type?" dry-validation adds rule blocks for semantic validation: "is this email
+  valid, does this cross-field rule hold?" The separation is intentional —
+  use dry-schema alone when you only need structural/type coercion; use
+  dry-validation when you also need semantic rules.
+
+  ## Contract Pattern
+  The Contract class, params block (schema), and rule blocks. Rules fire after
+  the schema passes. If the schema fails, rules are skipped.
+
+  ## Discriminated Union Limitation
+  dry-validation does not have native discriminated union support. Manual dispatch
+  via rule blocks on the data field. Document this.
+
+  ## Cross-Field Rules
+  rule(:field1, :field2) { } — values hash provides access to both fields.
+
+================================================================================
+PART 4: RUBY — DRY-SCHEMA (Lane A/B: Schema Layer + JSON Schema Output)
+================================================================================
+
+Create: examples/canonical-schema-validation/ruby/dry-schema/
+
+Required files:
+  examples/canonical-schema-validation/ruby/dry-schema/Gemfile
+  examples/canonical-schema-validation/ruby/dry-schema/schemas/workspace_config_schema.rb
+  examples/canonical-schema-validation/ruby/dry-schema/schemas/sync_run_schema.rb
+  examples/canonical-schema-validation/ruby/dry-schema/schema_export.rb
+  examples/canonical-schema-validation/ruby/dry-schema/README.md
+
+--- schemas/workspace_config_schema.rb ---
+
+  require 'dry-schema'
+
+  WorkspaceConfigSchema = Dry::Schema.JSON do
+    required(:id).filled(:string)
+    required(:name).filled(:string, min_size?: 3, max_size?: 100)
+    required(:slug).filled(:string)
+    required(:owner_email).filled(:string)
+    required(:plan).filled(:string, included_in?: %w[free pro enterprise])
+    required(:max_sync_runs).filled(:integer, gt?: 0, lteq?: 1000)
+    required(:settings).hash do
+      required(:retry_max).filled(:integer, gteq?: 0, lteq?: 10)
+      required(:timeout_seconds).filled(:integer, gteq?: 10, lteq?: 3600)
+      required(:notify_on_failure).filled(:bool)
+      optional(:webhook_url).maybe(:string)
+    end
+    optional(:tags).array(:string)
+    required(:created_at).filled(:string)
+    optional(:suspended_until).maybe(:string)
+  end
+
+  # Note: dry-schema handles type coercion and structural validation.
+  # It does NOT handle complex cross-field rules or semantic validation.
+  # For those, use dry-validation's Contract on top of this schema.
+
+--- schema_export.rb ---
+
+Demonstrate dry-schema's JSON Schema export capability:
+  require 'dry/schema/extensions/json_schema'  # if available in the gem version
+  schema_as_hash = WorkspaceConfigSchema.json_schema
+  puts JSON.pretty_generate(schema_as_hash)
+
+Note: the JSON Schema extension may not be part of the core gem in all versions.
+If unavailable, document the limitation and show how to extract schema information
+from the dry-schema object manually (e.g., schema.key_map, schema.rules).
+
+--- README.md ---
+
+  # Ruby — dry-schema (Lane A/B: Schema Foundation + JSON Schema Output)
+
+  ## Lane
+  Primarily Lane A (structural validation + coercion). The JSON Schema export
+  adds a Lane B capability.
+
+  ## What dry-schema Does (and Does Not Do)
+  4–5 sentences. dry-schema handles: type checking, coercion, presence/absence
+  rules, value constraints (min, max, inclusion). It does NOT handle: complex
+  cross-field rules, semantic validation rules (is this string a valid email?),
+  custom error messages beyond what the predicate system provides. For those,
+  wrap the schema in a dry-validation Contract.
+
+  ## The Layering
+  dry-schema → dry-validation → application rules.
+  Each layer adds power and complexity. Use the lowest layer that meets your needs.
+
+  ## JSON Schema Export
+  dry-schema can export a JSON Schema description of its structure. The output
+  reflects the schema definition, not the application-level rules in dry-validation.
+  A round-trip drift check: does the exported schema accept the same fixtures as
+  the runtime schema? Should hold true for structural rules; may diverge for
+  application-layer rules.
+
+================================================================================
+PART 5: ELIXIR — ECTO.CHANGESET (Lane A: Cast-Then-Validate Pipeline)
+================================================================================
+
+Create: examples/canonical-schema-validation/elixir/ecto-changeset/
+
+Required files:
+  examples/canonical-schema-validation/elixir/ecto-changeset/mix.exs
+  examples/canonical-schema-validation/elixir/ecto-changeset/lib/workspace_sync_context/workspace_config.ex
+  examples/canonical-schema-validation/elixir/ecto-changeset/lib/workspace_sync_context/sync_run.ex
+  examples/canonical-schema-validation/elixir/ecto-changeset/lib/workspace_sync_context/webhook_payload.ex
+  examples/canonical-schema-validation/elixir/ecto-changeset/lib/workspace_sync_context/ingestion_source.ex
+  examples/canonical-schema-validation/elixir/ecto-changeset/lib/workspace_sync_context/review_request.ex
+  examples/canonical-schema-validation/elixir/ecto-changeset/README.md
+
+--- lib/workspace_sync_context/workspace_config.ex ---
+
+  defmodule WorkspaceSyncContext.WorkspaceConfig do
+    use Ecto.Schema
+    import Ecto.Changeset
+
+    @valid_plans ~w[free pro enterprise]
+
+    embedded_schema do
+      field :id, :string
+      field :name, :string
+      field :slug, :string
+      field :owner_email, :string
+      field :plan, :string
+      field :max_sync_runs, :integer
+      field :tags, {:array, :string}, default: []
+      field :created_at, :utc_datetime_usec
+      field :suspended_until, :utc_datetime_usec
+      embeds_one :settings, WorkspaceSyncContext.SettingsBlock
+    end
+
+    def changeset(config, attrs) do
+      config
+      |> cast(attrs, [:id, :name, :slug, :owner_email, :plan, :max_sync_runs,
+                       :tags, :created_at, :suspended_until])
+      |> cast_embed(:settings, required: true)
+      |> validate_required([:id, :name, :slug, :owner_email, :plan,
+                             :max_sync_runs, :created_at])
+      |> validate_length(:name, min: 3, max: 100)
+      |> validate_format(:slug, ~r/^[a-z][a-z0-9-]{1,48}[a-z0-9]$/)
+      |> validate_format(:owner_email, ~r/.+@.+\..+/)
+      |> validate_inclusion(:plan, @valid_plans)
+      |> validate_number(:max_sync_runs, greater_than_or_equal_to: 1, less_than_or_equal_to: 1000)
+      |> validate_length(:tags, max: 20)
+      |> validate_plan_run_limit()
+    end
+
+    defp validate_plan_run_limit(changeset) do
+      plan = get_field(changeset, :plan)
+      max_runs = get_field(changeset, :max_sync_runs)
+      limit = case plan do
+        "free"       -> 10
+        "pro"        -> 100
+        "enterprise" -> 1000
+        _            -> 1000
+      end
+      if max_runs && max_runs > limit do
+        add_error(changeset, :max_sync_runs,
+          "must be <= #{limit} for #{plan} plan")
+      else
+        changeset
+      end
+    end
+  end
+
+Implement all five modules (WorkspaceConfig, SyncRun, WebhookPayload, IngestionSource,
+ReviewRequest). For SyncRun:
+  - Cast datetime fields; validate cross-field rules in a private function:
+    defp validate_finished_timestamps(changeset) do
+      started_at = get_field(changeset, :started_at)
+      finished_at = get_field(changeset, :finished_at)
+      if finished_at && is_nil(started_at) do
+        add_error(changeset, :started_at, "must be present when finished_at is set")
+      else
+        changeset
+      end
+    end
+
+For WebhookPayload:
+  - Use a :string field for event_type; validate_inclusion for allowed values
+  - The `data` field: use :map type. After cast, implement discriminated
+    dispatch in a private function that reads event_type and validates the
+    data map structure. Document: "Ecto.Changeset handles structured schemas.
+    Discriminated unions require manual dispatch — cast :map, then validate
+    the map's shape based on event_type."
+
+Add a module-level doc comment to each module:
+  @moduledoc """
+  Lane A example using Ecto.Changeset.
+  The changeset/2 function defines the cast-then-validate pipeline.
+  Casting: converts raw params to typed struct fields.
+  Validation: checks constraints and cross-field rules.
+  These are two distinct phases in the pipeline.
+  """
+
+--- mix.exs ---
+
+defp deps do
+  [{:ecto, "~> 3.12"}]
+end
+
+--- README.md ---
+
+  # Elixir — Ecto.Changeset (Lane A: Cast-Then-Validate Pipeline)
+
+  ## Lane
+  Lane A: runtime validation via a pipeline of cast and validate operations.
+
+  ## What Ecto.Changeset Is
+  4–5 sentences. A changeset is a data structure holding: the original data,
+  the changes, and any accumulated validation errors. It is NOT a schema in the
+  JSON Schema sense — it is a pipeline result. You create one with cast/3, chain
+  validation functions on it, and inspect it for validity. This functional
+  pipeline style is idiomatic Elixir: pure functions, explicit state, no mutations.
+
+  ## Cast vs Validate: Two Distinct Phases
+  3–4 sentences. cast/3 converts raw params (string keys, string values) to the
+  struct's typed fields. validate_*/2 then checks constraints. A changeset can
+  fail at the cast phase (uncastable type) or the validation phase (constraint
+  violated). Understanding this separation is key to debugging Ecto errors.
+
+  ## Cross-Field Rules
+  Private functions using get_field and add_error. More verbose than Konform's
+  DSL but explicit and readable. The pipeline makes it easy to see the order
+  of operations.
+
+  ## Discriminated Union Handling
+  Ecto does not have native discriminated union support in the sense of sealed
+  classes or tagged unions. Manual dispatch on event_type after cast. Document.
+
+  ## Comparison with Norm
+  See elixir/norm/. Norm is declarative and spec-oriented; Ecto.Changeset is
+  pipeline-oriented. Choose based on whether you prefer spec-first or pipeline-first.
+
+================================================================================
+PART 6: ELIXIR — NORM (Lane A: Declarative Spec-Oriented)
+================================================================================
+
+Create: examples/canonical-schema-validation/elixir/norm/
+
+Required files:
+  examples/canonical-schema-validation/elixir/norm/mix.exs
+  examples/canonical-schema-validation/elixir/norm/lib/workspace_sync_context/specs.ex
+  examples/canonical-schema-validation/elixir/norm/README.md
+
+--- lib/workspace_sync_context/specs.ex ---
+
+  defmodule WorkspaceSyncContext.Specs do
+    import Norm
+
+    def workspace_config_spec do
+      schema(%{
+        id: spec(is_binary()),
+        name: spec(is_binary() and (&(String.length(&1) >= 3)) and (&(String.length(&1) <= 100))),
+        slug: spec(is_binary() and (&Regex.match?(~r/^[a-z][a-z0-9-]{1,48}[a-z0-9]$/, &1))),
+        owner_email: spec(is_binary() and (&String.contains?(&1, "@"))),
+        plan: one_of(["free", "pro", "enterprise"]),
+        max_sync_runs: spec(is_integer() and (&(&1 >= 1)) and (&(&1 <= 1000))),
+        settings: settings_block_spec(),
+        tags: coll_of(spec(is_binary()), [min_count: 0, max_count: 20]),
+        created_at: spec(is_binary()),
+        suspended_until: spec(is_nil() or is_binary())
+      })
+    end
+
+    # Usage: Norm.conform!(data, workspace_config_spec())
+    # Returns the data if valid, raises Norm.MismatchError if invalid
+    # Or: Norm.conform(data, workspace_config_spec()) -> {:ok, data} | {:error, errors}
+
+  Implement at minimum workspace_config_spec and sync_run_spec.
+  For cross-field rules on SyncRun: Norm does not have a native cross-field
+  spec combinator. Use a custom spec:
+    spec(fn run ->
+      if run.finished_at, do: !is_nil(run.started_at), else: true
+    end)
+  Document the limitation.
+
+--- README.md ---
+
+  # Elixir — Norm (Lane A: Declarative Spec-Oriented Validation)
+
+  ## Lane
+  Lane A: declarative specs conforming data. Inspired by Clojure's spec.
+
+  ## What Norm Is
+  3–4 sentences. Norm provides schema/1 and spec/1 for defining data shapes
+  and constraints. conform/2 returns {:ok, data} or {:error, errors}.
+  The mental model is "data conforms to a spec" rather than "run validation
+  functions on a changeset."
+
+  ## Comparison with Ecto.Changeset
+  4–5 sentences. Ecto.Changeset: stateful pipeline (cast → validate → inspect).
+  Norm: stateless spec conformance (define spec → conform data). Ecto integrates
+  with Phoenix and database changesets. Norm is more general-purpose and not
+  tied to the Ecto ecosystem. Choose Ecto.Changeset for Phoenix web apps;
+  choose Norm for libraries, pure-data validation, or when Ecto is not in scope.
+
+  ## Cross-Field Rules
+  Norm specs can include arbitrary predicates, so cross-field rules are possible
+  but not as ergonomic as Ecto.Changeset's named functions. Document with example.
+
+================================================================================
+PART 7: ELIXIR — EX_JSON_SCHEMA (Lane B: JSON Schema Contract Workflows)
+================================================================================
+
+Create: examples/canonical-schema-validation/elixir/ex-json-schema/
+
+Required files:
+  examples/canonical-schema-validation/elixir/ex-json-schema/mix.exs
+  examples/canonical-schema-validation/elixir/ex-json-schema/lib/schema_validator.ex
+  examples/canonical-schema-validation/elixir/ex-json-schema/workspace_config.schema.json
+  examples/canonical-schema-validation/elixir/ex-json-schema/README.md
+
+--- lib/schema_validator.ex ---
+
+  defmodule WorkspaceSyncContext.SchemaValidator do
+    @moduledoc """
+    Lane B: validate data against a JSON Schema document using ex_json_schema.
+    This is the contract-first approach: the schema is the source of truth,
+    not the application code.
+    """
+
+    def load_schema(path) do
+      path |> File.read!() |> Jason.decode!() |> ExJsonSchema.Schema.resolve()
+    end
+
+    def validate_against_schema(data, schema) do
+      case ExJsonSchema.Validator.validate(schema, data) do
+        :ok -> {:ok, data}
+        {:error, errors} -> {:error, errors}
+      end
+    end
+
+    def demo do
+      schema = load_schema("workspace_config.schema.json")
+
+      # Load valid fixture
+      valid_data = "../../domain/fixtures/valid/workspace_config_basic.json"
+                   |> File.read!() |> Jason.decode!()
+      IO.puts("Valid fixture: #{inspect(validate_against_schema(valid_data, schema))}")
+
+      # Load invalid fixture
+      invalid_data = "../../domain/fixtures/invalid/workspace_config_bad_slug.json"
+                     |> File.read!() |> Jason.decode!()
+      IO.puts("Invalid fixture: #{inspect(validate_against_schema(invalid_data, schema))}")
+    end
+  end
+
+--- workspace_config.schema.json ---
+
+A JSON Schema document for WorkspaceConfig. Use the same schema as
+committed in rust/serde-schemars/ or write a parallel one that matches
+domain/models.md. Include a "$comment" field:
+  "$comment": "WorkspaceSyncContext domain — WorkspaceConfig schema.
+   Used by Elixir ex_json_schema Lane B example and by drift-detection tests."
+
+--- mix.exs ---
+
+defp deps do
+  [
+    {:ex_json_schema, "~> 0.10"},
+    {:jason, "~> 1.4"}
+  ]
+end
+
+--- README.md ---
+
+  # Elixir — ex_json_schema (Lane B: JSON Schema Contract Workflows)
+
+  ## Lane
+  Lane B: validate data against a JSON Schema document. Contract-first.
+
+  ## What ex_json_schema Does
+  3–4 sentences. ex_json_schema is a JSON Schema validator for Elixir. You
+  provide a JSON Schema document and data (as an Elixir map); it returns :ok
+  or {:error, errors}. This is the contract-first lane: the JSON Schema is
+  the source of truth, not the Elixir code. Use this when you receive a schema
+  from an external source or when you want to validate data against a published
+  contract.
+
+  ## Use Cases
+  - Validating webhook payloads against a published JSON Schema
+  - Contract-first API design: schema is published first, implementation conforms
+  - Drift detection: validate that the runtime data matches the committed schema
+  - Cross-language interoperability: the same JSON Schema works in Elixir,
+    Python (jsonschema), Rust (jsonschema crate), TypeScript (Ajv)
+
+  ## Comparison with Ecto.Changeset
+  ex_json_schema validates against a JSON Schema document; Ecto.Changeset
+  validates against your Elixir schema definition. For most Phoenix app use cases,
+  Ecto.Changeset is the right tool. Use ex_json_schema when you need schema-first
+  validation or cross-language contract compatibility.
+
+================================================================================
+PART 8: SMOKE TESTS
+================================================================================
+
+Create:
+  verification/schema-validation/kotlin/__init__.py
+  verification/schema-validation/kotlin/test_konform.py
+  verification/schema-validation/kotlin/test_hibernate_validator.py
+  verification/schema-validation/ruby/__init__.py
+  verification/schema-validation/ruby/test_dry_validation.py
+  verification/schema-validation/ruby/test_dry_schema.py
+  verification/schema-validation/elixir/__init__.py
+  verification/schema-validation/elixir/test_ecto_changeset.py
+  verification/schema-validation/elixir/test_norm.py
+  verification/schema-validation/elixir/test_ex_json_schema.py
+
+All test files use Python unittest. Write structural smoke tests (file existence,
+README content, key pattern checks) that run without the target language toolchain.
+Add execution tests that skip if the toolchain (gradlew, ruby, mix) is unavailable.
+
+--- test_konform.py ---
+
+Test class: TestKonformStructure
+  - test_validators_kt_exists
+  - test_models_kt_no_validate_annotations
+    Read Models.kt. Assert it does NOT contain "@field:NotBlank" or
+    "@field:Email" (those are Hibernate, not Konform).
+  - test_readme_mentions_dsl
+    Assert README.md contains "DSL" or "lambda".
+  - test_readme_compares_with_hibernate
+    Assert README.md contains "Hibernate" or "annotation".
+
+--- test_hibernate_validator.py ---
+
+Test class: TestHibernateValidatorStructure
+  - test_models_kt_has_annotations
+    Read Models.kt. Assert it contains "@field:NotBlank" or "@field:Email".
+  - test_readme_mentions_jakarta
+    Assert README.md contains "Jakarta" or "Bean Validation".
+  - test_readme_mentions_custom_annotation_for_cross_field
+    Assert README.md contains "custom" and ("annotation" or "cross-field" or "cross field").
+
+--- test_dry_validation.py ---
+
+Test class: TestDryValidationStructure
+  - test_all_five_contracts_exist
+    Assert workspace_config_contract.rb, sync_run_contract.rb,
+    webhook_payload_contract.rb, ingestion_source_contract.rb,
+    review_request_contract.rb all exist.
+  - test_cross_field_rule_in_sync_run_contract
+    Read sync_run_contract.rb. Assert it contains "finished_at" and "started_at".
+  - test_readme_explains_dry_schema_layering
+    Assert README.md contains "dry-schema" or "params block".
+
+--- test_ex_json_schema.py ---
+
+Test class: TestExJsonSchemaLaneB
+  - test_schema_json_exists
+    Assert workspace_config.schema.json exists.
+  - test_schema_is_valid_json
+    Load and json.parse() it.
+  - test_schema_has_properties
+    Assert 'properties' key exists in the parsed schema.
+  - test_readme_mentions_contract_first
+    Assert README.md contains "contract-first" or "contract first".
+  - test_readme_compares_with_ecto
+    Assert README.md contains "Ecto" or "changeset".
+
+================================================================================
+PART 9: UPDATE CATALOG.md
+================================================================================
+
+Update examples/canonical-schema-validation/CATALOG.md.
+
+Change status to [x] for:
+  Kotlin / Konform              → [x]
+  Kotlin / Hibernate Validator  → [x]
+  Ruby / dry-validation         → [x]
+  Ruby / dry-schema             → [x]
+  Elixir / Ecto.Changeset       → [x]
+  Elixir / Norm                 → [x]
+  Elixir / ex_json_schema       → [x]
+
+All 18 planned examples across 7 languages should now show [x] (implemented).
+
+================================================================================
+VERIFICATION
+================================================================================
+
+Final gate (all must pass):
+
+  python -m unittest discover -s verification/schema-validation -p "test_*.py" -v
+  python -m unittest discover -s verification/unit -p "test_*.py" -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Manual checks:
+  - Konform Models.kt has NO @field: annotations
+  - Hibernate Validator Models.kt HAS @field: annotations
+  - Elixir ex-json-schema has workspace_config.schema.json as committed artifact
+  - CATALOG.md shows all 18 examples as [x] (all implemented)
+  - Ecto.Changeset module docstrings explain cast vs validate distinction
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+Use grouped commits prefixed with [PROMPT_117]. Use `git add -p`.
+
+  1. [PROMPT_117] add Kotlin Konform (Lane A, DSL) schema validation example
+     Stage: examples/canonical-schema-validation/kotlin/konform/
+
+  2. [PROMPT_117] add Kotlin Hibernate Validator (Lane A, JVM annotation) example
+     Stage: examples/canonical-schema-validation/kotlin/hibernate-validator/
+
+  3. [PROMPT_117] add Ruby dry-validation (Lane A, contract DSL) example
+     Stage: examples/canonical-schema-validation/ruby/dry-validation/
+
+  4. [PROMPT_117] add Ruby dry-schema (Lane A/B, schema layer) example
+     Stage: examples/canonical-schema-validation/ruby/dry-schema/
+
+  5. [PROMPT_117] add Elixir Ecto.Changeset (Lane A, cast-then-validate) example
+     Stage: examples/canonical-schema-validation/elixir/ecto-changeset/
+
+  6. [PROMPT_117] add Elixir Norm (Lane A, declarative spec) example
+     Stage: examples/canonical-schema-validation/elixir/norm/
+
+  7. [PROMPT_117] add Elixir ex_json_schema (Lane B, contract-first) example
+     Stage: examples/canonical-schema-validation/elixir/ex-json-schema/
+
+  8. [PROMPT_117] add Kotlin, Ruby, Elixir smoke tests
+     Stage: verification/schema-validation/kotlin/,
+            verification/schema-validation/ruby/,
+            verification/schema-validation/elixir/
+
+  9. [PROMPT_117] update CATALOG.md — all 18 examples implemented
+     Stage: examples/canonical-schema-validation/CATALOG.md
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Implement all 7 examples in this prompt (2 Kotlin, 2 Ruby, 3 Elixir)
+  - Keep Konform and Hibernate Validator clearly distinct — separate directories,
+    different design emphasis in each README
+  - Show dry-schema as a first-class artifact, not just a dry-validation prerequisite
+  - Make the Ecto.Changeset cast-vs-validate distinction explicit in the module doc
+  - Write structural smoke tests for all 7 examples (run without toolchain)
+
+DO NOT:
+  - Add @field: annotations to the Konform models
+  - Reduce Kotlin validation to "just JVM annotations" — Konform is Kotlin-first
+  - Present dry-schema as merely a utility for dry-validation
+  - Skip Norm or ex_json_schema — they are required (not optional add-ons)
+  - Use pytest — unittest only
+  - Change any previously committed example (PROMPT_115, PROMPT_116 outputs)
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+
+  - All 7 new example directories exist with implementation files
+  - Konform Models.kt has no annotation-based validation
+  - Hibernate Validator Models.kt has @field: annotations
+  - Elixir Ecto.Changeset changeset/2 functions exist for all 5 models
+  - Elixir ex-json-schema has workspace_config.schema.json committed
+  - All smoke tests pass (structural checks pass without toolchain)
+  - CATALOG.md shows all 18 examples as [x]
+  - python scripts/validate_context.py passes
+
+PROMPT_118 will harden the arc: docs, navigation, drift detection, parity matrix
+runner, router polish, and the final arc completion summary.

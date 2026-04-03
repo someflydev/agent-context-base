@@ -1,0 +1,963 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one
+fresh coding-assistant session with commit prefixes like `[PROMPT_114]`.
+
+PROMPT_113: Schema Validation Arc — Foundation.
+  Created: doctrine (schema-validation-contracts.md), archetype
+  (polyglot-validation-lab.md), 7 language stacks, routing updates,
+  manifest (schema-validation-polyglot.yaml), 2 skills
+  (schema-validation-lane-selection.md, contract-generation-path-selection.md),
+  and workflow (add-schema-validation-example.md).
+
+This prompt (PROMPT_114) creates the shared corpus layer:
+
+  - The problem domain (WorkspaceSyncContext) with a language-agnostic model spec
+  - The shared fixture corpus (valid / invalid / edge payloads in JSON)
+  - The catalog (CATALOG.md) registering all planned examples by language, library, lane
+  - The parity matrix (PARITY.md) encoding cross-language consistency rules
+  - Fixture validation tests
+  - The cross-language smoke-test scaffold
+
+                [SCHEMA VALIDATION ARC: Prompt 2 of 6 — Shared Corpus]
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                    (run; study output)
+  4. memory/INDEX.md
+
+Read PROMPT_113 outputs before touching any file:
+  5. context/doctrine/schema-validation-contracts.md   (READ — Rules 6 and 8 apply here)
+  6. context/archetypes/polyglot-validation-lab.md     (READ — or the section in polyglot-lab.md)
+  7. context/stacks/schema-validation-rust.yaml        (READ — Rust separation of concerns)
+  8. context/stacks/schema-validation-typescript.yaml  (READ — io-ts, TypeBox nuances)
+  9. context/workflows/add-schema-validation-example.md (READ — domain requirements)
+ 10. context/skills/schema-validation-lane-selection.md (READ — lane definitions)
+
+Look at existing corpus/fixture patterns in the repo:
+ 11. examples/canonical-terminal/                       (SKIM — how canonical example dirs are structured)
+ 12. verification/terminal/                             (SKIM — how verification is structured)
+ 13. Any existing fixture files under verification/fixtures/ or examples/
+
+Run verification before touching any file:
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Do NOT begin writing until you have read all of the above.
+
+================================================================================
+BACKGROUND: WHY A SHARED CORPUS MATTERS
+================================================================================
+
+Cross-language validation comparison only means something when every example
+is solving the same problem. If Python validates a User object and TypeScript
+validates an Order object, you cannot compare ergonomics, error messages, or
+library philosophy — you are just looking at different programs.
+
+PROMPT_114 establishes:
+
+  1. A single shared domain (WorkspaceSyncContext) — the same five models
+     appear in every language example across all seven languages.
+
+  2. A shared fixture corpus — the same JSON payloads are used in all language
+     smoke tests. A valid workspace fixture that Python accepts must be accepted
+     by Go, Rust, TypeScript, Kotlin, Ruby, and Elixir (modulo coercion
+     differences that are explicitly documented).
+
+  3. A parity matrix — encoding what should behave identically across all
+     implementations, what is expected to differ, and why.
+
+  4. A catalog — a navigation index over all planned and implemented examples.
+
+================================================================================
+PART 1: CREATE examples/canonical-schema-validation/ DIRECTORY STRUCTURE
+================================================================================
+
+Create the following directory structure. Each item below that is a file needs
+actual content (not just a placeholder). Sub-items are the files within dirs.
+
+  examples/canonical-schema-validation/
+    README.md                           (see Part 2)
+    CATALOG.md                          (see Part 4)
+    PARITY.md                           (see Part 5)
+    domain/
+      README.md                         (brief: what the domain is, why it was chosen)
+      models.md                         (full language-agnostic domain spec — see Part 3)
+      fixtures/
+        README.md                       (describes fixture corpus structure)
+        valid/
+          workspace_config_basic.json
+          workspace_config_full.json
+          sync_run_pending.json
+          sync_run_succeeded.json
+          webhook_payload_sync_completed.json
+          webhook_payload_sync_failed.json
+          webhook_payload_workspace_suspended.json
+          ingestion_source_http_poll.json
+          ingestion_source_webhook_push.json
+          review_request_normal.json
+          review_request_critical.json
+        invalid/
+          workspace_config_bad_slug.json
+          workspace_config_plan_too_many_runs.json
+          sync_run_timestamps_inverted.json
+          sync_run_duration_missing_when_finished.json
+          webhook_payload_bad_signature_format.json
+          ingestion_source_poll_interval_missing.json
+          review_request_no_reviewers.json
+          review_request_critical_no_due_date.json
+        edge/
+          workspace_config_max_tags.json
+          sync_run_zero_records.json
+          webhook_payload_unknown_event_type.json
+          review_request_duplicate_content_ids.json
+
+  python/     (stub dir — created in PROMPT_115)
+  typescript/ (stub dir — created in PROMPT_115)
+  go/         (stub dir — created in PROMPT_116)
+  rust/       (stub dir — created in PROMPT_116)
+  kotlin/     (stub dir — created in PROMPT_117)
+  ruby/       (stub dir — created in PROMPT_117)
+  elixir/     (stub dir — created in PROMPT_117)
+
+Create the stub language directories with a single README.md each:
+  "Examples for {Language} will be created in PROMPT_1{15/16/17}."
+Do not create any implementation files in the language subdirectories yet.
+
+================================================================================
+PART 2: CREATE examples/canonical-schema-validation/README.md
+================================================================================
+
+Create: examples/canonical-schema-validation/README.md
+
+Required sections:
+
+  # Canonical Schema Validation Examples
+
+  ## Purpose
+  (3–4 sentences) Explain the three lanes (A/B/C), the shared domain, and why
+  comparing libraries across languages requires a shared problem space.
+
+  ## Domain
+  Name the domain: WorkspaceSyncContext. List the five models with one-line
+  descriptions. Link to domain/models.md.
+
+  ## Languages and Libraries
+  A table with columns: Language | Lane A (Runtime) | Lane B (Contract) | Lane C (Hybrid).
+
+  Fill the table:
+  | Language   | Lane A (Runtime)                          | Lane B (Contract)                      | Lane C (Hybrid)         |
+  |------------|-------------------------------------------|----------------------------------------|-------------------------|
+  | Python     | Pydantic, marshmallow                     | Pydantic model_json_schema()           | Pydantic                |
+  | TypeScript | Zod, Valibot, io-ts                       | TypeBox + Ajv                          | Zod, io-ts              |
+  | Go         | go-playground/validator, ozzo-validation  | External tooling (swaggo, kin-openapi) | —                       |
+  | Rust       | validator, garde                          | serde + schemars                       | —                       |
+  | Kotlin     | Konform, Hibernate Validator              | SpringDoc / kotlinx.serialization      | —                       |
+  | Ruby       | dry-validation, dry-schema                | dry-schema JSON Schema output          | —                       |
+  | Elixir     | Ecto.Changeset, Norm                      | ex_json_schema                         | —                       |
+
+  ## Fixture Corpus
+  Brief description. Link to domain/fixtures/. Note that valid fixtures must pass
+  in all implementations and invalid fixtures must be rejected in all implementations
+  (edge fixtures have documented per-language behavior).
+
+  ## Navigation
+  - CATALOG.md — full inventory of all examples by status
+  - PARITY.md — cross-language consistency rules and documented divergences
+  - domain/models.md — language-agnostic model spec
+  - domain/fixtures/ — shared JSON payload corpus
+
+  ## Verification
+  Point to verification/schema-validation/ (to be created alongside examples).
+  Note the smoke test entry point (to be established in PROMPT_115–117).
+
+Target length: 60–80 lines.
+
+================================================================================
+PART 3: CREATE examples/canonical-schema-validation/domain/models.md
+================================================================================
+
+Create: examples/canonical-schema-validation/domain/models.md
+
+This is the single canonical definition of the WorkspaceSyncContext domain.
+Write it as a language-agnostic specification, not as code. Future examples in
+all seven languages will implement exactly these models.
+
+Required content:
+
+  # WorkspaceSyncContext Domain Specification
+
+  ## Overview
+  (3–4 sentences) What this domain represents — a workspace-scoped sync system
+  where workspaces have configuration, sync jobs run against sources, webhook
+  events are emitted, ingestion sources are registered, and review requests can
+  be created for content. Designed to surface validation complexity across all
+  three lanes.
+
+  ## Design Goals
+  A bulleted list of what this domain exercises:
+    - Nested objects (WorkspaceConfig → SettingsBlock)
+    - Enum / tagged variants (SyncRun.status, WebhookPayload.event_type — discriminated)
+    - Optional vs nullable (SyncRun.started_at: null if pending; not absent)
+    - Collections with constraints (ReviewRequest.reviewer_emails: 1..5 items)
+    - Cross-field validation (SyncRun.finished_at must be after started_at)
+    - Coercion / parsing sensitivity (WebhookPayload.timestamp: ISO 8601 string → datetime)
+    - Boundary validation (WorkspaceConfig.max_sync_runs: 1..1000)
+    - Discriminated union / sum type (WebhookPayload.data varies by event_type)
+
+  ## Model Definitions
+
+  Use a consistent pseudocode format (field: Type | constraints | notes).
+  Write every model in full. Do not abbreviate.
+
+  ### SettingsBlock
+    retry_max:          integer,   0..10
+    timeout_seconds:    integer,   10..3600
+    notify_on_failure:  boolean
+    webhook_url:        string | null,  valid URL when present, null otherwise
+
+  ### WorkspaceConfig
+    id:                 UUID (string, RFC 4122)
+    name:               string,    min 3, max 100 chars
+    slug:               string,    lowercase letters, digits, hyphens only;
+                                   pattern: ^[a-z][a-z0-9-]{1,48}[a-z0-9]$
+    owner_email:        string,    valid email address
+    plan:               enum(free | pro | enterprise)
+    max_sync_runs:      integer,   1..1000
+                        cross-field: if plan == "enterprise", max_sync_runs may be 1..1000;
+                                     if plan == "free", max_sync_runs must be 1..10;
+                                     if plan == "pro", max_sync_runs must be 1..100
+    settings:           SettingsBlock (nested, required)
+    tags:               list[string], 0..20 items, each item 1..50 chars
+    created_at:         datetime (ISO 8601 string), not null, not future-dated
+    suspended_until:    datetime | null (ISO 8601 string)
+
+  ### SyncRun
+    run_id:             UUID
+    workspace_id:       UUID
+    status:             enum(pending | running | succeeded | failed | cancelled)
+    trigger:            enum(manual | scheduled | webhook)
+    started_at:         datetime | null  (null when status == pending)
+    finished_at:        datetime | null  (null when status == pending or running)
+    duration_ms:        integer | null   (null when not finished; >= 0 when present)
+    records_ingested:   integer | null   (null when status != succeeded; 0..10_000_000)
+    error_code:         string | null    (present only when status == failed)
+    cross-field rules:
+      - if finished_at is present, started_at must also be present
+      - if finished_at is present, finished_at must be >= started_at
+      - if finished_at is present, duration_ms must be present
+      - if status == failed, error_code must be present
+      - if status != failed, error_code must be null
+
+  ### WebhookPayload
+    event_type:         enum(sync.completed | sync.failed | workspace.suspended)
+    payload_version:    string, one of: "v1" | "v2" | "v3"
+    timestamp:          string, ISO 8601 datetime; parseable from multiple common formats
+                        (e.g., "2024-01-15T12:00:00Z", "2024-01-15T12:00:00+00:00")
+    signature:          string, lowercase hex, exactly 64 chars (HMAC-SHA256 representation)
+    data:               discriminated union — structure depends on event_type:
+      when event_type == "sync.completed":
+        SyncCompletedData { run_id: UUID, workspace_id: UUID, duration_ms: int >= 0,
+                            records_ingested: int 0..10_000_000 }
+      when event_type == "sync.failed":
+        SyncFailedData { run_id: UUID, workspace_id: UUID, error_code: string,
+                         error_message: string max 500 chars }
+      when event_type == "workspace.suspended":
+        WorkspaceSuspendedData { workspace_id: UUID, suspended_until: datetime,
+                                 reason: enum(policy_violation | payment_failure | manual) }
+
+  ### IngestionSource
+    source_id:          UUID
+    source_type:        enum(http_poll | webhook_push | file_watch | database_cdc)
+    config:             discriminated union on source_type:
+      http_poll:        HttpPollConfig { url: string (valid URL), method: enum(GET|POST),
+                                         headers: map[string, string] 0..20 entries }
+      webhook_push:     WebhookPushConfig { path: string starts with "/", secret: string }
+      file_watch:       FileWatchConfig { path: string, pattern: string (glob) }
+      database_cdc:     DatabaseCdcConfig { dsn: string, table: string, cursor_field: string }
+    enabled:            boolean
+    poll_interval_seconds: integer | null
+      cross-field: if source_type == http_poll, poll_interval_seconds must be present >= 60;
+                   if source_type != http_poll, poll_interval_seconds must be null
+
+  ### ReviewRequest
+    request_id:         UUID
+    workspace_id:       UUID
+    reviewer_emails:    list[string], 1..5 items, each a valid email, no duplicates
+    content_ids:        list[UUID], 1..50 items, no duplicates
+    priority:           enum(low | normal | high | critical)
+    due_at:             datetime | null
+      cross-field: if priority == critical, due_at must be present
+    notes:              string | null, max 2000 chars when present
+
+  ## Library-Specific Considerations
+
+  A section noting where language/library behavior will legitimately diverge:
+
+    - Coercion: Some libraries parse "2024-01-15T12:00:00Z" to a datetime automatically
+      (Pydantic, Ecto.Changeset); others require an explicit parse step (Go, Rust validator).
+      Document this in each example; do not fail parity rules for it.
+
+    - Nullable vs optional: In some languages, null and absent are the same (Ruby, Elixir).
+      In others (TypeScript, Rust Option<T>), they are distinct. Examples must handle this
+      explicitly and the PARITY.md rules must note the expected divergence.
+
+    - Error accumulation: Pydantic, Zod, Konform, and dry-validation accumulate multiple
+      errors. Go's validator and Rust's validator may return all errors or only the first.
+      Both behaviors are valid; the smoke tests must not require a specific error count.
+
+    - Discriminated unions: Rust (enums), TypeScript (discriminated union types), Kotlin
+      (sealed classes) have native constructs. Go and Ruby require more manual dispatch.
+      Examples must show the idiomatic approach for each language.
+
+Target length: 110–150 lines.
+
+================================================================================
+PART 4: CREATE FIXTURE FILES
+================================================================================
+
+Create all fixture JSON files listed in Part 1. Each must be valid JSON.
+Below are the required contents. Write them exactly — these are the canonical
+fixtures used by all language smoke tests.
+
+--- valid/workspace_config_basic.json ---
+{
+  "id": "550e8400-e29b-41d4-a716-446655440001",
+  "name": "Acme Workspace",
+  "slug": "acme-workspace",
+  "owner_email": "admin@acme.example.com",
+  "plan": "pro",
+  "max_sync_runs": 50,
+  "settings": {
+    "retry_max": 3,
+    "timeout_seconds": 300,
+    "notify_on_failure": true,
+    "webhook_url": null
+  },
+  "tags": ["production", "primary"],
+  "created_at": "2024-01-15T00:00:00Z",
+  "suspended_until": null
+}
+
+--- valid/workspace_config_full.json ---
+{
+  "id": "550e8400-e29b-41d4-a716-446655440002",
+  "name": "Enterprise Workspace Full",
+  "slug": "enterprise-full",
+  "owner_email": "ops@enterprise.example.com",
+  "plan": "enterprise",
+  "max_sync_runs": 500,
+  "settings": {
+    "retry_max": 5,
+    "timeout_seconds": 1800,
+    "notify_on_failure": false,
+    "webhook_url": "https://hooks.enterprise.example.com/notify"
+  },
+  "tags": ["prod", "tier-1", "monitored"],
+  "created_at": "2023-06-01T08:00:00Z",
+  "suspended_until": null
+}
+
+--- valid/sync_run_pending.json ---
+{
+  "run_id": "660e8400-e29b-41d4-a716-446655440001",
+  "workspace_id": "550e8400-e29b-41d4-a716-446655440001",
+  "status": "pending",
+  "trigger": "scheduled",
+  "started_at": null,
+  "finished_at": null,
+  "duration_ms": null,
+  "records_ingested": null,
+  "error_code": null
+}
+
+--- valid/sync_run_succeeded.json ---
+{
+  "run_id": "660e8400-e29b-41d4-a716-446655440002",
+  "workspace_id": "550e8400-e29b-41d4-a716-446655440001",
+  "status": "succeeded",
+  "trigger": "manual",
+  "started_at": "2024-01-15T10:00:00Z",
+  "finished_at": "2024-01-15T10:05:30Z",
+  "duration_ms": 330000,
+  "records_ingested": 42500,
+  "error_code": null
+}
+
+--- valid/webhook_payload_sync_completed.json ---
+{
+  "event_type": "sync.completed",
+  "payload_version": "v2",
+  "timestamp": "2024-01-15T10:05:31Z",
+  "signature": "a3f1b2c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2",
+  "data": {
+    "run_id": "660e8400-e29b-41d4-a716-446655440002",
+    "workspace_id": "550e8400-e29b-41d4-a716-446655440001",
+    "duration_ms": 330000,
+    "records_ingested": 42500
+  }
+}
+
+--- valid/webhook_payload_sync_failed.json ---
+{
+  "event_type": "sync.failed",
+  "payload_version": "v2",
+  "timestamp": "2024-01-15T11:00:00Z",
+  "signature": "b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5",
+  "data": {
+    "run_id": "660e8400-e29b-41d4-a716-446655440003",
+    "workspace_id": "550e8400-e29b-41d4-a716-446655440001",
+    "error_code": "SOURCE_TIMEOUT",
+    "error_message": "HTTP poll source timed out after 300 seconds"
+  }
+}
+
+--- valid/webhook_payload_workspace_suspended.json ---
+{
+  "event_type": "workspace.suspended",
+  "payload_version": "v1",
+  "timestamp": "2024-01-16T09:00:00Z",
+  "signature": "c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6",
+  "data": {
+    "workspace_id": "550e8400-e29b-41d4-a716-446655440002",
+    "suspended_until": "2024-01-23T09:00:00Z",
+    "reason": "payment_failure"
+  }
+}
+
+--- valid/ingestion_source_http_poll.json ---
+{
+  "source_id": "770e8400-e29b-41d4-a716-446655440001",
+  "source_type": "http_poll",
+  "config": {
+    "url": "https://api.partner.example.com/events",
+    "method": "GET",
+    "headers": {"Authorization": "Bearer token123"}
+  },
+  "enabled": true,
+  "poll_interval_seconds": 300
+}
+
+--- valid/ingestion_source_webhook_push.json ---
+{
+  "source_id": "770e8400-e29b-41d4-a716-446655440002",
+  "source_type": "webhook_push",
+  "config": {
+    "path": "/webhooks/partner-events",
+    "secret": "whsec_abc123def456"
+  },
+  "enabled": true,
+  "poll_interval_seconds": null
+}
+
+--- valid/review_request_normal.json ---
+{
+  "request_id": "880e8400-e29b-41d4-a716-446655440001",
+  "workspace_id": "550e8400-e29b-41d4-a716-446655440001",
+  "reviewer_emails": ["alice@acme.example.com", "bob@acme.example.com"],
+  "content_ids": [
+    "990e8400-e29b-41d4-a716-446655440001",
+    "990e8400-e29b-41d4-a716-446655440002"
+  ],
+  "priority": "normal",
+  "due_at": null,
+  "notes": "Please review the new ingestion source configuration."
+}
+
+--- valid/review_request_critical.json ---
+{
+  "request_id": "880e8400-e29b-41d4-a716-446655440002",
+  "workspace_id": "550e8400-e29b-41d4-a716-446655440001",
+  "reviewer_emails": ["alice@acme.example.com"],
+  "content_ids": ["990e8400-e29b-41d4-a716-446655440003"],
+  "priority": "critical",
+  "due_at": "2024-01-17T17:00:00Z",
+  "notes": null
+}
+
+--- invalid/workspace_config_bad_slug.json ---
+{
+  "id": "550e8400-e29b-41d4-a716-446655440010",
+  "name": "Bad Slug Workspace",
+  "slug": "Bad Slug! Has spaces",
+  "owner_email": "admin@test.example.com",
+  "plan": "free",
+  "max_sync_runs": 5,
+  "settings": {"retry_max": 1, "timeout_seconds": 60, "notify_on_failure": false, "webhook_url": null},
+  "tags": [],
+  "created_at": "2024-01-15T00:00:00Z",
+  "suspended_until": null
+}
+
+--- invalid/workspace_config_plan_too_many_runs.json ---
+{
+  "id": "550e8400-e29b-41d4-a716-446655440011",
+  "name": "Free Plan Overlimit",
+  "slug": "free-overlimit",
+  "owner_email": "admin@test.example.com",
+  "plan": "free",
+  "max_sync_runs": 50,
+  "settings": {"retry_max": 1, "timeout_seconds": 60, "notify_on_failure": false, "webhook_url": null},
+  "tags": [],
+  "created_at": "2024-01-15T00:00:00Z",
+  "suspended_until": null
+}
+
+--- invalid/sync_run_timestamps_inverted.json ---
+{
+  "run_id": "660e8400-e29b-41d4-a716-446655440010",
+  "workspace_id": "550e8400-e29b-41d4-a716-446655440001",
+  "status": "succeeded",
+  "trigger": "manual",
+  "started_at": "2024-01-15T10:05:30Z",
+  "finished_at": "2024-01-15T10:00:00Z",
+  "duration_ms": 0,
+  "records_ingested": 100,
+  "error_code": null
+}
+
+--- invalid/sync_run_duration_missing_when_finished.json ---
+{
+  "run_id": "660e8400-e29b-41d4-a716-446655440011",
+  "workspace_id": "550e8400-e29b-41d4-a716-446655440001",
+  "status": "succeeded",
+  "trigger": "scheduled",
+  "started_at": "2024-01-15T10:00:00Z",
+  "finished_at": "2024-01-15T10:05:30Z",
+  "duration_ms": null,
+  "records_ingested": 100,
+  "error_code": null
+}
+
+--- invalid/webhook_payload_bad_signature_format.json ---
+{
+  "event_type": "sync.completed",
+  "payload_version": "v2",
+  "timestamp": "2024-01-15T10:05:31Z",
+  "signature": "not-a-hex-string",
+  "data": {
+    "run_id": "660e8400-e29b-41d4-a716-446655440002",
+    "workspace_id": "550e8400-e29b-41d4-a716-446655440001",
+    "duration_ms": 1000,
+    "records_ingested": 10
+  }
+}
+
+--- invalid/ingestion_source_poll_interval_missing.json ---
+{
+  "source_id": "770e8400-e29b-41d4-a716-446655440010",
+  "source_type": "http_poll",
+  "config": {
+    "url": "https://api.partner.example.com/events",
+    "method": "GET",
+    "headers": {}
+  },
+  "enabled": true,
+  "poll_interval_seconds": null
+}
+
+--- invalid/review_request_no_reviewers.json ---
+{
+  "request_id": "880e8400-e29b-41d4-a716-446655440010",
+  "workspace_id": "550e8400-e29b-41d4-a716-446655440001",
+  "reviewer_emails": [],
+  "content_ids": ["990e8400-e29b-41d4-a716-446655440001"],
+  "priority": "normal",
+  "due_at": null,
+  "notes": null
+}
+
+--- invalid/review_request_critical_no_due_date.json ---
+{
+  "request_id": "880e8400-e29b-41d4-a716-446655440011",
+  "workspace_id": "550e8400-e29b-41d4-a716-446655440001",
+  "reviewer_emails": ["alice@acme.example.com"],
+  "content_ids": ["990e8400-e29b-41d4-a716-446655440001"],
+  "priority": "critical",
+  "due_at": null,
+  "notes": "Urgent review needed"
+}
+
+--- edge/workspace_config_max_tags.json ---
+{
+  "id": "550e8400-e29b-41d4-a716-446655440020",
+  "name": "Max Tags Workspace",
+  "slug": "max-tags-ws",
+  "owner_email": "admin@test.example.com",
+  "plan": "pro",
+  "max_sync_runs": 25,
+  "settings": {"retry_max": 0, "timeout_seconds": 10, "notify_on_failure": false, "webhook_url": null},
+  "tags": ["t01","t02","t03","t04","t05","t06","t07","t08","t09","t10",
+            "t11","t12","t13","t14","t15","t16","t17","t18","t19","t20"],
+  "created_at": "2024-01-15T00:00:00Z",
+  "suspended_until": null
+}
+
+--- edge/sync_run_zero_records.json ---
+{
+  "run_id": "660e8400-e29b-41d4-a716-446655440020",
+  "workspace_id": "550e8400-e29b-41d4-a716-446655440001",
+  "status": "succeeded",
+  "trigger": "scheduled",
+  "started_at": "2024-01-15T10:00:00Z",
+  "finished_at": "2024-01-15T10:00:01Z",
+  "duration_ms": 1000,
+  "records_ingested": 0,
+  "error_code": null
+}
+
+--- edge/webhook_payload_unknown_event_type.json ---
+{
+  "event_type": "workspace.renamed",
+  "payload_version": "v3",
+  "timestamp": "2024-01-15T10:05:31Z",
+  "signature": "a3f1b2c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2",
+  "data": {}
+}
+
+--- edge/review_request_duplicate_content_ids.json ---
+{
+  "request_id": "880e8400-e29b-41d4-a716-446655440020",
+  "workspace_id": "550e8400-e29b-41d4-a716-446655440001",
+  "reviewer_emails": ["alice@acme.example.com"],
+  "content_ids": [
+    "990e8400-e29b-41d4-a716-446655440001",
+    "990e8400-e29b-41d4-a716-446655440001"
+  ],
+  "priority": "normal",
+  "due_at": null,
+  "notes": null
+}
+
+================================================================================
+PART 5: CREATE examples/canonical-schema-validation/CATALOG.md
+================================================================================
+
+Create: examples/canonical-schema-validation/CATALOG.md
+
+This is the navigation index for all planned and implemented examples.
+
+Required structure:
+
+  # Schema Validation Canonical Examples — Catalog
+
+  ## Status Legend
+  - `[ ]` planned — not yet implemented
+  - `[~]` stub — directory exists, no working code yet
+  - `[x]` implemented — working code with passing smoke tests
+  - `[!]` gap — expected but blocked; reason documented
+
+  ## Python
+
+  | Status | Library        | Lane | Path                                     | Notes                           |
+  |--------|----------------|------|------------------------------------------|---------------------------------|
+  | [ ]    | Pydantic       | C    | python/pydantic/                         | Hybrid: type=validator=schema   |
+  | [ ]    | marshmallow    | A    | python/marshmallow/                      | Explicit schema, serialization  |
+
+  ## TypeScript
+
+  | Status | Library        | Lane | Path                                     | Notes                           |
+  |--------|----------------|------|------------------------------------------|---------------------------------|
+  | [ ]    | Zod            | C    | typescript/zod/                          | Mainstream hybrid               |
+  | [ ]    | Valibot        | A    | typescript/valibot/                      | Modular, lightweight            |
+  | [ ]    | io-ts          | A    | typescript/io-ts/                        | Codec/FP approach               |
+  | [ ]    | TypeBox + Ajv  | B    | typescript/typebox-ajv/                  | Contract-first, JSON Schema     |
+
+  ## Go
+
+  | Status | Library            | Lane | Path                                 | Notes                           |
+  |--------|--------------------|------|--------------------------------------|---------------------------------|
+  | [ ]    | go-playground/validator | A | go/go-playground-validator/         | Tag-based struct validation     |
+  | [ ]    | ozzo-validation    | A    | go/ozzo-validation/                  | Code-driven explicit rules      |
+  | [ ]    | OpenAPI generation | B    | go/openapi-generation/               | External contract lane; swaggo  |
+
+  ## Rust
+
+  | Status | Library            | Lane | Path                                 | Notes                                |
+  |--------|--------------------|------|--------------------------------------|--------------------------------------|
+  | [ ]    | validator          | A    | rust/validator/                      | Derive-based struct validation       |
+  | [ ]    | garde              | A    | rust/garde/                          | Richer rule DSL                      |
+  | [ ]    | serde + schemars   | B    | rust/serde-schemars/                 | CONTRACT lane: JSON Schema from serde|
+
+  ## Kotlin
+
+  | Status | Library                    | Lane | Path                              | Notes                           |
+  |--------|----------------------------|------|-----------------------------------|---------------------------------|
+  | [ ]    | Konform                    | A    | kotlin/konform/                   | Kotlin-first DSL                |
+  | [ ]    | Hibernate Validator        | A    | kotlin/hibernate-validator/       | JVM annotation standard         |
+
+  ## Ruby
+
+  | Status | Library        | Lane | Path                                     | Notes                           |
+  |--------|----------------|------|------------------------------------------|---------------------------------|
+  | [ ]    | dry-validation | A    | ruby/dry-validation/                     | Rich rule contracts             |
+  | [ ]    | dry-schema     | A/B  | ruby/dry-schema/                         | Schema layer; JSON Schema output|
+
+  ## Elixir
+
+  | Status | Library           | Lane | Path                                  | Notes                           |
+  |--------|-------------------|------|---------------------------------------|---------------------------------|
+  | [ ]    | Ecto.Changeset    | A    | elixir/ecto-changeset/                | Dominant boundary validator     |
+  | [ ]    | Norm              | A    | elixir/norm/                          | Declarative spec alternative    |
+  | [ ]    | ex_json_schema    | B    | elixir/ex-json-schema/                | JSON Schema contract lane       |
+
+  ## Cross-Language Summary
+
+  A short table showing which languages have a native hybrid lane (C):
+    Python ✓ (Pydantic), TypeScript ✓ (Zod, io-ts), Go ✗, Rust ✗, Kotlin ✗, Ruby ✗, Elixir ✗
+
+  Note why the others have no hybrid lane (type system characteristics).
+
+Target length: 70–90 lines. Update status fields as PROMPT_115–117 implement examples.
+
+================================================================================
+PART 6: CREATE examples/canonical-schema-validation/PARITY.md
+================================================================================
+
+Create: examples/canonical-schema-validation/PARITY.md
+
+This document encodes the cross-language consistency rules and documents
+expected divergences. It is the source of truth for what "parity" means in this arc.
+
+Required sections:
+
+  # Cross-Language Parity Rules
+
+  ## Purpose
+  (2–3 sentences) Define what parity means: same domain, same fixtures, comparable
+  behavior — not identical error messages or identical API ergonomics.
+
+  ## Universally Required Behavior (all 7 languages, all Lane A examples)
+
+  Numbered list of rules that MUST hold across all implementations:
+
+    1. All fixtures in domain/fixtures/valid/ must be accepted without errors.
+    2. All fixtures in domain/fixtures/invalid/ must be rejected with at least one
+       validation error. The specific error message format is language-defined.
+    3. Error accumulation: implementations may return the first error or all errors.
+       Smoke tests must not assert a specific error count — assert at least one.
+    4. WorkspaceConfig.plan cross-field rule (max_sync_runs by plan tier) must
+       be enforced at runtime. Fixture invalid/workspace_config_plan_too_many_runs.json
+       must be rejected by all Lane A implementations.
+    5. SyncRun timestamp cross-field rule (finished_at >= started_at) must be
+       enforced. Fixture invalid/sync_run_timestamps_inverted.json must be rejected.
+    6. ReviewRequest.due_at required when priority == critical must be enforced.
+       Fixture invalid/review_request_critical_no_due_date.json must be rejected.
+    7. IngestionSource cross-field rule (poll_interval_seconds required for http_poll)
+       must be enforced. Fixture invalid/ingestion_source_poll_interval_missing.json
+       must be rejected.
+
+  ## Lane B Required Behavior (contract generation)
+
+  Numbered list for Lane B examples:
+
+    1. The exported JSON Schema must be valid JSON and must parse without error.
+    2. The exported schema must include all five models or the primary model (at
+       minimum WorkspaceConfig) with correct field names matching domain/models.md.
+    3. The exported schema must reject invalid/workspace_config_bad_slug.json when
+       validated against it (round-trip drift check).
+    4. The exported schema must accept valid/workspace_config_full.json when
+       validated against it.
+
+  ## Documented Divergences (behavior that legitimately differs across languages)
+
+  A table listing each known divergence:
+
+  | Fixture | Behavior | Languages where X happens | Languages where Y happens | Why |
+  |---------|----------|--------------------------|--------------------------|-----|
+  | edge/webhook_payload_unknown_event_type.json | Accept vs reject | Some libraries accept unknown enum values with coercion | Others strict-reject | Enum strictness varies |
+  | edge/review_request_duplicate_content_ids.json | Accept vs reject | Languages without native dedup validation may accept | Those with explicit dedup rules reject | Requires explicit rule |
+  | Datetime coercion | Auto-parse vs error | Pydantic, Ecto auto-parse ISO 8601; | Go validator, Rust validator require pre-parsed values | Library philosophy |
+  | Null vs absent fields | Treated same vs different | Ruby, Elixir treat null/absent similarly | TypeScript, Rust distinguish Optional from null | Type system |
+
+  ## Smoke Test Assertions That Are Explicitly OUT OF SCOPE for Parity
+
+  A bulleted list:
+    - Specific error message text (implementation-defined)
+    - Error field names (implementation-defined)
+    - Stack trace format
+    - Performance characteristics
+    - Serialization format of error objects
+
+Target length: 70–90 lines.
+
+================================================================================
+PART 7: FIXTURE VALIDATION TESTS
+================================================================================
+
+Create: verification/schema-validation/test_fixtures.py
+
+Read at least one existing test file in verification/ before writing.
+Match import style and unittest conventions.
+
+This test file validates the fixture corpus itself — it does not test any
+language implementation. Its job is to ensure every fixture file is valid JSON
+and that the corpus has the expected set of files.
+
+Test class: TestFixtureCorpusExists
+
+  - test_valid_fixtures_exist
+    Assert all 11 valid fixture files exist in examples/canonical-schema-validation/domain/fixtures/valid/
+
+  - test_invalid_fixtures_exist
+    Assert all 8 invalid fixture files exist in .../fixtures/invalid/
+
+  - test_edge_fixtures_exist
+    Assert all 4 edge fixture files exist in .../fixtures/edge/
+
+Test class: TestFixtureCorpusIsValidJSON
+
+  - test_all_valid_fixtures_parse
+    For each file in fixtures/valid/: open, json.load(), assert no exception.
+
+  - test_all_invalid_fixtures_parse
+    Same for fixtures/invalid/ — they are invalid per the domain model, but
+    they must be valid JSON.
+
+  - test_all_edge_fixtures_parse
+    Same for fixtures/edge/.
+
+Test class: TestFixtureCorpusContent
+
+  - test_workspace_config_basic_has_required_fields
+    Load workspace_config_basic.json. Assert keys: id, name, slug, owner_email,
+    plan, max_sync_runs, settings, tags, created_at, suspended_until.
+
+  - test_sync_run_succeeded_has_timestamps
+    Load sync_run_succeeded.json. Assert started_at and finished_at are strings
+    (not null). Assert duration_ms is an integer.
+
+  - test_sync_run_pending_timestamps_are_null
+    Load sync_run_pending.json. Assert started_at, finished_at, duration_ms are null.
+
+  - test_invalid_slug_fixture_has_bad_slug
+    Load workspace_config_bad_slug.json. Assert slug contains a space or disallowed char.
+
+  - test_invalid_critical_no_due_date
+    Load review_request_critical_no_due_date.json. Assert priority == "critical"
+    and due_at is null.
+
+  - test_webhook_discriminated_union_structure
+    Load each webhook_payload_*.json from valid/. For each, assert event_type is
+    present and data is a dict.
+
+Use unittest only. All tests must pass before committing.
+
+================================================================================
+PART 8: CREATE verification/schema-validation/__init__.py
+================================================================================
+
+Create: verification/schema-validation/__init__.py (empty file)
+
+This makes the directory a Python package so unittest discovery works.
+Also ensure verification/schema-validation/ exists as a directory.
+
+================================================================================
+PART 9: UPDATE CATALOG.md AND ARCHITECTURE_MAP.md
+================================================================================
+
+9A. CATALOG.md is created fresh in Part 5. No update needed.
+
+9B. docs/ARCHITECTURE_MAP.md
+
+Read the file. Locate the schema validation arc entry added in PROMPT_113.
+Add a line noting the shared corpus:
+  "Corpus: examples/canonical-schema-validation/domain/ — WorkspaceSyncContext domain
+   with 23 fixtures (11 valid, 8 invalid, 4 edge)"
+
+Keep the addition to 2–3 lines.
+
+9C. memory/INDEX.md
+
+Read the file. In the Schema Validation Arc section added by PROMPT_113, add:
+  - [Domain Model Spec](../examples/canonical-schema-validation/domain/models.md) — WorkspaceSyncContext: 5 models, 23 fixtures
+  - [Parity Rules](../examples/canonical-schema-validation/PARITY.md) — cross-language consistency contract
+  - [Example Catalog](../examples/canonical-schema-validation/CATALOG.md) — all planned/implemented examples by language, library, lane
+
+================================================================================
+VERIFICATION
+================================================================================
+
+Final gate (all must pass):
+
+  python -m unittest discover -s verification/schema-validation -p "test_*.py" -v
+  python -m unittest discover -s verification/unit -p "test_*.py" -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Manual checks:
+  - All 23 fixture files exist and are valid JSON
+  - CATALOG.md lists all 18 planned examples across 7 languages
+  - PARITY.md has the 7 universally-required rules and documented divergences
+  - domain/models.md covers all 5 models with cross-field rules
+  - All fixture validation tests pass
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+Use grouped commits prefixed with [PROMPT_114]. Use `git add -p`.
+
+  1. [PROMPT_114] add WorkspaceSyncContext domain model spec
+     Stage: examples/canonical-schema-validation/domain/models.md,
+            examples/canonical-schema-validation/domain/README.md
+
+  2. [PROMPT_114] add shared fixture corpus (23 fixtures)
+     Stage: examples/canonical-schema-validation/domain/fixtures/
+
+  3. [PROMPT_114] add canonical-schema-validation README and stub language dirs
+     Stage: examples/canonical-schema-validation/README.md,
+            examples/canonical-schema-validation/{python,typescript,go,rust,kotlin,ruby,elixir}/README.md
+
+  4. [PROMPT_114] add CATALOG.md and PARITY.md
+     Stage: examples/canonical-schema-validation/CATALOG.md,
+            examples/canonical-schema-validation/PARITY.md
+
+  5. [PROMPT_114] add fixture corpus validation tests
+     Stage: verification/schema-validation/__init__.py,
+            verification/schema-validation/test_fixtures.py
+
+  6. [PROMPT_114] update ARCHITECTURE_MAP and memory INDEX for corpus layer
+     Stage: docs/ARCHITECTURE_MAP.md, memory/INDEX.md
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Create all fixtures exactly as specified — future language examples depend on these
+  - Create domain/models.md as the authoritative spec — do not deviate
+  - Create CATALOG.md with all 18 planned examples listed (status: planned)
+  - Create PARITY.md with 7 universally-required rules
+  - Write fixture validation tests using unittest only
+
+DO NOT:
+  - Implement any language-specific validation code (PROMPT_115–117)
+  - Change the fixture JSON once written — they are the canonical corpus
+  - Invent additional models beyond the five specified
+  - Add libraries not listed in PROMPT_113 or this prompt
+  - Skip the fixture README or domain README — they are part of the corpus contract
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+
+  - examples/canonical-schema-validation/domain/models.md exists with all 5 models
+    and cross-field rules documented
+  - All 23 fixture JSON files exist and are valid JSON
+  - CATALOG.md lists 18 examples across 7 languages with status [ ] (planned)
+  - PARITY.md has 7 universally-required rules and a documented divergences table
+  - verification/schema-validation/test_fixtures.py passes all tests
+  - python -m unittest discover -s verification/unit passes (PROMPT_113 tests still green)
+  - python scripts/validate_context.py passes
+
+The shared corpus is now established. PROMPT_115 will implement Python and TypeScript.

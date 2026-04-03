@@ -1,0 +1,920 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one
+fresh coding-assistant session with commit prefixes like `[PROMPT_113]`.
+
+PROMPT_100–112: Terminal Tooling Arc — doctrine, archetypes, stacks, routing,
+               canonical examples (7 languages × 2 tiers), cross-language test
+               harness, PTY validation, event-stream replay, arc hardening, and
+               terminal skills layer. Fully complete.
+
+This prompt (PROMPT_113) begins a new arc: Cross-Language Schema Validation and
+Contract Generation. It lays the structural foundation — doctrine, archetype,
+stacks, routing updates, manifests, skills, and a workflow — so that PROMPT_114
+through PROMPT_118 can implement the canonical examples and hardening without
+debating architecture.
+
+                [SCHEMA VALIDATION ARC: Prompt 1 of 6 — Foundation]
+
+The arc spans:
+  PROMPT_113 — Foundation: doctrine, archetype, 7 stacks, router updates,
+               manifests, 2 new skills, 1 workflow, structural tests
+  PROMPT_114 — Shared corpus: problem domain, fixtures, parity matrix, catalog
+  PROMPT_115 — Python + TypeScript canonical examples
+  PROMPT_116 — Go + Rust canonical examples
+  PROMPT_117 — Kotlin + Ruby + Elixir canonical examples
+  PROMPT_118 — Hardening: docs, drift detection, parity matrix, router polish,
+               navigation indexes, memory summary
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                    (run; study output)
+  4. memory/INDEX.md
+
+Read existing structural files to calibrate before writing anything:
+  5. context/doctrine/core-principles.md              (READ — voice and format model)
+  6. context/doctrine/testing-philosophy.md           (READ — note format, heading style)
+  7. context/doctrine/terminal-ux-first-class.md      (READ — most-recent doctrine; model)
+  8. context/archetypes/polyglot-lab.md               (READ — you will decide whether to
+                                                        extend this or create a sibling)
+  9. context/archetypes/terminal-tui.md               (READ — recent archetype; model format)
+ 10. context/stacks/backend-api-go-echo.yaml          (READ — stack file format)
+ 11. context/stacks/terminal-python-typer-textual.yaml (READ — if it exists; recent stack)
+ 12. context/router/archetype-router.md               (READ — you will add routing entries)
+ 13. context/router/stack-router.md                   (READ — you will add stack entries)
+ 14. context/router/task-router.md                    (READ — you will add task mappings)
+ 15. manifests/backend-api-fastapi-polars.yaml        (READ — manifest format, schema v2)
+ 16. context/skills/canonical-example-selection.md   (READ — skill voice and format)
+ 17. context/skills/verification-path-selection.md   (READ — skill decision tree format)
+ 18. context/workflows/add-terminal-example.md        (READ — workflow format; if exists)
+
+Run verification before touching any file:
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Do NOT begin writing until you have read all of the above.
+
+================================================================================
+BACKGROUND: THE SCHEMA VALIDATION AND CONTRACT GENERATION ARC
+================================================================================
+
+agent-context-base has canonical examples for API services, CLI tools, TUI
+applications, data pipelines, and observability patterns. It does not yet have a
+canonical area focused on a concern that cuts across all those surfaces: runtime
+validation, contract generation, and type-driven hybrid validation.
+
+These concerns matter because:
+  - Every service boundary needs to validate incoming data at runtime.
+  - Cross-language teams need interoperability artifacts (JSON Schema, OpenAPI specs).
+  - Library choices in this space vary enormously in philosophy and ergonomics.
+  - The right tool depends on whether you need runtime checking, schema export,
+    static-type integration, or all three.
+
+The arc adds a canonical-schema-validation area with examples in 7 languages
+across 3 distinct conceptual lanes:
+
+  Lane A — Runtime validation
+    Validating objects/values at runtime: boundary checks, nested structure,
+    cross-field rules, collection constraints, optional vs nullable handling,
+    coercion and parsing behavior.
+
+  Lane B — Contract generation / interoperability
+    Producing machine-readable artifacts: JSON Schema, OpenAPI snippets. Used
+    for cross-language interoperability, contract-first workflows, and drift
+    detection between runtime behavior and exported contracts.
+
+  Lane C — Hybrid type-driven flows
+    Libraries that unify static typing + runtime validation + schema behavior.
+    The static type definition IS the validation schema IS the contract source.
+    Strong in TypeScript (Zod, io-ts) and Python (Pydantic). Weaker in Go.
+
+These lanes are NOT the same thing. An assistant should be able to answer:
+  "Is Pydantic a runtime validator or a contract generator?"
+  "Why is serde + schemars a contract lane, not a validator?"
+  "When would I use marshmallow instead of Pydantic?"
+  "What is io-ts doing that Zod does not?"
+
+The doctrine, archetype, stacks, and skills you create here encode these
+distinctions clearly for future assistant sessions.
+
+================================================================================
+PART 1: CREATE context/doctrine/schema-validation-contracts.md
+================================================================================
+
+Create: context/doctrine/schema-validation-contracts.md
+
+Read core-principles.md and terminal-ux-first-class.md before writing.
+Match the heading style, rule-numbered format, and direct voice of those files.
+
+Required sections:
+
+  # Schema Validation and Contract Generation
+
+  ## Purpose
+  (2–3 sentences) Why this doctrine exists. What problem it solves. What
+  happens when these distinctions are not maintained.
+
+  ## The Three Lanes
+
+  Define each lane with its name and 2–4 sentences of explanation:
+
+  ### Lane A: Runtime Validation
+  Concerned with checking values against constraints at execution time.
+  Operates on live data. Errors are surfaced as validation exceptions or
+  result types. Does not inherently produce a machine-readable schema.
+
+  ### Lane B: Contract Generation and Interoperability
+  Concerned with producing a machine-readable description of expected structure.
+  Outputs JSON Schema, OpenAPI fragments, or equivalent artifacts. May or may
+  not be derived from the same code that performs runtime checking. Critical for
+  cross-language workflows and drift detection.
+
+  ### C: Hybrid Type-Driven Flows
+  Concerned with unifying the model definition, runtime validation, and
+  schema generation in a single construct. The type IS the validator IS the
+  contract source. Strongest in TypeScript and Python ecosystems. Go and Elixir
+  favor more separated approaches.
+
+  ## Rules
+
+  Number each rule. Include at minimum:
+
+  Rule 1 — Do not conflate lanes.
+    Explain why a contract-generation library (e.g., schemars) is not the same
+    as a validation library (e.g., garde), even when they are used together in
+    the same codebase. Each has a distinct job.
+
+  Rule 2 — Treat serde + schemars as a contract lane, not just a serialization add-on.
+    In Rust, serde defines the data's serialization shape. schemars derives JSON
+    Schema aligned with serde's JSON representation. This pairing is Rust's primary
+    path for contract generation and interoperability — treat it with the same
+    weight as Pydantic's schema_model() or Zod's z.toJsonSchema().
+
+  Rule 3 — Explicitly compare Konform and Hibernate Validator in Kotlin contexts.
+    Do not reduce Kotlin validation to "JVM annotation-based." Konform is a
+    Kotlin-first DSL that represents a distinct design philosophy. Contrasting
+    the two is part of a complete Kotlin validation picture.
+
+  Rule 4 — Distinguish marshmallow from Pydantic in Python contexts.
+    Pydantic is a hybrid type-driven library: types are the model, validator,
+    and schema source. marshmallow is an explicit schema/serialization library:
+    you define schema objects separately from your data classes. Both are valid;
+    neither is simply "a Python validator."
+
+  Rule 5 — Preserve io-ts in TypeScript comparisons.
+    io-ts takes a codec-based approach: types are defined as runtime values
+    that encode both static type inference and decode/encode behavior. It is
+    not a lightweight version of Zod — it is a different design point. Omit
+    it from "advanced TS validation" only when explicitly out of scope.
+
+  Rule 6 — Maintain a shared fixture corpus across language examples.
+    Canonical schema-validation examples must use the same logical domain and
+    the same set of valid/invalid/edge fixture values. This enables direct
+    cross-language comparison and drift detection.
+
+  Rule 7 — Distinguish drift detection from validation.
+    Validating a payload at runtime and detecting drift between runtime behavior
+    and an exported contract are different operations. A codebase can pass all
+    validation tests while its exported JSON Schema drifts from its actual
+    behavior. Drift detection is a separate verification concern.
+
+  Rule 8 — Smoke tests must cover at least one valid and one invalid fixture
+    per example. Asserting on a valid-only path does not verify the validation
+    logic; it only verifies that the code runs.
+
+  ## What This Doctrine Does NOT Cover
+  (3–5 bullet points of explicit exclusions)
+    - Input sanitization and XSS/injection prevention (security doctrine)
+    - API authentication and authorization checks (security doctrine)
+    - Database-level constraints and migrations (storage doctrine)
+    - ORM-level validation (storage doctrine)
+    - Exhaustive library API documentation (belongs in example comments)
+
+Target length: 80–110 lines. Voice: direct, rule-numbered, lowercase headings
+below the title. Do not use filler phrases like "it is important to note."
+
+================================================================================
+PART 2: CREATE OR EXTEND context/archetypes/polyglot-validation-lab.md
+================================================================================
+
+Read context/archetypes/polyglot-lab.md carefully before acting.
+
+Decision procedure:
+
+  If polyglot-lab.md already covers cross-language validation experiments with
+  a notion of library comparison and canonical corpus:
+    — extend it minimally with a "Schema Validation and Contract Generation"
+      subsection rather than creating a new archetype.
+
+  If polyglot-lab.md is general-purpose and does not specifically address
+  validation lanes, schema export, or contract generation:
+    — create context/archetypes/polyglot-validation-lab.md as a sibling archetype
+      that inherits from and specializes the polyglot-lab shape.
+
+In either case, the archetype content (in a new file or a new section) must
+include:
+
+  # Polyglot Validation Lab  (or "## Schema Validation and Contract Generation"
+                                if extending polyglot-lab.md)
+
+  ## Shape
+  A set of canonical examples organized by language and validation lane (A/B/C),
+  sharing a single problem domain and a common fixture corpus. Not a service —
+  a reference implementation area for teaching and comparison.
+
+  ## When to Use This Archetype
+  - Building cross-language schema validation comparison examples
+  - Teaching runtime validation vs contract generation distinctions
+  - Evaluating library ergonomics across Pydantic, Zod, serde+schemars, etc.
+  - Any task where the primary goal is showing the same domain problem solved
+    in multiple languages or with multiple library philosophies
+
+  ## Canonical Examples
+  Point to examples/canonical-schema-validation/ (which will be created in
+  PROMPT_114). Use a placeholder note if the directory does not yet exist:
+    "(canonical examples will be in examples/canonical-schema-validation/ —
+     created in PROMPT_114)"
+
+  ## Not Suitable For
+  - Production validation middleware (use backend-api-service archetype)
+  - Single-language validation tooling (use relevant language stack directly)
+  - API contract management systems (use backend-api-service + OpenAPI workflow)
+
+  ## Key Doctrine
+  - context/doctrine/schema-validation-contracts.md (created in PROMPT_113)
+
+Target length for the archetype file or new section: 40–65 lines.
+Match the format of terminal-tui.md or cli-tool.md.
+
+================================================================================
+PART 3: CREATE 7 STACK FILES
+================================================================================
+
+Create one stack YAML file per language. Each file belongs in context/stacks/.
+Read backend-api-go-echo.yaml for format. Read terminal-python-typer-textual.yaml
+(or any recent terminal stack) for a more recent example if it exists.
+
+Naming convention: schema-validation-{language}.yaml
+
+Files to create:
+  context/stacks/schema-validation-python.yaml
+  context/stacks/schema-validation-typescript.yaml
+  context/stacks/schema-validation-go.yaml
+  context/stacks/schema-validation-rust.yaml
+  context/stacks/schema-validation-kotlin.yaml
+  context/stacks/schema-validation-ruby.yaml
+  context/stacks/schema-validation-elixir.yaml
+
+Each file must contain these fields (match the existing YAML format exactly):
+
+  name: schema-validation-{language}
+  language: {Language}
+  tier: validation-lab
+  description: |
+    (2–3 sentences describing the validation/contract landscape for this language)
+
+  lanes:
+    runtime_validation:
+      primary: {library name and one-line description}
+      secondary: {library name and one-line description, or "none" if only one}
+    contract_generation:
+      primary: {library name and one-line description}
+      notes: (1 sentence on how contract generation differs in this language)
+    hybrid_type_driven:
+      primary: {library name and one-line description, or "not applicable"}
+      notes: (1 sentence)
+
+  when_to_use: |
+    (2–3 sentences on when to reach for this stack)
+
+  tradeoffs: |
+    (3–5 bullet points: library philosophy differences, ergonomic tradeoffs,
+     where each library shines or falls short)
+
+  canonical_example:
+    "(will be examples/canonical-schema-validation/{language}/ — created in PROMPT_114)"
+
+  docs:
+    - {primary library documentation URL}
+    - {secondary library documentation URL if relevant}
+
+Per-language library assignments (use these exactly — do not invent alternatives):
+
+  PYTHON
+    runtime_validation.primary:   Pydantic — hybrid type-driven validation + JSON Schema generation
+    runtime_validation.secondary: marshmallow — explicit schema objects, serialization-first
+    contract_generation.primary:  Pydantic (schema_model() / model_json_schema())
+    contract_generation.notes:    marshmallow-jsonschema for marshmallow contract export
+    hybrid_type_driven.primary:   Pydantic — type definition IS the validator IS the schema source
+
+  TYPESCRIPT
+    runtime_validation.primary:   Zod — mainstream TS-first schema + runtime validation
+    runtime_validation.secondary: Valibot — modular, lightweight alternative
+    contract_generation.primary:  TypeBox + Ajv — JSON-Schema-shaped, contract-first lane
+    contract_generation.notes:    Zod can export JSON Schema via zod-to-json-schema;
+                                  TypeBox schemas ARE JSON Schema natively
+    hybrid_type_driven.primary:   Zod — infers static TS type from schema definition
+    hybrid_type_driven.notes:     io-ts takes a distinct codec approach: runtime decoder
+                                  + static type, more FP-oriented; not a Zod alternative
+
+  GO
+    runtime_validation.primary:   go-playground/validator — tag-based struct validation
+    runtime_validation.secondary: ozzo-validation — code-driven explicit validation rules
+    contract_generation.primary:  OpenAPI/JSON Schema generation via ecosystem tooling
+                                  (e.g., kin-openapi, swaggo, or manual schema composition)
+    contract_generation.notes:    Go lacks a single unified library that both validates
+                                  and generates schemas; contract generation is typically
+                                  more externalized than in Python or TypeScript
+    hybrid_type_driven.primary:   not applicable
+    hybrid_type_driven.notes:     Go's type system is structural, not nominal; no mainstream
+                                  library unifies type definition + validation + schema export
+                                  in the way Pydantic or Zod do
+
+  RUST
+    runtime_validation.primary:   validator — derive-based struct validation
+    runtime_validation.secondary: garde — modeled validation with richer rule DSL
+    contract_generation.primary:  serde + schemars — CRITICAL: serde defines serialization shape;
+                                  schemars derives JSON Schema aligned with serde's representation;
+                                  this is Rust's primary contract-generation lane
+    contract_generation.notes:    schemars is NOT a validator; it generates JSON Schema for use
+                                  in OpenAPI workflows and cross-language interoperability
+    hybrid_type_driven.primary:   not applicable
+    hybrid_type_driven.notes:     Rust separates concerns clearly: serde (shape),
+                                  validator/garde (rules), schemars (schema export);
+                                  treat this separation as a feature, not a limitation
+
+  KOTLIN
+    runtime_validation.primary:   Konform — Kotlin-first DSL validation, no annotations
+    runtime_validation.secondary: Hibernate Validator / Jakarta Bean Validation — annotation-based,
+                                  JVM ecosystem standard
+    contract_generation.primary:  OpenAPI generation via SpringDoc, Swagger annotations,
+                                  or kotlinx.serialization + schema tooling
+    contract_generation.notes:    JVM ecosystem favors OpenAPI at the framework level rather
+                                  than inline schema derivation
+    hybrid_type_driven.primary:   not applicable in the Pydantic/Zod sense
+    hybrid_type_driven.notes:     Konform provides a DSL but does not generate schemas;
+                                  Hibernate Validator integrates with Bean Validation spec
+
+  RUBY
+    runtime_validation.primary:   dry-validation — rich rule-based validation contracts
+    runtime_validation.secondary: dry-schema — lower-level schema definition used by dry-validation
+    contract_generation.primary:  JSON Schema via custom schema export or json_schemer integration
+    contract_generation.notes:    dry-rb ecosystem separates schema definition (dry-schema)
+                                  from validation logic (dry-validation); each has a distinct role
+    hybrid_type_driven.primary:   not applicable
+    hybrid_type_driven.notes:     Ruby's dynamic type system means hybrid type-driven flows
+                                  require explicit coercion steps, not static inference
+
+  ELIXIR
+    runtime_validation.primary:   Ecto.Changeset — dominant application-boundary validation
+                                  in Elixir/Phoenix; data casting + validation pipeline
+    runtime_validation.secondary: Norm — declarative spec/schema-oriented alternative
+    contract_generation.primary:  ex_json_schema — JSON Schema validation and contract workflows
+    contract_generation.notes:    Elixir separates casting (coercion) from validation more
+                                  explicitly than most languages; Ecto.Changeset encodes both
+    hybrid_type_driven.primary:   not applicable
+    hybrid_type_driven.notes:     Elixir is dynamically typed; type specs (typespecs) are for
+                                  tooling only; validation is always runtime
+
+================================================================================
+PART 4: UPDATE ROUTING FILES
+================================================================================
+
+Make minimal targeted additions to the three router files. Read each file fully
+before editing. Do not restructure, remove, or reformat existing content.
+
+4A. context/router/archetype-router.md
+
+Add a routing entry for the new archetype. Find the section where archetypes
+are listed (likely a table or bulleted list). Add:
+
+  polyglot-validation-lab
+    When: cross-language validation comparison, schema export teaching,
+          library ergonomic comparison (Pydantic vs marshmallow, Zod vs io-ts,
+          Konform vs Hibernate Validator, serde+schemars contract lane),
+          building parity matrices across languages
+
+4B. context/router/stack-router.md
+
+Add a routing section for the schema-validation stacks. Find where stacks are
+listed. Add (grouped under a "Schema Validation" heading if headings exist):
+
+  schema-validation-python      → Pydantic, marshmallow, runtime + contract lane
+  schema-validation-typescript  → Zod, Valibot, io-ts, TypeBox+Ajv; hybrid + contract lanes
+  schema-validation-go          → go-playground/validator, ozzo-validation; runtime + external contract
+  schema-validation-rust        → validator, garde, serde+schemars; runtime + contract lanes
+  schema-validation-kotlin      → Konform, Hibernate Validator; runtime + JVM contract path
+  schema-validation-ruby        → dry-validation, dry-schema; runtime + schema lane
+  schema-validation-elixir      → Ecto.Changeset, Norm, ex_json_schema; runtime + contract lane
+
+4C. context/router/task-router.md
+
+Add task mappings so a plain-English request routes to the right artifact.
+Find the task mapping section. Add these entries (use the existing format exactly):
+
+  "validate data at runtime" → schema-validation-{language} stack (match language signal)
+  "generate JSON Schema from types" → schema-validation-{language} stack, Lane B
+  "export OpenAPI from models" → schema-validation-{language} stack, Lane B
+  "compare Pydantic and marshmallow" → polyglot-validation-lab archetype, Python stacks
+  "compare Zod and io-ts" → polyglot-validation-lab archetype, TypeScript stack
+  "compare Konform and Hibernate Validator" → polyglot-validation-lab, Kotlin stack
+  "explain serde + schemars" → polyglot-validation-lab archetype, Rust stack, Lane B
+  "cross-language schema validation" → polyglot-validation-lab archetype
+  "drift detection between schema and runtime" → schema-validation-contracts.md doctrine,
+                                                  Lane B in relevant language stack
+  "add a schema validation example" → workflow: add-schema-validation-example.md
+
+================================================================================
+PART 5: CREATE manifests/schema-validation-polyglot.yaml
+================================================================================
+
+Create: manifests/schema-validation-polyglot.yaml
+
+Read manifests/backend-api-fastapi-polars.yaml first to match the schema_version: 2
+format exactly.
+
+Content:
+
+  schema_version: 2
+  name: schema-validation-polyglot
+  description: >
+    Cross-language canonical example area for runtime validation, contract
+    generation, and hybrid type-driven flows. Covers Python (Pydantic,
+    marshmallow), TypeScript (Zod, Valibot, io-ts, TypeBox+Ajv), Go
+    (go-playground/validator, ozzo-validation), Rust (serde+schemars,
+    validator, garde), Kotlin (Konform, Hibernate Validator), Ruby
+    (dry-validation, dry-schema), and Elixir (Ecto.Changeset, Norm,
+    ex_json_schema). Three conceptual lanes: runtime validation, contract
+    generation, and hybrid type-driven flows.
+  archetype: polyglot-validation-lab
+  primary_stack: schema-validation-python    (use as anchor; all seven are active)
+  secondary_stacks:
+    - schema-validation-typescript
+    - schema-validation-go
+    - schema-validation-rust
+    - schema-validation-kotlin
+    - schema-validation-ruby
+    - schema-validation-elixir
+  triggers:
+    - schema validation
+    - contract generation
+    - runtime validation
+    - pydantic marshmallow comparison
+    - zod io-ts validation
+    - konform hibernate validator
+    - serde schemars rust
+    - json schema export
+    - cross-language validation
+    - dry-validation ruby
+    - ecto changeset elixir
+    - polyglot validation lab
+  aliases:
+    - validation-polyglot
+    - cross-language schema
+    - schema-validation-arc
+  required_context:
+    - context/doctrine/schema-validation-contracts.md
+    - context/archetypes/polyglot-validation-lab.md   (or the relevant section in polyglot-lab.md)
+    - context/skills/schema-validation-lane-selection.md
+    - context/skills/contract-generation-path-selection.md
+  optional_context:
+    - context/stacks/schema-validation-{language}.yaml   (load only the relevant language)
+    - examples/canonical-schema-validation/CATALOG.md
+    - examples/canonical-schema-validation/PARITY.md
+  preferred_examples:
+    - examples/canonical-schema-validation/{language}/   (load one language at a time)
+
+================================================================================
+PART 6: CREATE context/skills/schema-validation-lane-selection.md
+================================================================================
+
+Create: context/skills/schema-validation-lane-selection.md
+
+Read canonical-example-selection.md and verification-path-selection.md for
+tone and format before writing. Skills are 30–90 lines with lowercase headings,
+numbered steps, and no filler prose.
+
+  # Schema Validation Lane Selection
+
+  (one-sentence purpose)
+
+  ## Procedure
+
+  Numbered steps:
+
+    1. Identify the primary goal from task signals:
+         - "validate data" / "check constraints" / "boundary validation"
+           → Lane A: Runtime validation
+         - "generate JSON Schema" / "export schema" / "OpenAPI from models"
+           / "contract-first" / "interoperability artifact"
+           → Lane B: Contract generation
+         - "define my type once and get validation + schema" / "unified model"
+           → Lane C: Hybrid type-driven
+         - "compare libraries" / "which validator should I use"
+           → Compare within the relevant lane for the target language
+
+    2. Confirm the language, then load the relevant stack file:
+         context/stacks/schema-validation-{language}.yaml
+
+    3. Identify the library from the stack's lane fields:
+         Lane A  → runtime_validation.primary (or .secondary if a specific library is named)
+         Lane B  → contract_generation.primary (note: may be a different library from Lane A)
+         Lane C  → hybrid_type_driven.primary (or "not applicable" for Go, Rust, Elixir, Ruby)
+
+    4. For Rust — always treat serde + schemars as Lane B (contract lane), not as a validator.
+       The runtime validation libraries are validator and garde. Do not conflate these.
+
+    5. For TypeScript — always distinguish io-ts from Zod:
+         Zod: mainstream ergonomic hybrid (Lane C + Lane A)
+         io-ts: codec-based FP approach (Lane A with structural decode/encode)
+         TypeBox + Ajv: contract-first / JSON Schema native (Lane B)
+
+    6. Load examples/canonical-schema-validation/CATALOG.md to confirm which
+       examples exist for the identified lane and language before recommending one.
+
+  ## Priority
+
+  Exact lane + exact language (primary library first) > exact lane + adjacent
+  library (note the difference explicitly) > adjacent lane (flag the shift).
+  Never conflate lanes without stating the conflation.
+
+  ## Good Triggers
+
+  - "how do I validate this struct in Rust"
+  - "generate JSON Schema from my Pydantic model"
+  - "which TypeScript library should I use for schema validation"
+  - "explain the difference between Zod and TypeBox"
+  - "why is serde + schemars not a validator"
+  - "compare Konform and Hibernate Validator"
+  - "show me the contract generation path for Go"
+
+  ## Avoid
+
+  - Treating schemars as a runtime validator
+  - Treating marshmallow and Pydantic as equivalent
+  - Omitting io-ts from TypeScript comparisons that claim to be comprehensive
+  - Flattening all three lanes into "schema validation tools"
+  - Loading more than one language stack at a time unless explicitly comparing
+
+  ## Reference Files
+
+  - context/doctrine/schema-validation-contracts.md
+  - context/stacks/schema-validation-{language}.yaml  (load the relevant one)
+  - examples/canonical-schema-validation/CATALOG.md
+  - examples/canonical-schema-validation/PARITY.md
+
+Target length: 65–85 lines.
+
+================================================================================
+PART 7: CREATE context/skills/contract-generation-path-selection.md
+================================================================================
+
+Create: context/skills/contract-generation-path-selection.md
+
+This skill guides the assistant to the correct contract-generation approach for
+a given language, including drift detection. Match the format of
+verification-path-selection.md.
+
+  # Contract Generation Path Selection
+
+  (one-sentence purpose)
+
+  ## Procedure
+
+  Numbered steps:
+
+    1. Identify the output artifact type:
+         - JSON Schema document (.json or inline)
+         - OpenAPI fragment or full spec
+         - Custom schema export (msgpack schema, Protobuf annotation, etc.)
+       For this arc, JSON Schema and OpenAPI are the primary targets.
+
+    2. Route by language to the correct generation path:
+         Python:     Pydantic model_json_schema() or schema_json() for JSON Schema;
+                     marshmallow-jsonschema for marshmallow schemas
+         TypeScript: TypeBox schemas ARE JSON Schema natively;
+                     zod-to-json-schema for Zod; ts-json-schema-generator for raw types
+         Go:         External tooling (swaggo, kin-openapi, or manual composition);
+                     no single library unifies type + schema; document the gap explicitly
+         Rust:       schemars::schema_for!() derives JSON Schema aligned with serde;
+                     integrate with okapi or aide for OpenAPI
+         Kotlin:     SpringDoc or springdoc-openapi for Spring apps;
+                     kotlinx.serialization + schema tooling for non-Spring
+         Ruby:       json_schemer, dry-schema's JSON Schema output, or manual composition
+         Elixir:     ex_json_schema for JSON Schema validation and export
+
+    3. Determine whether drift detection is in scope:
+         Drift detection = confirming that the exported schema matches the actual
+         runtime validation behavior. Relevant when:
+           - A schema is exported and used by a downstream consumer
+           - The model definition and the schema export are maintained separately
+           - A library change could shift serialization shape (especially serde)
+         If in scope: load examples/canonical-schema-validation/PARITY.md for
+         cross-language parity rules.
+
+    4. For drift detection, recommend a round-trip check:
+         - Serialize a known-valid object
+         - Validate the serialized form against the exported schema
+         - Assert both the runtime validator and the schema validator accept it
+         - Do the same with a known-invalid object: both should reject it
+
+    5. Do not present a schema export as drift-free without running step 4.
+
+  ## Good Triggers
+
+  - "export JSON Schema from my model"
+  - "generate OpenAPI from my types"
+  - "does my schema match my runtime validation"
+  - "drift between schema and validator"
+  - "contract-first workflow in Go"
+  - "schemars for OpenAPI in Rust"
+
+  ## Avoid
+
+  - Treating schema export as complete without a drift check when downstream
+    consumers are mentioned
+  - Recommending manual JSON Schema composition when a derive macro or library
+    function is available
+  - Presenting Go's approach as equivalent to Pydantic's inline schema derivation —
+    acknowledge the ergonomic gap explicitly
+
+  ## Reference Files
+
+  - context/doctrine/schema-validation-contracts.md  (Rules 2, 7)
+  - context/stacks/schema-validation-{language}.yaml (contract_generation fields)
+  - examples/canonical-schema-validation/PARITY.md
+  - examples/canonical-schema-validation/CATALOG.md
+
+Target length: 70–90 lines.
+
+================================================================================
+PART 8: CREATE context/workflows/add-schema-validation-example.md
+================================================================================
+
+Create: context/workflows/add-schema-validation-example.md
+
+Read context/workflows/add-terminal-example.md (if it exists) for format.
+A workflow is a step-by-step procedure (50–120 lines) that an assistant follows
+to complete a recurring task correctly.
+
+Required sections:
+
+  # Workflow: Add a Schema Validation Example
+
+  ## When to Use This Workflow
+  (2–3 sentences: what task triggers this workflow)
+
+  ## Prerequisites
+  - Relevant stack file exists: context/stacks/schema-validation-{language}.yaml
+  - Domain model is defined: examples/canonical-schema-validation/domain/models.md
+  - Fixture corpus exists: examples/canonical-schema-validation/domain/fixtures/
+  - CATALOG.md exists: examples/canonical-schema-validation/CATALOG.md
+
+  ## Steps
+
+  Numbered procedure:
+
+    1. Identify the language, library, and lane (A / B / C).
+       Use context/skills/schema-validation-lane-selection.md.
+
+    2. Confirm the target directory does not already contain the example.
+       Check: examples/canonical-schema-validation/{language}/{library}/
+
+    3. Create the example directory and implementation file(s):
+       a. Use the shared domain (WorkspaceSyncContext) from domain/models.md.
+       b. Implement all five models: WorkspaceConfig, SyncRun, WebhookPayload,
+          IngestionSource, ReviewRequest.
+       c. Cover nested objects, enums, cross-field rules, optional/nullable,
+          collections, and coercion where the language/library supports them.
+       d. For Lane B: add a schema export function that outputs JSON Schema.
+       e. For Lane C: show that the type definition, validator, and schema
+          all derive from the same source construct.
+
+    4. Load the shared fixture corpus:
+       examples/canonical-schema-validation/domain/fixtures/valid/
+       examples/canonical-schema-validation/domain/fixtures/invalid/
+       examples/canonical-schema-validation/domain/fixtures/edge/
+       All examples must accept valid fixtures and reject invalid fixtures.
+       Edge fixtures must be tested explicitly.
+
+    5. Write a smoke test in verification/schema-validation/{language}/
+       that runs the example against valid, invalid, and edge fixtures.
+       Smoke tests use unittest only (not pytest).
+
+    6. Update examples/canonical-schema-validation/CATALOG.md to register
+       the new example (language, library, lane, status, file path).
+
+    7. Update examples/canonical-schema-validation/PARITY.md if the new
+       example reveals a cross-language divergence from the parity rules.
+
+    8. Run verification gates before committing:
+         python -m unittest discover -s verification/schema-validation -p "test_*.py" -v
+         python scripts/validate_context.py
+
+  ## Lane-Specific Notes
+
+  Lane A (runtime): Focus on the error type, message structure, and whether
+    validation is fail-fast or accumulates all errors.
+
+  Lane B (contract): Export the JSON Schema document and assert it is valid
+    JSON; assert required fields match the domain spec; run a round-trip drift
+    check (see contract-generation-path-selection.md).
+
+  Lane C (hybrid): Demonstrate that the model type, the validation result,
+    and the schema export are all derived from the same definition construct.
+    Show what happens when the definition changes: all three must update together.
+
+  ## Commit Format
+    [PROMPT_XXX] add {language}/{library} schema-validation example (Lane {A/B/C})
+
+Target length: 80–120 lines.
+
+================================================================================
+PART 9: STRUCTURAL TESTS
+================================================================================
+
+Create: verification/unit/test_schema_validation_structure.py
+
+Read at least one existing test file in verification/unit/ before writing.
+Match the import style, unittest setup, and file-path assertion patterns.
+
+Test class: TestSchemaValidationFoundation
+
+  - test_doctrine_exists
+    Assert context/doctrine/schema-validation-contracts.md exists and has content.
+
+  - test_doctrine_has_three_lanes
+    Read the file; assert it contains "Lane A", "Lane B", "Lane C" (or close
+    variant — check what you actually wrote).
+
+  - test_archetype_exists
+    Assert context/archetypes/polyglot-validation-lab.md exists OR that
+    context/archetypes/polyglot-lab.md contains "Schema Validation".
+    (Either is valid depending on the decision in Part 2.)
+
+  - test_all_seven_stacks_exist
+    Assert all seven stack files exist:
+      context/stacks/schema-validation-python.yaml
+      context/stacks/schema-validation-typescript.yaml
+      context/stacks/schema-validation-go.yaml
+      context/stacks/schema-validation-rust.yaml
+      context/stacks/schema-validation-kotlin.yaml
+      context/stacks/schema-validation-ruby.yaml
+      context/stacks/schema-validation-elixir.yaml
+
+  - test_manifest_exists
+    Assert manifests/schema-validation-polyglot.yaml exists and is valid YAML.
+    Import yaml and call yaml.safe_load() to verify.
+
+  - test_skills_exist
+    Assert context/skills/schema-validation-lane-selection.md exists.
+    Assert context/skills/contract-generation-path-selection.md exists.
+
+  - test_workflow_exists
+    Assert context/workflows/add-schema-validation-example.md exists.
+
+  - test_rust_stack_mentions_schemars
+    Read context/stacks/schema-validation-rust.yaml.
+    Assert it contains "schemars".
+    Assert it contains "contract".
+
+  - test_typescript_stack_mentions_io_ts
+    Read context/stacks/schema-validation-typescript.yaml.
+    Assert it contains "io-ts".
+
+  - test_kotlin_stack_mentions_both_libraries
+    Read context/stacks/schema-validation-kotlin.yaml.
+    Assert it contains "Konform".
+    Assert it contains "Hibernate".
+
+Use unittest only. All tests must pass before committing.
+
+================================================================================
+PART 10: UPDATE docs/ARCHITECTURE_MAP.md AND memory/INDEX.md
+================================================================================
+
+10A. docs/ARCHITECTURE_MAP.md
+
+Read the file. Locate where arcs or major feature areas are documented.
+Add a "Schema Validation and Contract Generation Arc" entry with:
+  - Doctrine: context/doctrine/schema-validation-contracts.md
+  - Archetype: context/archetypes/polyglot-validation-lab.md (or note in polyglot-lab.md)
+  - Stacks: context/stacks/schema-validation-{python,typescript,go,rust,kotlin,ruby,elixir}.yaml
+  - Skills: context/skills/schema-validation-lane-selection.md, contract-generation-path-selection.md
+  - Manifest: manifests/schema-validation-polyglot.yaml
+  - Workflow: context/workflows/add-schema-validation-example.md
+  - Examples: examples/canonical-schema-validation/ (created in PROMPT_114)
+Keep the addition to 6–10 lines. Do not restructure the existing file.
+
+10B. memory/INDEX.md
+
+Read the file. Add entries under a new "Schema Validation Arc" section:
+  - [Schema Validation Doctrine](../context/doctrine/schema-validation-contracts.md) — three-lane model: runtime / contract / hybrid
+  - [Schema Validation Lane Selection](../context/skills/schema-validation-lane-selection.md) — route to Lane A/B/C per language
+  - [Contract Generation Path Selection](../context/skills/contract-generation-path-selection.md) — schema export + drift detection
+  - [Schema Validation Stacks](../context/stacks/) — schema-validation-{language}.yaml for 7 languages
+  - [Polyglot Validation Lab Archetype](../context/archetypes/polyglot-validation-lab.md) — or note in polyglot-lab.md
+
+================================================================================
+VERIFICATION
+================================================================================
+
+Final gate (all must pass):
+
+  python -m unittest discover -s verification/unit -p "test_*.py" -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Manual checks:
+  - All 7 stack files exist and parse as valid YAML
+  - manifest validates as YAML with schema_version: 2
+  - Doctrine has 8 rules, 3 lane sections
+  - Both skills exist with required sections
+  - Workflow exists and covers all three lanes
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+Use grouped commits prefixed with [PROMPT_113]. Use `git add -p`.
+
+  1. [PROMPT_113] add schema-validation-contracts doctrine
+     Stage: context/doctrine/schema-validation-contracts.md
+
+  2. [PROMPT_113] add polyglot-validation-lab archetype
+     Stage: context/archetypes/polyglot-validation-lab.md (or update to polyglot-lab.md)
+
+  3. [PROMPT_113] add 7 schema-validation stacks
+     Stage: context/stacks/schema-validation-*.yaml
+
+  4. [PROMPT_113] update routing for schema validation arc
+     Stage: context/router/archetype-router.md,
+            context/router/stack-router.md,
+            context/router/task-router.md
+
+  5. [PROMPT_113] add schema-validation-polyglot manifest
+     Stage: manifests/schema-validation-polyglot.yaml
+
+  6. [PROMPT_113] add schema-validation-lane-selection and contract-generation-path-selection skills
+     Stage: context/skills/schema-validation-lane-selection.md,
+            context/skills/contract-generation-path-selection.md
+
+  7. [PROMPT_113] add add-schema-validation-example workflow
+     Stage: context/workflows/add-schema-validation-example.md
+
+  8. [PROMPT_113] add structural tests for schema validation foundation
+     Stage: verification/unit/test_schema_validation_structure.py
+
+  9. [PROMPT_113] update ARCHITECTURE_MAP and memory INDEX for schema validation arc
+     Stage: docs/ARCHITECTURE_MAP.md, memory/INDEX.md
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Create all 10 artifacts listed in Parts 1–10
+  - Extend existing router files minimally (add entries, do not restructure)
+  - Write tests for structural existence only (not behavior — that belongs in PROMPT_114+)
+  - Decide between new archetype file vs. extending polyglot-lab.md based on what you read
+
+DO NOT:
+  - Create examples/canonical-schema-validation/ (that is PROMPT_114's job)
+  - Implement any language-specific validation code (PROMPT_115–117)
+  - Create fixture files (PROMPT_114)
+  - Add a parity matrix (PROMPT_114)
+  - Invent new lanes beyond A, B, and C
+  - Add libraries not listed in this prompt
+  - Update AGENT.md or CLAUDE.md (not needed for structural work)
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+
+  - context/doctrine/schema-validation-contracts.md exists with 3 lane sections
+    and 8 numbered rules (or as many as written; minimum 6)
+  - context/archetypes/polyglot-validation-lab.md exists OR polyglot-lab.md has
+    a Schema Validation section
+  - All 7 context/stacks/schema-validation-{language}.yaml files exist and are
+    valid YAML
+  - context/router/archetype-router.md, stack-router.md, task-router.md each
+    have schema-validation entries
+  - manifests/schema-validation-polyglot.yaml exists and parses as valid YAML
+    with schema_version: 2
+  - context/skills/schema-validation-lane-selection.md exists with required sections
+  - context/skills/contract-generation-path-selection.md exists with required sections
+  - context/workflows/add-schema-validation-example.md exists covering all 3 lanes
+  - verification/unit/test_schema_validation_structure.py passes (all tests green)
+  - python scripts/validate_context.py passes
+  - docs/ARCHITECTURE_MAP.md and memory/INDEX.md reference the arc
+
+The structural layer is now complete. PROMPT_114 will build the shared corpus.

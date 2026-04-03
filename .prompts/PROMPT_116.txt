@@ -1,0 +1,801 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one
+fresh coding-assistant session with commit prefixes like `[PROMPT_116]`.
+
+PROMPT_113: Schema Validation Arc — Foundation.
+PROMPT_114: Schema Validation Arc — Shared corpus (WorkspaceSyncContext, 23 fixtures,
+            CATALOG.md, PARITY.md).
+PROMPT_115: Schema Validation Arc — Python (Pydantic Lane C, marshmallow Lane A) and
+            TypeScript (Zod Lane C, Valibot Lane A, io-ts Lane A, TypeBox+Ajv Lane B).
+
+This prompt (PROMPT_116) implements canonical examples for Go and Rust — the two
+systems-oriented languages in this arc. Each has a distinct relationship with the
+three validation lanes that is conceptually important and easily misrepresented.
+
+                [SCHEMA VALIDATION ARC: Prompt 4 of 6 — Go + Rust]
+
+Go libraries:
+  go-playground/validator    (Lane A: tag-based struct validation)
+  ozzo-validation            (Lane A: code-driven explicit rules)
+  OpenAPI/JSON Schema gen    (Lane B: externalized contract generation)
+
+Rust libraries:
+  validator                  (Lane A: derive-based struct validation)
+  garde                      (Lane A: richer derive-based validation DSL)
+  serde + schemars           (Lane B: CONTRACT lane — NOT a validator)
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                    (run; study output)
+  4. memory/INDEX.md
+
+Read the arc foundation:
+  5. context/doctrine/schema-validation-contracts.md   (READ — Rules 1, 2, 5 especially)
+  6. context/skills/schema-validation-lane-selection.md (READ — step 4: Rust schemars)
+  7. context/stacks/schema-validation-go.yaml          (READ — Go lane assignments, noted gaps)
+  8. context/stacks/schema-validation-rust.yaml        (READ — Rust separation of concerns)
+  9. context/workflows/add-schema-validation-example.md (READ — follow this procedure)
+ 10. examples/canonical-schema-validation/domain/models.md (READ — implement THESE models)
+ 11. examples/canonical-schema-validation/PARITY.md    (READ — parity rules your tests satisfy)
+ 12. examples/canonical-schema-validation/CATALOG.md   (READ — current status; update when done)
+
+Read existing Go and Rust canonical examples if present:
+ 13. examples/canonical-api/ (SKIM any Go or Rust example for code style and project layout)
+
+Run verification before touching any code:
+  python -m unittest discover -s verification/schema-validation -p "test_*.py" -v
+  python -m unittest discover -s verification/unit -p "test_*.py" -v
+  python scripts/validate_context.py
+
+Do NOT begin writing until you have read all of the above.
+
+================================================================================
+BACKGROUND: GO AND RUST CONCEPTUAL FRAMING
+================================================================================
+
+GO — The Externalized Contract Problem
+
+Go does not have a library that unifies type definition, runtime validation,
+and schema export in the way Pydantic or Zod do. This is a real architectural
+difference, not a gap to paper over.
+
+  go-playground/validator: Struct tags drive validation rules. The struct
+  definition carries tags like `validate:"required,min=3,max=100"`. The
+  validator reads them at runtime via reflection. It is mature and widely used.
+  Limitation: cross-field rules and discriminated union validation are awkward
+  with tags alone.
+
+  ozzo-validation: Explicit code drives validation. You call
+  validation.ValidateStruct(&obj, validation.Field(&obj.Name, is.Required, ...)).
+  More readable cross-field rules. Better for complex business logic. More
+  verbose for simple cases.
+
+  Contract generation: Go structs can generate JSON Schema or OpenAPI specs via
+  external tools (swaggo annotations, kin-openapi, openapi-generator, or hand-
+  crafting). There is no single standard. Show the swaggo comment annotation
+  approach because it is the most common in Go HTTP services. Acknowledge the
+  ergonomic gap — do not pretend Go has Pydantic-style inline schema derivation.
+
+RUST — Separation of Concerns as a Feature
+
+Rust's approach is the clearest example of separation of concerns in this arc:
+
+  serde: Defines how a type is serialized and deserialized. Attributes like
+  #[serde(rename_all = "camelCase")] and #[serde(skip_serializing_if = "Option::is_none")]
+  control the wire representation. serde does NOT validate.
+
+  validator / garde: Validate struct field values against rules. Attributes like
+  #[validate(length(min = 3))] or #[garde(length(min = 3))] check constraints.
+  These libraries do NOT control serialization.
+
+  schemars: Derives a JSON Schema from a Rust struct, using serde's representation
+  as the reference. The generated schema reflects the serde wire format, not the
+  Rust type system representation. This is the CONTRACT lane.
+
+This separation is a design strength, not a limitation. Make it explicit:
+  1. deserialize from JSON (serde)
+  2. validate the deserialized value (validator or garde)
+  3. export a JSON Schema reflecting the wire format (schemars)
+
+These are three distinct operations, each with its own library and derive macro.
+Never conflate step 3 (schemars) with step 2 (validator/garde) in code or docs.
+
+================================================================================
+PART 1: GO — GO-PLAYGROUND/VALIDATOR (Lane A, tag-based)
+================================================================================
+
+Create: examples/canonical-schema-validation/go/go-playground-validator/
+
+Required files:
+  examples/canonical-schema-validation/go/go-playground-validator/go.mod
+  examples/canonical-schema-validation/go/go-playground-validator/models/models.go
+  examples/canonical-schema-validation/go/go-playground-validator/validate/validate.go
+  examples/canonical-schema-validation/go/go-playground-validator/main.go
+  examples/canonical-schema-validation/go/go-playground-validator/README.md
+
+--- models/models.go ---
+
+Define all five WorkspaceSyncContext models as Go structs with json tags and
+validate tags.
+
+Requirements:
+  - package models
+  - import "time" for datetime fields; use *time.Time for nullable datetimes
+  - PlanType, SyncStatus, TriggerType, WebhookEventType, SourceType as string
+    type aliases with const blocks defining allowed values
+  - SettingsBlock: WebhookURL *string `json:"webhook_url" validate:"omitempty,url"`
+  - WorkspaceConfig:
+      - Slug: string `json:"slug" validate:"required,min=2,max=50,slug_format"`
+        (register a custom validator named "slug_format" for the regex)
+      - OwnerEmail: string `json:"owner_email" validate:"required,email"`
+      - Plan: PlanType `json:"plan" validate:"required,oneof=free pro enterprise"`
+      - MaxSyncRuns: int `json:"max_sync_runs" validate:"required,min=1,max=1000"`
+        Note: plan vs max_sync_runs cross-field rule requires a custom validator
+        or post-struct-validation check — tags alone cannot express it.
+        Show the cross-field rule in validate/validate.go, not in the struct tag.
+      - Settings: SettingsBlock `json:"settings" validate:"required"`
+      - Tags: []string `json:"tags" validate:"max=20,dive,min=1,max=50"`
+      - CreatedAt: time.Time `json:"created_at"`
+      - SuspendedUntil: *time.Time `json:"suspended_until"`
+  - SyncRun:
+      - All Optional timestamp fields: use *time.Time
+      - DurationMs: *int64 `json:"duration_ms" validate:"omitempty,min=0"`
+      - RecordsIngested: *int64 `json:"records_ingested" validate:"omitempty,min=0,max=10000000"`
+      - ErrorCode: *string `json:"error_code"`
+      - Cross-field rules CANNOT be expressed in struct tags. Document in comment:
+        "Cross-field validation (finished_at >= started_at, duration_ms required
+        when finished_at is set) is implemented in validate/validate.go using
+        a manual post-validation check."
+  - WebhookPayload:
+      - Data field: use json.RawMessage or interface{} — Go has no native
+        discriminated union. Document: "Go requires manual type dispatch for
+        discriminated unions. The data field is parsed after reading event_type."
+      - Define SyncCompletedData, SyncFailedData, WorkspaceSuspendedData as
+        separate structs. Show the dispatch function in validate.go.
+      - Signature: string `json:"signature" validate:"required,hexadecimal,len=64"`
+        If the validate library does not have a "hexadecimal" built-in, use
+        a regexp custom validator.
+  - IngestionSource: document cross-field rule in comment; implement in validate.go
+  - ReviewRequest: document cross-field rule in comment; implement in validate.go
+
+--- validate/validate.go ---
+
+  - package validate
+  - Register the custom "slug_format" validator using validate.RegisterValidation()
+  - Define ValidateWorkspaceConfig(cfg *models.WorkspaceConfig) error that:
+      1. Runs the struct validator
+      2. Applies the plan vs max_sync_runs cross-field rule
+      3. Returns a combined error if either check fails
+  - Define ValidateSyncRun(run *models.SyncRun) error with cross-field checks
+  - Define ValidateWebhookPayload(p *models.WebhookPayload) (interface{}, error)
+    that dispatches on event_type to parse the data field
+  - Define ValidateIngestionSource(src *models.IngestionSource) error
+  - Define ValidateReviewRequest(req *models.ReviewRequest) error
+
+Add a file-level comment:
+  "go-playground/validator uses struct tags for field-level rules (Lane A,
+   tag-based). Cross-field rules and discriminated union dispatch require
+   explicit code in this package — tags alone are insufficient for the
+   WorkspaceSyncContext domain. This is a characteristic limitation of the
+   tag-based approach."
+
+--- main.go ---
+
+Load a valid fixture (workspace_config_basic.json) and an invalid fixture
+(workspace_config_bad_slug.json) from the fixture corpus. Validate each.
+Print "PASS" or "FAIL: <error>" for each. Use this as the smoke demo.
+
+--- go.mod ---
+
+module: workspace-sync-validator-go-playground
+go: 1.22 (or current stable)
+require: github.com/go-playground/validator/v10 latest
+
+--- README.md ---
+
+  # Go — go-playground/validator (Lane A: Tag-Based Struct Validation)
+
+  ## Lane
+  Lane A: struct tags drive validation. reflect-based at runtime.
+
+  ## Key Tag Patterns Used
+  validate:"required,email", validate:"oneof=free pro enterprise", dive for slices,
+  custom RegisterValidation for slug pattern, omitempty for nullable fields.
+
+  ## Limitations of Tag-Based Validation
+  4–5 sentences. Tags cannot express: cross-field rules (finished_at >= started_at),
+  conditional requirements (due_at required when priority == critical), discriminated
+  union dispatch (data field varies by event_type). These require explicit code in
+  validate.go. This is the core tradeoff of tag-based validation: compact for simple
+  cases, awkward for business logic.
+
+  ## Comparison with ozzo-validation
+  3–4 sentences. ozzo-validation moves rules from struct tags to explicit code.
+  More readable cross-field logic. More verbose for simple scalar constraints.
+
+  ## Contract Generation
+  Go has no inline schema derivation. See go/openapi-generation/ for the contract
+  lane in Go (Lane B).
+
+================================================================================
+PART 2: GO — OZZO-VALIDATION (Lane A, code-driven)
+================================================================================
+
+Create: examples/canonical-schema-validation/go/ozzo-validation/
+
+Required files:
+  examples/canonical-schema-validation/go/ozzo-validation/go.mod
+  examples/canonical-schema-validation/go/ozzo-validation/models/models.go
+  examples/canonical-schema-validation/go/ozzo-validation/validate/validate.go
+  examples/canonical-schema-validation/go/ozzo-validation/README.md
+
+--- models/models.go ---
+
+Define the same five structs BUT without any validate tags. Fields use json tags
+only. The structs are clean data carriers; all rules are in validate.go.
+
+--- validate/validate.go ---
+
+  - import validation "github.com/go-ozzo/ozzo-validation/v4"
+  - import "github.com/go-ozzo/ozzo-validation/v4/is"
+  - Implement WorkspaceConfig.Validate() error method using validation.ValidateStruct():
+      validation.ValidateStruct(&w,
+        validation.Field(&w.Slug, validation.Required,
+                          validation.Match(regexp.MustCompile(`^[a-z][a-z0-9-]{1,48}[a-z0-9]$`))),
+        validation.Field(&w.OwnerEmail, validation.Required, is.Email),
+        validation.Field(&w.Plan, validation.Required, validation.In("free", "pro", "enterprise")),
+        validation.Field(&w.MaxSyncRuns, validation.Required, validation.Min(1), validation.Max(1000)),
+        validation.Field(&w.Tags, validation.Length(0, 20)),
+        validation.Field(&w.Settings, validation.Required),
+      )
+      Then check cross-field plan vs max_sync_runs rule in a follow-up block.
+  - Implement SyncRun.Validate() with cross-field rules:
+      These are expressed as explicit if-statements returning validation.Errors{...},
+      which is far more readable than tag-based equivalents. Show this contrast.
+  - Implement WebhookPayload.Validate() with signature regex check
+  - Implement IngestionSource.Validate() with poll_interval_seconds cross-field rule
+  - Implement ReviewRequest.Validate() with due_at / critical cross-field rule
+
+Add a file-level comment:
+  "ozzo-validation: all rules are in code, not struct tags. Cross-field rules
+   are expressed as explicit if-statements, making them easy to read and test.
+   The Validate() method returns validation.Errors — a map of field name to error.
+   This is Lane A with code-driven rule composition."
+
+--- README.md ---
+
+  # Go — ozzo-validation (Lane A: Code-Driven Explicit Rules)
+
+  ## Lane
+  Lane A: validation rules are in code, not struct tags. Clean struct definitions.
+
+  ## Key Patterns Used
+  ValidateStruct with Field(), is.Email, Match(regexp), custom cross-field if-blocks,
+  validation.Errors map for accumulating errors.
+
+  ## Comparison with go-playground/validator
+  4–5 sentences. ozzo: rules in code, readable cross-field logic, clean structs.
+  go-playground: rules in tags, compact for simple structs, awkward for cross-field.
+  Choose ozzo when validation logic is complex; choose go-playground/validator
+  for simple struct constraints and when tag proximity to field definition helps.
+
+================================================================================
+PART 3: GO — OPENAPI/JSON SCHEMA GENERATION (Lane B)
+================================================================================
+
+Create: examples/canonical-schema-validation/go/openapi-generation/
+
+Required files:
+  examples/canonical-schema-validation/go/openapi-generation/go.mod
+  examples/canonical-schema-validation/go/openapi-generation/models/models.go
+  examples/canonical-schema-validation/go/openapi-generation/schema_export.go
+  examples/canonical-schema-validation/go/openapi-generation/workspace_config.schema.json
+  examples/canonical-schema-validation/go/openapi-generation/README.md
+
+--- models/models.go ---
+
+Define WorkspaceConfig with swaggo-style doc comments:
+  // WorkspaceConfig defines a workspace with its sync configuration.
+  // @Description Workspace configuration object
+  // WorkspaceConfig godoc
+  type WorkspaceConfig struct {
+      // The workspace's globally unique identifier
+      // @example "550e8400-e29b-41d4-a716-446655440001"
+      ID string `json:"id"`
+      // The workspace name, between 3 and 100 characters
+      // @example "Acme Workspace"
+      Name string `json:"name"`
+      // etc.
+  }
+
+Show how swaggo annotations serve as the source of documentation and partial
+OpenAPI metadata, but note the limitation: they are comments, not type-checked.
+
+--- schema_export.go ---
+
+Implement a program that manually constructs a JSON Schema document for
+WorkspaceConfig using a map[string]interface{} structure, then marshals it
+to JSON. This demonstrates the "externalized" contract approach in Go:
+  1. Define the schema manually (or use a library like kin-openapi's spec package)
+  2. Export it as a JSON Schema file
+  3. Add a drift-check function that validates a fixture against the exported schema
+
+If a library simplifies this (e.g., github.com/invopop/jsonschema), use it.
+Add a comment explaining the choice.
+
+--- workspace_config.schema.json ---
+
+A hand-authored (or generated) JSON Schema for WorkspaceConfig. This file is
+the Lane B artifact. It should match domain/models.md for the WorkspaceConfig
+model. Include: type, properties, required array, pattern for slug, format for
+owner_email, enum for plan, minimum/maximum for max_sync_runs.
+
+This file is the contract. Include a "$comment" field:
+  "$comment": "Generated for the WorkspaceSyncContext domain. Go openapi-generation
+   Lane B example. Validate against domain/fixtures/valid/ and domain/fixtures/invalid/."
+
+--- README.md ---
+
+  # Go — OpenAPI/JSON Schema Generation (Lane B: Externalized Contract)
+
+  ## Lane
+  Lane B: contract generation. Go does not have a single library that derives
+  JSON Schema from struct definitions the way Pydantic or schemars do.
+
+  ## The Go Contract Generation Gap
+  4–5 sentences. Unlike Python (Pydantic.model_json_schema()) and Rust
+  (schemars::schema_for!()), Go lacks a mainstream library that automatically
+  derives a schema from a struct with serde-equivalent representation awareness.
+  swaggo extracts OpenAPI metadata from doc comments — not from type definitions.
+  Alternatives (invopop/jsonschema, kin-openapi spec construction) exist but
+  require explicit field registration or reflection. This is an acknowledged gap
+  in Go's tooling compared to Pydantic or schemars.
+
+  ## What This Example Shows
+  The manually/semi-automatically constructed JSON Schema for WorkspaceConfig.
+  A drift-check that validates fixtures against the schema.
+  The swaggo annotation approach for OpenAPI in HTTP service contexts.
+
+  ## Implication for Interoperability
+  If your team needs a machine-readable contract from Go structs, plan for the
+  additional integration work. Consider whether the contract lane is maintained
+  separately from the struct definitions, and add CI drift checks.
+
+================================================================================
+PART 4: RUST — VALIDATOR (Lane A, derive-based)
+================================================================================
+
+Create: examples/canonical-schema-validation/rust/validator/
+
+Required files:
+  examples/canonical-schema-validation/rust/validator/Cargo.toml
+  examples/canonical-schema-validation/rust/validator/src/models.rs
+  examples/canonical-schema-validation/rust/validator/src/main.rs
+  examples/canonical-schema-validation/rust/validator/README.md
+
+--- src/models.rs ---
+
+Implement all five WorkspaceSyncContext models using serde for deserialization
+and validator for validation. These are SEPARATE concerns — make this explicit.
+
+Requirements:
+  - use serde::{Deserialize, Serialize}
+  - use validator::{Validate, ValidationError, ValidationErrors}
+  - SettingsBlock: #[derive(Debug, Deserialize, Serialize, Validate)]
+      webhook_url: Option<String>  // serde handles null; validate with custom fn
+  - WorkspaceConfig: #[derive(Debug, Deserialize, Serialize, Validate)]
+      id: String  (no validate — UUID format is enforced by serde parse or regex)
+      name: String #[validate(length(min = 3, max = 100))]
+      slug: String #[validate(regex(path = *SLUG_REGEX))]
+        (define a Lazy<Regex> for the slug pattern)
+      owner_email: String #[validate(email)]
+      plan: PlanType  (enum: derive Deserialize; no validate macro needed — serde
+                       will fail to deserialize an unrecognized variant)
+      max_sync_runs: u32 #[validate(range(min = 1, max = 1000))]
+      settings: SettingsBlock #[validate(nested)]
+      tags: Vec<String> #[validate(length(max = 20))]
+        each tag: needs a custom validator for length 1..50 — show how
+      created_at: String  (ISO 8601 — validate format with regex or chrono parse)
+      suspended_until: Option<String>
+  - PlanType: enum { Free, Pro, Enterprise } with #[serde(rename_all="lowercase")]
+  - SyncRun with all optional fields as Option<...>
+  - For cross-field rules on SyncRun and ReviewRequest: implement a custom
+    validate_cross_fields() function that checks the rules after #[derive(Validate)]
+    runs. Call it explicitly in main.rs. Document:
+    "validator's derive macro handles field-level rules. Cross-field rules require
+     a separate function. The Validate trait's validate() method only runs what is
+     specified in #[validate(...)] attributes."
+  - WebhookPayload: use an enum for event_type + a generic data field:
+      #[serde(tag = "event_type", content = "data")]
+      enum WebhookData { SyncCompleted(SyncCompletedData), ... }
+    This is Rust's idiomatic discriminated union via serde's adjacently tagged enum.
+    Document: "Rust's serde provides native discriminated union support via
+    #[serde(tag = ..., content = ...)] or #[serde(tag = ...)]. This is more
+    ergonomic than Go's manual dispatch."
+
+Add a module-level doc comment:
+  "//! Lane A example using the `validator` crate.
+   //! serde handles deserialization (shape/wire format).
+   //! validator handles constraint checking (field-level rules).
+   //! schemars (in ../serde-schemars/) handles JSON Schema export (contract).
+   //! These are three distinct operations with three distinct libraries."
+
+--- src/main.rs ---
+
+Load valid/workspace_config_basic.json, deserialize with serde_json, then call
+.validate(). Print PASS or FAIL with error details.
+Repeat for invalid/workspace_config_bad_slug.json (expect validation error).
+Repeat for invalid/sync_run_timestamps_inverted.json (expect cross-field error
+from validate_cross_fields()).
+
+--- Cargo.toml ---
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+validator = { version = "0.18", features = ["derive"] }
+regex = "1"
+once_cell = "1"
+
+--- README.md ---
+
+  # Rust — validator (Lane A: Derive-Based Struct Validation)
+
+  ## Lane
+  Lane A: #[derive(Validate)] on structs. Field-level rules via attributes.
+
+  ## The Three-Library Separation
+  This is the most important section. Write 5–7 sentences explaining:
+    serde: deserialization shape (which fields, what names, what types)
+    validator: runtime constraint checking (#[validate(length(min=3))])
+    schemars: JSON Schema export aligned with serde (see ../serde-schemars/)
+  These three have non-overlapping responsibilities. The validator crate
+  does not know about serde's wire format. schemars reads serde's attributes
+  to produce a schema matching the wire format, not the Rust type representation.
+
+  ## Cross-Field Rules
+  validator's derive macro cannot express cross-field rules directly.
+  Shown as a separate validate_cross_fields() function.
+
+  ## Comparison with garde
+  3–4 sentences: garde provides a richer rule DSL with context-based validation.
+  Both are derive-based. garde has better support for custom error messages
+  and validation contexts.
+
+================================================================================
+PART 5: RUST — GARDE (Lane A, richer DSL)
+================================================================================
+
+Create: examples/canonical-schema-validation/rust/garde/
+
+Required files:
+  examples/canonical-schema-validation/rust/garde/Cargo.toml
+  examples/canonical-schema-validation/rust/garde/src/models.rs
+  examples/canonical-schema-validation/rust/garde/src/main.rs
+  examples/canonical-schema-validation/rust/garde/README.md
+
+--- src/models.rs ---
+
+Implement WorkspaceConfig and SyncRun using garde. Show what garde does
+differently from validator:
+
+Requirements:
+  - use serde::{Deserialize, Serialize}
+  - use garde::Validate
+  - WorkspaceConfig: #[derive(Debug, Deserialize, Serialize, Validate)]
+      #[garde(context(WorkspaceContext))]  (if using context-based validation)
+      name: String  #[garde(length(min=3, max=100))]
+      slug: String  #[garde(pattern(r"^[a-z][a-z0-9-]{1,48}[a-z0-9]$"))]
+      owner_email: String  #[garde(email)]
+      plan: PlanType  #[garde(custom(validate_plan))]
+      max_sync_runs: u32  #[garde(range(min=1, max=1000))]
+      tags: Vec<String>  #[garde(length(max=20), inner(length(min=1, max=50)))]
+        Note: garde's inner() for nested validation within collections is a
+        key ergonomic difference from validator. Show this explicitly.
+  - For cross-field rule (plan vs max_sync_runs): show how garde handles it
+    via a custom validation function or context-bound rule. Document how this
+    compares to validator's approach.
+  - SyncRun with at least the cross-field timestamp rule shown using garde's
+    custom validation approach.
+
+Add a module-level comment:
+  "//! Lane A example using the `garde` crate.
+   //! garde provides a richer attribute DSL than `validator`:
+   //! - inner() for per-element validation in collections
+   //! - pattern() for inline regex (no Lazy<Regex> needed)
+   //! - context-based validation for cross-field rules
+   //! Like validator, garde handles constraint checking only.
+   //! serde handles deserialization; schemars handles schema export."
+
+--- README.md ---
+
+  # Rust — garde (Lane A: Richer Validation DSL)
+
+  ## Lane
+  Lane A: derive-based validation, richer than validator.
+
+  ## What garde Does Differently from validator
+  Bullet list (4–6 points):
+    - inner() for per-element rules in collections (no separate custom validator needed)
+    - pattern() for inline regex (no Lazy<Regex> global)
+    - Context-based validation for cross-field rules
+    - Better custom error message ergonomics
+    - Validation context passed through the call, enabling cross-field access
+
+  ## When to Choose garde over validator
+  2–3 sentences: richer rule DSL, better collection validation, context-based
+  cross-field rules. validator has more community usage and examples.
+
+  ## Still Three Separate Libraries
+  Repeat the serde / garde / schemars separation. Do not conflate.
+
+================================================================================
+PART 6: RUST — SERDE + SCHEMARS (Lane B: CONTRACT LANE)
+================================================================================
+
+Create: examples/canonical-schema-validation/rust/serde-schemars/
+
+This is the most conceptually important Rust example. Read doctrine Rule 2
+before implementing. The name, the directory, and every README section must
+make unmistakably clear that schemars is NOT a validator.
+
+Required files:
+  examples/canonical-schema-validation/rust/serde-schemars/Cargo.toml
+  examples/canonical-schema-validation/rust/serde-schemars/src/models.rs
+  examples/canonical-schema-validation/rust/serde-schemars/src/schema_export.rs
+  examples/canonical-schema-validation/rust/serde-schemars/src/main.rs
+  examples/canonical-schema-validation/rust/serde-schemars/workspace_config.schema.json
+  examples/canonical-schema-validation/rust/serde-schemars/README.md
+
+--- src/models.rs ---
+
+Define WorkspaceConfig (at minimum) and SyncRun with:
+  - #[derive(Debug, Deserialize, Serialize, JsonSchema)]
+  - serde attributes: #[serde(rename_all = "snake_case")], #[serde(skip_serializing_if = "Option::is_none")]
+  - schemars attributes: #[schemars(description = "...")] on fields
+  - NO validator or garde attributes — this is the contract lane, not the validation lane
+  - Show that schemars reads serde's attributes to produce a schema that
+    matches the JSON wire format, not the Rust type names:
+      A field typed Option<String> with #[serde(skip_serializing_if = "Option::is_none")]
+      will NOT appear as required in the generated schema. Show this.
+
+Include a note in each struct:
+  "// No #[validate] or #[garde] attributes here.
+   // This is the contract lane: schemars generates JSON Schema.
+   // Use rust/validator/ or rust/garde/ for runtime validation."
+
+--- src/schema_export.rs ---
+
+  use schemars::{schema_for, JsonSchema}; // re-export from models
+
+  pub fn export_workspace_config_schema() -> String {
+      let schema = schema_for!(WorkspaceConfig);
+      serde_json::to_string_pretty(&schema).unwrap()
+  }
+
+  fn main() {
+      let schema_json = export_workspace_config_schema();
+      println!("{}", schema_json);
+      // Write to workspace_config.schema.json
+      // Then show a drift check:
+      //   1. Load valid/workspace_config_basic.json
+      //   2. Validate it against the generated schema using jsonschema crate
+      //   3. Print PASS or FAIL
+  }
+
+The drift check is the key: if serde's representation and the JSON Schema
+diverge (e.g., because someone changed a serde attribute but forgot to check
+the schema), the drift check catches it.
+
+--- workspace_config.schema.json ---
+
+The actual generated JSON Schema for WorkspaceConfig. Run cargo run --bin schema_export
+and capture the output. Commit this file. A CI drift check would compare a freshly
+generated schema against this committed baseline.
+
+--- Cargo.toml ---
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+schemars = "0.8"     (or latest stable)
+jsonschema = "0.18"  (for drift check validation)
+
+--- README.md ---
+
+  # Rust — serde + schemars (Lane B: Contract Generation)
+
+  ## THIS IS NOT A VALIDATOR
+  Write this sentence prominently, first, in bold. Then explain why this matters.
+
+  ## Lane
+  Lane B: schema export and cross-language interoperability. schemars derives
+  JSON Schema from Rust structs using serde's representation as the reference.
+
+  ## How schemars Works
+  5–7 sentences:
+    schemars reads both the Rust type structure and the serde attributes. A field
+    #[serde(skip_serializing_if = "Option::is_none")] will be marked as NOT required
+    in the generated JSON Schema, because serde omits it from the wire format when None.
+    A field #[serde(rename = "owner_email")] will appear as "owner_email" in the schema.
+    The schema reflects the wire format, not the Rust type system.
+    This alignment between serde's representation and schemars' output is the core
+    value of the combination — the schema you export IS what you serialize.
+
+  ## How to Use This With Runtime Validation
+  Show the full three-library pipeline:
+    1. Deserialize from JSON: serde_json::from_str::<WorkspaceConfig>(json)?
+    2. Validate: workspace_config.validate()? (from rust/validator/ or rust/garde/)
+    3. Export schema: schema_for!(WorkspaceConfig) (from this crate)
+  These three steps run independently. Step 3 does not require steps 1 or 2.
+
+  ## Drift Detection
+  A generated schema can drift from the runtime code if serde attributes change.
+  Show how to detect drift: commit workspace_config.schema.json; add a CI step
+  that regenerates the schema and diffs against the committed baseline.
+
+  ## OpenAPI Integration
+  schemars schemas can be used in OpenAPI workflows via aide, utoipa, or okapi.
+  Show the integration point (a reference or 3-5 line snippet) if feasible.
+
+================================================================================
+PART 7: SMOKE TESTS
+================================================================================
+
+Create:
+  verification/schema-validation/go/__init__.py
+  verification/schema-validation/go/test_go_validator.py
+  verification/schema-validation/go/test_ozzo_validation.py
+  verification/schema-validation/rust/__init__.py
+  verification/schema-validation/rust/test_validator.py
+  verification/schema-validation/rust/test_garde.py
+  verification/schema-validation/rust/test_serde_schemars.py
+
+All test files use Python unittest. For Go and Rust, write structural smoke
+tests (file existence, README content checks) plus subprocess-based execution
+tests that skip if the toolchain is not available.
+
+--- test_go_validator.py ---
+
+Test class: TestGoValidatorStructure
+  - test_models_go_exists
+  - test_validate_go_exists
+  - test_readme_mentions_tag_based
+    Assert README.md contains "tag" or "struct tag"
+  - test_readme_mentions_cross_field_limitation
+    Assert README.md contains "cross-field" or "cross field"
+
+Test class: TestGoValidatorExecution (skip if 'go' not in PATH)
+  - test_main_go_runs
+    subprocess.run(['go', 'run', 'main.go'], cwd=go_validator_dir, timeout=30)
+    Assert returncode == 0
+
+--- test_ozzo_validation.py --- (similar structure)
+
+--- test_validator.py, test_garde.py --- (Rust: skip if 'cargo' not in PATH)
+
+--- test_serde_schemars.py ---
+
+Test class: TestSerdeSchemarsCritical
+  - test_schemars_directory_exists
+  - test_models_rs_has_no_validate_attribute
+    Read models.rs. Assert "#[validate" does NOT appear (schemars is not a validator).
+    Assert "#[derive(JsonSchema)]" DOES appear.
+  - test_readme_says_not_a_validator
+    Read README.md. Assert it contains "NOT A VALIDATOR" or "not a validator".
+  - test_committed_schema_file_exists
+    Assert workspace_config.schema.json exists and is valid JSON.
+  - test_schema_has_expected_fields
+    Load workspace_config.schema.json. Assert 'properties' key exists.
+    Assert 'slug' or 'name' appears in properties.
+
+The test_serde_schemars.py critical tests (structure, README content,
+no-validate assertion) must run WITHOUT requiring cargo to be installed.
+The execution test (cargo run) may skip if cargo is not available.
+
+================================================================================
+PART 8: UPDATE CATALOG.md
+================================================================================
+
+Update examples/canonical-schema-validation/CATALOG.md.
+
+Change status from [ ] (planned) to [x] (implemented) for:
+  Go / go-playground/validator  → [x]
+  Go / ozzo-validation          → [x]
+  Go / OpenAPI generation       → [x]
+  Rust / validator              → [x]
+  Rust / garde                  → [x]
+  Rust / serde + schemars       → [x]
+
+================================================================================
+VERIFICATION
+================================================================================
+
+Final gate (all must pass):
+
+  python -m unittest discover -s verification/schema-validation -p "test_*.py" -v
+  python -m unittest discover -s verification/unit -p "test_*.py" -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Critical manual checks:
+  - rust/serde-schemars/src/models.rs does NOT contain #[validate or #[garde
+  - rust/serde-schemars/README.md contains "NOT A VALIDATOR" or equivalent
+  - go/openapi-generation/README.md acknowledges the Go contract-generation gap
+  - All smoke tests pass (structural checks pass without Go/Rust toolchain;
+    execution checks skip gracefully if toolchain unavailable)
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+Use grouped commits prefixed with [PROMPT_116]. Use `git add -p`.
+
+  1. [PROMPT_116] add Go go-playground/validator (Lane A) example
+     Stage: examples/canonical-schema-validation/go/go-playground-validator/
+
+  2. [PROMPT_116] add Go ozzo-validation (Lane A) example
+     Stage: examples/canonical-schema-validation/go/ozzo-validation/
+
+  3. [PROMPT_116] add Go OpenAPI/JSON Schema generation (Lane B) example
+     Stage: examples/canonical-schema-validation/go/openapi-generation/
+
+  4. [PROMPT_116] add Rust validator (Lane A) example
+     Stage: examples/canonical-schema-validation/rust/validator/
+
+  5. [PROMPT_116] add Rust garde (Lane A) example
+     Stage: examples/canonical-schema-validation/rust/garde/
+
+  6. [PROMPT_116] add Rust serde+schemars (Lane B: contract lane) example
+     Stage: examples/canonical-schema-validation/rust/serde-schemars/
+
+  7. [PROMPT_116] add Go and Rust smoke tests
+     Stage: verification/schema-validation/go/,
+            verification/schema-validation/rust/
+
+  8. [PROMPT_116] update CATALOG.md to mark Go+Rust examples as implemented
+     Stage: examples/canonical-schema-validation/CATALOG.md
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Implement all Go and Rust examples with the separation-of-concerns framing
+  - Make serde + schemars unmistakably a contract lane, not a validation lane
+  - Show Go's contract generation gap explicitly and honestly
+  - Write structural smoke tests that run without the Go/Rust toolchain
+  - Implement at minimum WorkspaceConfig and SyncRun in each example;
+    all five models where feasible
+
+DO NOT:
+  - Add #[validate] or #[garde] attributes to the serde-schemars example models
+  - Present Go's contract lane as equivalent to Pydantic or schemars ergonomics
+  - Use pytest — unittest only
+  - Implement Kotlin, Ruby, or Elixir (PROMPT_117)
+  - Conflate validator and garde — show their differences explicitly
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+
+  - All six Go and Rust example directories exist with implementation files
+  - rust/serde-schemars/src/models.rs has NO #[validate] attributes
+  - rust/serde-schemars/README.md says "NOT A VALIDATOR" (or strong equivalent)
+  - rust/serde-schemars/workspace_config.schema.json is a committed JSON Schema
+  - go/openapi-generation/README.md acknowledges the Go ergonomic gap
+  - test_serde_schemars.py structural tests pass (without cargo)
+  - CATALOG.md shows all 6 Go+Rust examples as [x]
+  - All verification gates pass
+
+PROMPT_117 will implement Kotlin, Ruby, and Elixir.

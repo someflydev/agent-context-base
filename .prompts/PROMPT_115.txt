@@ -1,0 +1,735 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one
+fresh coding-assistant session with commit prefixes like `[PROMPT_115]`.
+
+PROMPT_113: Schema Validation Arc — Foundation (doctrine, archetype, 7 stacks,
+            routing, manifest, 2 skills, workflow).
+PROMPT_114: Schema Validation Arc — Shared corpus (WorkspaceSyncContext domain,
+            23 fixtures, CATALOG.md, PARITY.md, fixture validation tests).
+
+This prompt (PROMPT_115) implements canonical examples for Python and TypeScript —
+the two languages with the strongest hybrid (Lane C) story and the richest library
+ecosystems in this space.
+
+                [SCHEMA VALIDATION ARC: Prompt 3 of 6 — Python + TypeScript]
+
+Python libraries:
+  Pydantic    (Lane C: hybrid type-driven — type = validator = schema)
+  marshmallow (Lane A: explicit schema objects, serialization-first)
+
+TypeScript libraries:
+  Zod         (Lane C: mainstream TS hybrid)
+  Valibot     (Lane A: modular, lightweight)
+  io-ts       (Lane A: codec-based FP approach — NOT a lightweight Zod)
+  TypeBox + Ajv (Lane B: contract-first, JSON Schema native)
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                    (run; study output)
+  4. memory/INDEX.md
+
+Read the arc foundation before implementing anything:
+  5. context/doctrine/schema-validation-contracts.md   (READ — all 8 rules apply)
+  6. context/skills/schema-validation-lane-selection.md (READ — lane assignments)
+  7. context/stacks/schema-validation-python.yaml      (READ — Python lane assignments)
+  8. context/stacks/schema-validation-typescript.yaml  (READ — TS lane assignments)
+  9. context/workflows/add-schema-validation-example.md (READ — follow this procedure)
+ 10. examples/canonical-schema-validation/domain/models.md (READ — implement THESE models)
+ 11. examples/canonical-schema-validation/PARITY.md    (READ — parity rules your tests must satisfy)
+ 12. examples/canonical-schema-validation/CATALOG.md   (READ — update statuses when done)
+
+Read relevant existing canonical examples for style reference:
+ 13. examples/canonical-api/  (SKIM one Python and one TypeScript example for code style)
+
+Run verification before touching any code:
+  python -m unittest discover -s verification/schema-validation -p "test_*.py" -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Do NOT begin writing until you have read all of the above.
+
+================================================================================
+BACKGROUND: WHY PYTHON AND TYPESCRIPT TOGETHER
+================================================================================
+
+Python and TypeScript are chosen first because they are the clearest exemplars
+of the hybrid (Lane C) approach — and because their library ecosystems require
+the most careful comparison work.
+
+For Python:
+  Pydantic is not just a runtime validator. The model class IS the type, IS the
+  validator, IS the JSON Schema source. When you define a BaseModel subclass,
+  you get all three for free. marshmallow does something fundamentally different:
+  it asks you to define a Schema object (separate from your data class) and then
+  use that schema to serialize/deserialize/validate. Both are valid; they have
+  different ergonomic tradeoffs that the examples must make concrete.
+
+For TypeScript:
+  Zod and io-ts are both TS libraries that give you both static type inference
+  and runtime validation — but they do so with very different designs:
+    - Zod: you define a schema, infer a type from it. Ergonomic, mainstream.
+    - io-ts: you define a Codec, which is a value that encodes BOTH a runtime
+      decoder AND a static type. FP-oriented, more compositional, more explicit.
+  These are not interchangeable. Do not flatten them.
+  Valibot is the lightweight alternative to Zod: same general hybrid approach,
+  modular imports for tree-shaking, simpler API surface.
+  TypeBox + Ajv represents a different lane entirely: TypeBox schemas ARE JSON
+  Schema natively, so the "contract" and the "validator" are the same object.
+  This is the contract-first lane in TypeScript.
+
+================================================================================
+PART 1: PYTHON — PYDANTIC (Lane C)
+================================================================================
+
+Create: examples/canonical-schema-validation/python/pydantic/
+
+Required files:
+  examples/canonical-schema-validation/python/pydantic/__init__.py  (empty)
+  examples/canonical-schema-validation/python/pydantic/models.py
+  examples/canonical-schema-validation/python/pydantic/schema_export.py
+  examples/canonical-schema-validation/python/pydantic/README.md
+
+--- models.py ---
+
+Implement all five WorkspaceSyncContext models from domain/models.md using
+Pydantic v2 (BaseModel, model_validator, field_validator). Use Python 3.11+
+type annotations throughout.
+
+Requirements:
+  - Import from pydantic: BaseModel, Field, field_validator, model_validator,
+    EmailStr (or use a pattern validator), AnyUrl (or str with url validator)
+  - SettingsBlock: webhook_url is Optional[str] = None; validate URL format
+    using a field_validator when present
+  - WorkspaceConfig:
+      - slug: use a field_validator with a regex pattern (^[a-z][a-z0-9-]{1,48}[a-z0-9]$)
+      - owner_email: use EmailStr or a regex field_validator
+      - plan: use an Enum (PlanEnum: free, pro, enterprise)
+      - max_sync_runs: use Field(ge=1, le=1000)
+      - cross-field rule (plan vs max_sync_runs): use a model_validator(mode='after')
+        that raises ValueError when plan == 'free' and max_sync_runs > 10, or
+        plan == 'pro' and max_sync_runs > 100
+      - tags: list[str] with Field(max_length=20); each item validated with
+        field_validator to be 1..50 chars
+      - created_at: datetime; use Field() without future-date enforcement
+        (document it as a known limitation in a comment)
+      - suspended_until: Optional[datetime] = None
+  - SyncRun:
+      - status: Enum (SyncStatus: pending, running, succeeded, failed, cancelled)
+      - trigger: Enum (TriggerType: manual, scheduled, webhook)
+      - started_at, finished_at, duration_ms, records_ingested, error_code: all Optional
+      - model_validator(mode='after') for all cross-field rules:
+          * if finished_at is set, started_at must be set
+          * finished_at >= started_at
+          * if finished_at is set, duration_ms must be set
+          * if status == failed, error_code must be set
+          * if status != failed, error_code must be None
+  - WebhookPayload:
+      - event_type: Enum (WebhookEventType: sync_completed, sync_failed, workspace_suspended)
+        Use string values "sync.completed", "sync.failed", "workspace.suspended"
+      - signature: str validated to be exactly 64 lowercase hex chars
+      - timestamp: datetime (Pydantic auto-parses ISO 8601 strings)
+      - data: implement as a discriminated union using Annotated + Field(discriminator=...)
+        Define SyncCompletedData, SyncFailedData, WorkspaceSuspendedData as BaseModel subclasses.
+        Use Literal[...] event_type field on each data model for discriminator routing.
+        If Pydantic v2 discriminated unions prove complex, use a Union type with manual
+        model_validator — document the approach in a comment.
+  - IngestionSource:
+      - source_type: Enum (SourceType: http_poll, webhook_push, file_watch, database_cdc)
+      - config: discriminated union (HttpPollConfig, WebhookPushConfig, FileWatchConfig,
+        DatabaseCdcConfig) keyed on source_type using Pydantic's discriminated union feature
+      - cross-field rule: model_validator for poll_interval_seconds requirement
+  - ReviewRequest:
+      - reviewer_emails: list[str] with Field(min_length=1, max_length=5)
+      - use a field_validator to check email format for each item
+      - content_ids: list[str] with Field(min_length=1, max_length=50)
+      - use a model_validator to check for duplicates in content_ids and reviewer_emails
+      - cross-field rule: due_at required when priority == critical
+
+Add a docstring to each class that says which domain model it implements and
+which Lane C characteristics it demonstrates (type = validator = schema source).
+
+--- schema_export.py ---
+
+Demonstrate Lane C schema export. Write a script that:
+  1. Calls WorkspaceConfig.model_json_schema() and prints the resulting JSON Schema
+  2. Calls SyncRun.model_json_schema() and prints it
+  3. Shows that the exported schema is valid JSON (json.loads round-trip)
+  4. Demonstrates a round-trip drift check: validates the schema against
+     a known-valid fixture and a known-invalid fixture using jsonschema.validate()
+     (or equivalent)
+
+Add a __main__ block so this can be run: python schema_export.py
+
+The script must import from models.py. Keep it under 80 lines.
+
+--- README.md ---
+
+Required sections:
+  # Python — Pydantic (Lane C: Hybrid Type-Driven)
+
+  ## Lane
+  Explain what Lane C means here: BaseModel subclass IS the type, IS the
+  validator, IS the JSON Schema source. One definition, three behaviors.
+
+  ## Models
+  List all 5 models. Note the cross-field validators.
+
+  ## Key Pydantic v2 Patterns Used
+  Bullet list: model_validator(mode='after'), field_validator, discriminated unions,
+  Field() constraints, EmailStr, Enum.
+
+  ## Comparison with marshmallow
+  3–5 sentences contrasting the approaches. Pydantic: type annotation drives
+  everything. marshmallow: explicit Schema class, separate from data class,
+  more control over serialization steps.
+
+  ## Running
+  python schema_export.py
+  python -m pytest / python -m unittest (point to smoke tests)
+
+  ## Smoke Tests
+  Point to verification/schema-validation/python/test_pydantic.py
+
+Target length: 40–60 lines.
+
+================================================================================
+PART 2: PYTHON — MARSHMALLOW (Lane A)
+================================================================================
+
+Create: examples/canonical-schema-validation/python/marshmallow/
+
+Required files:
+  examples/canonical-schema-validation/python/marshmallow/__init__.py
+  examples/canonical-schema-validation/python/marshmallow/schemas.py
+  examples/canonical-schema-validation/python/marshmallow/README.md
+
+--- schemas.py ---
+
+Implement Schema classes for all five WorkspaceSyncContext models using
+marshmallow (v3). Do NOT use Pydantic here. Use plain Python data classes or
+dicts as the data representation; marshmallow schemas handle validation and
+serialization separately.
+
+Requirements:
+  - Import from marshmallow: Schema, fields, validate, validates, validates_schema,
+    ValidationError, post_load
+  - SettingsBlockSchema: fields.Url() for webhook_url (allow_none=True)
+  - WorkspaceConfigSchema:
+      - slug: fields.Str() with validate.Regexp(r'^[a-z][a-z0-9-]{1,48}[a-z0-9]$')
+      - owner_email: fields.Email()
+      - plan: fields.Str() with validate.OneOf(['free', 'pro', 'enterprise'])
+      - max_sync_runs: fields.Int(validate=validate.Range(min=1, max=1000))
+      - tags: fields.List(fields.Str(validate=validate.Length(min=1, max=50)),
+               validate=validate.Length(max=20))
+      - settings: fields.Nested(SettingsBlockSchema)
+      - created_at: fields.DateTime(format='iso')
+      - suspended_until: fields.DateTime(format='iso', allow_none=True, load_default=None)
+      - @validates_schema for plan vs max_sync_runs cross-field rule
+  - SyncRunSchema:
+      - Use fields.DateTime(allow_none=True) for started_at, finished_at
+      - @validates_schema for all cross-field rules (timestamps, duration_ms, error_code)
+  - WebhookPayloadSchema:
+      - signature: fields.Str(validate=validate.Regexp(r'^[a-f0-9]{64}$'))
+      - For the discriminated union in 'data': implement a @validates_schema
+        that checks event_type and validates the 'data' dict against the
+        appropriate sub-schema. Use manual dispatch (not Pydantic-style
+        discriminated union — marshmallow does not have native discriminated unions).
+        Document this limitation in a comment.
+  - IngestionSourceSchema with cross-field @validates_schema for poll_interval_seconds
+  - ReviewRequestSchema with validates_schema for due_at / critical cross-field rule
+    and reviewer_emails deduplication check
+
+Note in each schema's docstring: "marshmallow Schema object — defined separately
+from data classes. This is Lane A: schema objects are explicit, not derived from type annotations."
+
+--- README.md ---
+
+Required sections:
+  # Python — marshmallow (Lane A: Explicit Schema Objects)
+
+  ## Lane
+  Lane A: the Schema class is a separate object from the data. Unlike Pydantic,
+  you define the schema explicitly and apply it to raw dicts or data class instances.
+
+  ## Key Patterns Used
+  validates_schema for cross-field rules, Nested for nested objects, manual dispatch
+  for discriminated unions (marshmallow limitation — document explicitly).
+
+  ## Comparison with Pydantic
+  3–5 sentences. marshmallow: explicit schema definition, strong serialization
+  control, mature ecosystem. Pydantic: type annotation IS the schema, better
+  for type-safe model-driven workflows. Neither is universally better.
+
+  ## Running
+  python -c "from schemas import WorkspaceConfigSchema; ..."
+
+  ## Smoke Tests
+  Point to verification/schema-validation/python/test_marshmallow.py
+
+================================================================================
+PART 3: TYPESCRIPT — ZOD (Lane C)
+================================================================================
+
+Create: examples/canonical-schema-validation/typescript/zod/
+
+Required files:
+  examples/canonical-schema-validation/typescript/zod/package.json
+  examples/canonical-schema-validation/typescript/zod/tsconfig.json
+  examples/canonical-schema-validation/typescript/zod/src/models.ts
+  examples/canonical-schema-validation/typescript/zod/src/schema_export.ts
+  examples/canonical-schema-validation/typescript/zod/README.md
+
+--- models.ts ---
+
+Implement all five WorkspaceSyncContext models using Zod (v3).
+Use z.infer<typeof Schema> to derive TypeScript types from schemas.
+
+Requirements:
+  - import { z } from 'zod'
+  - SettingsBlockSchema: z.object({ webhook_url: z.string().url().nullable() })
+  - WorkspaceConfigSchema:
+      - slug: z.string().regex(/^[a-z][a-z0-9-]{1,48}[a-z0-9]$/)
+      - owner_email: z.string().email()
+      - plan: z.enum(['free', 'pro', 'enterprise'])
+      - max_sync_runs: z.number().int().min(1).max(1000)
+      - settings: SettingsBlockSchema
+      - tags: z.array(z.string().min(1).max(50)).max(20)
+      - created_at: z.string().datetime()
+      - suspended_until: z.string().datetime().nullable()
+      - cross-field rule: use .superRefine() for plan vs max_sync_runs
+  - SyncRunSchema with .superRefine() for all cross-field rules
+  - WebhookPayloadSchema:
+      - signature: z.string().regex(/^[a-f0-9]{64}$/)
+      - data: implement as a discriminated union:
+        z.discriminatedUnion('event_type', [SyncCompletedDataSchema, ...])
+        Each sub-schema must have an event_type: z.literal('sync.completed') field.
+  - IngestionSourceSchema: discriminated union on source_type; .superRefine() for
+    poll_interval_seconds cross-field rule
+  - ReviewRequestSchema: .superRefine() for due_at / critical rule and deduplication
+
+Export both schemas AND types:
+  export type WorkspaceConfig = z.infer<typeof WorkspaceConfigSchema>
+  (etc. for all models)
+
+Add a JSDoc comment to each schema explaining which lane it demonstrates and
+the key Zod pattern used.
+
+--- schema_export.ts ---
+
+Demonstrate Lane C: derive the TypeScript type AND export JSON Schema from the
+same Zod schema. Use zod-to-json-schema or z.toJsonSchema() (if available in
+the version used). Show a round-trip drift check using ajv or similar.
+
+Add a top-level comment: "Lane C demonstration: one Zod schema definition yields
+a TypeScript type (static), a runtime validator, and a JSON Schema (contract)."
+
+--- package.json ---
+
+Include dependencies: zod, zod-to-json-schema (or note if using built-in).
+Add scripts: "validate": "ts-node src/schema_export.ts", "test": "jest" (or ts-node).
+Use TypeScript 5.x.
+
+--- README.md ---
+
+  # TypeScript — Zod (Lane C: Hybrid Type-Driven)
+
+  ## Lane
+  Lane C: z.schema() → z.infer<> gives you the static TS type; .parse()/.safeParse()
+  gives runtime validation; zod-to-json-schema gives the JSON Schema contract.
+  One definition, three behaviors.
+
+  ## Key Patterns Used
+  Bullet: discriminatedUnion(), superRefine(), z.infer<>, schema_export with
+  zod-to-json-schema, nullable vs optional distinction.
+
+  ## Comparison with io-ts
+  3–5 sentences. Zod: ergonomic, method-chaining, mainstream. io-ts: Codec values
+  that are first-class runtime objects encoding both type and decoder/encoder logic.
+  io-ts is more FP-oriented and more explicit about the decode/encode boundary.
+
+  ## Comparison with Valibot
+  2–3 sentences. Valibot: modular imports for tree-shaking, simpler API surface,
+  similar hybrid approach. Zod has a larger ecosystem and more middleware.
+
+  ## Running
+  ts-node src/schema_export.ts
+
+================================================================================
+PART 4: TYPESCRIPT — VALIBOT (Lane A)
+================================================================================
+
+Create: examples/canonical-schema-validation/typescript/valibot/
+
+Required files:
+  examples/canonical-schema-validation/typescript/valibot/package.json
+  examples/canonical-schema-validation/typescript/valibot/src/models.ts
+  examples/canonical-schema-validation/typescript/valibot/README.md
+
+--- models.ts ---
+
+Implement WorkspaceConfig and SyncRun (the two most complex models) using
+Valibot. Include inline comments about what Valibot does differently from Zod.
+
+Requirements:
+  - import * as v from 'valibot'
+  - Use v.object(), v.string(), v.number(), v.boolean(), v.nullable(),
+    v.optional(), v.array(), v.union(), v.literal(), v.enum_(), v.pipe()
+  - Use v.regex() for slug, v.email() for owner_email
+  - Use v.check() for cross-field rules (or v.forward() for field-level targeting)
+  - WorkspaceConfigSchema and SyncRunSchema at minimum; add the other three models
+    if time permits, clearly marking them as partial stubs if not complete.
+  - Export types: type WorkspaceConfig = v.InferOutput<typeof WorkspaceConfigSchema>
+
+Note in comments: "Valibot uses pipe() instead of method chaining. Validators
+are tree-shakeable — only imported pipes are bundled."
+
+--- README.md ---
+
+  # TypeScript — Valibot (Lane A: Modular Runtime Validation)
+
+  ## Lane
+  Lane A with hybrid characteristics: runtime validation + type inference,
+  but designed for tree-shaking and minimal bundle size.
+
+  ## Key Differences from Zod
+  3–5 bullet points: modular imports, pipe() instead of chaining, smaller bundle,
+  less middleware ecosystem, similar hybrid type inference.
+
+  ## When to Choose Valibot over Zod
+  2–3 sentences: bundle-size-sensitive environments (edge runtimes, mobile);
+  when you want explicit validation step composition.
+
+================================================================================
+PART 5: TYPESCRIPT — IO-TS (Lane A, codec approach)
+================================================================================
+
+Create: examples/canonical-schema-validation/typescript/io-ts/
+
+Required files:
+  examples/canonical-schema-validation/typescript/io-ts/package.json
+  examples/canonical-schema-validation/typescript/io-ts/src/codecs.ts
+  examples/canonical-schema-validation/typescript/io-ts/README.md
+
+--- codecs.ts ---
+
+Implement WorkspaceConfig and SyncRun using io-ts and fp-ts (its companion).
+This is the most important thing to get right: io-ts is NOT a lighter Zod.
+
+Requirements:
+  - import * as t from 'io-ts'
+  - import * as E from 'fp-ts/Either' (or PathReporter for error messages)
+  - Define SettingsBlockCodec: t.type({ ... }) with t.union([t.string, t.null])
+    for webhook_url
+  - Define WorkspaceConfigCodec: t.type({ ... }) with t.keyof for plan enum,
+    t.array(t.string) for tags
+  - For cross-field rules: implement a custom codec using t.brand() or a
+    t.refinement() that layers validation on top of the structural codec.
+    Document why this is different from Zod's .superRefine(): in io-ts, you
+    are constructing a new codec value, not adding a method to a schema object.
+  - SyncRunCodec with the same approach for cross-field rules.
+  - Show decoding: t.decode(SyncRunCodec)(rawData) returns E.Either<Errors, SyncRun>
+    NOT a thrown exception. This is a key design point — document it.
+  - Export both the Codec and the derived type: type WorkspaceConfig = t.TypeOf<typeof WorkspaceConfigCodec>
+
+Add a top-level comment block (10–15 lines) explaining the codec model:
+  io-ts codecs are runtime values that encode both a static type and a
+  decode/encode function. Decoding returns an Either<ValidationErrors, T>
+  — not a thrown exception. This functional style is distinct from Zod's
+  throw-on-invalid approach and from Pydantic's exception-based model.
+  Use io-ts when you want explicit functional error handling and composable
+  codec algebra. Do not use it expecting a simpler Zod.
+
+--- README.md ---
+
+  # TypeScript — io-ts (Lane A: Codec-Based FP Approach)
+
+  ## Lane
+  Lane A: runtime decoding with explicit error type. NOT a simpler Zod.
+
+  ## The Codec Model
+  4–6 sentences. Codec = runtime value encoding type + decode + encode.
+  decode() returns Either<Errors, T>. The Either type forces callers to handle
+  errors explicitly — no uncaught ValidationError. This is the FP-style
+  boundary: instead of try/catch, you pattern-match on Left/Right.
+
+  ## When to Choose io-ts
+  3–4 sentences: FP codebases using fp-ts; when you need composable codec algebra;
+  when explicit error typing (not throw) is a design requirement.
+
+  ## What io-ts is NOT
+  It is not a lighter Zod. It is a different design philosophy. Do not pick it
+  for ergonomic schema definition — pick it for compositional codec construction.
+
+================================================================================
+PART 6: TYPESCRIPT — TYPEBOX + AJV (Lane B)
+================================================================================
+
+Create: examples/canonical-schema-validation/typescript/typebox-ajv/
+
+Required files:
+  examples/canonical-schema-validation/typescript/typebox-ajv/package.json
+  examples/canonical-schema-validation/typescript/typebox-ajv/src/schemas.ts
+  examples/canonical-schema-validation/typescript/typebox-ajv/src/validate.ts
+  examples/canonical-schema-validation/typescript/typebox-ajv/README.md
+
+--- schemas.ts ---
+
+Implement WorkspaceConfig and SyncRun using TypeBox.
+
+Requirements:
+  - import { Type, Static } from '@sinclair/typebox'
+  - TypeBox schemas ARE JSON Schema objects natively (they extend JSON Schema spec)
+  - Use Type.Object(), Type.String(), Type.Number(), Type.Boolean(),
+    Type.Array(), Type.Union(), Type.Literal(), Type.Null(), Type.Optional()
+  - slug: Type.String({ pattern: '^[a-z][a-z0-9-]{1,48}[a-z0-9]$' })
+  - plan: Type.Union([Type.Literal('free'), Type.Literal('pro'), Type.Literal('enterprise')])
+  - Export the JSON Schema: JSON.stringify(WorkspaceConfigSchema, null, 2) is valid
+    JSON Schema without any transformation
+  - Export types: type WorkspaceConfig = Static<typeof WorkspaceConfigSchema>
+  - Note: cross-field rules (plan vs max_sync_runs) CANNOT be expressed in JSON Schema
+    natively. Document this gap in a comment: "Cross-field rules require application-
+    level enforcement or JSON Schema's 'if/then/else' syntax. TypeBox supports
+    if/then/else — show it for the plan/max_sync_runs rule if feasible."
+
+--- validate.ts ---
+
+Show Ajv + TypeBox integration:
+  - import Ajv from 'ajv'
+  - import { WorkspaceConfigSchema } from './schemas'
+  - const ajv = new Ajv(); const validate = ajv.compile(WorkspaceConfigSchema)
+  - Validate a known-good and known-bad fixture from the fixture corpus
+
+Add a comment: "The TypeBox schema IS a JSON Schema object. No transformation
+needed. This is the contract-first lane: the schema is the source of truth for
+both validation (Ajv) and contract export (JSON Schema spec)."
+
+--- README.md ---
+
+  # TypeScript — TypeBox + Ajv (Lane B: Contract-First, JSON Schema Native)
+
+  ## Lane
+  Lane B: TypeBox schemas ARE JSON Schema natively. No transformation needed.
+  This is the contract-first lane: define once in TypeBox, validate with Ajv,
+  export as JSON Schema for cross-language interoperability.
+
+  ## Key Distinction from Zod
+  Zod derives JSON Schema via a transformation. TypeBox schemas ARE JSON Schema —
+  the Static<> type is extracted from the schema at compile time, not the other
+  way around. Different mental model: schema-first vs type-first.
+
+  ## Limitations
+  Cross-field rules (plan vs max_sync_runs) require if/then/else in JSON Schema
+  or application-level enforcement. Pure schema validators cannot express all
+  business rules — document this explicitly.
+
+================================================================================
+PART 7: SMOKE TESTS
+================================================================================
+
+Create:
+  verification/schema-validation/python/__init__.py
+  verification/schema-validation/python/test_pydantic.py
+  verification/schema-validation/python/test_marshmallow.py
+  verification/schema-validation/typescript/__init__.py
+  verification/schema-validation/typescript/test_zod.py
+  verification/schema-validation/typescript/test_io_ts.py
+
+Python tests (test_pydantic.py, test_marshmallow.py) use unittest only.
+
+--- test_pydantic.py ---
+
+Test class: TestPydanticWorkspaceConfig
+  - test_valid_basic_fixture_accepted
+    Load fixtures/valid/workspace_config_basic.json. Call
+    WorkspaceConfig.model_validate(data). Assert no exception raised.
+  - test_valid_full_fixture_accepted
+    Same for workspace_config_full.json.
+  - test_invalid_bad_slug_rejected
+    Load invalid/workspace_config_bad_slug.json. Assert ValidationError raised.
+  - test_invalid_plan_too_many_runs_rejected
+    Load invalid/workspace_config_plan_too_many_runs.json. Assert ValidationError.
+
+Test class: TestPydanticSyncRun
+  - test_valid_pending_accepted
+    Load sync_run_pending.json. Assert success.
+  - test_valid_succeeded_accepted
+    Load sync_run_succeeded.json. Assert success.
+  - test_invalid_timestamps_inverted_rejected
+    Load invalid/sync_run_timestamps_inverted.json. Assert ValidationError.
+  - test_invalid_duration_missing_when_finished_rejected
+    Load invalid/sync_run_duration_missing_when_finished.json. Assert ValidationError.
+
+Test class: TestPydanticSchemaExport
+  - test_workspace_config_schema_is_valid_json
+    Call WorkspaceConfig.model_json_schema(). json.dumps() it. assert no exception.
+  - test_schema_contains_expected_fields
+    Assert 'slug', 'plan', 'max_sync_runs' appear in the schema dict or its
+    'properties' sub-dict.
+
+Test class: TestPydanticReviewRequest
+  - test_critical_without_due_date_rejected
+    Load invalid/review_request_critical_no_due_date.json. Assert ValidationError.
+  - test_valid_critical_with_due_date_accepted
+    Load valid/review_request_critical.json. Assert success.
+  - test_no_reviewers_rejected
+    Load invalid/review_request_no_reviewers.json. Assert ValidationError.
+
+--- test_marshmallow.py ---
+
+Test class: TestMarshmallowWorkspaceConfig
+  Same set of valid/invalid fixture tests using WorkspaceConfigSchema().load(data).
+  marshmallow raises ValidationError on invalid data.
+
+Test class: TestMarshmallowSyncRun
+  Valid/invalid fixture tests for SyncRunSchema.
+
+Test class: TestMarshmallowReviewRequest
+  Critical without due_date, no reviewers tests.
+
+--- TypeScript smoke tests ---
+
+For TypeScript: write test_zod.py and test_io_ts.py as Python subprocess-based
+tests that invoke the TypeScript code via node/ts-node and assert on exit code
+or stdout output.
+
+test_zod.py:
+  Test class: TestZodSmoke
+  - test_zod_directory_exists
+    Assert examples/canonical-schema-validation/typescript/zod/ exists.
+  - test_zod_models_ts_exists
+    Assert .../zod/src/models.ts exists.
+  - test_zod_package_json_exists
+    Assert .../zod/package.json exists.
+  - test_zod_readme_mentions_lane_c
+    Read README.md; assert it contains "Lane C" or "hybrid".
+
+test_io_ts.py:
+  Test class: TestIoTsSmoke
+  - test_io_ts_directory_exists
+  - test_codecs_ts_exists
+  - test_readme_mentions_codec_model
+    Assert README.md contains "Either" or "codec".
+  - test_readme_distinguishes_from_zod
+    Assert README.md contains "not" and ("Zod" or "simpler").
+
+Note: Full ts-node execution requires the TypeScript toolchain to be installed.
+The Python-based tests are structural smoke tests. If you want runtime execution
+tests for TypeScript, add a shell script (run_ts_tests.sh) and invoke it from a
+separate test class that skips if node/ts-node are not available.
+
+================================================================================
+PART 8: UPDATE CATALOG.md
+================================================================================
+
+Update examples/canonical-schema-validation/CATALOG.md.
+
+Change status from [ ] (planned) to [x] (implemented) for:
+  Python / Pydantic      → [x]
+  Python / marshmallow   → [x]
+  TypeScript / Zod       → [x]
+  TypeScript / Valibot   → [x]
+  TypeScript / io-ts     → [x]
+  TypeScript / TypeBox + Ajv → [x]
+
+Leave all Go, Rust, Kotlin, Ruby, Elixir rows as [ ] (planned).
+
+================================================================================
+VERIFICATION
+================================================================================
+
+Final gate (all must pass):
+
+  python -m unittest discover -s verification/schema-validation -p "test_*.py" -v
+  python -m unittest discover -s verification/unit -p "test_*.py" -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Manual checks:
+  - All Python tests run without requiring external services
+  - Pydantic ValidationError is raised for all invalid fixtures
+  - marshmallow ValidationError is raised for all invalid fixtures
+  - TypeScript structural smoke tests pass
+  - CATALOG.md shows 6 Python+TS examples as [x]
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+Use grouped commits prefixed with [PROMPT_115]. Use `git add -p`.
+
+  1. [PROMPT_115] add Python Pydantic (Lane C) schema validation example
+     Stage: examples/canonical-schema-validation/python/pydantic/
+
+  2. [PROMPT_115] add Python marshmallow (Lane A) schema validation example
+     Stage: examples/canonical-schema-validation/python/marshmallow/
+
+  3. [PROMPT_115] add TypeScript Zod (Lane C) schema validation example
+     Stage: examples/canonical-schema-validation/typescript/zod/
+
+  4. [PROMPT_115] add TypeScript Valibot (Lane A) schema validation example
+     Stage: examples/canonical-schema-validation/typescript/valibot/
+
+  5. [PROMPT_115] add TypeScript io-ts (Lane A, codec) schema validation example
+     Stage: examples/canonical-schema-validation/typescript/io-ts/
+
+  6. [PROMPT_115] add TypeScript TypeBox+Ajv (Lane B) schema validation example
+     Stage: examples/canonical-schema-validation/typescript/typebox-ajv/
+
+  7. [PROMPT_115] add Python and TypeScript smoke tests
+     Stage: verification/schema-validation/python/,
+            verification/schema-validation/typescript/
+
+  8. [PROMPT_115] update CATALOG.md to mark Python+TS examples as implemented
+     Stage: examples/canonical-schema-validation/CATALOG.md
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Implement all five WorkspaceSyncContext models in Pydantic and marshmallow
+  - Implement at minimum WorkspaceConfig and SyncRun in Zod, Valibot, io-ts, TypeBox
+  - Implement ALL cross-field validation rules from domain/models.md
+  - Keep the io-ts codec explanation prominent — it is the most likely to be flattened
+  - Write smoke tests in Python unittest for Pydantic and marshmallow
+  - Write structural smoke tests (Python subprocess) for TypeScript libraries
+
+DO NOT:
+  - Use pytest — unittest only
+  - Implement Go, Rust, Kotlin, Ruby, or Elixir examples (PROMPT_116/117)
+  - Add libraries not in the domain spec
+  - Conflate io-ts with Zod in any README or comment
+  - Skip the schema_export.py and schema_export.ts files — Lane C is not
+    demonstrated without the contract export
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+
+  - examples/canonical-schema-validation/python/pydantic/models.py exists with
+    all 5 models and cross-field validators
+  - examples/canonical-schema-validation/python/marshmallow/schemas.py exists
+    with Schema classes for all 5 models
+  - examples/canonical-schema-validation/typescript/zod/src/models.ts exists
+    with discriminated union WebhookPayloadSchema
+  - examples/canonical-schema-validation/typescript/io-ts/src/codecs.ts exists
+    with the codec model explained in comments
+  - examples/canonical-schema-validation/typescript/typebox-ajv/src/schemas.ts
+    exists and notes the JSON Schema native characteristic
+  - verification/schema-validation/python/test_pydantic.py passes all tests
+  - verification/schema-validation/python/test_marshmallow.py passes all tests
+  - verification/schema-validation/typescript/ structural tests pass
+  - CATALOG.md shows 6 examples as [x]
+  - python scripts/validate_context.py passes
+
+PROMPT_116 will implement Go and Rust.
