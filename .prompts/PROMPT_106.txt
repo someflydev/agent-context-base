@@ -1,0 +1,568 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one fresh
+coding-assistant session with commit prefixes like `[PROMPT_106]`.
+
+PROMPT_100: Terminal tooling foundation
+PROMPT_101: Terminal validation contract
+PROMPT_102: Python canonical examples (Typer+Textual, Click+Blessed) + fixture corpus
+PROMPT_103: Rust + Go canonical examples (4 examples)
+PROMPT_104: TypeScript + Java canonical examples (4 examples)
+PROMPT_105: Ruby + Elixir canonical examples (4 examples) — all 14 examples complete
+             [TERMINAL TOOLING ARC: Prompt 7 of 12]
+
+This prompt (PROMPT_106) adds the cross-language index and decision layer:
+  - examples/canonical-terminal/CATALOG.md
+  - examples/canonical-terminal/DECISION_GUIDE.md
+  - Update docs/ARCHITECTURE_MAP.md with terminal capability section
+  - Update docs/repo-layout.md with terminal examples
+  - Update memory/INDEX.md
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                          (run; study output)
+  4. memory/INDEX.md
+  5. examples/canonical-terminal/README.md                  (updated through PROMPT_105)
+  6. context/archetypes/terminal-dual-mode.md               (PROMPT_100)
+  7. context/router/stack-router.md                         (PROMPT_100 — terminal section)
+  8. docs/ARCHITECTURE_MAP.md                               (existing — you will add a section)
+  9. docs/repo-layout.md                                    (existing — you will update)
+ 10. Skim each of the 14 example README.md files to understand their stack + intent
+     (just the README, not the code)
+
+Do NOT begin implementation until you have read all of the above.
+Verify all 14 examples from PROMPT_102–105 are present.
+
+================================================================================
+TERMINAL TOOLING CONTEXT
+================================================================================
+
+This prompt creates the cross-language discovery and decision layer. It does not
+write code. Its outputs are documentation files that help future assistants (and
+human operators) discover, choose, and extend the terminal capability area.
+
+The 14 examples by language and tier:
+
+  Python:
+    python-typer-textual/    Typer + Textual       dual-mode flagship
+    python-click-blessed/    Click + Blessed        CLI + light interactive
+
+  Rust:
+    rust-clap-ratatui/       clap + ratatui         dual-mode flagship
+    rust-argh-tui-realm/     argh + tui-realm       dual-mode secondary
+
+  Go:
+    go-cobra-bubbletea/      Cobra + Bubble Tea     dual-mode flagship
+    go-urfave-tview/         urfave/cli + tview     dual-mode secondary
+
+  TypeScript:
+    typescript-commander-ink/  Commander + Ink       dual-mode flagship
+    typescript-yargs-blessed/  Yargs + Blessed       CLI + classic TUI
+
+  Java:
+    java-picocli-lanterna/   picocli + Lanterna     dual-mode flagship
+    java-jcommander-jline/   JCommander + JLine     CLI + REPL shell
+
+  Ruby:
+    ruby-thor-tty/           Thor + TTY::Prompt     guided interactive CLI
+    ruby-clamp-tty/          Clamp + TTY::Reader    CLI + raw key pager
+
+  Elixir:
+    elixir-optimus-ratatouille/  Optimus + Ratatouille  dual-mode + GenServer
+    elixir-optionparser-owl/     OptionParser + Owl     CLI + rich output
+
+================================================================================
+PART 1: examples/canonical-terminal/CATALOG.md
+================================================================================
+
+Create: examples/canonical-terminal/CATALOG.md
+
+This file is the authoritative cross-language index for all terminal examples.
+
+Structure:
+
+  # Terminal Canonical Example Catalog
+
+  All examples implement the TaskFlow Monitor domain: a fixture-backed job queue
+  inspector with CLI and TUI surfaces.
+
+  Fixture corpus: examples/canonical-terminal/fixtures/
+  Domain: jobs with id, name, status, started_at, duration_s, tags, output_lines
+
+  ---
+
+  ## Python
+
+  ### python-typer-textual/ — Flagship
+  - Stack: Typer (CLI) + Textual (TUI)
+  - Mode: Dual-mode (CLI + full-screen TUI)
+  - Install: pip install -e .
+  - Smoke: pytest tests/smoke/
+  - When to use: Python operator consoles, dual-mode tools, interactive dashboards
+
+  ### python-click-blessed/ — Secondary
+  - Stack: Click (CLI) + Blessed (terminal interaction)
+  - Mode: CLI + lightweight interactive pager
+  - Install: pip install -e .
+  - Smoke: pytest tests/smoke/
+  - When to use: Lighter Python CLIs, colored output, simple key navigation
+
+  ---
+
+  ## Rust
+
+  ### rust-clap-ratatui/ — Flagship
+  - Stack: clap (CLI) + ratatui + crossterm (TUI)
+  - Mode: Dual-mode
+  - Build: cargo build --release
+  - Smoke: cargo test
+  - When to use: High-performance Rust tools, operator dashboards, queue monitors
+
+  ### rust-argh-tui-realm/ — Secondary
+  - Stack: argh (CLI) + tui-realm (component TUI)
+  - Mode: Dual-mode
+  - Build: cargo build --release
+  - Smoke: cargo test
+  - When to use: Rust tools where CLI is simple and TUI benefits from component model
+
+  ---
+
+  ## Go
+
+  ### go-cobra-bubbletea/ — Flagship
+  - Stack: Cobra (CLI) + Bubble Tea + lipgloss (TUI)
+  - Mode: Dual-mode
+  - Build: go build
+  - Smoke: go test ./tests/...
+  - When to use: Go tools with multi-command tree + functional TUI model
+
+  ### go-urfave-tview/ — Secondary
+  - Stack: urfave/cli + tview (TUI)
+  - Mode: Dual-mode
+  - Build: go build
+  - Smoke: go test ./tests/...
+  - When to use: Simpler Go CLIs where widget primitives matter more than
+    message-driven purity
+
+  ---
+
+  ## TypeScript
+
+  ### typescript-commander-ink/ — Flagship
+  - Stack: Commander (CLI) + Ink + React (TUI)
+  - Mode: Dual-mode
+  - Install: npm install && npm run build
+  - Smoke: npm test
+  - When to use: TypeScript/Node devtools with React component TUI
+
+  ### typescript-yargs-blessed/ — Secondary
+  - Stack: Yargs (CLI) + Blessed (TUI)
+  - Mode: CLI + ncurses-style TUI
+  - Install: npm install && npm run build
+  - Smoke: npm test
+  - When to use: TypeScript CLIs with classic ncurses-style widgets; no React
+
+  ---
+
+  ## Java
+
+  ### java-picocli-lanterna/ — Flagship
+  - Stack: picocli (CLI) + Lanterna (TUI)
+  - Mode: Dual-mode
+  - Build: mvn package
+  - Smoke: mvn test
+  - When to use: JVM services, enterprise Java, operator consoles on JVM
+
+  ### java-jcommander-jline/ — Secondary
+  - Stack: JCommander (CLI) + JLine 3 (interactive shell)
+  - Mode: CLI + REPL shell
+  - Build: mvn package
+  - Smoke: mvn test
+  - When to use: Java tools needing readline UX, tab completion, command history;
+    not a full-screen TUI
+
+  ---
+
+  ## Ruby
+
+  ### ruby-thor-tty/ — Flagship
+  - Stack: Thor (CLI) + TTY::Prompt + TTY::Table
+  - Mode: Guided interactive CLI (prompt-driven, not full-screen TUI)
+  - Install: bundle install
+  - Smoke: bundle exec ruby tests/smoke/test_cli_smoke.rb
+  - When to use: Ruby operator workflows, guided remediations, wizards
+
+  ### ruby-clamp-tty/ — Secondary
+  - Stack: Clamp (CLI) + TTY::Reader
+  - Mode: CLI + raw keystroke pager
+  - Install: bundle install
+  - Smoke: bundle exec ruby tests/smoke/test_cli_smoke.rb
+  - When to use: Lighter Ruby CLIs with custom key-driven interaction
+
+  ---
+
+  ## Elixir
+
+  ### elixir-optimus-ratatouille/ — Flagship
+  - Stack: Optimus (CLI) + Ratatouille (TUI) + GenServer
+  - Mode: Dual-mode + BEAM supervision
+  - Build: mix escript.build
+  - Smoke: mix test
+  - When to use: Elixir shops needing terminal operator console with OTP strengths
+
+  ### elixir-optionparser-owl/ — Secondary
+  - Stack: OptionParser (built-in) + Owl
+  - Mode: CLI + rich terminal output
+  - Build: mix escript.build (or mix run)
+  - Smoke: mix test
+  - When to use: Mix tasks, simple Elixir scripts, rich CLI output without full TUI
+
+  ---
+
+  ## Quick Reference: Run All Smoke Tests
+
+  ```bash
+  # Python
+  cd examples/canonical-terminal/python-typer-textual && pytest tests/smoke/
+  cd examples/canonical-terminal/python-click-blessed  && pytest tests/smoke/
+
+  # Rust
+  cd examples/canonical-terminal/rust-clap-ratatui    && cargo test
+  cd examples/canonical-terminal/rust-argh-tui-realm  && cargo test
+
+  # Go
+  cd examples/canonical-terminal/go-cobra-bubbletea   && go test ./tests/...
+  cd examples/canonical-terminal/go-urfave-tview      && go test ./tests/...
+
+  # TypeScript
+  cd examples/canonical-terminal/typescript-commander-ink  && npm test
+  cd examples/canonical-terminal/typescript-yargs-blessed  && npm test
+
+  # Java
+  cd examples/canonical-terminal/java-picocli-lanterna  && mvn test -q
+  cd examples/canonical-terminal/java-jcommander-jline  && mvn test -q
+
+  # Ruby
+  cd examples/canonical-terminal/ruby-thor-tty   && bundle exec ruby tests/smoke/test_cli_smoke.rb
+  cd examples/canonical-terminal/ruby-clamp-tty  && bundle exec ruby tests/smoke/test_cli_smoke.rb
+
+  # Elixir
+  cd examples/canonical-terminal/elixir-optimus-ratatouille && mix test
+  cd examples/canonical-terminal/elixir-optionparser-owl    && mix test
+  ```
+
+================================================================================
+PART 2: examples/canonical-terminal/DECISION_GUIDE.md
+================================================================================
+
+Create: examples/canonical-terminal/DECISION_GUIDE.md
+
+This file helps future assistants and operators choose the right terminal stack.
+
+Structure:
+
+  # Terminal Stack Decision Guide
+
+  Use this guide to choose the right language and library combination for a
+  terminal tooling project.
+
+  ## Quick Decision Tree
+
+  1. What is your primary language constraint?
+     → Python: see Python section
+     → Rust:   see Rust section
+     → Go:     see Go section
+     → TypeScript/Node: see TypeScript section
+     → Java/JVM: see Java section
+     → Ruby:   see Ruby section
+     → Elixir/BEAM: see Elixir section
+     → No constraint: see Cross-Language Comparison
+
+  2. What interaction model do you need?
+     → Scripting/automation only (no interactive UI): any CLI-tier stack
+     → Guided prompts / menus / wizards: Ruby Thor+TTY::Prompt or Python Typer
+     → Full-screen dashboard / table / panels: Python Textual, Rust ratatui,
+       Go Bubble Tea, TypeScript Ink, Java Lanterna, Elixir Ratatouille
+     → Shell-style REPL with readline: Java JCommander+JLine
+     → Light colored output / simple pager: Click+Blessed, Clamp+TTY::Reader,
+       Yargs+Blessed, OptionParser+Owl
+
+  ---
+
+  ## Python
+
+  | Need | Stack |
+  |------|-------|
+  | Full-screen TUI + CLI, modern async | Typer + Textual |
+  | Light CLI + colored output + simple keys | Click + Blessed |
+  | Existing Click app, add light interaction | Click + Blessed |
+  | Existing FastAPI/async project | Typer + Textual (async-native) |
+
+  Textual vs Blessed:
+  - Textual: CSS-styled widgets, component model, async, web export potential
+  - Blessed: line-oriented, simpler, more Unix-y, lighter weight
+
+  ---
+
+  ## Rust
+
+  | Need | Stack |
+  |------|-------|
+  | High-performance, full-screen TUI, max control | clap + ratatui |
+  | Component/subscription TUI (Elm-style), simpler CLI | argh + tui-realm |
+  | Existing clap project, adding TUI | clap + ratatui |
+
+  ratatui vs tui-realm:
+  - ratatui: raw draw loop, maximum control, most community momentum
+  - tui-realm: higher abstraction, Elm-like, easier to extend large TUIs
+
+  ---
+
+  ## Go
+
+  | Need | Stack |
+  |------|-------|
+  | kubectl/git-style command tree + functional TUI | Cobra + Bubble Tea |
+  | Simple CLI + widget-centric TUI (tables, forms) | urfave/cli + tview |
+  | Large command tree (10+ subcommands) | Cobra + Bubble Tea |
+
+  Bubble Tea vs tview:
+  - Bubble Tea: functional/immutable model, clean composition, lipgloss styling
+  - tview: imperative widgets, rich built-ins (tables, forms, trees), less boilerplate
+
+  ---
+
+  ## TypeScript
+
+  | Need | Stack |
+  |------|-------|
+  | React devs, component-style TUI, modern tooling | Commander + Ink |
+  | Classic ncurses-style TUI, no React | Yargs + Blessed |
+  | Complex command parsing with middleware | Yargs (either TUI lib) |
+
+  Ink vs Blessed:
+  - Ink: React paradigm, JSX, clean composition, good for React-familiar teams
+  - Blessed: ncurses-style, larger widget set, no React overhead
+
+  ---
+
+  ## Java
+
+  | Need | Stack |
+  |------|-------|
+  | Full-screen TUI panels + structured CLI | picocli + Lanterna |
+  | Shell REPL + readline + tab completion | JCommander + JLine |
+  | Annotation-heavy enterprise CLI | picocli (either TUI lib) |
+
+  Lanterna vs JLine:
+  - Lanterna: full text-GUI (panels, dialogs, forms) — real TUI
+  - JLine: interactive console input (readline, completion) — REPL, not panels
+
+  ---
+
+  ## Ruby
+
+  Ruby terminal tooling note:
+  Ruby's ecosystem is optimized for guided interactive CLIs and prompt-driven
+  workflows. It does NOT have a production-grade full-screen TUI framework
+  equivalent to ratatui or Textual. For dashboard-style panels:
+  → prefer Python (Textual), Rust (ratatui), or Go (Bubble Tea)
+
+  | Need | Stack |
+  |------|-------|
+  | Guided menus, selection dialogs, wizards | Thor + TTY::Prompt |
+  | Simple CLI + raw keystroke pager | Clamp + TTY::Reader |
+  | Existing Thor app, add interactive prompts | Thor + TTY::Prompt |
+
+  ---
+
+  ## Elixir
+
+  | Need | Stack |
+  |------|-------|
+  | Full-screen TUI + BEAM supervision + OTP patterns | Optimus + Ratatouille |
+  | Rich CLI output (tables, spinners, color), no TUI | OptionParser + Owl |
+  | Mix task with styled output | OptionParser + Owl |
+  | Process-supervised live data feed → terminal | Optimus + Ratatouille + GenServer |
+
+  BEAM guidance:
+  Use GenServer/supervision when you have live data, async updates, or concurrent
+  state management needs. For a static fixture-backed tool, simple module functions
+  are sufficient.
+
+  ---
+
+  ## Cross-Language Comparison
+
+  | Aspect | Python | Rust | Go | TypeScript | Java | Ruby | Elixir |
+  |--------|--------|------|----|------------|------|------|--------|
+  | Full-screen TUI | Textual | ratatui | Bubble Tea | Ink | Lanterna | limited | Ratatouille |
+  | CLI builder | Typer/Click | clap/argh | Cobra/urfave | Commander/Yargs | picocli/JCommander | Thor/Clamp | Optimus/OptionParser |
+  | Startup time | medium | fast | fast | medium | slow | medium | medium |
+  | Concurrency model | async | OS threads | goroutines | event loop | JVM threads | GIL | BEAM actors |
+  | Ecosystem maturity | high | high | high | high | high | medium | medium |
+  | Best for | operator consoles, Python shops | perf-critical tools | devops CLIs | Node/devtools | JVM enterprise | guided workflows | BEAM process monitors |
+
+  ## Common Anti-Patterns
+
+  - Building full-screen TUI in Ruby when Rust/Python would be more appropriate
+  - Using Yargs+Blessed when you actually want React component composition (use Ink)
+  - Skipping --no-tui flag in a TUI tool (breaks CI)
+  - Duplicating domain logic in CLI and TUI surfaces (use shared core/)
+  - Network calls in smoke tests (use fixtures/)
+
+  ## See Also
+  - context/archetypes/terminal-dual-mode.md
+  - context/archetypes/terminal-tui.md
+  - context/doctrine/terminal-ux-first-class.md
+  - context/router/stack-router.md (terminal stacks section)
+  - CATALOG.md (this directory)
+
+================================================================================
+PART 3: UPDATE docs/ARCHITECTURE_MAP.md
+================================================================================
+
+Read docs/ARCHITECTURE_MAP.md. Add a new section:
+
+  ## Terminal Tooling Capability Area
+
+  Terminal tooling is a first-class capability area covering CLI tools, TUI
+  applications, and dual-mode (CLI+TUI) operator consoles.
+
+  ### Doctrine
+  context/doctrine/terminal-ux-first-class.md — 10 rules governing terminal examples
+
+  ### Archetypes
+  | Archetype | When |
+  |-----------|------|
+  | cli-tool | Simple command-line utilities |
+  | terminal-tui | Full-screen TUI applications |
+  | terminal-dual-mode | CLI + TUI sharing a domain core |
+
+  ### Stacks
+  14 terminal stacks in context/stacks/terminal-*.yaml covering:
+  Python, Rust, Go, TypeScript, Java, Ruby, Elixir.
+  See context/router/stack-router.md → Terminal Stacks section.
+
+  ### Canonical Examples
+  examples/canonical-terminal/ — 14 examples across 7 languages
+  All implement the TaskFlow Monitor domain (fixture-backed job queue inspector).
+  See examples/canonical-terminal/CATALOG.md and DECISION_GUIDE.md.
+
+  ### Validation
+  docs/terminal-validation-contract.md — smoke test rules, markers, PTY guidance
+  verification/scenarios/terminal-smoke-baseline.md — baseline scenario
+
+Place this section after the existing "Context Validation Layer" section (added
+by PROMPT_99) or at the appropriate location in the map's flow.
+Keep it under 30 lines. This is an architecture map, not a tutorial.
+
+================================================================================
+PART 4: UPDATE docs/repo-layout.md
+================================================================================
+
+Read docs/repo-layout.md. Add terminal tooling to the relevant sections.
+
+In the examples/ section, add:
+  canonical-terminal/    Terminal tool examples: CLI, TUI, dual-mode — 7 languages
+                         See canonical-terminal/CATALOG.md for index.
+
+In the context/ section, ensure these new items appear:
+  archetypes/terminal-tui.md
+  archetypes/terminal-dual-mode.md
+  doctrine/terminal-ux-first-class.md
+  stacks/terminal-*.yaml  (14 files)
+  workflows/add-terminal-example.md
+
+Add a terminal tooling entry to any capability area index if one exists.
+
+Keep changes minimal. Fit the existing doc's formatting and style.
+
+================================================================================
+PART 5: UPDATE memory/INDEX.md
+================================================================================
+
+Read memory/INDEX.md. Add entries for:
+
+  ## Terminal Tooling Arc (PROMPT_100–111)
+
+  - **Doctrine**: context/doctrine/terminal-ux-first-class.md — 10 rules
+  - **Archetypes**: terminal-tui.md, terminal-dual-mode.md
+  - **Stacks**: 14 stacks in context/stacks/terminal-*.yaml
+  - **Validation contract**: docs/terminal-validation-contract.md
+  - **Examples**: examples/canonical-terminal/ (14 examples, 7 languages)
+  - **Catalog**: examples/canonical-terminal/CATALOG.md
+  - **Decision guide**: examples/canonical-terminal/DECISION_GUIDE.md
+
+Add to Current Contents or create a new "Terminal Tooling" section as appropriate.
+Check memory/INDEX.md format before editing — match the existing style.
+
+================================================================================
+VERIFICATION
+================================================================================
+
+Run:
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Check manually:
+  - examples/canonical-terminal/CATALOG.md exists (all 14 examples listed)
+  - examples/canonical-terminal/DECISION_GUIDE.md exists (all 7 languages covered)
+  - docs/ARCHITECTURE_MAP.md has Terminal Tooling section
+  - docs/repo-layout.md updated with terminal entries
+  - memory/INDEX.md has terminal arc entries
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+  1. [PROMPT_106] add cross-language terminal example catalog
+     Stage: examples/canonical-terminal/CATALOG.md
+
+  2. [PROMPT_106] add terminal stack decision guide
+     Stage: examples/canonical-terminal/DECISION_GUIDE.md
+
+  3. [PROMPT_106] update ARCHITECTURE_MAP with terminal capability area section
+     Stage: docs/ARCHITECTURE_MAP.md
+
+  4. [PROMPT_106] update repo-layout with terminal examples and context entries
+     Stage: docs/repo-layout.md
+
+  5. [PROMPT_106] update memory INDEX with terminal arc entries
+     Stage: memory/INDEX.md
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Create CATALOG.md and DECISION_GUIDE.md (complete, accurate, useful)
+  - Add targeted sections to ARCHITECTURE_MAP.md and repo-layout.md
+  - Update memory/INDEX.md
+
+DO NOT:
+  - Modify any example code
+  - Change doctrine, archetypes, stacks, or routing files
+  - Write a hardening pass (that is PROMPT_107)
+  - Create new PROMPT files
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+  - CATALOG.md covers all 14 examples with correct install/test commands
+  - DECISION_GUIDE.md covers all 7 languages with honest stack guidance
+  - ARCHITECTURE_MAP.md has terminal section (under 30 lines)
+  - repo-layout.md updated with terminal entries
+  - memory/INDEX.md has terminal arc references
+  - validate_context.py and run_verification.py --tier fast pass
+
+PROMPT_106 complete. PROMPT_107 is the Phase 1 hardening pass.

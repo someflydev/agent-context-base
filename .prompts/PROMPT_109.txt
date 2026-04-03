@@ -1,0 +1,433 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one fresh
+coding-assistant session with commit prefixes like `[PROMPT_109]`.
+
+PROMPT_100–107: Terminal Tooling Arc Phase 1 (foundation + 14 examples + docs)
+PROMPT_108: Cross-language test harness + transcript normalization + PTY harness
+             [TERMINAL TOOLING ARC: Prompt 10 of 12]
+
+This prompt (PROMPT_109) adds:
+  1. Extended shared fixture corpora (larger, more realistic, edge-case-rich)
+  2. Event-stream simulation support (replay fixture events in order)
+  3. Optional Docker-backed live-data mode (gated, clearly optional)
+  4. Fixture validation tests (ensures fixture corpus is always coherent)
+
+These deepen the "fixture-first" layer and create a path toward live-data
+advanced patterns that real operator tools would need.
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                          (run; study output)
+  4. memory/INDEX.md
+  5. memory/summaries/PROMPT_100_through_107_phase1_summary.md
+  6. examples/canonical-terminal/fixtures/README.md          (current fixture schema)
+  7. examples/canonical-terminal/fixtures/jobs.json          (read the current data)
+  8. context/doctrine/terminal-ux-first-class.md             (Rule 3, 7: fixture rules)
+  9. docs/terminal-validation-contract.md                    (Section 5: fixture-first rule)
+ 10. context/stacks/event-streaming-patterns.md              (if it exists — skim for patterns)
+ 11. Inspect context/stacks/ for any existing Kafka/NATS/event-stream stacks
+ 12. verification/terminal/harness.py                        (PROMPT_108)
+
+Do NOT begin implementation until you have read all of the above.
+
+================================================================================
+TERMINAL TOOLING CONTEXT
+================================================================================
+
+The fixture corpus currently has 20 jobs, 30 events, and a config file.
+Phase 2 extends this to support:
+  - Larger corpus for stress-testing rendering (100 jobs)
+  - Edge-case fixtures (very long job names, no output_lines, Unicode tags)
+  - Event-stream replay (simulate a live queue by replaying events in order)
+  - Optional Docker Compose service providing a real job queue backend
+
+The event-stream replay is the most valuable new primitive: it allows all 14
+examples to demonstrate a "live" data mode using nothing but fixture data —
+no network, no external service.
+
+================================================================================
+PART 1: EXTENDED FIXTURE CORPUS
+================================================================================
+
+Location: examples/canonical-terminal/fixtures/
+
+--- 1a. jobs-large.json ---
+
+Create a JSON array of 100 job records. Use this distribution:
+  - 30 done (varied durations from 2s to 3600s)
+  - 15 failed (with realistic error output_lines)
+  - 20 running (started_at set, duration_s null)
+  - 35 pending (started_at null)
+
+Job variety beyond the base 20:
+  - 10 jobs with very long names (60–80 characters, realistic CI job names)
+  - 5 jobs with empty output_lines (valid: some jobs produce no output)
+  - 5 jobs with Unicode tags: ["déploiement", "构建", "настройка", "テスト", "🔥"]
+  - 3 jobs with very long output_lines (50+ lines each, for scroll testing)
+  - 3 jobs with all tags from the pool (8 tags each)
+
+Keep job IDs in the format job-NNN (job-021 through job-100).
+
+--- 1b. events-large.json ---
+
+Create 300 event records corresponding to jobs-large.json.
+At minimum 2 events per job. Cover all 4 event types.
+Include:
+  - 10 events with very long messages (describing detailed failure context)
+  - Chronologically consistent timestamps
+
+--- 1c. fixtures-edge-cases.json ---
+
+A separate file for explicit edge cases (NOT included in the main smoke tests
+by default, but usable for targeted robustness testing):
+  [
+    {"id": "edge-001", "name": "", ...},           // empty name
+    {"id": "edge-002", "name": "A" * 200, ...},    // extremely long name
+    {"id": "edge-003", "name": "job\nwith\nnewlines", ...},   // name with newlines
+    {"id": "edge-004", "name": "job\twith\ttabs", ...},       // name with tabs
+    {"id": "edge-005", "name": "<script>alert()</script>", ...},  // injection attempt
+    {"id": "edge-006", ..., "tags": []},           // no tags
+    {"id": "edge-007", ..., "output_lines": null}, // null output_lines
+    {"id": "edge-008", ..., "duration_s": 0},      // zero duration
+    {"id": "edge-009", ..., "duration_s": 999999}, // extremely long duration
+    {"id": "edge-010", ..., "status": "done", "started_at": null}  // done but no start
+  ]
+
+--- 1d. Update fixtures/README.md ---
+
+Add sections:
+  ## Extended Fixtures
+  - jobs-large.json:       100 job records (varied statuses, edge cases, Unicode)
+  - events-large.json:     300 event records
+  - fixtures-edge-cases.json: 10 explicit edge-case records for robustness testing
+
+  ## Usage: Large Corpus
+  Set TASKFLOW_FIXTURES_PATH=examples/canonical-terminal/fixtures/
+  and pass --fixtures-file jobs-large.json to use the large corpus.
+
+  (Or update --fixtures-path handling in examples to accept a specific file.)
+
+================================================================================
+PART 2: EVENT-STREAM REPLAY MODULE
+================================================================================
+
+Create: examples/canonical-terminal/fixtures/replay/
+
+This provides event-stream replay: simulate a live job queue by replaying events
+from events.json in chronological order with configurable speed.
+
+--- replay/stream.py (Python) ---
+
+  import json, time
+  from pathlib import Path
+  from typing import Iterator
+
+  def load_events(events_path: Path) -> list[dict]:
+    with open(events_path) as f:
+      return json.load(f)
+
+  def sort_by_timestamp(events: list[dict]) -> list[dict]:
+    return sorted(events, key=lambda e: e["timestamp"])
+
+  def replay_events(events_path: Path, speed_factor: float = 1.0,
+                    max_events: int = None) -> Iterator[dict]:
+    """
+    Generator. Yields events in timestamp order.
+    Sleeps between events proportional to real time gaps, scaled by speed_factor.
+    speed_factor=1.0: real time. speed_factor=10.0: 10x faster. speed_factor=0.0: no sleep.
+    max_events: stop after N events.
+    """
+    events = sort_by_timestamp(load_events(events_path))
+    if max_events:
+      events = events[:max_events]
+    prev_ts = None
+    for event in events:
+      if prev_ts and speed_factor > 0:
+        delta = parse_delta(event["timestamp"], prev_ts)
+        time.sleep(delta / speed_factor)
+      yield event
+      prev_ts = event["timestamp"]
+
+  def replay_to_state(events_path: Path, jobs_path: Path,
+                      up_to_event: int = None) -> list[dict]:
+    """
+    Apply events to job list up to the Nth event.
+    Returns the resulting job list state.
+    Useful for snapshot testing without sleep.
+    """
+
+  def parse_delta(ts_new: str, ts_old: str) -> float:
+    """Return seconds between two ISO8601 timestamps."""
+
+--- replay/stream.go (Go) ---
+
+  package replay
+
+  // Equivalent replay functionality in Go.
+  // Used by Go examples that want to demonstrate live-data simulation.
+  // EventReplayer struct with Next() -> (Event, bool) method.
+  // SpeedFactor field on EventReplayer.
+
+--- replay/README.md ---
+
+  # Event Stream Replay
+
+  Simulates a live job queue by replaying fixture events in timestamp order.
+
+  ## Python
+  ```python
+  from replay.stream import replay_events
+
+  for event in replay_events(events_path, speed_factor=10.0):
+      print(f"[{event['event_type']}] {event['job_id']}: {event['message']}")
+  ```
+
+  ## Go
+  ```go
+  replayer := replay.NewReplayer(eventsPath, replay.SpeedFactor(10.0))
+  for replayer.Next() {
+      event := replayer.Event()
+      // update job state
+  }
+  ```
+
+  ## Use in Terminal Examples
+  Pass --live-replay flag to watch commands to simulate live data.
+  All replay is fixture-backed: no network required.
+
+  ## Snapshot Mode
+  Use replay_to_state(events_path, jobs_path, up_to_event=N) to compute
+  the job list state at a specific point in the event stream, without sleep.
+  Useful for deterministic snapshot tests.
+
+================================================================================
+PART 3: OPTIONAL DOCKER-BACKED LIVE-DATA MODE
+================================================================================
+
+This part is CLEARLY OPTIONAL. Implement only if it adds genuine value and does
+not complicate the baseline fixture-first examples. Gate it behind explicit
+documentation and a feature flag. Baseline validation must never require Docker.
+
+--- When to implement ---
+Implement if: you have time after Parts 1–2 and the existing event-streaming stacks
+(kafka, nats-jetstream, etc.) in context/stacks/ suggest a natural integration point.
+
+Do NOT implement if: it would take longer than 2 hours or requires modifying the
+existing canonical examples in non-trivial ways.
+
+--- What to create (if implementing) ---
+
+Create: examples/canonical-terminal/docker/
+
+  docker-compose.yml:
+    version: "3.9"
+    services:
+      job-api:
+        image: python:3.11-slim
+        volumes:
+          - ../fixtures:/fixtures:ro
+          - ./job_api.py:/app/job_api.py:ro
+        command: python /app/job_api.py
+        ports:
+          - "8765:8765"
+        environment:
+          JOBS_FILE: /fixtures/jobs-large.json
+          EVENTS_FILE: /fixtures/events-large.json
+
+  job_api.py:
+    A minimal FastAPI or http.server-based API serving:
+      GET /jobs       → jobs-large.json contents
+      GET /jobs/{id}  → single job
+      GET /events     → event stream (Server-Sent Events, replaying events-large.json)
+      GET /stats      → aggregate stats
+
+  README.md:
+    # Docker Live-Data Mode (Optional)
+    Run a local API server backed by fixture data.
+    Terminal examples can connect via --api-url http://localhost:8765
+    to simulate a live backend without any real queue system.
+
+    This is OPTIONAL. All smoke tests use fixture files directly.
+    The Docker mode is for demonstration and exploratory use only.
+
+    Start:   docker compose up
+    Connect: taskflow list --api-url http://localhost:8765
+
+Add a note in docs/terminal-validation-contract.md:
+  ## Optional: Docker Live-Data Mode
+  A minimal fixture-backed HTTP API is available in examples/canonical-terminal/docker/
+  for exploring live-data modes. This is NOT required for any smoke test.
+
+================================================================================
+PART 4: FIXTURE VALIDATION TESTS
+================================================================================
+
+Create: verification/terminal/test_fixtures.py
+
+  Tests that ensure the fixture corpus is always coherent:
+
+  class TestFixtureCorpus(unittest.TestCase):
+
+    def setUp(self):
+      self.fixtures_dir = REPO_ROOT / "examples/canonical-terminal/fixtures"
+      with open(self.fixtures_dir / "jobs.json") as f:
+        self.jobs = json.load(f)
+      with open(self.fixtures_dir / "events.json") as f:
+        self.events = json.load(f)
+      with open(self.fixtures_dir / "jobs-large.json") as f:
+        self.jobs_large = json.load(f)
+
+    def test_jobs_count(self):
+      self.assertEqual(len(self.jobs), 20)
+
+    def test_jobs_large_count(self):
+      self.assertEqual(len(self.jobs_large), 100)
+
+    def test_events_count(self):
+      self.assertEqual(len(self.events), 30)
+
+    def test_jobs_have_required_fields(self):
+      required = {"id", "name", "status", "tags", "output_lines"}
+      for job in self.jobs:
+        self.assertTrue(required.issubset(job.keys()), f"job {job.get('id')} missing fields")
+
+    def test_job_statuses_valid(self):
+      valid = {"pending", "running", "done", "failed"}
+      for job in self.jobs:
+        self.assertIn(job["status"], valid)
+
+    def test_jobs_have_unique_ids(self):
+      ids = [j["id"] for j in self.jobs]
+      self.assertEqual(len(ids), len(set(ids)))
+
+    def test_jobs_large_have_unique_ids(self):
+      ids = [j["id"] for j in self.jobs_large]
+      self.assertEqual(len(ids), len(set(ids)))
+
+    def test_events_reference_valid_jobs(self):
+      job_ids = {j["id"] for j in self.jobs}
+      for evt in self.events:
+        self.assertIn(evt["job_id"], job_ids,
+                      f"event {evt.get('event_id')} references unknown job {evt.get('job_id')}")
+
+    def test_done_jobs_have_duration(self):
+      for job in self.jobs:
+        if job["status"] == "done":
+          self.assertIsNotNone(job.get("duration_s"),
+                               f"done job {job['id']} missing duration_s")
+
+    def test_pending_jobs_have_no_started_at(self):
+      for job in self.jobs:
+        if job["status"] == "pending":
+          self.assertIsNone(job.get("started_at"),
+                            f"pending job {job['id']} should not have started_at")
+
+    def test_config_json_exists_and_valid(self):
+      config_path = self.fixtures_dir / "config.json"
+      self.assertTrue(config_path.exists())
+      with open(config_path) as f:
+        config = json.load(f)
+      self.assertIn("queue_name", config)
+
+    def test_edge_cases_file_exists(self):
+      edge_path = self.fixtures_dir / "fixtures-edge-cases.json"
+      self.assertTrue(edge_path.exists())
+      with open(edge_path) as f:
+        edges = json.load(f)
+      self.assertGreaterEqual(len(edges), 5)
+
+  Register test_fixtures.py in verification/ so it runs under --tier fast.
+
+================================================================================
+PART 5: UPDATE REGISTRY AND HARNESS FOR EXTENDED FIXTURES
+================================================================================
+
+Update verification/terminal/registry.py (from PROMPT_108):
+  - Add an optional large_corpus_smoke_cmd to each TerminalExample for testing
+    with jobs-large.json
+  - Add a fixture_validator that confirms the expected fixture corpus exists
+    before running
+
+Update verification/terminal/runner.py:
+  - Add --large-corpus flag: use jobs-large.json instead of jobs.json
+  - Add --validate-fixtures flag: run fixture validation before smoke tests
+
+================================================================================
+VERIFICATION
+================================================================================
+
+Run:
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+  python -m unittest verification.terminal.test_fixtures -v
+  python -m unittest verification.terminal.test_harness -v
+
+Verify:
+  - fixtures/jobs-large.json exists with 100 records
+  - fixtures/events-large.json exists with 300 records
+  - fixtures/fixtures-edge-cases.json exists with ≥5 edge cases
+  - fixtures/replay/stream.py exists and is importable
+  - fixtures/replay/stream.go exists
+  - test_fixtures.py passes all tests
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+  1. [PROMPT_109] add extended fixture corpus (jobs-large, events-large, edge-cases)
+     Stage: examples/canonical-terminal/fixtures/jobs-large.json,
+            examples/canonical-terminal/fixtures/events-large.json,
+            examples/canonical-terminal/fixtures/fixtures-edge-cases.json,
+            examples/canonical-terminal/fixtures/README.md (updated)
+
+  2. [PROMPT_109] add event-stream replay module (Python + Go)
+     Stage: examples/canonical-terminal/fixtures/replay/
+
+  3. [PROMPT_109] add Docker live-data mode (if implemented)
+     Stage: examples/canonical-terminal/docker/
+
+  4. [PROMPT_109] add fixture validation tests
+     Stage: verification/terminal/test_fixtures.py
+
+  5. [PROMPT_109] update terminal harness registry for extended fixtures
+     Stage: verification/terminal/registry.py, verification/terminal/runner.py
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Create extended fixture corpus (mandatory)
+  - Create event-stream replay module (mandatory)
+  - Create fixture validation tests (mandatory)
+  - Create Docker live-data mode (optional — do if time allows)
+  - Update harness registry for extended fixtures
+
+DO NOT:
+  - Modify existing canonical examples unless fixing a fixture-path bug
+  - Require Docker for any smoke test
+  - Create new PTY harness (PROMPT_108 owns that)
+  - Create new PROMPT files
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+  - jobs-large.json (100 records), events-large.json (300 records),
+    fixtures-edge-cases.json exist and validate
+  - replay/stream.py and replay/stream.go exist
+  - test_fixtures.py passes all tests
+  - verify harness registry updated
+  - validate_context.py and run_verification.py --tier fast pass
+
+PROMPT_109 complete. PROMPT_110 adds terminal ↔ web parity examples and
+cross-language comparison harness.

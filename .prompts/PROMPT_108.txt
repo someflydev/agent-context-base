@@ -1,0 +1,386 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one fresh
+coding-assistant session with commit prefixes like `[PROMPT_108]`.
+
+PROMPT_100–107: Terminal Tooling Arc Phase 1 — doctrine, archetypes, stacks, routing,
+               validation contract, 14 canonical examples (7 languages), cross-language
+               index and decision guide, Phase 1 hardening.
+               [TERMINAL TOOLING ARC: Prompt 9 of 12 — Phase 2 begins here]
+
+This prompt (PROMPT_108) adds the cross-language terminal test harness, transcript
+normalization strategies, and PTY interaction harness. These deepen the validation
+layer beyond the smoke tests established in Phase 1.
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                          (run; study output)
+  4. memory/INDEX.md
+  5. memory/summaries/PROMPT_100_through_107_phase1_summary.md  (READ carefully)
+  6. docs/terminal-validation-contract.md                   (PROMPT_101 — your baseline)
+  7. context/doctrine/terminal-ux-first-class.md            (Rule 6: PTY validation)
+  8. examples/canonical-terminal/CATALOG.md                 (what examples exist)
+  9. verification/scenarios/terminal-smoke-baseline.md      (PROMPT_101)
+ 10. Inspect verification/ directory structure to understand how tests are organized
+ 11. Inspect scripts/run_verification.py — how does --tier work?
+
+Do NOT begin implementation until you have read all of the above.
+
+================================================================================
+TERMINAL TOOLING CONTEXT
+================================================================================
+
+Phase 2 goal: deepen the quality and coverage of terminal tooling validation.
+
+Phase 1 established:
+  - Smoke tests (non-interactive CLI, fixture-backed, no TTY required)
+  - Marker-based output assertion (## BEGIN_JOBS ## etc.)
+  - --no-tui flag for all TUI tools
+
+Phase 2 (this prompt) adds:
+  - Cross-language terminal test harness (Python runner for all examples)
+  - Transcript normalization for golden/snapshot testing of CLI output
+  - PTY interaction harness for TUI testing (pexpect-based, invokes TUI apps)
+  - --tier terminal for run_verification.py
+
+================================================================================
+PART 1: CROSS-LANGUAGE TERMINAL TEST HARNESS
+================================================================================
+
+Create: verification/terminal/
+
+This is a Python-based test harness that runs CLI smoke tests across all 14
+examples without needing to know each language's native test runner.
+
+--- verification/terminal/harness.py ---
+
+  A Python module with:
+
+  class TerminalExample:
+    name: str
+    path: Path                   # e.g., examples/canonical-terminal/python-typer-textual
+    build_cmd: list[str]         # command to build (empty if not needed before testing)
+    smoke_cmd: list[str]         # command to run the CLI list subcommand (no-tui mode)
+    fixtures_env: dict[str, str] # env vars to set (TASKFLOW_FIXTURES_PATH)
+    expected_marker: str         # e.g., "## BEGIN_JOBS ##"
+
+  def run_smoke(example: TerminalExample) -> SmokeResult:
+    """
+    Run the smoke command for an example.
+    Returns SmokeResult with: exit_code, stdout, stderr, duration_s.
+    Uses subprocess.run with timeout=30, no TTY (no stdin).
+    Sets TASKFLOW_FIXTURES_PATH env var.
+    """
+
+  class SmokeResult:
+    exit_code: int
+    stdout: str
+    stderr: str
+    duration_s: float
+    passed: bool  # exit_code == 0 and expected_marker in stdout
+
+  def run_all(examples: list[TerminalExample], parallel=False) -> dict[str, SmokeResult]:
+    """Run smoke tests for all examples. Optional parallel execution."""
+
+--- verification/terminal/registry.py ---
+
+  Define a TERMINAL_EXAMPLES list with one TerminalExample per implemented example.
+  For examples that are not yet built/installed, use a build_check function to
+  detect availability and skip gracefully.
+
+  Example entry:
+    TerminalExample(
+      name="python-typer-textual",
+      path=REPO_ROOT / "examples/canonical-terminal/python-typer-textual",
+      build_cmd=[],  # pip install -e . already run; or check if taskflow is installed
+      smoke_cmd=["taskflow", "list", "--no-tui", "--output", "json"],
+      fixtures_env={"TASKFLOW_FIXTURES_PATH": str(REPO_ROOT / "examples/canonical-terminal/fixtures")},
+      expected_marker='"id":'  # for JSON output assertion
+    )
+
+  Cover all 14 examples. For each, determine the appropriate:
+  - build detection (is the binary available?)
+  - smoke command
+  - expected marker
+
+--- verification/terminal/runner.py ---
+
+  CLI entry point:
+    python -m verification.terminal.runner [--example NAME] [--all] [--parallel]
+
+  Output: per-example pass/fail, duration, any assertion errors.
+  Summary: N passed, M failed, K skipped (not installed).
+  Exit code: 0 if all available examples pass, 1 if any fail.
+
+--- verification/terminal/test_harness.py ---
+
+  Python unittest test class: TestTerminalHarness
+
+  test_registry_has_all_14_examples:
+    Import registry.TERMINAL_EXAMPLES. Assert len == 14.
+    Assert each has name, path, smoke_cmd, expected_marker fields.
+
+  test_registry_paths_exist:
+    For each example in registry, assert example.path.exists().
+
+  test_fixture_path_exists:
+    Assert REPO_ROOT / "examples/canonical-terminal/fixtures/jobs.json" exists.
+
+  These tests verify the harness is correctly configured, not that the examples run.
+
+--- Integration with run_verification.py ---
+
+Inspect scripts/run_verification.py. Add a "--tier terminal" option that runs:
+  python -m verification.terminal.runner --all
+
+If adding a new tier is complex, instead add a note in run_verification.py
+and create a standalone script: scripts/run_terminal_tests.py
+
+  Usage: python scripts/run_terminal_tests.py [--example NAME] [--all]
+
+================================================================================
+PART 2: TRANSCRIPT NORMALIZATION
+================================================================================
+
+Create: verification/terminal/transcript.py
+
+Transcript normalization strips non-deterministic elements from CLI output
+to enable golden/snapshot testing.
+
+  def normalize_transcript(text: str) -> str:
+    """
+    Normalize CLI output for golden comparison:
+    - Replace timestamps (ISO8601 patterns) with <TIMESTAMP>
+    - Replace UUIDs / job IDs like job-001 with <JOB_ID> (optional, configurable)
+    - Replace duration_s values like 47.3 with <DURATION>
+    - Strip ANSI escape codes
+    - Normalize whitespace (multiple spaces → single space, trailing whitespace)
+    - Keep markers (## BEGIN_JOBS ## etc.) intact
+    Returns normalized string.
+    """
+
+  def diff_transcripts(expected: str, actual: str) -> str:
+    """Return unified diff of two normalized transcripts."""
+
+  def save_golden(name: str, content: str, golden_dir: Path) -> None:
+    """Save normalized transcript as golden file."""
+
+  def load_golden(name: str, golden_dir: Path) -> str | None:
+    """Load golden transcript for comparison. Returns None if not yet created."""
+
+  def assert_transcript(name: str, actual: str, golden_dir: Path,
+                        update=False) -> bool:
+    """
+    Compare actual (normalized) against golden.
+    If update=True: overwrite golden (used to regenerate expected output).
+    If golden doesn't exist: save it and return True (first-run bootstrap).
+    If differs: return False and print diff.
+    """
+
+Create: verification/terminal/goldens/
+  (empty directory with .gitkeep; golden files created by running the harness
+  with --update-goldens flag)
+
+Create: verification/terminal/README.md
+
+  # Terminal Verification Harness
+
+  ## Components
+  - harness.py:     cross-language smoke test runner
+  - registry.py:    example registry with build detection
+  - runner.py:      CLI entry point
+  - transcript.py:  output normalization and golden comparison
+  - goldens/:       golden transcript files (committed; update with --update-goldens)
+  - test_harness.py: unittest for harness configuration
+
+  ## Usage
+  ```bash
+  # Run all available smoke tests
+  python scripts/run_terminal_tests.py --all
+
+  # Run specific example
+  python scripts/run_terminal_tests.py --example python-typer-textual
+
+  # Update golden transcripts
+  python scripts/run_terminal_tests.py --all --update-goldens
+
+  # Unittest for harness configuration
+  python -m unittest verification.terminal.test_harness -v
+  ```
+
+  ## Golden Strategy
+  On first run, golden files are created automatically.
+  On subsequent runs, output is compared against goldens.
+  Use --update-goldens to regenerate after intentional output changes.
+
+  ## Normalization
+  Non-deterministic values (timestamps, durations) are replaced with
+  placeholders before golden comparison. ANSI codes are stripped.
+
+================================================================================
+PART 3: PTY INTERACTION HARNESS
+================================================================================
+
+Create: verification/terminal/pty_harness.py
+
+PTY harness for scripted interaction with TUI applications. Uses pexpect.
+
+  import pexpect
+
+  class PtySession:
+    """
+    Wraps a pexpect.spawn session for scripted TUI interaction.
+    """
+    def __init__(self, cmd: list[str], env: dict = None, timeout: int = 10):
+      self.child = pexpect.spawn(cmd[0], cmd[1:], env=env, timeout=timeout,
+                                  encoding='utf-8', codec_errors='replace')
+
+    def expect(self, pattern: str, timeout: int = None) -> str:
+      """Wait for pattern in output. Returns matched text."""
+      self.child.expect(pattern, timeout=timeout)
+      return self.child.before + self.child.after
+
+    def send_key(self, key: str) -> None:
+      """Send a key sequence (e.g., 'q', '\r', pexpect.CTRL_C)."""
+      self.child.send(key)
+
+    def send_line(self, line: str) -> None:
+      self.child.sendline(line)
+
+    def close(self) -> int:
+      """Close session. Returns exit code."""
+      self.child.close()
+      return self.child.exitstatus
+
+  def scripted_tui_test(cmd: list[str], script: list[dict], env: dict = None) -> bool:
+    """
+    Run a TUI app with a scripted interaction sequence.
+    script: list of {action: "expect"|"send_key", value: str}
+    Returns True if all steps succeed and app exits cleanly.
+
+    Example script:
+      [
+        {"action": "expect", "value": "BEGIN_JOBS|job-001"},  # wait for TUI to load
+        {"action": "send_key", "value": "q"},                  # quit
+        {"action": "expect_exit", "value": 0}                  # assert exit code 0
+      ]
+    """
+
+  def make_watch_script() -> list[dict]:
+    """
+    Standard script for testing 'taskflow watch' TUI:
+    1. Expect job list to appear (wait for a job name from fixtures)
+    2. Press 'q' to quit
+    3. Expect exit code 0
+    """
+    return [
+      {"action": "expect", "value": "build-frontend|job-001|TaskFlow"},
+      {"action": "send_key", "value": "q"},
+      {"action": "expect_exit", "value": 0}
+    ]
+
+Create: verification/terminal/test_pty_harness.py
+
+  TestPtyHarness (unittest):
+  test_pty_harness_importable:
+    Import pty_harness. Assert PtySession is importable.
+    (Does not require pexpect to be installed — skip if missing.)
+
+  test_make_watch_script:
+    Assert make_watch_script() returns a list with 3 items.
+
+  test_python_textual_tui (skip if pexpect not available or textual not installed):
+    Run watch command for python-typer-textual with make_watch_script().
+    Assert returns True (clean exit).
+
+  Decorator: @unittest.skipUnless(PEXPECT_AVAILABLE and TEXTUAL_INSTALLED, "requires pexpect and textual")
+
+--- Update docs/terminal-validation-contract.md ---
+
+Add a section "Phase 2 Additions" (or update Option A in the TUI Validation section):
+
+  ## PTY Interaction Harness (Phase 2)
+
+  verification/terminal/pty_harness.py provides a scripted PTY interaction harness
+  using pexpect. Use it to test TUI applications that support keyboard-driven exit.
+
+  Standard TUI test pattern:
+    from verification.terminal.pty_harness import scripted_tui_test, make_watch_script
+    result = scripted_tui_test(cmd=["taskflow", "watch"], script=make_watch_script(),
+                               env={"TASKFLOW_FIXTURES_PATH": "..."})
+    assert result is True
+
+  PTY tests require pexpect: pip install pexpect
+  PTY tests are tagged --tier terminal in run_verification.py (or run_terminal_tests.py).
+
+================================================================================
+VERIFICATION
+================================================================================
+
+Run:
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+  python -m unittest verification.terminal.test_harness -v
+  python -m unittest verification.terminal.test_pty_harness -v
+
+If run_terminal_tests.py exists:
+  python scripts/run_terminal_tests.py --all
+
+All must pass (or skip gracefully for unavailable examples/dependencies).
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+  1. [PROMPT_108] add cross-language terminal test harness (harness, registry, runner)
+     Stage: verification/terminal/harness.py, registry.py, runner.py
+
+  2. [PROMPT_108] add transcript normalization and golden strategy
+     Stage: verification/terminal/transcript.py, goldens/.gitkeep, README.md
+
+  3. [PROMPT_108] add PTY interaction harness (pexpect-based)
+     Stage: verification/terminal/pty_harness.py, test_pty_harness.py
+
+  4. [PROMPT_108] add harness unittest + run_terminal_tests.py script
+     Stage: verification/terminal/test_harness.py, scripts/run_terminal_tests.py
+
+  5. [PROMPT_108] update terminal-validation-contract.md with Phase 2 harness docs
+     Stage: docs/terminal-validation-contract.md
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Create verification/terminal/ with all described files
+  - Implement pexpect-based PTY harness
+  - Implement transcript normalization
+  - Implement cross-language runner
+  - Update terminal-validation-contract.md
+
+DO NOT:
+  - Modify canonical examples (unless a PTY test reveals a needed fix)
+  - Create Docker infrastructure (PROMPT_109)
+  - Write fixture corpora extensions (PROMPT_109)
+  - Create new PROMPT files
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+  - verification/terminal/ exists with all 6 described files
+  - test_harness.py and test_pty_harness.py pass
+  - scripts/run_terminal_tests.py exists and reports results
+  - docs/terminal-validation-contract.md updated
+  - validate_context.py and run_verification.py --tier fast pass
+
+PROMPT_108 complete. PROMPT_109 adds shared fixture corpora extensions and
+optional Docker/event-stream advanced patterns.

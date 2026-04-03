@@ -1,0 +1,372 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one fresh
+coding-assistant session with commit prefixes like `[PROMPT_107]`.
+
+PROMPT_100–106: Terminal Tooling Arc Phase 1 — foundation, validation contract,
+               Python/Rust/Go/TypeScript/Java/Ruby/Elixir canonical examples,
+               cross-language CATALOG and DECISION_GUIDE, ARCHITECTURE_MAP update.
+               [TERMINAL TOOLING ARC: Prompt 8 of 12 — Phase 1 Hardening]
+
+This prompt (PROMPT_107) is the Phase 1 hardening pass for the terminal tooling arc.
+It verifies consistency, fixes gaps, confirms all routing is correct, and creates
+arc summary documentation. It does not add new capabilities.
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                          (run; study output)
+  4. memory/INDEX.md
+  5. examples/canonical-terminal/CATALOG.md                 (PROMPT_106)
+  6. context/doctrine/terminal-ux-first-class.md            (PROMPT_100)
+  7. docs/terminal-validation-contract.md                   (PROMPT_101)
+  8. context/router/archetype-router.md                     (PROMPT_100 update)
+  9. context/router/stack-router.md                         (PROMPT_100 update)
+ 10. context/archetypes/terminal-dual-mode.md               (PROMPT_100)
+ 11. docs/ARCHITECTURE_MAP.md                               (PROMPT_106 update)
+
+Do NOT begin implementation until you have read all of the above and run the
+verification suite to identify what is broken or missing.
+
+================================================================================
+TERMINAL TOOLING CONTEXT
+================================================================================
+
+This is the Phase 1 hardening pass. The goal is:
+  1. Confirm everything PROMPT_100–106 promised actually exists and is correct
+  2. Fix gaps, broken links, inconsistencies, and missing pieces
+  3. Confirm all smoke tests pass
+  4. Confirm routing is accurate and discoverable
+  5. Create arc summary documentation
+  6. NOT to add new canonical examples or new capability layers (that is Phase 2)
+
+Run verification FIRST. Use the results to prioritize fixes.
+
+================================================================================
+PART 1: VERIFICATION SWEEP
+================================================================================
+
+Run all verification tools and record results:
+
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Also run these checks manually and fix any issues found:
+
+--- 1a. Doctrine check ---
+  File: context/doctrine/terminal-ux-first-class.md
+  Assert: Contains exactly 10 numbered rules.
+  Assert: Each rule has a heading and at least one explanatory sentence.
+  Assert: Rule 1 is "Shared Domain Core"
+  Assert: Rule 5 is "Smoke Test Requirement"
+  Assert: Rule 10 mentions fixture corpus path.
+
+--- 1b. Archetype check ---
+  File: context/archetypes/terminal-tui.md
+    Assert: References terminal-ux-first-class doctrine.
+    Assert: Has "Canonical Examples" section with paths.
+    Assert: Has "Routing" section.
+  File: context/archetypes/terminal-dual-mode.md
+    Assert: Lists all 7 flagship language stacks.
+    Assert: Has "Structural Requirements" (core/, cli/, tui/).
+    Assert: Has "Validation Path" section.
+  File: context/archetypes/cli-tool.md
+    Assert: Has been extended (not replaced) with terminal references.
+    Assert: References terminal-tui.md and terminal-dual-mode.md.
+
+--- 1c. Stack file check ---
+  All 14 context/stacks/terminal-*.yaml files must exist.
+  List expected files:
+    terminal-python-typer-textual.yaml
+    terminal-python-click-blessed.yaml
+    terminal-rust-clap-ratatui.yaml
+    terminal-rust-argh-tui-realm.yaml
+    terminal-go-cobra-bubbletea.yaml
+    terminal-go-urfave-tview.yaml
+    terminal-typescript-commander-ink.yaml
+    terminal-typescript-yargs-blessed.yaml
+    terminal-java-picocli-lanterna.yaml
+    terminal-java-jcommander-jline.yaml
+    terminal-ruby-thor-tty.yaml
+    terminal-ruby-clamp-tty.yaml
+    terminal-elixir-optimus-ratatouille.yaml
+    terminal-elixir-optionparser-owl.yaml
+  For each: verify name, language, cli_lib, tui_lib, canonical_example fields exist.
+
+--- 1d. Router check ---
+  File: context/router/archetype-router.md
+    Assert: Has "Terminal Tooling" section with cli-tool, terminal-tui, terminal-dual-mode entries.
+  File: context/router/stack-router.md
+    Assert: Has "Terminal Stacks" table with all 14 stacks.
+  File: context/router/alias-catalog.yaml
+    Assert: Has terminal, TUI, dashboard, operator console aliases.
+
+--- 1e. Workflow check ---
+  File: context/workflows/add-terminal-example.md — exists?
+  File: context/workflows/extend-cli.md — has "See Also" section?
+
+--- 1f. Manifest check ---
+  File: manifests/terminal-dual-mode-base.yaml — exists?
+  File: manifests/terminal-tui-base.yaml — exists?
+
+--- 1g. Fixture corpus check ---
+  examples/canonical-terminal/fixtures/jobs.json — exists, 20 records?
+  examples/canonical-terminal/fixtures/events.json — exists, 30 records?
+  examples/canonical-terminal/fixtures/config.json — exists?
+  examples/canonical-terminal/fixtures/README.md — exists?
+
+--- 1h. Example existence check ---
+  All 14 example directories must exist under examples/canonical-terminal/.
+  Each must have: README.md, tests/ directory.
+
+--- 1i. Cross-language docs check ---
+  examples/canonical-terminal/CATALOG.md — covers all 14 examples?
+  examples/canonical-terminal/DECISION_GUIDE.md — covers all 7 languages?
+  docs/ARCHITECTURE_MAP.md — has terminal section?
+  docs/repo-layout.md — has terminal entries?
+  memory/INDEX.md — has terminal arc entries?
+
+Record every missing or broken item. Fix all of them.
+
+================================================================================
+PART 2: SMOKE TEST PASS
+================================================================================
+
+For each of the 14 examples that is implemented, run its smoke tests:
+
+  # Python
+  (cd examples/canonical-terminal/python-typer-textual && pytest tests/smoke/ -q)
+  (cd examples/canonical-terminal/python-click-blessed  && pytest tests/smoke/ -q)
+
+  # Rust
+  (cd examples/canonical-terminal/rust-clap-ratatui   && cargo test 2>&1)
+  (cd examples/canonical-terminal/rust-argh-tui-realm && cargo test 2>&1)
+
+  # Go
+  (cd examples/canonical-terminal/go-cobra-bubbletea  && go test ./tests/... 2>&1)
+  (cd examples/canonical-terminal/go-urfave-tview     && go test ./tests/... 2>&1)
+
+  # TypeScript
+  (cd examples/canonical-terminal/typescript-commander-ink && npm test 2>&1)
+  (cd examples/canonical-terminal/typescript-yargs-blessed && npm test 2>&1)
+
+  # Java
+  (cd examples/canonical-terminal/java-picocli-lanterna  && mvn test -q 2>&1)
+  (cd examples/canonical-terminal/java-jcommander-jline  && mvn test -q 2>&1)
+
+  # Ruby
+  (cd examples/canonical-terminal/ruby-thor-tty  && bundle exec ruby tests/smoke/test_cli_smoke.rb 2>&1)
+  (cd examples/canonical-terminal/ruby-clamp-tty && bundle exec ruby tests/smoke/test_cli_smoke.rb 2>&1)
+
+  # Elixir
+  (cd examples/canonical-terminal/elixir-optimus-ratatouille && mix test 2>&1)
+  (cd examples/canonical-terminal/elixir-optionparser-owl    && mix test 2>&1)
+
+For each failure: diagnose and fix. Do not move on until all available examples
+pass smoke tests.
+
+If an example is a stub (not yet implemented), note it explicitly in the arc
+summary (Part 3) rather than claiming it passes.
+
+================================================================================
+PART 3: GAP ANALYSIS AND FIXES
+================================================================================
+
+After the verification sweep and smoke test pass, list every gap found and fix it.
+
+Common gaps to look for:
+  - Stack file missing a required field (canonical_example, docs)
+  - Router section missing a language's stacks
+  - Archetype missing a required section (e.g., "Routing" or "Validation Path")
+  - Example README missing "When to Use" section
+  - Example lacking --no-tui or --no-interactive flag
+  - Smoke test that requires a TTY (fix: add force-non-tty flag or env var)
+  - Output markers inconsistent across examples (all should use ## BEGIN_JOBS ##)
+  - Fixture path hardcoded instead of using env var or argument
+  - Missing tests/ directory in an example
+  - CATALOG.md entry with wrong install/test command
+
+Fix every gap found. Commit fixes as part of this prompt's commits.
+
+================================================================================
+PART 4: DOCTRINAL CONSISTENCY CHECK
+================================================================================
+
+The 10 rules in terminal-ux-first-class.md define requirements. Verify each rule
+is reflected in the artifacts:
+
+Rule 1 (Shared Domain Core):
+  → Each dual-mode example has core/ directory separate from cli/ and tui/
+  → If any example duplicates domain logic across CLI and TUI, fix it
+
+Rule 2 (Non-Interactive Mandatory):
+  → Each example with a TUI accepts --no-tui or --no-interactive
+  → Test it: run `taskflow watch --no-tui` in each example; must exit 0
+
+Rule 3 (Fixture-First):
+  → Each smoke test loads from examples/canonical-terminal/fixtures/
+  → No smoke test makes network calls
+
+Rule 4 (Output Assertion):
+  → Each CLI tool emits ## BEGIN_JOBS ## markers in default output
+  → OR: supports --output json
+
+Rule 5 (Smoke Test Required):
+  → Each example has at least one smoke test
+  → Smoke test passes without TTY
+
+Rule 6 (PTY Validation Documented):
+  → docs/terminal-validation-contract.md has PTY guidance
+  → Each TUI example has a README note on TUI validation approach
+
+Rule 7 (Shared Fixture Corpus):
+  → All examples load from examples/canonical-terminal/fixtures/
+  → No example has its own private fixture files
+
+Rule 8 (Stack Alignment):
+  → Each example has a corresponding context/stacks/terminal-*.yaml
+  → Each stack file's canonical_example path matches the actual directory
+
+Rule 9 (Router Discoverability):
+  → All 14 stacks appear in stack-router.md
+  → All 3 terminal archetypes appear in archetype-router.md
+  → Terminal aliases in alias-catalog.yaml
+
+Rule 10 (Manifest Registration):
+  → manifests/terminal-dual-mode-base.yaml and terminal-tui-base.yaml exist
+  → CATALOG.md lists all examples
+
+Document any rules not yet fully satisfied, with explanation of why and a
+TODO for Phase 2 (PROMPT_108–111).
+
+================================================================================
+PART 5: ARC PHASE 1 SUMMARY
+================================================================================
+
+Create: memory/summaries/PROMPT_100_through_107_phase1_summary.md
+
+Format:
+
+  ## Arc: Terminal Tooling — Phase 1
+  ## Prompts: PROMPT_100 through PROMPT_107
+
+  ### Problem Solved
+  Terminal tooling (CLI, TUI, dual-mode) was not a first-class capability area
+  in agent-context-base. This arc establishes it with doctrine, archetypes,
+  stacks, routing, validation contract, canonical examples across 7 languages,
+  and cross-language decision documents.
+
+  ### Key Artifacts Added
+  List every file created or significantly modified in PROMPT_100–107.
+  Organize by category: doctrine, archetypes, stacks, workflows, manifests,
+  examples, docs, memory.
+
+  ### Shared Domain
+  TaskFlow Monitor: fixture-backed job queue inspector. 14 examples,
+  all using examples/canonical-terminal/fixtures/ for deterministic smoke tests.
+
+  ### Implementation Status Per Language
+  For each of the 7 languages: implemented / stub / partial — with notes.
+
+  ### Smoke Test Status
+  For each of the 14 examples: passing / failing / stub.
+
+  ### Doctrinal Compliance
+  For each of the 10 rules: satisfied / partial / gap.
+
+  ### Routing Coverage
+  Confirmed: archetype-router, stack-router, alias-catalog all updated.
+
+  ### Known Gaps and TODOs for Phase 2 (PROMPT_108–111)
+  - Cross-language test harness
+  - Transcript normalization and golden strategies
+  - PTY interaction harness
+  - Shared fixture corpora extensions
+  - Advanced Docker/event-stream patterns
+  - Terminal ↔ web parity examples
+  - Cross-language comparison harness
+  - Full arc hardening
+
+  ### Created At
+  2026-04-02 (or actual session date)
+
+Also create: memory/summaries/PROMPT_107_completion.md
+Standard format: Objective, Completed, Files Touched, Tests Status, Next Action.
+
+================================================================================
+VERIFICATION
+================================================================================
+
+Final verification (all must pass):
+
+  python -m unittest discover -s verification/unit -p "test_*.py" -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+All smoke tests for implemented examples must pass.
+validate_context.py must pass with no new failures.
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+  1. [PROMPT_107] hardening: fix gaps found in verification sweep
+     Stage: whatever files needed fixing (list them specifically)
+
+  2. [PROMPT_107] hardening: fix failing smoke tests
+     Stage: affected example files
+
+  3. [PROMPT_107] hardening: doctrinal consistency fixes
+     Stage: affected doctrine/archetype/stack files
+
+  4. [PROMPT_107] add Phase 1 arc summary and PROMPT_107 completion summary
+     Stage: memory/summaries/PROMPT_100_through_107_phase1_summary.md,
+            memory/summaries/PROMPT_107_completion.md
+
+  5. [PROMPT_107] update memory INDEX with Phase 1 completion
+     Stage: memory/INDEX.md
+
+If no fixes are needed in a category, skip that commit rather than making
+an empty commit.
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Run full verification sweep and fix all gaps
+  - Run all available smoke tests and fix failures
+  - Check doctrinal compliance and fix gaps
+  - Create arc Phase 1 summary
+  - Update memory/INDEX.md
+
+DO NOT:
+  - Add new canonical examples (Phase 2 scope)
+  - Add PTY harness (PROMPT_108)
+  - Add golden transcript support (PROMPT_108)
+  - Add Docker/event-stream backends (PROMPT_109)
+  - Redesign any existing architecture (only fix gaps)
+  - Create new PROMPT files
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+  - All verification checks pass (validate_context.py, run_verification.py --tier fast)
+  - All implemented example smoke tests pass
+  - All 10 doctrinal rules verified (or gap documented in summary)
+  - All routing files verified complete
+  - memory/summaries/PROMPT_100_through_107_phase1_summary.md exists (accurate)
+  - memory/summaries/PROMPT_107_completion.md exists
+  - memory/INDEX.md updated
+
+Phase 1 of the Terminal Tooling Arc is complete.
+Phase 2 begins with PROMPT_108: cross-language test harness + transcript normalization
++ PTY interaction harness.

@@ -1,0 +1,563 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one fresh
+coding-assistant session with commit prefixes like `[PROMPT_102]`.
+
+PROMPT_100: Terminal tooling foundation — doctrine, archetypes, stacks, routing, manifests
+PROMPT_101: Terminal validation contract — testing philosophy, smoke test contract,
+            output assertion strategies, PTY guidance, validation scenarios
+            [TERMINAL TOOLING ARC: Prompt 3 of 12]
+
+This prompt (PROMPT_102) creates:
+  1. The shared fixture corpus used by all 14 terminal canonical examples
+  2. The Python flagship canonical example: Typer + Textual (TaskFlow Monitor)
+  3. The Python secondary canonical example: Click + Blessed
+
+Both examples implement the TaskFlow Monitor domain. Both are fixture-first,
+deterministic, and smoke-testable without a TTY.
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                          (run; study output)
+  4. memory/INDEX.md
+  5. context/doctrine/terminal-ux-first-class.md            (PROMPT_100)
+  6. context/archetypes/terminal-dual-mode.md               (PROMPT_100)
+  7. docs/terminal-validation-contract.md                   (PROMPT_101)
+  8. context/stacks/terminal-python-typer-textual.yaml      (PROMPT_100)
+  9. context/stacks/terminal-python-click-blessed.yaml      (PROMPT_100)
+ 10. examples/canonical-terminal/README.md                  (PROMPT_100 stub)
+ 11. examples/canonical-cli/README.md                       (existing — understand prior art)
+
+Do NOT begin implementation until you have read all of the above.
+Verify that PROMPT_100 and PROMPT_101 artifacts exist. If missing, implement them first.
+
+================================================================================
+TERMINAL TOOLING CONTEXT
+================================================================================
+
+This prompt is part of the TERMINAL TOOLING ARC (PROMPT_100–111).
+
+SHARED DOMAIN: TaskFlow Monitor
+  A job/task queue monitor. Loads jobs from a fixture file. CLI surface for scripting.
+  TUI surface for interactive inspection. Shared domain core used by both surfaces.
+
+JOB SCHEMA:
+  {
+    "id": "job-001",
+    "name": "build-frontend",
+    "status": "done",          // pending | running | done | failed
+    "started_at": "2024-01-15T10:23:00Z",  // null if pending
+    "duration_s": 47.3,        // null if not yet completed
+    "tags": ["frontend", "ci"],
+    "output_lines": ["Step 1/5: npm install", "Step 2/5: npm run build", "Build complete."]
+  }
+
+EVENT SCHEMA:
+  {
+    "event_id": "evt-001",
+    "job_id": "job-001",
+    "event_type": "job_started",  // job_queued | job_started | job_completed | job_failed
+    "timestamp": "2024-01-15T10:23:00Z",
+    "message": "Build started on worker-1"
+  }
+
+FIXTURE PATH: examples/canonical-terminal/fixtures/
+
+CLI COMMANDS (shared across all languages):
+  taskflow list [--status STATUS] [--tag TAG] [--output json|table]
+  taskflow inspect JOB_ID [--output json|plain]
+  taskflow stats [--output json|plain]
+  taskflow watch [--interval SECS] [--no-tui]   # dual-mode: --no-tui for headless
+
+================================================================================
+PART 1: CREATE SHARED FIXTURE CORPUS
+================================================================================
+
+Create: examples/canonical-terminal/fixtures/
+
+--- 1a. jobs.json ---
+
+Create a JSON array of exactly 20 job records. Use this distribution:
+  - 5 jobs with status "done"      (various durations 5–120s, various tags)
+  - 4 jobs with status "failed"    (duration_s set, output_lines includes error)
+  - 3 jobs with status "running"   (started_at set, duration_s null)
+  - 4 jobs with status "pending"   (started_at null, duration_s null)
+  - 4 more "done" jobs             (long-running 300–900s)
+
+Job names should be realistic: build-frontend, run-tests, deploy-staging,
+lint-python, compile-rust, integration-tests, seed-database, generate-report,
+sync-assets, cleanup-artifacts, etc.
+
+Tags pool (use 1–3 tags per job): ci, cd, build, test, deploy, lint, db, sync,
+  report, cleanup, frontend, backend, infra, python, rust, go
+
+Include output_lines (2–5 lines) for each job showing realistic terminal output.
+
+Example record (include this):
+  {
+    "id": "job-001",
+    "name": "build-frontend",
+    "status": "done",
+    "started_at": "2024-01-15T10:23:00Z",
+    "duration_s": 47.3,
+    "tags": ["frontend", "ci", "build"],
+    "output_lines": [
+      "Step 1/4: Installing dependencies...",
+      "Step 2/4: Running webpack build...",
+      "Step 3/4: Generating sourcemaps...",
+      "Step 4/4: Build complete. 2.4MB bundle."
+    ]
+  }
+
+--- 1b. events.json ---
+
+Create a JSON array of 30 event records tracking state transitions for the 20 jobs.
+At least 2 events per job. Cover all 4 event types. Timestamps should be
+chronologically consistent with job records.
+
+--- 1c. config.json ---
+
+  {
+    "queue_name": "taskflow-ci",
+    "refresh_interval_s": 5,
+    "max_display_jobs": 20,
+    "default_output": "table",
+    "fixture_mode": true
+  }
+
+--- 1d. fixtures/README.md ---
+
+  # TaskFlow Fixture Corpus
+
+  Shared fixture data for all terminal canonical examples.
+
+  ## Files
+  - jobs.json:   20 job records (5 done, 4 failed, 3 running, 8 pending or long-done)
+  - events.json: 30 event records (state transitions)
+  - config.json: sample tool configuration
+
+  ## Schema
+
+  Job fields: id, name, status, started_at, duration_s, tags, output_lines
+  Event fields: event_id, job_id, event_type, timestamp, message
+
+  ## Usage
+  Load from the canonical path:
+    examples/canonical-terminal/fixtures/jobs.json
+
+  In tests, use the absolute path or a path relative to the example root.
+  Never hardcode a local filesystem path that won't work after a clone.
+
+================================================================================
+PART 2: PYTHON FLAGSHIP — Typer + Textual (taskflow-py-textual)
+================================================================================
+
+Create: examples/canonical-terminal/python-typer-textual/
+
+This is the flagship Python dual-mode terminal example. It must be a working,
+runnable implementation — not scaffolding.
+
+Tech stack:
+  - Python 3.11+
+  - Typer for CLI surface
+  - Textual for TUI surface
+  - Shared domain core in core/
+
+--- Directory structure ---
+
+  python-typer-textual/
+    core/
+      __init__.py
+      models.py        # Job, JobStatus, Event dataclasses
+      loader.py        # load_jobs(path), load_events(path), load_config(path)
+      filters.py       # filter_jobs(jobs, status, tag) -> List[Job]
+      stats.py         # compute_stats(jobs) -> dict
+    cli/
+      __init__.py
+      main.py          # Typer app: list, inspect, stats, watch commands
+    tui/
+      __init__.py
+      app.py           # Textual App: dashboard with job table, detail panel
+      widgets.py       # JobTable, JobDetail, StatsBar widgets
+    tests/
+      smoke/
+        test_cli_smoke.py   # CLI tests: non-interactive, fixture-backed
+      unit/
+        test_core.py        # core/ unit tests: filtering, stats
+    fixtures -> ../../fixtures   # symlink or copy; EITHER is fine
+    pyproject.toml           # or setup.py; defines taskflow CLI entry point
+    README.md
+
+--- core/models.py ---
+
+  Dataclasses (or Pydantic models) for:
+    JobStatus: Enum (PENDING, RUNNING, DONE, FAILED)
+    Job: id, name, status, started_at, duration_s, tags, output_lines
+    Event: event_id, job_id, event_type, timestamp, message
+    Stats: total, by_status (dict), avg_duration_s, failure_rate
+
+--- core/loader.py ---
+
+  load_jobs(fixtures_path: Path) -> List[Job]
+    Parse jobs.json, return list of Job instances.
+  load_events(fixtures_path: Path) -> List[Event]
+    Parse events.json, return list of Event instances.
+  load_config(fixtures_path: Path) -> dict
+    Parse config.json.
+
+--- core/filters.py ---
+
+  filter_jobs(jobs, status=None, tag=None) -> List[Job]
+  sort_jobs(jobs, by="started_at") -> List[Job]
+
+--- core/stats.py ---
+
+  compute_stats(jobs: List[Job]) -> Stats
+
+--- cli/main.py ---
+
+  Typer app with:
+
+  taskflow list
+    Options: --status, --tag, --output [json|table]
+    Default: table output
+    Marker: wraps table output with ## BEGIN_JOBS ## / ## END_JOBS ##
+
+  taskflow inspect JOB_ID
+    Options: --output [json|plain]
+    Marker: wraps detail with ## BEGIN_JOB_DETAIL ## / ## END_JOB_DETAIL ##
+    Error: ## BEGIN_ERROR ## / ## END_ERROR ## for not-found
+
+  taskflow stats
+    Options: --output [json|plain]
+    Marker: wraps with ## BEGIN_STATS ## / ## END_STATS ##
+
+  taskflow watch
+    Options: --interval INT, --no-tui
+    With --no-tui: prints current job list once and exits (CI-friendly)
+    Without --no-tui: launches Textual TUI (taskflow.tui.app:TaskFlowApp)
+
+  The CLI must:
+  - Load fixtures from the path specified via --fixtures-path (or env var
+    TASKFLOW_FIXTURES_PATH). Default: auto-discover from canonical path.
+  - Print clean error messages for missing fixtures
+  - Return exit code 0 on success, 1 on error
+
+--- tui/app.py ---
+
+  Textual App: TaskFlowApp
+  Layout:
+    - Header (app name + queue stats summary)
+    - JobTable (main content: scrollable table of jobs with status colors)
+    - JobDetail (side/bottom panel: shows selected job's detail)
+    - Footer (key bindings: q=quit, r=refresh, f=filter, ↑↓=navigate)
+
+  Key bindings:
+    q: quit
+    r: refresh (reload fixtures)
+    f: open filter bar (filter by status or tag)
+    Enter: open/expand job detail
+
+  Colors by status:
+    DONE: green
+    FAILED: red
+    RUNNING: yellow
+    PENDING: dim white
+
+  TUI is launched by `taskflow watch` (without --no-tui).
+
+--- tests/smoke/test_cli_smoke.py ---
+
+  Use pytest (or unittest). Test:
+
+  1. test_list_table_output:
+     Run `taskflow list` (CLI via subprocess or Typer CliRunner).
+     Assert exit code 0.
+     Assert output contains ## BEGIN_JOBS ## and ## END_JOBS ##.
+     Assert output contains at least one job name from fixtures.
+
+  2. test_list_json_output:
+     Run `taskflow list --output json`.
+     Assert exit code 0.
+     Parse JSON. Assert len(result) == 20.
+
+  3. test_list_filter_by_status:
+     Run `taskflow list --status done --output json`.
+     Parse JSON. Assert all results have status "done".
+
+  4. test_inspect_job:
+     Run `taskflow inspect job-001 --output json`.
+     Assert exit code 0.
+     Parse JSON. Assert id == "job-001".
+
+  5. test_stats_json:
+     Run `taskflow stats --output json`.
+     Assert exit code 0.
+     Parse JSON. Assert "total" == 20.
+
+  6. test_watch_no_tui:
+     Run `taskflow watch --no-tui`.
+     Assert exit code 0.
+     Assert output contains ## BEGIN_JOBS ##.
+
+  7. test_list_missing_fixtures:
+     Run `taskflow list` with a bad --fixtures-path.
+     Assert exit code 1.
+
+  All tests must pass without a TTY (no isatty checks that block headless).
+
+--- tests/unit/test_core.py ---
+
+  Test filter_jobs, compute_stats, load_jobs (from fixture file directly).
+  At least 5 unit tests for core logic.
+
+--- pyproject.toml ---
+
+  [project]
+  name = "taskflow-py-textual"
+  version = "0.1.0"
+  requires-python = ">=3.11"
+  dependencies = ["typer>=0.9", "textual>=0.47", "rich>=13"]
+
+  [project.scripts]
+  taskflow = "taskflow.cli.main:app"
+
+--- README.md ---
+
+  # TaskFlow Monitor — Python (Typer + Textual)
+
+  Canonical Python dual-mode terminal example. Monitors a fixture-backed job queue
+  with a CLI surface (Typer) and TUI surface (Textual).
+
+  ## Stack
+  - CLI: Typer
+  - TUI: Textual
+  - Python 3.11+
+
+  ## Usage
+  ```bash
+  # Install
+  pip install -e .
+
+  # CLI
+  taskflow list
+  taskflow list --status failed --output json
+  taskflow inspect job-001
+  taskflow stats
+
+  # TUI (interactive)
+  taskflow watch
+
+  # Headless / CI
+  taskflow watch --no-tui
+  ```
+
+  ## Architecture
+  - core/: domain logic (models, loading, filtering, stats) — no I/O
+  - cli/:  Typer commands
+  - tui/:  Textual app and widgets
+  - tests/smoke/: fixture-backed CLI smoke tests (no TTY required)
+
+  ## Testing
+  ```bash
+  pytest tests/smoke/           # CLI smoke tests (CI-safe)
+  pytest tests/unit/            # domain core unit tests
+  ```
+
+  ## When to Use This Stack
+  Python + dual-mode tooling, operator consoles, interactive job monitors,
+  or any tool needing both scriptable CLI and a rich full-screen TUI.
+
+================================================================================
+PART 3: PYTHON SECONDARY — Click + Blessed (taskflow-py-blessed)
+================================================================================
+
+Create: examples/canonical-terminal/python-click-blessed/
+
+This is a lighter secondary Python terminal example using Click + Blessed.
+It shares the core domain but uses a simpler interactive approach (no full-screen TUI).
+The "interactive mode" is a simple read-eval-print loop with colored output and
+cursor navigation — not a full Textual app.
+
+Tech stack:
+  - Click for CLI
+  - Blessed for terminal color, cursor, key handling
+  - Shared domain core (can symlink or copy the models/loader/filters from
+    the flagship — or implement independently; both are acceptable)
+
+--- Directory structure ---
+
+  python-click-blessed/
+    core/            # same structure as flagship (independent copy is fine)
+    cli/
+      __init__.py
+      main.py        # Click app: list, inspect, stats, watch commands
+    interactive/
+      __init__.py
+      pager.py       # Blessed-based interactive list pager (not full-screen TUI)
+    tests/
+      smoke/
+        test_cli_smoke.py
+      unit/
+        test_core.py
+    pyproject.toml
+    README.md
+
+--- cli/main.py ---
+
+  Click app with the same command surface as the flagship (list, inspect, stats, watch).
+  Use markers: ## BEGIN_JOBS ## / ## END_JOBS ## (same contract).
+  --no-tui flag for watch command.
+  Colored output via Blessed terminal.term.bold, term.green, term.red, etc.
+
+--- interactive/pager.py ---
+
+  A simple line-by-line pager using Blessed:
+  - Prints jobs one per line with color-coded status
+  - Accepts keystrokes: q=quit, ↑↓=scroll, f=filter by status
+  - Simple: no full-screen window management, just colored output + key reading
+  - Exits on 'q' or EOF
+
+  This demonstrates Blessed's lightweight approach vs Textual's full-app model.
+
+--- tests/smoke/test_cli_smoke.py ---
+
+  Same 7 smoke tests as the flagship. Must pass without TTY.
+
+--- README.md ---
+
+  # TaskFlow Monitor — Python (Click + Blessed)
+
+  Secondary Python terminal example demonstrating a lighter interactive approach
+  using Click for CLI and Blessed for colored/interactive terminal output.
+
+  ## Stack
+  - CLI: Click
+  - Terminal UI: Blessed (lightweight, not a full-screen TUI framework)
+  - Python 3.11+
+
+  ## When to Use This Stack
+  Lighter Python CLIs where a full-screen TUI is overkill. Blessed shines for
+  colored output, simple key handling, and Unix-y workflows. Choose Typer+Textual
+  for dashboard-style UIs; choose Click+Blessed for simpler interactive tools.
+
+  ## Difference from Flagship
+  Typer+Textual: full-screen widget-based TUI with panels, tables, navigation
+  Click+Blessed: line-oriented colored output with lightweight key navigation
+
+================================================================================
+PART 4: UPDATE examples/canonical-terminal/README.md
+================================================================================
+
+Update (not replace) the stub README created in PROMPT_100. Add:
+
+  ## Implemented Examples
+
+  ### Python
+  | Example | Stack | Mode |
+  |---------|-------|------|
+  | python-typer-textual/ | Typer + Textual | Dual-mode (CLI + TUI) |
+  | python-click-blessed/ | Click + Blessed | CLI + light interactive |
+
+  ## Running Python Examples
+  ```bash
+  # Flagship
+  cd examples/canonical-terminal/python-typer-textual
+  pip install -e .
+  taskflow list
+  taskflow watch --no-tui     # headless / CI
+
+  # Secondary
+  cd examples/canonical-terminal/python-click-blessed
+  pip install -e .
+  taskflow list
+  ```
+
+  ## Smoke Tests
+  ```bash
+  # From each example directory:
+  pytest tests/smoke/
+  ```
+
+================================================================================
+VERIFICATION
+================================================================================
+
+Run:
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Also run directly (from example directories):
+  cd examples/canonical-terminal/python-typer-textual && pip install -e . && pytest tests/
+  cd examples/canonical-terminal/python-click-blessed && pip install -e . && pytest tests/
+
+Both must exit 0. All smoke tests must pass without a TTY.
+
+Verify fixture corpus:
+  - examples/canonical-terminal/fixtures/jobs.json   (20 records)
+  - examples/canonical-terminal/fixtures/events.json (30 records)
+  - examples/canonical-terminal/fixtures/config.json
+  - examples/canonical-terminal/fixtures/README.md
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+Use grouped commits prefixed with [PROMPT_102].
+
+  1. [PROMPT_102] add shared fixture corpus (jobs.json, events.json, config.json)
+     Stage: examples/canonical-terminal/fixtures/
+
+  2. [PROMPT_102] add Python flagship: Typer + Textual TaskFlow Monitor
+     Stage: examples/canonical-terminal/python-typer-textual/
+
+  3. [PROMPT_102] add Python secondary: Click + Blessed TaskFlow Monitor
+     Stage: examples/canonical-terminal/python-click-blessed/
+
+  4. [PROMPT_102] update canonical-terminal README with Python examples
+     Stage: examples/canonical-terminal/README.md
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Create complete, working Python flagship (Typer + Textual)
+  - Create complete, working Python secondary (Click + Blessed)
+  - Create complete shared fixture corpus (all 4 files)
+  - Write smoke tests that pass without TTY
+  - Update examples/canonical-terminal/README.md
+
+DO NOT:
+  - Begin Rust, Go, TS, Java, Ruby, or Elixir examples (those are PROMPT_103–105)
+  - Modify docs/terminal-validation-contract.md (PROMPT_101 owns that)
+  - Touch archetypes, stacks, or routing files (PROMPT_100 owns those)
+  - Create new PROMPT files
+
+QUALITY BAR:
+  - The flagship must be a working, runnable Textual app (not a stub)
+  - Smoke tests must actually pass (run them before committing)
+  - Fixture data must be realistic (not lorem ipsum)
+  - README must show real usage commands
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+  - fixtures/ exists with 4 files (jobs.json/20 records, events.json/30 records,
+    config.json, README.md)
+  - python-typer-textual/ exists with working code and passing smoke tests
+  - python-click-blessed/ exists with working code and passing smoke tests
+  - All pytest tests/ pass without a TTY for both examples
+  - validate_context.py passes
+  - run_verification.py --tier fast passes
+
+PROMPT_102 is complete. PROMPT_103 adds Rust and Go canonical examples.

@@ -1,0 +1,381 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one fresh
+coding-assistant session with commit prefixes like `[PROMPT_110]`.
+
+PROMPT_100–107: Terminal Tooling Arc Phase 1
+PROMPT_108: Cross-language test harness + transcript normalization + PTY harness
+PROMPT_109: Extended fixture corpus + event-stream replay + fixture validation
+             [TERMINAL TOOLING ARC: Prompt 11 of 12]
+
+This prompt (PROMPT_110) adds:
+  1. Terminal ↔ web parity concept doc and comparison patterns
+  2. Cross-language terminal comparison harness (same CLI operations, compared outputs)
+  3. Stack decision doctrine update (when terminal, when web, when both)
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                          (run; study output)
+  4. memory/INDEX.md
+  5. memory/summaries/PROMPT_100_through_107_phase1_summary.md
+  6. examples/canonical-terminal/DECISION_GUIDE.md          (PROMPT_106)
+  7. examples/canonical-terminal/CATALOG.md                 (PROMPT_106)
+  8. verification/terminal/harness.py                       (PROMPT_108)
+  9. context/doctrine/terminal-ux-first-class.md
+ 10. Skim context/stacks/backend-api-fastapi-uv-ruff.yaml   (web stack — for comparison)
+ 11. Skim examples/canonical-api/ README (if it exists)      (web examples — for parity)
+
+Do NOT begin implementation until you have read all of the above.
+
+================================================================================
+TERMINAL TOOLING CONTEXT
+================================================================================
+
+This prompt adds two distinct things:
+
+1. Terminal ↔ Web Parity:
+   A concept document explaining when the same functionality should be exposed
+   as a terminal tool vs a web interface vs both. This is architectural guidance
+   for future assistants, not a new implementation.
+
+2. Cross-Language Comparison Harness:
+   A test harness that runs the same CLI operation (e.g., `taskflow list --output json`)
+   across all available language implementations and compares their outputs.
+   This verifies that the domain behavior is consistent across languages —
+   same fixtures, same command, same expected result structure.
+
+================================================================================
+PART 1: TERMINAL ↔ WEB PARITY CONCEPT DOC
+================================================================================
+
+Create: docs/terminal-web-parity.md
+
+Content structure:
+
+  # Terminal ↔ Web Parity
+
+  ## Purpose
+  Helps future assistants and operators decide when a capability should be
+  exposed as a terminal tool, a web UI, or both.
+
+  ## When Terminal is the Right Choice
+
+  ### Automation and scripting pipelines
+  Terminal tools compose naturally with unix pipes, cron, CI, and shell scripts.
+  Web UIs do not. If the primary consumer is another program or script, prefer terminal.
+
+  ### Operator-local inspection
+  When an operator needs to inspect local state (files, processes, queues) without
+  deploying a web service, terminal is lower friction. No port, no browser, no auth.
+
+  ### Latency-sensitive feedback loops
+  Terminal tools start faster and require no network round trip for display.
+  For fast interactive inspection, terminal is better.
+
+  ### Secure/isolated environments
+  In air-gapped or locked-down environments, a terminal tool works where a
+  browser-accessible web UI cannot.
+
+  ## When Web is the Right Choice
+
+  ### Multi-user collaboration
+  Web UIs support concurrent users, sessions, and access control naturally.
+  Terminals are inherently single-user.
+
+  ### Rich data visualization
+  Charts, graphs, and large tabular data with sorting/filtering UI are better
+  served by a browser with full CSS/JS capabilities.
+
+  ### Public-facing interfaces
+  Public access without SSH or tool installation favors web.
+
+  ### Mobile/non-terminal clients
+  Web works on mobile; terminal tools do not.
+
+  ## When Both Are Right (Parity Pattern)
+
+  Build both when:
+  - The domain has both operator-local and collaborative consumption needs
+  - Automation (terminal) and exploration (web) are both first-class use cases
+  - The team has strong competence in both terminal and web tooling
+
+  Implementation pattern:
+    - shared domain core (no I/O, no rendering — pure logic)
+    - terminal surface: CLI + TUI (this arc)
+    - web surface: REST API + frontend (canonical-api examples)
+    Both surfaces import from the shared core. Neither reimplements domain logic.
+
+  ## Parity Example: TaskFlow Monitor
+
+  The TaskFlow Monitor domain (job queue inspector) is a good parity candidate:
+
+  | Aspect | Terminal | Web |
+  |--------|----------|-----|
+  | Primary users | On-call engineers, CI automation | Managers, distributed teams |
+  | Deployment | CLI binary, no server | Deployed web service |
+  | Data source | Fixture files or local API | Remote API, database |
+  | Auth | OS-level (SSH, local user) | Web auth (cookie, JWT) |
+  | Real-time | Polling refresh or event replay | WebSockets or SSE |
+
+  The terminal examples in this arc implement the terminal surface.
+  A web surface for the same domain would use a backend-api archetype
+  (FastAPI, Go Echo, etc.) exposing the same job data via REST.
+
+  ## Connecting Terminal and Web
+
+  When building both, consider:
+  - A shared local HTTP API (see examples/canonical-terminal/docker/) that
+    the terminal tool connects to via --api-url and the web UI connects to.
+  - The terminal `--output json` flag makes terminal tool output consumable
+    by web pipelines (webhook, curl-to-API patterns).
+  - PTY-based terminal output can be embedded in web UIs via xterm.js or
+    similar (advanced pattern; not in scope for this arc).
+
+  ## See Also
+  - context/archetypes/terminal-dual-mode.md
+  - context/archetypes/backend-api-service.md
+  - examples/canonical-terminal/DECISION_GUIDE.md
+  - examples/canonical-api/ (web parity examples for REST APIs)
+
+================================================================================
+PART 2: CROSS-LANGUAGE COMPARISON HARNESS
+================================================================================
+
+Create: verification/terminal/comparison.py
+
+This harness runs the same CLI operation across all available language
+implementations and compares their JSON output for structural consistency.
+
+Goal: verify that the TaskFlow domain is implemented consistently across 7 languages.
+If `taskflow list --output json` returns 20 items in Python, it should return
+20 items in Rust, Go, TypeScript, Java, Ruby, and Elixir — same fixtures, same count.
+
+  from dataclasses import dataclass
+  from typing import Any
+  import json, subprocess
+  from pathlib import Path
+
+  @dataclass
+  class ComparisonResult:
+    example_name: str
+    command: list[str]
+    exit_code: int
+    output: str
+    parsed: Any               # JSON-parsed output, or None on error
+    parse_error: str | None
+
+  def run_comparison_op(examples: list, command_template: list[str],
+                         fixtures_env: dict) -> list[ComparisonResult]:
+    """
+    Run command_template against each available example.
+    command_template: e.g., ["taskflow", "list", "--output", "json"]
+    Returns one ComparisonResult per example.
+    """
+
+  def compare_list_outputs(results: list[ComparisonResult]) -> dict:
+    """
+    Compare list --output json results across examples.
+    Returns:
+      {
+        "expected_count": 20,
+        "results": {
+          "python-typer-textual": {"count": 20, "match": True},
+          "rust-clap-ratatui":    {"count": 20, "match": True},
+          ...
+        },
+        "all_match": True,
+        "mismatches": []
+      }
+    """
+
+  def compare_stats_outputs(results: list[ComparisonResult]) -> dict:
+    """
+    Compare stats --output json results across examples.
+    Assert: total == 20 across all implementations.
+    """
+
+  def compare_inspect_outputs(results: list[ComparisonResult], job_id: str) -> dict:
+    """
+    Compare inspect <job_id> --output json results across examples.
+    Assert: id == job_id in all results.
+    """
+
+Create: verification/terminal/test_comparison.py
+
+  class TestCrossLanguageComparison(unittest.TestCase):
+
+    def test_list_json_count_consistent(self):
+      """
+      All available examples should return 20 jobs for list --output json.
+      Skip examples that are not installed/available.
+      Assert all available examples agree on count.
+      """
+
+    def test_stats_total_consistent(self):
+      """
+      All available examples should return total=20 for stats --output json.
+      """
+
+    def test_inspect_job001_id_consistent(self):
+      """
+      All available examples should return id="job-001" for inspect job-001.
+      """
+
+    def test_filter_done_all_status_done(self):
+      """
+      All available examples: list --status done --output json
+      → all returned items have status "done"
+      """
+
+  Mark individual example sub-checks with @unittest.skipUnless so that
+  unavailable examples are skipped rather than failed.
+
+Create: scripts/run_terminal_comparison.py
+
+  CLI entry point:
+    python scripts/run_terminal_comparison.py
+    Options: --verbose, --example NAME (compare subset)
+
+  Output:
+    Comparison: taskflow list --output json
+    ✓ python-typer-textual   count=20
+    ✓ rust-clap-ratatui      count=20
+    ✗ go-cobra-bubbletea     count=18  ← MISMATCH
+    ○ typescript-commander-ink  (not installed)
+    ...
+    Summary: 12/14 consistent, 1 mismatch, 1 skipped
+
+  Exit code: 0 if all available examples match, 1 if any mismatch.
+
+--- Update DECISION_GUIDE.md ---
+
+Add a short cross-language consistency note at the end of DECISION_GUIDE.md:
+
+  ## Cross-Language Consistency Contract
+
+  All 14 TaskFlow Monitor examples share the same fixture corpus and CLI command
+  surface. For the same command with the same fixtures, they must return:
+  - The same job count (list --output json → 20 items)
+  - The same stats total (stats --output json → total: 20)
+  - The same job detail (inspect job-001 → id: "job-001")
+
+  Verify with: python scripts/run_terminal_comparison.py
+
+  Inconsistencies indicate a domain implementation error in a specific example.
+
+================================================================================
+PART 3: UPDATE TERMINAL DOCTRINE
+================================================================================
+
+Read context/doctrine/terminal-ux-first-class.md.
+
+Add one rule at the end (Rule 11):
+
+  ### 11. Cross-Language Behavioral Consistency
+  When multiple language implementations of the same terminal domain exist
+  in canonical-terminal/, they must be behaviorally consistent:
+  - Same command + same fixtures → same output structure
+  - Verify with: python scripts/run_terminal_comparison.py
+  - A mismatch indicates a domain implementation error, not a language difference.
+
+Update the doctrine's rule count reference if the file mentions "10 rules."
+
+================================================================================
+PART 4: STACK ROUTING UPDATE — TERMINAL VS WEB DECISION
+================================================================================
+
+Read context/router/task-router.md (or task-router.md in context/specs/agent/routers/).
+
+Add a section that helps assistants decide terminal vs web:
+
+  ## Terminal vs Web Decision
+
+  When asked to build an operator tool, inspector, or monitor:
+
+  | If the request emphasizes... | Route to |
+  |------------------------------|----------|
+  | "CLI", "command-line", "scriptable", "CI-friendly" | terminal-dual-mode or cli-tool |
+  | "dashboard", "web UI", "browser", "multi-user" | backend-api-service + frontend |
+  | "both CLI and web", "API + operator tool" | both: terminal-dual-mode + backend-api-service |
+  | "interactive", "TUI", "terminal dashboard" | terminal-tui or terminal-dual-mode |
+
+  See docs/terminal-web-parity.md for detailed guidance.
+
+================================================================================
+VERIFICATION
+================================================================================
+
+Run:
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+  python -m unittest verification.terminal.test_comparison -v
+
+Also run comparison harness:
+  python scripts/run_terminal_comparison.py
+
+Check manually:
+  - docs/terminal-web-parity.md exists (all sections complete)
+  - verification/terminal/comparison.py exists
+  - verification/terminal/test_comparison.py exists and passes
+  - scripts/run_terminal_comparison.py exists and produces output
+  - context/doctrine/terminal-ux-first-class.md has Rule 11
+  - context/router/task-router.md (or equivalent) has Terminal vs Web section
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+  1. [PROMPT_110] add terminal ↔ web parity concept doc
+     Stage: docs/terminal-web-parity.md
+
+  2. [PROMPT_110] add cross-language comparison harness and tests
+     Stage: verification/terminal/comparison.py,
+            verification/terminal/test_comparison.py,
+            scripts/run_terminal_comparison.py
+
+  3. [PROMPT_110] update DECISION_GUIDE with consistency contract
+     Stage: examples/canonical-terminal/DECISION_GUIDE.md
+
+  4. [PROMPT_110] add Rule 11 (cross-language consistency) to doctrine
+     Stage: context/doctrine/terminal-ux-first-class.md
+
+  5. [PROMPT_110] update task-router with terminal vs web guidance
+     Stage: context/router/task-router.md (or equivalent)
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Create docs/terminal-web-parity.md
+  - Create cross-language comparison harness
+  - Update DECISION_GUIDE, doctrine (Rule 11), and task-router
+  - Run comparison harness and document any mismatches found
+
+DO NOT:
+  - Implement a web surface for the TaskFlow Monitor domain (beyond what's in docker/)
+  - Build an xterm.js integration or web-embedded terminal
+  - Modify canonical examples (except to fix comparison mismatches found during this session)
+  - Create new PROMPT files
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+  - docs/terminal-web-parity.md exists
+  - verification/terminal/comparison.py and test_comparison.py exist
+  - scripts/run_terminal_comparison.py exists and produces meaningful output
+  - Doctrine has Rule 11
+  - Task-router has terminal vs web section
+  - validate_context.py and run_verification.py --tier fast pass
+
+PROMPT_110 complete. PROMPT_111 is the full arc hardening pass and completion
+summaries for the entire terminal tooling arc (PROMPT_100–111).

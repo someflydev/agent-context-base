@@ -1,0 +1,903 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one fresh
+coding-assistant session with commit prefixes like `[PROMPT_100]`.
+
+PROMPT_91: 3-tier memory structure + memory-compaction doctrine
+PROMPT_92: work.py operator-console commands + work/ data model
+PROMPT_93: PROMPT_META_RUNNER repositioned + doctrine/workflows updated
+PROMPT_94: Session Context Briefing in work.py resume + startup visibility docs
+PROMPT_95: Tests, verification hardening, future-workstream readiness, arc completion
+PROMPT_96: Executable context-complexity-budget model + work.py budget-report
+PROMPT_97: Startup trace protocol + work.py startup-trace
+PROMPT_98: Heuristic prompt routing + work.py route-check + juicy-prompt scenarios
+PROMPT_99: Toggleable startup_features + holistic doc pass + arc summaries (PROMPT_96–99)
+
+This prompt (PROMPT_100) opens the TERMINAL TOOLING ARC. It establishes terminal
+tooling as a first-class, routed, doctrinally coherent capability area in the repo.
+
+The arc covers: doctrine, archetypes, stacks, routing, manifests, workflows, canonical
+examples across 7 languages, cross-language decision guides, test harness, and hardening.
+
+This prompt handles the foundation layer: doctrine, archetypes, stacks, routing,
+manifests, and workflows. Canonical examples begin in PROMPT_102.
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                    (run; study output)
+  4. AGENT.md
+  5. CLAUDE.md
+  6. memory/INDEX.md
+  7. memory/summaries/PROMPT_99_completion.md          (if it exists)
+  8. context/archetypes/cli-tool.md                   (READ CAREFULLY — you will extend it)
+  9. context/workflows/extend-cli.md                  (READ — you will add adjacent workflows)
+ 10. examples/canonical-cli/README.md                 (READ — understand what exists)
+ 11. context/router/archetype-router.md               (READ — you will add entries)
+ 12. context/router/stack-router.md                   (READ — you will add entries)
+ 13. context/router/alias-catalog.yaml                (READ — you will add terminal aliases)
+ 14. manifests/cli-python.yaml                        (READ — model for new terminal manifests)
+
+Skim these for structural patterns:
+  - context/archetypes/backend-api-service.md         (model for how archetypes are written)
+  - context/stacks/backend-api-go-echo.yaml           (model for how stacks are written)
+
+Do NOT begin implementation until you have read all of the above.
+
+================================================================================
+TERMINAL TOOLING ARCHITECTURE — DESIGN AUTHORITY
+================================================================================
+
+This section gives you the architectural decisions to implement. Do not deviate.
+
+SHARED DOMAIN (used across all canonical examples in PROMPT_102–105):
+  Name: TaskFlow Monitor
+  Domain: A job/task queue monitor — lists, inspects, filters, and watches
+          jobs in a fixture-backed queue.
+  Job schema:
+    { "id": str, "name": str, "status": "pending"|"running"|"done"|"failed",
+      "started_at": str|null, "duration_s": number|null, "tags": [str],
+      "output_lines": [str] }
+  Fixture files live in: examples/canonical-terminal/fixtures/
+  Each canonical example wraps this domain in a language-specific CLI and/or TUI.
+
+TERMINAL CAPABILITY TIERS:
+  Tier 1 – CLI tool:        subcommands + flags, scriptable, machine-readable output
+  Tier 2 – TUI app:         full-screen terminal UI, keyboard-driven
+  Tier 3 – Dual-mode:       shared core, CLI surface + TUI surface, --interactive flag
+
+KEY ARCHITECTURAL RULES (encode these into doctrine and archetypes):
+  1. Terminal UX is a first-class architecture target, not a thin layer.
+  2. CLI and TUI must wrap a shared domain/core where possible.
+  3. Non-interactive mode is mandatory even when a TUI exists (--no-tui / --output json).
+  4. Canonical examples are fixture-first and deterministic; no live network required.
+  5. Baseline validation must not depend on live network or OS state.
+  6. TUI apps must have a deterministic scripted or PTY-based validation path.
+  7. Each example must be discoverable through manifests, routers, and docs.
+  8. Each language stack must conform to repo-wide doctrine (smoke tests, etc.).
+  9. Prefer small set of excellent examples over sprawling shallow demos.
+ 10. Fixture-backed examples must include output assertion (markers or normalized text).
+
+CANONICAL EXAMPLE DIRECTORY:
+  examples/canonical-terminal/           (new — do not touch examples/canonical-cli/)
+    fixtures/                            (shared fixture corpus — PROMPT_102 creates this)
+    python-typer-textual/                (flagship Python — PROMPT_102)
+    python-click-blessed/                (secondary Python — PROMPT_102)
+    rust-clap-ratatui/                   (flagship Rust — PROMPT_103)
+    rust-argh-tui-realm/                 (secondary Rust — PROMPT_103)
+    go-cobra-bubbletea/                  (flagship Go — PROMPT_103)
+    go-urfave-tview/                     (secondary Go — PROMPT_103)
+    typescript-commander-ink/            (flagship TypeScript — PROMPT_104)
+    typescript-yargs-blessed/            (secondary TypeScript — PROMPT_104)
+    java-picocli-lanterna/               (flagship Java — PROMPT_104)
+    java-jcommander-jline/               (secondary Java — PROMPT_104)
+    ruby-thor-tty/                       (flagship Ruby — PROMPT_105)
+    ruby-clamp-tty/                      (secondary Ruby — PROMPT_105)
+    elixir-optimus-ratatouille/          (flagship Elixir — PROMPT_105)
+    elixir-optionparser-owl/             (secondary Elixir — PROMPT_105)
+    CATALOG.md                           (cross-language index — PROMPT_106)
+    DECISION_GUIDE.md                    (when to choose which — PROMPT_106)
+
+THIS PROMPT creates the framework. The examples themselves come in PROMPT_102–105.
+
+================================================================================
+PART 1: TERMINAL DOCTRINE FILE
+================================================================================
+
+Create: context/doctrine/terminal-ux-first-class.md
+
+Content structure:
+
+  # Terminal UX as a First-Class Architecture Target
+
+  ## Purpose
+  One paragraph explaining why terminal tooling is architecturally significant
+  (operator consoles, automation pipelines, scriptable inspection, TUI-first
+  applications for latency-sensitive workflows, etc.).
+
+  ## Core Rules
+
+  ### 1. Shared Domain Core
+  CLI and TUI surfaces must wrap a shared application core, not duplicate logic.
+  The core handles data loading, filtering, and state. Surfaces handle rendering only.
+
+  ### 2. Non-Interactive Mode is Mandatory
+  Every tool with a TUI mode must also work in non-interactive (CLI/headless) mode.
+  Accept --no-tui, --output json, or equivalent. CI pipelines must not require a TTY.
+
+  ### 3. Fixture-First Validation
+  Baseline validation must not depend on live network or OS state. Use fixture files
+  for the canonical happy path. Live backends are optional extensions.
+
+  ### 4. Output Assertion Discipline
+  CLI output must be assertable. Prefer marker-tagged sections (e.g., BEGIN_TABLE /
+  END_TABLE) or structured JSON for machine-readable output. TUI output is asserted
+  via normalized transcripts or PTY harness.
+
+  ### 5. Smoke Test Requirement
+  Every terminal example must have at least one smoke test that:
+  - runs in non-interactive (CLI) mode
+  - loads fixtures, not live data
+  - asserts on at least one marker or structured output field
+  - passes without a TTY (usable in CI)
+
+  ### 6. PTY Validation for TUI
+  TUI applications must have a documented path for scripted or PTY-based interaction
+  testing. If no PTY harness is available for a language, document the manual
+  validation approach and add a TODO for automation.
+
+  ### 7. Shared Fixture Corpus
+  All terminal examples share a fixture corpus at examples/canonical-terminal/fixtures/.
+  This ensures cross-language consistency and cross-example test transferability.
+
+  ### 8. Stack Alignment
+  Each terminal example must declare its stack (language + CLI library + TUI library)
+  in the stack file and must be reachable from the stack-router.
+
+  ### 9. Router Discoverability
+  Terminal archetypes, stacks, and examples must be discoverable through:
+  - context/router/archetype-router.md
+  - context/router/stack-router.md
+  - context/router/alias-catalog.yaml
+
+  ### 10. Manifest Registration
+  Each canonical terminal example must have a manifest entry in manifests/ or be
+  listed in the terminal catalog at examples/canonical-terminal/CATALOG.md.
+
+  ## Anti-Patterns
+  - TUI-only tool with no scriptable fallback
+  - Live network calls in smoke tests
+  - Duplicated domain logic across CLI and TUI layers
+  - Output formats that are hard to assert on in CI
+  - Missing stack declaration or router entry for a new terminal example
+
+================================================================================
+PART 2: EXTEND cli-tool.md ARCHETYPE
+================================================================================
+
+Read context/archetypes/cli-tool.md. Extend it (do not replace) to reference the
+terminal tooling capability area and point to the new terminal archetypes.
+
+Add to cli-tool.md:
+
+  ## Scope
+  This archetype covers command-line utilities. For full-screen TUI applications
+  or dual-mode CLI+TUI tools, see:
+  - context/archetypes/terminal-tui.md
+  - context/archetypes/terminal-dual-mode.md
+
+  ## Additional Doctrine
+  - context/doctrine/terminal-ux-first-class.md
+
+  ## Terminal Canonical Examples
+  - See examples/canonical-terminal/ for language-specific implementations
+
+Keep existing cli-tool.md content intact. Only add the new sections above.
+
+================================================================================
+PART 3: ADD terminal-tui.md ARCHETYPE
+================================================================================
+
+Create: context/archetypes/terminal-tui.md
+
+Use context/archetypes/cli-tool.md as a structural model. Include:
+
+  # Terminal TUI
+
+  Use this archetype for full-screen terminal user interface applications driven
+  by keyboard input, with panels, tables, detail views, and event loops.
+
+  ## Common Goals
+  - full-screen dashboard or inspector UI
+  - keyboard navigation and command shortcuts
+  - live or fixture-backed data display
+  - clean exit and signal handling
+
+  ## Required Doctrine
+  - context/doctrine/terminal-ux-first-class.md
+  - context/doctrine/testing-philosophy.md
+  - context/doctrine/smoke-test-philosophy.md
+
+  ## Required Patterns
+  - non-interactive mode with --no-tui or --output json (mandatory)
+  - PTY-based or scripted TUI validation path
+  - shared domain core (separate from rendering layer)
+  - fixture-backed canonical path
+
+  ## Routing
+  When asked to build a TUI dashboard, monitoring console, or interactive inspector,
+  prefer this archetype over cli-tool.
+
+  ## Language Stack Options
+  See context/router/stack-router.md → terminal stacks section.
+
+  ## Canonical Examples
+  - examples/canonical-terminal/python-typer-textual/
+  - examples/canonical-terminal/rust-clap-ratatui/
+  - examples/canonical-terminal/go-cobra-bubbletea/
+  - examples/canonical-terminal/typescript-commander-ink/
+  - examples/canonical-terminal/java-picocli-lanterna/
+  - examples/canonical-terminal/elixir-optimus-ratatouille/
+
+  ## Validation Path
+  - python scripts/run_verification.py --tier fast
+  - smoke tests in each example's tests/ directory
+  - PTY harness guidance in docs/terminal-validation-contract.md (PROMPT_101)
+
+  ## Common Pitfalls
+  - no non-interactive fallback
+  - TTY-dependent smoke tests (breaks CI)
+  - domain logic embedded in TUI event handlers instead of shared core
+  - no keyboard shortcut reference in --help output
+
+================================================================================
+PART 4: ADD terminal-dual-mode.md ARCHETYPE
+================================================================================
+
+Create: context/archetypes/terminal-dual-mode.md
+
+  # Terminal Dual-Mode (CLI + TUI)
+
+  Use this archetype for tools that expose a command-line interface for scripting
+  and automation, and a full-screen TUI for guided interactive use, both sharing
+  the same domain/application core.
+
+  ## Common Goals
+  - identical business logic in CLI and TUI paths
+  - --interactive flag (or alias) to enter TUI mode from CLI
+  - machine-readable output in CLI mode (--output json / --output table)
+  - keyboard-driven inspection in TUI mode
+
+  ## Required Doctrine
+  - context/doctrine/terminal-ux-first-class.md (ALL 10 rules apply here)
+  - context/doctrine/testing-philosophy.md
+  - context/doctrine/smoke-test-philosophy.md
+
+  ## Structural Requirements
+  - core/ directory: domain logic, data loading, filtering, state — no I/O
+  - cli/ directory (or cli.py / main.go / etc.): CLI entry surface
+  - tui/ directory (or tui.py / etc.): TUI entry surface
+  - Both surfaces import from core/. Neither surface reimplements domain logic.
+
+  ## Routing
+  When asked to build an operator console, job monitor, queue inspector, or tool
+  that needs both scriptable and interactive modes, prefer this archetype.
+
+  ## Language Stack Options (flagships)
+  - Python:     Typer + Textual    → examples/canonical-terminal/python-typer-textual/
+  - Rust:       clap + ratatui     → examples/canonical-terminal/rust-clap-ratatui/
+  - Go:         Cobra + Bubble Tea → examples/canonical-terminal/go-cobra-bubbletea/
+  - TypeScript: Commander + Ink   → examples/canonical-terminal/typescript-commander-ink/
+  - Java:       picocli + Lanterna → examples/canonical-terminal/java-picocli-lanterna/
+  - Ruby:       Thor + TTY::Prompt → examples/canonical-terminal/ruby-thor-tty/
+  - Elixir:     Optimus + Ratatouille → examples/canonical-terminal/elixir-optimus-ratatouille/
+
+  ## Validation Path
+  - CLI smoke test (non-interactive, fixture-backed)
+  - TUI scripted test via PTY harness (language-dependent)
+  - python scripts/run_verification.py --tier fast
+
+  ## Common Pitfalls
+  - core logic duplicated in both CLI and TUI paths
+  - TUI mode that cannot be headlessly exercised (no smoke path)
+  - --interactive flag missing from --help
+  - exit codes inconsistent between modes
+
+================================================================================
+PART 5: ADD TERMINAL STACK FILES
+================================================================================
+
+In context/stacks/, create the following 14 YAML files.
+
+Use the pattern from context/stacks/ YAML files you've already read.
+Each stack file should include: name, language, tier (cli|tui|dual-mode),
+cli_lib, tui_lib (if applicable), description, when_to_use, tradeoffs,
+canonical_example, docs.
+
+Create these files:
+
+  terminal-python-typer-textual.yaml
+    name: "Python Terminal — Typer + Textual"
+    language: python
+    tier: dual-mode
+    cli_lib: typer
+    tui_lib: textual
+    description: >
+      Flagship Python terminal stack. Typer builds ergonomic CLI subcommands
+      with type-driven argument parsing. Textual provides a modern full-screen
+      TUI framework with CSS-styled widgets and an async event loop.
+    when_to_use: >
+      Python dual-mode operator consoles, job monitors, dataset explorers,
+      or any tool needing both scriptable CLI and interactive TUI surfaces.
+    tradeoffs: >
+      Textual requires Python 3.8+ and is async-first. Adds ~5MB dependency.
+      Excellent for richly styled UIs; less suited for raw-TTY/Unix-pipe workflows.
+    canonical_example: examples/canonical-terminal/python-typer-textual/
+    docs: context/archetypes/terminal-dual-mode.md
+
+  terminal-python-click-blessed.yaml
+    name: "Python Terminal — Click + Blessed"
+    language: python
+    tier: cli-plus-light-tui
+    cli_lib: click
+    tui_lib: blessed
+    description: >
+      Secondary Python terminal stack. Click is battle-tested for composable CLI
+      frameworks. Blessed provides lightweight terminal color, cursor movement,
+      and key handling without a full widget framework.
+    when_to_use: >
+      Lighter Python CLIs with simple interactive prompts, colored output,
+      or Unix-y workflows where a full TUI framework would be overkill.
+    tradeoffs: >
+      Blessed lacks a widget/component model. Better for line-oriented UIs
+      than full-screen panels. Click has better third-party plugin ecosystem
+      than Typer but slightly more ceremony.
+    canonical_example: examples/canonical-terminal/python-click-blessed/
+    docs: context/archetypes/cli-tool.md
+
+  terminal-rust-clap-ratatui.yaml
+    name: "Rust Terminal — clap + ratatui"
+    language: rust
+    tier: dual-mode
+    cli_lib: clap
+    tui_lib: ratatui
+    description: >
+      Flagship Rust terminal stack. clap is the dominant Rust CLI parser with
+      derive macros, subcommand trees, and rich help generation. ratatui is the
+      center-of-gravity Rust TUI toolkit with a retained-mode draw loop.
+    when_to_use: >
+      High-performance Rust operator dashboards, queue monitors, or any tool
+      needing strong CLI parsing AND a production-quality terminal UI.
+    tradeoffs: >
+      ratatui requires managing a draw loop and terminal raw mode manually.
+      More boilerplate than higher-level frameworks but maximum control.
+    canonical_example: examples/canonical-terminal/rust-clap-ratatui/
+    docs: context/archetypes/terminal-dual-mode.md
+
+  terminal-rust-argh-tui-realm.yaml
+    name: "Rust Terminal — argh + tui-realm"
+    language: rust
+    tier: dual-mode
+    cli_lib: argh
+    tui_lib: tui-realm
+    description: >
+      Secondary Rust stack. argh is a lighter Google-style argument parser.
+      tui-realm adds an Elm/React-style component model over ratatui with
+      subscriptions and event-driven updates.
+    when_to_use: >
+      Rust tools where the CLI is simpler (fewer subcommands) and the TUI
+      benefits from a component/event-driven architecture.
+    tradeoffs: >
+      argh is less flexible than clap for complex subcommand trees. tui-realm
+      adds abstraction that helps for larger TUIs but has less community momentum.
+    canonical_example: examples/canonical-terminal/rust-argh-tui-realm/
+    docs: context/archetypes/terminal-tui.md
+
+  terminal-go-cobra-bubbletea.yaml
+    name: "Go Terminal — Cobra + Bubble Tea"
+    language: go
+    tier: dual-mode
+    cli_lib: cobra
+    tui_lib: bubbletea
+    description: >
+      Flagship Go terminal stack. Cobra is the dominant structured multi-command
+      Go CLI framework (used by kubectl, hugo, etc.). Bubble Tea builds TUIs
+      around an Elm-style model with Init / Update / View.
+    when_to_use: >
+      Go operator consoles, multi-command CLIs with a companion TUI inspector,
+      or tools with a git/kubectl-style command tree.
+    tradeoffs: >
+      Bubble Tea's functional model is clean but requires thinking in messages/commands.
+      Cobra adds boilerplate for very simple tools; urfave/cli is lighter then.
+    canonical_example: examples/canonical-terminal/go-cobra-bubbletea/
+    docs: context/archetypes/terminal-dual-mode.md
+
+  terminal-go-urfave-tview.yaml
+    name: "Go Terminal — urfave/cli + tview"
+    language: go
+    tier: dual-mode
+    cli_lib: urfave/cli
+    tui_lib: tview
+    description: >
+      Secondary Go stack. urfave/cli is simpler and smaller than Cobra. tview
+      provides practical high-level widgets (tables, forms, trees, lists) with
+      a more imperative widget-centric style than Bubble Tea.
+    when_to_use: >
+      Go tools where the CLI is simple (few commands) and the TUI needs rich
+      built-in widgets (tables, trees, input forms) without building them from scratch.
+    tradeoffs: >
+      tview is more imperative/stateful vs Bubble Tea's functional purity.
+      urfave/cli has less community tooling than Cobra.
+    canonical_example: examples/canonical-terminal/go-urfave-tview/
+    docs: context/archetypes/terminal-tui.md
+
+  terminal-typescript-commander-ink.yaml
+    name: "TypeScript Terminal — Commander + Ink"
+    language: typescript
+    tier: dual-mode
+    cli_lib: commander
+    tui_lib: ink
+    description: >
+      Flagship TypeScript/Node terminal stack. Commander is a strong structured CLI
+      framework with subcommand support. Ink enables React-style component composition
+      directly in the terminal, using JSX for TUI layout.
+    when_to_use: >
+      TypeScript developer tools, operator consoles, or modern devtool workflows
+      where React component model is already familiar.
+    tradeoffs: >
+      Ink requires React and JSX/TSX. React reconciler in the terminal is
+      elegant but adds cognitive overhead for simple tools. Commander is mature
+      and well-documented.
+    canonical_example: examples/canonical-terminal/typescript-commander-ink/
+    docs: context/archetypes/terminal-dual-mode.md
+
+  terminal-typescript-yargs-blessed.yaml
+    name: "TypeScript Terminal — Yargs + Blessed"
+    language: typescript
+    tier: cli-plus-light-tui
+    cli_lib: yargs
+    tui_lib: blessed
+    description: >
+      Secondary TypeScript stack. Yargs excels at command-heavy CLIs with
+      generated help and middleware. Blessed is a classic ncurses-style terminal
+      UI toolkit with a large widget set and direct event handling.
+    when_to_use: >
+      TypeScript CLIs needing rich help generation and middleware, paired with
+      a classic ncurses-style TUI (less React-y, more traditional widget approach).
+    tradeoffs: >
+      Blessed is less actively maintained than Ink. Yargs has a large API surface.
+      Good choice when the React model is undesirable or the team is unfamiliar with JSX.
+    canonical_example: examples/canonical-terminal/typescript-yargs-blessed/
+    docs: context/archetypes/cli-tool.md
+
+  terminal-java-picocli-lanterna.yaml
+    name: "Java Terminal — picocli + Lanterna"
+    language: java
+    tier: dual-mode
+    cli_lib: picocli
+    tui_lib: lanterna
+    description: >
+      Flagship Java terminal stack. picocli is the strongest modern Java CLI
+      framework with annotation-driven commands, rich help, and completion.
+      Lanterna is a pure-Java TUI library with real text-GUI widgets.
+    when_to_use: >
+      JVM-based operator consoles, enterprise tools, or services where terminal
+      access is part of a larger Java system and a real text GUI is needed.
+    tradeoffs: >
+      Lanterna uses Swing-style layout concepts adapted to terminals; has a
+      learning curve. picocli is excellent but Java verbosity applies.
+    canonical_example: examples/canonical-terminal/java-picocli-lanterna/
+    docs: context/archetypes/terminal-dual-mode.md
+
+  terminal-java-jcommander-jline.yaml
+    name: "Java Terminal — JCommander + JLine"
+    language: java
+    tier: cli-plus-interactive-shell
+    cli_lib: jcommander
+    tui_lib: jline
+    description: >
+      Secondary Java stack. JCommander is a compact annotation-driven parser.
+      JLine provides advanced console input, readline-like editing, completion,
+      and ANSI output — ideal for shell-style REPL workflows.
+    when_to_use: >
+      Java tools needing a shell-like interactive REPL, readline editing,
+      tab completion, or command history — rather than a full-screen TUI.
+    tradeoffs: >
+      JLine is not a TUI framework; it is an interactive console input library.
+      Better for shell-style interactions than for dashboard-style panels.
+    canonical_example: examples/canonical-terminal/java-jcommander-jline/
+    docs: context/archetypes/cli-tool.md
+
+  terminal-ruby-thor-tty.yaml
+    name: "Ruby Terminal — Thor + TTY::Prompt"
+    language: ruby
+    tier: guided-interactive-cli
+    cli_lib: thor
+    tui_lib: tty-prompt
+    description: >
+      Flagship Ruby terminal stack. Thor is a classic Ruby CLI toolkit for
+      multi-command apps. TTY::Prompt provides beautiful interactive prompts,
+      menus, and selection widgets for guided terminal workflows.
+    when_to_use: >
+      Ruby operator tools, guided remediation workflows, interactive installers,
+      or configuration wizards where prompt-driven UX is the goal.
+    tradeoffs: >
+      Ruby's terminal story favors guided interactive CLIs over full-screen TUI
+      architecture. This is the right fit for prompt-driven flows; use a
+      different language for dashboard-style TUI panels.
+    canonical_example: examples/canonical-terminal/ruby-thor-tty/
+    docs: context/archetypes/terminal-tui.md
+
+  terminal-ruby-clamp-tty.yaml
+    name: "Ruby Terminal — Clamp + TTY::Reader"
+    language: ruby
+    tier: cli-plus-raw-input
+    cli_lib: clamp
+    tui_lib: tty-reader
+    description: >
+      Secondary Ruby stack. Clamp is minimal and focused. TTY::Reader provides
+      lower-level keyboard input and ANSI handling primitives.
+    when_to_use: >
+      Lighter Ruby CLIs where the interactive element is primarily keyboard
+      input handling (key events, raw character reads) without full prompt menus.
+    tradeoffs: >
+      TTY::Reader is a building block, not a prompt framework. Better for custom
+      key-driven interactions than for wizard-style menus.
+    canonical_example: examples/canonical-terminal/ruby-clamp-tty/
+    docs: context/archetypes/cli-tool.md
+
+  terminal-elixir-optimus-ratatouille.yaml
+    name: "Elixir Terminal — Optimus + Ratatouille"
+    language: elixir
+    tier: dual-mode
+    cli_lib: optimus
+    tui_lib: ratatouille
+    description: >
+      Flagship Elixir terminal stack. Optimus provides structured CLI parsing.
+      Ratatouille wraps ex_termbox for a declarative TUI with Elm-style rendering.
+      BEAM process supervision can back live data feeds behind the TUI.
+    when_to_use: >
+      Elixir/Phoenix shops needing a terminal operator console, process inspector,
+      or event/log monitor where BEAM supervision and actor-model strengths matter.
+    when_not_to_use: >
+      Do not force BEAM supervision into examples where it adds no value.
+      If the example is purely data display without concurrency, keep it simple.
+    tradeoffs: >
+      Ratatouille is less actively maintained than ratatui (Rust). ex_termbox
+      may have platform limitations. Use Owl for lighter terminal UI needs.
+    canonical_example: examples/canonical-terminal/elixir-optimus-ratatouille/
+    docs: context/archetypes/terminal-dual-mode.md
+
+  terminal-elixir-optionparser-owl.yaml
+    name: "Elixir Terminal — OptionParser + Owl"
+    language: elixir
+    tier: cli-plus-rich-output
+    cli_lib: optionparser (built-in)
+    tui_lib: owl
+    description: >
+      Secondary Elixir stack. OptionParser is the built-in Elixir CLI parser.
+      Owl provides command-line UI for prompting, tables, progress bars, and
+      styled terminal output without a full TUI framework.
+    when_to_use: >
+      Elixir Mix tasks, simple escript tools, or operators scripts that need
+      rich CLI output (tables, progress, color) without a full-screen TUI.
+    tradeoffs: >
+      Owl is excellent for rich CLI output but not a TUI framework. No full-screen
+      dashboard capability. Very appropriate for simpler Elixir tooling.
+    canonical_example: examples/canonical-terminal/elixir-optionparser-owl/
+    docs: context/archetypes/cli-tool.md
+
+================================================================================
+PART 6: UPDATE ROUTING DOCS
+================================================================================
+
+--- 6a. context/router/archetype-router.md ---
+
+After reading the file, add a "Terminal Tooling" section. Follow the existing
+section format. Include:
+
+  ## Terminal Tooling
+
+  | Signal | Archetype |
+  |--------|-----------|
+  | "build a CLI tool", "add a command" | cli-tool |
+  | "build a TUI", "dashboard", "interactive terminal", "terminal UI" | terminal-tui |
+  | "operator console", "monitor", "inspector", "--interactive", dual CLI+TUI | terminal-dual-mode |
+
+  See context/doctrine/terminal-ux-first-class.md for rules that apply to all
+  terminal archetypes.
+
+--- 6b. context/router/stack-router.md ---
+
+After reading the file, add a "Terminal Stacks" section. Follow existing format.
+Include a table mapping:
+
+  Language + Use Case → Stack file → Canonical example
+
+  Cover all 14 stacks added in Part 5. Use a compact table format:
+  | Language | Tier | CLI Lib | TUI Lib | Stack file |
+  Refer the reader to DECISION_GUIDE.md (PROMPT_106) for deeper guidance.
+
+--- 6c. context/router/alias-catalog.yaml ---
+
+Add terminal capability aliases. Examples:
+  - "terminal": [terminal-dual-mode, terminal-tui, cli-tool]
+  - "TUI": [terminal-tui, terminal-dual-mode]
+  - "dashboard": [terminal-tui, terminal-dual-mode]
+  - "operator console": [terminal-dual-mode]
+  - "job monitor": [terminal-dual-mode]
+  - "interactive CLI": [terminal-dual-mode, cli-tool]
+
+Follow the existing alias format in the file.
+
+================================================================================
+PART 7: ADD TERMINAL WORKFLOWS
+================================================================================
+
+--- 7a. Create: context/workflows/add-terminal-example.md ---
+
+  # Add Terminal Canonical Example
+
+  Use this workflow when adding a new canonical terminal example (CLI, TUI,
+  or dual-mode) to examples/canonical-terminal/.
+
+  ## Preconditions
+  - target language and stack chosen (see context/router/stack-router.md)
+  - archetype confirmed (cli-tool / terminal-tui / terminal-dual-mode)
+  - fixture corpus available at examples/canonical-terminal/fixtures/
+
+  ## Sequence
+
+  1. Create examples/canonical-terminal/<language-stack>/ with:
+     - core/    — domain logic (no I/O, no terminal APIs)
+     - cli/     — CLI entry surface
+     - tui/     — TUI entry surface (if applicable)
+     - tests/   — smoke tests (non-interactive, fixture-backed)
+     - README.md — purpose, usage, when to use this stack
+  2. Point tests at examples/canonical-terminal/fixtures/ for all data.
+  3. Write at least one smoke test that:
+     - runs without a TTY
+     - loads fixture data
+     - asserts on at least one marker or structured output field
+  4. Add manifest entry or update examples/canonical-terminal/CATALOG.md.
+  5. Confirm the stack is registered in context/router/stack-router.md.
+  6. Run smoke tests.
+
+  ## Outputs
+  - working example in examples/canonical-terminal/<language-stack>/
+  - passing smoke test
+  - CATALOG.md entry
+
+  ## Related Doctrine
+  - context/doctrine/terminal-ux-first-class.md (ALL 10 rules)
+  - context/doctrine/smoke-test-philosophy.md
+
+  ## Common Pitfalls
+  - domain logic duplicated in CLI and TUI layers
+  - smoke test that requires a live TTY or network
+  - no README or CATALOG entry
+  - TUI that has no non-interactive fallback
+
+--- 7b. Update: context/workflows/extend-cli.md ---
+
+Read the file. At the end, add:
+
+  ## See Also
+
+  For full-screen TUI or dual-mode CLI+TUI tools:
+  - context/workflows/add-terminal-example.md
+  - context/archetypes/terminal-tui.md
+  - context/archetypes/terminal-dual-mode.md
+  - context/doctrine/terminal-ux-first-class.md
+
+================================================================================
+PART 8: ADD TERMINAL MANIFESTS
+================================================================================
+
+Create two manifest files following the pattern in manifests/cli-python.yaml.
+
+--- 8a. manifests/terminal-dual-mode-base.yaml ---
+
+  name: terminal-dual-mode-base
+  description: >
+    Base manifest for a dual-mode terminal tool: CLI surface for scripting
+    and automation + TUI surface for guided interactive use. Shared domain core.
+  archetype: terminal-dual-mode
+  doctrine:
+    - terminal-ux-first-class
+    - testing-philosophy
+    - smoke-test-philosophy
+  workflows:
+    - add-terminal-example
+    - extend-cli
+  required_dirs:
+    - core/
+    - cli/
+    - tui/
+    - tests/
+  required_files:
+    - README.md
+    - tests/test_smoke.py (or language equivalent)
+  canonical_examples:
+    - examples/canonical-terminal/python-typer-textual/
+    - examples/canonical-terminal/rust-clap-ratatui/
+    - examples/canonical-terminal/go-cobra-bubbletea/
+  stack_options:
+    - terminal-python-typer-textual
+    - terminal-rust-clap-ratatui
+    - terminal-go-cobra-bubbletea
+    - terminal-typescript-commander-ink
+    - terminal-java-picocli-lanterna
+    - terminal-elixir-optimus-ratatouille
+
+--- 8b. manifests/terminal-tui-base.yaml ---
+
+  name: terminal-tui-base
+  description: >
+    Base manifest for a full-screen TUI application. No CLI automation surface required,
+    but non-interactive --no-tui fallback is mandatory.
+  archetype: terminal-tui
+  doctrine:
+    - terminal-ux-first-class
+    - testing-philosophy
+    - smoke-test-philosophy
+  workflows:
+    - add-terminal-example
+  required_dirs:
+    - core/
+    - tui/
+    - tests/
+  required_files:
+    - README.md
+    - tests/test_smoke.py (or language equivalent)
+  canonical_examples:
+    - examples/canonical-terminal/python-typer-textual/
+    - examples/canonical-terminal/rust-clap-ratatui/
+
+================================================================================
+PART 9: STUB examples/canonical-terminal/
+================================================================================
+
+Create the directory structure stub for examples/canonical-terminal/:
+
+  examples/canonical-terminal/
+    README.md    (stub — full content in PROMPT_106)
+    fixtures/    (stub — full fixture corpus in PROMPT_102)
+
+Write a minimal README.md stub:
+
+  # Terminal Canonical Examples
+
+  This directory contains canonical terminal tool examples across 7 languages.
+  Each example implements the TaskFlow Monitor domain: a job queue inspector
+  with CLI and TUI surfaces backed by fixture data.
+
+  ## Domain
+  TaskFlow Monitor tracks jobs with: id, name, status (pending/running/done/failed),
+  started_at, duration_s, tags, and output_lines.
+  Fixture data: examples/canonical-terminal/fixtures/
+
+  ## Examples
+
+  Language examples are added by PROMPT_102–105. See CATALOG.md (PROMPT_106)
+  for the cross-language index and DECISION_GUIDE.md for stack selection guidance.
+
+  ## Architecture
+  All examples share:
+  - A domain core (data loading, filtering, state) isolated from terminal I/O
+  - A CLI surface (subcommands, flags, --output json/table)
+  - Optionally a TUI surface (--interactive mode or default for dual-mode tools)
+  - Fixture-first smoke tests that pass without a TTY
+
+  ## Related Docs
+  - context/archetypes/terminal-dual-mode.md
+  - context/archetypes/terminal-tui.md
+  - context/doctrine/terminal-ux-first-class.md
+  - docs/terminal-validation-contract.md (added by PROMPT_101)
+
+Create fixtures/ as an empty directory with a .gitkeep placeholder.
+The full fixture corpus is created in PROMPT_102.
+
+================================================================================
+VERIFICATION
+================================================================================
+
+Run:
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Check manually:
+  - context/doctrine/terminal-ux-first-class.md exists and has all 10 rules
+  - context/archetypes/terminal-tui.md exists and references doctrine
+  - context/archetypes/terminal-dual-mode.md exists and lists all 7 flagship stacks
+  - context/archetypes/cli-tool.md has been extended (not replaced) with terminal refs
+  - All 14 context/stacks/terminal-*.yaml files exist
+  - context/router/archetype-router.md has Terminal Tooling section
+  - context/router/stack-router.md has Terminal Stacks section
+  - context/router/alias-catalog.yaml has terminal aliases
+  - context/workflows/add-terminal-example.md exists
+  - context/workflows/extend-cli.md has See Also section
+  - manifests/terminal-dual-mode-base.yaml exists
+  - manifests/terminal-tui-base.yaml exists
+  - examples/canonical-terminal/README.md exists
+  - examples/canonical-terminal/fixtures/ exists
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+Use grouped commits prefixed with [PROMPT_100].
+
+Suggested groupings:
+
+  1. [PROMPT_100] add terminal-ux-first-class doctrine
+     Stage: context/doctrine/terminal-ux-first-class.md
+
+  2. [PROMPT_100] add terminal-tui and terminal-dual-mode archetypes; extend cli-tool
+     Stage: context/archetypes/terminal-tui.md, context/archetypes/terminal-dual-mode.md,
+            context/archetypes/cli-tool.md
+
+  3. [PROMPT_100] add 14 terminal stack YAML files
+     Stage: context/stacks/terminal-*.yaml (all 14)
+
+  4. [PROMPT_100] update routing: archetype-router, stack-router, alias-catalog
+     Stage: context/router/archetype-router.md, context/router/stack-router.md,
+            context/router/alias-catalog.yaml
+
+  5. [PROMPT_100] add terminal workflows; extend extend-cli
+     Stage: context/workflows/add-terminal-example.md, context/workflows/extend-cli.md
+
+  6. [PROMPT_100] add terminal manifests
+     Stage: manifests/terminal-dual-mode-base.yaml, manifests/terminal-tui-base.yaml
+
+  7. [PROMPT_100] stub examples/canonical-terminal/ with README and fixtures/
+     Stage: examples/canonical-terminal/README.md, examples/canonical-terminal/fixtures/.gitkeep
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Create all files described above
+  - Extend (not replace) cli-tool.md
+  - Add all 14 stack files (minimal but complete YAML)
+  - Update all three router/alias files
+  - Write both new workflow files
+  - Create both manifests
+  - Stub examples/canonical-terminal/
+
+DO NOT:
+  - Write canonical example code (that begins in PROMPT_102)
+  - Create fixture data (that begins in PROMPT_102)
+  - Write terminal validation docs (that is PROMPT_101)
+  - Create the CATALOG.md or DECISION_GUIDE.md (that is PROMPT_106)
+  - Touch any existing PROMPT files
+  - Modify scripts/work.py, AGENT.md, or CLAUDE.md unless you find a small, obvious gap
+  - Create new docs/ files (PROMPT_101 adds docs/terminal-validation-contract.md)
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+  - context/doctrine/terminal-ux-first-class.md exists with all 10 rules
+  - context/archetypes/terminal-tui.md exists
+  - context/archetypes/terminal-dual-mode.md exists
+  - context/archetypes/cli-tool.md extended with terminal references
+  - All 14 context/stacks/terminal-*.yaml files exist
+  - All three router files updated
+  - context/workflows/add-terminal-example.md exists
+  - context/workflows/extend-cli.md has See Also section
+  - manifests/terminal-dual-mode-base.yaml and terminal-tui-base.yaml exist
+  - examples/canonical-terminal/README.md and fixtures/.gitkeep exist
+  - validate_context.py passes
+  - run_verification.py --tier fast passes
+
+The terminal tooling foundation is in place. PROMPT_101 adds the validation contract.
+PROMPT_102 begins the canonical examples.

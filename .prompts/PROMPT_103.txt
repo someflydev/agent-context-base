@@ -1,0 +1,515 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one fresh
+coding-assistant session with commit prefixes like `[PROMPT_103]`.
+
+PROMPT_100: Terminal tooling foundation — doctrine, archetypes, stacks, routing
+PROMPT_101: Terminal validation contract — smoke test rules, PTY guidance, markers
+PROMPT_102: Python canonical examples + shared fixture corpus
+             [TERMINAL TOOLING ARC: Prompt 4 of 12]
+
+This prompt (PROMPT_103) adds four terminal canonical examples:
+  - Rust flagship:   clap + ratatui       (TaskFlow Monitor)
+  - Rust secondary:  argh + tui-realm     (TaskFlow Monitor)
+  - Go flagship:     Cobra + Bubble Tea   (TaskFlow Monitor)
+  - Go secondary:    urfave/cli + tview   (TaskFlow Monitor)
+
+All four use the shared fixture corpus from PROMPT_102. All are fixture-first,
+non-interactive mode mandatory, smoke-testable without a TTY.
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                          (run; study output)
+  4. memory/INDEX.md
+  5. context/doctrine/terminal-ux-first-class.md
+  6. docs/terminal-validation-contract.md
+  7. context/stacks/terminal-rust-clap-ratatui.yaml
+  8. context/stacks/terminal-rust-argh-tui-realm.yaml
+  9. context/stacks/terminal-go-cobra-bubbletea.yaml
+ 10. context/stacks/terminal-go-urfave-tview.yaml
+ 11. examples/canonical-terminal/fixtures/README.md          (understand fixture schema)
+ 12. examples/canonical-terminal/python-typer-textual/README.md  (understand domain impl)
+
+Verify PROMPT_100–102 artifacts exist. Confirm fixtures/ has all 4 files.
+Do NOT begin implementation until you have read all of the above.
+
+================================================================================
+TERMINAL TOOLING CONTEXT
+================================================================================
+
+SHARED DOMAIN: TaskFlow Monitor (same domain as Python examples in PROMPT_102)
+
+Job schema (from fixtures/jobs.json):
+  id, name, status (pending|running|done|failed), started_at, duration_s, tags, output_lines
+
+Fixture path: examples/canonical-terminal/fixtures/
+
+CLI command surface (same across all languages):
+  taskflow list [--status STATUS] [--tag TAG] [--output json|table]
+  taskflow inspect JOB_ID [--output json|plain]
+  taskflow stats [--output json|plain]
+  taskflow watch [--interval SECS] [--no-tui]
+
+Output markers (same contract as Python):
+  ## BEGIN_JOBS ##  /  ## END_JOBS ##
+  ## BEGIN_JOB_DETAIL ##  /  ## END_JOB_DETAIL ##
+  ## BEGIN_STATS ##  /  ## END_STATS ##
+  ## BEGIN_ERROR ##  /  ## END_ERROR ##
+
+Non-interactive rule: ALL four examples must support --no-tui on watch command
+and pass smoke tests without a TTY.
+
+================================================================================
+PART 1: RUST FLAGSHIP — clap + ratatui (taskflow-rs-ratatui)
+================================================================================
+
+Create: examples/canonical-terminal/rust-clap-ratatui/
+
+This is a complete, working Rust dual-mode terminal example.
+
+--- Directory structure ---
+
+  rust-clap-ratatui/
+    src/
+      main.rs          # Entry point: parses top-level CLI, dispatches to cli/tui
+      core/
+        mod.rs
+        models.rs      # Job, JobStatus, Event structs + serde derives
+        loader.rs      # load_jobs(path), load_events(path), load_config(path)
+        filters.rs     # filter_jobs(jobs, status, tag) -> Vec<Job>
+        stats.rs       # compute_stats(jobs) -> Stats struct
+      cli/
+        mod.rs
+        commands.rs    # list, inspect, stats, watch --no-tui implementations
+        output.rs      # table formatter, json output, marker wrapping
+      tui/
+        mod.rs
+        app.rs         # ratatui App struct, event loop, draw functions
+        ui.rs          # layout/widget rendering functions
+        state.rs       # AppState: selected job, filter, scroll position
+    tests/
+      smoke_cli.rs     # cargo test smoke tests (non-interactive, fixture-backed)
+    Cargo.toml
+    README.md
+
+--- src/core/models.rs ---
+
+  #[derive(Debug, Clone, Serialize, Deserialize)]
+  pub enum JobStatus { Pending, Running, Done, Failed }
+
+  #[derive(Debug, Clone, Serialize, Deserialize)]
+  pub struct Job {
+    pub id: String,
+    pub name: String,
+    pub status: JobStatus,
+    pub started_at: Option<String>,
+    pub duration_s: Option<f64>,
+    pub tags: Vec<String>,
+    pub output_lines: Vec<String>,
+  }
+
+  // Stats struct: total, by_status HashMap, avg_duration_s, failure_rate
+
+--- src/cli/commands.rs ---
+
+  clap App with subcommands:
+    list: --status, --tag, --output (json|table)
+    inspect: JOB_ID, --output (json|plain)
+    stats: --output (json|plain)
+    watch: --interval, --no-tui
+
+  All commands load from --fixtures-path arg or TASKFLOW_FIXTURES_PATH env var.
+  Markers on table/plain output (## BEGIN_JOBS ## etc.).
+  --output json: serialize to serde_json, print, exit.
+
+--- src/tui/app.rs ---
+
+  ratatui App with:
+  - crossterm raw mode + alternate screen
+  - Event loop: keyboard events (q=quit, r=refresh, ↑↓=select, f=filter)
+  - Draw function: 3-panel layout (header, job table, detail panel)
+  - Job table: id, name, status (colored), duration
+  - Detail panel: shows selected job's full info and output_lines
+  - On 'q': restore terminal and exit cleanly
+
+  Use ratatui::backend::CrosstermBackend.
+  Handle all terminal restore on panic (std::panic::set_hook or scopeguard).
+
+--- tests/smoke_cli.rs ---
+
+  #[cfg(test)]
+  Integration tests using std::process::Command:
+  1. list_table_output: run binary with list subcommand, check markers in stdout
+  2. list_json: run with --output json, parse JSON, assert 20 items
+  3. filter_by_status: --status done --output json, assert all done
+  4. inspect_job: inspect job-001 --output json, assert id match
+  5. stats_json: stats --output json, assert total == 20
+  6. watch_no_tui: watch --no-tui, check exit 0 and markers
+
+  Pass fixtures path via --fixtures-path arg pointing to
+  examples/canonical-terminal/fixtures/ (use cargo test env or relative path).
+
+--- Cargo.toml ---
+
+  [package]
+  name = "taskflow-rs-ratatui"
+  version = "0.1.0"
+  edition = "2021"
+
+  [[bin]]
+  name = "taskflow"
+
+  [dependencies]
+  clap = { version = "4", features = ["derive"] }
+  ratatui = "0.26"
+  crossterm = "0.27"
+  serde = { version = "1", features = ["derive"] }
+  serde_json = "1"
+  anyhow = "1"
+
+--- README.md ---
+
+  # TaskFlow Monitor — Rust (clap + ratatui)
+
+  Flagship Rust dual-mode terminal example. Demonstrates clap-based CLI parsing
+  with a ratatui terminal dashboard sharing a pure domain core.
+
+  ## Stack: clap + ratatui + crossterm
+
+  ## Usage
+  ```bash
+  cargo build --release
+  ./target/release/taskflow list
+  ./target/release/taskflow list --status failed --output json
+  ./target/release/taskflow watch --no-tui
+  ./target/release/taskflow watch   # launches TUI
+  ```
+
+  ## Testing
+  ```bash
+  cargo test
+  ```
+
+  ## Architecture
+  src/core/: domain logic (models, loading, filtering) — no terminal I/O
+  src/cli/:  clap subcommand dispatch and output formatting
+  src/tui/:  ratatui app, event loop, and UI rendering
+
+  ## When to Use
+  High-performance Rust tools needing both scriptable CLI and a rich terminal UI.
+
+================================================================================
+PART 2: RUST SECONDARY — argh + tui-realm (taskflow-rs-tui-realm)
+================================================================================
+
+Create: examples/canonical-terminal/rust-argh-tui-realm/
+
+This secondary example demonstrates a component/event-driven TUI architecture using
+tui-realm over ratatui, with argh for a simpler CLI parser.
+
+--- Scope ---
+
+Implement the full domain core (same models/loader/filters as flagship).
+Implement all 4 CLI commands (list, inspect, stats, watch) using argh.
+Implement TUI using tui-realm's component/subscription model.
+
+Key difference from flagship:
+  - tui-realm: components register subscriptions to events; updates are dispatched
+    via messages. Think Elm architecture. Each panel (JobList, JobDetail) is a Component.
+  - argh: lighter argument parsing (struct-based, no builder pattern)
+
+Structural similarity: same directory layout, same fixture path, same markers,
+same --no-tui requirement, same smoke tests (adjust for argh CLI parsing).
+
+--- Cargo.toml ---
+
+  [dependencies]
+  argh = "0.1"
+  tuirealm = "2"          # tui-realm
+  ratatui = "0.26"        # tui-realm depends on ratatui
+  crossterm = "0.27"
+  serde = { version = "1", features = ["derive"] }
+  serde_json = "1"
+  anyhow = "1"
+
+--- README.md ---
+
+  # TaskFlow Monitor — Rust (argh + tui-realm)
+
+  Secondary Rust terminal example demonstrating tui-realm's component/event
+  architecture with argh's lightweight CLI parser.
+
+  ## When to Use vs Flagship
+  - Use clap+ratatui for maximum CLI flexibility and direct ratatui control
+  - Use argh+tui-realm when the CLI is simpler and the TUI benefits from
+    a component-subscription model (easier to extend with more panels)
+
+================================================================================
+PART 3: GO FLAGSHIP — Cobra + Bubble Tea (taskflow-go-bubbletea)
+================================================================================
+
+Create: examples/canonical-terminal/go-cobra-bubbletea/
+
+Complete, working Go dual-mode terminal example.
+
+--- Directory structure ---
+
+  go-cobra-bubbletea/
+    cmd/
+      root.go          # Cobra root command + global flags
+      list.go          # taskflow list subcommand
+      inspect.go       # taskflow inspect JOB_ID subcommand
+      stats.go         # taskflow stats subcommand
+      watch.go         # taskflow watch [--no-tui] subcommand
+    internal/
+      core/
+        models.go      # Job, JobStatus, Event, Stats structs
+        loader.go      # LoadJobs, LoadEvents, LoadConfig
+        filters.go     # FilterJobs, SortJobs
+        stats.go       # ComputeStats
+      tui/
+        model.go       # Bubble Tea Model: Init, Update, View
+        update.go      # message handlers for key events, refresh
+        view.go        # rendering: job table, detail panel, header
+        messages.go    # custom tea.Msg types
+      cli/
+        output.go      # table formatter, JSON output, marker wrapping
+    tests/
+      smoke_test.go    # CLI smoke tests via os/exec
+    main.go
+    go.mod
+    README.md
+
+--- internal/core/models.go ---
+
+  type JobStatus string
+  const (
+    StatusPending JobStatus = "pending"
+    StatusRunning JobStatus = "running"
+    StatusDone    JobStatus = "done"
+    StatusFailed  JobStatus = "failed"
+  )
+
+  type Job struct {
+    ID          string    `json:"id"`
+    Name        string    `json:"name"`
+    Status      JobStatus `json:"status"`
+    StartedAt   *string   `json:"started_at"`
+    DurationS   *float64  `json:"duration_s"`
+    Tags        []string  `json:"tags"`
+    OutputLines []string  `json:"output_lines"`
+  }
+
+  // Event and Stats structs similarly
+
+--- internal/tui/model.go ---
+
+  Bubble Tea Model with:
+    Init: load jobs from fixtures, return tea.ClearScrollArea command
+    Update: handle KeyMsg (q=quit, r=refresh, ↑↓=cursor, f=filter)
+    View: render job list + selected job detail using lipgloss for styling
+
+  Use lipgloss for coloring (green=done, red=failed, yellow=running, dim=pending).
+  Use bubbletea.NewProgram with tea.WithAltScreen().
+
+  --no-tui watch command: print fixtures once with markers, exit.
+
+--- tests/smoke_test.go ---
+
+  func TestListTable(t *testing.T) { /* build binary, run, assert markers */ }
+  func TestListJSON(t *testing.T) { /* --output json, unmarshal, assert len 20 */ }
+  func TestFilterByStatus(t *testing.T) { /* --status done, assert all done */ }
+  func TestInspectJob(t *testing.T) { /* inspect job-001, assert id */ }
+  func TestStats(t *testing.T) { /* stats --output json, assert total 20 */ }
+  func TestWatchNoTui(t *testing.T) { /* --no-tui, assert exit 0, assert markers */ }
+  func TestMissingFixtures(t *testing.T) { /* bad path, assert exit 1 */ }
+
+  Use TestMain to build the binary once before tests.
+
+--- go.mod ---
+
+  module github.com/agent-context-base/taskflow-go-bubbletea
+  go 1.22
+
+  require (
+    github.com/spf13/cobra v1.8.0
+    github.com/charmbracelet/bubbletea v0.26.6
+    github.com/charmbracelet/lipgloss v0.12.1
+    github.com/charmbracelet/bubbles v0.20.0
+  )
+
+--- README.md ---
+
+  # TaskFlow Monitor — Go (Cobra + Bubble Tea)
+
+  Flagship Go dual-mode terminal example. Cobra command tree for CLI. Bubble Tea
+  Elm-style model for the interactive TUI. lipgloss for styling.
+
+  ## Usage
+  ```bash
+  go build -o taskflow ./...
+  ./taskflow list
+  ./taskflow list --status failed --output json
+  ./taskflow watch --no-tui
+  ./taskflow watch   # launches Bubble Tea TUI
+  ```
+
+  ## Testing
+  ```bash
+  go test ./tests/...
+  ```
+
+  ## Architecture
+  cmd/:       Cobra subcommands
+  internal/core/: domain models, loading, filtering
+  internal/tui/:  Bubble Tea model/update/view
+  internal/cli/:  output formatting and markers
+
+================================================================================
+PART 4: GO SECONDARY — urfave/cli + tview (taskflow-go-tview)
+================================================================================
+
+Create: examples/canonical-terminal/go-urfave-tview/
+
+Secondary Go example with simpler CLI (urfave/cli) and widget-centric TUI (tview).
+
+--- Scope ---
+
+Implement all 4 CLI commands using urfave/cli v2.
+Implement TUI using tview with:
+  - tview.Table for job list
+  - tview.TextView for job detail
+  - tview.Application as root
+
+Key difference: tview is more imperative/stateful than Bubble Tea's functional model.
+Show how tview's widget primitives (Table, Form, TreeView) differ from Bubble Tea's
+message-driven update loop.
+
+--- go.mod ---
+
+  require (
+    github.com/urfave/cli/v2 v2.27.0
+    github.com/rivo/tview v0.0.0-20240921122403
+    github.com/gdamore/tcell/v2 v2.7.4
+  )
+
+--- README.md ---
+
+  # TaskFlow Monitor — Go (urfave/cli + tview)
+
+  Secondary Go terminal example. Simpler CLI via urfave/cli.
+  Widget-centric TUI via tview (tables, text views, navigation).
+
+  ## When to Use vs Flagship
+  - Use Cobra+Bubble Tea for git/kubectl-style command trees + functional TUI
+  - Use urfave+tview for simpler CLIs where rich built-in widgets matter more
+    than message-driven architecture
+
+================================================================================
+PART 5: UPDATE examples/canonical-terminal/README.md
+================================================================================
+
+Add Rust and Go sections to the README:
+
+  ### Rust
+  | Example | Stack | Mode |
+  |---------|-------|------|
+  | rust-clap-ratatui/ | clap + ratatui | Dual-mode |
+  | rust-argh-tui-realm/ | argh + tui-realm | Dual-mode |
+
+  ### Go
+  | Example | Stack | Mode |
+  |---------|-------|------|
+  | go-cobra-bubbletea/ | Cobra + Bubble Tea | Dual-mode |
+  | go-urfave-tview/ | urfave/cli + tview | Dual-mode |
+
+  ## Running Rust Examples
+  ```bash
+  cd examples/canonical-terminal/rust-clap-ratatui && cargo test
+  cd examples/canonical-terminal/rust-argh-tui-realm && cargo test
+  ```
+
+  ## Running Go Examples
+  ```bash
+  cd examples/canonical-terminal/go-cobra-bubbletea && go test ./tests/...
+  cd examples/canonical-terminal/go-urfave-tview && go test ./tests/...
+  ```
+
+================================================================================
+VERIFICATION
+================================================================================
+
+Run:
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Also run directly:
+  cd examples/canonical-terminal/rust-clap-ratatui    && cargo test
+  cd examples/canonical-terminal/rust-argh-tui-realm  && cargo test
+  cd examples/canonical-terminal/go-cobra-bubbletea   && go test ./tests/...
+  cd examples/canonical-terminal/go-urfave-tview      && go test ./tests/...
+
+All must pass. Smoke tests must not require a TTY or network.
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+Use grouped commits prefixed with [PROMPT_103].
+
+  1. [PROMPT_103] add Rust flagship: clap + ratatui TaskFlow Monitor
+     Stage: examples/canonical-terminal/rust-clap-ratatui/
+
+  2. [PROMPT_103] add Rust secondary: argh + tui-realm TaskFlow Monitor
+     Stage: examples/canonical-terminal/rust-argh-tui-realm/
+
+  3. [PROMPT_103] add Go flagship: Cobra + Bubble Tea TaskFlow Monitor
+     Stage: examples/canonical-terminal/go-cobra-bubbletea/
+
+  4. [PROMPT_103] add Go secondary: urfave/cli + tview TaskFlow Monitor
+     Stage: examples/canonical-terminal/go-urfave-tview/
+
+  5. [PROMPT_103] update canonical-terminal README with Rust and Go examples
+     Stage: examples/canonical-terminal/README.md
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Create all 4 examples as complete, working, smoke-tested implementations
+  - Write smoke tests that pass without TTY
+  - Update examples/canonical-terminal/README.md
+
+DO NOT:
+  - Modify fixture corpus (PROMPT_102 owns that)
+  - Begin TypeScript, Java, Ruby, or Elixir examples (PROMPT_104–105)
+  - Modify doctrine, archetypes, stacks, or routing (PROMPT_100 owns those)
+  - Create new PROMPT files
+
+QUALITY BAR:
+  - Each flagship must be a genuinely working TUI (not a stub)
+  - Each secondary must demonstrate the architectural difference from its flagship
+  - Smoke tests must actually pass (run them before committing)
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+  - rust-clap-ratatui/ working with passing cargo test
+  - rust-argh-tui-realm/ working with passing cargo test
+  - go-cobra-bubbletea/ working with passing go test
+  - go-urfave-tview/ working with passing go test
+  - examples/canonical-terminal/README.md updated with Rust + Go sections
+  - validate_context.py passes
+  - run_verification.py --tier fast passes
+
+PROMPT_103 complete. PROMPT_104 adds TypeScript and Java canonical examples.

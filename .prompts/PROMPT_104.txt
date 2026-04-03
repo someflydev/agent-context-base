@@ -1,0 +1,526 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one fresh
+coding-assistant session with commit prefixes like `[PROMPT_104]`.
+
+PROMPT_100: Terminal tooling foundation — doctrine, archetypes, stacks, routing
+PROMPT_101: Terminal validation contract
+PROMPT_102: Python canonical examples + shared fixture corpus
+PROMPT_103: Rust + Go canonical examples
+             [TERMINAL TOOLING ARC: Prompt 5 of 12]
+
+This prompt (PROMPT_104) adds four terminal canonical examples:
+  - TypeScript flagship:   Commander + Ink     (TaskFlow Monitor)
+  - TypeScript secondary:  Yargs + Blessed     (TaskFlow Monitor)
+  - Java flagship:         picocli + Lanterna  (TaskFlow Monitor)
+  - Java secondary:        JCommander + JLine  (TaskFlow Monitor)
+
+All four use the shared fixture corpus. All are fixture-first and smoke-testable
+without a TTY.
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                          (run; study output)
+  4. memory/INDEX.md
+  5. context/doctrine/terminal-ux-first-class.md
+  6. docs/terminal-validation-contract.md
+  7. context/stacks/terminal-typescript-commander-ink.yaml
+  8. context/stacks/terminal-typescript-yargs-blessed.yaml
+  9. context/stacks/terminal-java-picocli-lanterna.yaml
+ 10. context/stacks/terminal-java-jcommander-jline.yaml
+ 11. examples/canonical-terminal/fixtures/README.md
+ 12. examples/canonical-terminal/python-typer-textual/README.md  (domain reference)
+
+Verify PROMPT_100–103 artifacts exist. Confirm fixtures/ has all 4 files.
+Do NOT begin implementation until you have read all of the above.
+
+================================================================================
+TERMINAL TOOLING CONTEXT
+================================================================================
+
+SHARED DOMAIN: TaskFlow Monitor
+Fixture path: examples/canonical-terminal/fixtures/
+CLI surface: taskflow list / inspect / stats / watch [--no-tui]
+Markers: ## BEGIN_JOBS ## / ## END_JOBS ## (same contract as Python/Rust/Go)
+Non-interactive rule: --no-tui must be supported; smoke tests must pass without TTY.
+
+================================================================================
+PART 1: TYPESCRIPT FLAGSHIP — Commander + Ink (taskflow-ts-ink)
+================================================================================
+
+Create: examples/canonical-terminal/typescript-commander-ink/
+
+Tech stack:
+  - TypeScript 5+ with strict mode
+  - Commander.js for CLI
+  - Ink + React for TUI
+  - Node.js 20+
+
+--- Directory structure ---
+
+  typescript-commander-ink/
+    src/
+      core/
+        models.ts        # Job, JobStatus, Event, Stats types
+        loader.ts        # loadJobs(path), loadEvents(path), loadConfig(path)
+        filters.ts       # filterJobs(jobs, {status?, tag?}) -> Job[]
+        stats.ts         # computeStats(jobs) -> Stats
+      cli/
+        index.ts         # Commander program: list, inspect, stats, watch commands
+        output.ts        # table formatter, JSON output, marker wrapping
+      tui/
+        App.tsx          # Ink App component: TaskFlowApp
+        JobTable.tsx     # Ink component: scrollable job list
+        JobDetail.tsx    # Ink component: selected job detail
+        StatsBar.tsx     # Ink component: top stats header
+        useJobs.ts       # custom hook: loads jobs, manages selected/filter state
+    tests/
+      smoke/
+        cli.smoke.test.ts    # vitest/jest: CLI smoke tests via execa or child_process
+      unit/
+        core.unit.test.ts    # unit tests for filters, stats, loader
+    package.json
+    tsconfig.json
+    README.md
+
+--- src/core/models.ts ---
+
+  export type JobStatus = 'pending' | 'running' | 'done' | 'failed';
+
+  export interface Job {
+    id: string;
+    name: string;
+    status: JobStatus;
+    started_at: string | null;
+    duration_s: number | null;
+    tags: string[];
+    output_lines: string[];
+  }
+
+  export interface Stats {
+    total: number;
+    by_status: Record<JobStatus, number>;
+    avg_duration_s: number | null;
+    failure_rate: number;
+  }
+
+--- src/cli/index.ts ---
+
+  Commander program with:
+    list: options --status, --tag, --output [json|table]
+    inspect: argument JOB_ID, option --output [json|plain]
+    stats: option --output [json|plain]
+    watch: options --interval, --no-tui
+
+  All commands accept --fixtures-path or read TASKFLOW_FIXTURES_PATH env var.
+  Markers: wrap table output in ## BEGIN_JOBS ## etc.
+  watch --no-tui: print current job list once with markers, exit 0.
+  watch (default): launch Ink TUI via renderApp().
+
+--- src/tui/App.tsx ---
+
+  Ink App component:
+    - Uses useApp() for quit control
+    - Keyboard input via useInput() or ink-select-input
+    - Layout: Header (stats bar), JobTable (scrollable list), JobDetail (side panel)
+    - Key bindings: q=quit, ↑↓=navigate, f=filter, r=refresh
+    - Color by status: green=done, red=failed, yellow=running, dim=pending
+
+  Use ink's <Box>, <Text>, <Static> components.
+  Render via renderApp() function called from CLI watch command.
+
+--- tests/smoke/cli.smoke.test.ts ---
+
+  Use vitest (preferred) or jest. Use execa or child_process.execSync.
+
+  Tests:
+  1. list_table: run binary, assert exit 0, assert markers in stdout
+  2. list_json: --output json, parse JSON, assert length 20
+  3. filter_status: --status done --output json, assert all done
+  4. inspect_job: inspect job-001 --output json, assert id
+  5. stats_json: stats --output json, assert total 20
+  6. watch_no_tui: watch --no-tui, exit 0, markers present
+  7. missing_fixtures: bad --fixtures-path, exit 1
+
+--- package.json ---
+
+  {
+    "name": "taskflow-ts-ink",
+    "version": "0.1.0",
+    "type": "module",
+    "scripts": {
+      "build": "tsc",
+      "test": "vitest run",
+      "taskflow": "node dist/cli/index.js"
+    },
+    "dependencies": {
+      "commander": "^12.0.0",
+      "ink": "^5.0.0",
+      "react": "^18.0.0"
+    },
+    "devDependencies": {
+      "typescript": "^5.0.0",
+      "@types/react": "^18.0.0",
+      "vitest": "^2.0.0",
+      "execa": "^9.0.0",
+      "@ink-testing-library/ink-testing-library": "^3.0.0"
+    },
+    "bin": {
+      "taskflow": "./dist/cli/index.js"
+    }
+  }
+
+--- README.md ---
+
+  # TaskFlow Monitor — TypeScript (Commander + Ink)
+
+  Flagship TypeScript dual-mode terminal example. Commander for structured CLI.
+  Ink for React-style component-based TUI.
+
+  ## Stack: Commander + Ink + React (TypeScript 5, Node 20)
+
+  ## Usage
+  ```bash
+  npm install && npm run build
+  node dist/cli/index.js list
+  node dist/cli/index.js watch --no-tui
+  node dist/cli/index.js watch   # launches Ink TUI
+  ```
+
+  ## Testing
+  ```bash
+  npm test
+  ```
+
+  ## When to Use
+  TypeScript developer tooling where the React component model is familiar.
+  Ink is the natural choice for JSX-based terminal composition.
+
+================================================================================
+PART 2: TYPESCRIPT SECONDARY — Yargs + Blessed (taskflow-ts-blessed)
+================================================================================
+
+Create: examples/canonical-terminal/typescript-yargs-blessed/
+
+Tech stack: Yargs for CLI, blessed for terminal UI.
+
+--- Scope ---
+
+Implement all 4 CLI commands using Yargs.
+Interactive mode (watch command, without --no-tui):
+  Use blessed screen with:
+  - blessed.list for job list with arrow navigation
+  - blessed.box for job detail panel
+  - Status bar at top using blessed.text
+  - Key bindings: q=quit, r=refresh, ↑↓=navigate, f=filter
+
+Blessed approach differs from Ink:
+  Blessed uses widget instances with direct mutation (widget.setContent, widget.focus).
+  No React reconciler. More like ncurses.
+
+Core: same structure as flagship (can share or independently implement).
+
+--- package.json ---
+
+  {
+    "name": "taskflow-ts-blessed",
+    "dependencies": {
+      "yargs": "^17.0.0",
+      "blessed": "^0.1.81"
+    },
+    "devDependencies": {
+      "typescript": "^5.0.0",
+      "@types/blessed": "^0.1.25",
+      "@types/yargs": "^17.0.0",
+      "vitest": "^2.0.0"
+    }
+  }
+
+--- README.md ---
+
+  # TaskFlow Monitor — TypeScript (Yargs + Blessed)
+
+  Secondary TypeScript example demonstrating Yargs for rich CLI parsing
+  and Blessed for a classic ncurses-style terminal UI.
+
+  ## When to Use vs Flagship
+  - Commander+Ink: React-style component model, JSX, modern devtools
+  - Yargs+Blessed:  ncurses-style widgets, imperative approach, no React
+
+================================================================================
+PART 3: JAVA FLAGSHIP — picocli + Lanterna (taskflow-java-lanterna)
+================================================================================
+
+Create: examples/canonical-terminal/java-picocli-lanterna/
+
+Tech stack:
+  - Java 17+ with records (or traditional POJOs)
+  - picocli for CLI
+  - Lanterna for TUI
+  - Jackson for JSON parsing
+  - Maven or Gradle (choose one; use Maven for clarity)
+
+--- Directory structure ---
+
+  java-picocli-lanterna/
+    src/main/java/dev/agentcontext/taskflow/
+      core/
+        Job.java         # record or POJO: id, name, status, startedAt, durationS, tags, outputLines
+        JobStatus.java   # enum: PENDING, RUNNING, DONE, FAILED
+        Event.java       # record: eventId, jobId, eventType, timestamp, message
+        Stats.java       # record: total, byStatus Map, avgDurationS, failureRate
+        JobLoader.java   # loadJobs(Path), loadEvents(Path), loadConfig(Path)
+        JobFilter.java   # filterJobs(List<Job>, status, tag)
+        StatsComputer.java # computeStats(List<Job>)
+      cli/
+        TaskflowCommand.java  # picocli @Command root with subcommands
+        ListCommand.java      # list subcommand
+        InspectCommand.java   # inspect subcommand
+        StatsCommand.java     # stats subcommand
+        WatchCommand.java     # watch subcommand (--no-tui flag)
+        OutputFormatter.java  # table, JSON, marker wrapping
+      tui/
+        TaskflowApp.java      # Lanterna TerminalScreen + WindowBasedTextGUI
+        JobListComponent.java # ActionListBox or Table-style panel
+        JobDetailComponent.java # BasicWindow with TextBox for job detail
+        TuiController.java    # keyboard handling, refresh logic, layout
+    src/test/java/dev/agentcontext/taskflow/
+      SmokeCliTest.java    # picocli CommandLine tests + process invocation
+      CoreTest.java        # unit tests for filter, stats, loader
+    pom.xml
+    README.md
+
+--- core/Job.java ---
+
+  public record Job(
+    String id,
+    String name,
+    JobStatus status,
+    @JsonProperty("started_at") String startedAt,     // nullable
+    @JsonProperty("duration_s") Double durationS,      // nullable
+    List<String> tags,
+    @JsonProperty("output_lines") List<String> outputLines
+  ) {}
+
+--- cli/TaskflowCommand.java ---
+
+  @Command(name = "taskflow", mixinStandardHelpOptions = true,
+           subcommands = {ListCommand.class, InspectCommand.class,
+                          StatsCommand.class, WatchCommand.class})
+  public class TaskflowCommand implements Runnable { ... }
+
+  Accept --fixtures-path option at root level (inheritable by subcommands).
+  Use @ParentCommand injection pattern for fixture path propagation.
+
+--- cli/WatchCommand.java ---
+
+  @Command(name = "watch")
+  public class WatchCommand implements Runnable {
+    @Option(names = "--no-tui") boolean noTui;
+    @Option(names = "--interval") int interval = 5;
+
+    public void run() {
+      if (noTui) {
+        // print jobs with markers, exit
+      } else {
+        // launch TUI
+        new TuiController(fixturesPath).run();
+      }
+    }
+  }
+
+--- tui/TaskflowApp.java ---
+
+  Use Lanterna's DefaultTerminalFactory to create terminal.
+  Use MultiWindowTextGUI.
+  Layout:
+    - Top: single-line status bar (total jobs, status counts)
+    - Left panel: job list (scrollable table/list)
+    - Right panel: job detail (text area with selected job info)
+    - Bottom: key hint bar (q=quit, r=refresh, ↑↓=nav)
+
+  Handle keyboard input in main event loop.
+  Clean up terminal on exit (restoreTerminal).
+  For CI / no-tty: detect System.console() == null; if null, print warning and
+  skip TUI (never block in a non-TTY environment).
+
+--- src/test/SmokeCliTest.java ---
+
+  JUnit 5 tests:
+  Use picocli's CommandLine + PrintWriter to test subcommands without spawning process.
+  Test: list table (assert markers), list json (Jackson parse, assert size 20),
+  filter status (assert all done), inspect job-001 (assert id), stats (assert total),
+  watch --no-tui (assert markers).
+
+  Also include 1–2 process-level tests (ProcessBuilder) to confirm the assembled
+  binary works end-to-end.
+
+--- pom.xml ---
+
+  Java 17, Jackson 2.17, picocli 4.7, Lanterna 3.1, JUnit 5.10.
+  Maven shade plugin for fat JAR (target/taskflow.jar).
+  Main class: dev.agentcontext.taskflow.cli.TaskflowCommand
+
+--- README.md ---
+
+  # TaskFlow Monitor — Java (picocli + Lanterna)
+
+  Flagship Java dual-mode terminal example. picocli for structured CLI.
+  Lanterna for a pure-Java text GUI.
+
+  ## Usage
+  ```bash
+  mvn package -q
+  java -jar target/taskflow.jar list
+  java -jar target/taskflow.jar watch --no-tui
+  java -jar target/taskflow.jar watch   # launches Lanterna TUI
+  ```
+
+  ## Testing
+  ```bash
+  mvn test
+  ```
+
+  ## When to Use
+  JVM services or enterprise Java tooling needing both a scriptable CLI
+  and a real text-GUI interactive mode.
+
+================================================================================
+PART 4: JAVA SECONDARY — JCommander + JLine (taskflow-java-jline)
+================================================================================
+
+Create: examples/canonical-terminal/java-jcommander-jline/
+
+Tech stack: JCommander for CLI, JLine 3 for interactive shell-like REPL.
+
+--- Scope ---
+
+This example demonstrates a different interaction model: instead of a full-screen
+TUI, the tool provides a shell-like REPL with readline editing, tab completion,
+and command history. The `watch` command enters a read-eval loop rather than a
+full-screen dashboard.
+
+JLine capabilities to demonstrate:
+  - LineReader with history (PersistentHistory or MemoryHistory)
+  - Tab completion (Completer for job IDs and status values)
+  - ANSI color output via AttributedString / AttributedStyle
+  - Terminal.writer() for formatted output
+
+JCommander capabilities: @Parameters for positional args, @Parameter for options.
+For non-interactive mode: run commands from args (--no-repl), exit immediately.
+
+Interactive mode (watch without --no-repl):
+  Prompt: taskflow>
+  Commands typed at prompt: list, inspect <id>, stats, filter status:failed, quit
+  Tab completion: job IDs for inspect, status values for filter
+
+--- pom.xml ---
+
+  JCommander 1.82, JLine 3.25, Jackson 2.17, JUnit 5.10.
+  Fat JAR (maven-shade).
+
+--- README.md ---
+
+  # TaskFlow Monitor — Java (JCommander + JLine)
+
+  Secondary Java example demonstrating an interactive shell/REPL approach
+  with JLine 3: readline editing, tab completion, command history.
+
+  ## When to Use vs Flagship
+  - picocli+Lanterna: structured commands + full-screen TUI panels
+  - JCommander+JLine: shell-style REPL with readline UX (no panels, just a prompt)
+
+================================================================================
+PART 5: UPDATE examples/canonical-terminal/README.md
+================================================================================
+
+Add TypeScript and Java sections:
+
+  ### TypeScript
+  | Example | Stack | Mode |
+  |---------|-------|------|
+  | typescript-commander-ink/ | Commander + Ink | Dual-mode |
+  | typescript-yargs-blessed/ | Yargs + Blessed | CLI + classic TUI |
+
+  ### Java
+  | Example | Stack | Mode |
+  |---------|-------|------|
+  | java-picocli-lanterna/ | picocli + Lanterna | Dual-mode |
+  | java-jcommander-jline/ | JCommander + JLine | CLI + REPL shell |
+
+================================================================================
+VERIFICATION
+================================================================================
+
+Run:
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Also run directly:
+  cd examples/canonical-terminal/typescript-commander-ink && npm install && npm test
+  cd examples/canonical-terminal/typescript-yargs-blessed && npm install && npm test
+  cd examples/canonical-terminal/java-picocli-lanterna    && mvn test -q
+  cd examples/canonical-terminal/java-jcommander-jline    && mvn test -q
+
+All must pass. Smoke tests must not require TTY.
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+  1. [PROMPT_104] add TypeScript flagship: Commander + Ink TaskFlow Monitor
+     Stage: examples/canonical-terminal/typescript-commander-ink/
+
+  2. [PROMPT_104] add TypeScript secondary: Yargs + Blessed TaskFlow Monitor
+     Stage: examples/canonical-terminal/typescript-yargs-blessed/
+
+  3. [PROMPT_104] add Java flagship: picocli + Lanterna TaskFlow Monitor
+     Stage: examples/canonical-terminal/java-picocli-lanterna/
+
+  4. [PROMPT_104] add Java secondary: JCommander + JLine TaskFlow Monitor
+     Stage: examples/canonical-terminal/java-jcommander-jline/
+
+  5. [PROMPT_104] update canonical-terminal README with TS + Java examples
+     Stage: examples/canonical-terminal/README.md
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Create all 4 examples as complete, working, smoke-tested implementations
+  - Write smoke tests that pass without TTY
+  - Update README.md
+
+DO NOT:
+  - Begin Ruby or Elixir examples (PROMPT_105)
+  - Modify fixture corpus
+  - Modify doctrine/archetypes/stacks/routing
+  - Create new PROMPT files
+
+QUALITY BAR:
+  - Java TUI must be a working Lanterna app (not a stub)
+  - JLine REPL must demonstrate tab completion
+  - TypeScript Ink app must use JSX components (not just text output)
+  - All smoke tests must actually pass
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+  - typescript-commander-ink/ working, npm test passes
+  - typescript-yargs-blessed/ working, npm test passes
+  - java-picocli-lanterna/ working, mvn test passes
+  - java-jcommander-jline/ working, mvn test passes
+  - README.md updated with TS + Java sections
+  - validate_context.py and run_verification.py --tier fast pass
+
+PROMPT_104 complete. PROMPT_105 adds Ruby and Elixir canonical examples.

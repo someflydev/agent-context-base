@@ -1,0 +1,604 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one fresh
+coding-assistant session with commit prefixes like `[PROMPT_105]`.
+
+PROMPT_100: Terminal tooling foundation
+PROMPT_101: Terminal validation contract
+PROMPT_102: Python canonical examples + shared fixture corpus
+PROMPT_103: Rust + Go canonical examples
+PROMPT_104: TypeScript + Java canonical examples
+             [TERMINAL TOOLING ARC: Prompt 6 of 12]
+
+This prompt (PROMPT_105) adds four terminal canonical examples:
+  - Ruby flagship:    Thor + TTY::Prompt     (TaskFlow Monitor)
+  - Ruby secondary:   Clamp + TTY::Reader    (TaskFlow Monitor)
+  - Elixir flagship:  Optimus + Ratatouille  (TaskFlow Monitor)
+  - Elixir secondary: OptionParser + Owl     (TaskFlow Monitor)
+
+These complete the seven-language canonical example set.
+
+IMPORTANT NUANCES:
+  Ruby: shines in guided interactive CLI workflows, not heavyweight full-screen TUI.
+        The "TUI" surface is a prompt-driven inspector, not a full-screen dashboard.
+        Do not force false symmetry with Rust/Go.
+  Elixir: use BEAM strengths (process supervision, actors) only where genuinely valuable.
+          For a fixture-backed example, the Ratatouille TUI is appropriate; a supervised
+          live-data GenServer feed is optional and should be clearly gated.
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                          (run; study output)
+  4. memory/INDEX.md
+  5. context/doctrine/terminal-ux-first-class.md
+  6. docs/terminal-validation-contract.md
+  7. context/stacks/terminal-ruby-thor-tty.yaml
+  8. context/stacks/terminal-ruby-clamp-tty.yaml
+  9. context/stacks/terminal-elixir-optimus-ratatouille.yaml
+ 10. context/stacks/terminal-elixir-optionparser-owl.yaml
+ 11. examples/canonical-terminal/fixtures/README.md
+ 12. examples/canonical-terminal/python-typer-textual/README.md  (domain reference)
+
+Verify PROMPT_100–104 artifacts exist. Confirm all 8 prior examples are in place.
+Do NOT begin implementation until you have read all of the above.
+
+================================================================================
+TERMINAL TOOLING CONTEXT
+================================================================================
+
+SHARED DOMAIN: TaskFlow Monitor
+Fixture path: examples/canonical-terminal/fixtures/
+CLI surface: taskflow list / inspect / stats / watch [--no-interactive | --no-tui | --batch]
+Markers: ## BEGIN_JOBS ## / ## END_JOBS ## (same contract)
+Non-interactive rule: each example must support a headless/CI-safe mode.
+
+================================================================================
+PART 1: RUBY FLAGSHIP — Thor + TTY::Prompt (taskflow-rb-tty-prompt)
+================================================================================
+
+Create: examples/canonical-terminal/ruby-thor-tty/
+
+Ruby's terminal strengths: guided interactive workflows, beautiful prompts, wizard-style UX.
+This example implements a prompt-driven inspector — not a full-screen TUI panel —
+because that is honest to Ruby's actual strengths.
+
+Tech stack:
+  - Ruby 3.2+
+  - Thor for multi-command CLI structure
+  - TTY::Prompt for interactive menus, selections, confirmations
+  - TTY::Table for formatted table output
+  - TTY::Color for status coloring
+
+--- Directory structure ---
+
+  ruby-thor-tty/
+    lib/
+      taskflow/
+        core/
+          job.rb          # Struct or Data class: id, name, status, started_at, duration_s, tags, output_lines
+          loader.rb       # TaskFlow::Core::Loader.load_jobs(path), load_events, load_config
+          filter.rb       # TaskFlow::Core::Filter.filter(jobs, status:, tag:)
+          stats.rb        # TaskFlow::Core::Stats.compute(jobs) -> Hash
+        cli/
+          commands.rb     # Thor subclass with list, inspect, stats, watch subcommands
+          output.rb       # table formatter (TTY::Table), JSON output, markers
+        interactive/
+          inspector.rb    # prompt-driven guided inspector using TTY::Prompt
+    tests/
+      smoke/
+        test_cli_smoke.rb    # minitest smoke tests
+      unit/
+        test_core.rb         # core unit tests
+    Gemfile
+    taskflow.gemspec          (optional, or just use Gemfile)
+    bin/
+      taskflow               # executable entry point
+    README.md
+
+--- lib/taskflow/cli/commands.rb ---
+
+  class CLI < Thor
+    desc "list", "List jobs"
+    option :status, type: :string
+    option :tag, type: :string
+    option :output, type: :string, default: "table", enum: ["table", "json"]
+    def list
+      jobs = load_and_filter(options)
+      Output.print_jobs(jobs, format: options[:output])
+    end
+
+    desc "inspect JOB_ID", "Show job details"
+    option :output, type: :string, default: "plain", enum: ["plain", "json"]
+    def inspect(job_id)
+      # find job, print detail with markers
+    end
+
+    desc "stats", "Show queue statistics"
+    option :output, type: :string, default: "plain"
+    def stats
+      # compute and print stats with markers
+    end
+
+    desc "watch", "Monitor queue (interactive or batch)"
+    option :"no-interactive", type: :boolean, default: false
+    def watch
+      if options[:"no-interactive"]
+        # headless: print job list once with markers, exit
+      else
+        Interactive::Inspector.new(fixtures_path).run
+      end
+    end
+  end
+
+--- lib/taskflow/interactive/inspector.rb ---
+
+  class Inspector
+    def initialize(fixtures_path)
+      @fixtures_path = fixtures_path
+      @prompt = TTY::Prompt.new
+    end
+
+    def run
+      loop do
+        jobs = Core::Loader.load_jobs(@fixtures_path)
+        action = @prompt.select("TaskFlow Inspector", [
+          "List all jobs",
+          "Filter by status",
+          "Inspect a job",
+          "Show stats",
+          "Quit"
+        ])
+        case action
+        when "List all jobs"
+          display_jobs(jobs)
+        when "Filter by status"
+          status = @prompt.select("Select status:", %w[pending running done failed])
+          filtered = Core::Filter.filter(jobs, status: status)
+          display_jobs(filtered)
+        when "Inspect a job"
+          job_id = @prompt.ask("Enter job ID (e.g. job-001):")
+          job = jobs.find { |j| j.id == job_id }
+          job ? display_job(job) : @prompt.warn("Job not found: #{job_id}")
+        when "Show stats"
+          display_stats(Core::Stats.compute(jobs))
+        when "Quit"
+          break
+        end
+        @prompt.keypress("Press any key to continue...")
+      end
+    end
+  end
+
+This demonstrates TTY::Prompt's strength: guided, beautiful, wizard-like workflows.
+It is NOT a ncurses-style full-screen TUI. That is the honest Ruby answer.
+
+--- tests/smoke/test_cli_smoke.rb ---
+
+  require "minitest/autorun"
+  require "open3"
+
+  Tests:
+  1. test_list_table:  run taskflow list, assert exit 0, assert markers in stdout
+  2. test_list_json:   --output json, parse JSON, assert 20 items
+  3. test_filter:      --status done --output json, assert all done
+  4. test_inspect:     inspect job-001 --output json, assert id
+  5. test_stats:       stats --output json, assert total 20
+  6. test_watch_batch: watch --no-interactive, exit 0, markers present
+  7. test_missing:     bad fixtures path, exit non-zero
+
+  Run in non-interactive mode only (no TTY::Prompt in tests).
+  Set TASKFLOW_FIXTURES_PATH env var or pass --fixtures-path flag.
+
+--- Gemfile ---
+
+  source "https://rubygems.org"
+  gem "thor", "~> 1.3"
+  gem "tty-prompt", "~> 0.23"
+  gem "tty-table", "~> 0.12"
+  gem "tty-color", "~> 0.6"
+  gem "json"
+
+  group :test do
+    gem "minitest", "~> 5.20"
+  end
+
+--- README.md ---
+
+  # TaskFlow Monitor — Ruby (Thor + TTY::Prompt)
+
+  Flagship Ruby terminal example. Guided interactive CLI inspector using
+  TTY::Prompt menus and selections. CLI structure via Thor.
+
+  ## Stack: Thor + TTY::Prompt + TTY::Table
+
+  ## Usage
+  ```bash
+  bundle install
+  bin/taskflow list
+  bin/taskflow list --status failed --output json
+  bin/taskflow watch               # guided interactive prompt-driven inspector
+  bin/taskflow watch --no-interactive  # headless / CI
+  ```
+
+  ## Testing
+  ```bash
+  bundle exec ruby tests/smoke/test_cli_smoke.rb
+  ```
+
+  ## Ruby Terminal Philosophy
+  Ruby's terminal sweet spot is guided interactive workflows — beautiful prompts,
+  select menus, confirmation dialogs. This example deliberately avoids forcing
+  a full-screen ncurses-style TUI, which is not Ruby's natural fit.
+
+  For dashboard-style full-screen TUI panels in Ruby, see external gems like
+  curses. For operator-quality terminal dashboards, prefer the Rust/Go/Python
+  examples in this collection.
+
+  ## When to Use
+  Operator tools, guided remediation workflows, interactive installers,
+  configuration wizards, triage tools — wherever a prompt-driven UX is the goal.
+
+================================================================================
+PART 2: RUBY SECONDARY — Clamp + TTY::Reader (taskflow-rb-clamp)
+================================================================================
+
+Create: examples/canonical-terminal/ruby-clamp-tty/
+
+Lighter Ruby example: Clamp for a minimal CLI, TTY::Reader for raw keyboard input.
+
+--- Scope ---
+
+Implement all 4 CLI commands using Clamp.
+Interactive watch mode: a simple pager using TTY::Reader for raw key events.
+  - Print jobs line by line with color
+  - Read single keystrokes: q=quit, ↑↓=scroll (limited), f=filter prompt
+  - No full-screen management; line-oriented key navigation only
+
+This demonstrates TTY::Reader's raw input approach (vs TTY::Prompt's menu model).
+
+--- Gemfile ---
+
+  gem "clamp", "~> 1.3"
+  gem "tty-reader", "~> 0.9"
+  gem "tty-color", "~> 0.6"
+  gem "json"
+
+--- README.md ---
+
+  # TaskFlow Monitor — Ruby (Clamp + TTY::Reader)
+
+  Secondary Ruby example. Minimal CLI via Clamp. Raw keyboard input and
+  line-oriented interactive pager via TTY::Reader.
+
+  ## When to Use vs Flagship
+  - Thor+TTY::Prompt: guided menus, select dialogs, wizard flows
+  - Clamp+TTY::Reader: simpler CLI, raw keystroke handling, custom key-driven pager
+
+================================================================================
+PART 3: ELIXIR FLAGSHIP — Optimus + Ratatouille (taskflow-ex-ratatouille)
+================================================================================
+
+Create: examples/canonical-terminal/elixir-optimus-ratatouille/
+
+Tech stack:
+  - Elixir 1.16+
+  - Optimus for structured CLI argument parsing
+  - Ratatouille for TUI (declarative, Elm-style rendering via ex_termbox)
+  - Jason for JSON parsing
+
+BEAM GUIDANCE:
+  Use BEAM process supervision where it adds genuine value:
+  - A GenServer to hold and update job state (loaded from fixtures, optionally refreshed)
+  - This makes the "refresh" operation (r key) clean: send a GenServer message
+  - Do NOT add supervision for its own sake if the example is purely static display
+  The GenServer approach is justified here because it models a real BEAM pattern
+  for live-data terminal apps.
+
+--- Directory structure ---
+
+  elixir-optimus-ratatouille/
+    lib/
+      taskflow/
+        core/
+          job.ex          # defstruct Job, JobStatus, Event
+          loader.ex       # Taskflow.Core.Loader: load_jobs/1, load_events/1
+          filter.ex       # Taskflow.Core.Filter: filter/2
+          stats.ex        # Taskflow.Core.Stats: compute/1 -> map
+        cli/
+          main.ex         # Optimus CLI definition + dispatch
+          output.ex       # table formatter, JSON output, marker printing
+        tui/
+          app.ex          # Ratatouille.App: init/1, update/2, render/1
+          state.ex        # AppState struct
+          components/
+            job_list.ex   # job list rendering function
+            job_detail.ex # job detail rendering function
+            status_bar.ex # header stats bar
+        job_store.ex      # GenServer holding job list (refreshable)
+        application.ex    # Application supervisor (optional if using GenServer)
+    test/
+      smoke/
+        cli_smoke_test.exs
+      unit/
+        core_test.exs
+    mix.exs
+    README.md
+
+--- lib/taskflow/job_store.ex ---
+
+  defmodule Taskflow.JobStore do
+    use GenServer
+
+    def start_link(fixtures_path) do
+      GenServer.start_link(__MODULE__, fixtures_path, name: __MODULE__)
+    end
+
+    def init(fixtures_path) do
+      {:ok, load_jobs(fixtures_path)}
+    end
+
+    def get_jobs, do: GenServer.call(__MODULE__, :get_jobs)
+    def refresh, do: GenServer.cast(__MODULE__, :refresh)
+
+    # handle_call, handle_cast implementations
+  end
+
+--- lib/taskflow/tui/app.ex ---
+
+  defmodule Taskflow.Tui.App do
+    @behaviour Ratatouille.App
+
+    alias Taskflow.{JobStore, Core.Filter}
+
+    def init(_context) do
+      %{selected: 0, filter: nil, jobs: JobStore.get_jobs()}
+    end
+
+    def update(model, msg) do
+      case msg do
+        {:event, %{ch: ?q}} -> Ratatouille.Runtime.Command.quit()
+        {:event, %{ch: ?r}} ->
+          JobStore.refresh()
+          %{model | jobs: JobStore.get_jobs()}
+        {:event, %{key: key}} when key in [65517, 65516] ->  # up/down
+          # update model.selected
+        _ -> model
+      end
+    end
+
+    def render(model) do
+      # use Ratatouille.View to build layout with rows, columns, panels
+      # JobList and JobDetail components
+    end
+  end
+
+--- lib/taskflow/cli/main.ex ---
+
+  Optimus CLI with subcommands: list, inspect, stats, watch.
+  watch --no-tui: print jobs once with markers, exit.
+  watch (default): start JobStore GenServer + launch Ratatouille.Runtime.
+
+--- test/smoke/cli_smoke_test.exs ---
+
+  ExUnit.Case tests:
+  Use System.cmd("mix", ["run", "-e", "..."], cd: fixture_root) or direct module calls.
+  Better: test Output module directly (no subprocess needed for Elixir unit-level tests).
+
+  Tests:
+  1. list_table: Output.print_jobs(jobs, :table) contains markers
+  2. list_json: Jason.decode!(output) has length 20
+  3. filter_status: Filter.filter(jobs, status: "done") all done
+  4. stats: Stats.compute(jobs).total == 20
+  5. watch_no_tui: CLI.dispatch(["watch", "--no-tui"]) returns :ok
+
+  For process-level smoke tests (optional): use Port or System.cmd to spawn the escript.
+
+--- mix.exs ---
+
+  defp deps do
+    [
+      {:optimus, "~> 0.3"},
+      {:ratatouille, "~> 0.5"},
+      {:jason, "~> 1.4"},
+      {:ex_termbox, "~> 1.0"}
+    ]
+  end
+
+  # escript target for standalone binary:
+  def project do
+    [..., escript: [main_module: Taskflow.CLI.Main]]
+  end
+
+--- README.md ---
+
+  # TaskFlow Monitor — Elixir (Optimus + Ratatouille)
+
+  Flagship Elixir dual-mode terminal example. Optimus for CLI parsing.
+  Ratatouille for a declarative TUI. JobStore GenServer for state management.
+
+  ## Stack: Optimus + Ratatouille + GenServer
+
+  ## Usage
+  ```bash
+  mix deps.get
+  mix escript.build
+  ./taskflow list
+  ./taskflow list --status failed --output json
+  ./taskflow watch --no-tui
+  ./taskflow watch   # launches Ratatouille TUI
+  ```
+
+  ## Testing
+  ```bash
+  mix test
+  ```
+
+  ## BEAM Architecture
+  JobStore is a GenServer holding job state. This is justified because it cleanly
+  models the BEAM pattern for live-data terminal apps: TUI sends GenServer messages;
+  the GenServer handles refresh and state updates independently of rendering.
+  For a purely static display, the GenServer could be eliminated.
+
+  ## When to Use
+  Elixir/BEAM shops needing a terminal operator console where OTP supervision,
+  process isolation, and BEAM concurrency are genuine assets.
+
+================================================================================
+PART 4: ELIXIR SECONDARY — OptionParser + Owl (taskflow-ex-owl)
+================================================================================
+
+Create: examples/canonical-terminal/elixir-optionparser-owl/
+
+Tech stack: OptionParser (built-in) for CLI, Owl for rich terminal output.
+
+--- Scope ---
+
+Implement all 4 CLI commands using Elixir's built-in OptionParser.
+Interactive watch mode: polling loop with Owl tables and progress spinners.
+  No full-screen TUI. Owl excels at: tables, styled output, progress bars, spinners.
+  watch command: loop, print updated job table every N seconds, Ctrl-C to quit.
+  --no-tui: print once and exit.
+
+Owl capabilities to demonstrate:
+  - Owl.Table.new/1 for formatted job table
+  - Owl.IO.input/1 or simple IO for prompts
+  - Owl.Spinner for "refreshing..." state
+  - Owl.Tag for colored/styled text
+
+No GenServer needed here: the simpler approach fits this secondary example.
+
+--- mix.exs ---
+
+  defp deps do
+    [
+      {:owl, "~> 0.11"},
+      {:jason, "~> 1.4"}
+    ]
+  end
+
+--- README.md ---
+
+  # TaskFlow Monitor — Elixir (OptionParser + Owl)
+
+  Secondary Elixir example. Built-in OptionParser for parsing. Owl for rich
+  terminal output (tables, spinners, styled text) without a full-screen TUI.
+
+  ## When to Use vs Flagship
+  - Optimus+Ratatouille: structured CLI + full-screen TUI + BEAM supervision
+  - OptionParser+Owl:    Mix tasks, escripts, simple tools needing rich CLI output
+
+================================================================================
+PART 5: UPDATE examples/canonical-terminal/README.md
+================================================================================
+
+Add Ruby and Elixir sections:
+
+  ### Ruby
+  | Example | Stack | Mode |
+  |---------|-------|------|
+  | ruby-thor-tty/ | Thor + TTY::Prompt | Guided interactive CLI |
+  | ruby-clamp-tty/ | Clamp + TTY::Reader | CLI + raw key pager |
+
+  ### Elixir
+  | Example | Stack | Mode |
+  |---------|-------|------|
+  | elixir-optimus-ratatouille/ | Optimus + Ratatouille | Dual-mode (GenServer-backed) |
+  | elixir-optionparser-owl/ | OptionParser + Owl | CLI + rich output |
+
+  ## Running Ruby Examples
+  ```bash
+  cd examples/canonical-terminal/ruby-thor-tty && bundle install && \
+    bundle exec ruby tests/smoke/test_cli_smoke.rb
+  cd examples/canonical-terminal/ruby-clamp-tty && bundle install && \
+    bundle exec ruby tests/smoke/test_cli_smoke.rb
+  ```
+
+  ## Running Elixir Examples
+  ```bash
+  cd examples/canonical-terminal/elixir-optimus-ratatouille && mix deps.get && mix test
+  cd examples/canonical-terminal/elixir-optionparser-owl    && mix deps.get && mix test
+  ```
+
+  ## All Examples Summary
+  This collection now covers all 7 languages with 14 total examples.
+  See CATALOG.md (added by PROMPT_106) for the full cross-language index.
+
+================================================================================
+VERIFICATION
+================================================================================
+
+Run:
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Also run directly:
+  cd examples/canonical-terminal/ruby-thor-tty         && bundle install && bundle exec ruby tests/smoke/test_cli_smoke.rb
+  cd examples/canonical-terminal/ruby-clamp-tty        && bundle install && bundle exec ruby tests/smoke/test_cli_smoke.rb
+  cd examples/canonical-terminal/elixir-optimus-ratatouille && mix deps.get && mix test
+  cd examples/canonical-terminal/elixir-optionparser-owl    && mix deps.get && mix test
+
+All must pass. Smoke tests must not require TTY.
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+  1. [PROMPT_105] add Ruby flagship: Thor + TTY::Prompt TaskFlow Monitor
+     Stage: examples/canonical-terminal/ruby-thor-tty/
+
+  2. [PROMPT_105] add Ruby secondary: Clamp + TTY::Reader TaskFlow Monitor
+     Stage: examples/canonical-terminal/ruby-clamp-tty/
+
+  3. [PROMPT_105] add Elixir flagship: Optimus + Ratatouille TaskFlow Monitor
+     Stage: examples/canonical-terminal/elixir-optimus-ratatouille/
+
+  4. [PROMPT_105] add Elixir secondary: OptionParser + Owl TaskFlow Monitor
+     Stage: examples/canonical-terminal/elixir-optionparser-owl/
+
+  5. [PROMPT_105] update canonical-terminal README (all 14 examples present)
+     Stage: examples/canonical-terminal/README.md
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Create all 4 examples with complete, working, smoke-tested code
+  - Be honest about Ruby and Elixir terminal idioms (do not force false symmetry)
+  - Write smoke tests that pass without TTY
+  - Update README.md
+
+DO NOT:
+  - Modify fixture corpus, doctrine, archetypes, stacks, routing
+  - Create cross-language docs (PROMPT_106 owns CATALOG.md and DECISION_GUIDE.md)
+  - Force Ruby to have a full-screen TUI when it's not the right fit
+  - Force Elixir to use supervision where it adds no genuine value
+  - Create new PROMPT files
+
+QUALITY BAR:
+  - Ruby interactive mode must use actual TTY::Prompt menus (not stubs)
+  - Elixir Ratatouille TUI must be a working declarative view (not a stub)
+  - Owl example must use actual Owl.Table and Owl.Tag (not just IO.puts)
+  - All smoke tests must actually pass
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+  - ruby-thor-tty/ working with passing minitest smoke tests
+  - ruby-clamp-tty/ working with passing minitest smoke tests
+  - elixir-optimus-ratatouille/ working with passing ExUnit tests
+  - elixir-optionparser-owl/ working with passing ExUnit tests
+  - README.md updated noting all 14 examples present
+  - validate_context.py and run_verification.py --tier fast pass
+
+PROMPT_105 complete. All 14 language examples are implemented.
+PROMPT_106 adds the cross-language index, decision guide, and atlas integration.
