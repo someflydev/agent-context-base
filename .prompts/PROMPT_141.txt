@@ -1,0 +1,789 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one
+fresh coding-assistant session with commit prefixes like `[PROMPT_141]`.
+
+PROMPT_134–140: JWT Auth, RBAC, and Multi-Tenant Patterns arc — complete.
+
+This prompt (PROMPT_141) adds a `graft` command to `scripts/work.py` and creates
+a vendored analysis prompt template. Together they allow an operator to drop ACB
+discipline (session state, memory, commit conventions, the `work.py` tool itself,
+and a high-quality starter prompt) into any locally cloned repo without starting
+from agent-context-base.
+
+              [GRAFT: Prompt 1 of 1 — Full Implementation]
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                   (run; study output)
+  4. memory/INDEX.md
+  5. scripts/work.py                                  (READ THE FULL FILE — mandatory)
+  6. AGENT.md
+  7. CLAUDE.md
+  8. docs/runtime-state-workflow.md
+
+Reading the full `scripts/work.py` before touching it is mandatory. The existing
+implementation is carefully designed. Understand the dataclass model, parser
+construction, handler functions, and main dispatch before adding to them.
+
+================================================================================
+BACKGROUND: WHAT GRAFT IS
+================================================================================
+
+The ACB workflow (work.py, memory/, runtime context files, commit discipline,
+CLAUDE.md boot sequence) has until now only been available to repos that start
+from agent-context-base. There is no way to bring this discipline to a repo that
+already exists and is being actively worked on.
+
+`work.py graft` solves this. It takes a path to any locally cloned repo and
+installs the portable ACB discipline layer into it. It does NOT copy stack
+definitions, archetypes, canonical examples, verification suites, or any
+content specific to agent-context-base. It installs only the infrastructure
+that makes assistants faster and more traceable regardless of what the repo does.
+
+After graft, an operator can open the target repo in any Claude Code session and
+immediately get work.py resume output, session state tracking, memory promotion,
+and a commit convention. The `.prompts/analyze-and-reverse-engineer.txt` file that
+graft installs gives the operator (or their assistant) a ready-made first prompt
+that will analyze the target repo and produce a real, high-quality promptset for
+the work being planned there.
+
+================================================================================
+PART 1 — work.py graft SUBCOMMAND
+================================================================================
+
+Extend `scripts/work.py` with a `graft` subcommand.
+
+--------------------------------------------------------------------------------
+1.1  Parser registration
+--------------------------------------------------------------------------------
+
+Add to `build_parser()`, after the existing subparsers:
+
+  graft_parser = subparsers.add_parser(
+      "graft",
+      help="Install ACB discipline into an existing local repo.",
+  )
+  graft_parser.add_argument(
+      "target",
+      help="Path to the repo to graft. Must be a directory.",
+  )
+  graft_parser.add_argument(
+      "--dry-run",
+      action="store_true",
+      help="Print what would be written without touching any files.",
+  )
+  graft_parser.add_argument(
+      "--force",
+      action="store_true",
+      help="Overwrite files that already exist in the target repo.",
+  )
+  graft_parser.add_argument(
+      "--no-prompts",
+      action="store_true",
+      help="Skip creating .prompts/ and the analyze-and-reverse-engineer template.",
+  )
+
+Add to the `main()` dispatch block:
+
+  if args.command == "graft":
+      return handle_graft(
+          repo_root,
+          target=Path(args.target),
+          dry_run=args.dry_run,
+          force=args.force,
+          no_prompts=args.no_prompts,
+      )
+
+--------------------------------------------------------------------------------
+1.2  handle_graft implementation
+--------------------------------------------------------------------------------
+
+Implement `handle_graft` with this exact behavior:
+
+  def handle_graft(
+      repo_root: Path,
+      *,
+      target: Path,
+      dry_run: bool,
+      force: bool,
+      no_prompts: bool,
+  ) -> int:
+
+Print header: "ACB Graft"
+
+Step A — Validate the target:
+  - Resolve target to an absolute path.
+  - If it does not exist or is not a directory: print an error, return 1.
+  - Check if target/.git exists. If not, print a warning (not an error):
+      "Warning: target does not appear to be a git repository. Continuing anyway."
+  - Check that target != repo_root. If they are equal, print an error and return 1:
+      "Error: target is the agent-context-base repo itself."
+
+Step B — Build the graft manifest:
+  Collect a list of GraftItem objects. A GraftItem has:
+    - dest: Path  (relative to target)
+    - content: str | None  (if None, the item is a directory marker)
+    - reason: str  (human-readable explanation, printed in dry-run and verbose output)
+
+  The manifest is built by the helper `build_graft_manifest(repo_root, target, no_prompts)`.
+  See Section 1.3 for exact items.
+
+Step C — Report planned actions:
+  Print the list of items, grouped by whether they already exist in the target:
+    - "Will write (new):"  — items whose dest does not exist in target
+    - "Will write (overwrite):" — items whose dest exists and --force is set
+    - "Will skip (already exists):" — items whose dest exists and --force is NOT set
+  If dry_run, print "Dry run — no files were written." and return 0.
+
+Step D — Execute:
+  For each GraftItem:
+    - If dest is a directory marker (content is None):
+        Create the directory (parents=True, exist_ok=True), plus a .gitkeep if empty.
+    - If dest already exists and not force: skip (already reported).
+    - Otherwise: write content to dest (create parent directories as needed).
+  Print a confirmation line for each file written.
+
+Step E — Print .gitignore guidance:
+  After writing, print:
+
+    Graft complete. Add these lines to {target}/.gitignore if not already present:
+
+      work/
+      PLAN.md
+      context/MEMORY.md
+
+  Do not modify the target's .gitignore automatically. This is the operator's decision.
+
+Step F — Print next steps:
+  Print:
+
+    Next steps:
+      1. Review the grafted files in {target}
+      2. Add the .gitignore entries above
+      3. Commit the grafted files: git add -p && git commit
+      4. Open a new session in {target} and run:
+           python3 scripts/work.py resume
+      5. Then run the analysis prompt:
+           cat .prompts/analyze-and-reverse-engineer.txt
+
+  (Omit step 5 if --no-prompts was set.)
+
+Return 0 on success.
+
+--------------------------------------------------------------------------------
+1.3  build_graft_manifest
+--------------------------------------------------------------------------------
+
+Implement `build_graft_manifest(repo_root: Path, target: Path, no_prompts: bool)
+-> list[GraftItem]`.
+
+The manifest must include exactly these items, in this order:
+
+SCRIPTS LAYER:
+  - dest: scripts/work.py
+    content: the full text of scripts/work.py (repo_root / "scripts" / "work.py")
+    reason: "ACB session management tool"
+
+MEMORY LAYER:
+  - dest: memory/  (directory marker, content=None)
+    reason: "memory root"
+  - dest: memory/INDEX.md
+    content: the MEMORY_INDEX_STUB (see below)
+    reason: "memory index — promote durable findings here"
+  - dest: memory/concepts/  (directory marker)
+    reason: "memory concepts tier"
+  - dest: memory/summaries/  (directory marker)
+    reason: "memory summaries tier"
+  - dest: memory/sessions/  (directory marker)
+    reason: "memory sessions tier"
+
+CONTEXT LAYER:
+  - dest: context/  (directory marker)
+    reason: "runtime context root"
+  - dest: context/TASK.md
+    content: CONTEXT_TASK_STUB (see below)
+    reason: "active task runtime file"
+  - dest: context/SESSION.md
+    content: CONTEXT_SESSION_STUB (see below)
+    reason: "session runtime file"
+  - dest: context/MEMORY.md
+    content: CONTEXT_MEMORY_STUB (see below)
+    reason: "durable repo-local memory (gitignored by convention)"
+
+BOOT FILES:
+  - dest: CLAUDE.md
+    content: GRAFT_CLAUDE_MD (see below)
+    reason: "assistant boot entrypoint"
+  - dest: AGENT.md
+    content: GRAFT_AGENT_MD (see below)
+    reason: "assistant operating rules"
+
+PROMPTS LAYER (only if not no_prompts):
+  - dest: .prompts/  (directory marker)
+    reason: ".prompts/ directory for prompt-first workflow"
+  - dest: .prompts/analyze-and-reverse-engineer.txt
+    content: read from repo_root / "templates" / "prompts" / "analyze-and-reverse-engineer.txt"
+    reason: "starter analysis prompt — run this first"
+
+The stub constants are defined as module-level string constants. Define them
+near the top of the file, below the dataclass definitions.
+
+  MEMORY_INDEX_STUB:
+    """# Memory Index\n\n<!-- Add entries as: - [Title](file.md) — one-line hook -->\n"""
+
+  CONTEXT_TASK_STUB:
+    Minimal TASK.md template (same voice as existing templates in the repo).
+    Two sections: ## Active Task (placeholder) and ## Subtasks (placeholder checklist).
+    Keep it under 20 lines.
+
+  CONTEXT_SESSION_STUB:
+    Minimal SESSION.md template.
+    Two sections: ## Session Goal (placeholder) and ## Next Safe Step (placeholder).
+    Keep it under 15 lines.
+
+  CONTEXT_MEMORY_STUB:
+    Minimal MEMORY.md template.
+    One section: ## Durable Repo Truths with a placeholder comment.
+    Note at top: "(gitignored — do not commit)"
+    Keep it under 12 lines.
+
+  GRAFT_CLAUDE_MD:
+    A short CLAUDE.md that tells the assistant:
+    - This repo uses the ACB session discipline.
+    - Run `python3 scripts/work.py resume` at the start of every session.
+    - Check memory/INDEX.md when resuming interrupted work.
+    - Use `python3 scripts/work.py checkpoint` after meaningful changes.
+    - Commit prefixes: [PROMPT_N] for prompt-driven sessions, [FIX], [REFACTOR], etc. otherwise.
+    - Do not add Co-Authored-By trailers.
+    - Keep context/TASK.md and context/SESSION.md action-oriented and concise.
+    Keep it under 40 lines. Do not reference agent-context-base-specific docs.
+
+  GRAFT_AGENT_MD:
+    A short AGENT.md that tells the assistant:
+    - Run work.py resume first. Study its output.
+    - Read context/TASK.md and context/SESSION.md before starting work.
+    - Read memory/INDEX.md when resuming interrupted work.
+    - Run work.py checkpoint after meaningful changes and before ending a session.
+    - Commit conventions: one prefix per commit, staged with git add -p.
+    - Do not claim completion without running the stated proof path.
+    - If proof is unavailable, report blocked or incomplete instead of done.
+    Keep it under 35 lines.
+
+--------------------------------------------------------------------------------
+1.4  GraftItem dataclass
+--------------------------------------------------------------------------------
+
+Add near the top of the file, with the other dataclasses:
+
+  @dataclass(frozen=True)
+  class GraftItem:
+      dest: Path          # relative to target repo root
+      content: str | None # None = directory marker
+      reason: str
+
+================================================================================
+PART 2 — templates/prompts/analyze-and-reverse-engineer.txt
+================================================================================
+
+Create this file. It is a self-contained prompt for a fresh assistant session
+opened inside a repo that has just been grafted. It must be excellent: thorough,
+structured, and produce real artifacts. An assistant running this prompt with no
+other context should leave the repo in a better state than it found it.
+
+--------------------------------------------------------------------------------
+Design principles for this prompt
+--------------------------------------------------------------------------------
+
+1. It is a GUEST in the target repo. It should read aggressively and write
+   conservatively. Reading every file it needs is expected. Creating files that
+   conflict with existing ones is not.
+
+2. It produces REAL artifacts, not plans to make artifacts. By the end of the
+   session, there must be at minimum: a PLAN.md, a populated context/TASK.md,
+   and at least one real .prompts/PROMPT_01.txt.
+
+3. It models the domain, not just the tech. A repo that does payroll processing
+   deserves a promptset rooted in payroll concepts, not just "add tests" or
+   "refactor." The analysis must surface what the software is actually for.
+
+4. It is honest about uncertainty. If the repo's purpose is unclear after reading,
+   the prompt instructs the assistant to say so and ask the operator before
+   generating prompts.
+
+5. It is calibrated to scope. A 200-file monorepo needs more prompts than a
+   500-line CLI. The assistant should generate as many prompts as makes sense
+   (neither underfitting with 2 nor padding with 30).
+
+--------------------------------------------------------------------------------
+Exact content of templates/prompts/analyze-and-reverse-engineer.txt
+--------------------------------------------------------------------------------
+
+The file should contain the following prompt (write it verbatim into the file,
+not as a code block — the file IS the prompt):
+
+================================================================================
+[begin file content — write everything below this line into the file]
+================================================================================
+
+You have been dropped into a repository that has just been grafted with the ACB
+session discipline. Your job in this session is to analyze the repo deeply and
+produce a high-quality promptset that the operator can execute session by session
+to improve, extend, or harden this codebase.
+
+This is not a planning session. You will produce real artifacts.
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Run this first:
+
+  python3 scripts/work.py resume
+
+Study the output. Then read, in order:
+
+  1. README.md (or the closest equivalent — OVERVIEW.md, docs/README.md, etc.)
+  2. The root directory listing (ls or equivalent — look at the shape of the repo)
+  3. Every manifest file you find: package.json, Cargo.toml, go.mod, pyproject.toml,
+     build.gradle, pom.xml, mix.exs, Gemfile, composer.json, etc.
+  4. The primary entry point(s): main.py, src/main.rs, cmd/, app.py, index.ts, etc.
+  5. Any existing docs/ or documentation directory
+  6. .github/workflows/ or CI configuration if present
+  7. Any existing test directory structure (tests/, spec/, __tests__/, etc.)
+  8. memory/INDEX.md (may be empty — that is fine)
+
+Do not start writing until you have completed this boot sequence.
+
+================================================================================
+PHASE 1 — REPOSITORY ANALYSIS
+================================================================================
+
+After reading, answer these questions internally (you do not need to print
+the answers, but you must have answered them before proceeding):
+
+IDENTITY
+  - What does this software actually do? (Not what framework it uses — what does it do
+    for its users or operators?)
+  - Who uses it? (CLI tool for developers, web app for end users, library for other
+    engineers, data pipeline for analysts, etc.)
+  - What is the primary domain? (e-commerce, developer tooling, healthcare, finance,
+    logistics, media, internal tooling, etc.)
+
+TECHNICAL SHAPE
+  - What language(s) and version(s)?
+  - What framework(s) and major libraries?
+  - What is the architectural style? (monolith, microservices, library, CLI, pipeline, etc.)
+  - What does the data model look like? (key entities/models)
+  - What is the test coverage situation? (none, partial, good — be honest)
+  - What is the build and deployment story? (CI/CD, Docker, bare metal, etc.)
+
+STATE OF THE CODE
+  - What is clearly done and working?
+  - What is clearly incomplete, broken, or skipped (TODOs, FIXMEs, stub functions,
+    empty test files, commented-out code)?
+  - What structural or conceptual debt is visible? (copy-paste, missing abstractions,
+    inconsistent naming, undocumented assumptions)
+  - What is the most important thing that is missing?
+
+If after reading you cannot confidently answer the IDENTITY questions, stop here.
+Write a message to the operator explaining what you found and what specific
+information you need before you can generate a useful promptset. Do not guess.
+
+================================================================================
+PHASE 2 — PROMPTSET DESIGN
+================================================================================
+
+Design a promptset. A promptset is a sequence of numbered prompt files, each
+representing one focused session of assistant work. Design it with these rules:
+
+SESSION SIZING
+  Each prompt should be completable in one session (roughly 30–120 minutes of
+  real work, or 1–5 meaningful commits). If a task is too large, split it.
+  If two tasks are too small individually, merge them.
+
+ORDERING
+  Prompts must be ordered so that each builds on what the previous established.
+  Foundation before features. Hardening after implementation. Documentation after
+  both. Do not put documentation before there is something to document.
+
+DOMAIN FIRST
+  The first prompt after any necessary setup should establish the domain model:
+  the core entities, their relationships, and the data shapes they produce.
+  Even if models already exist in the repo, documenting them in a domain spec
+  makes every subsequent prompt faster and more consistent.
+
+HONEST SCOPE
+  Generate as many prompts as the repo actually needs. A healthy range is 5–15.
+  Do not pad. Do not compress. If the repo needs 3 prompts, generate 3.
+  If it needs 20, generate 20.
+
+NAMING
+  Name each prompt by what it produces, not by what it touches.
+  Good: "Add pagination and filtering to the jobs API"
+  Bad:  "Work on routes.py"
+
+================================================================================
+PHASE 3 — ARTIFACT GENERATION
+================================================================================
+
+Write these artifacts. Do not skip any.
+
+--------------------------------------------------------------------------------
+A. PLAN.md (at the repo root)
+--------------------------------------------------------------------------------
+
+If PLAN.md already exists, read it first and decide whether to extend or replace.
+If it is a placeholder, replace it. If it reflects real work, extend it.
+
+Write a PLAN.md with:
+
+  ## Project Summary
+  2–4 sentences: what the project is, who it serves, and what phase of development
+  it is in (early, active, maintenance, etc.).
+
+  ## Prompt Queue
+  A table or numbered list of all prompts you will create, with a one-line
+  description of each.
+
+  ## Current State
+  A brief honest assessment: what works, what is missing, what is technical debt.
+
+  ## Near-Term Goals
+  3–6 bullet points for what the promptset will accomplish.
+
+Keep PLAN.md under 80 lines.
+
+--------------------------------------------------------------------------------
+B. context/TASK.md
+--------------------------------------------------------------------------------
+
+Write the active task as: "Execute analysis promptset starting with PROMPT_01."
+
+List the prompts as a checklist under ## Subtasks.
+
+--------------------------------------------------------------------------------
+C. context/SESSION.md
+--------------------------------------------------------------------------------
+
+Write a session summary:
+  - What you found in Phase 1 (key facts only, terse)
+  - What promptset you generated (titles only)
+  - What the operator should do next (run PROMPT_01)
+
+Keep it under 30 lines.
+
+--------------------------------------------------------------------------------
+D. .prompts/PROMPT_01.txt through .prompts/PROMPT_NN.txt
+--------------------------------------------------------------------------------
+
+Write all prompts you designed in Phase 2.
+
+Each prompt file must follow this structure exactly:
+
+  [one-line description of what this prompt produces]
+
+  ================================================================================
+  CONTEXT
+  ================================================================================
+
+  [2–5 sentences: what the previous prompt(s) established, what this one builds on]
+
+  ================================================================================
+  BOOT SEQUENCE
+  ================================================================================
+
+  Run this first:
+
+    python3 scripts/work.py resume
+
+  Then read:
+    [list only the files actually relevant to this prompt's task]
+
+  ================================================================================
+  TASK
+  ================================================================================
+
+  [The actual work. Be concrete. Name files. Specify formats. Include examples
+   where helpful. Do not leave ambiguity about what "done" looks like.]
+
+  ================================================================================
+  VERIFICATION
+  ================================================================================
+
+  [How the assistant proves the work is complete. A command to run, a file to
+   inspect, a behavior to demonstrate. If no automated verification exists yet,
+   say so and specify what manual check suffices.]
+
+  ================================================================================
+  COMMIT
+  ================================================================================
+
+  Run: python3 scripts/work.py checkpoint
+
+  Stage and commit with git add -p:
+
+    [PROMPT_NN] <one-line description matching the prompt title>
+
+    - <file or artifact 1>
+    - <file or artifact 2>
+    ...
+
+  ================================================================================
+
+Do NOT include filler, motivational language, or meta-commentary in the prompts.
+Every sentence should be either an instruction or a fact the assistant needs.
+
+--------------------------------------------------------------------------------
+E. memory/summaries/PROMPT_00_analysis.md
+--------------------------------------------------------------------------------
+
+Write a compact summary of what you found and what you generated. This is the
+artifact future sessions will read to orient themselves.
+
+Format:
+
+  # Repo Analysis Summary
+
+  ## Repo Identity
+  [3–5 sentences]
+
+  ## Technical Stack
+  [bullet list]
+
+  ## State at Analysis Time
+  [bullet list: done / incomplete / debt]
+
+  ## Promptset Generated
+  [numbered list of prompt titles]
+
+  ## Key Facts for Future Sessions
+  [any domain or architectural decisions that will affect future work]
+
+Keep it under 60 lines.
+
+--------------------------------------------------------------------------------
+F. memory/INDEX.md — update
+--------------------------------------------------------------------------------
+
+Add an entry:
+  - [Repo Analysis](summaries/PROMPT_00_analysis.md) — initial analysis: stack, domain, promptset
+
+================================================================================
+COMMIT
+================================================================================
+
+Run: python3 scripts/work.py checkpoint
+
+Stage and commit with git add -p:
+
+  [ANALYZE] Initial ACB analysis — promptset and domain summary
+
+  - PLAN.md
+  - context/TASK.md
+  - context/SESSION.md
+  - .prompts/PROMPT_01.txt through .prompts/PROMPT_NN.txt
+  - memory/summaries/PROMPT_00_analysis.md
+  - memory/INDEX.md
+
+================================================================================
+[end file content — everything above this line is the template prompt]
+================================================================================
+
+================================================================================
+PART 3 — VERIFICATION
+================================================================================
+
+Create: verification/unit/test_graft.py
+
+Test the following:
+
+  class TestGraftManifest:
+
+    test_graft_manifest_includes_work_py
+      Instantiate build_graft_manifest with a temp target dir.
+      Assert that a GraftItem with dest == Path("scripts/work.py") is in the manifest.
+
+    test_graft_manifest_includes_memory_index
+      Assert GraftItem with dest == Path("memory/INDEX.md") is in the manifest.
+
+    test_graft_manifest_excludes_prompts_when_flag_set
+      Call build_graft_manifest with no_prompts=True.
+      Assert no item has dest starting with ".prompts/".
+
+    test_graft_manifest_includes_prompts_by_default
+      Call build_graft_manifest with no_prompts=False.
+      Assert an item with dest == Path(".prompts/analyze-and-reverse-engineer.txt") exists.
+      Assert its content is not None and not empty.
+
+    test_graft_manifest_work_py_content_matches_source
+      Assert the content of the scripts/work.py GraftItem equals the actual
+      contents of repo_root/scripts/work.py.
+
+  class TestHandleGraftDryRun:
+
+    test_dry_run_writes_nothing (uses tmp_path as both repo_root and target — adjust
+      target to be a subdirectory so they are not equal)
+      Call handle_graft with dry_run=True.
+      Assert no files were created in the target dir beyond what existed before.
+
+    test_dry_run_returns_zero
+      Assert handle_graft with dry_run=True returns 0.
+
+    test_rejects_target_equal_to_repo_root
+      Call handle_graft with target == repo_root.
+      Assert return value is 1.
+
+    test_rejects_nonexistent_target
+      Call handle_graft with a nonexistent path.
+      Assert return value is 1.
+
+  class TestHandleGraftExecution:
+
+    test_writes_expected_files (uses tmp_path as target)
+      Call handle_graft with dry_run=False, force=False.
+      Assert scripts/work.py, memory/INDEX.md, CLAUDE.md, AGENT.md all exist in target.
+
+    test_force_flag_overwrites_existing_files
+      Pre-write a file to target/CLAUDE.md with sentinel content.
+      Call handle_graft with force=True.
+      Assert CLAUDE.md content is no longer the sentinel.
+
+    test_no_force_skips_existing_files
+      Pre-write a file to target/CLAUDE.md with sentinel content.
+      Call handle_graft with force=False.
+      Assert CLAUDE.md content is still the sentinel.
+
+Import only from the standard library and from scripts.work (or however the
+module is importable from the test file). Use unittest. Do not use pytest.
+
+================================================================================
+PART 4 — DOCUMENTATION
+================================================================================
+
+Create: docs/graft-command.md
+
+Content:
+
+  # work.py graft
+
+  ## Purpose
+  Install the ACB session discipline into an existing locally cloned repo.
+
+  ## Usage
+      python3 scripts/work.py graft /path/to/target-repo [--dry-run] [--force] [--no-prompts]
+
+  ## What it installs
+  Table with columns: File/Directory | Purpose
+  List every item from the graft manifest.
+
+  ## What it does NOT install
+  Brief list: stacks, archetypes, canonical examples, verification suites,
+  agent-context-base-specific docs, .prompts/ megaprompts.
+
+  ## .gitignore entries (add manually after grafting)
+      work/
+      PLAN.md
+      context/MEMORY.md
+
+  ## Workflow after grafting
+  Numbered list:
+    1. Review the grafted files
+    2. Add .gitignore entries
+    3. Commit grafted files
+    4. Open a session in the target repo
+    5. Run: python3 scripts/work.py resume
+    6. Run the analysis prompt: cat .prompts/analyze-and-reverse-engineer.txt
+
+  ## The analyze-and-reverse-engineer prompt
+  Brief description: what it does, what artifacts it produces, when to run it.
+
+Keep docs/graft-command.md under 80 lines.
+
+================================================================================
+PART 5 — AGENT.md UPDATE
+================================================================================
+
+Add a section to AGENT.md titled `## Grafting to Existing Repos` (near the
+bottom, before Verification):
+
+  Use `python3 scripts/work.py graft /path/to/repo` to install ACB discipline
+  into any locally cloned repo. See docs/graft-command.md for details.
+
+  The vendored analysis prompt lives at:
+    templates/prompts/analyze-and-reverse-engineer.txt
+
+  Do not modify that file for repo-specific purposes. It is a general-purpose
+  template. Repo-specific context belongs in the promptset it generates.
+
+================================================================================
+VERIFICATION
+================================================================================
+
+Run all unit tests:
+
+  python3 scripts/run_verification.py --tier fast
+
+Run the graft tests specifically:
+
+  python3 -m unittest verification/unit/test_graft.py -v
+
+Smoke test (do not commit this — just verify it works):
+
+  python3 scripts/work.py graft /tmp/acb-graft-smoke-test --dry-run
+
+  Confirm the dry-run output lists all expected files.
+  Confirm no files were created at /tmp/acb-graft-smoke-test.
+
+All tests must pass. Fix any regressions before committing.
+
+Run: python3 scripts/work.py checkpoint
+
+================================================================================
+COMMIT
+================================================================================
+
+Stage and commit with git add -p:
+
+  [PROMPT_141] Add work.py graft command and analyze-and-reverse-engineer template
+
+  - scripts/work.py — graft subcommand (handle_graft, build_graft_manifest, GraftItem)
+  - templates/prompts/analyze-and-reverse-engineer.txt — vendored analysis prompt
+  - docs/graft-command.md — operator documentation
+  - verification/unit/test_graft.py — unit tests
+  - AGENT.md — grafting section
+
+================================================================================
+IMPLEMENTATION NOTES
+================================================================================
+
+- The `build_graft_manifest` function reads the analyze-and-reverse-engineer.txt
+  template file at call time from repo_root. If the file does not exist, raise
+  a clear RuntimeError: "Graft template not found: {path}. Re-clone agent-context-base."
+
+- The stub constants (MEMORY_INDEX_STUB, CONTEXT_TASK_STUB, etc.) must be defined
+  as module-level string literals, not inline in the function. This keeps handle_graft
+  readable and makes the stubs easy to update later.
+
+- For the directory marker items (content=None), write only a .gitkeep if the
+  directory is empty after creation. Do not overwrite existing .gitkeep files.
+
+- The graft command must work when called from inside agent-context-base (i.e.,
+  repo_root is agent-context-base and target is some other path). The detect_repo_root()
+  function always returns agent-context-base's root — that is fine. Target resolution
+  is fully independent of repo_root.
+
+- Do not add import shutil or any new imports unless strictly necessary.
+  Use Path.read_text() and Path.write_text() for all file I/O.
+  Path.mkdir(parents=True, exist_ok=True) for directories.
+
+- The analyze-and-reverse-engineer.txt template must be written as plain text, not
+  wrapped in any outer format. The file is the prompt. An assistant opening it
+  should be able to paste it directly into a session.
