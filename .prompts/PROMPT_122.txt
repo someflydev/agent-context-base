@@ -1,0 +1,508 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one
+fresh coding-assistant session with commit prefixes like `[PROMPT_122]`.
+
+PROMPT_119: Faker Arc — Foundation.
+PROMPT_120: Faker Arc — Domain design (TenantCore, generation_patterns.py, CATALOG).
+PROMPT_121: Faker Arc — Python (Faker, Mimesis, factory_boy). [x]
+
+This prompt (PROMPT_122) implements canonical faker examples for two languages:
+  - JavaScript/TypeScript using @faker-js/faker and Chance
+  - Go using gofakeit and go-faker/faker
+
+              [FAKER ARC: Prompt 4 of 8 — JavaScript/TypeScript + Go]
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                    (run; study output)
+  4. memory/INDEX.md
+
+Read the arc foundation and domain spec:
+  5. context/doctrine/synthetic-data-realism.md       (READ — the 7 rules)
+  6. context/skills/synthetic-dataset-design.md       (READ — 7-step pipeline)
+  7. context/stacks/faker-javascript.yaml             (READ — JS/TS stack)
+  8. context/stacks/faker-go.yaml                     (READ — Go stack)
+  9. examples/canonical-faker/domain/schema.md        (READ — entity graph)
+ 10. examples/canonical-faker/domain/generation-order.md (READ — 7-stage order)
+ 11. examples/canonical-faker/domain/seed-registry.md (READ — smoke seed = 42)
+ 12. examples/canonical-faker/domain/profiles.md      (READ — row count targets)
+ 13. examples/canonical-faker/python/faker_pipeline/generators.py (READ — reference impl)
+ 14. examples/canonical-faker/CATALOG.md              (READ — current state)
+
+Run verification before touching any example files:
+  python -m unittest verification/faker/python/test_python_faker.py -v
+  python -m unittest verification/faker/test_domain_spec.py -v
+
+Both must pass (Python must be [x] before this prompt begins).
+
+================================================================================
+BACKGROUND
+================================================================================
+
+JavaScript/TypeScript and Go represent two very different generation idioms:
+  - JS/TS: dynamic language, flexible structures, the challenge is correctness
+    under type-optional-ness; @faker-js/faker is comprehensive, Chance adds
+    probability helpers and repeatable custom distributions
+  - Go: statically typed, struct-first; gofakeit populates structs imperatively,
+    go-faker/faker uses struct tags for annotation-driven population; the
+    contrast between these two styles is the key teaching surface for Go
+
+For both languages the same TenantCore domain is generated and the same
+relational integrity rules apply. Each language must produce JSONL output
+that can be validated by examples/canonical-faker/domain/validate_output.py.
+
+================================================================================
+PART A: JAVASCRIPT/TYPESCRIPT EXAMPLE
+================================================================================
+
+Directory: examples/canonical-faker/javascript/
+
+  examples/canonical-faker/javascript/
+  ├── README.md
+  ├── package.json
+  ├── tsconfig.json
+  ├── src/
+  │   ├── domain.ts             ← TypeScript type definitions for all entities
+  │   ├── profiles.ts           ← Profile type and smoke/small/medium/large constants
+  │   ├── pools.ts              ← ID pool and org_member_map management
+  │   ├── pipeline.ts           ← main generation pipeline (uses @faker-js/faker)
+  │   ├── distributions.ts      ← Chance-based distribution helpers
+  │   ├── validate.ts           ← output validation (FK integrity, cross-field rules)
+  │   └── index.ts              ← CLI entry point
+  ├── output/                   ← gitignored
+  └── __tests__/
+      └── smoke.test.ts         ← Jest smoke tests
+
+A-1. package.json
+
+  {
+    "name": "canonical-faker-js",
+    "type": "module",
+    "scripts": {
+      "generate": "ts-node src/index.ts",
+      "test": "jest --testPathPattern=smoke.test.ts"
+    },
+    "dependencies": {
+      "@faker-js/faker": "^8.0.0",
+      "chance": "^1.1.11"
+    },
+    "devDependencies": {
+      "typescript": "^5.0.0",
+      "ts-node": "^10.0.0",
+      "@types/node": "^20.0.0",
+      "jest": "^29.0.0",
+      "ts-jest": "^29.0.0",
+      "@types/jest": "^29.0.0"
+    }
+  }
+
+A-2. src/domain.ts
+
+Define TypeScript interfaces for all 7 TenantCore entities:
+  Organization, User, Membership, Project, AuditEvent, ApiKey, Invitation.
+Match field names and types from domain/schema.md exactly.
+Use string for UUID fields (not a UUID type — keep it simple).
+Use string for all timestamps (ISO 8601).
+
+A-3. src/profiles.ts
+
+  export interface Profile {
+    numOrgs: number
+    numUsers: number
+    seed: number
+    name: string
+  }
+  export const SMOKE: Profile  = { numOrgs: 3,    numUsers: 10,     seed: 42,   name: "smoke" }
+  export const SMALL: Profile  = { numOrgs: 20,   numUsers: 200,    seed: 1000, name: "small" }
+  export const MEDIUM: Profile = { numOrgs: 200,  numUsers: 5000,   seed: 5000, name: "medium" }
+  export const LARGE: Profile  = { numOrgs: 2000, numUsers: 50000,  seed: 9999, name: "large" }
+
+A-4. src/distributions.ts
+
+This module is the key Chance demonstration. Use the `chance` library for:
+
+  1. Weighted plan selection:
+     const PLAN_WEIGHTS = { free: 50, pro: 35, enterprise: 15 }
+     export function pickPlan(c: Chance.Chance): string {
+         return c.weighted(["free", "pro", "enterprise"], [50, 35, 15])
+     }
+
+  2. Weighted region selection (similar pattern).
+
+  3. Poisson-distributed member count per org:
+     export function memberCount(c: Chance.Chance): number {
+         // Most orgs have 3–10 members. Use Poisson(lambda=4) + 3.
+         const count = c.rpg("1d1", { sum: true }) // placeholder; implement properly
+         // Actually: sample from a right-skewed distribution, clamp to 3–50
+         ...
+     }
+     Document that Chance provides rpg(), normal(), and custom probability tools.
+
+  4. Edge-case injection:
+     export function withEdgeCase<T>(c: Chance.Chance, rate: number, edgeFn: () => T, normalFn: () => T): T {
+         return c.bool({ likelihood: rate * 100 }) ? edgeFn() : normalFn()
+     }
+     Use this in pipeline.ts to inject ~5% edge-case users.
+
+A-5. src/pipeline.ts
+
+Implement the full TenantCore generation pipeline in 7 stages.
+Use @faker-js/faker for all atomic field generation.
+Use distributions.ts for all distribution decisions.
+
+Seeding:
+  import { faker } from '@faker-js/faker'
+  import Chance from 'chance'
+  faker.seed(profile.seed)
+  const c = new Chance(profile.seed)
+
+Show that BOTH faker and Chance must be seeded with the same seed value
+to ensure reproducible output across all generation calls.
+
+Entity-specific faker usage:
+  - organizations.name:    faker.company.name()
+  - users.email:           faker.internet.email() — then uniqueness-check in pools.ts
+  - users.full_name:       faker.person.fullName()
+  - memberships.joined_at: faker.date.between({ from: org.created_at, to: new Date() })
+  - audit_events.action:   c.weighted(["created","updated","deleted","archived"], [...])
+
+Cross-field rules:
+  - project.created_by must be sampled from org's member pool (pools.ts)
+  - audit_event.user_id must be sampled from org's member pool
+  - audit_event.project_id must be sampled from org's projects
+  - audit_event.ts must be >= project.created_at (use faker.date.between)
+
+A-6. src/validate.ts
+
+Implement the validation pass in TypeScript. Check all Cross-Field Rules A–I.
+Return a ValidationReport:
+  interface ValidationReport {
+    ok: boolean
+    violations: string[]
+    counts: Record<string, number>
+    seed: number
+    profileName: string
+  }
+
+A-7. src/index.ts
+
+CLI using process.argv. Usage:
+  npx ts-node src/index.ts [smoke|small|medium|large] [jsonl|csv] [output-dir]
+
+Print validation report to stdout. Exit 1 on validation failure.
+
+A-8. __tests__/smoke.test.ts (Jest)
+
+Test suite: TenantCoreSmokeTests
+
+  test('generates smoke profile organizations', async () => {
+    const dataset = await generateDataset(SMOKE)
+    expect(dataset.organizations).toHaveLength(3)
+  })
+
+  test('smoke profile produces valid FK integrity', async () => {
+    const dataset = await generateDataset(SMOKE)
+    const report = validateDataset(dataset)
+    expect(report.ok).toBe(true)
+    expect(report.violations).toHaveLength(0)
+  })
+
+  test('smoke profile is reproducible', async () => {
+    const d1 = await generateDataset(SMOKE)
+    const d2 = await generateDataset(SMOKE)
+    expect(d1.organizations).toEqual(d2.organizations)
+    expect(d1.auditEvents).toEqual(d2.auditEvents)
+  })
+
+  test('generates at least one non-uniform distribution', async () => {
+    const dataset = await generateDataset(SMALL)
+    const plans = dataset.organizations.map(o => o.plan)
+    const freePct = plans.filter(p => p === 'free').length / plans.length
+    // free should be roughly 50%; allow 30%–70% for statistical noise at small N
+    expect(freePct).toBeGreaterThan(0.25)
+    expect(freePct).toBeLessThan(0.80)
+  })
+
+================================================================================
+PART B: GO EXAMPLE
+================================================================================
+
+Directory: examples/canonical-faker/go/
+
+  examples/canonical-faker/go/
+  ├── README.md
+  ├── go.mod
+  ├── go.sum                    ← committed after `go mod tidy`
+  ├── cmd/
+  │   └── generate/
+  │       └── main.go           ← CLI entry point
+  ├── internal/
+  │   ├── domain/
+  │   │   └── types.go          ← Go struct definitions for all entities
+  │   ├── profiles/
+  │   │   └── profiles.go       ← Profile struct and constants
+  │   ├── pools/
+  │   │   └── pools.go          ← ID pools, org_member_map, lookup tables
+  │   ├── pipeline/
+  │   │   ├── gofakeit.go       ← gofakeit-based generation pipeline
+  │   │   └── struct_tag.go     ← go-faker/faker struct-tag pipeline (contrast)
+  │   ├── distributions/
+  │   │   └── distributions.go  ← weighted pickers using math/rand
+  │   └── validate/
+  │       └── validate.go       ← FK integrity + cross-field validation
+  └── testdata/
+      └── smoke/                ← small committed test fixtures
+
+B-1. go.mod
+
+  module github.com/agent-context-base/canonical-faker-go
+  go 1.21
+
+  require (
+    github.com/brianvoe/gofakeit/v6 v6.x.x
+    github.com/go-faker/faker/v4 v4.x.x
+  )
+
+Use the latest stable versions at the time of implementation.
+
+B-2. internal/domain/types.go
+
+Go struct definitions for all 7 entities. Use json tags matching field names
+from domain/schema.md exactly. Use string for UUID and timestamp fields.
+
+B-3. internal/pipeline/gofakeit.go
+
+Implement the main generation pipeline using gofakeit.
+
+Seeding:
+  fake := gofakeit.New(uint64(profile.Seed))
+  // Do NOT use gofakeit.GlobalFaker — always use the local instance
+
+Key gofakeit APIs to demonstrate:
+  - fake.Company()              → organization name
+  - fake.Email()                → user email
+  - fake.Name()                 → user full name
+  - fake.DateRange(from, to)    → timestamps within a range
+  - fake.UUID()                 → UUID v4
+  - fake.RandomInt([]int{...})  → weighted integer sampling
+    or fake.WeightedNumber()    → if available in the version used
+
+Cross-field rules: same as Python — sample from pools.go, not from faker.
+
+Weighted distributions: implement in distributions/distributions.go using
+math/rand seeded from the same seed:
+  rng := rand.New(rand.NewSource(int64(profile.Seed)))
+  func WeightedPlan(rng *rand.Rand) string { ... }
+
+Show explicitly that rng and fake use the same seed but are separate instances.
+This is a teaching point: Go requires explicit seed management; there is no
+global seeded faker state.
+
+B-4. internal/pipeline/struct_tag.go
+
+Implement a contrasting struct-tag-based approach using go-faker/faker.
+
+Define a UserTagged struct with faker tags:
+  type UserTagged struct {
+      ID       string `faker:"uuid_hyphenated"`
+      Email    string `faker:"email"`
+      FullName string `faker:"name"`
+  }
+
+Show: faker.FakeData(&user)
+
+Demonstrate that struct tags handle atomic fields but NOT relational fields.
+Add a comment block: "go-faker/faker populates individual struct fields.
+Relational graph integrity (memberships, projects, events) must be handled
+in the orchestration layer, not by struct tags."
+
+Show that struct tag approach and gofakeit approach produce compatible output.
+
+B-5. internal/validate/validate.go
+
+Implement Go validation equivalent to Python's validate_dataset.
+Return a ValidationReport struct with: OK bool, Violations []string, Counts map[string]int.
+
+B-6. cmd/generate/main.go
+
+CLI using flag package:
+  -profile  smoke|small|medium|large  (default: smoke)
+  -pipeline gofakeit|structtag        (default: gofakeit)
+  -output   ./output                  (default: ./output)
+  -format   jsonl|csv                 (default: jsonl)
+  -seed     int override              (optional)
+
+Print validation report. Exit 1 on failure.
+
+JSONL output: one JSON object per line using encoding/json.
+
+B-7. Verification tests
+
+Create: verification/faker/go/test_go_faker.py
+
+This is a Python-based structural test (does NOT require Go toolchain for
+structural checks, but CAN invoke `go test ./...` if Go is installed).
+
+Test class: TestGoFakerExample
+
+  test_go_mod_exists
+    Assert examples/canonical-faker/go/go.mod exists.
+    Assert it contains "gofakeit" and "go-faker".
+
+  test_types_defined
+    Read examples/canonical-faker/go/internal/domain/types.go.
+    Assert it contains "Organization" and "AuditEvent" and "json:".
+
+  test_struct_tag_contrast_documented
+    Read examples/canonical-faker/go/internal/pipeline/struct_tag.go.
+    Assert it contains "relational graph integrity" or "orchestration layer".
+
+  test_cli_exists
+    Assert examples/canonical-faker/go/cmd/generate/main.go exists.
+    Assert it contains "flag.String" and "profile".
+
+  test_go_build_if_available
+    Skip if `go` binary not found in PATH.
+    Run: subprocess.run(["go", "build", "./..."], cwd=".../go/", check=True)
+
+  test_go_smoke_if_available
+    Skip if `go` binary not found.
+    Run: subprocess.run(["go", "run", "./cmd/generate/", "-profile", "smoke",
+                         "-output", tmpdir], check=True)
+    Assert tmpdir/organizations.jsonl exists.
+    Run validate_output.py against tmpdir. Assert exit code 0.
+
+================================================================================
+PART C: README FILES
+================================================================================
+
+Create: examples/canonical-faker/javascript/README.md
+  - What this example demonstrates
+  - @faker-js/faker for field generation, Chance for distribution control
+  - Key teaching points: seeding both faker and Chance, distribution helpers
+  - Quick start: npm install && npx ts-node src/index.ts smoke
+  - How to run tests: npm test
+  - How to validate: python ../../domain/validate_output.py --input-dir ./output/smoke
+
+Create: examples/canonical-faker/go/README.md
+  - What this example demonstrates
+  - gofakeit (imperative) vs go-faker/faker (struct-tag) — both approaches
+  - Key teaching points: explicit seed management, RNG isolation, pool pattern
+  - Quick start: go run ./cmd/generate/ -profile smoke
+  - How to test: go test ./...
+  - How to validate: python ../../domain/validate_output.py --input-dir ./output/smoke
+  - Honest note: Go's weighted distribution APIs are less ergonomic than Python's;
+    distributions.go shows the manual weighted-slice approach
+
+================================================================================
+PART D: UPDATE CATALOG
+================================================================================
+
+Update examples/canonical-faker/CATALOG.md.
+
+Change:
+  | JavaScript | @faker-js/faker | Chance    | [x] PROMPT_122 | javascript/ |
+  | Go         | gofakeit        | go-faker/faker | [x] PROMPT_122 | go/    |
+
+================================================================================
+PART E: VERIFICATION SUMMARY
+================================================================================
+
+After all parts are complete:
+
+  python -m unittest verification/faker/go/test_go_faker.py -v
+  python -m unittest verification/faker/python/test_python_faker.py -v
+  python -m unittest verification/faker/test_domain_spec.py -v
+  python -m unittest verification/unit/test_faker_arc_foundation.py -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+For JS/TS (if Node.js available):
+  cd examples/canonical-faker/javascript && npm install && npm test
+
+For Go (if Go available):
+  cd examples/canonical-faker/go && go test ./... -v -run TestSmoke
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+Use grouped commits prefixed [PROMPT_122].
+
+  1. [PROMPT_122] add JS/TS TenantCore domain types and profiles
+     Stage: examples/canonical-faker/javascript/src/domain.ts
+            examples/canonical-faker/javascript/src/profiles.ts
+            examples/canonical-faker/javascript/package.json
+            examples/canonical-faker/javascript/tsconfig.json
+
+  2. [PROMPT_122] add JS/TS Chance distribution helpers and faker pipeline
+     Stage: examples/canonical-faker/javascript/src/distributions.ts
+            examples/canonical-faker/javascript/src/pipeline.ts
+            examples/canonical-faker/javascript/src/pools.ts
+
+  3. [PROMPT_122] add JS/TS validator, CLI, and smoke tests
+     Stage: examples/canonical-faker/javascript/src/validate.ts
+            examples/canonical-faker/javascript/src/index.ts
+            examples/canonical-faker/javascript/__tests__/smoke.test.ts
+            examples/canonical-faker/javascript/README.md
+
+  4. [PROMPT_122] add Go domain types, profiles, and gofakeit pipeline
+     Stage: examples/canonical-faker/go/go.mod
+            examples/canonical-faker/go/internal/domain/types.go
+            examples/canonical-faker/go/internal/profiles/profiles.go
+            examples/canonical-faker/go/internal/pipeline/gofakeit.go
+            examples/canonical-faker/go/internal/pools/pools.go
+            examples/canonical-faker/go/internal/distributions/distributions.go
+
+  5. [PROMPT_122] add Go struct-tag contrast pipeline and validator
+     Stage: examples/canonical-faker/go/internal/pipeline/struct_tag.go
+            examples/canonical-faker/go/internal/validate/validate.go
+            examples/canonical-faker/go/cmd/generate/main.go
+            examples/canonical-faker/go/README.md
+
+  6. [PROMPT_122] add structural tests for JS/TS and Go examples
+     Stage: verification/faker/go/test_go_faker.py
+
+  7. [PROMPT_122] mark JS and Go complete in CATALOG
+     Stage: examples/canonical-faker/CATALOG.md
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Implement both JS/TS and Go examples with full relational pipelines
+  - Demonstrate the key contrasting patterns in each language
+  - Show explicit seed management in both languages
+  - Show that relational graph integrity is not provided by faker libs
+  - Write structural Python tests for Go (no Go toolchain requirement for structural checks)
+
+DO NOT:
+  - Use any database — output is flat JSONL/CSV only
+  - Add Docker containers
+  - Use ORMs, frameworks, or HTTP servers
+  - Modify domain/ files or Python example files
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+
+  - examples/canonical-faker/javascript/ has all source files and compiles
+  - examples/canonical-faker/go/ has all source files and builds
+  - JS smoke tests pass (or Node not available: documented)
+  - Go smoke tests pass (or Go not available: documented)
+  - validate_output.py passes against smoke output from both pipelines
+  - CATALOG.md shows JS and Go as [x]
+  - All Python structural tests pass
+
+PROMPT_123 implements Rust, Java, and Kotlin canonical examples.

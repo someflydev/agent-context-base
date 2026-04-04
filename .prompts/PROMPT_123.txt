@@ -1,0 +1,599 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one
+fresh coding-assistant session with commit prefixes like `[PROMPT_123]`.
+
+PROMPT_119: Faker Arc — Foundation.
+PROMPT_120: Faker Arc — Domain design.
+PROMPT_121: Faker Arc — Python. [x]
+PROMPT_122: Faker Arc — JavaScript/TypeScript + Go. [x]
+
+This prompt (PROMPT_123) implements canonical faker examples for three languages:
+  - Rust using fake (fake-rs) with typed builders
+  - Java using Datafaker with relational orchestration
+  - Kotlin using kotlin-faker (primary) and Datafaker (secondary)
+
+              [FAKER ARC: Prompt 5 of 8 — Rust + Java + Kotlin]
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                    (run; study output)
+  4. memory/INDEX.md
+
+Read arc foundation and domain spec:
+  5. context/doctrine/synthetic-data-realism.md       (READ — the 7 rules)
+  6. context/skills/synthetic-dataset-design.md       (READ — 7-step pipeline)
+  7. context/stacks/faker-rust.yaml                   (READ — Rust stack)
+  8. context/stacks/faker-java.yaml                   (READ — Java stack)
+  9. context/stacks/faker-kotlin.yaml                 (READ — Kotlin stack)
+ 10. examples/canonical-faker/domain/schema.md        (READ — entity graph)
+ 11. examples/canonical-faker/domain/generation-order.md (READ — 7-stage order)
+ 12. examples/canonical-faker/domain/seed-registry.md (READ — smoke seed = 42)
+ 13. examples/canonical-faker/python/faker_pipeline/generators.py (READ — reference)
+ 14. examples/canonical-faker/CATALOG.md              (READ — current state)
+
+Run verification before touching any example files:
+  python -m unittest verification/faker/python/test_python_faker.py -v
+  python -m unittest verification/faker/go/test_go_faker.py -v
+
+Both must pass (Python and Go must be [x] before this prompt begins).
+
+================================================================================
+BACKGROUND
+================================================================================
+
+This prompt covers the typed/JVM cluster plus Rust:
+
+RUST: fake-rs is the primary Rust library. It provides derive macros and a
+      typed generation API. The key teaching surface is building a relational
+      builder layer on top of fake-rs that maintains ID pools and enforces the
+      7-stage generation order. Rust's ownership model makes the pool pattern
+      explicit in a way that dynamic languages hide. This is an advantage — show it.
+      Use deterministic seeding with fake-rs's Seed trait (or rand::SeedableRng).
+
+JAVA: Datafaker is the modern maintained JVM faker. It supersedes java-faker.
+      The Java example's primary teaching value is the orchestration layer above
+      Datafaker — showing how to build a relational graph using plain Java data
+      structures, not JPA or Spring annotations. The example must be pure Java
+      with no framework dependencies.
+
+KOTLIN: Two styles side by side. kotlin-faker provides a DSL-idiomatic Kotlin API.
+        Datafaker is available via JVM interop for teams that already use it on
+        the Java side. Show both. Use Kotlin data classes, sequence/flow-based
+        pipeline idioms, and coroutines if the batched write path benefits from it.
+
+================================================================================
+PART A: RUST EXAMPLE
+================================================================================
+
+Directory: examples/canonical-faker/rust/
+
+  examples/canonical-faker/rust/
+  ├── README.md
+  ├── Cargo.toml
+  ├── src/
+  │   ├── main.rs               ← CLI entry point
+  │   ├── domain.rs             ← Rust struct definitions + serde Serialize
+  │   ├── profiles.rs           ← Profile struct + smoke/small/medium/large
+  │   ├── pools.rs              ← ID pools and org_member_map
+  │   ├── pipeline.rs           ← main generation pipeline using fake-rs
+  │   ├── distributions.rs      ← weighted pickers using rand + weights
+  │   └── validate.rs           ← FK integrity + cross-field validation
+  └── tests/
+      └── smoke_test.rs         ← Rust integration tests
+
+A-1. Cargo.toml
+
+  [package]
+  name = "canonical-faker-rust"
+  version = "0.1.0"
+  edition = "2021"
+
+  [dependencies]
+  fake = { version = "2.x", features = ["derive"] }
+  rand = "0.8"
+  serde = { version = "1.0", features = ["derive"] }
+  serde_json = "1.0"
+  uuid = { version = "1.0", features = ["v4"] }
+  chrono = { version = "0.4", features = ["serde"] }
+
+Use latest stable versions at implementation time.
+
+A-2. src/domain.rs
+
+Rust structs for all 7 TenantCore entities.
+Derive: #[derive(Debug, Clone, Serialize, Deserialize)]
+Use String for UUIDs, chrono::DateTime<Utc> for timestamps.
+Add serde rename_all = "snake_case" to match JSON field names from schema.md.
+
+A-3. src/profiles.rs
+
+  #[derive(Debug, Clone)]
+  pub struct Profile {
+      pub num_orgs: usize,
+      pub num_users: usize,
+      pub seed: u64,
+      pub name: &'static str,
+  }
+  impl Profile {
+      pub const SMOKE: Profile = Profile { num_orgs: 3, num_users: 10, seed: 42, name: "smoke" };
+      // ... SMALL, MEDIUM, LARGE
+  }
+
+A-4. src/pipeline.rs
+
+Use fake-rs derive macros for atomic field generation AND the builder pattern
+for relational orchestration.
+
+Demonstrate fake-rs derive macros on a struct that is NOT part of the
+relational graph (e.g., a standalone AddressSnapshot struct):
+  #[derive(Debug, Fake)]
+  pub struct AddressSnapshot {
+      #[fake(faker = "CityName()")]
+      pub city: String,
+      #[fake(faker = "CountryName()")]
+      pub country: String,
+  }
+
+For the relational entities (Organization, User, Membership, etc.),
+use explicit builder functions that call fake-rs APIs directly and maintain
+pools. Show this as a builder struct:
+
+  pub struct PipelineBuilder {
+      pub profile: Profile,
+      pub rng: StdRng,
+      pub org_pool: Vec<Organization>,
+      pub user_pool: Vec<User>,
+      pub org_member_map: HashMap<String, Vec<String>>,
+      // ...
+  }
+  impl PipelineBuilder {
+      pub fn new(profile: Profile) -> Self {
+          let rng = StdRng::seed_from_u64(profile.seed);
+          // ...
+      }
+      pub fn build_orgs(&mut self) -> &mut Self { ... self }
+      pub fn build_users(&mut self) -> &mut Self { ... self }
+      pub fn build_memberships(&mut self) -> &mut Self { ... self }
+      // ... method chaining
+      pub fn build(self) -> Dataset { ... }
+  }
+
+Method chaining is idiomatic Rust for builder patterns. Show it.
+
+A-5. src/distributions.rs
+
+Weighted distributions using rand::seq::SliceRandom and manual weight arrays:
+  pub fn weighted_plan(rng: &mut impl Rng) -> &'static str {
+      let choices = ["free", "free", "free", "free", "free",
+                     "pro", "pro", "pro", "pro",       // rough 50/35/15 weights
+                     "enterprise"];                     // using repeated values
+      choices.choose(rng).unwrap()
+  }
+
+Or use the `rand_distr` crate if available and justified. Document the choice.
+
+A-6. src/validate.rs
+
+ValidationReport struct:
+  pub struct ValidationReport {
+      pub ok: bool,
+      pub violations: Vec<String>,
+      pub counts: HashMap<String, usize>,
+      pub seed: u64,
+      pub profile_name: String,
+  }
+
+Implement all Cross-Field Rules A–I from schema.md.
+Return ValidationReport. Print to stdout in main.rs.
+
+A-7. src/main.rs
+
+CLI using clap or std::env::args:
+  cargo run -- --profile smoke --output ./output --format jsonl
+
+Write one JSONL file per entity. Use BufWriter for chunked writes.
+
+A-8. tests/smoke_test.rs
+
+  #[test]
+  fn test_smoke_produces_correct_org_count() {
+      let dataset = PipelineBuilder::new(Profile::SMOKE).build_all().build();
+      assert_eq!(dataset.organizations.len(), 3);
+  }
+
+  #[test]
+  fn test_smoke_passes_validation() {
+      let dataset = PipelineBuilder::new(Profile::SMOKE).build_all().build();
+      let report = validate(&dataset);
+      assert!(report.ok, "Validation failed: {:?}", report.violations);
+  }
+
+  #[test]
+  fn test_smoke_reproducible() {
+      let d1 = PipelineBuilder::new(Profile::SMOKE).build_all().build();
+      let d2 = PipelineBuilder::new(Profile::SMOKE).build_all().build();
+      assert_eq!(d1.organizations, d2.organizations);
+  }
+
+================================================================================
+PART B: JAVA EXAMPLE
+================================================================================
+
+Directory: examples/canonical-faker/java/
+
+  examples/canonical-faker/java/
+  ├── README.md
+  ├── pom.xml                   ← Maven build file
+  ├── src/
+  │   └── main/
+  │       └── java/
+  │           └── io/agentcontextbase/faker/
+  │               ├── domain/
+  │               │   └── TenantCoreEntities.java   ← all entity records
+  │               ├── profiles/
+  │               │   └── Profile.java
+  │               ├── pipeline/
+  │               │   └── TenantCorePipeline.java   ← main generation pipeline
+  │               ├── distributions/
+  │               │   └── Distributions.java        ← weighted pickers
+  │               ├── pools/
+  │               │   └── IdPools.java
+  │               ├── validate/
+  │               │   └── ValidationReport.java
+  │               └── Main.java                     ← CLI entry point
+  └── src/
+      └── test/
+          └── java/
+              └── io/agentcontextbase/faker/
+                  └── SmokeTest.java                ← JUnit 5 smoke tests
+
+B-1. pom.xml
+
+Maven POM with:
+  - Datafaker 2.x dependency
+  - Jackson (jackson-databind) for JSON serialization
+  - JUnit 5 for tests
+  - maven-compiler-plugin targeting Java 17+
+
+  <dependency>
+    <groupId>net.datafaker</groupId>
+    <artifactId>datafaker</artifactId>
+    <version>2.x.x</version>
+  </dependency>
+  <dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-databind</artifactId>
+    <version>2.x.x</version>
+  </dependency>
+
+B-2. TenantCoreEntities.java
+
+Use Java 17+ record types for all 7 entities. Examples:
+  public record Organization(
+      String id, String name, String slug, String plan,
+      String region, String createdAt, String ownerEmail) {}
+
+B-3. TenantCorePipeline.java
+
+The key teaching point for Java: relational orchestration on top of Datafaker.
+
+Show:
+  1. Datafaker initialization with seed:
+     Faker faker = new Faker(new Random(profile.seed()));
+
+  2. Provider calls:
+     faker.company().name()
+     faker.internet().emailAddress()
+     faker.name().fullName()
+     faker.date().past(365 * 3, TimeUnit.DAYS)
+
+  3. Explicit ID pools as ArrayList<String>:
+     List<String> orgIds = new ArrayList<>();
+     // generate orgs, collect IDs
+     // then generate memberships sampling from orgIds
+
+  4. Map-based org_member_map:
+     Map<String, List<String>> orgMemberMap = new HashMap<>();
+
+  5. Weighted plan selection using Distributions.weightedPlan(random):
+     a utility method that uses random.nextInt() against weight thresholds
+
+  6. Chunked JSONL writes:
+     try (BufferedWriter writer = Files.newBufferedWriter(path)) {
+         for (Organization org : orgs) {
+             writer.write(mapper.writeValueAsString(org));
+             writer.newLine();
+         }
+     }
+
+  7. Temporal realism: use Instant arithmetic, not faker.date() alone.
+     For joined_at >= org.created_at, parse org.createdAt as Instant,
+     then add a random duration.
+
+B-4. SmokeTest.java (JUnit 5)
+
+  @Test
+  void smokeProducesCorrectOrgCount() {
+      TenantCoreDataset dataset = TenantCorePipeline.generate(Profile.SMOKE);
+      assertEquals(3, dataset.organizations().size());
+  }
+
+  @Test
+  void smokePassesValidation() {
+      TenantCoreDataset dataset = TenantCorePipeline.generate(Profile.SMOKE);
+      ValidationReport report = TenantCorePipeline.validate(dataset);
+      assertTrue(report.ok(), "Violations: " + report.violations());
+  }
+
+  @Test
+  void smokeIsReproducible() {
+      TenantCoreDataset d1 = TenantCorePipeline.generate(Profile.SMOKE);
+      TenantCoreDataset d2 = TenantCorePipeline.generate(Profile.SMOKE);
+      assertEquals(d1.organizations(), d2.organizations());
+  }
+
+================================================================================
+PART C: KOTLIN EXAMPLE
+================================================================================
+
+Directory: examples/canonical-faker/kotlin/
+
+  examples/canonical-faker/kotlin/
+  ├── README.md
+  ├── build.gradle.kts
+  ├── settings.gradle.kts
+  ├── src/
+  │   └── main/
+  │       └── kotlin/
+  │           └── io/agentcontextbase/faker/
+  │               ├── domain/
+  │               │   └── Entities.kt             ← data classes for all entities
+  │               ├── profiles/
+  │               │   └── Profile.kt
+  │               ├── pipeline/
+  │               │   ├── KotlinFakerPipeline.kt  ← kotlin-faker-based pipeline
+  │               │   └── DatafakerPipeline.kt    ← Datafaker JVM interop pipeline
+  │               ├── distributions/
+  │               │   └── Distributions.kt
+  │               ├── pools/
+  │               │   └── IdPools.kt
+  │               ├── validate/
+  │               │   └── Validate.kt
+  │               └── Main.kt
+  └── src/
+      └── test/
+          └── kotlin/
+              └── io/agentcontextbase/faker/
+                  └── SmokeTest.kt
+
+C-1. build.gradle.kts
+
+  dependencies {
+      implementation("io.github.serpro69:kotlin-faker:2.x.x")
+      implementation("net.datafaker:datafaker:2.x.x")
+      implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.x.x")
+      testImplementation("org.junit.jupiter:junit-jupiter:5.x.x")
+      testImplementation("io.kotest:kotest-runner-junit5:5.x.x")
+  }
+
+C-2. Entities.kt
+
+Kotlin data classes for all 7 entities. Use @JsonProperty annotations for
+snake_case JSON fields:
+  data class Organization(
+      val id: String,
+      val name: String,
+      val slug: String,
+      val plan: String,
+      val region: String,
+      @JsonProperty("created_at") val createdAt: String,
+      @JsonProperty("owner_email") val ownerEmail: String
+  )
+
+C-3. KotlinFakerPipeline.kt
+
+Demonstrates kotlin-faker DSL style:
+  val faker = faker {
+      fakerConfig { locale = Locale.EN }
+      randomClassInstance { }
+  }
+
+  faker.company.name()
+  faker.internet.email()
+  faker.name.name()
+
+Show Kotlin-specific idioms:
+  - Use buildList { ... } and buildMap { ... } for constructing pools
+  - Use generateSequence for lazy evaluation if appropriate
+  - Use data class copy() for trait-like entity modification
+
+Show that kotlin-faker supports seeding (check the library's seed API and
+document it). If the library's seed support is limited, document this clearly
+and use java.util.Random(seed) for distribution decisions.
+
+C-4. DatafakerPipeline.kt
+
+Short demonstration (not a full reimplementation) showing Datafaker called
+from Kotlin via JVM interop:
+  val faker = Faker(Random(profile.seed))
+  faker.company().name()  // same Java API called from Kotlin
+
+Add a comment: "Datafaker is a Java library. kotlin-faker provides a more
+idiomatic Kotlin DSL. Use kotlin-faker for new Kotlin projects; use Datafaker
+when you already have a Java faker dependency to share."
+
+C-5. SmokeTest.kt (Kotest or JUnit 5)
+
+  class SmokeTest : FunSpec({
+    test("smoke produces correct org count") {
+        val dataset = KotlinFakerPipeline.generate(Profile.SMOKE)
+        dataset.organizations.size shouldBe 3
+    }
+    test("smoke passes validation") {
+        val dataset = KotlinFakerPipeline.generate(Profile.SMOKE)
+        val report = validate(dataset)
+        report.ok shouldBe true
+    }
+    test("smoke is reproducible") {
+        val d1 = KotlinFakerPipeline.generate(Profile.SMOKE)
+        val d2 = KotlinFakerPipeline.generate(Profile.SMOKE)
+        d1.organizations shouldBe d2.organizations
+    }
+  })
+
+================================================================================
+PART D: STRUCTURAL VERIFICATION TESTS
+================================================================================
+
+Create: verification/faker/rust/test_rust_faker.py
+
+Test class: TestRustFakerExample
+  test_cargo_toml_exists
+    Assert Cargo.toml exists. Assert it contains "fake" and "rand".
+  test_domain_types_defined
+    Read src/domain.rs. Assert it contains "Organization" and "AuditEvent".
+  test_pipeline_uses_builder_pattern
+    Read src/pipeline.rs. Assert it contains "PipelineBuilder".
+  test_smoke_tests_exist
+    Assert tests/smoke_test.rs exists. Assert it contains "#[test]".
+  test_rust_build_if_available
+    Skip if cargo not found. Run: cargo build --manifest-path .../Cargo.toml
+  test_rust_smoke_if_available
+    Skip if cargo not found. Run: cargo test --test smoke_test
+    Assert exit 0.
+
+Create: verification/faker/java/test_java_faker.py
+
+Test class: TestJavaFakerExample
+  test_pom_exists
+    Assert pom.xml exists. Assert it contains "datafaker".
+  test_entity_records_defined
+    Read TenantCoreEntities.java. Assert it contains "record Organization" and "record AuditEvent".
+  test_pipeline_uses_explicit_pools
+    Read TenantCorePipeline.java. Assert it contains "orgIds" or "orgPool".
+  test_maven_build_if_available
+    Skip if mvn not found. Run: mvn compile -f .../pom.xml
+  test_java_smoke_if_available
+    Skip if mvn not found. Run: mvn test -f .../pom.xml -Dtest=SmokeTest
+
+Create: verification/faker/kotlin/test_kotlin_faker.py
+
+Test class: TestKotlinFakerExample
+  test_build_gradle_exists
+    Assert build.gradle.kts exists. Assert it contains "kotlin-faker" and "datafaker".
+  test_entities_defined
+    Read Entities.kt. Assert it contains "data class Organization".
+  test_two_pipelines_exist
+    Assert KotlinFakerPipeline.kt exists.
+    Assert DatafakerPipeline.kt exists.
+    Read DatafakerPipeline.kt. Assert it contains "kotlin-faker" or "DSL" or "idiomatic".
+  test_gradle_build_if_available
+    Skip if gradle not found. Run: gradle build --project-dir .../kotlin/
+  test_kotlin_smoke_if_available
+    Skip if gradle not found. Run: gradle test --project-dir .../kotlin/
+
+================================================================================
+PART E: README FILES
+================================================================================
+
+Create: examples/canonical-faker/rust/README.md
+  - What this example demonstrates (fake-rs derive macros + builder pattern)
+  - Why Rust's ownership model makes the pool pattern explicit
+  - Seeding via rand::SeedableRng
+  - Quick start: cargo run -- --profile smoke
+  - How to test: cargo test
+  - How to validate: python ../../domain/validate_output.py --input-dir ./output/smoke
+  - Note: no database, no async, pure generation pipeline
+
+Create: examples/canonical-faker/java/README.md
+  - Datafaker as the modern JVM faker
+  - Why relational orchestration is the primary teaching surface (not just provider calls)
+  - Seeding: new Faker(new Random(seed))
+  - Quick start: mvn compile && java -jar target/... --profile smoke
+  - Java 17+ record types for entity definitions
+  - Note: pure Java, no Spring/JPA/Hibernate
+
+Create: examples/canonical-faker/kotlin/README.md
+  - kotlin-faker DSL vs Datafaker JVM interop — when to use each
+  - Kotlin data classes, buildList/buildMap idioms, lazy sequences
+  - Seeding caveats if kotlin-faker's seed support is limited (document honestly)
+  - Quick start: gradle run --args="--profile smoke"
+  - How to test: gradle test
+
+================================================================================
+PART F: UPDATE CATALOG
+================================================================================
+
+Update examples/canonical-faker/CATALOG.md:
+  | Rust   | fake (fake-rs) | —          | [x] PROMPT_123 | rust/   |
+  | Java   | Datafaker      | —          | [x] PROMPT_123 | java/   |
+  | Kotlin | kotlin-faker   | Datafaker  | [x] PROMPT_123 | kotlin/ |
+
+================================================================================
+VERIFICATION
+================================================================================
+
+After all parts are complete:
+
+  python -m unittest verification/faker/rust/test_rust_faker.py -v
+  python -m unittest verification/faker/java/test_java_faker.py -v
+  python -m unittest verification/faker/kotlin/test_kotlin_faker.py -v
+  python -m unittest verification/faker/python/test_python_faker.py -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+If Rust toolchain available:
+  cd examples/canonical-faker/rust && cargo test
+If Maven available:
+  cd examples/canonical-faker/java && mvn test
+If Gradle/Kotlin available:
+  cd examples/canonical-faker/kotlin && gradle test
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+Use grouped commits prefixed [PROMPT_123].
+
+  1. [PROMPT_123] add Rust TenantCore types, profiles, pools, distributions
+  2. [PROMPT_123] add Rust builder pipeline, validation, CLI, smoke tests
+  3. [PROMPT_123] add Java pom, entity records, Datafaker pipeline, JUnit tests
+  4. [PROMPT_123] add Kotlin build, entities, kotlin-faker + Datafaker pipelines, tests
+  5. [PROMPT_123] add structural tests for Rust, Java, Kotlin examples
+  6. [PROMPT_123] mark Rust, Java, Kotlin complete in CATALOG
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Implement all three language examples with full relational pipelines
+  - Show builder pattern in Rust, explicit pool management in Java, DSL contrast in Kotlin
+  - Write structural tests that verify file presence and key patterns
+  - Note honestly where seed support is limited in any library
+
+DO NOT:
+  - Use Spring, JPA, Hibernate, or any web framework
+  - Add database connections — output is JSONL/CSV flat files only
+  - Install toolchains — document commands for running when available
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+  - All three examples have complete source files
+  - All three examples have smoke tests (in the target language)
+  - All three have structural Python tests that pass
+  - CATALOG.md shows Rust, Java, Kotlin as [x] PROMPT_123
+  - validate_output.py would pass against smoke output from all three
+
+PROMPT_124 implements Ruby and PHP canonical examples.

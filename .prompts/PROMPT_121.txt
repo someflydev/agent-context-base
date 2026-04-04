@@ -1,0 +1,429 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one
+fresh coding-assistant session with commit prefixes like `[PROMPT_121]`.
+
+PROMPT_119: Faker Arc — Foundation (doctrine, archetypes, 10 stacks, skills, workflow).
+PROMPT_120: Faker Arc — Domain design (TenantCore schema, generation order, profiles,
+            Python reference patterns module, validate_output.py, CATALOG skeleton).
+
+This prompt (PROMPT_121) implements the Python canonical faker example.
+Python is the reference implementation for this arc. It must be correct,
+readable, and complete enough to serve as the model other language prompts point to.
+
+              [FAKER ARC: Prompt 3 of 8 — Python Canonical Examples]
+
+Python has three library surfaces to demonstrate:
+  - Faker: the mainstream realistic-data provider (primary)
+  - Mimesis: a fast, strongly typed complementary provider
+  - factory_boy: ORM-style object graph factories (for the graph layer)
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                    (run; study output)
+  4. memory/INDEX.md
+
+Read the arc foundation and domain spec:
+  5. context/doctrine/synthetic-data-realism.md       (READ — the 7 rules; know them)
+  6. context/skills/synthetic-dataset-design.md       (READ — 7-step pipeline)
+  7. context/stacks/faker-python.yaml                 (READ — Python stack spec)
+  8. examples/canonical-faker/domain/schema.md        (READ — entity graph and constraints)
+  9. examples/canonical-faker/domain/generation-order.md (READ — canonical 7-stage order)
+ 10. examples/canonical-faker/domain/seed-registry.md (READ — smoke seed = 42)
+ 11. examples/canonical-faker/domain/profiles.md      (READ — row count targets)
+ 12. examples/canonical-faker/domain/generation_patterns.py (READ — reference implementation)
+ 13. examples/canonical-faker/CATALOG.md              (READ — mark Python as in-progress)
+
+Run verification before touching any example files:
+  python -m unittest verification/faker/test_domain_spec.py -v
+  python -m unittest verification/unit/test_faker_arc_foundation.py -v
+
+Both must pass.
+
+================================================================================
+BACKGROUND
+================================================================================
+
+Python goes first in this arc for two reasons:
+  1. The domain/generation_patterns.py module (PROMPT_120) is already a Python
+     reference implementation. The canonical example extends it into a full
+     deliverable with CLI, three library demonstrations, and output profiles.
+  2. Python is the only language in this arc that can be smoke-tested without
+     a separate toolchain install. All arc-level parity checks run against
+     Python output (see PROMPT_126).
+
+The three Python library surfaces cover meaningfully different positions:
+  - Faker: imperative provider calls; the standard "call a method" approach
+  - Mimesis: schema-driven, typed, faster; shows a different generation idiom
+  - factory_boy: factory declarations + lazy evaluation; ORM-oriented, but
+    useful for showing how a declarative object graph layer sits on top of faker
+
+The three examples must generate the same TenantCore domain entities.
+Their output JSONL files must be structurally identical (same keys, same schema).
+
+================================================================================
+PART 1: DIRECTORY STRUCTURE
+================================================================================
+
+Create the following directory structure. Read this carefully before creating files.
+
+  examples/canonical-faker/python/
+  ├── README.md
+  ├── requirements.txt
+  ├── generate.py               ← main CLI entry point
+  ├── profiles.py               ← profile definitions (wraps domain/profiles.md)
+  ├── faker_pipeline/
+  │   ├── __init__.py
+  │   ├── generators.py         ← Faker-based generation pipeline
+  │   └── README.md
+  ├── mimesis_pipeline/
+  │   ├── __init__.py
+  │   ├── generators.py         ← Mimesis-based generation pipeline
+  │   └── README.md
+  ├── factory_graph/
+  │   ├── __init__.py
+  │   ├── factories.py          ← factory_boy factory declarations
+  │   ├── runner.py             ← runs the factory graph and collects output
+  │   └── README.md
+  └── output/                   ← gitignored; generated data goes here
+
+================================================================================
+PART 2: requirements.txt
+================================================================================
+
+Create: examples/canonical-faker/python/requirements.txt
+
+  faker>=24.0.0
+  mimesis>=11.0.0
+  factory_boy>=3.3.0
+
+No other dependencies. Do not use pandas, SQLAlchemy, or any DB library.
+
+================================================================================
+PART 3: faker_pipeline/generators.py
+================================================================================
+
+Create: examples/canonical-faker/python/faker_pipeline/generators.py
+
+This module extends domain/generation_patterns.py with Faker-specific idioms.
+
+Do not duplicate what generation_patterns.py already provides.
+Import and reuse:
+  from examples.canonical_faker.domain.generation_patterns import (
+      Profile, generate_dataset, write_jsonl, write_csv, validate_dataset
+  )
+
+If importing via relative path is cleaner in this context, use that. The key
+requirement is no duplication of the generation logic.
+
+This file must demonstrate Faker-specific features NOT in the base module:
+  1. Locale-aware generation: use Faker with multiple locales simultaneously.
+     Show how to generate a mixed-locale dataset (e.g., 60% en-US, 20% en-GB,
+     10% de-DE, 10% fr-FR) where locale-specific fields (names, addresses,
+     phone numbers) are consistent within a user record.
+     Use: Faker(['en_US', 'en_GB', 'de_DE', 'fr_FR'], use_weighting=True)
+
+  2. Custom provider: write a small CustomProvider class that adds:
+     - faker.tenant_core_plan() → weighted plan (free/pro/enterprise)
+     - faker.tenant_core_region() → weighted region
+     Add the provider to the Faker instance.
+
+  3. Edge-case injection: with 5% probability, generate "edge case" users:
+     - very long email (near 254 char limit)
+     - name with non-ASCII characters
+     - timezone set to 'UTC' (a common special case)
+     Document these edge case rates in a module-level comment.
+
+The module must expose: run_faker_pipeline(profile: Profile, output_dir: Path)
+
+================================================================================
+PART 4: mimesis_pipeline/generators.py
+================================================================================
+
+Create: examples/canonical-faker/python/mimesis_pipeline/generators.py
+
+This module implements the same TenantCore generation pipeline using Mimesis.
+
+Key Mimesis APIs to demonstrate:
+  - from mimesis import Person, Address, Internet, Datetime, Text, Finance
+  - from mimesis import Generic (multi-provider entry point)
+  - from mimesis.locales import Locale
+  - from mimesis.schema import Schema, Field — show schema-based generation
+
+Mimesis-specific demonstrations:
+  1. Schema-based generation: define the organization entity using
+     mimesis.Schema and mimesis.Field, showing the schema-as-code pattern
+     that Mimesis specializes in.
+     Example:
+       field = Field(locale=Locale.EN, seed=profile.seed)
+       schema = Schema(schema=lambda: {
+           "id": field("uuid"),
+           "name": field("company"),
+           ...
+       }, iterations=profile.num_orgs)
+       orgs = schema.create()
+
+  2. Custom field: add a custom provider that generates TenantCore-specific
+     enums (plan, region, role) using mimesis.providers.BaseProvider.
+
+  3. Batched generation: demonstrate mimesis's built-in iteration support.
+     Mimesis Schema.create(iterations=N) is faster than a Python for loop
+     calling faker methods N times. Document the performance note in the README.
+
+The module must expose: run_mimesis_pipeline(profile: Profile, output_dir: Path)
+
+The relational graph layer (memberships, projects, audit_events) must follow
+the same 7-stage ordering as generation_patterns.py, even if atomic field
+generation uses Mimesis instead of Faker.
+
+IMPORTANT: Mimesis alone does not handle relational integrity. The graph layer
+(parent-first ordering, ID pools, cross-field rules) must be implemented
+explicitly on top of Mimesis, just as it is in the Faker pipeline.
+Add a comment at the top of the file: "Mimesis generates realistic atomic
+values. This module adds the relational graph layer on top."
+
+================================================================================
+PART 5: factory_graph/factories.py
+================================================================================
+
+Create: examples/canonical-faker/python/factory_graph/factories.py
+
+This module shows factory_boy as a declarative object-graph layer.
+factory_boy does not replace the generation pipeline — it provides a
+declarative syntax for defining entity construction patterns.
+
+Key demonstration points:
+  1. Define factory classes for Organization, User, Membership, Project,
+     AuditEvent using factory.Factory (not DjangoModelFactory — no ORM).
+
+  2. Show lazy attributes: joined_at must be after org.created_at.
+     Use factory.LazyAttribute.
+
+  3. Show SubFactory: membership.user = factory.SubFactory(UserFactory).
+
+  4. Show Sequence: unique email via factory.Sequence(lambda n: f"user_{n}@example.com")
+
+  5. Show Trait: an "enterprise_org" trait that sets plan="enterprise" and
+     generates a larger initial member count.
+
+  6. Show batch creation: UserFactory.create_batch(10, seed=42) — note that
+     factory_boy's "seed" concept requires use_seed() on the Faker instance
+     inside the factory.
+
+IMPORTANT scope note: factory_boy is useful for object graph declaration.
+It is NOT ideal for large-volume generation (it creates Python objects, not
+raw dicts, and the overhead is meaningful at 50,000+ rows). Add a note in
+the module docstring: "Use factory_boy for smoke/small profiles. For medium/
+large profiles, use the faker_pipeline or mimesis_pipeline directly."
+
+factory_graph/runner.py must:
+  - Run the factory graph for the smoke profile
+  - Collect output as dicts (not ORM objects)
+  - Write to output_dir using write_jsonl from domain/generation_patterns.py
+  - Run validate_dataset
+  - Print the validation report
+
+================================================================================
+PART 6: generate.py (main CLI)
+================================================================================
+
+Create: examples/canonical-faker/python/generate.py
+
+A simple CLI using argparse. Usage:
+
+  python generate.py --pipeline faker|mimesis|factory --profile smoke|small|medium|large
+                     --output-dir ./output [--seed N] [--format jsonl|csv|both]
+
+Arguments:
+  --pipeline   which generation pipeline to use (default: faker)
+  --profile    which profile to use (default: smoke)
+  --output-dir where to write output files (default: ./output)
+  --seed       override the profile's default seed (optional)
+  --format     output format (default: jsonl)
+
+The CLI must:
+  - Import and call the selected pipeline's run function
+  - Print the validation report summary to stdout
+  - Exit 0 on success, 1 on validation failure
+  - Not require any environment variables or configuration files
+
+================================================================================
+PART 7: README.md for each sub-directory
+================================================================================
+
+Create: examples/canonical-faker/python/README.md
+
+Required content:
+  - What these examples demonstrate
+  - Library matrix (Faker, Mimesis, factory_boy)
+  - Quick start: pip install -r requirements.txt && python generate.py
+  - Profile descriptions and typical run times
+  - Explanation of why relational integrity is handled explicitly, not by the faker lib
+  - Link to domain/schema.md and domain/generation-order.md
+
+Create: examples/canonical-faker/python/faker_pipeline/README.md
+  - Faker-specific features demonstrated (multi-locale, custom provider, edge cases)
+  - Generation time estimate for smoke/small/medium profiles
+
+Create: examples/canonical-faker/python/mimesis_pipeline/README.md
+  - Mimesis Schema-based generation demonstration
+  - Performance note: Mimesis is faster than Faker for large volumes
+  - When to prefer Mimesis vs Faker
+
+Create: examples/canonical-faker/python/factory_graph/README.md
+  - factory_boy use case: declarative object graph, small volume
+  - When to use factory_boy vs raw faker pipeline
+  - Note: not intended for large profiles
+
+================================================================================
+PART 8: SMOKE TESTS
+================================================================================
+
+Create: verification/faker/python/test_python_faker.py
+
+Test class: TestPythonFakerExample
+
+  test_requirements_file_exists
+    Assert examples/canonical-faker/python/requirements.txt exists.
+    Assert it contains "faker" and "mimesis" and "factory_boy".
+
+  test_generate_cli_exists
+    Assert examples/canonical-faker/python/generate.py exists.
+    Assert it contains "argparse" and "--pipeline" and "--profile".
+
+  test_faker_pipeline_importable
+    import examples.canonical_faker.python.faker_pipeline.generators
+    (catches syntax errors)
+
+  test_mimesis_pipeline_importable
+    import examples.canonical_faker.python.mimesis_pipeline.generators
+
+  test_factory_graph_importable
+    import examples.canonical_faker.python.factory_graph.factories
+
+  test_faker_smoke_profile_runs
+    Skip if faker is not installed (try/except ImportError).
+    from examples.canonical_faker.python.faker_pipeline.generators import run_faker_pipeline
+    import tempfile, pathlib
+    with tempfile.TemporaryDirectory() as tmpdir:
+        run_faker_pipeline(profile=Profile.SMOKE, output_dir=pathlib.Path(tmpdir))
+        assert (pathlib.Path(tmpdir) / "organizations.jsonl").exists()
+        assert (pathlib.Path(tmpdir) / "audit_events.jsonl").exists()
+
+  test_faker_smoke_reproducible
+    Skip if faker is not installed.
+    Run run_faker_pipeline twice with same seed into two separate temp dirs.
+    Read organizations.jsonl from both. Assert contents are identical.
+
+  test_faker_validation_passes
+    Skip if faker is not installed.
+    Run smoke profile. The returned or printed validation report must show ok=True.
+    Alternatively: run validate_output.py as subprocess and assert exit code 0.
+
+  test_mimesis_smoke_profile_runs
+    Skip if mimesis is not installed.
+    Similar to test_faker_smoke_profile_runs but for the Mimesis pipeline.
+
+  test_factory_graph_smoke_runs
+    Skip if factory_boy is not installed.
+    Run the factory graph smoke profile. Assert output files exist.
+
+Run with:
+  python -m unittest verification/faker/python/test_python_faker.py -v
+
+================================================================================
+PART 9: UPDATE CATALOG
+================================================================================
+
+Update examples/canonical-faker/CATALOG.md.
+
+Change the Python row:
+  | Python | Faker + Mimesis | factory_boy | [x] PROMPT_121 | python/ |
+
+================================================================================
+VERIFICATION
+================================================================================
+
+After all parts are complete:
+
+  python -m unittest verification/faker/python/test_python_faker.py -v
+  python -m unittest verification/faker/test_domain_spec.py -v
+  python -m unittest verification/unit/test_faker_arc_foundation.py -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+All five must pass (with acceptable SKIP for missing optional installs).
+
+Manual smoke run:
+  cd examples/canonical-faker/python
+  pip install -r requirements.txt
+  python generate.py --pipeline faker --profile smoke --output-dir ./output
+  python ../../domain/validate_output.py --input-dir ./output/smoke
+
+The validate_output.py run must exit 0.
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+Use grouped commits prefixed [PROMPT_121]. Use `git add -p`.
+
+  1. [PROMPT_121] add Python faker pipeline (Faker + multi-locale + custom provider)
+     Stage: examples/canonical-faker/python/faker_pipeline/
+
+  2. [PROMPT_121] add Python mimesis pipeline (schema-based, batched generation)
+     Stage: examples/canonical-faker/python/mimesis_pipeline/
+
+  3. [PROMPT_121] add Python factory_boy graph (declarative object graph layer)
+     Stage: examples/canonical-faker/python/factory_graph/
+
+  4. [PROMPT_121] add Python generate CLI and requirements
+     Stage: examples/canonical-faker/python/generate.py
+            examples/canonical-faker/python/requirements.txt
+            examples/canonical-faker/python/README.md
+
+  5. [PROMPT_121] add Python faker smoke tests
+     Stage: verification/faker/python/test_python_faker.py
+
+  6. [PROMPT_121] mark Python complete in CATALOG
+     Stage: examples/canonical-faker/CATALOG.md
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Implement all three Python library surfaces
+  - Demonstrate multi-locale Faker, Mimesis schema-based generation, factory_boy graph
+  - Implement smoke tests that run without ORM or database setup
+  - Write clear READMEs that explain library tradeoffs
+
+DO NOT:
+  - Use SQLAlchemy, Django, or any ORM
+  - Use a database for this example — output is flat files only
+  - Implement medium or large profiles beyond defining the profile object
+    (smoke and small are the required working profiles)
+  - Modify any files under examples/canonical-faker/domain/
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+
+  - All three sub-directories exist with importable Python modules
+  - generate.py CLI works for faker and mimesis pipelines with --profile smoke
+  - Smoke profile produces valid JSONL output that passes validate_output.py
+  - Smoke profile is reproducible (two runs with seed=42 produce identical output)
+  - verification/faker/python/test_python_faker.py passes (or skips cleanly)
+  - CATALOG.md shows Python as [x] PROMPT_121
+  - python scripts/validate_context.py passes
+
+PROMPT_122 implements JavaScript/TypeScript and Go canonical examples.

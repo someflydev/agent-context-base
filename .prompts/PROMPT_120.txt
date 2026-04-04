@@ -1,0 +1,659 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one
+fresh coding-assistant session with commit prefixes like `[PROMPT_120]`.
+
+PROMPT_119: Faker Arc — Foundation. Doctrine, archetypes, 10 stacks, 2 skills,
+            workflow, manifest, router updates. All structural artifacts in place.
+
+This prompt (PROMPT_120) designs the canonical domain and builds the shared
+generation infrastructure that all 10 language examples will use.
+
+              [FAKER ARC: Prompt 2 of 8 — Domain Design + Shared Infrastructure]
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                    (run; study output)
+  4. memory/INDEX.md
+
+Read the arc foundation before writing anything:
+  5. context/doctrine/synthetic-data-realism.md       (READ — the 7 rules)
+  6. context/skills/synthetic-dataset-design.md       (READ — 7-step pipeline)
+  7. context/archetypes/synthetic-data-generator.md   (READ — archetype contract)
+  8. context/stacks/faker-python.yaml                 (READ — Python stack details)
+
+Read existing canonical examples for directory pattern reference:
+  9. examples/canonical-schema-validation/domain/models.md (READ — domain spec format)
+ 10. examples/canonical-schema-validation/CATALOG.md       (READ — CATALOG format)
+
+Run verification before touching any file:
+  python -m unittest verification/unit/test_faker_arc_foundation.py -v
+  python scripts/run_verification.py --tier fast
+
+All foundation tests must pass before this prompt begins.
+
+================================================================================
+BACKGROUND
+================================================================================
+
+Every language example in this arc generates data for the same canonical domain.
+A shared domain ensures that:
+  - Outputs from different language examples can be cross-validated
+  - Assistants can answer "show me how Go generates the same data as Python"
+  - The arc teaches relational generation principles, not domain design debates
+
+The canonical domain is a SaaS multi-tenant platform called TenantCore.
+
+This prompt creates:
+  - The domain spec (entity graph, field definitions, constraints)
+  - The generation order contract (parent-first sequence, with rationale)
+  - The seed registry strategy (how seeds are chosen and documented)
+  - The output profiles spec (smoke/small/medium/large row count targets)
+  - The shared Python generation patterns module (reference implementation)
+  - The shared validation module (used by the Python smoke tests)
+  - The CATALOG.md skeleton (all 10 language entries, initially empty)
+  - Structural tests that verify these artifacts exist and are internally consistent
+
+================================================================================
+PART 1: CREATE examples/canonical-faker/domain/schema.md
+================================================================================
+
+Create: examples/canonical-faker/domain/schema.md
+
+This is the authoritative entity graph spec for the TenantCore domain.
+All language examples must generate these entities. No language example may
+add new entities without updating this file first.
+
+Required content:
+
+  # TenantCore Domain Specification
+
+  ## Domain Identity
+  TenantCore is a fictional SaaS multi-tenant platform used exclusively for
+  generating canonical synthetic datasets in agent-context-base. It is not
+  a real product. All generated data is synthetic.
+
+  ## Entity Graph
+
+  Draw a simple ASCII dependency diagram showing the generation order:
+
+    organizations
+        |
+        +── users (via memberships)
+        |       |
+        |       └── memberships (org_id + user_id + role)
+        |
+        +── projects (org_id)
+        |       |
+        |       └── audit_events (org_id + user_id + project_id)
+        |
+        +── api_keys (org_id + created_by)
+        |
+        └── invitations (org_id + invited_email + role)
+
+  ## Entity Definitions
+
+  For each entity, list: field name, type, constraints, generation notes.
+
+  ### organizations
+  | Field         | Type      | Constraints           | Generation Notes                         |
+  |---------------|-----------|-----------------------|------------------------------------------|
+  | id            | UUID v4   | unique, primary key   | Generate first; add to org_id pool       |
+  | name          | string    | unique, non-empty     | Faker company name                       |
+  | slug          | string    | unique, url-safe      | Derived from name + collision suffix     |
+  | plan          | enum      | one of: free/pro/enterprise | Weighted: 50% free, 35% pro, 15% ent |
+  | region        | enum      | one of: us-east/us-west/eu-west/ap-southeast | Weighted by realistic distribution |
+  | created_at    | timestamp | past 3 years          | Faker past date within range             |
+  | owner_email   | string    | unique, valid email   | Faker email                              |
+
+  ### users
+  | Field         | Type      | Constraints           | Generation Notes                         |
+  |---------------|-----------|-----------------------|------------------------------------------|
+  | id            | UUID v4   | unique, primary key   | Generate after orgs; add to user_id pool |
+  | email         | string    | unique, valid email   | Faker email; must be globally unique     |
+  | full_name     | string    | non-empty             | Faker name                               |
+  | locale        | string    | BCP-47 code           | Weighted: 60% en-US, others distributed  |
+  | timezone      | string    | IANA tz name          | Consistent with region; not random       |
+  | created_at    | timestamp | past 3 years          | May predate membership                   |
+
+  ### memberships
+  | Field         | Type      | Constraints           | Generation Notes                         |
+  |---------------|-----------|-----------------------|------------------------------------------|
+  | id            | UUID v4   | unique, primary key   |                                          |
+  | org_id        | UUID v4   | FK → organizations.id |                                          |
+  | user_id       | UUID v4   | FK → users.id         |                                          |
+  | role          | enum      | owner/admin/member/viewer | Weighted: 5% owner, 10% admin, 60% member, 25% viewer |
+  | joined_at     | timestamp | >= org.created_at     | Cannot predate the organization          |
+  | invited_by    | UUID v4   | FK → users.id or null | Null for the first owner of an org       |
+
+  Cardinality: 3–50 members per org. Skewed: most orgs have 3–10.
+
+  ### projects
+  | Field         | Type      | Constraints           | Generation Notes                         |
+  |---------------|-----------|-----------------------|------------------------------------------|
+  | id            | UUID v4   | unique, primary key   |                                          |
+  | org_id        | UUID v4   | FK → organizations.id |                                          |
+  | name          | string    | non-empty             | Faker project/product name               |
+  | status        | enum      | active/archived/draft | Weighted: 60% active, 25% archived, 15% draft |
+  | created_by    | UUID v4   | FK → users.id; must be member of org_id | Cross-field rule |
+  | created_at    | timestamp | >= org.created_at     |                                          |
+
+  Cardinality: 1–20 projects per org. Skewed: most orgs have 1–5.
+
+  ### audit_events
+  | Field         | Type      | Constraints           | Generation Notes                         |
+  |---------------|-----------|-----------------------|------------------------------------------|
+  | id            | UUID v4   | unique, primary key   |                                          |
+  | org_id        | UUID v4   | FK → organizations.id |                                          |
+  | user_id       | UUID v4   | FK → users.id; must be member of org_id | Cross-field rule |
+  | project_id    | UUID v4   | FK → projects.id; must belong to org_id | Cross-field rule |
+  | action        | string    | one of: created/updated/deleted/archived/invited/exported | Weighted |
+  | resource_type | string    | one of: project/user/membership/api_key/invitation | |
+  | resource_id   | UUID v4   | references a generated entity ID |                 |
+  | ts            | timestamp | >= project.created_at and >= membership.joined_at | Temporal rule |
+
+  Cardinality: 5–500 events per project. Skewed: active projects have more events.
+
+  ### api_keys
+  | Field         | Type      | Constraints           | Generation Notes                         |
+  |---------------|-----------|-----------------------|------------------------------------------|
+  | id            | UUID v4   | unique, primary key   |                                          |
+  | org_id        | UUID v4   | FK → organizations.id |                                          |
+  | created_by    | UUID v4   | FK → users.id; must be member | Cross-field rule               |
+  | name          | string    | non-empty             | Faker phrase                             |
+  | key_prefix    | string    | 8 chars, unique       | "tc_" + random alphanumeric              |
+  | created_at    | timestamp | >= org.created_at     |                                          |
+  | last_used_at  | timestamp | null or >= created_at |                                          |
+
+  Cardinality: 0–10 api_keys per org.
+
+  ### invitations
+  | Field         | Type      | Constraints           | Generation Notes                         |
+  |---------------|-----------|-----------------------|------------------------------------------|
+  | id            | UUID v4   | unique, primary key   |                                          |
+  | org_id        | UUID v4   | FK → organizations.id |                                          |
+  | invited_email | string    | valid email           | Must NOT match an existing member's email |
+  | role          | enum      | admin/member/viewer   |                                          |
+  | invited_by    | UUID v4   | FK → users.id; must be member |                                  |
+  | expires_at    | timestamp | > now, within 30 days |                                          |
+  | accepted_at   | timestamp | null or past          | 40% accepted, 60% pending                |
+
+  Cardinality: 0–5 pending invitations per org.
+
+  ## Cross-Field Rules (enforced in validation)
+
+  Rule A: membership.joined_at >= organization.created_at
+  Rule B: project.created_at >= organization.created_at
+  Rule C: project.created_by must be a member of project.org_id
+  Rule D: audit_event.user_id must be a member of audit_event.org_id
+  Rule E: audit_event.project_id must belong to audit_event.org_id
+  Rule F: audit_event.ts >= project.created_at for that project
+  Rule G: api_key.created_by must be a member of api_key.org_id
+  Rule H: invitation.invited_by must be a member of invitation.org_id
+  Rule I: invitation.invited_email must not match any member's email for that org
+
+================================================================================
+PART 2: CREATE examples/canonical-faker/domain/generation-order.md
+================================================================================
+
+Create: examples/canonical-faker/domain/generation-order.md
+
+Required content:
+
+  # TenantCore Generation Order
+
+  ## Canonical Generation Sequence
+
+  The following order must be followed in every language implementation.
+  It satisfies all foreign key constraints and cross-field rules.
+
+  Stage 1 — Root entities (no parents):
+    1. Generate organizations
+       → Build org_id pool
+       → Build org metadata map (plan, region, created_at, member_ids)
+
+  Stage 2 — Global entities (reference orgs but are globally unique):
+    2. Generate users
+       → Build user_id pool
+       → Build user metadata map (locale, timezone)
+
+  Stage 3 — Bridge entities (join roots to global entities):
+    3. Generate memberships (org_id × user_id × role × joined_at)
+       → For each org: sample from user pool
+       → Apply cardinality rule: 3–50 members per org, skewed toward 3–10
+       → Build org_member_map: org_id → set of user_ids
+
+  Stage 4 — Owned entities (require org + member):
+    4. Generate projects (org_id, created_by from org_member_map)
+       → Build project_id pool
+       → Build project metadata map (org_id, created_at)
+
+  Stage 5 — Activity entities (require org + member + project):
+    5. Generate audit_events (org_id, user_id from org_member_map,
+                               project_id from org's projects,
+                               ts >= project.created_at)
+
+  Stage 6 — Support entities (optional, generated last):
+    6. Generate api_keys (org_id, created_by from org_member_map)
+    7. Generate invitations (org_id, invited_by from org_member_map,
+                             invited_email NOT in org_member_map emails)
+
+  ## ID Pool Pattern
+
+  Every stage must maintain an ID pool. Do not inline ID generation.
+
+  Python pseudocode (conceptual only — actual implementation in PROMPT_121):
+    org_ids = []
+    for _ in range(profile.num_orgs):
+        org = generate_org(seed_state)
+        org_ids.append(org["id"])
+        orgs.append(org)
+
+  ## Why This Order Matters
+
+  (3–4 sentences) Explain that generating children before parents creates
+  forward references that cannot be resolved, forces retry loops, and produces
+  FK violations. The canonical order ensures every foreign key can be resolved
+  at generation time without rollback or retry.
+
+================================================================================
+PART 3: CREATE examples/canonical-faker/domain/seed-registry.md
+================================================================================
+
+Create: examples/canonical-faker/domain/seed-registry.md
+
+Required content:
+
+  # Seed Registry
+
+  ## Purpose
+
+  Every canonical faker example must use a fixed seed for its smoke profile.
+  This file documents the canonical seeds used across the arc.
+
+  ## Canonical Seeds
+
+  | Profile   | Seed  | Notes                                      |
+  |-----------|-------|--------------------------------------------|
+  | smoke     | 42    | Used in all smoke tests. Must not change.  |
+  | small     | 1000  | Stable reference small dataset.            |
+  | medium    | 5000  | Stable reference medium dataset.           |
+  | large     | 9999  | For benchmark runs. May be overridden.     |
+
+  ## Per-Language Seeding
+
+  Each language has a different RNG API. The stack files document the seeding
+  API. Key principles:
+  - The seed must be applied before the first faker/random call.
+  - The seed must flow through the entire generation pipeline.
+  - No language-native random call should bypass the seeded generator.
+  - Two runs with the same seed must produce byte-identical JSONL output.
+
+  ## Reproducibility Test
+
+  Every smoke test must include a reproducibility assertion:
+    run1 = generate(seed=42, profile="smoke")
+    run2 = generate(seed=42, profile="smoke")
+    assert run1 == run2  (or compare output files)
+
+================================================================================
+PART 4: CREATE examples/canonical-faker/domain/profiles.md
+================================================================================
+
+Create: examples/canonical-faker/domain/profiles.md
+
+This file is the normative reference for the four generation profiles.
+The table must be explicit enough for any language implementation to target
+the correct row counts.
+
+Required content:
+
+  # Output Profiles
+
+  ## Profile Definitions
+
+  | Profile | Orgs | Users  | Memberships | Projects | Audit Events | API Keys | Invitations |
+  |---------|------|--------|-------------|----------|--------------|----------|-------------|
+  | smoke   | 3    | 10     | ~18         | ~9       | ~50          | ~5       | ~5          |
+  | small   | 20   | 200    | ~400        | ~100     | ~2,000       | ~50      | ~30         |
+  | medium  | 200  | 5,000  | ~12,000     | ~1,500   | ~50,000      | ~500     | ~200        |
+  | large   | 2000 | 50,000 | ~150,000    | ~15,000  | ~500,000     | ~5,000   | ~1,500      |
+
+  (~) Approximate; actual counts depend on cardinality distributions.
+
+  ## Profile Selection
+
+  - smoke: always the smoke test and CI gate profile. Fast. Deterministic seed 42.
+  - small: local development. Enough data to see realistic distributions.
+  - medium: realistic demo environments and UI load testing.
+  - large: benchmark or showcase runs. Document memory requirements.
+
+  ## Implementation Notes
+
+  (3–4 bullets) Note that profiles are additive: large includes all the
+  entities that small includes (plus more, with different seeds). Note that
+  chunked writes are required for medium and large profiles to avoid
+  out-of-memory errors. Note that all profiles must pass validation.
+
+================================================================================
+PART 5: CREATE examples/canonical-faker/domain/generation_patterns.py
+================================================================================
+
+Create: examples/canonical-faker/domain/generation_patterns.py
+
+This is the reference Python implementation of the generation pattern library.
+Language implementations in PROMPT_121 will use this as their core.
+Other language implementations (PROMPT_122+) are NOT required to use this file —
+they implement the same patterns idiomatically in their own language.
+
+This module must implement:
+
+  1. class Profile(dataclass):
+     num_orgs, num_users: int
+     seed: int
+     SMOKE, SMALL, MEDIUM, LARGE = class methods returning Profile instances
+
+  2. build_org_pool(profile: Profile, rng) -> list[dict]:
+     Generates organizations using Faker with the given RNG.
+     Returns list of org dicts. Each has: id, name, slug, plan, region, created_at, owner_email.
+     plan distribution: 50% free, 35% pro, 15% enterprise (use weighted random choice).
+     region distribution: 40% us-east, 25% us-west, 20% eu-west, 15% ap-southeast.
+
+  3. build_user_pool(profile: Profile, rng) -> list[dict]:
+     Generates users. Returns list of user dicts.
+     locale distribution: 60% en-US, 20% en-GB, 10% de-DE, 10% fr-FR.
+     timezone: consistent with locale (not pure random — use a lookup table).
+
+  4. build_membership_pool(orgs, users, rng) -> list[dict]:
+     For each org: sample 3–50 users (skewed toward 3–10 with Poisson or triangular
+     distribution). Assign roles with weights: 5% owner, 10% admin, 60% member, 25% viewer.
+     Ensure at least one owner per org. joined_at >= org.created_at.
+     Returns memberships list AND org_member_map (org_id → list of member user_ids).
+
+  5. build_project_pool(orgs, org_member_map, rng) -> list[dict]:
+     For each org: sample 1–20 projects (skewed 1–5). created_by from org_member_map.
+     Returns projects list AND project_org_map (project_id → org_id).
+
+  6. build_audit_event_pool(orgs, org_member_map, projects, project_org_map, rng) -> list[dict]:
+     For each project: generate 5–500 events (skewed, active projects have more).
+     user_id from org_member_map[project.org_id]. ts >= project.created_at.
+
+  7. build_api_key_pool(orgs, org_member_map, rng) -> list[dict]:
+     0–10 per org. created_by from org_member_map. key_prefix unique.
+
+  8. build_invitation_pool(orgs, org_member_map, users, rng) -> list[dict]:
+     0–5 per org. invited_email must NOT be an existing member's email.
+
+  9. generate_dataset(profile: Profile) -> dict:
+     Runs all eight stages in the canonical order.
+     Returns: {"organizations": [...], "users": [...], ...}
+     Must use a single seeded Faker instance and single seeded random.Random.
+     Must pass validate_dataset() before returning.
+
+ 10. validate_dataset(dataset: dict) -> ValidationReport:
+     Checks all Cross-Field Rules A–I from domain/schema.md.
+     Returns a ValidationReport dataclass with:
+       ok: bool
+       violations: list[str]
+       counts: dict[str, int]
+       seed: int
+       profile: str
+
+ 11. write_jsonl(dataset: dict, output_dir: Path, profile_name: str):
+     Writes one JSONL file per entity to output_dir/{entity}.jsonl.
+     Uses chunked writes (chunk_size=1000).
+
+ 12. write_csv(dataset: dict, output_dir: Path, profile_name: str):
+     Writes one CSV per entity. Includes header row.
+
+Implementation requirements:
+  - Use `from faker import Faker` and `import random`
+  - Seed Faker with: `fake = Faker(); Faker.seed(profile.seed)`
+  - Seed random with: `rng = random.Random(profile.seed)`
+  - Do NOT use random.seed() (global state) — use the rng instance
+  - Import uuid (standard library) for ID generation
+  - No other dependencies in this file
+
+Add a `__main__` block:
+  if __name__ == "__main__":
+      import sys
+      profile_name = sys.argv[1] if len(sys.argv) > 1 else "smoke"
+      profiles = {"smoke": Profile.SMOKE, "small": Profile.SMALL,
+                  "medium": Profile.MEDIUM, "large": Profile.LARGE}
+      profile = profiles[profile_name]
+      dataset = generate_dataset(profile)
+      print(dataset["report"])
+
+================================================================================
+PART 6: CREATE examples/canonical-faker/domain/validate_output.py
+================================================================================
+
+Create: examples/canonical-faker/domain/validate_output.py
+
+A standalone validation script that reads JSONL output files and validates
+FK integrity and cross-field rules. This is the language-agnostic validator —
+it can validate output from any language's generator.
+
+Implementation:
+
+  Reads from: output_dir/{entity}.jsonl (one record per line)
+  Checks:
+    - All FK references resolve (org_id, user_id, project_id)
+    - All Cross-Field Rules A–I from schema.md
+    - Uniqueness constraints (org.id, user.email, api_key.key_prefix)
+    - Row count sanity (at least 1 record per entity)
+    - Temporal ordering (joined_at >= org.created_at, etc.)
+  Outputs:
+    - Console summary: PASS/FAIL per rule
+    - Exit code 0 on pass, 1 on fail
+    - Optional --json flag that outputs a machine-readable report
+
+CLI:
+  python examples/canonical-faker/domain/validate_output.py \
+    --input-dir output/smoke/python \
+    [--json]
+
+Dependencies: only Python standard library (json, pathlib, argparse, sys).
+
+================================================================================
+PART 7: CREATE examples/canonical-faker/CATALOG.md
+================================================================================
+
+Create: examples/canonical-faker/CATALOG.md
+
+Model this on examples/canonical-schema-validation/CATALOG.md.
+
+Required content:
+
+  # Canonical Faker Examples — Catalog
+
+  ## Domain
+  All examples generate the TenantCore domain (see domain/schema.md).
+
+  ## Examples by Language
+
+  | Language     | Primary Library        | Secondary/Graph Library | Status        | Path                        |
+  |--------------|------------------------|-------------------------|---------------|-----------------------------|
+  | Python       | Faker + Mimesis        | factory_boy             | [ ] PROMPT_121 | python/                    |
+  | JavaScript   | @faker-js/faker        | Chance                  | [ ] PROMPT_122 | javascript/                |
+  | Go           | gofakeit               | go-faker/faker          | [ ] PROMPT_122 | go/                        |
+  | Rust         | fake (fake-rs)         | —                       | [ ] PROMPT_123 | rust/                      |
+  | Java         | Datafaker              | —                       | [ ] PROMPT_123 | java/                      |
+  | Kotlin       | kotlin-faker           | Datafaker               | [ ] PROMPT_123 | kotlin/                    |
+  | Ruby         | faker                  | ffaker                  | [ ] PROMPT_124 | ruby/                      |
+  | PHP          | FakerPHP/Faker         | Nelmio Alice            | [ ] PROMPT_124 | php/                       |
+  | Scala        | Datafaker (JVM)        | —                       | [ ] PROMPT_125 | scala/                     |
+  | Elixir       | Faker                  | ExMachina               | [ ] PROMPT_125 | elixir/                    |
+
+  ## Domain Artifacts
+
+  - domain/schema.md          — entity graph, field definitions, constraints
+  - domain/generation-order.md — canonical 7-stage generation sequence
+  - domain/seed-registry.md   — canonical seeds by profile
+  - domain/profiles.md        — row count targets per profile
+  - domain/generation_patterns.py — Python reference implementation
+
+  ## Validation
+
+  - domain/validate_output.py — language-agnostic JSONL validator
+  - verification/faker/       — per-language smoke test suites
+
+================================================================================
+PART 8: CREATE examples/canonical-faker/README.md
+================================================================================
+
+Create: examples/canonical-faker/README.md (skeleton only — full content in PROMPT_126)
+
+Required content for now:
+  # Canonical Faker Examples
+  (Brief: what this directory is, reference to CATALOG.md, reference to domain/schema.md)
+  Status: in progress — see CATALOG.md for per-language completion status.
+
+================================================================================
+PART 9: CREATE STRUCTURAL TESTS
+================================================================================
+
+Create: verification/faker/test_domain_spec.py
+
+Test class: TestFakerDomainSpec
+
+  test_schema_doc_exists
+    Assert examples/canonical-faker/domain/schema.md exists.
+    Assert it contains "organizations" and "audit_events".
+    Assert it contains "Cross-Field Rules".
+
+  test_generation_order_exists
+    Assert examples/canonical-faker/domain/generation-order.md exists.
+    Assert it contains "Stage 1" through "Stage 6".
+
+  test_seed_registry_exists
+    Assert examples/canonical-faker/domain/seed-registry.md exists.
+    Assert it contains "42" (smoke seed) and "reproducibility".
+
+  test_profiles_doc_exists
+    Assert examples/canonical-faker/domain/profiles.md exists.
+    Assert it contains "smoke" and "large".
+
+  test_generation_patterns_module_exists
+    Assert examples/canonical-faker/domain/generation_patterns.py exists.
+    Assert it contains "generate_dataset" and "validate_dataset".
+
+  test_validate_output_script_exists
+    Assert examples/canonical-faker/domain/validate_output.py exists.
+    Assert it contains "__main__" and "FK".
+
+  test_catalog_exists
+    Assert examples/canonical-faker/CATALOG.md exists.
+    Assert it contains all 10 languages.
+
+  test_generation_patterns_importable
+    import examples.canonical_faker.domain.generation_patterns
+    (This catches syntax errors before any language toolchain is involved.)
+
+  test_smoke_profile_runs
+    from examples.canonical_faker.domain.generation_patterns import (
+        Profile, generate_dataset
+    )
+    dataset = generate_dataset(Profile.SMOKE)
+    assert dataset["report"].ok
+    assert len(dataset["organizations"]) == 3
+    assert len(dataset["users"]) == 10
+    assert len(dataset["memberships"]) >= 3
+
+  test_smoke_profile_reproducible
+    from examples.canonical_faker.domain.generation_patterns import (
+        Profile, generate_dataset
+    )
+    d1 = generate_dataset(Profile.SMOKE)
+    d2 = generate_dataset(Profile.SMOKE)
+    assert d1["organizations"] == d2["organizations"]
+    assert d1["audit_events"] == d2["audit_events"]
+
+Note: test_smoke_profile_runs and test_smoke_profile_reproducible require
+`faker` to be installed. These tests may be skipped if faker is not available.
+Add a try/except ImportError skip guard.
+
+================================================================================
+VERIFICATION
+================================================================================
+
+After all parts are complete:
+
+  python -m unittest verification/faker/test_domain_spec.py -v
+  python -m unittest verification/unit/test_faker_arc_foundation.py -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Manual checks:
+  - examples/canonical-faker/domain/schema.md has all 7 entities defined
+  - examples/canonical-faker/domain/generation-order.md has 7 stages
+  - generation_patterns.py smoke profile runs without errors
+  - validate_output.py runs with --help without errors
+  - CATALOG.md shows all 10 languages as [ ]
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+Use grouped commits prefixed [PROMPT_120]. Use `git add -p`.
+
+  1. [PROMPT_120] add TenantCore domain spec
+     Stage: examples/canonical-faker/domain/schema.md
+
+  2. [PROMPT_120] add generation order and seed registry docs
+     Stage: examples/canonical-faker/domain/generation-order.md
+            examples/canonical-faker/domain/seed-registry.md
+            examples/canonical-faker/domain/profiles.md
+
+  3. [PROMPT_120] add Python generation patterns reference module
+     Stage: examples/canonical-faker/domain/generation_patterns.py
+
+  4. [PROMPT_120] add language-agnostic output validator
+     Stage: examples/canonical-faker/domain/validate_output.py
+
+  5. [PROMPT_120] add CATALOG and README skeletons
+     Stage: examples/canonical-faker/CATALOG.md
+            examples/canonical-faker/README.md
+
+  6. [PROMPT_120] add domain spec structural tests
+     Stage: verification/faker/test_domain_spec.py
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Create all domain specification documents
+  - Implement the Python reference generation module (generation_patterns.py)
+  - Implement the language-agnostic validator (validate_output.py)
+  - Implement the CATALOG skeleton and README skeleton
+  - Write structural tests that verify docs exist and the Python module runs
+
+DO NOT:
+  - Implement any language-specific example (Python canonical in PROMPT_121)
+  - Add Dockerfiles or language toolchain configuration
+  - Modify any files created in PROMPT_119
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+
+  - All domain docs exist in examples/canonical-faker/domain/
+  - generation_patterns.py smoke profile runs and produces valid output
+  - validate_output.py runs without errors
+  - CATALOG.md has all 10 languages listed
+  - verification/faker/test_domain_spec.py passes fully
+  - verification/unit/test_faker_arc_foundation.py still passes
+  - python scripts/validate_context.py passes
+
+PROMPT_121 will implement the full Python canonical example (Faker + Mimesis
++ factory_boy) using generation_patterns.py as the foundation.

@@ -1,0 +1,549 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one
+fresh coding-assistant session with commit prefixes like `[PROMPT_124]`.
+
+PROMPT_119: Faker Arc — Foundation.
+PROMPT_120: Faker Arc — Domain design.
+PROMPT_121: Faker Arc — Python. [x]
+PROMPT_122: Faker Arc — JavaScript/TypeScript + Go. [x]
+PROMPT_123: Faker Arc — Rust + Java + Kotlin. [x]
+
+This prompt (PROMPT_124) implements canonical faker examples for two languages:
+  - Ruby using faker (primary) and ffaker (secondary/contrast)
+  - PHP using FakerPHP/Faker (primary) and Nelmio Alice (declarative fixtures)
+
+              [FAKER ARC: Prompt 6 of 8 — Ruby + PHP]
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                    (run; study output)
+  4. memory/INDEX.md
+
+Read arc foundation and domain spec:
+  5. context/doctrine/synthetic-data-realism.md       (READ — the 7 rules)
+  6. context/skills/synthetic-dataset-design.md       (READ — 7-step pipeline)
+  7. context/stacks/faker-ruby.yaml                   (READ — Ruby stack)
+  8. context/stacks/faker-php.yaml                    (READ — PHP stack)
+  9. examples/canonical-faker/domain/schema.md        (READ — entity graph)
+ 10. examples/canonical-faker/domain/generation-order.md (READ — 7-stage order)
+ 11. examples/canonical-faker/domain/seed-registry.md (READ — smoke seed = 42)
+ 12. examples/canonical-faker/python/faker_pipeline/generators.py (READ — reference)
+ 13. examples/canonical-faker/CATALOG.md              (READ — current state)
+
+Run verification before touching any example files:
+  python -m unittest verification/faker/rust/test_rust_faker.py -v
+  python -m unittest verification/faker/java/test_java_faker.py -v
+  python -m unittest verification/faker/kotlin/test_kotlin_faker.py -v
+
+All must pass (Rust, Java, Kotlin must be [x] before this prompt begins).
+
+================================================================================
+BACKGROUND
+================================================================================
+
+RUBY: Ruby has a strong fixture-generation culture rooted in FactoryBot (Rails).
+      This arc focuses on raw output generation, not ORM fixtures, but the README
+      must honestly note the FactoryBot path for Rails teams. The primary teaching
+      surface in Ruby is showing that faker's output becomes a relational dataset
+      only when you build the graph layer explicitly in Ruby code.
+      ffaker is the secondary library: faster (no locale overhead), simpler API,
+      useful as a performance alternative or legacy context.
+
+PHP: PHP is the most interesting language in this arc because of Alice.
+     FakerPHP/Faker does atomic field generation in the standard imperative style.
+     Alice is a YAML/PHP fixture definition language that lets you write relational
+     graph definitions declaratively. The key teaching point is showing BOTH:
+     imperative generation (FakerPHP alone) and declarative generation (Alice),
+     and explaining when each approach is appropriate.
+
+================================================================================
+PART A: RUBY EXAMPLE
+================================================================================
+
+Directory: examples/canonical-faker/ruby/
+
+  examples/canonical-faker/ruby/
+  ├── README.md
+  ├── Gemfile
+  ├── Gemfile.lock               ← committed after `bundle install`
+  ├── generate.rb                ← main CLI entry point
+  ├── lib/
+  │   ├── domain.rb             ← Struct/Data definitions for all entities
+  │   ├── profiles.rb           ← Profile struct + constants
+  │   ├── pools.rb              ← ID pools and org_member_map (plain Ruby hashes)
+  │   ├── faker_pipeline.rb     ← faker-based generation pipeline
+  │   ├── ffaker_pipeline.rb    ← ffaker-based generation pipeline (contrast)
+  │   ├── distributions.rb      ← weighted random pickers
+  │   └── validate.rb           ← FK integrity + cross-field validation
+  └── spec/
+      └── smoke_spec.rb         ← RSpec smoke tests
+
+A-1. Gemfile
+
+  source "https://rubygems.org"
+  gem "faker", "~> 3.0"
+  gem "ffaker", "~> 2.0"
+  group :test do
+    gem "rspec", "~> 3.0"
+  end
+
+A-2. lib/domain.rb
+
+Use Ruby Struct or Data (Ruby 3.2+) for entity definitions. Use symbols matching
+field names from schema.md:
+  Organization = Data.define(:id, :name, :slug, :plan, :region, :created_at, :owner_email)
+  User         = Data.define(:id, :email, :full_name, :locale, :timezone, :created_at)
+  # ... all 7 entities
+
+Or use Struct if Data is not available in the target Ruby version. Document
+which Ruby version is required in the README.
+
+Convert to plain Hash for JSON serialization:
+  def entity_to_hash(entity)
+    entity.members.zip(entity.deconstruct).to_h
+        .transform_keys { |k| k.to_s }
+  end
+
+A-3. lib/distributions.rb
+
+Ruby weighted random without gems:
+
+  PLAN_WEIGHTS = { "free" => 50, "pro" => 35, "enterprise" => 15 }.freeze
+
+  def weighted_choice(weights_hash, rng)
+    total = weights_hash.values.sum
+    target = rng.rand(total)
+    cumulative = 0
+    weights_hash.each do |value, weight|
+      cumulative += weight
+      return value if target < cumulative
+    end
+  end
+
+Note: Ruby's Random class supports seeding: `rng = Random.new(seed)`.
+All generation calls must use this rng instance, not Kernel#rand.
+
+A-4. lib/faker_pipeline.rb
+
+Key Faker APIs to demonstrate:
+  Faker::Company.name
+  Faker::Internet.email
+  Faker::Name.name
+  Faker::Time.between(from: ..., to: ...)
+  SecureRandom.uuid (for IDs — faker gem doesn't generate UUIDs by default)
+
+Seeding:
+  Faker::Config.random = Random.new(seed)
+  rng = Random.new(seed)
+
+Show that Faker::Config.random must be set before ANY Faker call.
+Show that a separate rng instance is used for distribution decisions.
+
+Cross-field rules: same pattern — sample from pools, not from Faker.
+
+Note in the code: Ruby's faker gem uses Faker::Config.random globally,
+which means ALL Faker calls in a single process share the seed state.
+Document this: "Set Faker::Config.random once at pipeline startup and do not
+reset it mid-run."
+
+A-5. lib/ffaker_pipeline.rb
+
+Short contrast demonstration using FFaker (not a full re-implementation):
+
+Show the key API difference:
+  FFaker::Company.name       vs   Faker::Company.name
+  FFaker::Internet.email     vs   Faker::Internet.email
+  FFaker::Name.name          vs   Faker::Name.name
+
+ffaker seeding:
+  FFaker.seed(42)
+
+Note in the README: ffaker does not support as many locales as faker.
+For a US-English-only dataset, ffaker is faster. For multi-locale datasets,
+use faker.
+
+Implement only the Organizations entity using ffaker to demonstrate the
+contrast without duplicating the entire pipeline.
+
+A-6. lib/validate.rb
+
+ValidationReport = Struct.new(:ok, :violations, :counts, :seed, :profile_name, keyword_init: true)
+
+Implement all Cross-Field Rules A–I.
+Print report as formatted text to stdout.
+Return exit code 0 on ok, 1 on failure.
+
+A-7. generate.rb (CLI)
+
+  #!/usr/bin/env ruby
+  require_relative "lib/faker_pipeline"
+  # ...
+  Usage: ruby generate.rb [--pipeline faker|ffaker] [--profile smoke|small|medium|large]
+                          [--output ./output] [--format jsonl|csv]
+
+Parse options with OptionParser from stdlib.
+
+A-8. spec/smoke_spec.rb (RSpec)
+
+  describe "TenantCore Faker Pipeline" do
+    let(:dataset) { FakerPipeline.generate(Profile::SMOKE) }
+
+    it "generates 3 organizations" do
+      expect(dataset[:organizations].length).to eq(3)
+    end
+
+    it "passes validation" do
+      report = Validate.check(dataset)
+      expect(report.ok).to be true
+      expect(report.violations).to be_empty
+    end
+
+    it "is reproducible" do
+      d1 = FakerPipeline.generate(Profile::SMOKE)
+      d2 = FakerPipeline.generate(Profile::SMOKE)
+      expect(d1[:organizations]).to eq(d2[:organizations])
+    end
+
+    it "has skewed plan distribution (not perfectly uniform)" do
+      dataset = FakerPipeline.generate(Profile::SMALL)
+      plans = dataset[:organizations].map { |o| o[:plan] }
+      free_count = plans.count("free")
+      expect(free_count.to_f / plans.length).to be_between(0.30, 0.75)
+    end
+  end
+
+================================================================================
+PART B: PHP EXAMPLE
+================================================================================
+
+Directory: examples/canonical-faker/php/
+
+  examples/canonical-faker/php/
+  ├── README.md
+  ├── composer.json
+  ├── composer.lock              ← committed after `composer install`
+  ├── generate.php               ← imperative CLI (FakerPHP)
+  ├── src/
+  │   ├── Domain/
+  │   │   └── Entities.php      ← PHP readonly classes for all entities
+  │   ├── Profiles/
+  │   │   └── Profile.php       ← Profile value object
+  │   ├── Pools/
+  │   │   └── IdPools.php       ← ID pools and org_member_map (PHP arrays)
+  │   ├── Pipeline/
+  │   │   └── TenantCorePipeline.php ← FakerPHP imperative pipeline
+  │   ├── Distributions/
+  │   │   └── Distributions.php ← weighted pickers
+  │   └── Validate/
+  │       └── Validator.php     ← FK integrity + cross-field rules
+  ├── alice/
+  │   ├── organizations.yaml    ← Alice fixture definition for organizations
+  │   ├── users.yaml            ← Alice fixture definition for users
+  │   ├── memberships.yaml      ← Alice fixture definition for memberships
+  │   └── README.md             ← explains Alice approach and limitations
+  └── tests/
+      └── SmokeTest.php         ← PHPUnit smoke tests
+
+B-1. composer.json
+
+  {
+    "require": {
+      "fakerphp/faker": "^1.23",
+      "nelmio/alice": "^3.13"
+    },
+    "require-dev": {
+      "phpunit/phpunit": "^11.0"
+    },
+    "autoload": {
+      "psr-4": {
+        "AgentContextBase\\Faker\\": "src/"
+      }
+    }
+  }
+
+B-2. src/Domain/Entities.php
+
+PHP 8.2+ readonly classes:
+  final readonly class Organization {
+      public function __construct(
+          public string $id,
+          public string $name,
+          public string $slug,
+          public string $plan,
+          public string $region,
+          public string $created_at,
+          public string $owner_email,
+      ) {}
+      public function toArray(): array { return get_object_vars($this); }
+  }
+  // ... all 7 entities
+
+B-3. src/Pipeline/TenantCorePipeline.php
+
+Key FakerPHP APIs to demonstrate:
+  $faker = \Faker\Factory::create();
+  $faker->seed(42);
+
+  $faker->company           // company name
+  $faker->safeEmail         // unique email
+  $faker->name              // full name
+  $faker->dateTimeBetween($start, $end)->format('c')  // ISO 8601 timestamp
+  $faker->uuid              // UUID v4
+
+Show seeding:
+  $faker->seed(42);    // FakerPHP's seed method
+
+Show unique email generation:
+  $faker->unique()->safeEmail()
+
+Note in the code: FakerPHP's $faker->unique() uses an internal uniqueness
+tracker per Faker instance. Reset it between entity types:
+  $faker->unique(true)->safeEmail()
+
+Show the pool pattern explicitly:
+  $orgIds = [];
+  foreach (range(1, $profile->numOrgs) as $_) {
+      $org = $this->generateOrg($faker, $rng);
+      $orgIds[] = $org->id;
+  }
+
+B-4. alice/organizations.yaml
+
+Alice fixture definition. This is the key PHP teaching surface.
+
+Alice uses a YAML format that:
+  - generates multiple records with ranges
+  - assigns fake values via <method()> syntax
+  - allows cross-references via @name
+
+Example:
+  AgentContextBase\Faker\Domain\Organization:
+    organization_{1..3}:
+      id: '<uuid()>'
+      name: '<company()>'
+      slug: '<slug()>'
+      plan: '<randomElement(["free","pro","enterprise"])>'
+      region: '<randomElement(["us-east","us-west","eu-west","ap-southeast"])>'
+      created_at: '<dateTimeBetween("-3 years", "now")->format("c")'
+      owner_email: '<safeEmail()>'
+
+alice/users.yaml:
+  AgentContextBase\Faker\Domain\User:
+    user_{1..10}:
+      id: '<uuid()>'
+      email: '<unique().safeEmail()>'
+      full_name: '<name()>'
+      locale: '<randomElement(["en-US","en-GB","de-DE","fr-FR"])>'
+      # ...
+
+alice/memberships.yaml:
+  AgentContextBase\Faker\Domain\Membership:
+    membership_{1..18}:
+      id: '<uuid()>'
+      org_id: '@organization_<numberBetween(1,3)>->id'
+      user_id: '@user_<numberBetween(1,10)>->id'
+      role: '<randomElement(["owner","admin","member","viewer"])>'
+      # ...
+
+Add alice/README.md explaining:
+  - Alice uses @reference syntax for FK relationships
+  - Alice handles simple ranges but NOT weighted distributions natively
+  - For weighted distributions, you need custom Faker providers in PHP
+  - Alice does NOT enforce joined_at >= org.created_at — temporal rules
+    require either a custom provider or post-generation validation
+  - Alice is excellent for: readable fixture files, team-readable graph
+    definitions, simple testing scenarios
+  - Alice is NOT ideal for: weighted distributions, complex temporal rules,
+    large volumes (>10K rows), programmatic distribution shaping
+
+  This is the honest contrast with imperative generation:
+    - FakerPHP imperative: full control, handles all 7 doctrine rules
+    - Alice declarative: readable, team-friendly, simpler but less flexible
+
+B-5. tests/SmokeTest.php (PHPUnit)
+
+  class SmokeTest extends TestCase
+  {
+      public function testGeneratesCorrectOrgCount(): void
+      {
+          $pipeline = new TenantCorePipeline(Profile::SMOKE);
+          $dataset = $pipeline->generate();
+          $this->assertCount(3, $dataset->organizations);
+      }
+
+      public function testPassesValidation(): void
+      {
+          $pipeline = new TenantCorePipeline(Profile::SMOKE);
+          $dataset = $pipeline->generate();
+          $report = Validator::check($dataset);
+          $this->assertTrue($report->ok, implode("\n", $report->violations));
+      }
+
+      public function testIsReproducible(): void
+      {
+          $d1 = (new TenantCorePipeline(Profile::SMOKE))->generate();
+          $d2 = (new TenantCorePipeline(Profile::SMOKE))->generate();
+          $this->assertEquals($d1->organizations, $d2->organizations);
+      }
+  }
+
+B-6. generate.php (CLI)
+
+  #!/usr/bin/env php
+  <?php
+  // Usage: php generate.php [--pipeline imperative|alice] [--profile smoke|small|medium|large]
+  //                         [--output ./output] [--format jsonl|csv]
+
+  Note: Alice pipeline only supports the smoke profile in this example.
+  For medium/large, use the imperative pipeline. Document this in the README.
+
+================================================================================
+PART C: STRUCTURAL VERIFICATION TESTS
+================================================================================
+
+Create: verification/faker/ruby/test_ruby_faker.py
+
+Test class: TestRubyFakerExample
+  test_gemfile_exists
+    Assert Gemfile exists. Assert it contains "faker" and "ffaker".
+  test_domain_types_defined
+    Read lib/domain.rb. Assert it contains "Organization" and "AuditEvent".
+  test_faker_pipeline_sets_seed
+    Read lib/faker_pipeline.rb. Assert it contains "Faker::Config.random".
+  test_ffaker_contrast_documented
+    Read lib/ffaker_pipeline.rb.
+    Assert it contains "FFaker" and ("locale" or "contrast" or "faster").
+  test_alice_not_required (Ruby does not use Alice — PHP does)
+    Assert NOT any file in the ruby/ directory references "Alice".
+  test_ruby_build_if_available
+    Skip if `ruby` not found. Run: bundle install --gemfile=.../Gemfile
+  test_ruby_smoke_if_available
+    Skip if `bundle` not found.
+    Run: bundle exec ruby generate.rb --profile smoke --output tmpdir
+    Assert tmpdir/organizations.jsonl exists.
+
+Create: verification/faker/php/test_php_faker.py
+
+Test class: TestPhpFakerExample
+  test_composer_json_exists
+    Assert composer.json exists. Assert it contains "fakerphp/faker" and "nelmio/alice".
+  test_entity_classes_defined
+    Read src/Domain/Entities.php. Assert it contains "readonly class Organization".
+  test_alice_fixtures_exist
+    Assert alice/organizations.yaml exists.
+    Assert alice/memberships.yaml exists.
+    Read alice/README.md. Assert it contains "temporal" or "weighted" (Alice's limitations).
+  test_alice_readme_is_honest
+    Read alice/README.md. Assert it contains "NOT" (Alice's limitations are documented).
+  test_pipeline_uses_unique_faker
+    Read src/Pipeline/TenantCorePipeline.php. Assert it contains "unique()".
+  test_php_build_if_available
+    Skip if `composer` not found.
+    Run: composer install --working-dir=.../php/ --no-interaction
+  test_php_smoke_if_available
+    Skip if `php` not found.
+    Run: php generate.php --profile smoke --output tmpdir
+    Assert tmpdir/organizations.jsonl exists.
+
+================================================================================
+PART D: README FILES
+================================================================================
+
+Create: examples/canonical-faker/ruby/README.md
+  - What this demonstrates: faker + ffaker with full relational pipeline
+  - Seeding via Faker::Config.random and Random.new(seed)
+  - Why two separate random sources are needed (Faker vs. distribution decisions)
+  - ffaker contrast: faster, simpler, fewer locales — when to prefer it
+  - Note for Rails teams: FactoryBot is the idiomatic Rails fixture tool;
+    this example shows raw output generation for non-Rails contexts
+  - Quick start: bundle install && ruby generate.rb --profile smoke
+  - How to test: bundle exec rspec
+  - How to validate: python ../../domain/validate_output.py --input-dir ./output/smoke
+
+Create: examples/canonical-faker/php/README.md
+  - What this demonstrates: FakerPHP (imperative) vs. Alice (declarative)
+  - The core contrast: imperative full control vs. readable-but-limited YAML
+  - Alice's strengths: team-readable, expressive cross-references, quick setup
+  - Alice's limitations: no weighted distributions natively, no temporal rules,
+    not suited for large volumes
+  - When to use each approach
+  - Quick start: composer install && php generate.php --profile smoke
+  - How to test: ./vendor/bin/phpunit tests/
+  - How to validate: python ../../domain/validate_output.py --input-dir ./output/smoke
+
+================================================================================
+PART E: UPDATE CATALOG
+================================================================================
+
+Update examples/canonical-faker/CATALOG.md:
+  | Ruby | faker + ffaker | — | [x] PROMPT_124 | ruby/ |
+  | PHP  | FakerPHP/Faker | Nelmio Alice | [x] PROMPT_124 | php/ |
+
+================================================================================
+VERIFICATION
+================================================================================
+
+After all parts are complete:
+
+  python -m unittest verification/faker/ruby/test_ruby_faker.py -v
+  python -m unittest verification/faker/php/test_php_faker.py -v
+  python -m unittest verification/faker/python/test_python_faker.py -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+If Ruby available:
+  cd examples/canonical-faker/ruby && bundle install && bundle exec rspec
+If PHP + Composer available:
+  cd examples/canonical-faker/php && composer install && ./vendor/bin/phpunit tests/
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+Use grouped commits prefixed [PROMPT_124].
+
+  1. [PROMPT_124] add Ruby domain types, distributions, faker pipeline
+  2. [PROMPT_124] add Ruby ffaker contrast, validation, CLI, RSpec tests
+  3. [PROMPT_124] add PHP entities, FakerPHP imperative pipeline, PHPUnit tests
+  4. [PROMPT_124] add PHP Alice declarative fixtures and Alice README
+  5. [PROMPT_124] add PHP generate CLI and validator
+  6. [PROMPT_124] add structural tests for Ruby and PHP examples
+  7. [PROMPT_124] mark Ruby and PHP complete in CATALOG
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Implement Ruby with faker (full pipeline) and ffaker (contrast for orgs only)
+  - Implement PHP with FakerPHP (full imperative pipeline) and Alice (orgs/users/memberships)
+  - Write honest Alice README documenting its limitations for temporal + distribution rules
+  - Write structural Python tests for both languages
+
+DO NOT:
+  - Use Rails, ActiveRecord, or any web framework in Ruby
+  - Implement full Alice pipeline for all entities — demonstrate with 3 entities and explain why
+  - Use database connections
+  - Use FactoryBot (ORM fixture gem) in the Ruby example
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+  - Ruby example has full faker pipeline, ffaker contrast, RSpec tests, README
+  - PHP example has FakerPHP imperative pipeline, Alice YAML for 3 entities,
+    Alice README documenting limitations, PHPUnit tests, CLI
+  - CATALOG.md shows Ruby and PHP as [x] PROMPT_124
+  - All structural Python tests pass
+  - python scripts/validate_context.py passes
+
+PROMPT_125 implements Scala and Elixir canonical examples.

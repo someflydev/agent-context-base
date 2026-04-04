@@ -1,0 +1,683 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one
+fresh coding-assistant session with commit prefixes like `[PROMPT_119]`.
+
+PROMPT_113–118: Schema Validation and Contract Generation Arc — complete.
+               7 languages, 18 examples, 3 lanes (runtime / contract / hybrid),
+               shared fixture corpus, drift detection guide, parity matrix runner.
+
+This prompt (PROMPT_119) begins a new arc: Cross-Language Faker and Synthetic
+Data Generation. It lays the structural foundation — doctrine, archetypes, stacks,
+routing, manifests, skills, and a workflow — so that PROMPT_120 through PROMPT_126
+can implement canonical examples without debating architecture.
+
+              [FAKER ARC: Prompt 1 of 8 — Foundation]
+
+The arc spans:
+  PROMPT_119 — Foundation: doctrine, archetypes, 10 stacks, router updates,
+               manifests, 2 new skills, 1 workflow, structural tests
+  PROMPT_120 — Domain design + shared generation infrastructure (entity graph,
+               profiles, seed registry, shared patterns, CATALOG skeleton)
+  PROMPT_121 — Python canonical examples (Faker, Mimesis, factory_boy)
+  PROMPT_122 — JavaScript/TypeScript + Go canonical examples
+  PROMPT_123 — Rust + Java + Kotlin canonical examples
+  PROMPT_124 — Ruby + PHP canonical examples
+  PROMPT_125 — Scala + Elixir canonical examples
+  PROMPT_126 — Arc completion: docs, parity runner, ARCHITECTURE_MAP update,
+               memory/concepts, README navigation, arc summary
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                    (run; study output)
+  4. memory/INDEX.md
+
+Read existing structural files to calibrate before writing anything:
+  5. context/doctrine/core-principles.md              (READ — voice and format model)
+  6. context/doctrine/smoke-test-philosophy.md        (READ — how smoke tests are described)
+  7. context/doctrine/schema-validation-contracts.md  (READ — most recent doctrine; model)
+  8. context/archetypes/polyglot-lab.md               (READ — generic polyglot shape)
+  9. context/archetypes/polyglot-validation-lab.md    (READ — most recent polyglot archetype;
+                                                        model format for what you will create)
+ 10. context/stacks/schema-validation-python.yaml     (READ — recent stack yaml format)
+ 11. context/router/archetype-router.md               (READ — you will add entries)
+ 12. context/router/stack-router.md                   (READ — you will add entries)
+ 13. context/router/task-router.md                    (READ — you will add task mappings)
+ 14. manifests/faker-polyglot.yaml                    (READ — if it exists; skip if not)
+ 15. manifests/prompt-first-meta-repo.yaml            (READ — manifest schema format)
+ 16. context/skills/schema-validation-lane-selection.md (READ — recent skill format to model)
+ 17. context/workflows/add-schema-validation-example.md (READ — recent workflow format)
+ 18. memory/concepts/schema-validation-arc.md         (READ — durable knowledge artifact model)
+
+Run verification before touching any file:
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Do NOT begin writing until you have read all of the above.
+
+================================================================================
+BACKGROUND: THE FAKER AND SYNTHETIC DATA GENERATION ARC
+================================================================================
+
+agent-context-base has canonical examples for API services, CLI tools, pipelines,
+observability, schema validation, and terminal tooling. It does not yet have a
+canonical area focused on a concern that underlies all of those: generating
+realistic synthetic data at scale for development, testing, benchmarking, and
+demo environments.
+
+This arc adds canonical-faker examples in 10 languages, each demonstrating:
+  - Realistic atomic field generation (names, emails, addresses, phones, UUIDs, dates)
+  - Relational graph generation with parent-first ordering and foreign key integrity
+  - Deterministic replay via seeded random generators
+  - Weighted distributions, edge-case injection, and temporal realism
+  - Batch/streaming output (JSONL, CSV, SQL seed export)
+  - Profile-based scale control (smoke / small / medium / large)
+  - Validation of output realism and relational consistency
+  - Docs explaining library tradeoffs and generation design decisions
+
+The canonical domain is a SaaS multi-tenant platform called TenantCore
+(defined fully in PROMPT_120). All language examples generate the same domain.
+
+THE CORE INSIGHT THIS ARC MUST PRESERVE:
+  Faker libraries generate realistic atomic values. They do NOT generate
+  relational systems. The arc must explicitly teach how to build the graph
+  layer on top of faker — parent-first ordering, ID pools, lookup tables,
+  cardinality rules, temporal consistency, and cross-field correlation.
+  This design principle is the primary doctrine this arc enforces.
+
+================================================================================
+PART 1: CREATE context/doctrine/synthetic-data-realism.md
+================================================================================
+
+Create: context/doctrine/synthetic-data-realism.md
+
+This doctrine governs how canonical faker examples in this repo must be designed.
+It must be explicit enough that an assistant following only this doctrine and a
+stack file can implement a correct example without prior context.
+
+Required sections:
+
+  # Synthetic Data Realism Doctrine
+
+  ## The Core Separation
+
+  Explain in 3–4 sentences: faker libraries are atomic value generators, not
+  relational system builders. An assistant must never conflate "call Faker.name()"
+  with "generate a realistic user table." Producing a realistic dataset requires
+  a deliberate generation pipeline on top of faker, not just more faker calls.
+
+  ## Seven Mandatory Generation Properties
+
+  Number each rule clearly. Every canonical faker example in this repo must satisfy
+  all seven:
+
+  Rule 1 — DETERMINISTIC SEED
+    Every generator must accept an explicit seed and produce identical output
+    for the same seed on every run on every machine. Document the seed. Test it.
+    Do not use random seeds in smoke tests or CI.
+
+  Rule 2 — PARENT-FIRST ORDERING
+    Entities must be generated in dependency order: parents before children.
+    No child record may reference an ID that does not yet exist in a generated
+    pool. Document the generation order in each example's README.
+
+  Rule 3 — STABLE ID POOLS
+    Before generating children, build and hold the full parent ID pool in memory
+    (or in a lookup file for large datasets). Children sample from this pool.
+    Do not generate IDs on demand during child generation — this breaks referential
+    integrity under sampling and partial runs.
+
+  Rule 4 — WEIGHTED DISTRIBUTIONS, NOT UNIFORM RANDOMNESS
+    Real datasets are not uniformly distributed. Organizations have skewed user
+    counts (some have 1, a few have hundreds). Events cluster around active users.
+    Every canonical example must demonstrate at least one non-uniform distribution.
+    Document the distribution choices and why they are realistic.
+
+  Rule 5 — TEMPORAL REALISM
+    Events happen after the entities they reference were created. Memberships
+    join after org creation. Audit events happen during a member's tenure.
+    Every example must validate that no event timestamp precedes its parent's
+    creation timestamp.
+
+  Rule 6 — CROSS-FIELD CONSISTENCY
+    Fields that constrain each other must be generated together. An audit event's
+    user_id must be a member of the audit event's org_id. A project's created_by
+    must be a member of the project's org. Generate these relationships explicitly —
+    do not rely on faker's value generators to produce consistent cross-field values.
+
+  Rule 7 — VALIDATION BEFORE OUTPUT
+    Every example must run a validation pass before writing output. Validation
+    must check: FK integrity (every foreign key references a generated parent),
+    uniqueness (emails, slugs, API keys are unique), row count sanity,
+    and seed reproducibility (two runs with the same seed produce identical output).
+    The validation pass must produce a human-readable summary report.
+
+  ## What Faker Libraries Do Well
+
+  A short list (4–6 items): realistic names, emails, addresses, phone numbers,
+  lorem text, dates within a range, UUIDs, product names, company names, URLs,
+  IP addresses, credit card numbers (test only), locale-aware text.
+
+  ## What Faker Libraries Do NOT Do
+
+  A short list (4–6 items): relational integrity, cardinality constraints,
+  temporal ordering, weighted distributions across entity graphs, cross-field
+  consistency, domain-specific business logic validation.
+
+  ## Output Profiles
+
+  Define four standard profiles. Every canonical example must implement these or
+  document why a profile is not applicable:
+
+  | Profile | Organizations | Users  | Projects | Events   | Purpose                          |
+  |---------|---------------|--------|----------|----------|----------------------------------|
+  | smoke   | 3             | 10     | 9        | ~50      | CI gate, runs in <5s, deterministic |
+  | small   | 20            | 200    | 100      | ~2,000   | local dev data load              |
+  | medium  | 200           | 5,000  | 2,000    | ~50,000  | realistic demo environment       |
+  | large   | 2,000         | 50,000 | 20,000   | ~500,000 | benchmark or showcase run        |
+
+  Profiles are additive approximations. The actual row counts depend on
+  cardinality rules. Document the actual counts in the validation report.
+
+  ## Commit Rule
+
+  Do not commit a faker canonical example until its smoke profile produces
+  a passing validation report and smoke tests pass in the language's toolchain.
+
+Target length: 80–100 lines. Voice: direct, imperative, matches existing doctrine tone.
+
+================================================================================
+PART 2: CREATE context/archetypes/synthetic-data-generator.md
+================================================================================
+
+Create: context/archetypes/synthetic-data-generator.md
+
+This archetype describes the shape of a project that generates synthetic seed
+data using faker libraries. It is a sibling to polyglot-validation-lab.
+
+Required sections:
+
+  # Synthetic Data Generator
+
+  ## When to Use This Archetype
+
+  2–3 sentences: when the primary work is generating realistic seed data for
+  development, testing, benchmarking, or demo environments. Not for generating
+  one-off test fixtures — this archetype is for structured, relational, scalable,
+  reproducible dataset generation.
+
+  ## Required Context
+  (The files an assistant must load before implementing in this archetype)
+  - context/doctrine/synthetic-data-realism.md
+  - context/stacks/faker-{language}.yaml for the target language
+  - examples/canonical-faker/domain/schema.md
+  - examples/canonical-faker/domain/generation-order.md
+
+  ## Common Goals
+  - Parent-first relational generation with stable ID pools
+  - Deterministic seeded replay
+  - Profile-based scale control (smoke / small / medium / large)
+  - JSONL/CSV/SQL output with validation reports
+  - Smoke tests that are fast and CI-safe
+
+  ## Anti-Patterns
+  - Calling faker methods inline without a generation pipeline
+  - Generating children before parents
+  - Using language-native random without a fixed seed
+  - Treating faker output as validated output without a verification pass
+  - Generating everything in memory for large profiles (use chunked writes)
+  - Conflating "realistic-looking values" with "relational integrity"
+
+  ## Typical Verification Gate
+  - smoke profile runs in < 5 seconds
+  - validation report shows 0 FK violations
+  - two identical-seed runs produce byte-identical JSONL output
+  - row counts match profile spec within ±10%
+
+  ## Related Artifacts
+  - context/doctrine/synthetic-data-realism.md
+  - context/skills/faker-library-selection.md
+  - context/skills/synthetic-dataset-design.md
+  - context/workflows/add-faker-example.md
+  - manifests/faker-polyglot.yaml
+
+Target length: 50–70 lines.
+
+================================================================================
+PART 3: CREATE TEN STACK FILES
+================================================================================
+
+Create one stack YAML file per language. Use the same YAML format as
+context/stacks/schema-validation-python.yaml (read it first for field names).
+
+Each stack file must include:
+  - name
+  - language
+  - primary_faker_library (name, repo URL, brief description)
+  - secondary_library (name, repo URL, brief description)
+  - optional_graph_library (if applicable)
+  - output_formats (list)
+  - notes (1–3 sentences on the stack's strengths and what to watch for)
+  - examples (path to the canonical example once created, or "TBD: PROMPT_1XX")
+  - verification (the smoke test command for this language)
+
+Files to create:
+
+  context/stacks/faker-python.yaml
+  --------------------------------
+  primary:   Faker (https://github.com/joke2k/faker)
+             Realistic, locale-aware, broad category coverage. Mature ecosystem.
+  secondary: Mimesis (https://github.com/lk-geimfari/mimesis)
+             Fast, strongly typed, custom providers, schema-based generation.
+  optional:  factory_boy (https://github.com/FactoryBoy/factory_boy)
+             ORM-style object graph factories. Use only when relational graph
+             clarity benefits from factory declarations, not for raw output.
+  outputs:   JSONL, CSV, SQL seed
+  notes:     Python is the reference implementation for this arc. Implement
+             Python first. All parity checks run against Python output.
+
+  context/stacks/faker-javascript.yaml
+  -------------------------------------
+  primary:   @faker-js/faker (https://github.com/faker-js/faker)
+             Community-maintained fork; broad locale support; tree-shakeable.
+  secondary: Chance (https://github.com/chancejs/chance)
+             Lightweight probability helper and repeatable RNG building block.
+             Useful for weighted picks, distributions, and custom generators
+             that @faker-js/faker does not expose directly.
+  outputs:   JSONL, CSV, Node.js script
+  notes:     Target Node.js CLI. TypeScript types are included with @faker-js/faker.
+             Use Chance for any distribution shaping beyond simple faker calls.
+
+  context/stacks/faker-go.yaml
+  ----------------------------
+  primary:   gofakeit (https://github.com/brianvoe/gofakeit)
+             Broad category coverage, functional API, struct tag population.
+  secondary: go-faker/faker (https://github.com/go-faker/faker)
+             Struct-tag-driven field population. Contrasting style: tag-based
+             annotation vs. explicit function calls.
+  outputs:   JSONL, CSV
+  notes:     Demonstrate both styles. gofakeit for the main generation pipeline;
+             go-faker/faker to show the struct-tag approach as a contrast.
+             Use deterministic seeding via gofakeit.New(seed) or rand.New.
+
+  context/stacks/faker-rust.yaml
+  ------------------------------
+  primary:   fake (https://github.com/cksac/fake-rs)
+             Derive macros, typed generation, CLI-friendly, seed support.
+  secondary: (none — fake-rs covers both derive and builder styles)
+  notes:     Use fake-rs derive macros for typed struct population. Show the
+             builder pattern explicitly for the relational graph layer. Emphasize
+             deterministic seed pipelines via fake-rs Seed trait. Parquet output
+             via arrow2 or polars is optional but noted in the example README.
+  outputs:   JSONL, CSV
+
+  context/stacks/faker-java.yaml
+  ------------------------------
+  primary:   Datafaker (https://github.com/datafaker-net/datafaker)
+             Modern JVM faker; successor to java-faker; provider-based design.
+  secondary: (none — Datafaker is the clear primary for modern Java)
+  outputs:   JSONL, CSV, SQL seed
+  notes:     Datafaker has extensive provider coverage. The key teaching point
+             in the Java example is building a relational orchestration layer
+             on top of Datafaker providers, not just calling providers directly.
+
+  context/stacks/faker-kotlin.yaml
+  ---------------------------------
+  primary:   kotlin-faker (https://github.com/serpro69/kotlin-faker)
+             Kotlin-native DSL-style faker with strong idiomatic Kotlin API.
+  secondary: Datafaker (same as Java stack — interoperable on the JVM)
+             Use when JVM interop or Java team familiarity with Datafaker matters.
+  outputs:   JSONL, CSV
+  notes:     Show both Kotlin-native style (kotlin-faker) and the JVM-interop
+             path (Datafaker). The contrast is idiomatic DSL vs. provider-based
+             Java-descended API. Use coroutines for the chunked write pipeline
+             if appropriate.
+
+  context/stacks/faker-scala.yaml
+  --------------------------------
+  primary:   scala-faker (https://github.com/irevive/scala-faker) — if still
+             maintained, otherwise use Datafaker via Scala interop.
+  secondary: Datafaker (JVM interop fallback, widely maintained)
+  outputs:   JSONL, CSV
+  notes:     The Scala faker ecosystem is thinner than Python or JavaScript.
+             Be explicit about this. Recommend Datafaker as the pragmatic JVM
+             fallback. Show a functional pipeline idiom around faker calls using
+             LazyList, ZIO Stream, or a simple Iterator approach.
+
+  context/stacks/faker-ruby.yaml
+  --------------------------------
+  primary:   faker (https://github.com/faker-ruby/faker)
+             Community standard Ruby faker. Wide category coverage, locale-aware.
+  secondary: ffaker (https://github.com/ffaker/ffaker)
+             Faster, simpler alternative. Less category coverage but useful as
+             a performance/legacy comparison and for demonstrating the contrast.
+  outputs:   JSONL, CSV, Ruby fixture script
+  notes:     Ruby's fixture-generation culture (e.g., FactoryBot) is relevant
+             context. This arc focuses on raw output generation, not ORM fixtures,
+             but the README should note the FactoryBot path for teams using Rails.
+
+  context/stacks/faker-php.yaml
+  --------------------------------
+  primary:   FakerPHP/Faker (https://github.com/FakerPHP/Faker)
+             The maintained PHP community fork. Provider-based, locale-aware.
+  secondary: Nelmio Alice (https://github.com/nelmio/alice)
+             YAML/PHP fixture definition language. Expressive relational graph
+             definitions with references, ranges, and optional values.
+             Alice is the key teaching surface for PHP — it shows a different
+             paradigm for relational fixture generation vs. imperative code.
+  outputs:   JSONL, CSV, Alice YAML fixture files
+  notes:     Alice is the distinguishing PHP tool. The PHP example must show
+             both imperative generation (FakerPHP) and the Alice declarative
+             approach side by side to make the paradigm contrast visible.
+
+  context/stacks/faker-elixir.yaml
+  --------------------------------
+  primary:   Faker (https://github.com/elixirs/faker)
+             The standard Elixir community faker library. Struct-oriented.
+  secondary: ExMachina (https://github.com/thoughtbot/ex_machina)
+             Factory-based approach, integrates with Ecto for relational graph
+             generation. Use where the example benefits from factory declarations
+             and Ecto changesets for validation.
+  outputs:   JSONL, CSV, Mix seed script
+  notes:     Elixir's generation pipeline idiom is functional (Enum.map, Stream).
+             Emphasize this throughout. The Mix task pattern for seeding is the
+             natural delivery mechanism in Elixir — use it.
+
+================================================================================
+PART 4: CREATE TWO SKILLS
+================================================================================
+
+Create: context/skills/faker-library-selection.md
+
+This skill helps an assistant choose the right faker library for a language
+given the use case. Model the format on context/skills/schema-validation-lane-selection.md.
+
+Required decision dimensions:
+  - Target language (10 languages in this arc)
+  - Primary vs. secondary library choice
+  - When to add a graph/factory library (factory_boy, Alice, ExMachina)
+  - When the language's faker ecosystem is thin (Scala; acknowledge it)
+  - Locale requirements (faker libraries vary in locale coverage)
+  - Output format requirements
+  - Whether the use case is atomic generation or full relational graph
+
+The skill must have a decision table or flowchart structure, not prose.
+It should be loadable in < 50 lines and answer the selection question directly.
+
+Create: context/skills/synthetic-dataset-design.md
+
+This skill guides the design of a relational synthetic dataset generation pipeline.
+It teaches the seven-step pattern that every canonical example in this arc follows.
+
+Required sections:
+
+  # Synthetic Dataset Design Skill
+
+  ## When to Use
+  When asked to generate seed data, fixtures, synthetic datasets, or realistic
+  test data that spans multiple related entities.
+
+  ## The Seven-Step Generation Pipeline
+
+  Step 1: Define the entity graph and generation order
+    Draw the dependency graph. Write it down in the example README before coding.
+    Identify which entities are roots (no parents) and which are leaves (deepest children).
+
+  Step 2: Choose a seed and make it explicit
+    Pick a seed (e.g., 42) and use it consistently throughout. Document it.
+    Every random call in the pipeline must flow from the same seeded RNG.
+
+  Step 3: Generate roots first, build ID pools
+    Generate all root entities. Store their IDs in a lookup structure.
+    Do not proceed until roots are complete and ID pool is built.
+
+  Step 4: Generate each dependent layer in order
+    For each layer: sample parent IDs from the parent pool, generate children,
+    apply cardinality rules, apply weighted distributions.
+
+  Step 5: Apply cross-field consistency rules
+    After all entities are generated, run consistency rules:
+    - membership.user_id must be in users pool
+    - event.user_id must be a member of event.org_id
+    - event.project_id must belong to event.org_id
+
+  Step 6: Validate
+    Run the validation pass. Check FK integrity, uniqueness, row counts,
+    temporal ordering, distribution sanity. Produce a validation report.
+    Do not write output until validation passes.
+
+  Step 7: Write output
+    Write to JSONL/CSV/SQL in the requested profile size.
+    Use chunked writes for medium/large profiles.
+    Report progress and final row counts.
+
+  ## Common Design Mistakes
+
+  List 5 common mistakes with one-line explanations each.
+
+Target length for each skill: 40–60 lines.
+
+================================================================================
+PART 5: CREATE context/workflows/add-faker-example.md
+================================================================================
+
+Create: context/workflows/add-faker-example.md
+
+This workflow guides adding a new canonical faker example to this repository.
+Model it on context/workflows/add-schema-validation-example.md.
+
+Required steps:
+
+  1. Read context/doctrine/synthetic-data-realism.md — confirm the 7 rules
+  2. Read examples/canonical-faker/domain/schema.md — the entity graph
+  3. Read examples/canonical-faker/domain/generation-order.md — parent-first order
+  4. Read context/stacks/faker-{language}.yaml for the target language
+  5. Read examples/canonical-faker/CATALOG.md — check what is already there
+  6. Create the example directory under examples/canonical-faker/{language}/
+  7. Implement the generation pipeline following the 7-step skill
+  8. Implement output profiles (smoke / small)
+  9. Add smoke tests under verification/faker/{language}/
+ 10. Run the smoke profile and confirm validation report passes
+ 11. Update examples/canonical-faker/CATALOG.md — mark the example
+ 12. Run python scripts/validate_context.py
+ 13. Commit with [PROMPT_XXX] prefix
+
+Include a "Scope Boundaries" section:
+  DO:    implement atomic generation, relational graph, validation, JSONL/CSV output
+  AVOID: adding new domain entities without updating domain/schema.md
+  AVOID: committing before smoke tests pass
+  AVOID: using language-native random without the seeded generator
+
+================================================================================
+PART 6: CREATE manifests/faker-polyglot.yaml
+================================================================================
+
+Create: manifests/faker-polyglot.yaml
+
+Use the same YAML format as manifests/prompt-first-meta-repo.yaml (read it first).
+
+The manifest must describe:
+  - name: Faker Polyglot Canonical Examples
+  - purpose: Cross-language synthetic data generation examples
+  - languages: list of 10
+  - primary_doctrine: context/doctrine/synthetic-data-realism.md
+  - canonical_examples: examples/canonical-faker/ (by language)
+  - skills: list of 2
+  - workflow: context/workflows/add-faker-example.md
+  - verification: python scripts/run_verification.py --tier fast
+  - arc_status: in-progress (PROMPT_119 — foundation)
+  - arc_prompts: PROMPT_119 through PROMPT_126
+
+================================================================================
+PART 7: UPDATE ROUTERS
+================================================================================
+
+Read each router file before editing. Append entries — do NOT restructure.
+
+context/router/task-router.md — add these entries:
+
+  - "generate seed data", "realistic test data", "synthetic dataset", "fake data pipeline",
+    "relational fixture generation"
+    - load context/doctrine/synthetic-data-realism.md
+    - load context/skills/synthetic-dataset-design.md
+    - load context/stacks/faker-{language}.yaml for the target language
+  - "choose a faker library", "what faker library should I use", "faker library comparison"
+    - load context/skills/faker-library-selection.md
+  - "add a faker example", "add a synthetic data example"
+    - load context/workflows/add-faker-example.md
+
+context/router/archetype-router.md — add this entry:
+
+  - seed data generator, synthetic dataset builder, fixture graph generator,
+    demo data generator, benchmark dataset builder
+    - context/archetypes/synthetic-data-generator.md
+
+context/router/stack-router.md — add the 10 faker stacks. Format should
+match existing stack entries. Link each to context/stacks/faker-{language}.yaml.
+
+================================================================================
+PART 8: WRITE STRUCTURAL VERIFICATION TESTS
+================================================================================
+
+Create: verification/unit/test_faker_arc_foundation.py
+
+These are fast structural tests (no language toolchains required) that verify
+the foundation artifacts exist and are internally consistent.
+
+Test class: TestFakerArcFoundation
+
+Tests to implement:
+
+  test_doctrine_exists
+    Assert context/doctrine/synthetic-data-realism.md exists.
+    Assert it contains "Rule 1" through "Rule 7" (all seven rules are present).
+
+  test_archetype_exists
+    Assert context/archetypes/synthetic-data-generator.md exists.
+    Assert it references context/doctrine/synthetic-data-realism.md.
+    Assert it references context/skills/synthetic-dataset-design.md.
+
+  test_all_ten_stacks_exist
+    For each of the 10 language stack files (faker-python.yaml through
+    faker-elixir.yaml): assert the file exists.
+
+  test_skills_exist
+    Assert context/skills/faker-library-selection.md exists.
+    Assert context/skills/synthetic-dataset-design.md exists.
+    Assert synthetic-dataset-design.md contains "Step 1" through "Step 7".
+
+  test_workflow_exists
+    Assert context/workflows/add-faker-example.md exists.
+    Assert it references context/doctrine/synthetic-data-realism.md.
+
+  test_manifest_exists
+    Assert manifests/faker-polyglot.yaml exists.
+    Assert it contains "faker-python" (proving languages are listed).
+
+  test_router_updated_task
+    Read context/router/task-router.md.
+    Assert it contains "synthetic-data-realism" and "faker-library-selection".
+
+  test_router_updated_archetype
+    Read context/router/archetype-router.md.
+    Assert it contains "synthetic-data-generator".
+
+Use unittest. Run with:
+  python -m unittest verification/unit/test_faker_arc_foundation.py -v
+
+================================================================================
+VERIFICATION
+================================================================================
+
+After all parts are complete:
+
+  python -m unittest verification/unit/test_faker_arc_foundation.py -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+All three must pass before committing.
+
+Manual checks:
+  - context/doctrine/synthetic-data-realism.md exists and contains all 7 rules
+  - All 10 stack files exist under context/stacks/
+  - Both skills exist under context/skills/
+  - Workflow exists under context/workflows/
+  - Manifest exists under manifests/
+  - All three routers have new entries for this arc
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+Use grouped commits prefixed [PROMPT_119]. Use `git add -p`.
+
+  1. [PROMPT_119] add synthetic-data-realism doctrine
+     Stage: context/doctrine/synthetic-data-realism.md
+
+  2. [PROMPT_119] add synthetic-data-generator archetype
+     Stage: context/archetypes/synthetic-data-generator.md
+
+  3. [PROMPT_119] add faker language stacks (10 languages)
+     Stage: context/stacks/faker-python.yaml through context/stacks/faker-elixir.yaml
+
+  4. [PROMPT_119] add faker arc skills
+     Stage: context/skills/faker-library-selection.md
+            context/skills/synthetic-dataset-design.md
+
+  5. [PROMPT_119] add add-faker-example workflow
+     Stage: context/workflows/add-faker-example.md
+
+  6. [PROMPT_119] add faker-polyglot manifest
+     Stage: manifests/faker-polyglot.yaml
+
+  7. [PROMPT_119] update routers for faker arc
+     Stage: context/router/task-router.md
+            context/router/archetype-router.md
+            context/router/stack-router.md
+
+  8. [PROMPT_119] add faker arc foundation structural tests
+     Stage: verification/unit/test_faker_arc_foundation.py
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Create doctrine, archetype, 10 stack files, 2 skills, 1 workflow, 1 manifest
+  - Add entries to all three routers
+  - Add structural tests that verify foundation artifacts exist
+  - Confirm all verification gates pass before committing
+
+DO NOT:
+  - Implement any canonical faker examples — that begins in PROMPT_120
+  - Install or configure any language toolchains
+  - Create any files under examples/ — that is PROMPT_120's job
+  - Restructure existing router or doctrine files — append only
+  - Create any stack file without reading schema-validation-python.yaml for format
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+
+  - context/doctrine/synthetic-data-realism.md exists with all 7 rules
+  - context/archetypes/synthetic-data-generator.md exists
+  - All 10 context/stacks/faker-{language}.yaml files exist
+  - Both skills exist and have the required sections
+  - Workflow exists and references the doctrine
+  - manifests/faker-polyglot.yaml exists
+  - All three routers have new entries
+  - verification/unit/test_faker_arc_foundation.py passes
+  - python scripts/validate_context.py passes
+  - python scripts/run_verification.py --tier fast passes
+
+This prompt has no implementation deliverables — only knowledge artifacts.
+PROMPT_120 begins the domain design and shared infrastructure work.

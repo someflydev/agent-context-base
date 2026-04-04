@@ -1,0 +1,573 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one
+fresh coding-assistant session with commit prefixes like `[PROMPT_125]`.
+
+PROMPT_119: Faker Arc — Foundation.
+PROMPT_120: Faker Arc — Domain design.
+PROMPT_121: Faker Arc — Python. [x]
+PROMPT_122: Faker Arc — JavaScript/TypeScript + Go. [x]
+PROMPT_123: Faker Arc — Rust + Java + Kotlin. [x]
+PROMPT_124: Faker Arc — Ruby + PHP. [x]
+
+This prompt (PROMPT_125) implements canonical faker examples for two languages:
+  - Scala using Datafaker (JVM interop) as primary, acknowledging the thinner
+    Scala-native faker ecosystem
+  - Elixir using the Faker library (primary) with ExMachina for factory-style
+    generation and Mix tasks as the standard delivery mechanism
+
+              [FAKER ARC: Prompt 7 of 8 — Scala + Elixir]
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                    (run; study output)
+  4. memory/INDEX.md
+
+Read arc foundation and domain spec:
+  5. context/doctrine/synthetic-data-realism.md       (READ — the 7 rules)
+  6. context/skills/synthetic-dataset-design.md       (READ — 7-step pipeline)
+  7. context/stacks/faker-scala.yaml                  (READ — Scala stack and caveats)
+  8. context/stacks/faker-elixir.yaml                 (READ — Elixir stack)
+  9. examples/canonical-faker/domain/schema.md        (READ — entity graph)
+ 10. examples/canonical-faker/domain/generation-order.md (READ — 7-stage order)
+ 11. examples/canonical-faker/domain/seed-registry.md (READ — smoke seed = 42)
+ 12. examples/canonical-faker/python/faker_pipeline/generators.py (READ — reference)
+ 13. examples/canonical-faker/kotlin/src/main/kotlin/io/agentcontextbase/faker/pipeline/DatafakerPipeline.kt
+                                                     (READ — Java/Kotlin Datafaker reference)
+ 14. examples/canonical-faker/CATALOG.md              (READ — current state)
+
+Run verification before touching any example files:
+  python -m unittest verification/faker/ruby/test_ruby_faker.py -v
+  python -m unittest verification/faker/php/test_php_faker.py -v
+
+Both must pass (Ruby and PHP must be [x] before this prompt begins).
+
+================================================================================
+BACKGROUND
+================================================================================
+
+SCALA: The Scala faker ecosystem is thinner than Python, JS, or Java.
+       The most honest approach is: use Datafaker (via Scala/JVM interop) as the
+       primary provider, and show idiomatic Scala patterns in the orchestration
+       layer — lazy evaluation, case classes, functional pipelines, ZIO or Cats
+       Effect if a streaming pipeline adds clarity, otherwise just LazyList.
+       Do NOT pretend there is a thriving Scala-native faker ecosystem.
+       State this clearly in the README and in the stack file.
+
+ELIXIR: Elixir's functional nature means the generation pipeline is naturally
+        expressed as a pipeline of Enum.map/Enum.flat_map/Stream transforms.
+        The Faker library (elixirs/faker) provides atomic value generation.
+        ExMachina provides factory-style generation with optional Ecto integration.
+        The natural delivery mechanism in Elixir is a Mix task (mix generate).
+        This arc's example must use Mix tasks, not a separate CLI binary.
+
+================================================================================
+PART A: SCALA EXAMPLE
+================================================================================
+
+Directory: examples/canonical-faker/scala/
+
+  examples/canonical-faker/scala/
+  ├── README.md
+  ├── build.sbt
+  ├── project/
+  │   └── build.properties
+  ├── src/
+  │   └── main/
+  │       └── scala/
+  │           └── io/agentcontextbase/faker/
+  │               ├── Domain.scala          ← case classes for all entities
+  │               ├── Profile.scala         ← Profile case class + constants
+  │               ├── Pools.scala           ← ID pools and org_member_map
+  │               ├── Distributions.scala   ← weighted pickers using scala.util.Random
+  │               ├── Pipeline.scala        ← main generation pipeline
+  │               ├── Validate.scala        ← FK integrity + cross-field rules
+  │               └── Main.scala            ← CLI entry point
+  └── src/
+      └── test/
+          └── scala/
+              └── io/agentcontextbase/faker/
+                  └── SmokeTest.scala       ← ScalaTest smoke tests
+
+A-1. build.sbt
+
+  name := "canonical-faker-scala"
+  version := "0.1.0"
+  scalaVersion := "3.3.x"
+
+  libraryDependencies ++= Seq(
+    "net.datafaker" % "datafaker" % "2.x.x",
+    "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.x.x",
+    "org.scalatest" %% "scalatest" % "3.2.x" % Test
+  )
+
+Note: No Scala-native faker library is declared here. Document this in
+the README under "Ecosystem Note."
+
+A-2. Domain.scala
+
+Scala 3 case classes for all 7 entities:
+  case class Organization(
+    id: String,
+    name: String,
+    slug: String,
+    plan: String,
+    region: String,
+    created_at: String,
+    owner_email: String
+  ) derives io.circe.Codec  // if circe is added, else use Jackson
+
+JSON serialization: use Jackson with jackson-module-scala, or add circe
+if the team prefers it. Jackson is simpler for a focused example. Choose one,
+document it, and be consistent.
+
+A-3. Pipeline.scala
+
+This is the key teaching surface for Scala. Show:
+
+  1. Datafaker initialization:
+     import net.datafaker.Faker
+     import java.util.Random
+     val faker = new Faker(new Random(profile.seed))
+
+  2. Idiomatic Scala functional pipeline using LazyList:
+     val orgStream: LazyList[Organization] =
+       LazyList.continually(buildOrg(faker, rng))
+                .take(profile.numOrgs)
+
+     Note: LazyList is lazy; elements are generated on demand.
+     This is Scala's natural streaming approach without a streaming library.
+
+  3. ZIO option (mention, don't require):
+     Add a comment noting that ZIO Stream could replace LazyList for the
+     medium/large profiles when backpressure and async chunked writes matter.
+     This is a pointer for teams using ZIO, not a requirement for this example.
+
+  4. Pool management in idiomatic Scala:
+     val orgIds: Vector[String] = orgs.map(_.id).toVector
+     val orgMemberMap: Map[String, Vector[String]] = buildMemberMap(orgs, users, rng)
+
+  5. Weighted distributions via scala.util.Random:
+     def weightedPlan(rng: scala.util.Random): String = {
+       val n = rng.nextInt(100)
+       if (n < 50) "free" else if (n < 85) "pro" else "enterprise"
+     }
+
+  6. Cross-field rules: same pattern — sample from Vectors/Maps, not from faker.
+
+A-4. Validate.scala
+
+  case class ValidationReport(
+    ok: Boolean,
+    violations: Vector[String],
+    counts: Map[String, Int],
+    seed: Long,
+    profileName: String
+  )
+
+Implement all Cross-Field Rules A–I.
+
+A-5. Main.scala
+
+CLI using scala.util.CommandLineParser or manual args parsing:
+  // Usage: sbt "run --profile smoke --output ./output --format jsonl"
+
+A-6. SmokeTest.scala (ScalaTest)
+
+  class SmokeTest extends AnyFlatSpec with Matchers {
+    "Smoke profile" should "generate 3 organizations" in {
+      val dataset = Pipeline.generate(Profile.SMOKE)
+      dataset.organizations should have length 3
+    }
+    it should "pass validation" in {
+      val dataset = Pipeline.generate(Profile.SMOKE)
+      val report = Validate.check(dataset)
+      report.ok shouldBe true
+      report.violations shouldBe empty
+    }
+    it should "be reproducible" in {
+      val d1 = Pipeline.generate(Profile.SMOKE)
+      val d2 = Pipeline.generate(Profile.SMOKE)
+      d1.organizations shouldBe d2.organizations
+    }
+  }
+
+================================================================================
+PART B: ELIXIR EXAMPLE
+================================================================================
+
+Directory: examples/canonical-faker/elixir/
+
+  examples/canonical-faker/elixir/
+  ├── README.md
+  ├── mix.exs
+  ├── lib/
+  │   ├── tenant_core/
+  │   │   ├── domain.ex          ← struct definitions for all entities
+  │   │   ├── profiles.ex        ← Profile struct + constants
+  │   │   ├── pools.ex           ← ID pools and org_member_map (Maps)
+  │   │   ├── distributions.ex   ← weighted pickers using :rand
+  │   │   ├── pipeline.ex        ← main generation pipeline (Faker-based)
+  │   │   ├── ex_machina_pipeline.ex ← ExMachina factory approach (contrast)
+  │   │   ├── validate.ex        ← FK integrity + cross-field rules
+  │   │   └── output.ex          ← JSONL and CSV writers
+  │   └── mix/
+  │       └── tasks/
+  │           └── generate.ex    ← `mix generate` task
+  └── test/
+      └── tenant_core/
+          └── smoke_test.exs     ← ExUnit smoke tests
+
+B-1. mix.exs
+
+  defmodule CanonicalFakerElixir.MixProject do
+    use Mix.Project
+    def project, do: [
+      app: :canonical_faker_elixir,
+      version: "0.1.0",
+      elixir: "~> 1.15",
+      deps: deps()
+    ]
+    defp deps do
+      [
+        {:faker, "~> 0.18"},
+        {:ex_machina, "~> 2.7"},
+        {:jason, "~> 1.4"}        # JSON serialization
+      ]
+    end
+  end
+
+B-2. lib/tenant_core/domain.ex
+
+Elixir structs for all 7 entities:
+  defmodule TenantCore.Organization do
+    @enforce_keys [:id, :name, :slug, :plan, :region, :created_at, :owner_email]
+    defstruct [:id, :name, :slug, :plan, :region, :created_at, :owner_email]
+  end
+  # ... all 7 entities
+
+B-3. lib/tenant_core/distributions.ex
+
+Elixir weighted random using :rand (seeded Erlang RNG):
+
+  defmodule TenantCore.Distributions do
+    def weighted_plan(seed_state) do
+      choices = [{"free", 50}, {"pro", 35}, {"enterprise", 15}]
+      weighted_pick(choices, seed_state)
+    end
+
+    defp weighted_pick(weighted_list, _seed_state) do
+      total = Enum.sum(Enum.map(weighted_list, fn {_, w} -> w end))
+      target = :rand.uniform(total)
+      # walk the list until cumulative weight >= target
+      Enum.reduce_while(weighted_list, 0, fn {value, weight}, acc ->
+        new_acc = acc + weight
+        if new_acc >= target, do: {:halt, value}, else: {:cont, new_acc}
+      end)
+    end
+  end
+
+Seeding in Elixir:
+  :rand.seed(:exsss, {42, 0, 0})   # seed the process-level RNG
+
+Document: Elixir's :rand module seeds the process-level RNG. All :rand calls
+in a single process share this state. Seed once at pipeline startup.
+The Faker library also uses :rand internally — seeding :rand affects Faker's output.
+
+B-4. lib/tenant_core/pipeline.ex
+
+Functional pipeline using Enum and Map:
+
+  defmodule TenantCore.Pipeline do
+    alias TenantCore.{Domain, Distributions, Pools}
+
+    def generate(%TenantCore.Profile{} = profile) do
+      :rand.seed(:exsss, {profile.seed, 0, 0})
+
+      orgs = build_orgs(profile.num_orgs)
+      org_ids = Enum.map(orgs, & &1.id)
+
+      users = build_users(profile.num_users)
+      user_ids = Enum.map(users, & &1.id)
+
+      {memberships, org_member_map} = build_memberships(orgs, user_ids)
+      {projects, project_org_map} = build_projects(orgs, org_member_map)
+      audit_events = build_audit_events(projects, org_member_map, project_org_map)
+      api_keys = build_api_keys(orgs, org_member_map)
+      invitations = build_invitations(orgs, org_member_map, users)
+
+      dataset = %{
+        organizations: orgs,
+        users: users,
+        memberships: memberships,
+        projects: projects,
+        audit_events: audit_events,
+        api_keys: api_keys,
+        invitations: invitations
+      }
+
+      report = TenantCore.Validate.check(dataset)
+      unless report.ok, do: raise("Validation failed: #{inspect(report.violations)}")
+      Map.put(dataset, :report, report)
+    end
+
+    defp build_orgs(count) do
+      Enum.map(1..count, fn _ ->
+        %TenantCore.Organization{
+          id: UUID.uuid4(),
+          name: Faker.Company.name(),
+          slug: Faker.Internet.slug(),
+          plan: Distributions.weighted_plan(nil),
+          region: Distributions.weighted_region(nil),
+          created_at: Faker.DateTime.backward(365 * 3) |> DateTime.to_iso8601(),
+          owner_email: Faker.Internet.email()
+        }
+      end)
+    end
+    # ... similar for users, memberships, projects, events, api_keys, invitations
+  end
+
+Show the Enum.map pipeline idiom throughout. Use Stream for large profiles
+(document this in the README):
+  "For medium/large profiles, replace Enum.map with Stream.map and add a
+   chunked write step using Stream.chunk_every/2."
+
+B-5. lib/tenant_core/ex_machina_pipeline.ex
+
+Short contrast demonstration using ExMachina:
+
+  defmodule TenantCore.ExMachinaPipeline do
+    use ExMachina
+
+    def organization_factory do
+      %TenantCore.Organization{
+        id: Faker.UUID.v4(),
+        name: Faker.Company.name(),
+        slug: Faker.Internet.slug(),
+        plan: Enum.random(["free", "pro", "enterprise"]),
+        # ...
+      }
+    end
+
+    def user_factory do
+      %TenantCore.User{
+        id: Faker.UUID.v4(),
+        email: sequence(:email, &"user_#{&1}@example.com"),
+        # ...
+      }
+    end
+  end
+
+Add a clear comment in this file:
+  "ExMachina provides a factory declaration syntax similar to FactoryBot (Ruby).
+   It handles atomic field generation and simple sequences (unique emails).
+   It does NOT handle relational graph integrity, temporal ordering, or weighted
+   distributions. Those rules must be enforced in the orchestration layer.
+   Use ExMachina for smoke-volume test fixtures. Use TenantCore.Pipeline for
+   production-quality dataset generation."
+
+B-6. lib/mix/tasks/generate.ex
+
+  defmodule Mix.Tasks.Generate do
+    use Mix.Task
+
+    @shortdoc "Generate TenantCore synthetic dataset"
+    @moduledoc """
+    Usage:
+      mix generate [--profile smoke|small|medium|large]
+                   [--output ./output]
+                   [--format jsonl|csv]
+    """
+
+    @impl Mix.Task
+    def run(args) do
+      # parse args
+      # call TenantCore.Pipeline.generate(profile)
+      # write output
+      # print validation report
+    end
+  end
+
+B-7. test/tenant_core/smoke_test.exs (ExUnit)
+
+  defmodule TenantCore.SmokeTest do
+    use ExUnit.Case
+
+    test "smoke profile generates 3 organizations" do
+      dataset = TenantCore.Pipeline.generate(TenantCore.Profile.smoke())
+      assert length(dataset.organizations) == 3
+    end
+
+    test "smoke profile passes validation" do
+      dataset = TenantCore.Pipeline.generate(TenantCore.Profile.smoke())
+      assert dataset.report.ok == true
+      assert dataset.report.violations == []
+    end
+
+    test "smoke profile is reproducible" do
+      d1 = TenantCore.Pipeline.generate(TenantCore.Profile.smoke())
+      d2 = TenantCore.Pipeline.generate(TenantCore.Profile.smoke())
+      assert d1.organizations == d2.organizations
+    end
+
+    test "smoke profile has at least one non-free organization (weighted distribution)" do
+      dataset = TenantCore.Pipeline.generate(TenantCore.Profile.small())
+      plans = Enum.map(dataset.organizations, & &1.plan)
+      free_count = Enum.count(plans, &(&1 == "free"))
+      # free should be roughly 50%; allow wider range for small N
+      assert free_count < length(plans)
+    end
+  end
+
+================================================================================
+PART C: STRUCTURAL VERIFICATION TESTS
+================================================================================
+
+Create: verification/faker/scala/test_scala_faker.py
+
+Test class: TestScalaFakerExample
+  test_build_sbt_exists
+    Assert build.sbt exists. Assert it contains "datafaker".
+  test_ecosystem_note_in_readme
+    Read README.md. Assert it contains "Scala-native" or "ecosystem" (honest note).
+  test_lazy_list_in_pipeline
+    Read Pipeline.scala. Assert it contains "LazyList" or "Stream" or "Vector".
+  test_domain_case_classes_defined
+    Read Domain.scala. Assert it contains "case class Organization" and "case class AuditEvent".
+  test_validation_implemented
+    Assert Validate.scala exists. Assert it contains "ValidationReport".
+  test_scala_build_if_available
+    Skip if `sbt` not found.
+    Run: sbt compile --project-dir .../scala/
+  test_scala_smoke_if_available
+    Skip if `sbt` not found.
+    Run: sbt test --project-dir .../scala/
+
+Create: verification/faker/elixir/test_elixir_faker.py
+
+Test class: TestElixirFakerExample
+  test_mix_exs_exists
+    Assert mix.exs exists. Assert it contains "faker" and "ex_machina".
+  test_pipeline_uses_enum_map
+    Read lib/tenant_core/pipeline.ex. Assert it contains "Enum.map".
+  test_rand_seed_called
+    Read lib/tenant_core/pipeline.ex. Assert it contains ":rand.seed".
+  test_ex_machina_limitation_documented
+    Read lib/tenant_core/ex_machina_pipeline.ex.
+    Assert it contains "NOT" (limitation is documented explicitly).
+  test_mix_task_exists
+    Assert lib/mix/tasks/generate.ex exists.
+    Assert it contains "use Mix.Task".
+  test_elixir_build_if_available
+    Skip if `mix` not found.
+    Run: mix deps.get --project-dir .../elixir/
+  test_elixir_smoke_if_available
+    Skip if `mix` not found.
+    Run: mix test test/tenant_core/smoke_test.exs --project-dir .../elixir/
+
+================================================================================
+PART D: README FILES
+================================================================================
+
+Create: examples/canonical-faker/scala/README.md
+  - What this demonstrates (Datafaker on the JVM via Scala interop + functional pipeline)
+  - ECOSYSTEM NOTE (prominent section): "Scala-native faker libraries are limited
+    or unmaintained as of 2024. This example uses Datafaker (Java) via JVM interop.
+    The Scala value comes from the functional pipeline layer: LazyList generation,
+    case classes, immutable Maps for pools, and idiomatic Scala patterns above
+    Datafaker's provider API."
+  - Seeding: new Random(seed) passed to Datafaker
+  - LazyList-based pipeline and when to upgrade to ZIO Stream
+  - Quick start: sbt run --profile smoke
+  - How to test: sbt test
+
+Create: examples/canonical-faker/elixir/README.md
+  - What this demonstrates (Faker for atoms, ExMachina for factory contrast, Mix task delivery)
+  - :rand.seed/2 for deterministic generation
+  - Functional pipeline idiom: Enum.map over entity ranges
+  - When to switch from Enum to Stream (medium/large profiles)
+  - ExMachina: good for simple test fixtures, not for relational graph generation
+    (note the limitation honestly)
+  - Quick start: mix deps.get && mix generate --profile smoke
+  - How to test: mix test
+
+================================================================================
+PART E: UPDATE CATALOG
+================================================================================
+
+Update examples/canonical-faker/CATALOG.md:
+  | Scala  | Datafaker (JVM) | —          | [x] PROMPT_125 | scala/   |
+  | Elixir | Faker           | ExMachina  | [x] PROMPT_125 | elixir/  |
+
+================================================================================
+VERIFICATION
+================================================================================
+
+After all parts are complete:
+
+  python -m unittest verification/faker/scala/test_scala_faker.py -v
+  python -m unittest verification/faker/elixir/test_elixir_faker.py -v
+  python -m unittest verification/faker/ruby/test_ruby_faker.py -v
+  python -m unittest verification/faker/php/test_php_faker.py -v
+  python -m unittest verification/faker/python/test_python_faker.py -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+If Scala/sbt available:
+  cd examples/canonical-faker/scala && sbt test
+If Elixir/mix available:
+  cd examples/canonical-faker/elixir && mix deps.get && mix test
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+Use grouped commits prefixed [PROMPT_125].
+
+  1. [PROMPT_125] add Scala domain, profiles, and Datafaker pipeline
+  2. [PROMPT_125] add Scala distributions, validation, CLI, ScalaTest tests
+  3. [PROMPT_125] add Elixir domain, profiles, distributions, pipeline
+  4. [PROMPT_125] add Elixir ExMachina contrast and Mix generate task
+  5. [PROMPT_125] add Elixir validation, output writers, ExUnit tests
+  6. [PROMPT_125] add structural tests for Scala and Elixir examples
+  7. [PROMPT_125] mark Scala and Elixir complete in CATALOG
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Be honest about the Scala faker ecosystem in the README and stack file
+  - Show idiomatic Scala functional pipeline patterns on top of Datafaker
+  - Show Elixir's functional Enum.map pipeline and :rand seeding
+  - Show ExMachina as a factory contrast with explicit limitation notes
+  - Use Mix tasks as the Elixir delivery mechanism
+
+DO NOT:
+  - Claim there is a thriving Scala-native faker ecosystem if there isn't
+  - Use Ecto or Phoenix in the Elixir example (keep it pure mix, no web layer)
+  - Use ZIO in the Scala example (mention it, but don't require it)
+  - Add database connections in either language
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+  - Scala example has all source files, honest ecosystem note in README, and
+    ScalaTest smoke tests that compile
+  - Elixir example has Pipeline.ex with :rand.seed, ExMachina contrast with
+    limitation note, Mix task, and ExUnit smoke tests
+  - CATALOG.md shows Scala and Elixir as [x] PROMPT_125
+  - All structural Python tests pass
+  - python scripts/validate_context.py passes
+
+PROMPT_126 is the arc completion prompt: docs, parity runner, ARCHITECTURE_MAP,
+memory/concepts, README navigation, and final arc summary.

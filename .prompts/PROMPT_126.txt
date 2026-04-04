@@ -1,0 +1,697 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one
+fresh coding-assistant session with commit prefixes like `[PROMPT_126]`.
+
+PROMPT_119: Faker Arc — Foundation. [x]
+PROMPT_120: Faker Arc — Domain design. [x]
+PROMPT_121: Faker Arc — Python. [x]
+PROMPT_122: Faker Arc — JavaScript/TypeScript + Go. [x]
+PROMPT_123: Faker Arc — Rust + Java + Kotlin. [x]
+PROMPT_124: Faker Arc — Ruby + PHP. [x]
+PROMPT_125: Faker Arc — Scala + Elixir. [x]
+
+This prompt (PROMPT_126) completes the arc:
+  - Arc overview documentation
+  - Cross-language navigation and docs atlas entry
+  - Cross-language parity check runner
+  - Router polish (verify all common routing questions are answerable)
+  - ARCHITECTURE_MAP.md update
+  - memory/concepts/ entry for durable arc knowledge
+  - Final arc summary and completion documentation
+
+              [FAKER ARC: Prompt 8 of 8 — Arc Completion and Hardening]
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                    (run; study output)
+  4. memory/INDEX.md
+
+Read the full arc state before writing anything:
+  5. context/doctrine/synthetic-data-realism.md       (READ — 7 rules; audit them)
+  6. context/skills/faker-library-selection.md        (READ — audit completeness)
+  7. context/skills/synthetic-dataset-design.md       (READ — audit 7-step pipeline)
+  8. examples/canonical-faker/CATALOG.md              (READ — all 10 should be [x])
+  9. examples/canonical-faker/domain/schema.md        (READ — entity graph)
+ 10. docs/ARCHITECTURE_MAP.md                         (READ — you will update this)
+ 11. memory/INDEX.md                                  (READ — you will update this)
+ 12. context/router/task-router.md                    (READ — verify routing completeness)
+
+Read arc docs created in earlier prompts:
+ 13. docs/schema-validation-arc-overview.md           (READ — format model for arc overview)
+ 14. memory/concepts/schema-validation-arc.md         (READ — durable knowledge format model)
+
+Run full verification audit before touching anything:
+  python -m unittest discover -s verification/faker -p "test_*.py" -v
+  python -m unittest verification/unit/test_faker_arc_foundation.py -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Do NOT begin writing until you have read all of the above and resolved any
+failing tests from earlier prompts. This prompt does not fix PROMPT_121–125
+implementation gaps — resolve those before PROMPT_126 begins.
+
+================================================================================
+BACKGROUND: WHY HARDENING IS A SEPARATE PROMPT
+================================================================================
+
+After seven substantial implementation prompts, the arc has:
+  - 1 doctrine (7 rules)
+  - 1 archetype
+  - 10 stacks
+  - 2 skills and 1 workflow
+  - 1 manifest
+  - 10 canonical examples across 10 languages
+  - Shared domain: TenantCore (7 entities, cross-field rules, 4 profiles)
+  - Python reference implementation (generation_patterns.py)
+  - Language-agnostic validator (validate_output.py)
+
+What is still missing:
+  A. Human-readable arc overview for future assistants
+  B. Docs/atlas entry in top-level navigation
+  C. Cross-language parity check runner
+  D. Router polish — verify most common routing questions are answerable
+  E. ARCHITECTURE_MAP.md update showing arc as COMPLETE
+  F. memory/concepts/ entry for durable arc knowledge
+  G. Arc completion summary for prompt-boundary resume handoffs
+
+================================================================================
+PART 1: CREATE docs/faker-arc-overview.md
+================================================================================
+
+Create: docs/faker-arc-overview.md
+
+This is the single-read document that a future assistant can load to understand
+the entire arc without reading all 10 example directories.
+
+Required sections:
+
+  # Faker and Synthetic Data Generation Arc
+
+  ## Purpose
+  (4–5 sentences) What problem this arc solves. Why cross-language faker comparison
+  requires a shared domain. Why realistic synthetic data requires an explicit
+  graph layer on top of faker libraries. What question a developer should be able
+  to answer after working through these examples.
+
+  ## The Core Insight
+  (4–5 sentences) Faker libraries generate realistic atomic values. They do not
+  generate relational systems. The arc explicitly teaches building the graph layer
+  on top: parent-first ordering, ID pools, weighted distributions, temporal realism,
+  and cross-field consistency. Every example demonstrates this pattern.
+
+  ## The Seven Mandatory Generation Properties
+  Brief reference to context/doctrine/synthetic-data-realism.md rules 1–7.
+  Do not repeat the full rules — just name them and say where the full spec lives.
+
+  ## The TenantCore Domain
+  (3–4 sentences) What TenantCore is. Why it was chosen.
+  List the 7 entities with one-line descriptions.
+  Note the 4 output profiles (smoke/small/medium/large).
+
+  ## Language Matrix
+
+  | Language     | Primary Library       | Secondary              | Key Teaching Surface            |
+  |--------------|-----------------------|------------------------|---------------------------------|
+  | Python       | Faker + Mimesis       | factory_boy            | Multi-locale, schema-based gen  |
+  | JavaScript   | @faker-js/faker       | Chance                 | Distribution helpers, seeding   |
+  | Go           | gofakeit              | go-faker/faker         | Struct-tag vs. imperative       |
+  | Rust         | fake (fake-rs)        | —                      | Builder pattern, typed pipeline |
+  | Java         | Datafaker             | —                      | Orchestration above providers   |
+  | Kotlin       | kotlin-faker          | Datafaker              | DSL vs. JVM interop             |
+  | Scala        | Datafaker (JVM)       | —                      | Functional pipeline, LazyList   |
+  | Ruby         | faker                 | ffaker                 | faker vs. ffaker contrast       |
+  | PHP          | FakerPHP/Faker        | Nelmio Alice           | Imperative vs. declarative      |
+  | Elixir       | Faker                 | ExMachina              | Functional Enum pipeline, Mix   |
+
+  ## Key Distinctions to Preserve
+
+  A bulleted list of the distinctions that are easiest to lose:
+
+    - Faker libraries generate realistic atomic values. They do NOT provide
+      relational integrity. Every example builds the graph layer explicitly.
+    - PHP's Alice is a different paradigm from imperative FakerPHP — use it to
+      show declarative fixture definition, not as a replacement for a full pipeline.
+    - Scala's faker ecosystem is thin — this is documented honestly; Datafaker
+      via JVM interop is the recommended path.
+    - Elixir's :rand.seed/2 seeds the process-level RNG, which affects both
+      :rand calls and the Faker library's internal randomness.
+    - Mimesis's schema-based generation (Schema + Field) is a different idiom
+      from Faker's imperative provider calls — both produce the same domain.
+    - factory_boy (Python) is for small-volume object graph fixtures, not for
+      production-scale dataset generation.
+    - ExMachina (Elixir) has the same scope as factory_boy — small volume, test use.
+    - The smoke profile (seed=42) must be deterministic across all runs and machines.
+
+  ## Navigation
+
+  - examples/canonical-faker/CATALOG.md        — all examples by language, status
+  - examples/canonical-faker/domain/schema.md  — entity graph spec
+  - examples/canonical-faker/domain/generation-order.md — 7-stage generation sequence
+  - examples/canonical-faker/domain/profiles.md — row count targets
+  - context/doctrine/synthetic-data-realism.md — 7 generation rules
+  - context/skills/faker-library-selection.md  — library selection guide
+  - context/skills/synthetic-dataset-design.md — 7-step pipeline design
+  - context/stacks/faker-{language}.yaml       — per-language library choices
+
+  ## Routing Questions This Arc Can Answer
+
+    - "Show me Python realistic data generation" → python/ (faker or mimesis pipeline)
+    - "Show declarative fixture generation in PHP" → php/alice/
+    - "Show the functional Elixir generation pipeline" → elixir/pipeline.ex
+    - "Compare gofakeit vs struct-tag-based Go generation" → go/pipeline/
+    - "Show deterministic seed replay" → any example, smoke profile, seed=42
+    - "Show how to build FK integrity on top of a faker library" → domain/generation_patterns.py
+    - "Which faker library for Kotlin?" → context/skills/faker-library-selection.md
+    - "How do I validate generated output?" → domain/validate_output.py
+    - "What is the difference between Faker and Mimesis?" → python/mimesis_pipeline/README.md
+    - "Show large-volume generation" → context/doctrine/synthetic-data-realism.md (Rule 7),
+       then the relevant language's medium/large profile implementation
+
+Target length: 100–130 lines.
+
+================================================================================
+PART 2: CREATE verification/faker/run_parity_check.py
+================================================================================
+
+Create: verification/faker/run_parity_check.py
+
+This is the cross-language parity runner. It checks that the Python reference
+implementation (generation_patterns.py) produces output that matches the
+expected row counts and structural rules from domain/profiles.md.
+
+It also invokes per-language smoke tests if the toolchain is available.
+
+Implementation:
+
+  #!/usr/bin/env python3
+  """
+  Faker arc parity check runner.
+
+  Checks:
+  1. Python reference implementation (generation_patterns.py) — always runs.
+  2. Python example pipelines (faker, mimesis) — runs if Faker/Mimesis installed.
+  3. Per-language toolchain tests — skipped if toolchain not available; documented.
+
+  Exit code 0: all checks pass or skip gracefully.
+  Exit code 1: one or more checks FAIL.
+  """
+
+  import sys, json, pathlib, subprocess, tempfile
+
+  ROOT = pathlib.Path(__file__).parent.parent.parent
+  results = []
+
+  def record(impl, status, msg):
+      results.append((impl, status, msg))
+      print(f"  [{status}] {impl}: {msg}")
+
+  def check_python_reference():
+      """Always runs — no toolchain required."""
+      try:
+          sys.path.insert(0, str(ROOT))
+          from examples.canonical_faker.domain.generation_patterns import (
+              Profile, generate_dataset
+          )
+      except ImportError as e:
+          record("python-reference", "SKIP", f"import failed: {e}")
+          return
+
+      dataset = generate_dataset(Profile.SMOKE)
+      if not dataset["report"].ok:
+          record("python-reference", "FAIL", f"validation failed: {dataset['report'].violations}")
+          return
+      assert len(dataset["organizations"]) == 3
+      assert len(dataset["users"]) == 10
+      record("python-reference", "PASS", "smoke profile produces valid dataset")
+
+      # Reproducibility
+      d2 = generate_dataset(Profile.SMOKE)
+      if dataset["organizations"] == d2["organizations"]:
+          record("python-reference", "PASS", "smoke profile is reproducible")
+      else:
+          record("python-reference", "FAIL", "smoke profile NOT reproducible")
+
+  def check_python_faker_pipeline():
+      try:
+          from examples.canonical_faker.python.faker_pipeline.generators import run_faker_pipeline
+          from examples.canonical_faker.domain.generation_patterns import Profile
+      except ImportError as e:
+          record("python-faker", "SKIP", f"import failed: {e}")
+          return
+
+      with tempfile.TemporaryDirectory() as tmpdir:
+          p = pathlib.Path(tmpdir)
+          run_faker_pipeline(Profile.SMOKE, p)
+          if (p / "organizations.jsonl").exists():
+              record("python-faker", "PASS", "smoke JSONL output produced")
+          else:
+              record("python-faker", "FAIL", "organizations.jsonl not found")
+
+  def check_toolchain(name, cmd, cwd):
+      """Run a toolchain command; skip if the toolchain is not available."""
+      try:
+          result = subprocess.run(
+              cmd, cwd=cwd, capture_output=True, timeout=120, text=True
+          )
+          if result.returncode == 0:
+              record(name, "PASS", f"toolchain tests passed")
+          else:
+              record(name, "FAIL", f"exit {result.returncode}: {result.stderr[:200]}")
+      except FileNotFoundError:
+          record(name, "SKIP", f"toolchain not found: {cmd[0]}")
+      except subprocess.TimeoutExpired:
+          record(name, "SKIP", "timed out (>120s) — run manually")
+
+  if __name__ == "__main__":
+      print("\nFaker Arc Parity Check\n")
+
+      check_python_reference()
+      check_python_faker_pipeline()
+
+      # Per-language toolchain checks (skip gracefully if not available)
+      check_toolchain("js-jest",
+          ["npx", "jest", "--testPathPattern=smoke.test.ts", "--passWithNoTests"],
+          ROOT / "examples/canonical-faker/javascript")
+
+      check_toolchain("go-test",
+          ["go", "test", "./...", "-run", "TestSmoke", "-timeout", "30s"],
+          ROOT / "examples/canonical-faker/go")
+
+      check_toolchain("rust-cargo",
+          ["cargo", "test", "--test", "smoke_test"],
+          ROOT / "examples/canonical-faker/rust")
+
+      check_toolchain("java-mvn",
+          ["mvn", "test", "-Dtest=SmokeTest", "-q"],
+          ROOT / "examples/canonical-faker/java")
+
+      check_toolchain("kotlin-gradle",
+          ["gradle", "test", "--tests", "*.SmokeTest"],
+          ROOT / "examples/canonical-faker/kotlin")
+
+      check_toolchain("ruby-rspec",
+          ["bundle", "exec", "rspec", "spec/smoke_spec.rb"],
+          ROOT / "examples/canonical-faker/ruby")
+
+      check_toolchain("php-phpunit",
+          ["./vendor/bin/phpunit", "tests/SmokeTest.php"],
+          ROOT / "examples/canonical-faker/php")
+
+      check_toolchain("scala-sbt",
+          ["sbt", "testOnly *.SmokeTest"],
+          ROOT / "examples/canonical-faker/scala")
+
+      check_toolchain("elixir-mix",
+          ["mix", "test", "test/tenant_core/smoke_test.exs"],
+          ROOT / "examples/canonical-faker/elixir")
+
+      passes = [r for r in results if r[1] == "PASS"]
+      fails  = [r for r in results if r[1] == "FAIL"]
+      skips  = [r for r in results if r[1] == "SKIP"]
+
+      print(f"\nParity Check: {len(passes)} PASS, {len(fails)} FAIL, {len(skips)} SKIP\n")
+
+      if fails:
+          print(f"{len(fails)} check(s) FAILED.")
+          sys.exit(1)
+      else:
+          print("All checks PASSED (or gracefully skipped).")
+          sys.exit(0)
+
+Also create a unittest wrapper:
+
+  verification/faker/test_parity_runner.py
+
+  Test class: TestParityRunnerExists
+    test_runner_exists
+      Assert verification/faker/run_parity_check.py exists.
+    test_runner_has_shebang_or_main
+      Read the file. Assert it contains "__main__" or "#!/usr/bin/env python3".
+    test_runner_documents_skip_behavior
+      Assert the file contains "SKIP" (proves graceful toolchain-missing handling).
+    test_runner_checks_python_reference
+      Assert the file contains "check_python_reference" or "generation_patterns".
+
+================================================================================
+PART 3: DOCTRINE AUDIT
+================================================================================
+
+Read context/doctrine/synthetic-data-realism.md.
+Audit each of the 7 rules against the actual implemented examples.
+
+For each rule, check:
+  - Is the rule implemented in at least the Python reference example?
+  - Does the verification test for that language check the rule?
+  - Is the rule documented in the example README?
+
+Rule 1 (deterministic seed): Python smoke test checks reproducibility.
+Rule 2 (parent-first order): generation_patterns.py has 7-stage order.
+Rule 3 (stable ID pools): org_ids, user_ids pools are explicit in Python.
+Rule 4 (weighted distributions): distributions.py shows Poisson + weighted picks.
+Rule 5 (temporal realism): joined_at >= org.created_at enforced in validation.
+Rule 6 (cross-field consistency): audit_event.user_id must be org member.
+Rule 7 (validation before output): generate_dataset calls validate_dataset first.
+
+For each rule: document "SATISFIED: <evidence>" or add one targeted fix.
+
+Write audit results to: memory/summaries/PROMPT_126_doctrine_audit.md
+(This file is gitignored — local only.)
+
+================================================================================
+PART 4: ROUTER POLISH
+================================================================================
+
+Read context/router/task-router.md. Verify that the following routing questions
+are answerable from current routing artifacts:
+
+  Q1: "Show me Python realistic data generation"
+      Expected: → examples/canonical-faker/python/, faker-python.yaml stack
+
+  Q2: "Show declarative fixture generation"
+      Expected: → PHP Alice example (examples/canonical-faker/php/alice/)
+
+  Q3: "Show how to enforce FK integrity on top of faker"
+      Expected: → domain/generation_patterns.py, doctrine Rule 2+3,
+                   synthetic-dataset-design.md skill
+
+  Q4: "Which faker library for a Go project?"
+      Expected: → faker-library-selection.md skill,
+                   context/stacks/faker-go.yaml
+
+  Q5: "Show deterministic/reproducible data generation"
+      Expected: → doctrine Rule 1, domain/seed-registry.md,
+                   any smoke profile test
+
+  Q6: "Generate 50,000 rows for a benchmark"
+      Expected: → doctrine Rule 7 (validation), profiles.md large profile,
+                   medium/large profile in the relevant language example
+
+  Q7: "Show weighted distributions in data generation"
+      Expected: → doctrine Rule 4, distributions.py (Python reference),
+                   distributions.ts (JS), distributions.go (Go)
+
+  Q8: "Compare faker with Mimesis"
+      Expected: → python/mimesis_pipeline/README.md,
+                   context/stacks/faker-python.yaml
+
+For each question:
+  - If the route is CLEAR: note it.
+  - If missing: add one targeted task-router entry.
+  - Keep additions minimal. Append only.
+
+================================================================================
+PART 5: UPDATE docs/ARCHITECTURE_MAP.md
+================================================================================
+
+Read docs/ARCHITECTURE_MAP.md. Add the faker arc entry:
+
+  Faker and Synthetic Data Generation Arc (PROMPT_119–126):
+  - Doctrine:   context/doctrine/synthetic-data-realism.md (7 rules)
+  - Archetype:  context/archetypes/synthetic-data-generator.md
+  - Stacks:     context/stacks/faker-{python,javascript,go,rust,java,kotlin,
+                                       scala,ruby,php,elixir}.yaml (10 stacks)
+  - Skills:     context/skills/faker-library-selection.md
+                context/skills/synthetic-dataset-design.md
+  - Workflow:   context/workflows/add-faker-example.md
+  - Manifest:   manifests/faker-polyglot.yaml
+  - Domain:     examples/canonical-faker/domain/ (TenantCore, 7 entities, 4 profiles)
+  - Examples:   examples/canonical-faker/ (10 examples, 10 languages)
+  - Validator:  examples/canonical-faker/domain/validate_output.py
+  - Docs:       docs/faker-arc-overview.md
+  - Tests:      verification/faker/ (per-language + parity runner)
+  - Status:     COMPLETE (PROMPT_126)
+
+Keep the entry to 14 lines or fewer.
+
+================================================================================
+PART 6: ADD memory/concepts/ ENTRY
+================================================================================
+
+Create: memory/concepts/faker-arc.md
+
+This is a committed, curated knowledge artifact for future assistants.
+Model format on memory/concepts/schema-validation-arc.md.
+
+Required sections:
+
+  # Faker and Synthetic Data Generation Arc
+
+  ## Durable Facts
+
+    - The core insight: faker libraries generate realistic atomic values; they
+      do NOT provide relational integrity. Every example builds the graph layer
+      explicitly on top of faker.
+    - Parent-first generation and stable ID pools are mandatory (Rules 2–3).
+      Violating this order creates FK violations that cannot be fixed without
+      regenerating the entire dataset.
+    - Every example uses seed 42 for its smoke profile. This must not change.
+    - Alice (PHP) and ExMachina (Elixir) and factory_boy (Python) are factory-
+      style tools for small-volume test fixtures. They are NOT replacements for
+      a production-scale generation pipeline.
+    - Scala's native faker ecosystem is thin. Datafaker (JVM) is the recommended
+      path for Scala.
+    - Elixir's :rand.seed/2 seeds the process-level RNG. This affects both
+      :rand calls and the Faker library's internals. Seed once at startup.
+    - The language-agnostic validator (validate_output.py) can validate output
+      from ANY language implementation. Use it in all smoke tests.
+
+  ## Key Files
+
+  | Artifact        | Path                                              | Purpose                    |
+  |-----------------|---------------------------------------------------|----------------------------|
+  | Doctrine        | context/doctrine/synthetic-data-realism.md        | 7 generation rules         |
+  | Archetype       | context/archetypes/synthetic-data-generator.md    | project shape              |
+  | Skills          | context/skills/synthetic-dataset-design.md        | 7-step pipeline guide      |
+  | Overview        | docs/faker-arc-overview.md                        | human-readable summary     |
+  | Domain          | examples/canonical-faker/domain/schema.md         | TenantCore spec            |
+  | Reference impl  | examples/canonical-faker/domain/generation_patterns.py | Python reference       |
+  | Validator       | examples/canonical-faker/domain/validate_output.py | FK + cross-field check    |
+  | Catalog         | examples/canonical-faker/CATALOG.md               | all 10 examples            |
+
+Target length: 50–70 lines.
+
+================================================================================
+PART 7: UPDATE memory/INDEX.md
+================================================================================
+
+Read memory/INDEX.md. Add the Faker Arc section:
+
+  ## Faker and Synthetic Data Generation Arc
+
+  - [Arc Overview](../docs/faker-arc-overview.md) — single-read arc summary for future sessions
+  - [Doctrine](../context/doctrine/synthetic-data-realism.md) — 7 generation rules
+  - [Domain Spec](../examples/canonical-faker/domain/schema.md) — TenantCore entity graph
+  - [CATALOG](../examples/canonical-faker/CATALOG.md) — all 10 examples (all [x] as of PROMPT_125)
+  - [Arc Durable Knowledge](../memory/concepts/faker-arc.md) — committed facts about the arc
+
+================================================================================
+PART 8: UPDATE examples/canonical-faker/README.md
+================================================================================
+
+Replace the placeholder README (created in PROMPT_120) with a complete version.
+
+Required sections:
+  # Canonical Faker Examples
+
+  ## Purpose
+  (3–4 sentences) Why these examples exist. What TenantCore is.
+  What the arc teaches about relational generation.
+
+  ## Quick Navigation
+  - CATALOG.md — all examples by language
+  - domain/schema.md — TenantCore entity graph
+  - domain/generation-order.md — canonical 7-stage generation sequence
+  - domain/profiles.md — output profiles (smoke/small/medium/large)
+  - domain/validate_output.py — language-agnostic validator
+
+  ## The Core Insight
+  (1 paragraph, from docs/faker-arc-overview.md — the same key insight)
+
+  ## Language Examples
+  Table with: Language | Primary Library | Secondary | Path | Quick Start
+
+  ## Validation
+  All examples produce JSONL output that can be validated:
+    python domain/validate_output.py --input-dir {language}/output/smoke
+
+================================================================================
+PART 9: WRITE ARC COMPLETION SUMMARY
+================================================================================
+
+Create: memory/summaries/PROMPT_119_through_126_arc_summary.md
+(This file is gitignored — local only, for prompt-boundary resume handoffs.)
+
+Required sections:
+  # Faker Arc — PROMPT_119–126 Completion Summary
+
+  ## Arc Identity
+  Name: Faker and Synthetic Data Generation Arc
+  Prompts: PROMPT_119 (foundation) through PROMPT_126 (hardening)
+  Status: COMPLETE
+
+  ## What Was Built
+
+  ### Foundation (PROMPT_119)
+  List of artifacts.
+
+  ### Domain + Shared Infrastructure (PROMPT_120)
+  List: TenantCore spec (7 entities), generation_patterns.py, validate_output.py,
+  profiles.md, seed-registry.md, CATALOG skeleton.
+
+  ### Python (PROMPT_121)
+  Faker (multi-locale, custom provider, edge cases), Mimesis (schema-based),
+  factory_boy (declarative graph).
+
+  ### JS/TS + Go (PROMPT_122)
+  @faker-js/faker + Chance (distributions), gofakeit + go-faker/faker (contrast).
+
+  ### Rust + Java + Kotlin (PROMPT_123)
+  fake-rs + builder pattern, Datafaker orchestration, kotlin-faker + Datafaker.
+
+  ### Ruby + PHP (PROMPT_124)
+  faker + ffaker (contrast), FakerPHP + Alice (imperative vs. declarative).
+
+  ### Scala + Elixir (PROMPT_125)
+  Datafaker/JVM + LazyList pipeline (honest Scala ecosystem note),
+  Elixir Faker + ExMachina + Mix task.
+
+  ### Hardening (PROMPT_126)
+  Arc overview doc, parity runner, doctrine audit, router polish,
+  ARCHITECTURE_MAP update, memory/concepts entry, arc summary.
+
+  ## Key Distinctions Preserved
+  (Copy from PART 1 "Key Distinctions to Preserve" section)
+
+  ## Routing Guide
+  (Copy from PART 4 router audit results)
+
+  ## Proof Path
+
+  [ ] python -m unittest discover -s verification/unit -p "test_*.py" -v
+  [ ] python -m unittest discover -s verification/faker -p "test_*.py" -v
+  [ ] python scripts/validate_context.py
+  [ ] python scripts/run_verification.py --tier fast
+  [ ] python verification/faker/run_parity_check.py
+  [ ] examples/canonical-faker/CATALOG.md shows all 10 as [x]
+  [ ] memory/concepts/faker-arc.md exists and is committed
+  [ ] docs/faker-arc-overview.md exists
+
+  ## Resume Instructions for Future Sessions
+  Load docs/faker-arc-overview.md first.
+  Then load context/stacks/faker-{language}.yaml for the target language.
+  Then load examples/canonical-faker/CATALOG.md to see current status.
+  Use context/skills/faker-library-selection.md for any library choice question.
+  Use context/skills/synthetic-dataset-design.md for any pipeline design question.
+  Do not add new domain entities without updating domain/schema.md first.
+
+================================================================================
+PART 10: FINAL VERIFICATION SWEEP
+================================================================================
+
+Run the full verification suite in sequence. Record and fix any failures.
+
+  Step 1: python -m unittest verification/unit/test_faker_arc_foundation.py -v
+  Step 2: python -m unittest discover -s verification/faker -p "test_*.py" -v
+  Step 3: python scripts/validate_context.py
+  Step 4: python scripts/run_verification.py --tier fast
+  Step 5: python verification/faker/run_parity_check.py
+    Review output. Document SKIP entries as expected (non-Python toolchains).
+    Investigate any FAIL entries.
+
+Do NOT claim completion until all 5 steps pass or have documented acceptable
+SKIP entries.
+
+================================================================================
+VERIFICATION
+================================================================================
+
+Final gate:
+  python -m unittest verification/unit/test_faker_arc_foundation.py -v
+  python -m unittest discover -s verification/faker -p "test_*.py" -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+  python verification/faker/run_parity_check.py
+
+Manual checks:
+  - docs/faker-arc-overview.md exists and covers all 10 languages
+  - memory/concepts/faker-arc.md is committed (NOT gitignored)
+  - CATALOG.md shows all 10 languages as [x]
+  - ARCHITECTURE_MAP.md shows arc status as COMPLETE (PROMPT_126)
+
+================================================================================
+COMMIT DISCIPLINE
+================================================================================
+
+Use grouped commits prefixed [PROMPT_126].
+
+  1. [PROMPT_126] add faker arc overview doc
+     Stage: docs/faker-arc-overview.md
+
+  2. [PROMPT_126] add parity check runner and test wrapper
+     Stage: verification/faker/run_parity_check.py
+            verification/faker/test_parity_runner.py
+
+  3. [PROMPT_126] add faker-arc durable knowledge concept
+     Stage: memory/concepts/faker-arc.md
+
+  4. [PROMPT_126] update router for faker arc completion
+     Stage: context/router/task-router.md (only if new entries needed)
+
+  5. [PROMPT_126] update ARCHITECTURE_MAP for faker arc completion
+     Stage: docs/ARCHITECTURE_MAP.md
+
+  6. [PROMPT_126] update memory INDEX for faker arc completion
+     Stage: memory/INDEX.md
+
+  7. [PROMPT_126] complete canonical-faker README
+     Stage: examples/canonical-faker/README.md
+
+  Note: memory/summaries/ files are gitignored — do not stage them.
+
+================================================================================
+SCOPE BOUNDARIES
+================================================================================
+
+DO:
+  - Create docs/faker-arc-overview.md as a single-read summary
+  - Create the parity runner and its test wrapper
+  - Create memory/concepts/faker-arc.md as a committed artifact
+  - Perform the doctrine audit (write findings to gitignored summary)
+  - Verify routing for 8 key questions and add missing entries
+  - Update ARCHITECTURE_MAP.md, memory/INDEX.md, examples/canonical-faker/README.md
+
+DO NOT:
+  - Rewrite any PROMPT_121–125 implementation files
+  - Add new examples or new entities
+  - Restructure router files — append or patch only
+  - Commit memory/summaries/ files
+
+================================================================================
+COMPLETION CONDITION
+================================================================================
+
+Done when:
+
+  - docs/faker-arc-overview.md exists, covers all 10 languages, includes the
+    key distinctions and routing question guide
+  - verification/faker/run_parity_check.py exists, runs, exits 0
+  - memory/concepts/faker-arc.md is committed with 8 durable facts
+  - All 8 routing questions from PART 4 are answerable
+  - ARCHITECTURE_MAP.md lists arc as COMPLETE (PROMPT_126)
+  - memory/INDEX.md has the Faker Arc section with 5 entries
+  - examples/canonical-faker/README.md is complete (not a placeholder)
+  - All verification gates pass
+
+The faker and synthetic data generation arc is complete. Future assistants
+can navigate the entire arc from docs/faker-arc-overview.md in a single read
+and use context/skills/faker-library-selection.md for any library selection
+question and context/skills/synthetic-dataset-design.md for any pipeline
+design question.
