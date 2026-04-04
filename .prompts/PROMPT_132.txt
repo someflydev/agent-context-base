@@ -1,0 +1,589 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one
+fresh coding-assistant session with commit prefixes like `[PROMPT_132]`.
+
+PROMPT_127: Plotly + HTMX Arc — Foundation. [x]
+PROMPT_128: Plotly + HTMX Arc — Shared domain spec, fixtures, parity matrix. [x]
+PROMPT_129: Plotly + HTMX Arc — Python / FastAPI / Jinja2 implementation. [x]
+PROMPT_130: Plotly + HTMX Arc — Go / Echo / templ implementation. [x]
+PROMPT_131: Plotly + HTMX Arc — Rust / Axum / Askama implementation. [x]
+
+This prompt (PROMPT_132) implements the Elixir / Phoenix / HEEx / Tailwind /
+HTMX / Plotly canonical analytics example at parity with the other three stacks.
+
+     [PLOTLY + HTMX ARC: Prompt 6 of 7 — Elixir Implementation]
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                    (run; study output)
+  4. memory/INDEX.md
+
+Read the arc foundation:
+  5. context/doctrine/plotly-htmx-server-rendered-viz.md   (READ — 11 rules)
+  6. context/doctrine/tailwind-utility-first.md             (READ)
+  7. context/doctrine/filter-panel-rendering-rules.md       (READ)
+  8. context/stacks/elixir-phoenix.md                       (READ — base Phoenix stack)
+  9. context/stacks/elixir-phoenix-htmx-plotly.md           (READ — analytics extension)
+ 10. context/skills/plotly-figure-builder-design.md         (READ — Elixir notes section)
+
+Read the shared domain spec:
+ 11. examples/canonical-analytics/domain/spec.md
+ 12. examples/canonical-analytics/domain/page-layout-spec.md
+ 13. examples/canonical-analytics/domain/verification-contract.md
+ 14. examples/canonical-analytics/domain/parity-matrix.md   (READ — Elixir column all [ ])
+ 15. examples/canonical-analytics/CATALOG.md
+
+Study the Python implementation for structural reference:
+ 16. examples/canonical-analytics/python/src/analytics_workbench/charts/  (READ)
+ 17. examples/canonical-analytics/python/src/analytics_workbench/analytics/ (READ)
+
+Check fixture files:
+ 18. examples/canonical-analytics/domain/fixtures/smoke.json
+ 19. examples/canonical-analytics/domain/fixtures/small.json
+
+If fixtures missing:
+  python examples/canonical-analytics/domain/generate_fixtures.py --profiles smoke,small
+
+Run verification:
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+================================================================================
+BACKGROUND: ELIXIR TEACHING SURFACE AND HTMX vs LIVEVIEW
+================================================================================
+
+This implementation uses Phoenix with standard controllers + HEEx templates +
+HTMX. It does NOT use LiveView. This is an intentional design choice for this
+arc — see context/stacks/elixir-phoenix-htmx-plotly.md for the rationale.
+
+The Elixir implementation teaches:
+
+  - Phoenix controllers for server-rendered analytics pages and HTMX fragments
+  - HEEx templates for typed, component-friendly HTML rendering
+  - Elixir map-based figure building (no Elixir Plotly library needed; pure maps
+    + Jason for JSON serialization is idiomatic)
+  - Phoenix context modules for analytics aggregation (OTP/BEAM-friendly design)
+  - Detecting the HX-Request header to route full-page vs. fragment responses
+  - Jason.encode! for figure serialization in the controller
+  - ExUnit for all testing
+
+Key difference from other stacks:
+  Elixir figure builders return plain Elixir maps. Jason.encode!() in the
+  controller serializes them. The map structure mirrors the Plotly.js figure JSON.
+
+  Example figure builder return:
+    %{
+      data: [
+        %{type: "scatter", mode: "lines+markers", name: "production",
+          x: dates, y: counts, hovertemplate: "%{y} events on %{x}"}
+      ],
+      layout: %{
+        title: %{text: "Event Volume Over Time"},
+        xaxis: %{title: %{text: "Date"}},
+        yaxis: %{title: %{text: "Event Count"}}
+      },
+      meta: %{
+        total_count: total,
+        filters_applied: filters_applied,
+        generated_at: DateTime.utc_now() |> DateTime.to_iso8601()
+      }
+    }
+
+This is the three-layer model applied idiomatically in Elixir.
+
+================================================================================
+PART 1: PROJECT STRUCTURE
+================================================================================
+
+Create a new Phoenix application under examples/canonical-analytics/elixir/.
+Use mix phx.new analytics_workbench --no-ecto --no-mailer --no-live
+(no Ecto — fixture-backed storage; no LiveView — HTMX pattern).
+
+Expected structure (from mix phx.new, then augmented):
+
+  mix.exs
+  config/
+    config.exs
+    dev.exs
+    test.exs
+    runtime.exs
+  lib/
+    analytics_workbench/
+      application.ex
+      data/
+        loader.ex            — reads fixture JSON at app startup
+        models.ex            — structs for Event, Session, Service, etc.
+      filters.ex             — FilterState struct + parse_filter_state/1
+      analytics/
+        events.ex
+        services.ex
+        distributions.ex
+        heatmap.ex
+        funnel.ex
+        incidents.ex
+      charts/
+        time_series.ex
+        service_bar.ex
+        latency_histogram.ex
+        latency_boxplot.ex
+        incident_bar.ex
+        funnel_chart.ex
+        heatmap_chart.ex
+    analytics_workbench_web/
+      router.ex
+      controllers/
+        page_controller.ex   — full-page views
+        fragment_controller.ex — HTMX fragment responses
+        health_controller.ex
+      templates/
+        layout/
+          root.html.heex
+          app.html.heex
+        page/
+          index.html.heex
+          trends.html.heex
+          services.html.heex
+          distributions.html.heex
+          heatmap.html.heex
+          funnel.html.heex
+          incidents.html.heex
+        fragment/
+          chart.html.heex
+          summary.html.heex
+          details.html.heex
+  test/
+    analytics_workbench/
+      analytics/
+        events_test.exs
+        services_test.exs
+        distributions_test.exs
+        heatmap_test.exs
+        funnel_test.exs
+        incidents_test.exs
+      charts/
+        time_series_test.exs
+        service_bar_test.exs
+        latency_test.exs
+        incident_bar_test.exs
+        funnel_test.exs
+        heatmap_test.exs
+      filters_test.exs
+    analytics_workbench_web/
+      smoke_test.exs
+  README.md
+
+================================================================================
+PART 2: DEPENDENCIES
+================================================================================
+
+mix.exs must include:
+
+  defp deps do
+    [
+      {:phoenix, "~> 1.7"},
+      {:phoenix_html, "~> 4.0"},
+      {:jason, "~> 1.4"},
+      {:plug_cowboy, "~> 2.7"},
+      {:phoenix_live_reload, "~> 1.4", only: :dev},
+    ]
+  end
+
+No Ecto. No Phoenix.PubSub needed. No LiveView.
+Tailwind is available via Phoenix's asset pipeline or CDN script in the base template.
+For the canonical example, use CDN script (simpler, no Node.js build step needed).
+
+Add to README.md: setup and run instructions (mix deps.get, mix phx.server).
+
+================================================================================
+PART 3: FIXTURE LOADING
+================================================================================
+
+Implement lib/analytics_workbench/data/loader.ex:
+
+  defmodule AnalyticsWorkbench.Data.Loader do
+    @doc """
+    Loads fixture data from the canonical-analytics domain fixtures directory.
+    Dogfoods examples/canonical-faker/ via the shared fixture files produced
+    by examples/canonical-analytics/domain/generate_fixtures.py.
+    """
+
+    def load_fixtures(profile \\ :smoke) do
+      path = fixture_path(profile)
+      path |> File.read!() |> Jason.decode!(keys: :atoms)
+    end
+
+    def fixture_path(profile) do
+      base = System.get_env("FIXTURE_PATH") ||
+        Path.join([__DIR__, "../../../../domain/fixtures"])
+      Path.join(base, "#{profile}.json")
+    end
+  end
+
+Store the loaded fixture data in the application's supervision tree using an
+Agent or a simple GenServer. Access via a module-level function:
+
+  defmodule AnalyticsWorkbench.Data.Store do
+    use Agent
+
+    def start_link(_) do
+      Agent.start_link(fn -> AnalyticsWorkbench.Data.Loader.load_fixtures(:smoke) end,
+        name: __MODULE__)
+    end
+
+    def get, do: Agent.get(__MODULE__, & &1)
+  end
+
+Add Store to the application's supervisor children in application.ex.
+
+================================================================================
+PART 4: FILTER STATE
+================================================================================
+
+Implement lib/analytics_workbench/filters.ex:
+
+  defmodule AnalyticsWorkbench.Filters do
+    defstruct date_from: nil, date_to: nil,
+              services: [], severity: [], environment: []
+
+    def parse(params) do
+      %__MODULE__{
+        date_from: Map.get(params, "date_from"),
+        date_to: Map.get(params, "date_to"),
+        services: parse_multi(params, "services"),
+        severity: parse_multi(params, "severity"),
+        environment: parse_multi(params, "environment"),
+      }
+    end
+
+    defp parse_multi(params, key) do
+      case Map.get(params, key) do
+        nil -> []
+        val when is_list(val) -> val
+        val when is_binary(val) -> String.split(val, ",") |> Enum.reject(&(&1 == ""))
+      end
+    end
+  end
+
+Phoenix query params for multi-select <select multiple> are sent as
+services[]=a&services[]=b — ensure parse_multi handles both [] suffix and plain key.
+
+================================================================================
+PART 5: ANALYTICS CONTEXT MODULES
+================================================================================
+
+Implement all six analytics modules in lib/analytics_workbench/analytics/.
+
+Each module exposes one or more public functions following the pattern:
+  def aggregate_<name>(data, %FilterState{} = filters) :: result_map
+
+Return plain Elixir maps (not structs) for aggregate results. This keeps the
+return type inspectable and pattern-matchable in tests.
+
+Required functions and result shapes:
+
+  Analytics.Events.aggregate_event_counts(events, filters)
+    Returns: %{dates: [String], counts: [Integer], by_environment: %{String => [Integer]}}
+
+  Analytics.Services.aggregate_service_error_rates(events, services, filters)
+    Returns: %{services: [String], error_rates: [Float], total_events: [Integer]}
+
+  Analytics.Distributions.aggregate_latency_histogram(samples, filters)
+    Returns: %{values: [Float], p50: Float, p95: Float, p99: Float}
+
+  Analytics.Distributions.aggregate_latency_by_service(samples, services, filters)
+    Returns: %{services: [String], p50s: [Float], p95s: [Float], p99s: [Float]}
+
+  Analytics.Heatmap.aggregate_event_heatmap(events, filters)
+    Returns: %{hours: [Integer], days: [String], counts: [[Integer]]}
+
+  Analytics.Funnel.aggregate_funnel_stages(sessions, filters)
+    Returns: %{stages: [String], counts: [Integer], drop_off_rates: [Float]}
+
+  Analytics.Incidents.aggregate_incident_severity(incidents, filters)
+    Returns: %{severities: [String], counts: [Integer], mttr_by_severity: %{String => Float}}
+
+For percentile calculations: sort with Enum.sort/1, index by floor(length * p / 100).
+Implement a private percentile(values, p) helper in distributions.ex.
+
+All functions: return a zero-valued result map (not raise) when input list is empty.
+
+Filter application pattern:
+  Use Enum.filter/2 for each non-empty FilterState field.
+  Example: filter by environment:
+    if filters.environment != [] do
+      Enum.filter(events, &(&1.environment in filters.environment))
+    else
+      events
+    end
+
+================================================================================
+PART 6: FIGURE BUILDER MODULES
+================================================================================
+
+Implement all 7 figure builders in lib/analytics_workbench/charts/.
+
+Each module exposes:
+  def build_figure(agg :: map()) :: map()
+
+Returns a plain Elixir map that Jason.encode!() will produce valid Plotly.js JSON.
+
+Required map structure:
+  %{
+    data: [ %{type: ..., name: ..., hovertemplate: ..., x: ..., y: ...} ],
+    layout: %{
+      title: %{text: "..."},
+      xaxis: %{title: %{text: "..."}},
+      yaxis: %{title: %{text: "..."}}
+    },
+    meta: %{
+      total_count: integer,
+      filters_applied: [String],
+      generated_at: iso8601_string
+    }
+  }
+
+Chart type specifics (match Python/Go/Rust implementations):
+
+  charts/time_series.ex:
+    type: "scatter", mode: "lines+markers", one trace per environment key
+    hovertemplate: "%{y} events<br>%{x}<extra></extra>"
+
+  charts/service_bar.ex:
+    type: "bar", orientation: "h"
+    Sort services by error_rate descending before building traces.
+
+  charts/latency_histogram.ex:
+    type: "histogram", x: agg.values
+    Add P50 annotation via layout shapes or a vertical line annotation.
+
+  charts/latency_boxplot.ex:
+    type: "box", one trace per service
+    Include q1, median, q3, lowerfence, upperfence from agg data.
+
+  charts/incident_bar.ex:
+    type: "bar"
+    Order severities: ["critical", "high", "medium", "low"]
+
+  charts/funnel_chart.ex:
+    type: "funnel"
+    y: stage names, x: counts
+    textinfo: "value+percent previous"
+
+  charts/heatmap_chart.ex:
+    type: "heatmap"
+    x: agg.hours, y: agg.days, z: agg.counts
+    colorscale: "Blues"
+
+Empty-state: return a figure with data: [] and layout title: "No data for selected filters".
+
+================================================================================
+PART 7: PHOENIX CONTROLLERS AND ROUTER
+================================================================================
+
+Implement lib/analytics_workbench_web/controllers/page_controller.ex:
+
+  def index(conn, params), do: render_view(conn, :index, params)
+  def trends(conn, params), do: render_view(conn, :trends, params)
+  def services(conn, params), do: render_view(conn, :services, params)
+  def distributions(conn, params), do: render_view(conn, :distributions, params)
+  def heatmap(conn, params), do: render_view(conn, :heatmap, params)
+  def funnel(conn, params), do: render_view(conn, :funnel, params)
+  def incidents(conn, params), do: render_view(conn, :incidents, params)
+
+  defp render_view(conn, view, params) do
+    filters = AnalyticsWorkbench.Filters.parse(params)
+    store = AnalyticsWorkbench.Data.Store.get()
+    {figure, summary} = build_for_view(view, store, filters)
+    figure_json = Jason.encode!(figure)
+    render(conn, "#{view}.html", figure_json: figure_json, summary: summary,
+           filters: filters, services_list: services_list(store),
+           environment_list: environment_list(store),
+           severity_list: severity_list(store))
+  end
+
+Implement lib/analytics_workbench_web/controllers/fragment_controller.ex:
+
+  def chart(conn, %{"view" => view} = params), do: ...
+    Detect HX-Request header: get_req_header(conn, "hx-request")
+    Aggregate + build figure for the named view.
+    render(conn, AnalyticsWorkbenchWeb.FragmentView, "chart.html", figure_json: ...)
+
+  def summary(conn, %{"view" => view} = params), do: ...
+    render(conn, "summary.html", summary: ...)
+
+  def details(conn, %{"view" => "services", "service" => service} = params), do: ...
+    Filter incidents for the named service.
+    render(conn, "details.html", incidents: ...)
+
+Implement lib/analytics_workbench_web/controllers/health_controller.ex:
+  def index(conn, _), do: json(conn, %{status: "ok"})
+
+Implement router.ex:
+
+  scope "/", AnalyticsWorkbenchWeb do
+    pipe_through :browser
+    get "/", PageController, :index
+    get "/trends", PageController, :trends
+    get "/services", PageController, :services
+    get "/distributions", PageController, :distributions
+    get "/heatmap", PageController, :heatmap
+    get "/funnel", PageController, :funnel
+    get "/incidents", PageController, :incidents
+    get "/fragments/chart", FragmentController, :chart
+    get "/fragments/summary", FragmentController, :summary
+    get "/fragments/details", FragmentController, :details
+  end
+
+  scope "/", AnalyticsWorkbenchWeb do
+    pipe_through :api
+    get "/health", HealthController, :index
+  end
+
+================================================================================
+PART 8: HEEX TEMPLATES
+================================================================================
+
+Implement templates/layout/root.html.heex:
+  - Load Tailwind CDN, HTMX CDN, Plotly.js CDN
+  - Navigation links to all 7 views
+  - Active view: check @view_name or conn.request_path, apply Tailwind ring class
+  - Plotly initialization script (data-figure attribute approach)
+  - Footer with fixture info
+
+Filter form (in each view template):
+  <form method="get"
+        phx-no-format
+        hx-get={~p"/fragments/chart?view=#{@view_name}"}
+        hx-target="#content-panel"
+        hx-swap="innerHTML"
+        hx-push-url="true">
+    <select name="services[]" multiple class="border rounded p-1 min-h-[80px] w-full">
+      <%= for s <- @services_list do %>
+        <option value={s} selected={s in @filters.services}><%= s %></option>
+      <% end %>
+    </select>
+    <%= # environment and severity selects follow same pattern %>
+    <input type="date" name="date_from" value={@filters.date_from} />
+    <input type="date" name="date_to" value={@filters.date_to} />
+    <button type="submit"
+            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+      Apply Filters
+    </button>
+  </form>
+
+templates/fragment/chart.html.heex:
+  <div id="chart-panel"
+       data-figure={@figure_json}
+       class="w-full h-96">
+  </div>
+  <script>
+    (function() {
+      var div = document.getElementById("chart-panel");
+      if (div && div.dataset.figure) {
+        var fig = JSON.parse(div.dataset.figure);
+        Plotly.newPlot("chart-panel", fig.data, fig.layout);
+      }
+    })();
+  </script>
+
+templates/fragment/summary.html.heex:
+  Tailwind card showing total_count, date_range, active_filters.
+
+================================================================================
+PART 9: TESTS
+================================================================================
+
+Unit tests (test/analytics_workbench/analytics/ and test/analytics_workbench/charts/):
+
+  For each analytics test file (events_test.exs, etc.):
+    test "aggregate with smoke fixture returns expected shape"
+    test "aggregate with empty input returns zero-value result"
+    test "filter by environment narrows results"
+    test "filter by service narrows results"
+
+  For each chart test file (time_series_test.exs, etc.):
+    test "build_figure returns a map with data key"
+    test "build_figure returns at least one trace"
+    test "build_figure layout title is non-empty"
+    test "build_figure meta key has total_count"
+    test "build_figure with empty aggregate does not raise"
+
+  For filters_test.exs:
+    test "parse empty params returns zero-value FilterState"
+    test "parse multi-value services"
+    test "parse date range"
+
+Smoke tests (test/analytics_workbench_web/smoke_test.exs):
+
+  Use Phoenix.ConnTest and AnalyticsWorkbenchWeb.ConnCase:
+    test "GET / returns 200"
+    test "GET /trends returns 200"
+    test "GET /services returns 200"
+    test "GET /distributions returns 200"
+    test "GET /heatmap returns 200"
+    test "GET /funnel returns 200"
+    test "GET /incidents returns 200"
+    test "GET /health returns {status: ok}"
+    test "GET /fragments/chart?view=trends returns 200 with plotly in body"
+    test "GET /fragments/summary?view=trends returns 200"
+    test "GET /fragments/details?view=services&service=<first service> returns 200"
+    test "GET /trends?environment[]=production returns 200"
+
+Run tests:
+  mix test
+
+All tests must pass. Fix ExUnit test failures before marking complete.
+
+================================================================================
+PART 10: RUN VERIFICATION AND UPDATE PARITY
+================================================================================
+
+  mix test              — must pass
+  mix compile --warnings-as-errors  — fix all compilation warnings
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Update parity-matrix.md: mark Elixir column [x] (or [~] for partial).
+Update CATALOG.md: mark Elixir row [x].
+
+Run: python3 scripts/work.py checkpoint
+
+================================================================================
+PART 11: COMMIT
+================================================================================
+
+  [PROMPT_132] Add Elixir Phoenix + HEEx + Tailwind + HTMX + Plotly analytics example
+
+  - examples/canonical-analytics/elixir/ — full workbench implementation
+    - 6 chart families via plain Elixir map builders + Jason
+    - HEEx templates for all views and HTMX fragments
+    - Phoenix controllers (not LiveView), HTMX fragment detection
+    - ExUnit unit tests: analytics context + figure builders
+    - ExUnit smoke tests: all routes
+  - examples/canonical-analytics/domain/parity-matrix.md — Elixir column [x]
+  - examples/canonical-analytics/CATALOG.md — Elixir [x]
+
+================================================================================
+WHAT PROMPT_133 WILL DO
+================================================================================
+
+PROMPT_133 is the hardening and completion prompt for the arc. It will:
+
+  - Write docs/plotly-htmx-arc-overview.md (single-read arc overview)
+  - Create verification/analytics/run_parity_check.py (cross-stack parity runner)
+  - Do a router polish pass (verify all chart/visualization routing questions
+    are answerable)
+  - Update docs/ARCHITECTURE_MAP.md to show this arc as complete
+  - Update memory/concepts/ with a durable arc knowledge entry
+  - Add CATALOG.md entry to examples/catalog.json
+  - Fix any gaps found during parity check
+
+Do not begin that work in this prompt.

@@ -1,0 +1,631 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one
+fresh coding-assistant session with commit prefixes like `[PROMPT_128]`.
+
+PROMPT_127: Plotly + HTMX Arc — Foundation. [x]
+  Created: doctrine (plotly-htmx-server-rendered-viz, tailwind-utility-first),
+  archetype (analytics-workbench), 4 stacks (Python/Go/Rust/Elixir), 2 skills
+  (chart-type-selection, plotly-figure-builder-design), 1 workflow
+  (add-visualization-panel), router updates, AGENT.md dogfooding section.
+
+This prompt (PROMPT_128) creates the shared canonical-example specification
+for the arc. It defines the domain, dogfoods the faker arc for seed data,
+and produces the parity contract and verification contract that PROMPT_129
+through PROMPT_132 will implement.
+
+        [PLOTLY + HTMX ARC: Prompt 2 of 7 — Shared Domain and Spec]
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                    (run; study output)
+  4. memory/INDEX.md
+
+Verify the arc foundation from PROMPT_127 is in place:
+  5. context/doctrine/plotly-htmx-server-rendered-viz.md   (READ — must exist)
+  6. context/doctrine/tailwind-utility-first.md             (READ — must exist)
+  7. context/archetypes/analytics-workbench.md             (READ — must exist)
+  8. context/skills/chart-type-selection.md                (READ — must exist)
+  9. context/skills/plotly-figure-builder-design.md        (READ — must exist)
+ 10. context/workflows/add-visualization-panel.md          (READ — must exist)
+
+Verify and study the faker arc output that this prompt will dogfood:
+ 11. examples/canonical-faker/CATALOG.md             (READ — verify all [x])
+ 12. examples/canonical-faker/domain/schema.md       (READ — TenantCore entity graph)
+ 13. examples/canonical-faker/domain/generation-order.md  (READ — 7-stage order)
+ 14. examples/canonical-faker/domain/profiles.md     (READ — smoke/small/medium/large)
+ 15. examples/canonical-faker/python/               (READ directory — verify Python example exists)
+
+Read format reference files:
+ 16. examples/canonical-schema-validation/domain/spec.md  (if it exists — format reference)
+ 17. examples/canonical-schema-validation/CATALOG.md      (if it exists — catalog format)
+ 18. examples/catalog.json                                (READ — registry format)
+
+Run verification before touching any file:
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+If faker arc Python example is missing or broken, resolve the gap before
+proceeding. This prompt depends on it for seed data. Document any gap found.
+
+================================================================================
+BACKGROUND: DOGFOODING THE FAKER ARC
+================================================================================
+
+The faker arc (PROMPT_119–126) created a canonical domain called TenantCore with
+7 entities and a Python reference implementation for generating relational
+synthetic datasets (examples/canonical-faker/domain/generation_patterns.py).
+
+This arc's canonical analytics examples will represent an "Ops & Product Analytics
+Workbench" — a server-rendered analytics tool for exploring operational metrics
+derived from that same domain. The data shapes naturally arise from TenantCore:
+
+  - Events (counts, rates, volume over time)
+  - Sessions (durations, funnel stages, conversions)
+  - Services/teams (category comparisons, error rates)
+  - Deployments/releases (time-series, rollout patterns)
+  - Incidents (severity distributions, MTTR analysis)
+  - Latency samples (histogram, P50/P95/P99 distributions)
+  - Funnel stages (drop-off rates, conversion analysis)
+
+Instead of inventing a new seed system, the analytics examples will import or
+call the faker arc's generation pipeline to produce seeded test data. Every
+implementation (Python, Go, Rust, Elixir) reads from the same JSON fixture
+files that the faker arc's Python reference implementation produces.
+
+This is the dogfooding principle from AGENT.md in action.
+
+================================================================================
+PART 1: CREATE THE SEED DATA FIXTURE GENERATOR
+================================================================================
+
+Create: examples/canonical-analytics/domain/generate_fixtures.py
+
+This script calls or imports the faker arc's Python reference implementation
+(examples/canonical-faker/python/ or examples/canonical-faker/domain/generation_patterns.py)
+to generate deterministic JSON fixture files for the analytics examples.
+
+The script must:
+
+  1. Import or call the faker arc's generation pipeline. Inspect
+     examples/canonical-faker/python/ to understand the correct import path.
+     If a standalone runner script exists there, call it as a subprocess.
+     If generation_patterns.py is importable, import it directly.
+
+  2. Generate four JSON fixture files under examples/canonical-analytics/domain/fixtures/:
+       smoke.json   — seed=42, same row counts as faker arc's smoke profile
+       small.json   — seed=42, same row counts as faker arc's small profile
+       medium.json  — seed=42, same row counts as faker arc's medium profile
+       large.json   — seed=42, same row counts as faker arc's large profile
+
+  3. Each fixture file must contain these top-level keys (derived from TenantCore):
+       events         — list of event records
+       sessions       — list of session records
+       services       — list of service records
+       deployments    — list of deployment records
+       incidents      — list of incident records
+       latency_samples — list of latency measurement records
+       funnel_stages  — list of funnel stage conversion records
+
+     Read examples/canonical-faker/domain/schema.md to confirm exact field names.
+     Map TenantCore fields to these analytics keys explicitly.
+
+  4. Include a determinism assertion: run the generator twice with the same seed
+     and assert the output files are byte-identical.
+
+  5. Print a summary after generation: entity counts, seed used, output paths.
+
+If the faker arc's Python reference implementation is not importable (e.g., path
+issues, missing dependencies), implement a self-contained fallback generator that
+uses the Faker library with seed=42 and produces the same schema. Document the
+fallback clearly with a # FALLBACK comment. The fallback should still use
+TenantCore's schema.md as the specification.
+
+Add a README note at the top of the file:
+  "This generator dogfoods examples/canonical-faker/ — see that directory for the
+  full synthetic data generation arc. Do not build a parallel generation system here."
+
+================================================================================
+PART 2: CREATE THE DOMAIN SPEC
+================================================================================
+
+Create: examples/canonical-analytics/domain/spec.md
+
+This is the primary human-readable spec for the canonical analytics example. It
+must be readable in one session and give a future assistant enough context to
+understand the domain, the chart families required, and the parity contract.
+
+Required sections:
+
+  # Ops & Product Analytics Workbench — Domain Spec
+
+  ## Purpose
+  3–4 sentences. What this canonical example teaches. Why the domain was chosen
+  (it arises directly from the TenantCore faker arc, enabling dogfooding).
+  What a developer should understand after working through all four implementations.
+
+  ## Data Domain
+
+  The analytics domain is derived from TenantCore (examples/canonical-faker/).
+  The following entities drive the analytics:
+
+  | Entity          | Source TenantCore Entity | Key Analytics Shape          |
+  |-----------------|--------------------------|------------------------------|
+  | events          | Event                    | time series, count rates     |
+  | sessions        | Session                  | funnel, duration histogram   |
+  | services        | Service / Team           | category comparison          |
+  | deployments     | Deployment               | time series, rollout pattern |
+  | incidents       | Incident                 | severity distribution, MTTR  |
+  | latency_samples | Latency / Metric         | histogram, P95/P99 box plot  |
+  | funnel_stages   | FunnelStage              | drop-off funnel              |
+
+  For exact field definitions, see:
+    - examples/canonical-faker/domain/schema.md
+    - examples/canonical-analytics/domain/fixtures/smoke.json (generated)
+
+  ## Seed Data Contract
+  3–4 sentences. Fixtures are generated by generate_fixtures.py, which
+  dogfoods the faker arc. All four implementations read from the same fixture
+  files. Seed=42 guarantees deterministic output across all runs and machines.
+  Reference examples/canonical-analytics/domain/seed-data-contract.md for rules.
+
+  ## The Workbench Layout
+
+  The workbench is a single web application with these top-level views:
+
+    /                    — Overview: event volume trend + service error rate bar
+    /trends              — Time Series view: event count line chart with date filter
+    /services            — Service Comparison: horizontal sorted bar, drilldown panel
+    /distributions       — Distribution view: latency histogram + box plot pair
+    /incidents           — Incident Analysis: severity bar + MTTR summary card
+    /funnel              — Funnel view: session funnel chart + conversion summary
+    /heatmap             — Activity Heatmap: hour-of-day × day-of-week event density
+
+  HTMX fragment endpoints (all views):
+    /fragments/chart     — returns only the chart panel for the current view
+    /fragments/summary   — returns only the summary card
+    /fragments/details   — returns a drilldown detail panel (where applicable)
+
+  Filter state for all views:
+    date_from, date_to   — ISO date strings
+    services             — multi-value (one or more service names)
+    severity             — multi-value (incident severity levels)
+    environment          — multi-value (production/staging/development)
+
+  ## Required Chart Families
+
+  Each implementation must include all six chart families:
+
+    Family 1 — Time Series (line chart)
+      View: /trends
+      Chart: event count over time, one line per environment
+      HTMX trigger: date_from/date_to filter form submission
+      Summary card: total events, date range, active filters
+
+    Family 2 — Category Comparison (horizontal sorted bar)
+      View: /services
+      Chart: error rate per service, sorted descending
+      HTMX trigger: environment multi-select
+      Detail panel: top-N incidents for the selected service (drilldown)
+
+    Family 3 — Distribution (histogram + box plot pair)
+      View: /distributions
+      Chart A: latency histogram (P50 annotated)
+      Chart B: box plot by service (P95, P99 whiskers)
+      HTMX trigger: service multi-select
+      Summary card: P50, P95, P99 values
+
+    Family 4 — Heatmap
+      View: /heatmap
+      Chart: event density by hour-of-day × day-of-week
+      HTMX trigger: date range + environment
+      Summary card: peak hour, peak day
+
+    Family 5 — Funnel
+      View: /funnel
+      Chart: session funnel stages with drop-off percentages
+      HTMX trigger: environment multi-select
+      Summary card: overall conversion rate, biggest drop-off stage
+
+    Family 6 — Incident Distribution (bar + summary)
+      View: /incidents
+      Chart: incident count by severity level (bar)
+      HTMX trigger: date range + service + environment
+      Summary card: MTTR (mean time to resolve) by severity
+
+  ## Parity Contract
+
+  All four implementations (Python, Go, Rust, Elixir) must:
+    - implement all six chart families
+    - read from the same fixture files (smoke.json and small.json minimum)
+    - apply the same filter state semantics
+    - expose the same fragment endpoints (/fragments/chart, /fragments/summary)
+    - pass the verification contract (see verification-contract.md)
+    - expose a /health endpoint that returns 200 and {"status": "ok"}
+
+  ## What Each Implementation Does NOT Need to Match
+    - UI pixel-level layout (Tailwind class choices may differ)
+    - exact hover text wording (hovertemplate content may vary)
+    - database backend (in-memory or file-backed storage is acceptable)
+    - port number (each implementation uses its own default port)
+
+================================================================================
+PART 3: CREATE THE SEED DATA CONTRACT
+================================================================================
+
+Create: examples/canonical-analytics/domain/seed-data-contract.md
+
+  # Seed Data Contract
+
+  ## Source
+  Fixture files are generated by examples/canonical-analytics/domain/generate_fixtures.py.
+  That script dogfoods examples/canonical-faker/ — see AGENT.md for the dogfooding principle.
+
+  ## Determinism Rules
+    - All fixtures use seed=42.
+    - The same seed must produce byte-identical fixture files on any machine.
+    - Do not use system time, random.uuid4() without a seed, or os.urandom() in fixture generation.
+    - Re-running generate_fixtures.py must be idempotent: same output, no side effects.
+
+  ## Fixture Profiles
+  (derive row counts from examples/canonical-faker/domain/profiles.md)
+
+  | Profile  | Seed | Use                                           |
+  |----------|------|-----------------------------------------------|
+  | smoke    | 42   | CI / smoke tests — minimal row counts         |
+  | small    | 42   | Unit test data — representative but fast      |
+  | medium   | 42   | Integration tests and local development       |
+  | large    | 42   | Load testing and realistic scenario validation |
+
+  ## Required Coverage in Smoke Profile
+  The smoke fixture must include at minimum:
+    - at least 3 distinct services
+    - at least 2 distinct environments (production + staging)
+    - at least 3 incident severity levels
+    - at least 4 funnel stages
+    - at least 30 days of event data (to allow date-range filter testing)
+    - at least 3 data points for each time-series chart (to verify line rendering)
+    - at least 1 anomaly or outlier value in latency_samples (to verify histogram shape)
+
+  ## Usage in Implementations
+  All four implementations must read from these fixture files:
+    examples/canonical-analytics/domain/fixtures/smoke.json
+    examples/canonical-analytics/domain/fixtures/small.json
+
+  Fixture path resolution must work from the implementation directory or accept
+  a FIXTURE_PATH environment variable pointing to the canonical-analytics domain directory.
+
+================================================================================
+PART 4: CREATE THE PARITY MATRIX
+================================================================================
+
+Create: examples/canonical-analytics/domain/parity-matrix.md
+
+  # Cross-Stack Parity Matrix
+
+  Status legend: [ ] not started · [~] partial · [x] complete
+
+  ## Chart Family Parity
+
+  | Chart Family          | Python | Go | Rust | Elixir |
+  |-----------------------|--------|----|------|--------|
+  | Time Series           | [ ]    | [] | [ ]  | [ ]    |
+  | Category Comparison   | [ ]    | [] | [ ]  | [ ]    |
+  | Distribution          | [ ]    | [] | [ ]  | [ ]    |
+  | Heatmap               | [ ]    | [] | [ ]  | [ ]    |
+  | Funnel                | [ ]    | [] | [ ]  | [ ]    |
+  | Incident Distribution | [ ]    | [] | [ ]  | [ ]    |
+
+  ## Fragment Endpoint Parity
+
+  | Endpoint              | Python | Go | Rust | Elixir |
+  |-----------------------|--------|----|------|--------|
+  | /fragments/chart      | [ ]    | [] | [ ]  | [ ]    |
+  | /fragments/summary    | [ ]    | [] | [ ]  | [ ]    |
+  | /fragments/details    | [ ]    | [] | [ ]  | [ ]    |
+
+  ## Filter State Parity
+
+  | Filter                | Python | Go | Rust | Elixir |
+  |-----------------------|--------|----|------|--------|
+  | date_from / date_to   | [ ]    | [] | [ ]  | [ ]    |
+  | services (multi)      | [ ]    | [] | [ ]  | [ ]    |
+  | severity (multi)      | [ ]    | [] | [ ]  | [ ]    |
+  | environment (multi)   | [ ]    | [] | [ ]  | [ ]    |
+
+  ## Verification Parity
+
+  | Verification Item         | Python | Go | Rust | Elixir |
+  |---------------------------|--------|----|------|--------|
+  | Smoke test: all routes    | [ ]    | [] | [ ]  | [ ]    |
+  | Figure builder unit tests | [ ]    | [] | [ ]  | [ ]    |
+  | Aggregation unit tests    | [ ]    | [] | [ ]  | [ ]    |
+  | Filter-to-chart alignment | [ ]    | [] | [ ]  | [ ]    |
+  | Empty state handling      | [ ]    | [] | [ ]  | [ ]    |
+  | Fixture determinism test  | [ ]    | [] | [ ]  | [ ]    |
+
+  Update this matrix as each implementation prompt completes.
+
+================================================================================
+PART 5: CREATE THE VERIFICATION CONTRACT
+================================================================================
+
+Create: examples/canonical-analytics/domain/verification-contract.md
+
+  # Verification Contract
+
+  Each implementation must pass all items in this contract before it is marked
+  [x] in the parity matrix and CATALOG.md.
+
+  ## Smoke Tests (required; run against live server)
+
+  Every route listed in spec.md must return HTTP 200 with no server error.
+
+  Minimum routes to smoke-test:
+    GET /                      → 200, HTML response
+    GET /trends                → 200, HTML response
+    GET /services              → 200, HTML response
+    GET /distributions         → 200, HTML response
+    GET /heatmap               → 200, HTML response
+    GET /funnel                → 200, HTML response
+    GET /incidents             → 200, HTML response
+    GET /health                → 200, {"status": "ok"} JSON
+    GET /fragments/chart?view=trends → 200, HTML fragment containing plotly JSON
+    GET /fragments/summary?view=trends → 200, HTML fragment with text content
+
+  ## Figure Builder Unit Tests (required; no server needed)
+
+  For each of the six chart families, there must be a unit test covering:
+    1. valid aggregate input → assert trace count ≥ 1 and axis titles non-empty
+    2. empty aggregate input → assert a valid figure is returned (not an error)
+    3. single-item aggregate input → assert valid output shape
+
+  ## Aggregation Unit Tests (required; no server or DB needed)
+
+  For each chart family's aggregation function:
+    1. smoke fixture input → assert output matches expected shape and row count
+    2. filtered input (e.g., one service, one environment) → assert filtered output
+
+  ## Filter State Alignment Tests (required)
+
+  For each chart family:
+    - Apply a filter (e.g., services=["service-A"]) and assert that both the
+      visible results and the chart data reflect the same filtered set.
+    - Assert: chart trace labels or x-axis values do not include filtered-out values.
+
+  ## Fixture Determinism Test (required)
+
+  Run generate_fixtures.py twice. Assert the output files are byte-identical.
+
+  ## Empty State Test (required)
+
+  Pass an empty or zero-result filter state to each chart endpoint.
+  Assert the response is HTTP 200 and the figure contains an appropriate empty-state
+  trace or annotation (not a 500 error).
+
+  ## Parity Alignment Check (required before marking complete)
+
+  Run the arc's parity check runner (PROMPT_133 will create it):
+    python verification/analytics/run_parity_check.py --stack <python|go|rust|elixir>
+
+================================================================================
+PART 6: CREATE PAGE LAYOUT SPEC
+================================================================================
+
+Create: examples/canonical-analytics/domain/page-layout-spec.md
+
+  # Page Layout Specification
+
+  ## Overview
+  Each view is a server-rendered HTML page. The layout is consistent across
+  all four implementations. Tailwind provides the utility classes.
+
+  ## Chrome (consistent across all views)
+  - Top navigation bar: links to all 7 views, active view highlighted
+  - Page title: matches view name from spec.md
+  - Filter panel: left sidebar or collapsible top strip (implementation choice)
+    - Multi-select inputs for: services, environment, severity (where applicable)
+    - Date range inputs (date_from, date_to)
+    - Submit button with hx-get and hx-target pointing at the main content panel
+  - Main content panel: chart panel + summary card (HTMX target)
+  - Footer: seed info (fixture profile name, seed value used, record counts)
+
+  ## Filter Panel Requirements
+  - Multi-select filter controls must use native <select multiple> OR a
+    Tailwind-styled checkbox list. Either is acceptable.
+  - Follow context/doctrine/filter-panel-rendering-rules.md if implementing
+    include/exclude semantics. For the analytics examples, include-only is
+    sufficient (full include/exclude is optional enhancement).
+  - Active filter state must be visually indicated (Tailwind: ring, bg, or badge).
+  - Submit must use hx-get (not POST) so filter state is URL-addressable.
+
+  ## Chart Panel + Summary Card (HTMX fragment target)
+  The main panel contains:
+    - Chart div: a <div id="chart-panel"> populated by Plotly.js from JSON
+    - Summary card: key metrics (total count, date range, active filters)
+    - For views with drilldown: a <div id="detail-panel"> populated by a
+      separate HTMX request when user selects a chart element or table row
+
+  ## Detail Panel (drilldown, optional per view)
+  - Rendered as a side panel or modal overlay
+  - Fragment endpoint: /fragments/details?view=<view>&item=<item>
+  - Returns: an HTML partial with detail metrics for the selected item
+
+  ## Accessibility Minimum
+  - All filter inputs must have a visible or sr-only <label>
+  - Chart divs must have an aria-label describing the chart purpose
+  - Summary card text must be readable without interpreting the chart
+
+================================================================================
+PART 7: CREATE THE EXAMPLES CATALOG SKELETON
+================================================================================
+
+Create: examples/canonical-analytics/CATALOG.md
+
+  # Canonical Analytics Examples
+
+  Status: [ ] not started · [~] partial · [x] complete
+
+  ## Ops & Product Analytics Workbench
+
+  Domain spec: examples/canonical-analytics/domain/spec.md
+  Parity matrix: examples/canonical-analytics/domain/parity-matrix.md
+  Verification contract: examples/canonical-analytics/domain/verification-contract.md
+  Fixtures: examples/canonical-analytics/domain/fixtures/ (generated by generate_fixtures.py)
+  Dogfoods: examples/canonical-faker/ (TenantCore domain, generation_patterns.py)
+
+  | Implementation | Path                               | Status | Notes |
+  |----------------|------------------------------------|--------|-------|
+  | Python         | examples/canonical-analytics/python/ | [ ]  |       |
+  | Go             | examples/canonical-analytics/go/     | [ ]  |       |
+  | Rust           | examples/canonical-analytics/rust/   | [ ]  |       |
+  | Elixir         | examples/canonical-analytics/elixir/ | [ ]  |       |
+
+  ## Chart Family Coverage
+
+  See parity-matrix.md for detailed per-family cross-stack status.
+
+  ## Navigation
+
+  - examples/canonical-analytics/domain/spec.md          — domain and chart family spec
+  - examples/canonical-analytics/domain/seed-data-contract.md — fixture rules
+  - examples/canonical-analytics/domain/parity-matrix.md — cross-stack status
+  - examples/canonical-analytics/domain/verification-contract.md — what each impl must prove
+  - examples/canonical-analytics/domain/page-layout-spec.md — page structure and filter UI
+  - examples/canonical-faker/CATALOG.md                  — upstream faker arc (dogfooded here)
+
+================================================================================
+PART 8: GENERATE FIXTURE FILES (SMOKE + SMALL)
+================================================================================
+
+After creating generate_fixtures.py (Part 1), run it to generate at minimum
+the smoke and small fixture files:
+
+  python examples/canonical-analytics/domain/generate_fixtures.py \
+    --profiles smoke,small \
+    --output examples/canonical-analytics/domain/fixtures/
+
+Verify:
+  - smoke.json exists and is valid JSON
+  - small.json exists and is valid JSON
+  - smoke.json satisfies all Required Coverage rules from seed-data-contract.md
+    (verify by reading and manually checking against the contract)
+
+Print entity counts from smoke.json and include them in a comment at the top
+of generate_fixtures.py.
+
+Commit fixture files (smoke.json and small.json only) alongside the generator.
+Do NOT commit medium.json or large.json (too large for the repo).
+
+Add medium.json and large.json to .gitignore if they are not already excluded.
+
+================================================================================
+PART 9: WRITE STRUCTURAL VERIFICATION TESTS
+================================================================================
+
+Create: verification/unit/test_plotly_htmx_arc_domain.py
+
+Use Python stdlib unittest only.
+
+Tests:
+
+  TestAnalyticsDomainSpec:
+    test_spec_file_exists
+    test_spec_has_all_six_chart_families
+      (assert "Family 1" through "Family 6" appear in spec.md)
+    test_spec_has_workbench_routes_section
+    test_spec_has_parity_contract_section
+
+  TestSeedDataContract:
+    test_contract_file_exists
+    test_contract_mentions_smoke_profile
+    test_contract_references_faker_arc
+
+  TestParityMatrix:
+    test_parity_matrix_exists
+    test_parity_matrix_has_all_four_stacks
+    test_parity_matrix_has_all_six_chart_families
+
+  TestVerificationContract:
+    test_contract_file_exists
+    test_contract_has_smoke_test_section
+    test_contract_has_figure_builder_unit_test_section
+    test_contract_has_filter_alignment_section
+
+  TestPageLayoutSpec:
+    test_layout_spec_exists
+    test_layout_spec_has_filter_panel_section
+    test_layout_spec_references_filter_panel_rendering_rules
+
+  TestCatalogSkeleton:
+    test_catalog_exists
+    test_catalog_has_all_four_implementations
+    test_catalog_references_faker_arc
+
+  TestFixtureFiles:
+    test_smoke_fixture_exists
+    test_smoke_fixture_is_valid_json
+    test_smoke_fixture_has_required_keys
+      (assert all 7 entity keys present: events, sessions, services,
+       deployments, incidents, latency_samples, funnel_stages)
+    test_small_fixture_exists
+    test_small_fixture_is_valid_json
+    test_fixture_generator_script_exists
+
+  TestGeneratorDogfooding:
+    test_generator_references_canonical_faker
+      (assert "canonical-faker" appears in generate_fixtures.py source)
+
+================================================================================
+PART 10: RUN VERIFICATION AND COMMIT
+================================================================================
+
+Run:
+  python -m unittest verification/unit/test_plotly_htmx_arc_domain.py -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+All tests must pass before committing.
+
+Run: python3 scripts/work.py checkpoint
+
+Commit with git add -p:
+
+  [PROMPT_128] Add Plotly arc shared domain spec and fixtures
+
+  - examples/canonical-analytics/domain/spec.md
+  - examples/canonical-analytics/domain/seed-data-contract.md
+  - examples/canonical-analytics/domain/parity-matrix.md
+  - examples/canonical-analytics/domain/verification-contract.md
+  - examples/canonical-analytics/domain/page-layout-spec.md
+  - examples/canonical-analytics/domain/generate_fixtures.py (dogfoods canonical-faker)
+  - examples/canonical-analytics/domain/fixtures/smoke.json
+  - examples/canonical-analytics/domain/fixtures/small.json
+  - examples/canonical-analytics/CATALOG.md
+  - verification/unit/test_plotly_htmx_arc_domain.py
+
+================================================================================
+WHAT PROMPT_129 WILL DO
+================================================================================
+
+PROMPT_129 will implement the Python / FastAPI / Jinja2 / Tailwind / HTMX /
+Plotly canonical example under examples/canonical-analytics/python/.
+
+It will:
+  - scaffold the Python project structure per the page-layout-spec
+  - implement all 6 chart families as figure builders + aggregation functions
+  - implement all HTMX fragment endpoints (/fragments/chart, /fragments/summary,
+    /fragments/details)
+  - load fixtures from examples/canonical-analytics/domain/fixtures/smoke.json
+  - write unit tests for all aggregation and figure builder functions
+  - write smoke tests for all routes
+  - mark Python column in CATALOG.md and parity-matrix.md as [x]
+
+Do not begin that work in this prompt.

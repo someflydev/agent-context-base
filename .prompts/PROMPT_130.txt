@@ -1,0 +1,476 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one
+fresh coding-assistant session with commit prefixes like `[PROMPT_130]`.
+
+PROMPT_127: Plotly + HTMX Arc — Foundation. [x]
+PROMPT_128: Plotly + HTMX Arc — Shared domain spec, fixtures, parity matrix. [x]
+PROMPT_129: Plotly + HTMX Arc — Python / FastAPI / Jinja2 implementation. [x]
+
+This prompt (PROMPT_130) implements the Go / Echo / templ / Tailwind / HTMX /
+Plotly canonical analytics example at parity with the Python implementation.
+
+        [PLOTLY + HTMX ARC: Prompt 4 of 7 — Go Implementation]
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                    (run; study output)
+  4. memory/INDEX.md
+
+Read the arc foundation:
+  5. context/doctrine/plotly-htmx-server-rendered-viz.md   (READ — 11 rules)
+  6. context/doctrine/tailwind-utility-first.md             (READ)
+  7. context/doctrine/filter-panel-rendering-rules.md       (READ)
+  8. context/doctrine/backend-driven-ui-correctness.md      (READ)
+  9. context/stacks/go-echo.md                              (READ — base Echo stack)
+ 10. context/stacks/go-echo-templ-htmx-plotly.md            (READ — analytics extension)
+ 11. context/skills/plotly-figure-builder-design.md         (READ — three-layer model)
+
+Read the shared domain spec:
+ 12. examples/canonical-analytics/domain/spec.md            (READ — full spec)
+ 13. examples/canonical-analytics/domain/page-layout-spec.md (READ — layout/filter contract)
+ 14. examples/canonical-analytics/domain/verification-contract.md (READ — what you must prove)
+ 15. examples/canonical-analytics/domain/parity-matrix.md   (READ — Go column is all [ ])
+ 16. examples/canonical-analytics/CATALOG.md               (READ)
+
+Study the Python implementation for structural reference:
+ 17. examples/canonical-analytics/python/src/analytics_workbench/charts/ (READ)
+ 18. examples/canonical-analytics/python/src/analytics_workbench/analytics/ (READ)
+
+Check the fixture files:
+ 19. examples/canonical-analytics/domain/fixtures/smoke.json (READ — verify exists)
+ 20. examples/canonical-analytics/domain/fixtures/small.json (READ — verify exists)
+
+If fixture files do not exist, run:
+  python examples/canonical-analytics/domain/generate_fixtures.py --profiles smoke,small
+
+Run verification before touching anything:
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Do NOT begin writing until the fixture files exist and verification passes.
+
+================================================================================
+BACKGROUND: PARITY POINTS AND ALLOWED DIVERGENCES
+================================================================================
+
+The Go implementation teaches the same analytical concepts as the Python
+implementation, applied idiomatically to Go. The teaching surface is:
+
+  - Go struct-based figure building (no external Plotly Go library needed)
+  - templ typed component fragments for HTMX partial responses
+  - Echo route registration and middleware
+  - encoding/json for Plotly figure serialization
+  - reading shared JSON fixture files (same files as Python)
+
+Parity points (must match exactly):
+  - All 6 chart families
+  - All 3 fragment endpoints (/fragments/chart, /fragments/summary, /fragments/details)
+  - All 4 filter parameters (date_from, date_to, services, environment, severity)
+  - /health endpoint
+  - Reading from smoke.json and small.json
+
+Allowed divergences (idiomatic Go choices):
+  - Go struct types instead of Python dataclasses
+  - encoding/json struct serialization instead of plotly.Figure.to_dict()
+  - templ components instead of Jinja2 templates
+  - Go testing package instead of pytest
+  - Different directory layout (Go module conventions)
+  - Different port (e.g., 8080 vs Python's 8000)
+
+================================================================================
+PART 1: PROJECT STRUCTURE
+================================================================================
+
+Create under examples/canonical-analytics/go/:
+
+  go.mod                      — module: analytics-workbench-go
+  go.sum
+  README.md                   — what it is, how to run, how to test
+  cmd/
+    server/
+      main.go                 — Entry point, Echo setup, fixture load, route registration
+  internal/
+    config/
+      config.go               — settings struct (fixture path, port, debug)
+    data/
+      loader.go               — loads fixture JSON; populates in-memory store at startup
+      models.go               — Go structs for Event, Session, Service, Deployment,
+                                Incident, LatencySample, FunnelStage
+    filters/
+      filters.go              — FilterState struct, ParseFilterState(c echo.Context) FilterState
+    analytics/
+      events.go               — EventCountSeries aggregation
+      services.go             — ServiceErrorRates aggregation
+      distributions.go        — LatencyHistogram + LatencyByService aggregation
+      heatmap.go              — EventHeatmap aggregation
+      funnel.go               — FunnelStages aggregation
+      incidents.go            — IncidentSeverity aggregation
+    charts/
+      plotly.go               — Shared PlotlyTrace, PlotlyLayout, PlotlyFigure, PlotlyMeta structs
+      time_series.go          — BuildTimeSeriesFigure(agg EventCountSeries) PlotlyFigure
+      service_bar.go          — BuildServiceBarFigure(agg ServiceErrorRates) PlotlyFigure
+      latency_histogram.go    — BuildLatencyHistogramFigure(agg LatencyHistogram) PlotlyFigure
+      latency_boxplot.go      — BuildLatencyBoxplotFigure(agg LatencyByService) PlotlyFigure
+      incident_bar.go         — BuildIncidentBarFigure(agg IncidentSeverity) PlotlyFigure
+      funnel_chart.go         — BuildFunnelFigure(agg FunnelStages) PlotlyFigure
+      heatmap_chart.go        — BuildHeatmapFigure(agg EventHeatmap) PlotlyFigure
+    handlers/
+      pages.go                — full-page Echo handlers for all 7 views
+      fragments.go            — HTMX fragment handlers
+      health.go               — GET /health
+    views/                    — templ component files
+      base.templ              — base layout component
+      index.templ
+      trends.templ
+      services.templ
+      distributions.templ
+      heatmap.templ
+      funnel.templ
+      incidents.templ
+      fragments/
+        chart.templ
+        summary.templ
+        details.templ
+  tests/
+    unit/
+      analytics_events_test.go
+      analytics_services_test.go
+      analytics_distributions_test.go
+      analytics_heatmap_test.go
+      analytics_funnel_test.go
+      analytics_incidents_test.go
+      charts_time_series_test.go
+      charts_service_bar_test.go
+      charts_latency_test.go
+      charts_incident_test.go
+      charts_funnel_test.go
+      charts_heatmap_test.go
+      filters_test.go
+    smoke/
+      routes_smoke_test.go
+
+================================================================================
+PART 2: DEPENDENCIES
+================================================================================
+
+go.mod must declare:
+
+  module analytics-workbench-go
+  go 1.22
+
+  require (
+    github.com/labstack/echo/v4 v4.12.0
+    github.com/a-h/templ v0.2.747
+  )
+
+No external Plotly Go library is needed. Use Go structs + encoding/json for
+all figure construction. Read context/stacks/go-echo-templ-htmx-plotly.md
+for the recommended approach.
+
+================================================================================
+PART 3: PLOTLY FIGURE STRUCTS
+================================================================================
+
+Implement internal/charts/plotly.go with explicit Go struct types for the
+Plotly figure model. These structs encode the Plotly.js JSON structure:
+
+  type PlotlyTrace struct {
+    Type         string          `json:"type"`
+    Mode         string          `json:"mode,omitempty"`
+    Name         string          `json:"name"`
+    X            interface{}     `json:"x,omitempty"`
+    Y            interface{}     `json:"y,omitempty"`
+    Z            interface{}     `json:"z,omitempty"`
+    Orientation  string          `json:"orientation,omitempty"`
+    HoverTemplate string         `json:"hovertemplate"`
+    Marker       *PlotlyMarker   `json:"marker,omitempty"`
+    // Add other fields as needed for specific chart types
+  }
+
+  type PlotlyMarker struct {
+    Colorscale   interface{}   `json:"colorscale,omitempty"`
+    Color        interface{}   `json:"color,omitempty"`
+    // ...
+  }
+
+  type PlotlyAxis struct {
+    Title PlotlyAxisTitle `json:"title"`
+  }
+
+  type PlotlyAxisTitle struct {
+    Text string `json:"text"`
+  }
+
+  type PlotlyTitle struct {
+    Text string `json:"text"`
+  }
+
+  type PlotlyLayout struct {
+    Title  PlotlyTitle  `json:"title"`
+    XAxis  PlotlyAxis   `json:"xaxis"`
+    YAxis  PlotlyAxis   `json:"yaxis"`
+    // Add height, margin, legend, shapes fields as needed
+  }
+
+  type PlotlyMeta struct {
+    TotalCount     int      `json:"total_count"`
+    FiltersApplied []string `json:"filters_applied"`
+    GeneratedAt    string   `json:"generated_at"`
+  }
+
+  type PlotlyFigure struct {
+    Data   []PlotlyTrace  `json:"data"`
+    Layout PlotlyLayout   `json:"layout"`
+    Meta   PlotlyMeta     `json:"meta"`
+  }
+
+  // ToJSON serializes the figure. Used in handlers, not in builders.
+  func (f PlotlyFigure) ToJSON() ([]byte, error) {
+    return json.Marshal(f)
+  }
+
+Extend PlotlyTrace with additional fields as you implement each chart type.
+Do not attempt to cover all possible Plotly fields up front — add fields as needed.
+
+================================================================================
+PART 4: DATA LOADING AND FILTER STATE
+================================================================================
+
+Implement internal/data/loader.go:
+  - ReadFixtures(path string) (*FixtureStore, error) — reads fixture JSON into a store
+  - FixtureStore struct holding all entity slices
+  - GetFixturePath() string — resolves path relative to go.mod, supports FIXTURE_PATH env var
+    (path must resolve to examples/canonical-analytics/domain/fixtures/smoke.json)
+
+Implement internal/data/models.go:
+  - One struct per entity matching the JSON keys in smoke.json
+  - Use json struct tags that match exactly the fixture JSON keys
+  - Date/time fields: use string for JSON; parse to time.Time in aggregation functions
+
+Implement internal/filters/filters.go:
+  FilterState struct with fields: DateFrom, DateTo (optional time.Time pointer),
+    Services []string, Severity []string, Environment []string
+  ParseFilterState(c echo.Context) FilterState:
+    - multi-value params: c.QueryParams()["services"] returns []string
+    - date params: parse "2024-01-01" format, treat empty string as nil
+
+================================================================================
+PART 5: AGGREGATION LAYER (internal/analytics/)
+================================================================================
+
+Implement all six aggregation functions following the three-layer model.
+
+Each function signature pattern:
+  func Aggregate<Name>(data []<Model>, filters FilterState) <ResultType>
+
+Types for each result (define in the same file as the aggregation function,
+or in a results.go file in the analytics package):
+
+  EventCountSeries: Dates []string, Counts []int, ByEnvironment map[string][]int
+  ServiceErrorRates: Services []string, ErrorRates []float64, TotalEvents []int
+  LatencyHistogram: Values []float64, P50, P95, P99 float64
+  LatencyByService: Services []string, P50s, P95s, P99s []float64
+  EventHeatmap: Hours []int, Days []string, Counts [][]int
+  FunnelStages: Stages []string, Counts []int, DropOffRates []float64
+  IncidentSeverity: Severities []string, Counts []int, MTTRBySeverity map[string]float64
+
+All aggregation functions must:
+  - apply all non-empty FilterState fields
+  - return a zero-value result (not panic) when the input slice is empty
+  - be deterministic: same input yields same output
+
+For percentile calculations (P50, P95, P99 in latency):
+  Sort the float64 slice and compute by index. Do not use an external statistics library.
+  Include a helper func percentile(values []float64, p float64) float64 in distributions.go.
+
+================================================================================
+PART 6: FIGURE BUILDER LAYER (internal/charts/)
+================================================================================
+
+Implement all 7 figure builders following Part 3's struct types.
+
+Each builder function signature:
+  func Build<Name>Figure(agg <ResultType>) PlotlyFigure
+
+Requirements:
+  - Every trace: HoverTemplate must be non-empty string
+  - Every trace: Name must be non-empty string
+  - Layout.Title.Text must be non-empty
+  - Layout.XAxis.Title.Text and Layout.YAxis.Title.Text must be non-empty
+    (where the chart has axes — funnel and some heatmap variants may vary)
+  - Meta.TotalCount must be set from aggregate data
+  - Meta.GeneratedAt must be set from time.Now().UTC().Format(time.RFC3339)
+
+Chart type specifics (match Python implementation's chart types):
+  - Time series: type="scatter", mode="lines+markers", one trace per environment
+  - Service bar: type="bar", orientation="h", sorted descending by error rate
+  - Latency histogram: type="histogram"
+  - Latency boxplot: type="box", one trace per service
+  - Incident bar: type="bar"
+  - Funnel: type="funnel"
+  - Heatmap: type="heatmap", colorscale="Blues"
+
+Empty-state behavior: when agg produces zero data, return a PlotlyFigure with
+one empty trace and a layout title like "No data for selected filters".
+
+================================================================================
+PART 7: TEMPL COMPONENTS
+================================================================================
+
+Implement templ components for all views and fragments.
+
+views/base.templ:
+  - Full HTML skeleton with Tailwind CDN, HTMX CDN, Plotly.js CDN
+  - Navigation: links to all 7 views; active view highlighted with Tailwind class
+  - Content slot: { children... }
+  - Plotly initialization (same approach as Python: data-figure attribute + JS)
+  - Footer with fixture info
+
+views/fragments/chart.templ:
+  - Accept figureJSON string as parameter
+  - Render: <div id="chart-panel" data-figure={ figureJSON } class="w-full h-96"></div>
+  - Inline <script> calling Plotly.newPlot on this div
+
+views/fragments/summary.templ:
+  - Accept summary map or struct as parameter
+  - Render Tailwind card (bg-white border rounded shadow-sm p-4)
+  - Show: total_count, date range, active filters
+
+views/fragments/details.templ:
+  - Accept a list of incident details
+  - Render a Tailwind table or list
+
+Filter form (included in each view template):
+  - <form method="get" hx-get="/fragments/chart" hx-target="#content-panel"
+         hx-swap="innerHTML" hx-push-url="true">
+  - Multi-select for services (Tailwind: border rounded p-1 min-h-[80px] w-full)
+  - Multi-select for environment
+  - Date range inputs
+  - Submit button: bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700
+
+Run `templ generate` after writing all .templ files to produce the _templ.go files.
+Include these generated files in the commit.
+
+================================================================================
+PART 8: ECHO HANDLERS
+================================================================================
+
+Implement internal/handlers/pages.go:
+  - Inject FixtureStore via Echo's context or middleware (use echo.Context.Set)
+  - One handler per view: ParseFilterState → aggregate → build figure → render
+    full-page templ component
+  - Template data must include: FigureJSON string, Summary struct, ViewName string,
+    ServicesList, EnvironmentsList, SeverityList (for filter dropdowns)
+
+Implement internal/handlers/fragments.go:
+  - GET /fragments/chart?view=<view>
+    Parse filter state → aggregate for the named view → build figure →
+    render views/fragments/chart.templ with figure JSON
+  - GET /fragments/summary?view=<view>
+    Same aggregation → render views/fragments/summary.templ with summary
+  - GET /fragments/details?view=services&service=<name>
+    Filter incidents to those for the named service → render fragments/details.templ
+
+Implement internal/handlers/health.go:
+  - GET /health → c.JSON(200, map[string]string{"status": "ok"})
+
+Register all routes in cmd/server/main.go using Echo's route groups.
+
+================================================================================
+PART 9: TESTS
+================================================================================
+
+Unit tests (tests/unit/, build tag: //go:build unit):
+
+  For each analytics_*_test.go:
+    TestWithSmokeFixture: Load smoke.json, run aggregation, assert result is non-zero
+    TestWithEmptyInput: pass empty slice, assert zero-value result (no panic)
+    TestFilterByService: single-service filter, assert filtered output
+    TestFilterByEnvironment: single-environment filter, assert filtered output
+
+  For each charts_*_test.go:
+    TestBuildFigureWithValidAggregate: call builder, assert len(figure.Data) >= 1
+    TestAxisTitlesSet: assert figure.Layout.XAxis.Title.Text != "" (where applicable)
+    TestHoverTemplateSet: assert each trace.HoverTemplate != ""
+    TestBuildFigureWithEmptyAggregate: call builder with zero-value aggregate, no panic
+    TestMetaKeyPresent: assert figure.Meta.TotalCount >= 0
+
+  For filters_test.go:
+    TestParseEmptyQuery: all fields empty
+    TestParseMultiService: repeated params parsed as []string
+    TestParseDateRange: date_from and date_to parsed correctly
+
+Smoke tests (tests/smoke/routes_smoke_test.go, build tag: //go:build smoke):
+
+  - Start the Echo server in a goroutine using httptest.NewServer
+  - For each of these paths, assert HTTP 200 and non-empty body:
+    / , /trends, /services, /distributions, /heatmap, /funnel, /incidents,
+    /health,
+    /fragments/chart?view=trends,
+    /fragments/summary?view=trends,
+    /fragments/details?view=services&service=<first service from fixture>
+  - /health body must unmarshal to {"status": "ok"}
+  - /fragments/chart?view=trends body must contain "plotly" (case-insensitive)
+  - Filter test: /trends?environment=production must return 200
+
+Run tests:
+  go test -tags unit ./tests/unit/...
+  go test -tags smoke ./tests/smoke/...
+
+================================================================================
+PART 10: RUN VERIFICATION AND UPDATE PARITY
+================================================================================
+
+Run all tests:
+  go test -tags unit ./tests/unit/...    — must all pass
+  go test -tags smoke ./tests/smoke/...  — must all pass
+
+Run base repo verification:
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Update parity-matrix.md:
+  Mark Go column as [x] for all completed rows (or [~] for partial).
+
+Update CATALOG.md:
+  Change Go row Status from [ ] to [x].
+
+Run: python3 scripts/work.py checkpoint
+
+================================================================================
+PART 11: COMMIT
+================================================================================
+
+Stage and commit with git add -p:
+
+  [PROMPT_130] Add Go Echo + templ + Tailwind + HTMX + Plotly analytics example
+
+  - examples/canonical-analytics/go/ — full workbench implementation
+    - 6 chart families, typed PlotlyFigure structs + encoding/json
+    - templ components for all views and HTMX fragments
+    - HTMX fragment endpoints, Echo router
+    - unit tests: aggregation + figure builders
+    - smoke tests: all routes
+  - examples/canonical-analytics/domain/parity-matrix.md — Go column [x]
+  - examples/canonical-analytics/CATALOG.md — Go [x]
+
+================================================================================
+WHAT PROMPT_131 WILL DO
+================================================================================
+
+PROMPT_131 will implement the Rust / Axum / Askama / Tailwind / HTMX / Plotly
+canonical example under examples/canonical-analytics/rust/.
+
+It will implement all 6 chart families with plotly.rs typed builders, Askama
+compiled templates for fragment responses, and an Axum router. It reads the
+same fixture JSON files and passes the same verification contract.
+
+Do not begin that work in this prompt.

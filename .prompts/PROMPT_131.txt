@@ -1,0 +1,510 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one
+fresh coding-assistant session with commit prefixes like `[PROMPT_131]`.
+
+PROMPT_127: Plotly + HTMX Arc — Foundation. [x]
+PROMPT_128: Plotly + HTMX Arc — Shared domain spec, fixtures, parity matrix. [x]
+PROMPT_129: Plotly + HTMX Arc — Python / FastAPI / Jinja2 implementation. [x]
+PROMPT_130: Plotly + HTMX Arc — Go / Echo / templ implementation. [x]
+
+This prompt (PROMPT_131) implements the Rust / Axum / Askama / Tailwind /
+HTMX / Plotly canonical analytics example at parity with Python and Go.
+
+       [PLOTLY + HTMX ARC: Prompt 5 of 7 — Rust Implementation]
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                    (run; study output)
+  4. memory/INDEX.md
+
+Read the arc foundation:
+  5. context/doctrine/plotly-htmx-server-rendered-viz.md   (READ — 11 rules)
+  6. context/doctrine/tailwind-utility-first.md             (READ)
+  7. context/doctrine/filter-panel-rendering-rules.md       (READ)
+  8. context/stacks/rust-axum-modern.md                     (READ — base Rust stack)
+  9. context/stacks/rust-axum-askama-htmx-plotly.md         (READ — analytics extension)
+ 10. context/skills/plotly-figure-builder-design.md         (READ — three-layer model, Rust notes)
+
+Read the shared domain spec:
+ 11. examples/canonical-analytics/domain/spec.md
+ 12. examples/canonical-analytics/domain/page-layout-spec.md
+ 13. examples/canonical-analytics/domain/verification-contract.md
+ 14. examples/canonical-analytics/domain/parity-matrix.md   (READ — Rust column all [ ])
+ 15. examples/canonical-analytics/CATALOG.md
+
+Study the Python and Go implementations for structural reference:
+ 16. examples/canonical-analytics/python/src/analytics_workbench/charts/ (READ)
+ 17. examples/canonical-analytics/go/internal/charts/ (READ)
+
+Check fixture files:
+ 18. examples/canonical-analytics/domain/fixtures/smoke.json
+ 19. examples/canonical-analytics/domain/fixtures/small.json
+
+If fixtures missing, run:
+  python examples/canonical-analytics/domain/generate_fixtures.py --profiles smoke,small
+
+Run verification:
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+================================================================================
+BACKGROUND: RUST TEACHING SURFACE
+================================================================================
+
+The Rust implementation teaches:
+
+  - plotly.rs typed builders: Plot, Scatter, Bar, Histogram, BoxPlot,
+    HeatMap, Funnel — each with typed trace and layout methods
+  - serde + serde_json for figure serialization (plotly.rs implements
+    Serialize on all its types)
+  - Askama compile-time templates: define struct templates with typed fields;
+    templates are verified at compile time (no runtime rendering errors)
+  - Axum typed extractors: use Query<FilterState> for filter parsing
+  - tokio async runtime throughout
+  - Separation of domain logic, aggregation, and figure building with
+    Rust's module system
+
+Key Rust idiom: plotly.rs's Plot type accumulates traces and returns
+plot.to_json() as a String. In handlers, do NOT call to_json() inside the
+figure builder. Instead, return the Plot (or an equivalent struct wrapping
+it) and serialize in the handler — matching the three-layer model.
+
+If plotly.rs's Plot type cannot be returned from a figure builder without
+serialization (e.g., it does not implement Clone), design a FigureData newtype
+or serialize to serde_json::Value inside the builder and annotate with a
+comment explaining why this deviates from the three-layer model.
+
+================================================================================
+PART 1: PROJECT STRUCTURE
+================================================================================
+
+Create under examples/canonical-analytics/rust/:
+
+  Cargo.toml
+  Cargo.lock
+  README.md
+  src/
+    main.rs                   — Axum app setup, router, fixture load, tokio runtime
+    config.rs                 — settings struct (fixture path, port)
+    data/
+      mod.rs
+      loader.rs               — load and deserialize fixture JSON
+      models.rs               — serde Deserialize structs for all entities
+    filters/
+      mod.rs                  — FilterState struct, implement from Query<FilterState>
+    analytics/
+      mod.rs
+      events.rs
+      services.rs
+      distributions.rs
+      heatmap.rs
+      funnel.rs
+      incidents.rs
+    charts/
+      mod.rs
+      time_series.rs
+      service_bar.rs
+      latency_histogram.rs
+      latency_boxplot.rs
+      incident_bar.rs
+      funnel_chart.rs
+      heatmap_chart.rs
+    handlers/
+      mod.rs
+      pages.rs                — Axum handlers for full-page views
+      fragments.rs            — Axum handlers for HTMX fragment responses
+      health.rs               — GET /health
+    templates/                — Askama template files (*.html.j2 or *.html)
+      base.html
+      index.html
+      trends.html
+      services.html
+      distributions.html
+      heatmap.html
+      funnel.html
+      incidents.html
+      fragments/
+        chart.html
+        summary.html
+        details.html
+  tests/
+    unit_analytics.rs
+    unit_charts.rs
+    smoke.rs                  — compile with cfg(test) + tokio::test
+
+================================================================================
+PART 2: DEPENDENCIES
+================================================================================
+
+Cargo.toml must declare:
+
+  [package]
+  name = "analytics-workbench-rust"
+  version = "0.1.0"
+  edition = "2021"
+
+  [dependencies]
+  axum = "0.7"
+  tokio = { version = "1", features = ["full"] }
+  tower = "0.4"
+  tower-http = { version = "0.5", features = ["fs", "trace"] }
+  askama = { version = "0.12", features = ["with-axum"] }
+  askama_axum = "0.4"
+  plotly = { version = "0.9", features = ["plotly_ndarray"] }
+  serde = { version = "1", features = ["derive"] }
+  serde_json = "1"
+  chrono = { version = "0.4", features = ["serde"] }
+  anyhow = "1"
+
+  [dev-dependencies]
+  reqwest = { version = "0.11", features = ["json"] }
+  axum-test = "14"
+
+Verify plotly crate version compatibility before using. If version "0.9" does
+not exist, use the latest available version and adjust the API accordingly.
+Read the plotly.rs README carefully before implementing figure builders.
+
+================================================================================
+PART 3: DATA LOADING AND FILTER STATE
+================================================================================
+
+Implement src/data/models.rs:
+  - #[derive(Debug, Clone, Deserialize)] structs for each entity
+  - Field names must match JSON keys in smoke.json exactly
+  - DateTime fields: use chrono::DateTime<Utc> with #[serde(with = "...")]
+    or use String and parse in aggregation functions
+
+Implement src/data/loader.rs:
+  pub struct FixtureStore {
+    pub events: Vec<Event>,
+    pub sessions: Vec<Session>,
+    pub services: Vec<Service>,
+    pub deployments: Vec<Deployment>,
+    pub incidents: Vec<Incident>,
+    pub latency_samples: Vec<LatencySample>,
+    pub funnel_stages: Vec<FunnelStage>,
+  }
+
+  pub fn load_fixtures(path: &Path) -> anyhow::Result<FixtureStore>
+    Reads path (smoke.json), deserializes to FixtureStore.
+
+  pub fn get_fixture_path() -> PathBuf
+    Resolves relative to CARGO_MANIFEST_DIR at build time.
+    Supports FIXTURE_PATH env var override at runtime.
+
+  Share FixtureStore via Arc<FixtureStore> in Axum AppState.
+
+Implement src/filters/mod.rs:
+  #[derive(Debug, Default, Deserialize)]
+  pub struct FilterState {
+    pub date_from: Option<String>,
+    pub date_to: Option<String>,
+    #[serde(default)]
+    pub services: Vec<String>,
+    #[serde(default)]
+    pub severity: Vec<String>,
+    #[serde(default)]
+    pub environment: Vec<String>,
+  }
+
+  Use Query<FilterState> in Axum handlers for automatic deserialization.
+  For multi-value params (services, environment, severity), Axum's Query
+  deserializer handles repeated params. If it does not handle them natively,
+  use a custom deserializer or parse from the raw URI query string.
+
+================================================================================
+PART 4: AGGREGATION LAYER (src/analytics/)
+================================================================================
+
+Implement all six aggregation modules. Each exposes one or more public functions:
+
+  pub fn aggregate_<name>(data: &[<Model>], filters: &FilterState) -> <ResultType>
+
+Result types (define in the same module or in analytics/mod.rs):
+
+  pub struct EventCountSeries {
+    pub dates: Vec<String>,
+    pub counts: Vec<i64>,
+    pub by_environment: HashMap<String, Vec<i64>>,
+  }
+
+  pub struct ServiceErrorRates {
+    pub services: Vec<String>,
+    pub error_rates: Vec<f64>,
+    pub total_events: Vec<i64>,
+  }
+
+  pub struct LatencyHistogram {
+    pub values: Vec<f64>,
+    pub p50: f64, pub p95: f64, pub p99: f64,
+  }
+
+  pub struct LatencyByService {
+    pub services: Vec<String>,
+    pub p50s: Vec<f64>, pub p95s: Vec<f64>, pub p99s: Vec<f64>,
+  }
+
+  pub struct EventHeatmap {
+    pub hours: Vec<i32>,
+    pub days: Vec<String>,
+    pub counts: Vec<Vec<i64>>,
+  }
+
+  pub struct FunnelStages {
+    pub stages: Vec<String>,
+    pub counts: Vec<i64>,
+    pub drop_off_rates: Vec<f64>,
+  }
+
+  pub struct IncidentSeverity {
+    pub severities: Vec<String>,
+    pub counts: Vec<i64>,
+    pub mttr_by_severity: HashMap<String, f64>,
+  }
+
+For percentile computation: sort a Vec<f64> and index by (len as f64 * p / 100.0)
+as usize. Implement a pub fn percentile(values: &mut Vec<f64>, p: f64) -> f64
+helper in distributions.rs.
+
+All functions: return zero-value structs (not panic) when input slice is empty.
+
+================================================================================
+PART 5: FIGURE BUILDER LAYER (src/charts/)
+================================================================================
+
+Implement all 7 figure builders using the plotly.rs crate.
+
+Each module exposes:
+  pub fn build_<name>_figure(agg: &<ResultType>) -> serde_json::Value
+
+Return serde_json::Value (not Plot, not String) from figure builders. This
+keeps builders testable: tests can assert on JSON structure without running
+a server. Serialize with serde_json::to_value(plot)? where plot is a
+plotly::Plot or plotly::common::Plot.
+
+This is a deliberate deviation from the three-layer model's "return structured
+object, not JSON string" guidance — returning serde_json::Value IS the
+structured object here. Document this in a module-level comment in src/charts/mod.rs:
+
+  // Rust figure builders return serde_json::Value rather than a typed struct
+  // because plotly.rs's Plot type does not implement Clone or meaningful
+  // introspection. serde_json::Value is the structured form that handlers
+  // serialize to a response body, and test code can assert on JSON structure.
+  // This matches the spirit of the three-layer model: aggregation → builder →
+  // handler, with the builder returning a testable object.
+
+Chart type specifics per family (match Python and Go implementations):
+
+  src/charts/time_series.rs:
+    use plotly::Scatter;
+    One Scatter trace per environment. Mode::LinesMarkers.
+    HoverTemplate set on each trace.
+
+  src/charts/service_bar.rs:
+    use plotly::Bar;
+    Horizontal bars (orientation: "h"), sorted by error_rate descending.
+
+  src/charts/latency_histogram.rs:
+    use plotly::Histogram;
+    X values = agg.values. Annotate P50 as a vertical line via layout shapes.
+
+  src/charts/latency_boxplot.rs:
+    use plotly::BoxPlot;
+    One trace per service. BoxPoints::Outliers.
+
+  src/charts/incident_bar.rs:
+    use plotly::Bar;
+    Ordered by severity level (critical > high > medium > low).
+
+  src/charts/funnel_chart.rs:
+    Plotly funnel chart. If plotly.rs does not have a Funnel type in the
+    version you are using, use Bar with text annotations for drop-off.
+    Document the substitution clearly.
+
+  src/charts/heatmap_chart.rs:
+    use plotly::HeatMap;
+    Z values = agg.counts. ColorScale::Blues.
+
+All builders must add a "meta" key to the returned serde_json::Value with
+total_count, filters_applied, and generated_at. Add it via:
+  let mut value = serde_json::to_value(plot)?;
+  value["meta"] = serde_json::json!({
+    "total_count": total_count,
+    "filters_applied": filters_applied,
+    "generated_at": chrono::Utc::now().to_rfc3339()
+  });
+
+Empty-state: when aggregate data is empty, return a minimal valid figure with
+one empty trace and a layout title "No data for selected filters".
+
+================================================================================
+PART 6: ASKAMA TEMPLATES
+================================================================================
+
+Implement Askama templates for all views and fragments.
+
+Template struct pattern (in handlers/pages.rs or a templates module):
+
+  #[derive(Template)]
+  #[template(path = "trends.html")]
+  struct TrendsTemplate {
+    figure_json: String,
+    summary: SummaryData,
+    active_filters: FilterState,
+    services_list: Vec<String>,
+    environments_list: Vec<String>,
+    view_name: String,
+  }
+
+templates/base.html:
+  - Askama inheritance: {% block content %}{% endblock %}
+  - Load Tailwind CDN, HTMX CDN, Plotly.js CDN
+  - Navigation bar with active view highlighting
+  - Plotly initialization script (data-figure attribute approach)
+  - Footer with fixture info
+
+templates/fragments/chart.html:
+  - Accept figure_json as template variable
+  - Render chart div with data-figure="{{ figure_json | e }}"
+  - Include inline <script> for Plotly.newPlot
+
+templates/fragments/summary.html:
+  - Tailwind card showing total_count, date_range, active filters
+
+Filter form in each view template:
+  - <form method="get" hx-get="/fragments/chart" hx-target="#content-panel"
+         hx-swap="innerHTML" hx-push-url="true">
+  - Multi-select inputs (same Tailwind classes as Python/Go)
+  - Submit button: bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700
+
+Note: Askama templates are compiled at build time. Template compilation errors
+appear as Rust compile errors. Fix template errors before running tests.
+
+================================================================================
+PART 7: AXUM HANDLERS AND ROUTER
+================================================================================
+
+Implement src/handlers/pages.rs:
+  - One async fn per view
+  - Signature: async fn trends(State(store): State<Arc<FixtureStore>>,
+      Query(filters): Query<FilterState>) -> impl IntoResponse
+  - Handler body: aggregate → build_figure → serialize to String →
+    render Askama template with figure_json
+
+Implement src/handlers/fragments.rs:
+  - async fn fragment_chart(State, Query<FragmentQuery>) where FragmentQuery
+    has a `view` field (String) plus filter fields
+  - Dispatch on view name → aggregate → build → render fragments/chart.html
+  - async fn fragment_summary — same dispatch, render fragments/summary.html
+  - async fn fragment_details — for services view drilldown
+
+Implement src/handlers/health.rs:
+  - async fn health() -> impl IntoResponse { Json(json!({"status": "ok"})) }
+
+Register all routes in src/main.rs using Axum's Router::new() with routes!() macro.
+
+================================================================================
+PART 8: TESTS
+================================================================================
+
+Unit tests (tests/unit_analytics.rs and tests/unit_charts.rs):
+
+  Unit analytics:
+    test_aggregate_events_with_smoke_fixture
+    test_aggregate_events_with_empty_input
+    test_aggregate_events_filter_by_environment
+    test_aggregate_services_with_smoke_fixture
+    test_aggregate_services_with_empty_input
+    test_aggregate_latency_histogram_with_smoke_fixture
+    test_aggregate_latency_histogram_empty_input
+    test_percentile_helper
+    test_aggregate_heatmap_with_smoke_fixture
+    test_aggregate_funnel_with_smoke_fixture
+    test_aggregate_incidents_with_smoke_fixture
+
+  Unit charts:
+    test_build_time_series_figure_trace_count
+    test_build_time_series_figure_axis_titles
+    test_build_time_series_figure_empty_aggregate
+    test_build_service_bar_figure_trace_count
+    test_build_latency_histogram_meta_key
+    test_build_latency_histogram_empty_aggregate
+    test_build_funnel_figure_trace_count
+    test_build_heatmap_figure_colorscale
+    test_build_incident_bar_figure_severity_order
+    test_all_figures_have_meta_key
+
+Smoke tests (tests/smoke.rs):
+
+  Use axum-test or tokio::test with reqwest against a bound test server:
+    test_health_returns_ok
+    test_index_returns_200
+    test_trends_returns_200
+    test_services_returns_200
+    test_distributions_returns_200
+    test_heatmap_returns_200
+    test_funnel_returns_200
+    test_incidents_returns_200
+    test_fragment_chart_trends_returns_200_with_plotly
+    test_fragment_summary_trends_returns_200
+    test_fragment_details_services_returns_200
+    test_filter_by_environment_returns_200
+
+Run tests:
+  cargo test --lib            — unit tests (no server)
+  cargo test --tests          — integration/smoke tests
+
+All tests must compile and pass. Fix all Rust compilation errors before marking
+this prompt complete.
+
+================================================================================
+PART 9: RUN VERIFICATION AND UPDATE PARITY
+================================================================================
+
+  cargo build                    — must succeed with zero warnings (or note any)
+  cargo test --lib               — must pass
+  cargo test --tests             — must pass
+  cargo clippy -- -D warnings    — fix all clippy warnings before committing
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Update parity-matrix.md: mark Rust column [x] (or [~] if partial).
+Update CATALOG.md: mark Rust row [x].
+
+Run: python3 scripts/work.py checkpoint
+
+================================================================================
+PART 10: COMMIT
+================================================================================
+
+  [PROMPT_131] Add Rust Axum + Askama + Tailwind + HTMX + Plotly analytics example
+
+  - examples/canonical-analytics/rust/ — full workbench implementation
+    - 6 chart families via plotly.rs typed builders + serde_json::Value
+    - Askama compiled templates for all views and HTMX fragments
+    - Axum router, typed extractors, Arc<FixtureStore> shared state
+    - unit tests: aggregation + figure builders
+    - smoke tests: all routes
+  - examples/canonical-analytics/domain/parity-matrix.md — Rust column [x]
+  - examples/canonical-analytics/CATALOG.md — Rust [x]
+
+================================================================================
+WHAT PROMPT_132 WILL DO
+================================================================================
+
+PROMPT_132 will implement the Elixir / Phoenix / HEEx / Tailwind / HTMX / Plotly
+canonical example under examples/canonical-analytics/elixir/.
+
+It will use Phoenix controllers (NOT LiveView) + HEEx templates + HTMX for
+fragment updates. Figure builders return plain Elixir maps serialized by Jason.
+It reads the same fixture JSON files and passes the same verification contract.
+
+Do not begin that work in this prompt.

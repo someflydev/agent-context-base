@@ -1,0 +1,986 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one
+fresh coding-assistant session with commit prefixes like `[PROMPT_127]`.
+
+PROMPT_100–112: Terminal Tooling Arc — complete.
+PROMPT_113–118: Schema Validation and Contract Generation Arc — complete.
+PROMPT_119–126: Faker and Synthetic Data Generation Arc — complete.
+
+This prompt (PROMPT_127) begins a new arc: Plotly + HTMX + Tailwind +
+Server-Rendered Analytics and Visualization Patterns. It lays the structural
+foundation — two new doctrines, a new archetype, four new stacks, router
+updates, two skills, a workflow, structural tests, and a small AGENT.md
+addition — so that PROMPT_128 through PROMPT_133 can implement canonical
+examples and hardening without debating architecture.
+
+        [PLOTLY + HTMX ARC: Prompt 1 of 7 — Foundation]
+
+The arc spans:
+  PROMPT_127 — Foundation: doctrines, archetype, 4 stacks, router, skills,
+               workflow, structural tests, AGENT.md dogfooding note
+  PROMPT_128 — Shared spec: domain, seed contract (dogfooding faker arc),
+               parity matrix, verification contract, catalog skeleton
+  PROMPT_129 — Python / FastAPI / Jinja2 / Tailwind / HTMX / Plotly
+  PROMPT_130 — Go / Echo / templ / Tailwind / HTMX / Plotly
+  PROMPT_131 — Rust / Axum / Askama / Tailwind / HTMX / Plotly
+  PROMPT_132 — Elixir / Phoenix / HEEx / Tailwind / HTMX / Plotly
+  PROMPT_133 — Hardening: comparison docs, parity runner, atlas, router
+               polish, ARCHITECTURE_MAP update, memory summary
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                    (run; study output)
+  4. memory/INDEX.md
+
+Read existing structural files to calibrate before writing anything:
+  5. context/doctrine/core-principles.md              (READ — voice/format model)
+  6. context/doctrine/testing-philosophy.md           (READ — note heading style)
+  7. context/doctrine/backend-driven-ui-correctness.md (READ — closely related)
+  8. context/doctrine/filter-panel-rendering-rules.md  (READ — faceting/filter UI)
+  9. context/doctrine/filter-state-and-query-state.md  (READ — closely related)
+ 10. context/stacks/backend-driven-ui-htmx-tailwind-plotly.md (READ — existing)
+ 11. context/stacks/python-fastapi-uv-ruff-orjson-polars.md   (READ — format model)
+ 12. context/stacks/go-echo.md                         (READ — Go Echo stack; you extend)
+ 13. context/stacks/rust-axum-modern.md               (READ — Rust stack; you extend)
+ 14. context/stacks/elixir-phoenix.md                 (READ — Elixir stack; you extend)
+ 15. context/archetypes/polyglot-lab.md               (READ — archetype format model)
+ 16. context/archetypes/backend-api-service.md        (READ — archetype format model)
+ 17. context/router/task-router.md                    (READ — you will add entries)
+ 18. context/router/stack-router.md                   (READ — you will add entries)
+ 19. context/router/archetype-router.md               (READ — you will add entries)
+ 20. context/router/alias-catalog.yaml                (READ — you will add aliases)
+ 21. context/skills/canonical-example-selection.md   (READ — skill format model)
+ 22. context/skills/task-inference.md                 (READ — decision-tree format model)
+ 23. context/workflows/add-plotly-backed-query-view.md (READ — existing Plotly workflow)
+ 24. context/workflows/add-faceted-filter-ui.md        (READ — existing filter workflow)
+ 25. AGENT.md                                          (READ — you will add one section)
+ 26. docs/ARCHITECTURE_MAP.md                          (READ — orientation; update at end)
+
+Run verification before touching any file:
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Do NOT begin writing until you have read all of the above and resolved any
+pre-existing failing tests. This prompt does not fix earlier arcs.
+
+================================================================================
+BACKGROUND: THE PLOTLY + HTMX + TAILWIND ARC
+================================================================================
+
+This arc adds first-class status to Plotly + HTMX + Tailwind visualization
+in server-rendered backend applications. The existing repo has fragments of
+this capability in one stack file (backend-driven-ui-htmx-tailwind-plotly.md),
+one workflow (add-plotly-backed-query-view.md), and references in
+backend-driven-ui-correctness.md. But there is no dedicated visualization
+doctrine, no Tailwind utility-first doctrine, no chart-selection guidance, no
+canonical example set, and no cross-stack comparison across the four server-
+rendered stacks that fit this philosophy: Python, Go, Rust, and Elixir.
+
+Key philosophy for this arc:
+
+  Plotly as a declarative figure model
+    Plotly figures are structured data (traces, layout, config). They can be
+    constructed server-side, tested at the function level, and then serialized
+    to JSON for the browser. The browser's Plotly.js consumes a fully-specified
+    figure. This separation is what makes server-rendered visualization testable.
+
+  HTMX for minimal, inspectable interactivity
+    HTMX replaces the smallest meaningful unit in the DOM. Filters, drilldowns,
+    chart panels, and detail drawers are all fragment endpoints. No client-side
+    data reshaping. No faux-SPA complexity.
+
+  Tailwind as the default styling layer
+    Tailwind is assumed alongside HTMX and Plotly. Interactive filter UIs use
+    Tailwind utilities for multi-select affordances, active state indicators,
+    count badges, disabled states, and layout. The filter panel rendering rules
+    already use Tailwind (filter-panel-rendering-rules.md); this arc formalizes
+    Tailwind as the canonical styling approach for analytics workbench UIs.
+
+  Faker arc dogfooding for seed data
+    The canonical examples in this arc must dogfood the faker arc
+    (PROMPT_119–126). Seed data for canonical analytics examples should be
+    generated using the TenantCore domain helpers and generation patterns
+    already established in examples/canonical-faker/. Do not build a parallel
+    seed system. Before PROMPT_128 generates the shared spec, it must verify
+    that the faker arc's Python reference implementation is available and use it.
+
+  Four implementation stacks
+    Python / FastAPI / Jinja2 / Tailwind / HTMX / Plotly
+    Go / Echo / templ / Tailwind / HTMX / Plotly
+    Rust / Axum / Askama / Tailwind / HTMX / Plotly
+    Elixir / Phoenix / HEEx / Tailwind / HTMX / Plotly
+
+    All four are first-class. Elixir/Phoenix is not a later addition.
+
+================================================================================
+PART 1: CREATE context/doctrine/plotly-htmx-server-rendered-viz.md
+================================================================================
+
+Create: context/doctrine/plotly-htmx-server-rendered-viz.md
+
+This doctrine EXTENDS — not replaces — backend-driven-ui-correctness.md.
+Do not duplicate its filter-state and query-alignment rules; reference them.
+Read core-principles.md, backend-driven-ui-correctness.md, and
+filter-panel-rendering-rules.md before writing.
+
+Required sections and guidance:
+
+  # Plotly + HTMX Server-Rendered Visualization
+
+  ## Purpose
+  3–4 sentences. What problem this doctrine solves. What happens when charts
+  are treated as decorative widgets. Why figure construction belongs server-side.
+
+  ## Plotly as a Declarative Figure Model
+  3–4 sentences. Figures are structured data objects, not rendered outputs.
+  Server-side construction enables unit testing. The browser's Plotly.js
+  receives a fully-specified figure; it does not decide layout or aggregation.
+
+  ## Rules (number each; minimum 10)
+
+  Rule 1 — Separate aggregation from figure construction.
+    Aggregation belongs in a service or query layer. Figure construction belongs
+    in a dedicated figure-builder module. Handlers call both and return the result.
+
+  Rule 2 — Separate figure construction from serialization.
+    Figure builders return structured data (dict/struct/map). Serialization to
+    JSON is done in the handler. This makes builders testable without HTTP.
+
+  Rule 3 — Choose chart type by analysis task, not by appearance.
+    The chart must answer a stated question. Use context/skills/chart-type-selection.md
+    before choosing a chart type. Task and data shape drive the choice.
+
+  Rule 4 — Set intentional axis titles, hover content, and legend labels.
+    Axes must have titles. hovertemplate must be set on every trace.
+    Legend labels must be human-readable. These are required fields, not styling.
+
+  Rule 5 — Derive chart data from the same query state as visible results.
+    Inherited from backend-driven-ui-correctness.md. Repeated here because it
+    is the single most common failure: the chart endpoint silently applies
+    different filter logic than the results endpoint.
+
+  Rule 6 — Keep HTMX fragment boundaries at the panel, not the page.
+    Replace the smallest meaningful unit: one chart panel, one summary card,
+    one detail drawer. Over-wide swaps mask filter-state bugs and inflate response size.
+
+  Rule 7 — Pair every chart with a fallback textual representation.
+    A summary card, table, or subtitle with key metrics must accompany any
+    chart showing a trend, comparison, or distribution. The primary reason is
+    not accessibility — it is that charts mislead without numerical context.
+
+  Rule 8 — Make figure output deterministic under deterministic seed data.
+    Figure builders receiving the same input must produce identical trace
+    counts, axis ranges, and label sets. Non-determinism in a figure builder
+    indicates hidden state or side effects.
+
+  Rule 9 — Avoid gratuitous 3D, excessive animation, and pie charts.
+    Use 3D only when the third dimension encodes information not expressible in 2D.
+    Use pie only for 2–3 part compositions with a clear part-whole question.
+    Do not add transitions or animations unless they directly aid comprehension.
+
+  Rule 10 — Never ship raw row-level datasets to the browser.
+    Aggregate server-side. The browser receives pre-computed traces, not event
+    rows. Shipping raw rows couples the frontend to backend schema.
+
+  Rule 11 — Use Tailwind for all interactive filter UI state expression.
+    Active filter badges, disabled include options, count badges, multi-select
+    affordances, and drawer/panel visibility must use Tailwind utilities.
+    Follow context/doctrine/filter-panel-rendering-rules.md for the exact
+    class contract. Do not use ad hoc inline CSS for filter state indicators.
+
+  ## HTMX Fragment Patterns
+  Preferred patterns (bullet list):
+    - partial replacement of the smallest meaningful content unit
+    - explicit hx-target and hx-swap on every interactive element
+    - filters as HTML form inputs (let browser serialize query state)
+    - hx-push-url for URL-addressable filter state (where appropriate)
+    - chart panel + summary card updated together via OOB swap
+    - side panels and detail drawers as separate fragment endpoints
+    - server-rendered fallback for every HTMX-enhanced fragment
+
+  Anti-patterns (bullet list):
+    - replacing the full content area on every filter interaction
+    - client-side data reshaping (backend must own all aggregation)
+    - ad hoc JavaScript state alongside HTMX (fragile, opaque)
+    - charts with spinners that do not reflect filter state
+    - OOB swaps that update unrelated UI regions in one response
+
+  ## What This Doctrine Does NOT Cover
+  3–5 bullet points of explicit exclusions (security, data acquisition, etc.)
+
+Target length: 110–140 lines.
+
+================================================================================
+PART 2: CREATE context/doctrine/tailwind-utility-first.md
+================================================================================
+
+Create: context/doctrine/tailwind-utility-first.md
+
+This is a new doctrine. Read core-principles.md and filter-panel-rendering-rules.md
+before writing. Tailwind is already used in filter-panel-rendering-rules.md and
+backend-driven-ui-correctness.md — make those references explicit as existing usage.
+
+The doctrine should be brief and prescriptive, not a Tailwind tutorial.
+
+Required sections:
+
+  # Tailwind Utility-First Styling
+
+  ## Purpose
+  2–3 sentences. Why Tailwind is the canonical styling layer for server-rendered
+  analytics UIs. Why it pairs well with HTMX and Plotly. What happens when
+  ad hoc inline styles or a second CSS methodology enters the codebase.
+
+  ## Assumptions
+    - Tailwind is loaded via CDN script or bundled via postcss/tailwindcss CLI
+    - The full class list is available (no arbitrary purge rules breaking development)
+    - dark mode is opt-in and toggled via a class or data attribute, not system pref
+
+  ## Rules (number each)
+
+  Rule 1 — Use Tailwind utilities for all interactive state expression.
+    Active, disabled, selected, loading, and error states must be expressed
+    via Tailwind utility classes, not inline styles or bespoke CSS class names.
+
+  Rule 2 — Follow filter-panel-rendering-rules.md for the filter UI class contract.
+    The include/exclude panel class contract (`opacity-50 cursor-not-allowed`,
+    `data-excluded`, etc.) is defined there. Tailwind classes in filter panels
+    are not arbitrary — they are part of the backend-to-frontend contract.
+
+  Rule 3 — Keep layout logic in templates, not in Python/Go/Rust/Elixir code.
+    Do not generate Tailwind class strings in backend code. Template files own
+    layout decisions. Backend code may conditionally pass a flag or enum, but
+    the class-string resolution belongs in the template.
+
+  Rule 4 — Use semantic naming for repeated component patterns.
+    When a set of utilities is repeated across templates (e.g., a count badge,
+    a filter pill, a chart card border), extract it to a named template component
+    or partial. Do not scatter identical utility strings across 20 templates.
+
+  Rule 5 — Prefer prose- and screen-reader-friendly label patterns.
+    Every interactive control needs a visible or sr-only label. Do not rely on
+    placeholder text or icon-only affordances for filter controls.
+
+  Rule 6 — Tailwind is the only CSS methodology in this stack.
+    Do not mix Tailwind with Bootstrap, Bulma, or bespoke CSS frameworks.
+    Scoped component CSS is acceptable only where Tailwind genuinely cannot
+    express the layout (rare). Document the exception in a comment.
+
+  ## Existing Usage in This Repo
+    - context/doctrine/filter-panel-rendering-rules.md — defines the include/exclude
+      class contract
+    - context/doctrine/backend-driven-ui-correctness.md — states that Tailwind classes
+      should improve readability, not hide missing state markers
+    - context/stacks/backend-driven-ui-htmx-tailwind-plotly.md — the multi-stack
+      support surface for HTMX + Tailwind + Plotly
+
+  ## What This Doctrine Does NOT Cover
+    - CSS-in-JS, styled-components, or frontend build toolchains beyond Tailwind CLI
+    - Plotly chart styling (controlled via Plotly layout templates, not Tailwind)
+    - Non-analytics repo types (Tailwind may or may not be appropriate)
+
+Target length: 60–80 lines.
+
+================================================================================
+PART 3: CREATE context/archetypes/analytics-workbench.md
+================================================================================
+
+Create: context/archetypes/analytics-workbench.md
+
+Read polyglot-lab.md and backend-api-service.md before writing.
+
+Required sections:
+
+  # Analytics Workbench
+
+  ## Use This Archetype When
+  5–7 bullet points. Conditions:
+    - repo delivers operational or product analytics views over internal or derived data
+    - charts, filters, drilldowns, and summary cards are the primary UI surface
+    - a server-rendered backend owns aggregation, figure construction, and HTML fragments
+    - HTMX updates chart panels and filter-results sections without a frontend framework
+    - Tailwind provides interactive filter UI state expression
+    - cross-stack comparison or multi-language parity is in scope
+
+  ## Typical Repo Surface
+  File layout bullet list matching style of other archetypes:
+    - routes/handlers for pages, chart data endpoints, and HTMX partials
+    - figure-builder modules (separate from route handlers)
+    - aggregation/query service modules (separate from figure builders)
+    - template files (Jinja2 / templ / Askama / HEEx) for pages and partials
+    - static assets: Tailwind (CDN or compiled), HTMX (CDN or bundled), Plotly.js (CDN)
+    - seed data generators (dogfooding canonical-faker domain and helpers)
+    - unit tests for aggregation logic and figure-builder output
+    - smoke tests for route availability and chart data shape
+    - integration tests for filter-to-chart query state alignment
+
+  ## Required Doctrine
+    - context/doctrine/plotly-htmx-server-rendered-viz.md
+    - context/doctrine/tailwind-utility-first.md
+    - context/doctrine/backend-driven-ui-correctness.md
+    - context/doctrine/filter-state-and-query-state.md
+    - context/doctrine/filter-panel-rendering-rules.md
+
+  ## Common Workflows
+    - context/workflows/add-visualization-panel.md
+    - context/workflows/add-plotly-backed-query-view.md
+    - context/workflows/add-faceted-filter-ui.md
+    - context/workflows/add-seed-data.md
+    - context/workflows/add-smoke-tests.md
+
+  ## Common Stack Packs
+    - context/stacks/python-fastapi-jinja2-htmx-plotly.md
+    - context/stacks/go-echo-templ-htmx-plotly.md
+    - context/stacks/rust-axum-askama-htmx-plotly.md
+    - context/stacks/elixir-phoenix-htmx-plotly.md
+    - context/stacks/backend-driven-ui-htmx-tailwind-plotly.md  (cross-stack patterns)
+
+  ## Likely Examples
+    - examples/canonical-analytics/CATALOG.md
+
+  ## Typical Anti-Patterns
+    - chart endpoints that do not respect the same filter state as result routes
+    - figure construction inside route handlers instead of dedicated builders
+    - shipping row-level datasets to the browser and aggregating in JavaScript
+    - one monolithic "everything dashboard" with no information hierarchy
+    - omitting paired textual summaries alongside charts
+    - building bespoke seed data instead of dogfooding the canonical-faker domain
+
+================================================================================
+PART 4: CREATE FOUR STACK FILES
+================================================================================
+
+4a. Create: context/stacks/python-fastapi-jinja2-htmx-plotly.md
+
+Read python-fastapi-uv-ruff-orjson-polars.md and backend-driven-ui-htmx-tailwind-plotly.md.
+This is the Python-specific surface for server-rendered analytics pages.
+
+Required sections:
+  # Python: FastAPI + Jinja2 + HTMX + Tailwind + Plotly
+
+  ## Typical Repo Surface (file layout)
+
+  ## Key Libraries
+    - fastapi, uvicorn — HTTP framework and ASGI server
+    - jinja2 — server-side HTML templates
+    - plotly — figure construction; plotly.graph_objects for full layout control
+    - htmx — partial page updates via HTML attributes (CDN or bundled)
+    - tailwindcss — utility-first styling (CDN script or compiled via CLI)
+    - pandas or polars — aggregation and data transforms
+    - python-multipart — form body parsing for HTMX form submissions
+    - pytest, httpx — route and fragment testing
+    - playwright (optional) — browser-level HTMX and filter interaction testing
+
+  ## Figure Builder Pattern
+    5–7 line code sketch (comments, not runnable). Show: aggregation fn →
+    figure builder fn → handler calling both, returning JSONResponse(figure.to_dict()).
+    Note: use plotly.graph_objects.Figure, not plotly.express, for builders that
+    need full layout control. Return .to_dict() in builders; .to_json() in handler.
+
+  ## Jinja2 Fragment Pattern
+    4–5 lines. Show TemplateResponse for full page vs. TemplateResponse with
+    a partial template for HTMX fragment responses (same endpoint, different template
+    chosen by request header or parameter).
+
+  ## Tailwind + HTMX Filter Pattern
+    4–6 lines. Show a multi-select filter form using Tailwind classes, with
+    hx-get and hx-target wired to the results + chart panel. Reference
+    filter-panel-rendering-rules.md for the exact class contract.
+
+  ## Testing Expectations
+    (match format of other stack files — unit/integration/e2e tiers)
+
+  ## Common Assistant Mistakes
+    (3–4 bullet points specific to this stack)
+
+4b. Create: context/stacks/go-echo-templ-htmx-plotly.md
+
+Read go-echo.md — this extends it with the analytics surface.
+Preferred template engine is templ (a-h/templ) for typed, compiled fragments.
+
+Required sections:
+  # Go: Echo + templ + HTMX + Tailwind + Plotly
+
+  ## Typical Repo Surface (extend go-echo.md layout)
+
+  ## Key Libraries
+    - echo — lightweight HTTP router with middleware support
+    - templ (a-h/templ) — typed, compiled Go templates; ideal for fragment responses
+    - plotly — figure construction via explicit Go struct types + encoding/json
+    - htmx — partial page updates (CDN)
+    - tailwindcss — utility-first styling (CDN or compiled)
+    - encoding/json, net/http — stdlib serialization and handler interfaces
+    - testing, net/http/httptest — route and fragment testing
+    - playwright (optional) — browser-level testing
+
+  ## Figure Builder Pattern
+    5–7 line sketch. Show: PlotlyTrace struct, PlotlyLayout struct, PlotlyFigure
+    struct, aggregation fn, builder fn, Echo handler calling both and returning
+    c.JSON(200, figure). Emphasize: no external Plotly Go library required;
+    use typed structs + encoding/json.
+
+  ## templ Fragment Pattern
+    4–5 lines. Show a templ component rendering a chart panel partial. Show
+    how an Echo handler conditionally returns a full-page templ render vs.
+    a fragment-only render based on request header.
+
+  ## Tailwind + HTMX Filter Pattern
+    (same guidance as Python stack but in templ syntax)
+
+  ## Testing Expectations
+    (match go-echo.md format, extend with chart endpoint and fragment tests)
+
+  ## Common Assistant Mistakes
+    (3–4 bullet points: building figure logic inside Echo handlers; treating templ
+    as raw html/template; JSON-encoding entire result sets; not setting typed
+    PlotlyFigure struct fields explicitly)
+
+4c. Create: context/stacks/rust-axum-askama-htmx-plotly.md
+
+Read rust-axum-modern.md before writing.
+
+Required sections:
+  # Rust: Axum + Askama + HTMX + Tailwind + Plotly
+
+  ## Typical Repo Surface (extend rust-axum-modern.md layout)
+
+  ## Key Libraries
+    - axum — async HTTP framework with typed extractors
+    - askama — compile-time typed Jinja-like templates (good for fragment responses)
+    - plotly (plotly.rs crate) — typed figure and trace types; serde-compatible
+    - serde, serde_json — figure serialization and request deserialization
+    - htmx — partial page updates (CDN)
+    - tailwindcss — utility-first styling (CDN or compiled)
+    - tokio — async runtime
+    - tower, tower-http — middleware layer (static files, tracing)
+    - axum-test or reqwest — integration testing
+
+  ## Figure Builder Pattern
+    5–7 line sketch. Show: plotly::Plot builder, aggregation fn returning
+    domain structs, figure builder fn consuming them and returning a Plot,
+    Axum handler calling both and returning Json(figure.to_inline_html()
+    or serde_json serialization). Clarify which plotly.rs API to use.
+
+  ## Askama Fragment Pattern
+    4–5 lines. Show an Askama template struct for a chart panel partial.
+    Show how an Axum handler returns an HtmlTemplate<T> (or equivalent)
+    wrapping the Askama render. Note the askama_axum crate if applicable.
+
+  ## Tailwind + HTMX Filter Pattern
+    (same guidance; Askama template syntax for multi-select filter form)
+
+  ## Testing Expectations
+    (match rust-axum-modern.md format; extend with chart data shape assertions)
+
+  ## Common Assistant Mistakes
+    (3–4 bullet points: building figure logic inside Axum handlers; serializing
+    Vec<Row> instead of aggregated trace data; not using serde-compatible
+    Plotly types; forgetting that Askama templates are compiled at build time)
+
+4d. Create: context/stacks/elixir-phoenix-htmx-plotly.md
+
+Read elixir-phoenix.md before writing. This stack targets Phoenix with
+standard (non-LiveView) controller + HEEx templates + HTMX for fragment updates.
+LiveView is NOT the target pattern here — HTMX + Phoenix controllers is.
+
+Required sections:
+  # Elixir: Phoenix + HEEx + HTMX + Tailwind + Plotly
+
+  ## When to Use HTMX over LiveView
+  2–3 sentences. HTMX + Phoenix controllers are appropriate when the application
+  already uses HTMX as the interactivity layer (parity with other stacks in this
+  arc), when the team wants to avoid Phoenix PubSub and WebSocket overhead for
+  simple filter-and-chart interactions, or when building reference examples that
+  compare server-rendered HTMX across multiple language stacks. LiveView is not
+  wrong — it is just a different pattern with different tradeoffs.
+
+  ## Typical Repo Surface
+    - mix.exs, config/
+    - lib/<app>_web/router.ex
+    - lib/<app>_web/controllers/ (NOT LiveView controllers)
+    - lib/<app>_web/templates/ (HEEx templates for pages and partials)
+    - lib/<app>/analytics/ (aggregation context modules)
+    - lib/<app>/charts/ (figure builder modules)
+    - test/
+
+  ## Key Libraries
+    - phoenix — HTTP framework with controller + HEEx template pipeline
+    - plotly (JSON construction via Elixir maps/structs + Jason)
+    - jason — JSON encoding/decoding
+    - htmx — partial page updates (CDN)
+    - tailwindcss — utility-first styling (Phoenix already includes this)
+    - ecto, postgrex — data access (or ETS / in-memory for examples)
+    - ExUnit — testing
+    - playwright (optional) — browser-level testing
+
+  ## Figure Builder Pattern
+    5–7 line sketch. Show: aggregation fn in analytics context returning
+    structured data, figure builder fn in charts module returning a map
+    that Jason.encode!() will serialize, Phoenix controller calling both
+    and returning json(conn, figure_map). Emphasize: no Elixir Plotly library
+    needed; pure map construction + Jason is idiomatic.
+
+  ## HEEx Fragment Pattern
+    4–5 lines. Show a Phoenix controller rendering a partial HEEx template
+    for HTMX fragment responses. Show how the controller detects
+    the HX-Request header to decide full page vs. partial render.
+
+  ## Tailwind + HTMX Filter Pattern
+    (same guidance; HEEx syntax for multi-select filter form)
+
+  ## Testing Expectations
+    - ExUnit smoke tests for controller routes (conn() + get/post helpers)
+    - unit tests for aggregation context and figure builder modules
+    - integration tests against real PostgreSQL (or ETS) for filter alignment
+
+  ## Common Assistant Mistakes
+    (3–4 bullet points: reaching for LiveView when HTMX is the stated pattern;
+    encoding Plotly JSON manually in controller instead of figure builder;
+    not separating analytics context from charts module; missing Jason dependency)
+
+================================================================================
+PART 5: UPDATE ROUTER FILES
+================================================================================
+
+Update: context/router/task-router.md
+
+Add these entries in their appropriate sections. Read the full file first to
+place them near thematically related existing entries.
+
+  - "choose a chart type", "which chart for this data", "best chart for time series",
+    "best chart for category comparison", "chart type guide", "what chart should I use"
+    → load `context/skills/chart-type-selection.md`
+
+  - "design a figure builder", "testable plotly figure", "separate aggregation from chart",
+    "plotly figure builder pattern", "how to structure chart construction"
+    → load `context/skills/plotly-figure-builder-design.md`
+
+  - "add a visualization panel", "add a chart panel to a page", "add a new chart view",
+    "add plotly to server-rendered page", "add htmx chart panel"
+    → load `context/workflows/add-visualization-panel.md`
+    → load `context/doctrine/plotly-htmx-server-rendered-viz.md`
+
+  - "plotly visualization doctrine", "chart anti-patterns", "server-side figure model",
+    "why not ship raw data to browser", "htmx fragment scope for charts"
+    → load `context/doctrine/plotly-htmx-server-rendered-viz.md`
+
+  - "tailwind styling rules", "tailwind utility classes for filter ui",
+    "tailwind in server-rendered analytics"
+    → load `context/doctrine/tailwind-utility-first.md`
+
+  - "analytics workbench archetype", "ops analytics app", "product analytics service",
+    "server-rendered analytics with htmx and plotly"
+    → load `context/archetypes/analytics-workbench.md`
+    → load `context/doctrine/plotly-htmx-server-rendered-viz.md`
+
+Update: context/router/stack-router.md
+
+Add stack signal entries for the four new stacks:
+
+  - `jinja2`, `Jinja2`, `TemplateResponse`, Python + HTMX + Tailwind rendering
+    → load `context/stacks/python-fastapi-jinja2-htmx-plotly.md`
+
+  - `go.mod`, `echo`, `templ`, `.templ`, Go server-rendered HTMX analytics
+    → load `context/stacks/go-echo-templ-htmx-plotly.md`
+    (Note: go-echo.md covers the base Go/Echo surface; this stack adds analytics)
+
+  - `Cargo.toml`, `askama`, Rust server-rendered HTMX analytics
+    → load `context/stacks/rust-axum-askama-htmx-plotly.md`
+
+  - `mix.exs`, Phoenix controllers (non-LiveView), `HX-Request`, Elixir HTMX analytics
+    → load `context/stacks/elixir-phoenix-htmx-plotly.md`
+
+Update: context/router/archetype-router.md
+
+Add:
+  - charts, filters, drilldowns, HTMX-driven analytics, operations analytics,
+    product analytics, server-rendered dashboard with Plotly and Tailwind
+    → `context/archetypes/analytics-workbench.md`
+
+Update: context/router/alias-catalog.yaml
+
+Add aliases (match existing YAML format):
+  - analytics workbench → context/archetypes/analytics-workbench.md
+  - visualization doctrine → context/doctrine/plotly-htmx-server-rendered-viz.md
+  - tailwind doctrine → context/doctrine/tailwind-utility-first.md
+  - chart type selection → context/skills/chart-type-selection.md
+  - figure builder design → context/skills/plotly-figure-builder-design.md
+  - add visualization panel → context/workflows/add-visualization-panel.md
+  - fastapi jinja2 plotly → context/stacks/python-fastapi-jinja2-htmx-plotly.md
+  - go echo templ plotly → context/stacks/go-echo-templ-htmx-plotly.md
+  - rust axum askama plotly → context/stacks/rust-axum-askama-htmx-plotly.md
+  - elixir phoenix htmx plotly → context/stacks/elixir-phoenix-htmx-plotly.md
+
+================================================================================
+PART 6: CREATE TWO NEW SKILLS
+================================================================================
+
+6a. Create: context/skills/chart-type-selection.md
+
+Read canonical-example-selection.md and task-inference.md for format/voice.
+
+  # Chart Type Selection
+
+  ## When To Use This Skill
+  Before creating any Plotly chart. State the analysis question first.
+
+  ## Procedure
+
+  Step 1 — State the analytical question.
+    In one sentence: what must the chart help the reader answer?
+
+  Step 2 — Identify data shape.
+    How many series? Ordinal, categorical, or continuous? Is there a time
+    dimension? What is the cardinality of the category axis? Nested hierarchy?
+
+  Step 3 — Match task + data shape to a chart family using the table below.
+
+  ## Task-to-Chart Family Table
+
+  | Analysis Task                          | Data Shape                           | Recommended Chart                   |
+  |----------------------------------------|--------------------------------------|-------------------------------------|
+  | Trend over time, 1–5 series            | time × value                         | Line chart                          |
+  | Trend over time, many overlapping      | time × value × N series (N > 5)      | Small multiples (faceted lines)     |
+  | Category comparison, ranked            | category × value, n ≤ 20             | Horizontal sorted bar               |
+  | Category comparison, high cardinality  | category × value, n > 20             | Paginated horizontal bar            |
+  | Part-whole, 2–3 parts only             | category × proportion, n ≤ 3         | Pie (paired with table)             |
+  | Part-whole, more than 3 parts          | category × proportion, n > 3         | Sorted bar (do not use pie)         |
+  | Distribution shape                     | continuous values, one dimension     | Histogram                           |
+  | Distribution + summary stats           | continuous values, one+ groups       | Box plot (paired with histogram)    |
+  | Correlation / relationship             | two continuous dimensions            | Scatter plot                        |
+  | Correlation + grouping                 | two continuous + one categorical     | Scatter with color encoding         |
+  | Matrix / intensity                     | row × column × value                 | Heatmap                             |
+  | Calendar or time-of-day pattern        | hour/day-of-week × value             | Calendar heatmap                    |
+  | Process drop-off / funnel              | ordered stages × counts              | Funnel chart                        |
+  | Hierarchical breakdown, depth ≥ 2      | hierarchy × value                    | Treemap or sunburst (use sparingly) |
+  | Many small groups compared             | group × value, many groups           | Small multiples                     |
+
+  ## Guidance Notes (after the table)
+    - Time series: annotate anomalies with shapes or vertical lines; include date range filter
+    - Distributions: pair histogram + box plot; summary card showing mean, median, P95, P99
+    - Heatmaps: sequential colorscale for intensity; diverging for deviation from midpoint; never rainbow
+    - Treemap/sunburst: three hierarchy levels is usually the maximum before cognitive overload
+    - Scatter: verify one variable is not actually categorical — use box plot or bar if so
+
+  ## Anti-Patterns
+    - choosing a chart because it looks impressive (3D, radial, animated)
+    - pie chart when n > 3 or when the question is not part-whole
+    - one chart answering multiple unrelated questions simultaneously
+    - line chart with an unordered categorical x-axis (use bar instead)
+
+  ## Verify Before Proceeding
+    - "Does this chart answer exactly one stated question?"
+    - "Is the type justified by task AND data shape?"
+    - "Will axis titles, hover content, and legend labels make the answer readable?"
+
+6b. Create: context/skills/plotly-figure-builder-design.md
+
+  # Plotly Figure Builder Design
+
+  ## When To Use This Skill
+  When adding or refactoring any Plotly chart endpoint.
+
+  ## The Three-Layer Model
+
+  Layer 1 — Aggregation
+    Input: raw/stored data + filter/query state.
+    Output: structured aggregate data (series by date, counts by category, etc.).
+    No Plotly import. Testable with pure data assertions.
+
+  Layer 2 — Figure Builder
+    Input: aggregate data from Layer 1.
+    Constructs: Plotly figure — traces, layout, config.
+    Output: structured object (dict / struct / map). NOT a JSON string.
+    Testable: assert trace count, axis titles, hover templates, label sets.
+
+  Layer 3 — Route Handler
+    Calls Layer 1, then Layer 2.
+    Serializes the figure to JSON.
+    Returns the HTTP response.
+    Contains NO aggregation or figure-construction logic.
+
+  ## Mandatory Figure Fields
+  Every figure builder MUST set:
+    - title (or a paired subtitle with key context)
+    - xaxis.title (where applicable)
+    - yaxis.title (where applicable)
+    - hovertemplate for every trace (never leave as default)
+    - name for every trace (used as legend labels)
+    - a metadata dict or annotation: total count, filters applied, date range
+
+  ## Testing a Figure Builder
+  A builder is testable if it accepts plain data structures (no DB connections,
+  no HTTP requests). Three minimum test cases:
+    1. Valid aggregate data: assert trace count and axis title text
+    2. Empty aggregate data: assert graceful empty-state figure (not a crash)
+    3. Single-item data: assert valid output shape
+
+  ## Language-Specific Notes
+
+  Python:
+    - use plotly.graph_objects.Figure for builders needing full layout control
+    - return figure.to_dict() from builders; call figure.to_json() in the handler
+    - aggregate in a services/ module; build figures in a charts/ or figures/ module
+
+  Go:
+    - define PlotlyTrace, PlotlyLayout, PlotlyFigure as explicit typed structs
+    - use encoding/json for serialization; no external Plotly Go library needed
+    - aggregate in an analytics/ package; build in a charts/ package
+
+  Rust:
+    - use the plotly crate's typed builders (Plot, Scatter, Bar, etc.)
+    - serde_json::to_string() in the handler; return Plot from the builder
+    - aggregate in a domain::analytics module; build in a charts module
+
+  Elixir:
+    - figure builders return plain Elixir maps (no struct needed)
+    - Jason.encode!() in the controller; figure builder fn lives in a Charts module
+    - aggregate in an Analytics context; build in a Charts module
+
+  ## Common Mistakes
+    - putting aggregation SQL/logic inside the figure builder
+    - putting figure construction inside the HTTP handler
+    - returning a JSON string from the builder (breaks testability)
+    - using plotly.express in a builder where full layout control is needed
+    - leaving hovertemplate unset (defaults are often misleading)
+    - not testing the empty-data case (graceful empty state is required)
+
+================================================================================
+PART 7: CREATE WORKFLOW
+================================================================================
+
+Create: context/workflows/add-visualization-panel.md
+
+Read add-plotly-backed-query-view.md and add-faceted-filter-ui.md before writing.
+This workflow is the full lifecycle for adding one chart panel to a server-rendered
+page, including chart type selection, builder testing, and HTMX fragment wiring.
+
+  # Add Visualization Panel
+
+  ## Purpose
+  Add a Plotly-backed chart panel to a server-rendered page with HTMX fragment
+  support, Tailwind filter UI, and paired textual summary.
+
+  ## When To Use It
+    - adding a new chart to an analytics workbench page
+    - refactoring inline chart construction into a proper figure-builder structure
+    - adding a drilldown or detail panel to an existing chart view
+
+  ## Sequence
+
+  Step 1 — Select chart type.
+    Load context/skills/chart-type-selection.md. State the analysis question.
+    Do not proceed without a justified chart type choice.
+
+  Step 2 — Design the aggregation layer.
+    Define inputs (query state, filters) and outputs (structured aggregate data).
+    Write a unit test before implementing.
+
+  Step 3 — Design the figure builder.
+    Follow context/skills/plotly-figure-builder-design.md (three-layer model).
+    Set all mandatory figure fields. Write three unit tests (valid, empty, single-item).
+
+  Step 4 — Add the chart data endpoint.
+    The endpoint calls the aggregation layer then the figure builder.
+    It must accept the same filter state as the results endpoint.
+    Verify query state alignment with backend-driven-ui-correctness.md.
+
+  Step 5 — Add paired textual summary.
+    A summary card or subtitle must show: total count, date range, active filters.
+
+  Step 6 — Wire HTMX fragment with Tailwind filter controls.
+    Identify the smallest panel boundary for the chart + summary card.
+    Use hx-target and hx-swap to replace only that panel on filter change.
+    Multi-select filter inputs must follow filter-panel-rendering-rules.md class contract.
+    Verify server-rendered fallback without JavaScript.
+
+  Step 7 — Add smoke test.
+    Assert the chart endpoint returns 200 and the response contains a valid
+    Plotly figure with at least one trace and a non-empty axis title.
+
+  Step 8 — Run verification.
+    python scripts/run_verification.py --tier fast
+
+  ## Outputs
+    - aggregation function with unit test
+    - figure builder with three unit tests (valid, empty, single-item)
+    - chart data endpoint
+    - HTML template fragment (chart panel + summary card)
+    - HTMX fragment wiring in parent page template
+    - Tailwind multi-select filter form wired to fragment endpoint
+    - smoke test for chart endpoint
+
+  ## Related Doctrine
+    - context/doctrine/plotly-htmx-server-rendered-viz.md
+    - context/doctrine/tailwind-utility-first.md
+    - context/doctrine/backend-driven-ui-correctness.md
+    - context/doctrine/filter-state-and-query-state.md
+    - context/doctrine/filter-panel-rendering-rules.md
+
+  ## Common Pitfalls
+    - picking chart type before stating the analysis question
+    - chart endpoint applying different filter logic than results endpoint
+    - hx-target scoped too wide (replacing whole page instead of panel)
+    - no fallback HTML when JavaScript or HTMX is unavailable
+    - missing textual summary alongside chart
+    - figure builder that cannot be tested without a running server
+
+================================================================================
+PART 8: UPDATE AGENT.MD — ADD DOGFOODING PRINCIPLE
+================================================================================
+
+Read AGENT.md in full before editing.
+
+Add one new section to AGENT.md. Place it after "New Repo Routing" and before
+"Verification". The section should be brief — 5–8 lines — and add a durable
+principle without bloating the boot doc.
+
+The section to add:
+
+  ## Dogfooding Repo Artifacts
+
+  When implementing a new arc, prefer dogfooding existing repo artifacts over
+  building parallel infrastructure.
+
+  - Seed data for new canonical examples should use the canonical-faker domain
+    (examples/canonical-faker/) and its generation helpers where they exist.
+  - New doctrines should reference and build on related existing doctrines rather
+    than repeating or silently contradicting them.
+  - New skills and workflows should link to existing skills and workflows they depend on.
+
+  Dogfooding is not optional: it is the mechanism that keeps the repo's artifacts
+  coherent and its context system trustworthy. A new example that builds parallel
+  seed infrastructure is a signal that the canonical-faker arc's outputs are not
+  usable — which is itself a bug to fix.
+
+================================================================================
+PART 9: WRITE STRUCTURAL VERIFICATION TESTS
+================================================================================
+
+Create: verification/unit/test_plotly_htmx_arc_foundation.py
+
+Use Python stdlib unittest only. Tests verify structural completeness (file
+existence and required section presence), not content quality.
+
+Classes and tests:
+
+  TestPlotlyHTMXVizDoctrine:
+    test_doctrine_file_exists
+    test_doctrine_has_rules_1_through_11
+      (assert "Rule 1" through "Rule 11" present in file text)
+    test_doctrine_references_backend_driven_ui_correctness
+    test_doctrine_references_chart_type_selection_skill
+    test_doctrine_references_filter_panel_rendering_rules
+
+  TestTailwindDoctrine:
+    test_doctrine_file_exists
+    test_doctrine_has_rules_1_through_6
+    test_doctrine_references_filter_panel_rendering_rules
+
+  TestAnalyticsWorkbenchArchetype:
+    test_archetype_file_exists
+    test_archetype_references_all_four_stacks
+    test_archetype_references_visualization_workflow
+    test_archetype_references_visualization_doctrine
+    test_archetype_references_tailwind_doctrine
+
+  TestPlotlyHTMXArcStacks:
+    test_python_stack_file_exists
+    test_go_stack_file_exists
+    test_rust_stack_file_exists
+    test_elixir_stack_file_exists
+    test_python_stack_has_figure_builder_section
+    test_go_stack_has_figure_builder_section
+    test_rust_stack_has_figure_builder_section
+    test_elixir_stack_has_figure_builder_section
+    test_elixir_stack_mentions_htmx_over_liveview
+
+  TestPlotlyHTMXArcSkills:
+    test_chart_type_selection_exists
+    test_chart_type_selection_has_task_table
+    test_chart_type_selection_has_anti_patterns_section
+    test_figure_builder_design_exists
+    test_figure_builder_design_has_three_layer_model
+    test_figure_builder_design_has_language_notes_for_all_four_stacks
+
+  TestPlotlyHTMXArcWorkflow:
+    test_workflow_file_exists
+    test_workflow_has_chart_type_selection_step
+    test_workflow_has_smoke_test_step
+    test_workflow_references_tailwind_doctrine
+    test_workflow_references_filter_panel_rendering_rules
+
+  TestPlotlyHTMXArcRouterUpdates:
+    test_task_router_references_chart_type_selection
+    test_task_router_references_add_visualization_panel
+    test_task_router_references_tailwind_doctrine
+    test_stack_router_references_python_jinja2_plotly_stack
+    test_stack_router_references_go_echo_templ_plotly_stack
+    test_stack_router_references_rust_axum_askama_plotly_stack
+    test_stack_router_references_elixir_phoenix_htmx_plotly_stack
+    test_archetype_router_references_analytics_workbench
+    test_alias_catalog_references_analytics_workbench
+
+  TestAgentMdDogfoodingSection:
+    test_agent_md_has_dogfooding_section
+    test_agent_md_dogfooding_references_canonical_faker
+
+All tests: stdlib only (os, pathlib, unittest). Keep each test small.
+Total target: 90–120 lines.
+
+================================================================================
+PART 10: RUN VERIFICATION AND COMMIT
+================================================================================
+
+Run:
+  python -m unittest verification/unit/test_plotly_htmx_arc_foundation.py -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+All tests must pass before committing.
+
+Run: python3 scripts/work.py checkpoint
+
+Stage and commit with git add -p (review every hunk):
+
+  [PROMPT_127] Add Plotly + HTMX + Tailwind arc foundation
+
+  - context/doctrine/plotly-htmx-server-rendered-viz.md (11 rules)
+  - context/doctrine/tailwind-utility-first.md (6 rules)
+  - context/archetypes/analytics-workbench.md
+  - context/stacks/python-fastapi-jinja2-htmx-plotly.md
+  - context/stacks/go-echo-templ-htmx-plotly.md
+  - context/stacks/rust-axum-askama-htmx-plotly.md
+  - context/stacks/elixir-phoenix-htmx-plotly.md
+  - context/skills/chart-type-selection.md
+  - context/skills/plotly-figure-builder-design.md
+  - context/workflows/add-visualization-panel.md
+  - router updates: task, stack, archetype, alias-catalog
+  - AGENT.md: dogfooding principle section
+  - verification/unit/test_plotly_htmx_arc_foundation.py
+
+================================================================================
+WHAT PROMPT_128 WILL DO
+================================================================================
+
+PROMPT_128 will create the shared canonical-example specification:
+
+  - examples/canonical-analytics/ directory skeleton
+  - examples/canonical-analytics/CATALOG.md (four implementations, all [ ])
+  - examples/canonical-analytics/domain/spec.md (Ops & Product Analytics Workbench)
+  - examples/canonical-analytics/domain/seed-data-contract.md
+    — dogfoods examples/canonical-faker/ TenantCore domain and generation patterns
+  - examples/canonical-analytics/domain/parity-matrix.md (cross-stack chart parity)
+  - examples/canonical-analytics/domain/verification-contract.md
+  - examples/canonical-analytics/domain/page-layout-spec.md (panels, drawers, nav)
+  - examples/canonical-analytics/domain/chart-families.md (6 required families)
+
+Do not begin that work in this prompt.

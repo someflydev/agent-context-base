@@ -1,0 +1,463 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one
+fresh coding-assistant session with commit prefixes like `[PROMPT_129]`.
+
+PROMPT_127: Plotly + HTMX Arc — Foundation. [x]
+PROMPT_128: Plotly + HTMX Arc — Shared domain spec, fixtures, parity matrix. [x]
+
+This prompt (PROMPT_129) implements the Python / FastAPI / Jinja2 / Tailwind /
+HTMX / Plotly canonical analytics example.
+
+      [PLOTLY + HTMX ARC: Prompt 3 of 7 — Python Implementation]
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                    (run; study output)
+  4. memory/INDEX.md
+
+Read the arc foundation and spec:
+  5. context/doctrine/plotly-htmx-server-rendered-viz.md   (READ — 11 rules)
+  6. context/doctrine/tailwind-utility-first.md             (READ — 6 rules)
+  7. context/doctrine/filter-panel-rendering-rules.md       (READ — include/exclude contract)
+  8. context/doctrine/backend-driven-ui-correctness.md      (READ — query state rules)
+  9. context/stacks/python-fastapi-jinja2-htmx-plotly.md    (READ — stack guidance)
+ 10. context/skills/chart-type-selection.md                 (READ — chart type justifications)
+ 11. context/skills/plotly-figure-builder-design.md         (READ — three-layer model)
+ 12. context/workflows/add-visualization-panel.md           (READ — 8-step workflow)
+
+Read the shared domain spec:
+ 13. examples/canonical-analytics/domain/spec.md            (READ — full spec)
+ 14. examples/canonical-analytics/domain/page-layout-spec.md (READ — layout/filter contract)
+ 15. examples/canonical-analytics/domain/verification-contract.md (READ — what you must prove)
+ 16. examples/canonical-analytics/domain/parity-matrix.md   (READ — you will update this)
+ 17. examples/canonical-analytics/CATALOG.md               (READ — you will update this)
+ 18. examples/canonical-analytics/domain/fixtures/smoke.json (READ — verify it exists and is valid)
+ 19. examples/canonical-analytics/domain/fixtures/small.json (READ — verify it exists and is valid)
+
+Run verification before touching anything:
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+If the fixture files do not exist, run:
+  python examples/canonical-analytics/domain/generate_fixtures.py --profiles smoke,small
+
+Do NOT begin writing until all fixture files exist and both verification scripts pass.
+
+================================================================================
+BACKGROUND: WHAT TO BUILD
+================================================================================
+
+You are building a complete FastAPI + Jinja2 + Tailwind + HTMX + Plotly server-
+rendered analytics workbench. It is a standalone Python application under:
+
+  examples/canonical-analytics/python/
+
+The application exposes seven views (/, /trends, /services, /distributions,
+/heatmap, /funnel, /incidents) plus three HTMX fragment endpoints and a /health
+check — all specified in examples/canonical-analytics/domain/spec.md.
+
+Data comes from the smoke.json and small.json fixture files. The application
+reads them at startup into memory — no database required for the examples.
+
+================================================================================
+PART 1: PROJECT STRUCTURE
+================================================================================
+
+Create the following structure under examples/canonical-analytics/python/:
+
+  pyproject.toml            — uv/pip dependencies
+  README.md                 — brief: what it is, how to run, how to test
+  src/
+    analytics_workbench/
+      __init__.py
+      main.py               — FastAPI app, route registration, startup fixture load
+      config.py             — settings (fixture_path, host, port, debug flag)
+      data/
+        __init__.py
+        loader.py           — loads and parses fixture JSON; exposes typed dataclasses
+        models.py           — dataclasses for Event, Session, Service, Deployment,
+                              Incident, LatencySample, FunnelStage
+      analytics/
+        __init__.py
+        events.py           — aggregation functions for event data
+        services.py         — aggregation functions for service data
+        distributions.py    — aggregation functions for latency data
+        incidents.py        — aggregation functions for incident data
+        funnel.py           — aggregation functions for funnel data
+        heatmap.py          — aggregation functions for heatmap data
+      charts/
+        __init__.py
+        time_series.py      — figure builder: event count time series
+        service_bar.py      — figure builder: error rate per service
+        latency_histogram.py — figure builder: latency histogram
+        latency_boxplot.py  — figure builder: latency box plot by service
+        incident_bar.py     — figure builder: incident count by severity
+        funnel_chart.py     — figure builder: session funnel
+        heatmap_chart.py    — figure builder: hour-of-day × day-of-week heatmap
+      filters.py            — FilterState dataclass, parse_filter_state(request)
+      routes/
+        __init__.py
+        pages.py            — full-page route handlers (/, /trends, /services, etc.)
+        fragments.py        — HTMX fragment handlers (/fragments/chart, etc.)
+        health.py           — /health
+      templates/
+        base.html           — base layout (nav bar, Tailwind CDN, HTMX CDN, Plotly.js CDN)
+        index.html
+        trends.html
+        services.html
+        distributions.html
+        heatmap.html
+        funnel.html
+        incidents.html
+        fragments/
+          chart.html        — chart panel partial
+          summary.html      — summary card partial
+          details.html      — detail drilldown partial
+  tests/
+    unit/
+      test_analytics_events.py
+      test_analytics_services.py
+      test_analytics_distributions.py
+      test_analytics_incidents.py
+      test_analytics_funnel.py
+      test_analytics_heatmap.py
+      test_charts_time_series.py
+      test_charts_service_bar.py
+      test_charts_latency.py
+      test_charts_incident.py
+      test_charts_funnel.py
+      test_charts_heatmap.py
+      test_filters.py
+    smoke/
+      test_routes_smoke.py
+
+================================================================================
+PART 2: DEPENDENCIES
+================================================================================
+
+pyproject.toml must declare:
+
+  [project]
+  name = "analytics-workbench"
+  requires-python = ">=3.11"
+  dependencies = [
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.27",
+    "jinja2>=3.1",
+    "plotly>=5.20",
+    "pandas>=2.0",
+    "python-multipart>=0.0.9",
+    "httpx>=0.27",        # for testing
+  ]
+
+  [project.optional-dependencies]
+  dev = ["pytest>=8", "pytest-asyncio>=0.23"]
+
+Use uv or pip for installation. Include setup instructions in README.md.
+
+================================================================================
+PART 3: DATA LOADING AND FILTER STATE
+================================================================================
+
+Implement data/loader.py:
+  - Load smoke.json (or the file pointed to by FIXTURE_PATH env var) at import
+    or on first call to get_dataset()
+  - Return typed dataclasses (defined in data/models.py)
+  - Include a get_fixture_path() helper that resolves the fixture path relative
+    to this file's location AND supports FIXTURE_PATH env var override
+
+Implement data/models.py:
+  - One @dataclass per entity (Event, Session, Service, Deployment, Incident,
+    LatencySample, FunnelStage)
+  - Field names must match exactly the keys in smoke.json
+  - Include a from_dict(d: dict) classmethod on each
+
+Implement filters.py:
+  - FilterState dataclass with fields: date_from, date_to (Optional[date]),
+    services (list[str]), severity (list[str]), environment (list[str])
+  - parse_filter_state(request: Request) → FilterState
+    Reads query params. Multi-value params (services, severity, environment)
+    accept repeated ?services=a&services=b OR comma-separated ?services=a,b
+  - All fields are optional; empty list means "no filter applied"
+
+================================================================================
+PART 4: AGGREGATION LAYER (analytics/)
+================================================================================
+
+Implement all six aggregation modules following the three-layer model from
+context/skills/plotly-figure-builder-design.md.
+
+Each module must expose one or more functions with this signature pattern:
+  aggregate_<name>(data: list[<Model>], filters: FilterState) → <AggregateResult>
+
+Where <AggregateResult> is a typed dataclass or NamedTuple. Never return raw
+dicts from aggregation functions — use typed results.
+
+Guidelines per module:
+
+  analytics/events.py
+    aggregate_event_counts(events, filters) → EventCountSeries
+      Returns: dates: list[str], counts: list[int], by_environment: dict[str, list]
+
+  analytics/services.py
+    aggregate_service_error_rates(events, services, filters) → ServiceErrorRates
+      Returns: services: list[str], error_rates: list[float], total_events: list[int]
+
+  analytics/distributions.py
+    aggregate_latency_histogram(samples, filters) → LatencyHistogram
+      Returns: values: list[float], bin_size: float, p50: float, p95: float, p99: float
+    aggregate_latency_by_service(samples, services, filters) → LatencyByService
+      Returns: services: list[str], p50s: list[float], p95s: list[float], p99s: list[float]
+
+  analytics/heatmap.py
+    aggregate_event_heatmap(events, filters) → EventHeatmap
+      Returns: hours: list[int], days: list[str], counts: list[list[int]]
+
+  analytics/funnel.py
+    aggregate_funnel_stages(sessions, filters) → FunnelStages
+      Returns: stages: list[str], counts: list[int], drop_off_rates: list[float]
+
+  analytics/incidents.py
+    aggregate_incident_severity(incidents, filters) → IncidentSeverity
+      Returns: severities: list[str], counts: list[int], mttr_by_severity: dict[str, float]
+
+ALL aggregation functions must:
+  - apply all non-empty fields of FilterState
+  - return a valid typed result even when input list is empty (graceful empty state)
+  - be deterministic: same input, same output
+
+================================================================================
+PART 5: FIGURE BUILDER LAYER (charts/)
+================================================================================
+
+Implement all figure builders following the three-layer model exactly.
+
+Each module must expose one primary function:
+  build_<name>_figure(aggregate: <AggregateResult>) → dict
+
+The returned dict must be serializable with json.dumps() and consumable by
+Plotly.js's Plotly.newPlot(). It is the complete Plotly figure JSON.
+
+Mandatory fields in every returned dict:
+  - data: list of traces (each with hovertemplate set, name set)
+  - layout.title.text: non-empty string
+  - layout.xaxis.title.text: non-empty (where applicable)
+  - layout.yaxis.title.text: non-empty (where applicable)
+  - meta: {"total_count": int, "filters_applied": list[str], "generated_at": str}
+    (the meta key is not rendered by Plotly but is useful for tests and summaries)
+
+charts/time_series.py:
+  build_time_series_figure(agg: EventCountSeries) → dict
+  Chart type: go.Scatter (mode="lines+markers"), one trace per environment
+  Use context/skills/chart-type-selection.md justification: trend over time, 1–5 series
+
+charts/service_bar.py:
+  build_service_bar_figure(agg: ServiceErrorRates) → dict
+  Chart type: go.Bar(orientation="h"), sorted descending by error rate
+  Justification: category comparison, ranked (horizontal sorted bar)
+
+charts/latency_histogram.py:
+  build_latency_histogram_figure(agg: LatencyHistogram) → dict
+  Chart type: go.Histogram
+  Annotate P50 with a vertical line (go.layout.Shape)
+  Justification: distribution shape
+
+charts/latency_boxplot.py:
+  build_latency_boxplot_figure(agg: LatencyByService) → dict
+  Chart type: go.Box, one trace per service
+  Show P25, P50, P75, P95, P99 whiskers
+  Justification: distribution + summary stats
+
+charts/incident_bar.py:
+  build_incident_bar_figure(agg: IncidentSeverity) → dict
+  Chart type: go.Bar, ordered by severity level (critical > high > medium > low)
+  Justification: category comparison
+
+charts/funnel_chart.py:
+  build_funnel_figure(agg: FunnelStages) → dict
+  Chart type: go.Funnel
+  Include drop-off percentage in hover text
+  Justification: process drop-off / funnel
+
+charts/heatmap_chart.py:
+  build_heatmap_figure(agg: EventHeatmap) → dict
+  Chart type: go.Heatmap
+  x-axis: hours (0–23), y-axis: days of week (Mon–Sun)
+  Colorscale: "Blues" (sequential, not rainbow)
+  Justification: time-of-day pattern
+
+================================================================================
+PART 6: ROUTE HANDLERS
+================================================================================
+
+Implement routes/pages.py:
+  - One async handler per view (/, /trends, /services, /distributions,
+    /heatmap, /funnel, /incidents)
+  - Each handler: parse_filter_state → aggregate → build_figure →
+    TemplateResponse with figure dict and summary dict passed to template
+  - Template context must include: figure_json (str), summary (dict),
+    active_filters (dict), view_name (str), services_list, environments_list,
+    severity_levels_list (for filter dropdowns)
+
+Implement routes/fragments.py:
+  - GET /fragments/chart?view=<view>&<filter params>
+    Returns: TemplateResponse("fragments/chart.html", {"figure_json": ...})
+  - GET /fragments/summary?view=<view>&<filter params>
+    Returns: TemplateResponse("fragments/summary.html", {"summary": ...})
+  - GET /fragments/details?view=services&service=<name>&<filter params>
+    Returns: TemplateResponse("fragments/details.html", {"details": ...})
+    Where details = top-5 most recent incidents for that service
+
+Implement routes/health.py:
+  - GET /health → JSONResponse({"status": "ok"})
+
+================================================================================
+PART 7: JINJA2 TEMPLATES
+================================================================================
+
+Implement all templates per examples/canonical-analytics/domain/page-layout-spec.md.
+
+templates/base.html requirements:
+  - Load from CDN: Tailwind CSS (latest play CDN or full CDN script), HTMX,
+    Plotly.js
+  - Navigation: links to all 7 views. Active view link styled with Tailwind
+    ring or bg class
+  - Content block: {% block content %}{% endblock %}
+  - Footer with fixture info (pass as template context variable)
+  - Plotly initialization script:
+    <script>
+      document.addEventListener("htmx:afterSwap", function(evt) {
+        var chartDiv = document.getElementById("chart-panel");
+        if (chartDiv && chartDiv.dataset.figure) {
+          Plotly.newPlot("chart-panel",
+            JSON.parse(chartDiv.dataset.figure).data,
+            JSON.parse(chartDiv.dataset.figure).layout);
+        }
+      });
+    </script>
+    Embed figure JSON as data-figure attribute on the chart div. Initial load
+    also calls Plotly.newPlot via a non-HTMX path.
+
+Filter panel requirements (in each view template):
+  - <form method="get" hx-get="/fragments/chart" hx-target="#content-panel"
+         hx-swap="innerHTML" hx-push-url="true">
+  - Date range inputs: date_from, date_to (type="date")
+  - Multi-select for services: <select name="services" multiple class="...">
+    (Tailwind classes: border rounded p-1 min-h-[80px] w-full)
+  - Multi-select for environment: <select name="environment" multiple class="...">
+  - Multi-select for severity (incidents view): <select name="severity" multiple>
+  - Submit button with Tailwind: bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700
+
+Summary card requirements (in fragments/summary.html):
+  - Show: total_count, date range, list of active filters
+  - Use Tailwind card styling: bg-white border rounded shadow-sm p-4
+
+Chart panel requirements (in fragments/chart.html):
+  - <div id="chart-panel"
+         data-figure="{{ figure_json }}"
+         class="w-full h-96">
+  - Inline script that calls Plotly.newPlot immediately (for non-HTMX initial load)
+
+================================================================================
+PART 8: TESTS
+================================================================================
+
+Unit tests (tests/unit/):
+
+  For each aggregation module (test_analytics_*.py):
+    - test_with_smoke_fixture: load smoke.json, run aggregation, assert types correct
+    - test_with_empty_input: pass [], assert valid typed result returned
+    - test_filter_by_service: apply single-service filter, assert filtered output
+    - test_filter_by_environment: apply single-environment filter, assert filtered output
+
+  For each chart builder (test_charts_*.py):
+    - test_with_valid_aggregate: build figure, assert trace count ≥ 1
+    - test_axis_titles_set: assert xaxis.title.text and yaxis.title.text non-empty
+    - test_hovertemplate_set: assert each trace has a non-empty hovertemplate
+    - test_with_empty_aggregate: build figure, assert no crash, assert figure returned
+    - test_meta_key_present: assert figure dict has "meta" key with total_count
+
+  For filters (test_filters.py):
+    - test_parse_empty_query: assert all FilterState fields are empty/None
+    - test_parse_multi_service: verify repeated params parsed as list
+    - test_parse_date_range: verify date_from and date_to parsed as date objects
+
+Smoke tests (tests/smoke/test_routes_smoke.py):
+
+  Use httpx.AsyncClient with FastAPI TestClient (or pytest-asyncio with ASGITransport).
+
+  For each of these routes, assert HTTP 200 and a non-empty body:
+    / , /trends, /services, /distributions, /heatmap, /funnel, /incidents,
+    /health,
+    /fragments/chart?view=trends,
+    /fragments/summary?view=trends,
+    /fragments/details?view=services&service=<first service from smoke.json>
+
+  Additionally:
+    - /health returns JSON with {"status": "ok"}
+    - /fragments/chart?view=trends response body contains "plotly" (case-insensitive)
+    - Applying a filter: /trends?environment=production — assert 200 and non-empty
+
+================================================================================
+PART 9: RUN VERIFICATION AND UPDATE PARITY
+================================================================================
+
+Run all tests:
+  cd examples/canonical-analytics/python/
+  python -m pytest tests/ -v
+
+All tests must pass. If any tests fail, fix them before proceeding.
+
+Verify smoke fixture coverage:
+  python examples/canonical-analytics/domain/generate_fixtures.py --check smoke
+
+Run base repo verification:
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Update parity-matrix.md:
+  Mark Python column as [x] for all rows where this implementation is complete.
+  Mark any rows [~] if partial.
+
+Update CATALOG.md:
+  Change Python row Status from [ ] to [x].
+
+Run: python3 scripts/work.py checkpoint
+
+================================================================================
+PART 10: COMMIT
+================================================================================
+
+Stage and commit with git add -p:
+
+  [PROMPT_129] Add Python FastAPI + Jinja2 + Tailwind + HTMX + Plotly analytics example
+
+  - examples/canonical-analytics/python/ — full workbench implementation
+    - 6 chart families (time series, bar, histogram, box, heatmap, funnel, incident)
+    - HTMX fragment endpoints (/fragments/chart, /fragments/summary, /fragments/details)
+    - Tailwind + multi-select filter panel
+    - unit tests: aggregation + figure builders
+    - smoke tests: all routes
+  - examples/canonical-analytics/domain/parity-matrix.md — Python column [x]
+  - examples/canonical-analytics/CATALOG.md — Python [x]
+
+================================================================================
+WHAT PROMPT_130 WILL DO
+================================================================================
+
+PROMPT_130 will implement the Go / Echo / templ / Tailwind / HTMX / Plotly
+canonical example under examples/canonical-analytics/go/.
+
+It will implement all 6 chart families with Go-idiomatic figure builders (typed
+structs + encoding/json), templ fragment components, and an Echo router. It will
+read the same fixture JSON files and pass the same verification contract.
+
+Do not begin that work in this prompt.

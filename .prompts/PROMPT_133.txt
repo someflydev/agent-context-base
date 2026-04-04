@@ -1,0 +1,544 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one
+fresh coding-assistant session with commit prefixes like `[PROMPT_133]`.
+
+PROMPT_127: Plotly + HTMX Arc — Foundation. [x]
+PROMPT_128: Plotly + HTMX Arc — Shared domain spec, fixtures, parity matrix. [x]
+PROMPT_129: Plotly + HTMX Arc — Python / FastAPI / Jinja2 implementation. [x]
+PROMPT_130: Plotly + HTMX Arc — Go / Echo / templ implementation. [x]
+PROMPT_131: Plotly + HTMX Arc — Rust / Axum / Askama implementation. [x]
+PROMPT_132: Plotly + HTMX Arc — Elixir / Phoenix / HEEx implementation. [x]
+
+This prompt (PROMPT_133) completes the arc:
+  - Arc overview documentation
+  - Cross-stack navigation and docs atlas entry
+  - Cross-stack parity check runner
+  - Router polish (verify all visualization routing questions are answerable)
+  - examples/catalog.json update
+  - ARCHITECTURE_MAP.md update
+  - memory/concepts/ durable arc knowledge entry
+  - Final arc summary
+
+       [PLOTLY + HTMX ARC: Prompt 7 of 7 — Hardening and Completion]
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                    (run; study output)
+  4. memory/INDEX.md
+
+Read the full arc state before writing anything:
+  5. context/doctrine/plotly-htmx-server-rendered-viz.md   (READ — audit all 11 rules)
+  6. context/doctrine/tailwind-utility-first.md             (READ — audit all 6 rules)
+  7. context/skills/chart-type-selection.md                (READ — audit task table)
+  8. context/skills/plotly-figure-builder-design.md        (READ — audit four language sections)
+  9. context/workflows/add-visualization-panel.md          (READ — audit 8 steps)
+ 10. examples/canonical-analytics/CATALOG.md              (READ — all 4 should be [x])
+ 11. examples/canonical-analytics/domain/spec.md           (READ)
+ 12. examples/canonical-analytics/domain/parity-matrix.md  (READ — verify all [x])
+ 13. docs/ARCHITECTURE_MAP.md                              (READ — you will update this)
+ 14. memory/INDEX.md                                       (READ — you will update this)
+ 15. context/router/task-router.md                         (READ — router polish pass)
+ 16. context/router/alias-catalog.yaml                     (READ — verify completeness)
+
+Read arc overview format models from previous arcs:
+ 17. docs/faker-arc-overview.md      (READ — if it exists; use as format model)
+ 18. docs/schema-validation-arc-overview.md (READ — if it exists; use as format model)
+ 19. memory/concepts/schema-validation-arc.md (READ — if it exists; format model)
+
+Run full verification audit before touching anything:
+  python -m unittest discover -s verification/analytics -p "test_*.py" -v  (if tests exist)
+  python -m unittest verification/unit/test_plotly_htmx_arc_foundation.py -v
+  python -m unittest verification/unit/test_plotly_htmx_arc_domain.py -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Do NOT begin writing until all passing tests from earlier prompts still pass.
+This prompt does not fix PROMPT_129–132 implementation gaps — resolve those first.
+
+================================================================================
+BACKGROUND: WHY HARDENING IS A SEPARATE PROMPT
+================================================================================
+
+After six substantial prompts, the arc has:
+  - 2 doctrines (11 rules + 6 rules)
+  - 1 archetype
+  - 4 stacks
+  - 2 skills and 1 workflow
+  - 1 shared domain spec with fixtures (dogfooding canonical-faker)
+  - 4 canonical implementations (Python, Go, Rust, Elixir)
+  - Parity across all 6 chart families and 3 fragment endpoints
+
+What is still missing:
+  A. Human-readable arc overview for future assistants
+  B. Docs/atlas entry in top-level navigation
+  C. Cross-stack parity check runner
+  D. Router polish — verify most common visualization routing questions are answerable
+  E. examples/catalog.json update
+  F. ARCHITECTURE_MAP.md showing arc as COMPLETE
+  G. memory/concepts/ entry for durable arc knowledge
+  H. Arc completion summary
+
+================================================================================
+PART 1: CREATE docs/plotly-htmx-arc-overview.md
+================================================================================
+
+Create: docs/plotly-htmx-arc-overview.md
+
+This is the single-read document that a future assistant can load to understand
+the entire arc without reading all four example directories.
+
+Required sections:
+
+  # Plotly + HTMX + Tailwind Server-Rendered Visualization Arc
+
+  ## Purpose
+  4–5 sentences. What problem this arc solves. Why treating Plotly as a
+  declarative figure model (not just a charting library) matters for
+  testability. Why the combination of HTMX + Tailwind + server-rendered
+  templates is the right architecture for analytics workbench applications.
+  What a developer should understand after working through these examples.
+
+  ## The Core Insight
+  4–5 sentences. Plotly figures are structured data objects. Server-side
+  construction decouples aggregation logic, figure-builder logic, and HTTP
+  handling — each is independently testable. HTMX enables fragment-based
+  interactivity without a frontend framework. Tailwind provides the filter
+  UI state contract. These four choices are mutually reinforcing, not
+  incidental — explain why.
+
+  ## The Three-Layer Model
+  Brief reference to context/skills/plotly-figure-builder-design.md.
+  Name the three layers and say where the full spec lives.
+
+  ## The Six Chart Families
+  Brief table of the six chart families from domain/spec.md:
+  | Family | Chart Type | Analysis Question |
+  (Use the task-to-chart justification from chart-type-selection.md)
+
+  ## The Domain: Ops & Product Analytics Workbench
+  3–4 sentences. What TenantCore is. Why it was chosen (dogfooding the faker arc).
+  List the 7 entities with one-line descriptions.
+  Note that fixture files are generated by generate_fixtures.py, which dogfoods
+  examples/canonical-faker/.
+
+  ## Implementation Matrix
+
+  | Stack                  | Path                              | Template Engine | Fragment Pattern         |
+  |------------------------|-----------------------------------|-----------------|--------------------------|
+  | Python / FastAPI       | examples/canonical-analytics/python/ | Jinja2        | TemplateResponse partial |
+  | Go / Echo              | examples/canonical-analytics/go/     | templ          | Typed templ component    |
+  | Rust / Axum            | examples/canonical-analytics/rust/   | Askama         | Compiled HtmlTemplate    |
+  | Elixir / Phoenix       | examples/canonical-analytics/elixir/ | HEEx           | Controller + render      |
+
+  ## Key Distinctions to Preserve
+
+  A bulleted list of the distinctions that are easiest to lose:
+    - Figure builders return structured data objects, not JSON strings. The
+      handler serializes. This is the most important architectural invariant.
+    - Aggregation and figure construction are separate layers. A route handler
+      that contains aggregation SQL or filter logic is a violation.
+    - HTMX fragment boundaries are at the panel, not the page. Over-wide swaps
+      mask filter-state bugs.
+    - Tailwind class contracts for filter UI are defined in
+      filter-panel-rendering-rules.md — they are part of the backend-to-frontend
+      contract, not cosmetic choices.
+    - The Go implementation uses plain Go structs + encoding/json for figures.
+      No external Plotly Go library is needed or used.
+    - The Rust implementation uses plotly.rs and returns serde_json::Value from
+      figure builders (documented deviation from the three-layer model).
+    - The Elixir implementation uses Phoenix controllers, NOT LiveView. HTMX +
+      HEEx is the pattern here. LiveView is a valid but different approach.
+    - Fixture files are generated by dogfooding the faker arc's Python reference
+      implementation. Do not build a parallel seed system.
+
+  ## Navigation
+
+  - examples/canonical-analytics/CATALOG.md             — implementation status
+  - examples/canonical-analytics/domain/spec.md          — domain and chart families
+  - examples/canonical-analytics/domain/parity-matrix.md — cross-stack status
+  - examples/canonical-analytics/domain/verification-contract.md
+  - context/doctrine/plotly-htmx-server-rendered-viz.md  — 11 rules
+  - context/doctrine/tailwind-utility-first.md            — 6 rules
+  - context/skills/chart-type-selection.md               — chart type decision guide
+  - context/skills/plotly-figure-builder-design.md       — three-layer model
+  - context/workflows/add-visualization-panel.md         — 8-step workflow
+  - context/stacks/python-fastapi-jinja2-htmx-plotly.md
+  - context/stacks/go-echo-templ-htmx-plotly.md
+  - context/stacks/rust-axum-askama-htmx-plotly.md
+  - context/stacks/elixir-phoenix-htmx-plotly.md
+  - examples/canonical-faker/CATALOG.md                  — upstream dogfooded arc
+
+  ## Routing Questions This Arc Can Answer
+  A list of 12–15 natural-language routing questions and where to look:
+    - "Show me Python server-rendered Plotly" → python/ implementation
+    - "How do I build a testable Plotly figure builder?" → plotly-figure-builder-design.md
+    - "Which chart type for time-series analysis?" → chart-type-selection.md
+    - "How do HTMX fragments work with chart panels?" → add-visualization-panel.md
+    - "Show me Go-idiomatic Plotly figure construction" → go/ charts/ package
+    - "Why is the chart data different from the visible results?" → backend-driven-ui-correctness.md
+    - "How do I build multi-select filter forms with Tailwind?" → page-layout-spec.md
+    - "Show an Elixir Phoenix HTMX analytics workbench" → elixir/ implementation
+    - "What are the visualization anti-patterns?" → plotly-htmx-server-rendered-viz.md
+    - "How do I generate seed data for analytics tests?" → generate_fixtures.py (dogfoods faker arc)
+    - "Show Rust Askama templates with Plotly" → rust/ implementation
+    - "What is the parity status across stacks?" → parity-matrix.md
+
+Target length: 110–140 lines.
+
+================================================================================
+PART 2: CREATE verification/analytics/run_parity_check.py
+================================================================================
+
+Create: verification/analytics/run_parity_check.py
+
+This is the cross-stack parity runner. It checks that:
+  1. All four implementations exist (directory presence)
+  2. All four CATALOG.md rows are marked [x]
+  3. All parity-matrix.md rows are complete (no [ ] remaining)
+  4. Fixture files exist and are valid JSON with required keys
+  5. Python smoke tests pass (if httpx is installed)
+
+Implementation plan:
+
+  #!/usr/bin/env python3
+  """
+  Plotly + HTMX arc parity check runner.
+
+  Checks:
+  1. Implementation directories exist for all 4 stacks.
+  2. CATALOG.md marks all 4 implementations as [x].
+  3. parity-matrix.md has no [ ] (not started) cells.
+  4. Fixture files (smoke.json, small.json) exist and have required keys.
+  5. Python smoke tests pass (optional; skipped if httpx not installed).
+  """
+
+  import sys, json, pathlib, subprocess, unittest
+
+  REPO_ROOT = pathlib.Path(__file__).parent.parent.parent
+  ANALYTICS_DIR = REPO_ROOT / "examples" / "canonical-analytics"
+  FIXTURE_DIR = ANALYTICS_DIR / "domain" / "fixtures"
+
+  REQUIRED_IMPLEMENTATIONS = ["python", "go", "rust", "elixir"]
+  REQUIRED_FIXTURE_KEYS = [
+    "events", "sessions", "services", "deployments",
+    "incidents", "latency_samples", "funnel_stages"
+  ]
+
+  class TestImplementationDirectories(unittest.TestCase):
+    def test_all_implementation_dirs_exist(self):
+      for stack in REQUIRED_IMPLEMENTATIONS:
+        d = ANALYTICS_DIR / stack
+        self.assertTrue(d.exists(), f"Missing: {d}")
+
+  class TestCatalogCompleteness(unittest.TestCase):
+    def test_all_implementations_marked_complete(self):
+      catalog = (ANALYTICS_DIR / "CATALOG.md").read_text()
+      for stack in ["Python", "Go", "Rust", "Elixir"]:
+        self.assertIn(f"| {stack}", catalog, f"{stack} not in CATALOG.md")
+        # Find the line and check it has [x]
+        for line in catalog.splitlines():
+          if f"| {stack}" in line:
+            self.assertIn("[x]", line, f"{stack} row not marked [x]")
+
+  class TestParityMatrixCompleteness(unittest.TestCase):
+    def test_no_not_started_cells_in_matrix(self):
+      matrix = (ANALYTICS_DIR / "domain" / "parity-matrix.md").read_text()
+      not_started = [line for line in matrix.splitlines()
+                     if "| [ ]" in line or "|[ ]" in line]
+      self.assertEqual(not_started, [],
+        f"Parity matrix has incomplete rows:\n" + "\n".join(not_started))
+
+  class TestFixtureFiles(unittest.TestCase):
+    def _load_fixture(self, name):
+      path = FIXTURE_DIR / f"{name}.json"
+      self.assertTrue(path.exists(), f"Missing fixture: {path}")
+      with open(path) as f:
+        return json.load(f)
+
+    def test_smoke_fixture_exists_and_valid(self):
+      data = self._load_fixture("smoke")
+      for key in REQUIRED_FIXTURE_KEYS:
+        self.assertIn(key, data, f"smoke.json missing key: {key}")
+
+    def test_small_fixture_exists_and_valid(self):
+      data = self._load_fixture("small")
+      for key in REQUIRED_FIXTURE_KEYS:
+        self.assertIn(key, data, f"small.json missing key: {key}")
+
+    def test_smoke_fixture_minimum_coverage(self):
+      data = self._load_fixture("smoke")
+      services = {e.get("service") for e in data.get("events", [])}
+      self.assertGreaterEqual(len(services), 3, "smoke.json: need >= 3 services")
+      environments = {e.get("environment") for e in data.get("events", [])}
+      self.assertGreaterEqual(len(environments), 2, "smoke.json: need >= 2 environments")
+      severities = {i.get("severity") for i in data.get("incidents", [])}
+      self.assertGreaterEqual(len(severities), 3, "smoke.json: need >= 3 severity levels")
+
+  class TestDocumentation(unittest.TestCase):
+    def test_arc_overview_exists(self):
+      p = REPO_ROOT / "docs" / "plotly-htmx-arc-overview.md"
+      self.assertTrue(p.exists(), f"Missing: {p}")
+
+    def test_arc_overview_has_navigation_section(self):
+      p = REPO_ROOT / "docs" / "plotly-htmx-arc-overview.md"
+      self.assertIn("Navigation", p.read_text())
+
+    def test_arc_overview_has_all_four_stacks(self):
+      text = (REPO_ROOT / "docs" / "plotly-htmx-arc-overview.md").read_text()
+      for stack in ["Python", "Go", "Rust", "Elixir"]:
+        self.assertIn(stack, text)
+
+  if __name__ == "__main__":
+    result = unittest.main(exit=False, verbosity=2)
+    sys.exit(0 if result.result.wasSuccessful() else 1)
+
+================================================================================
+PART 3: ROUTER POLISH PASS
+================================================================================
+
+Read context/router/task-router.md in full.
+
+Verify that the following routing questions are all answerable by reading the
+task router and alias catalog. For each gap, add or fix the relevant entry.
+
+Questions the task router must handle:
+
+  - "show me a plotly chart example in python"
+    → examples/canonical-analytics/python/
+    → context/stacks/python-fastapi-jinja2-htmx-plotly.md
+
+  - "show me a plotly chart example in go"
+    → examples/canonical-analytics/go/
+    → context/stacks/go-echo-templ-htmx-plotly.md
+
+  - "show me a plotly chart example in rust"
+    → examples/canonical-analytics/rust/
+    → context/stacks/rust-axum-askama-htmx-plotly.md
+
+  - "show me a plotly chart example in elixir"
+    → examples/canonical-analytics/elixir/
+    → context/stacks/elixir-phoenix-htmx-plotly.md
+
+  - "visualization anti-patterns", "what charts should I avoid"
+    → context/doctrine/plotly-htmx-server-rendered-viz.md
+
+  - "tailwind filter panel styling", "tailwind for analytics ui"
+    → context/doctrine/tailwind-utility-first.md
+    → context/doctrine/filter-panel-rendering-rules.md
+
+  - "what is the difference between LiveView and HTMX in elixir"
+    → context/stacks/elixir-phoenix-htmx-plotly.md (When to Use HTMX section)
+
+  - "cross-stack parity status for analytics"
+    → examples/canonical-analytics/domain/parity-matrix.md
+    → verification/analytics/run_parity_check.py
+
+  - "show the analytics canonical example catalog"
+    → examples/canonical-analytics/CATALOG.md
+
+Add any missing entries directly in task-router.md. Mark them with a comment:
+  # added by PROMPT_133
+
+================================================================================
+PART 4: UPDATE examples/catalog.json
+================================================================================
+
+Read examples/catalog.json to understand the schema. Add entries for the
+four canonical analytics implementations. Pattern after existing entries.
+
+Each entry must include: path, category, summary, stacks, archetypes,
+workflows, patterns, rank, stability.
+
+Entries to add:
+
+  {
+    "path": "examples/canonical-analytics/python/",
+    "category": "analytics",
+    "summary": "FastAPI + Jinja2 + Tailwind + HTMX + Plotly analytics workbench with 6 chart families.",
+    "stacks": ["python-fastapi-jinja2-htmx-plotly"],
+    "archetypes": ["analytics-workbench"],
+    "workflows": ["add-visualization-panel", "add-plotly-backed-query-view"],
+    "patterns": ["server-rendered-charts", "htmx-fragments", "figure-builder", "tailwind-filter-ui"],
+    "rank": 85,
+    "stability": "canonical"
+  }
+
+  (repeat for go, rust, elixir with appropriate stacks and summaries)
+
+  Also add the domain spec as a reference entry:
+  {
+    "path": "examples/canonical-analytics/domain/spec.md",
+    "category": "analytics",
+    "summary": "Ops & Product Analytics Workbench domain spec — 6 chart families, 4 filter params, parity contract.",
+    "stacks": [],
+    "archetypes": ["analytics-workbench"],
+    "workflows": [],
+    "patterns": ["cross-stack-parity", "deterministic-fixtures", "dogfooding"],
+    "rank": 90,
+    "stability": "canonical"
+  }
+
+================================================================================
+PART 5: UPDATE docs/ARCHITECTURE_MAP.md
+================================================================================
+
+Read ARCHITECTURE_MAP.md in full. Add the Plotly + HTMX arc to the map.
+
+Find the appropriate section (likely under "Canonical Examples" or "System Shape"
+or wherever other arcs are documented). Add a brief entry:
+
+  ## Plotly + HTMX + Tailwind Analytics Arc
+
+  Status: COMPLETE (PROMPT_127–133)
+
+  - doctrine: plotly-htmx-server-rendered-viz.md, tailwind-utility-first.md
+  - archetype: analytics-workbench
+  - stacks: 4 (Python/FastAPI/Jinja2, Go/Echo/templ, Rust/Axum/Askama, Elixir/Phoenix/HEEx)
+  - skills: chart-type-selection, plotly-figure-builder-design
+  - workflow: add-visualization-panel
+  - canonical examples: python/, go/, rust/, elixir/ — all 6 chart families
+  - domain: Ops & Product Analytics Workbench (dogfoods canonical-faker)
+  - overview: docs/plotly-htmx-arc-overview.md
+
+================================================================================
+PART 6: CREATE memory/concepts/plotly-htmx-arc.md
+================================================================================
+
+Create: memory/concepts/plotly-htmx-arc.md
+
+Read memory/concepts/schema-validation-arc.md (if it exists) for format reference.
+
+This is the durable knowledge entry for future assistant sessions. It should
+capture the non-obvious insights that are hardest to re-derive from the code.
+
+Required content:
+
+  # Plotly + HTMX + Tailwind Analytics Arc
+
+  ## What This Arc Teaches
+  (4–5 sentences) The core insight about Plotly as a declarative figure model.
+  Why HTMX + Tailwind + server-rendered templates is the right architecture for
+  analytics workbench applications. Why dogfooding the faker arc for fixtures
+  matters. What makes this arc reusable for derived projects.
+
+  ## The Three-Layer Model — Why It Matters
+  (3–4 sentences) Why separating aggregation from figure-building from
+  serialization is not just "good practice" — it enables unit testing at each
+  layer without HTTP infrastructure. Where this model is documented. What the
+  most common violation is.
+
+  ## Key Distinctions to Preserve
+
+  (Bulleted list — focus on things future assistants will get wrong)
+    - [same distinctions as in the arc overview, but phrased as actionable rules
+      for an assistant context rather than documentation prose]
+
+  ## The Canonical Domain and Fixture Dogfooding
+  (2–3 sentences) TenantCore entities → analytics domain mapping. Why
+  generate_fixtures.py must call the faker arc, not build parallel infrastructure.
+  Where to look if fixtures are stale or the faker arc is updated.
+
+  ## Navigation Shortcuts
+  (5–6 most important navigation pointers only — not a repeat of the overview)
+
+Target length: 50–70 lines. Dense, assistant-oriented, no wasted prose.
+
+================================================================================
+PART 7: ARC COMPLETION GAP AUDIT
+================================================================================
+
+Before writing the arc completion documentation, perform this audit:
+
+  A. Read parity-matrix.md.
+     If any cell is [ ] or [~], it means an earlier prompt is incomplete.
+     Document the gap here: create docs/plotly-htmx-arc-gaps.md listing
+     what is missing and which prompt should fix it.
+     Do NOT attempt to fix implementation gaps in this prompt.
+
+  B. Run verification/analytics/run_parity_check.py.
+     If tests fail, document the failures in docs/plotly-htmx-arc-gaps.md.
+     Do not claim arc completion if parity_check reports failures.
+
+  C. Check that all four examples/canonical-analytics/<stack>/README.md files
+     exist and have at minimum: "what it is", "how to run", "how to test".
+     If any README is missing, create a minimal one.
+
+  D. Check that verification/unit/test_plotly_htmx_arc_foundation.py still passes.
+     If it does not, fix the specific test that broke (likely a missing file).
+
+If gaps are found, state them clearly in the commit message.
+A commit with known gaps is better than a silently incomplete arc.
+
+================================================================================
+PART 8: RUN FULL VERIFICATION AND COMMIT
+================================================================================
+
+Run everything:
+  python -m unittest verification/unit/test_plotly_htmx_arc_foundation.py -v
+  python -m unittest verification/unit/test_plotly_htmx_arc_domain.py -v
+  python verification/analytics/run_parity_check.py
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+All arc-specific tests must pass. Fix any foundation or domain test regressions.
+
+Run: python3 scripts/work.py checkpoint
+
+Stage and commit with git add -p:
+
+  [PROMPT_133] Complete Plotly + HTMX + Tailwind arc — hardening and overview
+
+  - docs/plotly-htmx-arc-overview.md
+  - verification/analytics/run_parity_check.py
+  - context/router/task-router.md — router polish (visualization routing coverage)
+  - examples/catalog.json — 5 new entries (4 implementations + domain spec)
+  - docs/ARCHITECTURE_MAP.md — arc marked COMPLETE
+  - memory/concepts/plotly-htmx-arc.md
+  [- docs/plotly-htmx-arc-gaps.md — if any gaps found]
+
+================================================================================
+ARC COMPLETION SUMMARY
+================================================================================
+
+After PROMPT_133, the Plotly + HTMX + Tailwind arc is complete:
+
+  PROMPT_127 — Foundation [x]
+    2 doctrines, 1 archetype, 4 stacks, 2 skills, 1 workflow, router updates,
+    AGENT.md dogfooding section, structural verification tests
+
+  PROMPT_128 — Shared Domain + Spec [x]
+    Domain spec, seed data contract, parity matrix, verification contract,
+    page layout spec, fixture generator (dogfooding canonical-faker),
+    smoke.json + small.json fixtures, CATALOG.md skeleton
+
+  PROMPT_129 — Python / FastAPI / Jinja2 [x]
+    6 chart families, HTMX fragments, Tailwind filter UI,
+    unit tests + smoke tests
+
+  PROMPT_130 — Go / Echo / templ [x]
+    6 chart families, typed PlotlyFigure structs, templ components,
+    unit tests + smoke tests
+
+  PROMPT_131 — Rust / Axum / Askama [x]
+    6 chart families, plotly.rs builders, Askama compiled templates,
+    unit tests + smoke tests
+
+  PROMPT_132 — Elixir / Phoenix / HEEx [x]
+    6 chart families, plain Elixir map builders + Jason, HEEx templates,
+    Phoenix controllers (not LiveView), ExUnit tests
+
+  PROMPT_133 — Hardening [x]
+    Arc overview, parity runner, router polish, catalog.json,
+    ARCHITECTURE_MAP, memory/concepts entry
+
+The arc teaches Plotly + HTMX + Tailwind analytics patterns across four
+server-rendered stacks, with a shared domain (dogfooding canonical-faker),
+deterministic fixtures, and a cross-stack parity contract.
