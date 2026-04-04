@@ -1,0 +1,595 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one
+fresh coding-assistant session with commit prefixes like `[PROMPT_138]`.
+
+PROMPT_134: JWT Auth Arc — Foundation.
+PROMPT_135: JWT Auth Arc — Shared domain spec.
+PROMPT_136: JWT Auth Arc — Python (FastAPI + PyJWT) and TypeScript (Hono + jose).
+PROMPT_137: JWT Auth Arc — Go (Echo + golang-jwt/jwt) and Rust (Axum + jsonwebtoken).
+
+This prompt (PROMPT_138) implements two language canonical examples:
+  - Java: Spring Boot + JJWT
+  - Kotlin: http4k + JJWT
+
+Both examples must conform to examples/canonical-auth/domain/spec.md.
+Both must implement all required flows, routes, and tests from the verification
+contract in examples/canonical-auth/domain/verification-contract.md.
+
+              [JWT AUTH ARC: Prompt 5 of 7 — Java + Kotlin Implementations]
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                    (run; study output)
+  4. memory/INDEX.md
+
+Read the full arc foundation before writing any code:
+  5. examples/canonical-auth/domain/spec.md            (READ — all sections; this is your spec)
+  6. examples/canonical-auth/domain/parity-matrix.md   (READ — you will update Java + Kotlin rows)
+  7. examples/canonical-auth/domain/verification-contract.md (READ — 12 smoke tests required)
+  8. examples/canonical-auth/CATALOG.md                (READ — you will update 2 rows)
+  9. context/doctrine/jwt-auth-request-context.md      (READ)
+ 10. context/doctrine/rbac-permission-taxonomy.md      (READ)
+ 11. context/doctrine/tenant-boundary-enforcement.md   (READ)
+ 12. context/doctrine/route-metadata-registry.md       (READ)
+ 13. context/doctrine/me-endpoint-discoverability.md   (READ)
+ 14. context/stacks/java-spring-jjwt-rbac.md           (READ — Java stack guidance)
+ 15. context/stacks/kotlin-http4k-jjwt-rbac.md         (READ — Kotlin stack guidance)
+ 16. context/stacks/kotlin-http4k-exposed.md           (READ — Kotlin http4k conventions)
+ 17. manifests/backend-api-kotlin-http4k-exposed.yaml  (READ — Kotlin project conventions)
+ 18. context/archetypes/tenant-aware-backend-api.md    (READ — directory shape)
+
+Also read an existing implementation for reference:
+ 19. examples/canonical-auth/python/src/auth/         (READ — if available)
+ 20. examples/canonical-auth/go/internal/auth/        (READ — if available)
+
+Run verification before writing any code:
+  python -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
+  python -m unittest verification/unit/test_jwt_auth_arc_domain.py -v
+
+Do NOT begin implementation until both test suites pass.
+
+================================================================================
+BACKGROUND: JVM PATTERNS FOR JWT AUTH
+================================================================================
+
+Java and Kotlin share the JVM and JJWT (io.jsonwebtoken), so their token
+issuance and validation code is closely related. The key differences are in
+how auth context is wired into the request lifecycle:
+
+Java (Spring Boot):
+  - A custom OncePerRequestFilter extracts and validates the JWT.
+  - Auth context is stored in Spring's SecurityContextHolder — the standard
+    Spring Security mechanism even when not using the full Spring Security
+    OAuth2 stack.
+  - Route permissions are enforced via a custom HandlerInterceptor or via
+    method-level @PreAuthorize annotations.
+  - The canonical example uses a custom filter + method-level @PreAuthorize
+    with Spring Security's @EnableMethodSecurity. This is the
+    minimal-but-real Spring pattern. No Spring Security OAuth2 server.
+
+Kotlin (http4k):
+  - http4k uses a Filter chain for middleware — a composable, functional style.
+  - A JwtFilter wraps routes that need authentication.
+  - Auth context is passed via RequestContext extension functions or
+    via a custom lens on the Request object.
+  - Route permissions are checked by a RbacFilter factory that wraps
+    individual route handlers.
+  - http4k's routing is functional — routes are values, not annotations.
+
+JJWT library notes:
+  - JJWT (io.jsonwebtoken) fluent API:
+    Jwts.builder().subject(sub).claim("permissions", perms)
+        .expiration(Date(...)).signWith(key).compact()
+  - Parsing:
+    Jwts.parser().verifyWith(verifyKey).build().parseSignedClaims(token)
+  - JJWT v0.12.x changed the API significantly from 0.11.x.
+    Target v0.12.x in the canonical example. Document the API version clearly.
+  - java-jwt (Auth0) is the noted alternative; it has a different API style
+    but similar capabilities. Do not mix the two in one example.
+
+================================================================================
+JAVA IMPLEMENTATION
+================================================================================
+
+PART A: Directory Structure
+
+Create: examples/canonical-auth/java/
+
+  examples/canonical-auth/java/
+    README.md
+    pom.xml                     (Maven; Spring Boot 3.2+)
+    src/
+      main/
+        java/dev/tenantcore/auth/
+          TenantCoreAuthApplication.java   (main class)
+          config/
+            SecurityConfig.java           (Spring Security config: disable CSRF,
+                                           stateless session, add JWT filter)
+            JwtConfig.java                (loads signing key from env/props)
+          auth/
+            JwtFilter.java                (OncePerRequestFilter: validate + extract)
+            JwtService.java               (issueToken, parseToken, verifyAclVer)
+            AuthContext.java              (record: sub, email, tenantId, tenantRole,
+                                           groups, permissions, aclVer, issuedAt, expiresAt)
+            PermissionEvaluator.java      (hasPermission helper)
+          domain/
+            InMemoryStore.java            (loads fixtures from JSON; query methods)
+            User.java                     (record)
+            Tenant.java                   (record)
+            Group.java                    (record)
+            Permission.java               (record)
+          routes/
+            AuthController.java           (POST /auth/token)
+            MeController.java             (GET /me)
+            UserController.java           (GET/POST /users, GET/PATCH /users/{id})
+            GroupController.java          (GET/POST /groups, POST /groups/{id}/permissions,
+                                           POST /groups/{id}/users)
+            AdminController.java          (GET/POST /admin/tenants)
+            HealthController.java         (GET /health)
+          registry/
+            RouteMetadata.java            (record)
+            RouteRegistry.java            (ROUTE_REGISTRY constant, getAllowedRoutes)
+      test/
+        java/dev/tenantcore/auth/
+          JwtServiceTest.java
+          AuthIntegrationTest.java
+          MeControllerTest.java
+
+PART B: Key Implementation Requirements
+
+  AuthContext.java:
+    public record AuthContext(
+      String sub,
+      String email,
+      String tenantId,      // null for super_admin
+      String tenantRole,    // "super_admin" | "tenant_admin" | "tenant_member"
+      List<String> groups,
+      List<String> permissions,
+      int aclVer,
+      Instant issuedAt,
+      Instant expiresAt
+    ) {
+      public boolean hasPermission(String permission) {
+        return permissions.contains(permission);
+      }
+    }
+
+  JwtService.java:
+    public String issueToken(User user, InMemoryStore store) {
+      // compute effective permissions
+      // build claims: sub, email, tenant_id, tenant_role, groups, permissions, acl_ver
+      // Jwts.builder()
+      //   .subject(user.id())
+      //   .issuer("tenantcore-auth")
+      //   .audience().add("tenantcore-api").and()
+      //   .claim("tenant_id", tenantId)
+      //   .claim("tenant_role", tenantRole)
+      //   .claim("groups", groups)
+      //   .claim("permissions", permissions)
+      //   .claim("acl_ver", user.aclVer())
+      //   .claim("jti", UUID.randomUUID().toString())
+      //   .issuedAt(now)
+      //   .notBefore(now)
+      //   .expiration(Date.from(now.toInstant().plusSeconds(900)))
+      //   .signWith(signingKey)  // RS256 default; HS256 for test mode
+      //   .compact()
+    }
+
+    public Claims parseToken(String token) throws JwtException {
+      // Jwts.parser().verifyWith(verifyKey).build().parseSignedClaims(token).getPayload()
+      // validate iss, aud in the parser configuration
+    }
+
+  JwtFilter.java (OncePerRequestFilter):
+    1. Extract Bearer token from Authorization header; continue chain if missing
+       (let Spring Security return 401 for protected endpoints)
+    2. Parse token with JwtService.parseToken(); on failure, set 401 response and return
+    3. Load user from store by sub; if not found, 401
+    4. Verify acl_ver match; if stale, 401
+    5. Verify tenant membership; if inactive, 403
+    6. Build AuthContext; set in SecurityContextHolder via:
+       UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+         authContext, null, List.of());
+       SecurityContextHolder.getContext().setAuthentication(auth);
+
+  SecurityConfig.java:
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) {
+      // disable CSRF (REST API)
+      // sessionManagement STATELESS
+      // add JwtFilter before UsernamePasswordAuthenticationFilter
+      // permit /auth/token and /health (public)
+      // require authentication for all other paths
+    }
+
+    @EnableMethodSecurity must be on the config class.
+
+  RBAC enforcement — method-level with @PreAuthorize:
+    @GetMapping("/users")
+    @PreAuthorize("hasAuthority('iam:user:read')")
+    public ResponseEntity<List<Map<String, Object>>> listUsers(...) { ... }
+
+    For this to work, the authorities in the UsernamePasswordAuthenticationToken
+    must be built from the user's effective permissions:
+    List<GrantedAuthority> authorities = permissions.stream()
+      .map(SimpleGrantedAuthority::new)
+      .toList();
+
+  Super-admin enforcement:
+    @PreAuthorize("hasAuthority('admin:tenant:create')")
+    // This is sufficient because super_admin tokens carry admin:tenant:create
+    // and tenant-scoped tokens do not. Document this clearly.
+
+  RouteRegistry.java:
+    public record RouteMetadata(
+      String method, String path, String permission,
+      boolean tenantScoped, String description,
+      String service, String resource, String action,
+      boolean isPublic, boolean superAdminOnly
+    ) {}
+
+    public static final List<RouteMetadata> ROUTE_REGISTRY = List.of(...)
+
+    public static List<RouteMetadata> getAllowedRoutes(List<String> permissions) {
+      return ROUTE_REGISTRY.stream()
+        .filter(r -> r.isPublic() || permissions.contains(r.permission()))
+        .toList();
+    }
+
+  MeController.java:
+    @GetMapping("/me")
+    public ResponseEntity<Map<String, Object>> me() {
+      AuthContext auth = (AuthContext) SecurityContextHolder
+        .getContext().getAuthentication().getPrincipal();
+      // build response per domain spec /me shape
+      // fetch tenant_name from store
+      // call RouteRegistry.getAllowedRoutes(auth.permissions())
+    }
+
+  InMemoryStore.java:
+    public static InMemoryStore loadFromFixtures(Path fixtureDir) throws IOException {
+      // load users.json, tenants.json, groups.json, permissions.json, memberships.json
+      // use Jackson ObjectMapper
+    }
+    // query methods: getUserById, getUserByEmail, getTenantById,
+    // getGroupsForUser, getEffectivePermissions, verifyMembership, getTenantName
+
+PART C: Tests
+
+  JwtServiceTest.java:
+    - testIssueToken_AllClaimsPresent
+    - testIssueToken_ExpiryIs15Minutes
+    - testIssueToken_PermissionsMatchStore
+
+  AuthIntegrationTest.java:
+    All 12 smoke tests from verification contract.
+    Use @SpringBootTest + MockMvc.
+    Generate tokens with JwtService.issueToken() against fixture store.
+
+  MeControllerTest.java:
+    - testMeResponse_ContainsRequiredFields
+    - testMeResponse_AllowedRoutesFiltered
+    - testMeResponse_SuperAdminShape
+
+PART D: README.md
+
+  Required sections:
+  - What it is
+  - Requirements (Java 21+, Maven 3.9+)
+  - How to run: mvn spring-boot:run
+  - How to test: mvn test
+  - Key files and what they do
+  - Token issuance example (curl)
+  - /me example
+  - Teaching notes (Spring Security minimal setup, @PreAuthorize, JJWT v0.12)
+
+PART E: pom.xml
+
+  Key dependencies:
+    spring-boot-starter-web
+    spring-boot-starter-security
+    io.jsonwebtoken:jjwt-api:0.12.x
+    io.jsonwebtoken:jjwt-impl:0.12.x (runtime)
+    io.jsonwebtoken:jjwt-jackson:0.12.x (runtime)
+    jackson-databind (for fixture loading)
+    spring-boot-starter-test (test scope)
+
+================================================================================
+KOTLIN IMPLEMENTATION
+================================================================================
+
+PART F: Directory Structure
+
+Create: examples/canonical-auth/kotlin/
+
+  examples/canonical-auth/kotlin/
+    README.md
+    build.gradle.kts            (Kotlin DSL; http4k)
+    src/
+      main/
+        kotlin/dev/tenantcore/auth/
+          Main.kt                    (creates store, builds http4k server)
+          auth/
+            JwtMiddleware.kt         (http4k Filter: validates JWT, sets auth context)
+            TokenService.kt          (issueToken function)
+            AuthContext.kt           (data class)
+            RbacFilter.kt            (Filter factory: requirePermission)
+          domain/
+            InMemoryStore.kt         (loads fixtures; query methods)
+            Models.kt                (User, Tenant, Group, Permission data classes)
+          routes/
+            AuthRoutes.kt            (POST /auth/token)
+            MeRoutes.kt              (GET /me)
+            UserRoutes.kt            (GET/POST /users, GET/PATCH /users/{id})
+            GroupRoutes.kt           (GET/POST /groups, POST /groups/{id}/permissions,
+                                      POST /groups/{id}/users)
+            AdminRoutes.kt           (GET/POST /admin/tenants)
+            HealthRoutes.kt          (GET /health)
+          registry/
+            RouteRegistry.kt         (RouteMetadata data class, ROUTE_REGISTRY, getAllowedRoutes)
+      test/
+        kotlin/dev/tenantcore/auth/
+          TokenServiceTest.kt
+          AuthIntegrationTest.kt
+          MeRoutesTest.kt
+
+PART G: Key Implementation Requirements
+
+  auth/AuthContext.kt:
+    data class AuthContext(
+      val sub: String,
+      val email: String,
+      val tenantId: String?,
+      val tenantRole: String,
+      val groups: List<String>,
+      val permissions: List<String>,
+      val aclVer: Int,
+      val issuedAt: Instant,
+      val expiresAt: Instant
+    ) {
+      fun hasPermission(permission: String): Boolean = permissions.contains(permission)
+    }
+
+    // http4k Request extension for auth context:
+    private val AUTH_CONTEXT_KEY = RequestContextKey.required<AuthContext>(contexts)
+    val Request.authContext: AuthContext get() = AUTH_CONTEXT_KEY(this)
+    fun Request.withAuthContext(ctx: AuthContext): Request = with(AUTH_CONTEXT_KEY of ctx)
+
+  auth/JwtMiddleware.kt:
+    fun jwtMiddleware(store: InMemoryStore, verifyKey: SecretKey): Filter =
+      Filter { next ->
+        { request ->
+          val token = request.header("Authorization")
+            ?.removePrefix("Bearer ")?.trim()
+            ?: return@Filter Response(Status.UNAUTHORIZED)
+
+          val claims = try {
+            Jwts.parser().verifyWith(verifyKey).build()
+              .parseSignedClaims(token).payload
+          } catch (e: JwtException) {
+            return@Filter Response(Status.UNAUTHORIZED)
+          }
+
+          val user = store.getUserById(claims.subject)
+            ?: return@Filter Response(Status.UNAUTHORIZED)
+
+          if (claims.get("acl_ver", Int::class.java) != user.aclVer) {
+            return@Filter Response(Status.UNAUTHORIZED)
+          }
+
+          val tenantId = claims.get("tenant_id", String::class.java)
+          if (tenantId != null && !store.verifyMembership(user.id, tenantId)) {
+            return@Filter Response(Status.FORBIDDEN)
+          }
+
+          val ctx = AuthContext(
+            sub = claims.subject,
+            email = user.email,
+            tenantId = tenantId,
+            tenantRole = claims.get("tenant_role", String::class.java),
+            groups = (claims.get("groups", List::class.java) as? List<String>) ?: emptyList(),
+            permissions = (claims.get("permissions", List::class.java) as? List<String>) ?: emptyList(),
+            aclVer = claims.get("acl_ver", Int::class.java),
+            issuedAt = claims.issuedAt.toInstant(),
+            expiresAt = claims.expiration.toInstant()
+          )
+          next(request.withAuthContext(ctx))
+        }
+      }
+
+  auth/RbacFilter.kt:
+    fun requirePermission(permission: String): Filter =
+      Filter { next ->
+        { request ->
+          val auth = try { request.authContext } catch (e: Exception) {
+            return@Filter Response(Status.UNAUTHORIZED)
+          }
+          if (!auth.hasPermission(permission)) Response(Status.FORBIDDEN)
+          else next(request)
+        }
+      }
+
+    fun requireSuperAdmin(): Filter =
+      Filter { next ->
+        { request ->
+          val auth = try { request.authContext } catch (e: Exception) {
+            return@Filter Response(Status.UNAUTHORIZED)
+          }
+          if (auth.tenantRole != "super_admin") Response(Status.FORBIDDEN)
+          else next(request)
+        }
+      }
+
+  auth/TokenService.kt:
+    fun issueToken(user: User, store: InMemoryStore, signingKey: Key): String {
+      val permissions = store.getEffectivePermissions(user.id)
+      val groups = store.getGroupsForUser(user.id, user.tenantId ?: "").map { it.slug }
+      val now = Date()
+      val exp = Date(now.time + 900_000L)
+      return Jwts.builder()
+        .subject(user.id)
+        .issuer("tenantcore-auth")
+        .audience().add("tenantcore-api").and()
+        .claim("tenant_id", user.tenantId)
+        .claim("tenant_role", store.getMembershipRole(user.id, user.tenantId))
+        .claim("groups", groups)
+        .claim("permissions", permissions)
+        .claim("acl_ver", user.aclVer)
+        .claim("jti", UUID.randomUUID().toString())
+        .issuedAt(now)
+        .notBefore(now)
+        .expiration(exp)
+        .signWith(signingKey)
+        .compact()
+    }
+
+  registry/RouteRegistry.kt:
+    data class RouteMetadata(
+      val method: String,
+      val path: String,
+      val permission: String,
+      val tenantScoped: Boolean,
+      val description: String,
+      val service: String,
+      val resource: String,
+      val action: String,
+      val isPublic: Boolean = false,
+      val superAdminOnly: Boolean = false
+    )
+
+    val ROUTE_REGISTRY: List<RouteMetadata> = listOf(...)
+
+    fun getAllowedRoutes(permissions: List<String>): List<RouteMetadata> =
+      ROUTE_REGISTRY.filter { it.isPublic || permissions.contains(it.permission) }
+
+  Main.kt — route composition:
+    val routingHandler = routes(
+      "/health" bind GET to healthRoutes.handler(),
+      "/auth/token" bind POST to authRoutes.tokenHandler(store, signingKey),
+      // Protected routes wrapped with jwtMiddleware:
+      routes(
+        "/me" bind GET to meRoutes.handler(store),
+        "/users" bind GET to (requirePermission("iam:user:read") then usersRoutes.listHandler(store)),
+        // ... all routes per registry
+      ).withFilter(jwtMiddleware(store, verifyKey)),
+      // Admin routes wrapped with both jwtMiddleware and requireSuperAdmin:
+      routes(
+        "/admin/tenants" bind GET to adminRoutes.listTenantsHandler(store),
+        "/admin/tenants" bind POST to adminRoutes.createTenantHandler(store),
+      ).withFilter(jwtMiddleware(store, verifyKey)).withFilter(requireSuperAdmin())
+    )
+    ServerFilters.RequestTracing()
+      .then(routingHandler)
+      .asServer(Jetty(8080))
+      .start()
+
+  Note: http4k's RequestContexts must be set up and the jwtMiddleware Filter
+  must be applied to the RoutingHttpHandler, not globally, to allow public
+  routes to bypass it. Adjust the composition above as needed to match http4k's
+  Filter application semantics.
+
+PART H: Tests
+
+  TokenServiceTest.kt:
+    - testIssueToken_AllClaimsPresent
+    - testIssueToken_ExpiryIs15Minutes
+    - testIssueToken_PermissionsMatchStore
+
+  AuthIntegrationTest.kt:
+    All 12 smoke tests from verification contract.
+    Use http4k's built-in test client: handler(request).
+
+  MeRoutesTest.kt:
+    - testMeResponse_ContainsRequiredFields
+    - testMeResponse_AllowedRoutesFiltered
+    - testMeResponse_SuperAdminShape
+
+PART I: README.md
+
+  Required sections:
+  - What it is
+  - Requirements (Kotlin 1.9+, Java 21+, Gradle 8+)
+  - How to run: ./gradlew run
+  - How to test: ./gradlew test
+  - Key files and what they do
+  - Token issuance example (curl)
+  - /me example
+  - Teaching notes (http4k Filter chain, functional routing, JJWT v0.12,
+    RequestContextKey pattern for auth context)
+
+PART J: build.gradle.kts
+
+  Core dependencies:
+    org.http4k:http4k-core
+    org.http4k:http4k-server-jetty (or undertow)
+    org.http4k:http4k-format-jackson (for JSON)
+    io.jsonwebtoken:jjwt-api:0.12.x
+    io.jsonwebtoken:jjwt-impl:0.12.x (runtimeOnly)
+    io.jsonwebtoken:jjwt-jackson:0.12.x (runtimeOnly)
+
+  Test dependencies:
+    org.http4k:http4k-testing-kotest (or junit5)
+    kotlin("test")
+
+================================================================================
+PARITY MATRIX AND CATALOG UPDATES
+================================================================================
+
+After completing both implementations:
+
+  1. Update examples/canonical-auth/domain/parity-matrix.md:
+     Mark all cells [x] for Java and Kotlin rows.
+     Any cell that could not be completed: mark [~] with a footnote.
+
+  2. Update examples/canonical-auth/CATALOG.md:
+     Change Java and Kotlin rows from [ ] to [x].
+
+================================================================================
+VERIFICATION AND COMMIT
+================================================================================
+
+Run everything:
+  python -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
+  python -m unittest verification/unit/test_jwt_auth_arc_domain.py -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+For Java tests (if mvn is available):
+  cd examples/canonical-auth/java && mvn test
+
+For Kotlin tests (if gradle is available):
+  cd examples/canonical-auth/kotlin && ./gradlew test
+
+If a runtime is not available, state the gap clearly in the commit message.
+Do NOT claim implementation is complete if tests have not run.
+
+Run: python3 scripts/work.py checkpoint
+
+Stage and commit with git add -p:
+
+  [PROMPT_138] JWT auth arc: Java (Spring Boot + JJWT) and Kotlin (http4k + JJWT) examples
+
+  - examples/canonical-auth/java/ — complete Spring Boot + JJWT implementation
+  - examples/canonical-auth/kotlin/ — complete http4k + JJWT implementation
+  - examples/canonical-auth/domain/parity-matrix.md — Java + Kotlin rows updated
+  - examples/canonical-auth/CATALOG.md — Java + Kotlin rows marked [x]
+
+================================================================================
+ARC PROGRESS AFTER THIS PROMPT
+================================================================================
+
+  PROMPT_134 — Foundation [done]
+  PROMPT_135 — Shared domain spec [done]
+  PROMPT_136 — Python + TypeScript [done]
+  PROMPT_137 — Go + Rust [done]
+  PROMPT_138 — Java + Kotlin [this prompt]
+  PROMPT_139 — Ruby + Elixir (next)
+  PROMPT_140 — Hardening and arc completion

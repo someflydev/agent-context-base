@@ -1,0 +1,454 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one
+fresh coding-assistant session with commit prefixes like `[PROMPT_136]`.
+
+PROMPT_134: JWT Auth Arc — Foundation (doctrines, archetype, 8 stacks, skills, workflows).
+PROMPT_135: JWT Auth Arc — Shared domain spec (entities, permission catalog, JWT claim
+            shape, canonical flows, route metadata, /me shape, fixtures, parity matrix).
+
+This prompt (PROMPT_136) implements two language canonical examples:
+  - Python: FastAPI + PyJWT
+  - TypeScript: Hono + jose (Bun runtime)
+
+Both examples must conform to the domain spec in PROMPT_135.
+Both must implement all required flows, routes, and tests from the verification contract.
+
+           [JWT AUTH ARC: Prompt 3 of 7 — Python + TypeScript Implementations]
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                    (run; study output)
+  4. memory/INDEX.md
+
+Read the full arc foundation before writing any code:
+  5. examples/canonical-auth/domain/spec.md            (READ — all sections; this is your spec)
+  6. examples/canonical-auth/domain/parity-matrix.md   (READ — you will update Python and
+                                                         TypeScript rows)
+  7. examples/canonical-auth/domain/verification-contract.md (READ — 12 smoke tests required)
+  8. examples/canonical-auth/CATALOG.md                (READ — you will update 2 rows)
+  9. context/doctrine/jwt-auth-request-context.md      (READ — all 8 rules)
+ 10. context/doctrine/rbac-permission-taxonomy.md      (READ — rules 1–7)
+ 11. context/doctrine/tenant-boundary-enforcement.md   (READ — rules 1–6)
+ 12. context/doctrine/route-metadata-registry.md       (READ — canonical metadata fields)
+ 13. context/doctrine/me-endpoint-discoverability.md   (READ — required /me fields)
+ 14. context/stacks/python-fastapi-pyjwt-rbac.md       (READ — Python stack guidance)
+ 15. context/stacks/typescript-hono-jose-rbac.md       (READ — TypeScript stack guidance)
+ 16. context/archetypes/tenant-aware-backend-api.md    (READ — directory shape)
+ 17. context/stacks/python-fastapi-uv-ruff-orjson-polars.md (READ — Python conventions)
+
+Run verification before writing any code:
+  python -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
+  python -m unittest verification/unit/test_jwt_auth_arc_domain.py -v
+  python scripts/validate_context.py
+
+Do NOT begin implementation until both test suites pass. This prompt does not
+fix PROMPT_134 or PROMPT_135 gaps — resolve those first.
+
+================================================================================
+BACKGROUND: CANONICAL EXAMPLE DESIGN GOALS
+================================================================================
+
+These examples are intentionally constrained:
+- No live database required — fixtures are loaded from JSON at startup
+- No Redis/session storage — acl_ver check is done via in-memory user store
+- No external service dependencies — runs with a single command
+- The in-memory store is a teaching simplification; each README must clearly
+  note where a production system would use a real database
+
+What these examples teach:
+- How to wire JWT validation middleware correctly in this ecosystem
+- How route metadata drives authorization (not inline if-chains)
+- How tenant context is extracted and enforced structurally
+- How /me is computed from token + route registry
+- How to test auth behavior with crafted tokens
+
+Aim for ~350–500 lines of application code per example (not counting tests).
+Prefer clarity over cleverness. Comments should explain auth-specific choices,
+not boilerplate.
+
+================================================================================
+PYTHON IMPLEMENTATION
+================================================================================
+
+PART A: Directory Structure
+
+Create: examples/canonical-auth/python/
+
+  examples/canonical-auth/python/
+    README.md
+    pyproject.toml            (or requirements.txt — use uv-style pyproject.toml)
+    src/
+      __init__.py
+      main.py                 (FastAPI app factory, router registration)
+      auth/
+        __init__.py
+        middleware.py         (JWT validation dependency — FastAPI Depends)
+        token.py              (token builder: issue_token() function)
+        claims.py             (AuthContext dataclass: sub, tenant_id, tenant_role,
+                               groups, permissions, acl_ver)
+      domain/
+        __init__.py
+        store.py              (in-memory store, loads from fixtures JSON on init)
+        models.py             (User, Tenant, Group, Permission dataclasses)
+      routes/
+        __init__.py
+        auth.py               (POST /auth/token)
+        me.py                 (GET /me)
+        users.py              (GET /users, POST /users, GET+PATCH /users/{id})
+        groups.py             (GET /groups, POST /groups, POST /groups/{id}/permissions,
+                               POST /groups/{id}/users)
+        admin.py              (GET /admin/tenants, POST /admin/tenants)
+        health.py             (GET /health)
+      registry/
+        __init__.py
+        routes.py             (ROUTE_REGISTRY: list of RouteMetadata dicts)
+    tests/
+      __init__.py
+      test_token.py           (unit tests: token builder, claim shape, expiry)
+      test_auth.py            (smoke tests: all 12 verification contract tests)
+      test_me.py              (unit tests: /me response shape, allowed_routes)
+      conftest.py             (test client, fixture loader)
+
+PART B: Key Implementation Requirements
+
+  auth/claims.py:
+    @dataclass
+    class AuthContext:
+        sub: str
+        email: str
+        tenant_id: str | None
+        tenant_role: str        # "super_admin" | "tenant_admin" | "tenant_member"
+        groups: list[str]
+        permissions: list[str]
+        acl_ver: int
+        issued_at: datetime
+        expires_at: datetime
+
+    AuthContext must be created from a validated decoded token dict.
+    Include a method: has_permission(self, permission: str) -> bool
+
+  auth/token.py:
+    issue_token(user: User, store: InMemoryStore) -> str
+
+    Must:
+    - load RSA private key (or HS256 secret in test mode via env var)
+    - compute effective permissions from store (user's groups → group_permissions)
+    - set exp = iat + 900 (15 minutes)
+    - embed all claims per domain spec (iss, aud, sub, exp, iat, nbf, jti, tenant_id,
+      tenant_role, groups, permissions, acl_ver)
+    - sign with PyJWT: jwt.encode(payload, key, algorithm="RS256")
+
+    For test mode: accept TENANTCORE_TEST_SECRET env var → use HS256.
+    Document this clearly in a comment.
+
+  auth/middleware.py:
+    get_auth_context(token: HTTPAuthorizationCredentials = Depends(HTTPBearer())) -> AuthContext
+
+    Must:
+    - decode and verify: signature, exp, nbf, iss, aud
+    - raise 401 if any check fails
+    - load user from store by sub
+    - compare token acl_ver to store user.acl_ver; raise 401 if stale
+    - extract tenant_id and verify user is an active member of that tenant
+    - raise 403 if membership check fails
+    - return AuthContext
+
+  registry/routes.py:
+    ROUTE_REGISTRY: list[dict] — one entry per route per domain spec.
+    Each entry has: method, path, permission, tenant_scoped, description,
+    service, resource, action, public (bool).
+
+    Implement get_allowed_routes(permissions: list[str]) -> list[dict]
+    that filters ROUTE_REGISTRY to entries where either public=True or
+    the required permission is in the permissions list.
+
+  routes/me.py:
+    GET /me: requires get_auth_context dependency.
+    Build /me response from AuthContext + store (for tenant_name) +
+    get_allowed_routes(auth.permissions).
+    Must include: sub, email, display_name, tenant_id, tenant_name, tenant_role,
+    groups, permissions, acl_ver, allowed_routes, guide_sections, issued_at,
+    expires_at.
+    guide_sections: unique docs_section values from allowed_routes (if the
+    route registry includes docs_section — omit if not present).
+
+  RBAC enforcement pattern (NOT inline if-chains):
+    Create a FastAPI dependency factory:
+      def require_permission(permission: str):
+          def checker(auth: AuthContext = Depends(get_auth_context)):
+              if not auth.has_permission(permission):
+                  raise HTTPException(status_code=403, detail="Forbidden")
+          return checker
+
+    Use it on routes:
+      @router.get("/users", dependencies=[Depends(require_permission("iam:user:read"))])
+
+  domain/store.py:
+    InMemoryStore class:
+    - loads from examples/canonical-auth/domain/fixtures/ at init
+    - provide methods: get_user_by_id, get_user_by_email, get_tenant_by_id,
+      get_groups_for_user(user_id, tenant_id), get_effective_permissions(user_id),
+      verify_membership(user_id, tenant_id) -> bool, get_tenant_name(tenant_id)
+    - for tenant isolation: all multi-user queries MUST filter by tenant_id
+
+  admin.py routes:
+    Gate with a super_admin check dependency (separate from require_permission):
+      def require_super_admin(auth: AuthContext = Depends(get_auth_context)):
+          if auth.tenant_role != "super_admin":
+              raise HTTPException(status_code=403, ...)
+
+PART C: Tests
+
+  tests/test_token.py — unit tests:
+    - issue_token produces a decodable JWT
+    - claims include all required fields from domain spec
+    - exp - iat == 900 (15 minutes)
+    - permissions list matches user's effective permissions from store
+    - acl_ver in token matches user's acl_ver in store
+
+  tests/test_auth.py — smoke tests for all 12 verification contract flows:
+    Use pytest or unittest with a FastAPI TestClient.
+    For RS256 in tests: use TENANTCORE_TEST_SECRET=test-secret and HS256 mode,
+    OR generate a test RSA key pair in conftest.py (preferred).
+    Craft tokens directly using issue_token() against the fixture store.
+
+  tests/test_me.py — unit tests:
+    - /me returns correct sub, email, tenant_id
+    - allowed_routes contains only routes user has permissions for
+    - allowed_routes does NOT contain routes user lacks permissions for
+    - super_admin /me has tenant_id: null and only /admin/* allowed_routes
+
+PART D: README.md
+
+  Required sections:
+  - What it is (one paragraph)
+  - Requirements (python, uv)
+  - How to run: uv run uvicorn src.main:app --reload
+  - How to test: uv run pytest tests/ -v (or python -m unittest)
+  - Key files and what they do
+  - Token issuance: example curl call to /auth/token
+  - /me: example curl call
+  - Teaching notes: what this is a simplification of (in-memory store,
+    no refresh tokens, HS256 test mode)
+
+PART E: pyproject.toml
+
+  Core dependencies:
+    fastapi >= 0.110
+    uvicorn
+    pyjwt[cryptography] >= 2.8
+    httpx (for tests — TestClient)
+
+  Include a [tool.uv] section if the repo's Python convention uses uv.
+
+================================================================================
+TYPESCRIPT IMPLEMENTATION
+================================================================================
+
+PART F: Directory Structure
+
+Create: examples/canonical-auth/typescript/
+
+  examples/canonical-auth/typescript/
+    README.md
+    package.json              (bun project)
+    tsconfig.json
+    src/
+      index.ts                (Hono app factory, route registration)
+      auth/
+        middleware.ts         (JWT validation Hono middleware)
+        token.ts              (issueToken function)
+        context.ts            (AuthContext interface)
+      domain/
+        store.ts              (InMemoryStore class, loads from fixtures)
+        models.ts             (User, Tenant, Group, Permission interfaces)
+      routes/
+        auth.ts               (POST /auth/token)
+        me.ts                 (GET /me)
+        users.ts              (GET/POST /users, GET/PATCH /users/:id)
+        groups.ts             (GET/POST /groups, POST /groups/:id/permissions,
+                               POST /groups/:id/users)
+        admin.ts              (GET/POST /admin/tenants)
+        health.ts             (GET /health)
+      registry/
+        routes.ts             (ROUTE_REGISTRY array, getAllowedRoutes function)
+    tests/
+      token.test.ts
+      auth.test.ts
+      me.test.ts
+
+PART G: Key Implementation Requirements
+
+  auth/context.ts:
+    interface AuthContext {
+      sub: string
+      email: string
+      tenantId: string | null
+      tenantRole: "super_admin" | "tenant_admin" | "tenant_member"
+      groups: string[]
+      permissions: string[]
+      aclVer: number
+      issuedAt: Date
+      expiresAt: Date
+    }
+    function hasPermission(ctx: AuthContext, permission: string): boolean
+
+  auth/token.ts:
+    async function issueToken(user: User, store: InMemoryStore): Promise<string>
+
+    Must:
+    - use jose: new SignJWT(payload).setProtectedHeader({alg:"ES256"})
+    - compute effective permissions from store
+    - set expiry 15 minutes from now
+    - embed all standard claims per domain spec
+    - for tests: support TENANTCORE_TEST_ALG=HS256 + TENANTCORE_TEST_SECRET
+      (document this clearly)
+
+  auth/middleware.ts:
+    Hono middleware:
+      const jwtMiddleware: MiddlewareHandler = async (c, next) => {
+        // extract Bearer token from Authorization header
+        // verify with jose: jwtVerify(token, key, { issuer, audience })
+        // decode AuthContext from payload
+        // load user from store by sub
+        // verify acl_ver
+        // verify tenant membership
+        // c.set("auth", authContext)
+        // call next()
+      }
+
+  registry/routes.ts:
+    const ROUTE_REGISTRY: RouteMetadata[] = [ ... ]
+    function getAllowedRoutes(permissions: string[]): RouteMetadata[]
+
+  routes/me.ts:
+    GET /me handler: reads c.get("auth"), builds /me response per domain spec.
+
+  RBAC pattern:
+    Factory middleware (not inline checks):
+      function requirePermission(permission: string): MiddlewareHandler {
+        return async (c, next) => {
+          const auth = c.get("auth") as AuthContext
+          if (!hasPermission(auth, permission)) {
+            return c.json({ error: "Forbidden" }, 403)
+          }
+          await next()
+        }
+      }
+
+    Used as:
+      app.get("/users", jwtMiddleware, requirePermission("iam:user:read"), listUsers)
+
+  domain/store.ts:
+    class InMemoryStore:
+    - loads fixture JSON from examples/canonical-auth/domain/fixtures/
+    - methods: getUserById, getUserByEmail, getTenantById, getGroupsForUser,
+      getEffectivePermissions, verifyMembership, getTenantName
+    - all tenant-scoped queries filter by tenantId
+
+PART H: Tests
+
+  Use Bun's built-in test runner (bun:test). Tests should be runnable with:
+    bun test
+
+  tests/token.test.ts:
+    - issueToken produces a verifiable JWT
+    - all required claims are present
+    - expiry is exactly 15 minutes
+
+  tests/auth.test.ts:
+    All 12 smoke tests from verification contract.
+    Use Hono's built-in test client (app.request()) or fetch against a test server.
+    Generate tokens with issueToken() against the fixture store.
+
+  tests/me.test.ts:
+    - /me returns correct auth context fields
+    - allowed_routes filtered by permissions
+    - super_admin /me has correct shape
+
+PART I: README.md
+
+  Required sections:
+  - What it is
+  - Requirements (bun >= 1.x)
+  - How to run: bun run src/index.ts
+  - How to test: bun test
+  - Key files and what they do
+  - Token issuance example
+  - /me example
+  - Teaching notes
+
+PART J: package.json
+
+  dependencies:
+    hono (latest stable)
+    jose (latest stable — v5.x preferred)
+
+  devDependencies:
+    @types/node
+    typescript
+
+================================================================================
+PARITY MATRIX AND CATALOG UPDATES
+================================================================================
+
+After completing both implementations:
+
+  1. Update examples/canonical-auth/domain/parity-matrix.md:
+     Mark all cells [x] for Python and TypeScript rows.
+     Any cell that could not be completed: mark [~] with a footnote explaining
+     what is missing and which prompt should address it.
+
+  2. Update examples/canonical-auth/CATALOG.md:
+     Change Python and TypeScript rows from [ ] to [x].
+
+================================================================================
+VERIFICATION AND COMMIT
+================================================================================
+
+Run everything:
+  python -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
+  python -m unittest verification/unit/test_jwt_auth_arc_domain.py -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+For Python tests (if uv is available):
+  cd examples/canonical-auth/python && uv run python -m pytest tests/ -v
+  (or: uv run python -m unittest discover -s tests -v)
+
+For TypeScript tests (if bun is available):
+  cd examples/canonical-auth/typescript && bun test
+
+If a runtime is not available, state the gap clearly in the commit message.
+Do NOT claim implementation is complete if tests have not run.
+
+Run: python3 scripts/work.py checkpoint
+
+Stage and commit with git add -p:
+
+  [PROMPT_136] JWT auth arc: Python (FastAPI + PyJWT) and TypeScript (Hono + jose) examples
+
+  - examples/canonical-auth/python/ — complete FastAPI + PyJWT implementation
+  - examples/canonical-auth/typescript/ — complete Hono + jose implementation
+  - examples/canonical-auth/domain/parity-matrix.md — Python + TypeScript rows updated
+  - examples/canonical-auth/CATALOG.md — Python + TypeScript rows marked [x]
+
+================================================================================
+ARC PROGRESS AFTER THIS PROMPT
+================================================================================
+
+  PROMPT_134 — Foundation [done]
+  PROMPT_135 — Shared domain spec [done]
+  PROMPT_136 — Python + TypeScript [this prompt]
+  PROMPT_137 — Go + Rust (next)
+  PROMPT_138 — Java + Kotlin
+  PROMPT_139 — Ruby + Elixir
+  PROMPT_140 — Hardening and arc completion

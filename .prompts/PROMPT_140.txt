@@ -1,0 +1,693 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one
+fresh coding-assistant session with commit prefixes like `[PROMPT_140]`.
+
+PROMPT_134: JWT Auth Arc — Foundation.
+PROMPT_135: JWT Auth Arc — Shared domain spec.
+PROMPT_136: JWT Auth Arc — Python + TypeScript.
+PROMPT_137: JWT Auth Arc — Go + Rust.
+PROMPT_138: JWT Auth Arc — Java + Kotlin.
+PROMPT_139: JWT Auth Arc — Ruby + Elixir.
+
+This prompt (PROMPT_140) completes the arc:
+  - Arc overview documentation
+  - Cross-stack parity check runner
+  - Router polish (verify all auth routing questions are answerable)
+  - examples/catalog.json update
+  - docs/ARCHITECTURE_MAP.md update
+  - memory/concepts/jwt-auth-arc.md
+  - Final arc summary
+
+              [JWT AUTH ARC: Prompt 7 of 7 — Hardening and Completion]
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                    (run; study output)
+  4. memory/INDEX.md
+
+Read the full arc state before writing anything:
+  5. context/doctrine/jwt-auth-request-context.md      (READ — audit all rules)
+  6. context/doctrine/rbac-permission-taxonomy.md      (READ)
+  7. context/doctrine/tenant-boundary-enforcement.md   (READ)
+  8. context/doctrine/route-metadata-registry.md       (READ)
+  9. context/doctrine/me-endpoint-discoverability.md   (READ)
+ 10. context/archetypes/tenant-aware-backend-api.md    (READ — audit capability list)
+ 11. examples/canonical-auth/domain/spec.md            (READ)
+ 12. examples/canonical-auth/domain/parity-matrix.md   (READ — verify all 8 rows)
+ 13. examples/canonical-auth/CATALOG.md               (READ — verify 8 rows)
+ 14. context/router/task-router.md                     (READ — you will add entries)
+ 15. context/router/alias-catalog.yaml                 (READ — verify completeness)
+ 16. docs/ARCHITECTURE_MAP.md                          (READ — you will add arc entry)
+ 17. memory/concepts/README.md                         (READ — memory concepts tier rules)
+
+Read arc overview format models from previous arcs:
+ 18. docs/plotly-htmx-arc-overview.md   (READ — if it exists; use as format model)
+ 19. docs/faker-arc-overview.md         (READ — if it exists; format model)
+ 20. memory/concepts/schema-validation-arc.md (READ — if it exists; durable knowledge format)
+
+Run full verification audit before touching anything:
+  python -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
+  python -m unittest verification/unit/test_jwt_auth_arc_domain.py -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Do NOT begin writing until all passing tests from earlier prompts still pass.
+This prompt does not fix PROMPT_134–139 gaps — resolve those first.
+If gaps exist in the parity matrix, document them in a gaps file (see PART 7).
+
+================================================================================
+BACKGROUND: WHY HARDENING IS A SEPARATE PROMPT
+================================================================================
+
+After six substantial prompts, the arc has:
+  - 5 doctrines
+  - 1 archetype
+  - 8 stacks
+  - 4 skills, 2 workflows
+  - 1 manifest
+  - Shared domain spec with 8 entities, 24+ permissions, 10 flows, 14 routes
+  - 8 language canonical implementations
+  - Fixture data and parity matrix
+
+What is still missing:
+  A. Human-readable arc overview for future assistants
+  B. Cross-stack parity check runner
+  C. Router polish
+  D. examples/catalog.json update
+  E. docs/ARCHITECTURE_MAP.md update
+  F. memory/concepts entry for durable arc knowledge
+  G. Arc completion summary
+
+================================================================================
+PART 1: CREATE docs/jwt-auth-arc-overview.md
+================================================================================
+
+This is the single-read document that a future assistant can load to understand
+the entire arc without reading all eight example directories.
+
+Required sections:
+
+  # JWT Auth, RBAC, and Multi-Tenant Backend Patterns Arc
+
+  ## Purpose
+  4–5 sentences. What problem this arc solves. Why JWT + RBAC + route metadata
+  + /me is a coherent system rather than separate concerns. Why teaching this
+  across 8 languages reinforces the mental model that authorization is
+  domain-agnostic. What a developer should understand after working through
+  these examples.
+
+  ## The Core Insight
+  4–5 sentences. The database is the source of truth. Tokens are short-lived
+  snapshots that accelerate request-time checks but must be invalidatable via
+  acl_ver. Route metadata is the durable permission namespace — not URL paths.
+  /me turns authorization state into a self-documenting surface. These four
+  choices are mutually reinforcing — explain why.
+
+  ## The Five Doctrines
+  A table:
+  | Doctrine | File | Key Rule |
+  One row per doctrine. Single most important rule from each.
+
+  ## The Standard Auth Model
+  A description of:
+  - Entity model (users, tenants, memberships, groups, permissions,
+    group_permissions, user_groups, audit_events)
+  - Role hierarchy (super_admin → tenant_admin → tenant_member)
+  - Permission taxonomy ({service}:{resource}:{action})
+  - JWT claim shape (key fields: sub, tenant_id, tenant_role, permissions, acl_ver)
+  - acl_ver invalidation mechanism
+
+  ## Implementation Matrix
+
+  | Language    | Framework    | JWT Library     | Path                              |
+  |-------------|--------------|-----------------|-----------------------------------|
+  | Python      | FastAPI      | PyJWT           | examples/canonical-auth/python/   |
+  | TypeScript  | Hono (Bun)   | jose            | examples/canonical-auth/typescript/ |
+  | Go          | Echo         | golang-jwt/jwt  | examples/canonical-auth/go/       |
+  | Rust        | Axum         | jsonwebtoken    | examples/canonical-auth/rust/     |
+  | Java        | Spring Boot  | JJWT            | examples/canonical-auth/java/     |
+  | Kotlin      | http4k       | JJWT            | examples/canonical-auth/kotlin/   |
+  | Ruby        | Hanami       | ruby-jwt        | examples/canonical-auth/ruby/     |
+  | Elixir      | Phoenix      | Joken           | examples/canonical-auth/elixir/   |
+
+  ## Key Distinctions to Preserve
+
+  A bulleted list of the distinctions most likely to be lost by future assistants:
+    - The database is the source of truth. The token is a snapshot. Never
+      trust token-only data for high-stakes operations without a DB check.
+    - acl_ver is not optional. A token with a stale acl_ver must be rejected.
+      Missing this check makes group/permission changes ineffective until expiry.
+    - Permissions are named {service}:{resource}:{action}. Route URL strings
+      are not the permission namespace.
+    - Route metadata is the source of truth for auth requirements. Inline
+      permission checks that bypass the registry create drift.
+    - Tenant-admin composes from a platform-owned permission catalog. If the
+      example allows tenant-admins to name arbitrary permissions, it is wrong.
+    - /me's allowed_routes must be computed from the route registry filtered
+      by effective permissions. A hardcoded list is a defect.
+    - super_admin is a global role with no tenant_id. Any code path that
+      puts super_admin logic inside the tenant-scoped check path is wrong.
+    - The canonical examples use an in-memory store. Production systems
+      replace this with a real database — and must still enforce all the
+      same invariants.
+    - Python's test mode uses HS256 via TENANTCORE_TEST_SECRET. All other
+      languages have a parallel test-mode escape hatch documented in their
+      README. These are teaching aids, not production patterns.
+
+  ## The /me Endpoint Pattern
+  3–4 sentences describing what /me returns, why allowed_routes is computed
+  not hardcoded, and how guide_sections enables HTMX-driven navigation.
+  Reference context/doctrine/me-endpoint-discoverability.md.
+
+  ## Navigation
+
+  - examples/canonical-auth/CATALOG.md              — implementation status
+  - examples/canonical-auth/domain/spec.md           — entity schema, permission
+                                                       catalog, flows, route metadata
+  - examples/canonical-auth/domain/parity-matrix.md — cross-language status
+  - examples/canonical-auth/domain/verification-contract.md — test requirements
+  - context/archetypes/tenant-aware-backend-api.md  — archetype overview
+  - context/doctrine/jwt-auth-request-context.md   — token validation rules
+  - context/doctrine/rbac-permission-taxonomy.md   — permission naming rules
+  - context/doctrine/tenant-boundary-enforcement.md — tenant isolation rules
+  - context/doctrine/route-metadata-registry.md    — route annotation rules
+  - context/doctrine/me-endpoint-discoverability.md — /me rules
+  - context/skills/jwt-middleware-implementation.md — middleware guidance
+  - context/skills/permission-catalog-design.md    — catalog design guidance
+  - context/skills/me-endpoint-design.md           — /me design guidance
+  - context/skills/route-metadata-annotation.md    — annotation guidance
+  - context/workflows/add-protected-endpoint.md    — 8-step workflow
+  - context/workflows/add-tenant-aware-canonical-example.md — 10-step workflow
+
+  ## Routing Questions This Arc Can Answer
+  12–15 natural-language questions and where to look:
+    - "How do I add JWT auth to my Python/FastAPI app" → python/ + jwt-middleware-implementation.md
+    - "What is the permission naming convention" → rbac-permission-taxonomy.md
+    - "Show me RBAC with JWT in Go" → go/ implementation
+    - "How do I build a /me endpoint" → me-endpoint-design.md + any language example
+    - "How do I invalidate stale tokens" → jwt-auth-request-context.md Rule 6 (acl_ver)
+    - "How does multi-tenancy work with JWT" → tenant-boundary-enforcement.md
+    - "Show me route metadata in Rust/Axum" → rust/ registry/routes.rs
+    - "What claims should my JWT contain" → domain/spec.md JWT Claim Shape section
+    - "How does super-admin work" → domain/spec.md Role Hierarchy section
+    - "How do I test auth behavior" → verification-contract.md + any language tests/
+    - "Show me /me in Elixir/Phoenix" → elixir/ me_controller.ex
+    - "What permissions do I need to read users" → domain/spec.md Route Metadata table
+    - "How do I add a new protected endpoint" → add-protected-endpoint.md workflow
+
+Target length: 130–160 lines.
+
+================================================================================
+PART 2: CREATE verification/auth/run_parity_check.py
+================================================================================
+
+Create: verification/auth/run_parity_check.py
+
+This is the cross-stack parity runner. It checks that all 8 language
+implementations exist and are complete.
+
+  #!/usr/bin/env python3
+  """
+  JWT Auth arc parity check runner.
+
+  Checks:
+  1. All 8 implementation directories exist.
+  2. CATALOG.md marks all 8 implementations as [x].
+  3. parity-matrix.md has no [ ] (not started) cells.
+  4. Fixture files (users, tenants, groups, permissions, memberships) exist
+     and are valid JSON with minimum entry counts.
+  5. Domain spec contains all required sections.
+  6. All 8 README files exist and contain required sections.
+  """
+
+  import sys, json, pathlib, unittest
+
+  REPO_ROOT = pathlib.Path(__file__).parent.parent.parent
+  AUTH_DIR = REPO_ROOT / "examples" / "canonical-auth"
+  FIXTURE_DIR = AUTH_DIR / "domain" / "fixtures"
+
+  REQUIRED_IMPLEMENTATIONS = [
+    "python", "typescript", "go", "rust", "java", "kotlin", "ruby", "elixir"
+  ]
+
+  REQUIRED_FIXTURE_FILES = [
+    "users.json", "tenants.json", "groups.json",
+    "permissions.json", "memberships.json"
+  ]
+
+  REQUIRED_FIXTURE_MINIMUMS = {
+    "users.json": 6,
+    "tenants.json": 2,
+    "groups.json": 3,
+    "permissions.json": 10,
+    "memberships.json": 5
+  }
+
+  REQUIRED_SPEC_SECTIONS = [
+    "## The Permission Catalog",
+    "## JWT Claim Shape Standard",
+    "## Canonical Flows",
+    "## Route Metadata Specification",
+    "## /me Response Shape",
+    "## Fixture Contract"
+  ]
+
+  REQUIRED_README_SECTIONS = [
+    "How to run",
+    "How to test"
+  ]
+
+  class TestImplementationDirectories(unittest.TestCase):
+    def test_all_implementation_dirs_exist(self):
+      for lang in REQUIRED_IMPLEMENTATIONS:
+        d = AUTH_DIR / lang
+        self.assertTrue(d.exists(), f"Missing implementation directory: {d}")
+
+  class TestCatalogCompleteness(unittest.TestCase):
+    def test_catalog_exists(self):
+      self.assertTrue((AUTH_DIR / "CATALOG.md").exists())
+
+    def test_all_implementations_marked_complete(self):
+      catalog = (AUTH_DIR / "CATALOG.md").read_text()
+      display_names = {
+        "python": "Python", "typescript": "TypeScript",
+        "go": "Go", "rust": "Rust", "java": "Java",
+        "kotlin": "Kotlin", "ruby": "Ruby", "elixir": "Elixir"
+      }
+      for lang, name in display_names.items():
+        found_complete = False
+        for line in catalog.splitlines():
+          if name in line and "[x]" in line:
+            found_complete = True
+            break
+        self.assertTrue(found_complete,
+          f"{name} not marked [x] in CATALOG.md")
+
+  class TestParityMatrixCompleteness(unittest.TestCase):
+    def test_no_not_started_cells(self):
+      matrix = (AUTH_DIR / "domain" / "parity-matrix.md").read_text()
+      not_started = [line for line in matrix.splitlines()
+                     if "| [ ]" in line or "|[ ]" in line]
+      self.assertEqual(not_started, [],
+        f"Parity matrix has incomplete rows:\n" + "\n".join(not_started))
+
+  class TestFixtureFiles(unittest.TestCase):
+    def test_fixture_files_exist_and_valid(self):
+      for fname in REQUIRED_FIXTURE_FILES:
+        path = FIXTURE_DIR / fname
+        self.assertTrue(path.exists(), f"Missing fixture: {path}")
+        data = json.loads(path.read_text())
+        self.assertIsInstance(data, list, f"{fname} should be a JSON array")
+        minimum = REQUIRED_FIXTURE_MINIMUMS.get(fname, 1)
+        self.assertGreaterEqual(len(data), minimum,
+          f"{fname}: expected >= {minimum} entries, got {len(data)}")
+
+  class TestDomainSpecSections(unittest.TestCase):
+    def test_spec_has_required_sections(self):
+      spec = (AUTH_DIR / "domain" / "spec.md").read_text()
+      for section in REQUIRED_SPEC_SECTIONS:
+        self.assertIn(section, spec, f"Missing section in spec.md: {section}")
+
+  class TestReadmeFiles(unittest.TestCase):
+    def test_all_readmes_exist_with_required_sections(self):
+      for lang in REQUIRED_IMPLEMENTATIONS:
+        readme = AUTH_DIR / lang / "README.md"
+        self.assertTrue(readme.exists(), f"Missing README: {readme}")
+        text = readme.read_text()
+        for section in REQUIRED_README_SECTIONS:
+          self.assertIn(section, text,
+            f"README for {lang} missing section: '{section}'")
+
+  class TestArcDocumentation(unittest.TestCase):
+    def test_arc_overview_exists(self):
+      p = REPO_ROOT / "docs" / "jwt-auth-arc-overview.md"
+      self.assertTrue(p.exists(), "Missing docs/jwt-auth-arc-overview.md")
+
+    def test_arc_overview_has_implementation_matrix(self):
+      text = (REPO_ROOT / "docs" / "jwt-auth-arc-overview.md").read_text()
+      self.assertIn("Implementation Matrix", text)
+
+    def test_arc_overview_has_all_eight_languages(self):
+      text = (REPO_ROOT / "docs" / "jwt-auth-arc-overview.md").read_text()
+      for lang in ["Python", "TypeScript", "Go", "Rust", "Java", "Kotlin", "Ruby", "Elixir"]:
+        self.assertIn(lang, text, f"Arc overview missing language: {lang}")
+
+  if __name__ == "__main__":
+    result = unittest.main(exit=False, verbosity=2)
+    sys.exit(0 if result.result.wasSuccessful() else 1)
+
+================================================================================
+PART 3: ROUTER POLISH PASS
+================================================================================
+
+Read context/router/task-router.md in full.
+
+Verify that the following routing questions are all answerable. For each gap,
+add or fix the relevant entry. Mark new entries with: # added by PROMPT_140
+
+Questions the task router must handle after this polish pass:
+
+  - "how do I add JWT auth to my app"
+    → context/doctrine/jwt-auth-request-context.md
+    → context/skills/jwt-middleware-implementation.md
+
+  - "what is the permission naming convention / how do I name permissions"
+    → context/doctrine/rbac-permission-taxonomy.md
+
+  - "show me RBAC with custom claims in Go / Rust / Python / etc."
+    → examples/canonical-auth/<language>/
+    → context/stacks/<language>-*-rbac.md
+
+  - "how do I build a /me endpoint"
+    → context/skills/me-endpoint-design.md
+    → context/doctrine/me-endpoint-discoverability.md
+    → examples/canonical-auth/python/src/routes/me.py (or any language)
+
+  - "how do I invalidate JWT tokens / handle stale authorization"
+    → context/doctrine/jwt-auth-request-context.md (Rule 6 — acl_ver)
+
+  - "how does multi-tenancy work with JWT"
+    → context/doctrine/tenant-boundary-enforcement.md
+
+  - "show me route metadata / route annotation for auth"
+    → context/doctrine/route-metadata-registry.md
+    → context/skills/route-metadata-annotation.md
+
+  - "what claims should a JWT contain"
+    → examples/canonical-auth/domain/spec.md (JWT Claim Shape Standard)
+
+  - "how do I test JWT auth / auth smoke tests"
+    → examples/canonical-auth/domain/verification-contract.md
+    → examples/canonical-auth/<language>/tests/
+
+  - "show me the permission catalog"
+    → examples/canonical-auth/domain/spec.md (The Permission Catalog section)
+    → context/doctrine/rbac-permission-taxonomy.md
+
+  - "how does super-admin work / super-admin vs tenant-admin"
+    → examples/canonical-auth/domain/spec.md (Role Hierarchy section)
+    → context/doctrine/tenant-boundary-enforcement.md (Rule 3)
+
+  - "cross-stack parity status for auth examples"
+    → examples/canonical-auth/domain/parity-matrix.md
+    → verification/auth/run_parity_check.py
+
+  - "show the auth canonical example catalog"
+    → examples/canonical-auth/CATALOG.md
+
+Also verify context/router/alias-catalog.yaml has the aliases added in PROMPT_134.
+If any are missing, add them now.
+
+================================================================================
+PART 4: UPDATE examples/catalog.json
+================================================================================
+
+Read examples/catalog.json to understand the schema. Pattern after existing entries.
+
+Add 9 entries: 8 language implementations + 1 domain spec reference.
+
+Each entry must include: path, category, summary, stacks, archetypes,
+workflows, patterns, rank, stability.
+
+Entries to add:
+
+  {
+    "path": "examples/canonical-auth/python/",
+    "category": "authentication",
+    "summary": "FastAPI + PyJWT JWT auth with RBAC, multi-tenant scoping, route metadata, and /me endpoint.",
+    "stacks": ["python-fastapi-pyjwt-rbac"],
+    "archetypes": ["tenant-aware-backend-api"],
+    "workflows": ["add-protected-endpoint", "add-tenant-aware-canonical-example"],
+    "patterns": ["jwt-rbac", "route-metadata", "me-endpoint", "tenant-scoped-api", "in-memory-fixture-store"],
+    "rank": 88,
+    "stability": "canonical"
+  }
+
+  (repeat for typescript, go, rust, java, kotlin, ruby, elixir with appropriate
+   stacks and framework-specific summaries)
+
+  {
+    "path": "examples/canonical-auth/domain/spec.md",
+    "category": "authentication",
+    "summary": "TenantCore IAM domain spec — 24+ permissions, 10 flows, route metadata, /me shape, shared fixtures.",
+    "stacks": [],
+    "archetypes": ["tenant-aware-backend-api"],
+    "workflows": [],
+    "patterns": ["cross-language-parity", "permission-catalog", "jwt-claim-shape", "me-endpoint"],
+    "rank": 92,
+    "stability": "canonical"
+  }
+
+================================================================================
+PART 5: UPDATE docs/ARCHITECTURE_MAP.md
+================================================================================
+
+Read ARCHITECTURE_MAP.md in full. Add the JWT auth arc to the map.
+
+Find the appropriate section for canonical example arcs. Add a brief entry:
+
+  ## JWT Auth, RBAC, and Multi-Tenant Patterns Arc
+
+  Status: COMPLETE (PROMPT_134–140)
+
+  - doctrines (5): jwt-auth-request-context, rbac-permission-taxonomy,
+    tenant-boundary-enforcement, route-metadata-registry, me-endpoint-discoverability
+  - archetype: tenant-aware-backend-api
+  - stacks (8): python-fastapi-pyjwt-rbac, typescript-hono-jose-rbac,
+    go-echo-golang-jwt-rbac, rust-axum-jsonwebtoken-rbac,
+    java-spring-jjwt-rbac, kotlin-http4k-jjwt-rbac,
+    ruby-hanami-ruby-jwt-rbac, elixir-phoenix-joken-rbac
+  - skills (4): jwt-middleware-implementation, permission-catalog-design,
+    me-endpoint-design, route-metadata-annotation
+  - workflows: add-protected-endpoint, add-tenant-aware-canonical-example
+  - canonical examples: python, typescript, go, rust, java, kotlin, ruby, elixir
+  - domain: TenantCore IAM (dogfoods TenantCore entity model from faker arc)
+  - overview: docs/jwt-auth-arc-overview.md
+
+================================================================================
+PART 6: CREATE memory/concepts/jwt-auth-arc.md
+================================================================================
+
+Read memory/concepts/README.md for the rules of the concepts tier.
+Read memory/concepts/schema-validation-arc.md (if it exists) for format reference.
+Read memory/concepts/plotly-htmx-arc.md (if it exists) for format reference.
+
+This is the durable knowledge entry for future assistant sessions.
+
+  # JWT Auth, RBAC, and Multi-Tenant Patterns Arc
+
+  ## What This Arc Teaches
+  4–5 sentences. The five-doctrine system (token validation, permission taxonomy,
+  tenant boundary, route metadata, /me discoverability) is a coherent framework
+  for production auth — not five separate concerns. Why acl_ver is the key
+  mechanism that makes short-lived tokens safe to use without real-time DB checks.
+  Why route metadata must be the single source of truth for authorization
+  requirements. Why /me is a first-class architectural feature, not a debug
+  endpoint.
+
+  ## The Key Non-Negotiables
+  A bulleted list of the things future assistants most often get wrong:
+  - The database is the source of truth. The token is a snapshot.
+  - acl_ver must be checked. Missing this makes permission revocation ineffective.
+  - Permission names are {service}:{resource}:{action}, not URL paths.
+  - Tenant-admin composes from the platform's permission catalog. No tenant-defined atoms.
+  - Route metadata drives enforcement AND /me. No dual source of truth.
+  - super_admin has no tenant_id. Super-admin logic must never live in the
+    tenant-scoped permission check path.
+  - /me allowed_routes is computed from route registry filtered by permissions.
+    A hardcoded allowed_routes list is a defect.
+
+  ## Library Defaults by Language
+  A compact table:
+  | Language   | Library        | Why                                    |
+  | Python     | PyJWT          | battle-tested, minimal API             |
+  | TypeScript | jose           | ESM-native, runtime-agnostic           |
+  | Go         | golang-jwt/jwt | focused, idiomatic                     |
+  | Rust       | jsonwebtoken   | most mature, best docs                 |
+  | Java       | JJWT v0.12     | fluent builder, wide adoption          |
+  | Kotlin     | JJWT v0.12     | JVM parity with Java example           |
+  | Ruby       | ruby-jwt       | canonical Ruby JWT base                |
+  | Elixir     | Joken          | Elixir-native, composable pipeline     |
+
+  ## The TenantCore IAM Domain
+  3–4 sentences. The canonical domain is TenantCore — the same SaaS platform
+  used in the faker arc. The entity model (users, tenants, memberships, groups,
+  permissions, group_permissions, user_groups, audit_events) reflects a
+  real multi-tenant RBAC system. All 8 language examples load the same JSON
+  fixture files from examples/canonical-auth/domain/fixtures/. The fixture
+  data is hardcoded (not randomly generated) for deterministic tests.
+
+  ## Test Mode Pattern
+  All implementations support a test mode: HS256 signing with a
+  TENANTCORE_TEST_SECRET environment variable. RS256 is the default for
+  production-like behavior. The test mode escape hatch is documented in
+  each language README and should not be used outside tests.
+
+  ## Navigation Shortcuts
+  - Domain spec: examples/canonical-auth/domain/spec.md
+  - Permission catalog: spec.md → "The Permission Catalog" section
+  - JWT claim shape: spec.md → "JWT Claim Shape Standard" section
+  - All 8 implementations: examples/canonical-auth/CATALOG.md
+  - Cross-stack status: examples/canonical-auth/domain/parity-matrix.md
+  - Primary doctrine: context/doctrine/jwt-auth-request-context.md
+  - Arc overview: docs/jwt-auth-arc-overview.md
+
+Target length: 55–75 lines. Dense, assistant-oriented, no wasted prose.
+
+================================================================================
+PART 7: CREATE docs/jwt-auth-arc-prompt-pack.md
+================================================================================
+
+Create: docs/jwt-auth-arc-prompt-pack.md
+
+This is a human-readable summary of the prompt pack itself — not the arc
+overview for future coding assistants (that is docs/jwt-auth-arc-overview.md),
+but a concise reference for humans who want to understand the prompt file
+sequence, what each prompt does, and how to run them.
+
+Required sections:
+
+  # JWT Auth Arc — Prompt Pack Summary
+
+  ## Prompt Pack: PROMPT_134–140
+
+  One-paragraph description of what this arc adds to agent-context-base.
+
+  ## Files in Order
+
+  A table: filename → purpose (one line each)
+
+  ## Prompt Details
+
+  One subsection per prompt (PROMPT_134 through PROMPT_140).
+  For each: what it creates, key design decisions, and what must exist
+  before it runs.
+
+  ## Execution Order
+
+  A short diagram or numbered list. Emphasize that 134 and 135 must run
+  before any language implementation, 136–139 update the shared parity
+  matrix so sequential is safer, and 140 requires all prior prompts.
+
+  ## Sequencing Rationale
+
+  4–5 bullet points explaining why the arc is split the way it is:
+  - Why foundation before domain spec
+  - Why domain spec before implementations
+  - Why two languages per implementation prompt (the conceptual groupings)
+  - Why a separate hardening prompt
+
+  ## How This Arc Fits agent-context-base
+
+  3–4 sentences on what was missing from the repo before this arc and how
+  the auth domain is native (same structure as prior arcs, dogfoods TenantCore,
+  registers into existing routers and catalog).
+
+  ## Repo Structures Extended
+
+  A table: structure → which prompt extends it
+
+Target length: 80–120 lines. Useful to a human, not to an assistant session.
+
+================================================================================
+PART 8: ARC COMPLETION GAP AUDIT
+================================================================================
+
+Before writing the arc completion documentation, perform this audit:
+
+  A. Read examples/canonical-auth/domain/parity-matrix.md in full.
+     If any cell is [ ] or [~], it means an earlier prompt is incomplete.
+     Document the gap: create docs/jwt-auth-arc-gaps.md listing what is missing
+     and which prompt should fix it.
+     Do NOT attempt to fix implementation gaps in this prompt.
+
+  B. Run verification/auth/run_parity_check.py.
+     If tests fail, add the failures to docs/jwt-auth-arc-gaps.md.
+     Do not claim arc completion if parity_check reports failures.
+
+  C. Check that all 8 examples/canonical-auth/<language>/README.md files exist
+     and contain "How to run" and "How to test" sections.
+     If any README is missing or incomplete, create or patch it.
+
+  D. Verify that verification/unit/test_jwt_auth_arc_foundation.py and
+     verification/unit/test_jwt_auth_arc_domain.py both pass.
+     If either fails, fix the specific failing test (likely a missing file).
+
+If gaps are found, state them in the commit message.
+A commit with known gaps is better than a silently incomplete arc.
+
+================================================================================
+PART 8: RUN FULL VERIFICATION AND COMMIT
+================================================================================
+
+Run everything:
+  python -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
+  python -m unittest verification/unit/test_jwt_auth_arc_domain.py -v
+  python verification/auth/run_parity_check.py
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+All arc-specific tests must pass. Fix any test regressions before committing.
+
+Run: python3 scripts/work.py checkpoint
+
+Stage and commit with git add -p:
+
+  [PROMPT_140] Complete JWT auth arc — hardening and overview
+
+  - docs/jwt-auth-arc-overview.md
+  - docs/jwt-auth-arc-prompt-pack.md
+  - verification/auth/run_parity_check.py
+  - context/router/task-router.md — router polish (auth routing coverage)
+  - examples/catalog.json — 9 new entries (8 implementations + domain spec)
+  - docs/ARCHITECTURE_MAP.md — jwt-auth arc marked COMPLETE
+  - memory/concepts/jwt-auth-arc.md
+  [- docs/jwt-auth-arc-gaps.md — if any gaps found]
+
+================================================================================
+ARC COMPLETION SUMMARY
+================================================================================
+
+After PROMPT_140, the JWT Auth, RBAC, and Multi-Tenant Patterns arc is complete:
+
+  PROMPT_134 — Foundation
+    5 doctrines, 1 archetype (tenant-aware-backend-api), 8 stacks, 4 skills,
+    2 workflows, 1 manifest, router updates, AGENT.md section, structural tests
+
+  PROMPT_135 — Shared Domain Spec
+    Entity schema, permission catalog (24+ atoms), JWT claim shape, 10 flows,
+    route metadata spec, /me response shape, fixture generator, fixture JSON,
+    parity matrix, verification contract, CATALOG skeleton
+
+  PROMPT_136 — Python + TypeScript
+    Python: FastAPI + PyJWT + in-memory store + all routes + /me + 12 smoke tests
+    TypeScript: Hono (Bun) + jose + same pattern
+
+  PROMPT_137 — Go + Rust
+    Go: Echo + golang-jwt/jwt + RouteMetadata structs + all routes + /me + tests
+    Rust: Axum + jsonwebtoken + FromRequestParts extractor + all routes + /me + tests
+
+  PROMPT_138 — Java + Kotlin
+    Java: Spring Boot + JJWT + OncePerRequestFilter + @PreAuthorize + /me + tests
+    Kotlin: http4k + JJWT + Filter chain + functional routing + /me + tests
+
+  PROMPT_139 — Ruby + Elixir
+    Ruby: Hanami + ruby-jwt + Rack middleware + Data.define AuthContext + /me + tests
+    Elixir: Phoenix + Joken + Plug pipeline + GenServer store + /me + ExUnit tests
+
+  PROMPT_140 — Hardening
+    Arc overview, prompt pack summary, parity runner, router polish,
+    catalog.json (9 entries), ARCHITECTURE_MAP, memory/concepts entry, gap audit
+
+The arc teaches JWT-backed authentication and RBAC across 8 backend language
+ecosystems, with a shared TenantCore IAM domain, a platform-owned permission
+catalog, route metadata as the authorization source of truth, and a /me
+endpoint that makes authorization state self-documenting.

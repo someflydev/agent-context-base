@@ -1,0 +1,670 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one
+fresh coding-assistant session with commit prefixes like `[PROMPT_135]`.
+
+PROMPT_134: JWT Auth Arc — Foundation.
+  Completed: 5 doctrines, 1 archetype (tenant-aware-backend-api), 8 stacks,
+  4 skills, 2 workflows, 1 manifest, router updates, structural tests.
+
+This prompt (PROMPT_135) creates the shared domain for the JWT auth arc:
+the entity schema, permission catalog, canonical JWT claim shape, canonical
+flows, /me response shape, shared fixture data, route metadata specification,
+parity matrix skeleton, verification contract, and CATALOG.md skeleton.
+
+PROMPT_136–139 implement language-specific canonical examples using this spec.
+PROMPT_140 hardens, documents, and closes the arc.
+
+            [JWT AUTH ARC: Prompt 2 of 7 — Shared Domain Spec]
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                    (run; study output)
+  4. memory/INDEX.md
+
+Read the full arc foundation before writing anything:
+  5. context/doctrine/jwt-auth-request-context.md     (READ — all rules)
+  6. context/doctrine/rbac-permission-taxonomy.md     (READ — all rules)
+  7. context/doctrine/tenant-boundary-enforcement.md  (READ — all rules)
+  8. context/doctrine/route-metadata-registry.md      (READ — canonical metadata fields)
+  9. context/doctrine/me-endpoint-discoverability.md  (READ — required /me fields)
+ 10. context/archetypes/tenant-aware-backend-api.md   (READ — directory shape)
+ 11. context/workflows/add-tenant-aware-canonical-example.md (READ — 10 steps)
+
+Read format models from the most recent arc:
+ 12. examples/canonical-analytics/domain/spec.md      (READ — domain spec format model)
+ 13. examples/canonical-analytics/domain/parity-matrix.md (READ — parity matrix format)
+ 14. examples/canonical-analytics/CATALOG.md          (READ — CATALOG format model)
+ 15. examples/canonical-faker/CATALOG.md              (READ — alternate catalog format)
+
+Read existing fixture/verification patterns:
+ 16. verification/unit/test_jwt_auth_arc_foundation.py (READ — foundation test exists)
+ 17. examples/canonical-analytics/domain/verification-contract.md (READ — format model)
+
+Run verification before touching any file:
+  python -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Do NOT begin writing until all foundation tests pass. If test_jwt_auth_arc_foundation.py
+does not exist, PROMPT_134 is incomplete — resolve that first.
+
+================================================================================
+BACKGROUND: WHY A SEPARATE DOMAIN SPEC PROMPT
+================================================================================
+
+The canonical auth domain is more complex than a data-analytics domain spec
+because it involves multiple interacting entities, role hierarchies, a
+platform-managed permission catalog, canonical flows with specific actor
+sequences, and a shared contract for /me output shape.
+
+Getting this right once — before any implementation — means all 8 language
+examples will be members of the same family rather than independent
+interpretations. The spec is the parity contract.
+
+The canonical domain is called TenantCore (the same SaaS platform used in
+the faker arc). This is intentional dogfooding: the faker arc generates
+realistic TenantCore data; the auth arc implements TenantCore's access
+control. Fixture data in this arc should be consistent with the TenantCore
+entity definitions established in the faker arc.
+
+================================================================================
+PART 1: CREATE DIRECTORY STRUCTURE
+================================================================================
+
+Create the canonical-auth directory skeleton:
+
+  examples/canonical-auth/
+    CATALOG.md             (created in PART 7)
+    domain/
+      spec.md              (created in PART 2)
+      parity-matrix.md     (created in PART 6)
+      verification-contract.md (created in PART 5)
+      fixtures/
+        users.json         (created in PART 4)
+        tenants.json       (created in PART 4)
+        groups.json        (created in PART 4)
+        permissions.json   (created in PART 4)
+        memberships.json   (created in PART 4)
+
+Each language implementation directory (python/, typescript/, go/, rust/,
+java/, kotlin/, ruby/, elixir/) is created by PROMPT_136–139. This prompt
+creates only the domain/ structure and CATALOG.md.
+
+================================================================================
+PART 2: CREATE examples/canonical-auth/domain/spec.md
+================================================================================
+
+This is the authoritative reference document for the canonical TenantCore
+IAM domain. All 8 language implementations must conform to this spec.
+Future assistants implementing a new language start here.
+
+Required sections:
+
+  # TenantCore IAM Domain Specification
+
+  ## Purpose
+  3–4 sentences. What TenantCore IAM is. Why it is the shared domain for
+  the jwt-auth arc. How it connects to the TenantCore entity graph from
+  the faker arc. What makes it a good teaching domain for auth patterns.
+
+  ## Core Entities
+
+  ### users
+  Fields: id (UUID), email (unique), display_name, tenant_id (FK → tenants),
+  created_at, is_active, acl_ver (int, incremented on permission change)
+
+  ### tenants
+  Fields: id (UUID), slug (unique), name, created_at, is_active
+
+  ### memberships
+  Fields: id (UUID), user_id (FK → users), tenant_id (FK → tenants),
+  tenant_role (enum: super_admin / tenant_admin / tenant_member),
+  created_at, is_active
+  Note: super_admin has no tenant_id (it is NULL / omitted). Model this
+  explicitly — super_admin is a global role.
+
+  ### groups
+  Fields: id (UUID), tenant_id (FK → tenants), slug (unique per tenant),
+  name, created_at
+
+  ### permissions
+  Fields: id (UUID), name (format: {service}:{resource}:{action}),
+  description, created_at
+  Note: This is the platform-owned permission catalog. No tenant-local
+  additions. Owned and seeded by the platform.
+
+  ### group_permissions
+  Fields: id (UUID), group_id (FK → groups), permission_id (FK → permissions),
+  granted_at
+
+  ### user_groups
+  Fields: id (UUID), user_id (FK → users), group_id (FK → groups), joined_at
+
+  ### audit_events
+  Fields: id (UUID), actor_id (FK → users), actor_role, tenant_id (nullable),
+  action, resource_type, resource_id, outcome (success/failure), created_at,
+  metadata (JSON blob)
+
+  ## Role Hierarchy
+
+  A clear description of:
+  - super_admin: global; not tenant-scoped; can create tenants, assign
+    tenant_admins, inspect cross-tenant state. No tenant_id in token.
+  - tenant_admin: tenant-scoped; creates users, groups, assigns permissions
+    to groups from catalog, assigns users to groups within their tenant.
+  - tenant_member: tenant-scoped; acts within their group-granted permissions.
+
+  ## The Permission Catalog
+
+  Define the canonical 20+ permission atoms used across all examples.
+  Organized by service. All implementations must seed these exact atoms.
+
+  Service: iam
+    iam:user:read
+    iam:user:create
+    iam:user:update
+    iam:user:delete
+    iam:user:invite
+    iam:group:read
+    iam:group:create
+    iam:group:update
+    iam:group:delete
+    iam:group:assign_permission
+    iam:group:assign_user
+    iam:tenant:read
+    iam:tenant:create
+    iam:tenant:update
+    iam:permission:read
+
+  Service: billing
+    billing:invoice:read
+    billing:invoice:create
+    billing:subscription:read
+    billing:subscription:update
+
+  Service: reports
+    reports:usage:read
+    reports:usage:export
+    reports:audit:read
+
+  Service: admin (super-admin only)
+    admin:tenant:create
+    admin:tenant:suspend
+    admin:audit:read
+
+  ## JWT Claim Shape Standard
+
+  The canonical claim shape for all 8 implementations:
+
+    {
+      "iss": "tenantcore-auth",
+      "aud": "tenantcore-api",
+      "sub": "<user UUID>",
+      "exp": <unix timestamp — max 15 minutes from iat>,
+      "iat": <unix timestamp>,
+      "nbf": <unix timestamp — same as iat>,
+      "jti": "<UUID — unique token ID>",
+      "tenant_id": "<tenant UUID or null for super_admin>",
+      "tenant_role": "tenant_admin | tenant_member | super_admin",
+      "groups": ["<group-slug>", ...],
+      "permissions": ["iam:user:read", ...],
+      "acl_ver": <int>
+    }
+
+  Notes:
+  - permissions are embedded for fast request-time checks
+  - acl_ver must match users.acl_ver or the token is treated as stale
+  - super_admin tokens omit tenant_id (null or absent)
+  - groups carries slugs (not IDs) for human-legibility
+  - jti enables token replay prevention (optional in smoke tests)
+  - signing: RS256 default; HS256 acceptable only in test/dev mode
+
+  ## Canonical Flows
+
+  The following flows must be implemented by all language examples.
+  Each flow lists the actor, inputs, expected outcome, and which permissions
+  are required.
+
+  ### Flow 1: Issue Token
+  Actor: any authenticated user (via username + password or test endpoint)
+  Input: user credentials
+  Output: signed JWT with claims per shape above
+  Permissions: none (public endpoint for credential exchange)
+  Notes: In canonical examples, a /token or /auth/token endpoint accepts
+         email + password (plaintext in dev fixtures — hash in real systems).
+
+  ### Flow 2: GET /me
+  Actor: any valid token holder
+  Input: Bearer token
+  Output: JSON with sub, tenant context, groups, permissions,
+          allowed_routes (filtered route registry), guide_sections
+  Permissions: none beyond a valid token
+  Error: 401 if token missing or invalid
+
+  ### Flow 3: Super Admin — Create Tenant
+  Actor: super_admin
+  Input: tenant name, slug, first tenant_admin email
+  Output: new tenant record; new user record; membership record with tenant_admin role
+  Permissions: admin:tenant:create
+  Error: 403 if not super_admin
+
+  ### Flow 4: Tenant Admin — Create Group
+  Actor: tenant_admin
+  Input: group name, group slug, optional permissions (must be from catalog)
+  Output: new group in actor's tenant
+  Permissions: iam:group:create
+  Error: 403 if not tenant_admin; 400 if permission not in catalog
+
+  ### Flow 5: Tenant Admin — Assign Permission to Group
+  Actor: tenant_admin
+  Input: group_id, permission_id (must be catalog permission)
+  Output: group_permissions record created
+  Permissions: iam:group:assign_permission
+  Error: 403 if not tenant_admin; 404 if group not in actor's tenant
+
+  ### Flow 6: Tenant Admin — Invite User
+  Actor: tenant_admin
+  Input: email, display_name, initial group slugs
+  Output: new user record, membership, user_group records
+  Permissions: iam:user:invite
+  Error: 403 if not tenant_admin
+
+  ### Flow 7: Tenant Admin — Assign User to Group
+  Actor: tenant_admin
+  Input: user_id, group_id (both must be in actor's tenant)
+  Output: user_groups record created
+  Permissions: iam:group:assign_user
+  Error: 403 if not tenant_admin; 404 if user or group not in actor's tenant
+
+  ### Flow 8: Tenant Member — Read Users in Tenant
+  Actor: tenant_member with iam:user:read
+  Input: Bearer token
+  Output: list of users in actor's tenant
+  Permissions: iam:user:read
+  Error: 403 if missing permission; 401 if invalid token
+
+  ### Flow 9: Cross-Tenant Denial
+  Actor: tenant_member from tenant A
+  Input: valid token, request targeting tenant B resource
+  Output: 403
+  Purpose: This is a negative test. It must be implemented as a test in
+           every language example.
+
+  ### Flow 10: Stale ACL Version Denial
+  Actor: tenant_member with an acl_ver behind current users.acl_ver
+  Input: valid (non-expired) token with stale acl_ver
+  Output: 401 (token treated as expired due to stale acl_ver)
+  Purpose: This negative test verifies authorization versioning works.
+
+  ## Route Metadata Specification
+
+  The route registry is the shared source of truth for all implementations.
+  Every implementation must register (at minimum) these routes:
+
+  | Method | Path                         | Permission              | Tenant Scoped | Super Admin Only | Public |
+  |--------|------------------------------|-------------------------|---------------|-----------------|--------|
+  | POST   | /auth/token                  | (none)                  | false         | false           | true   |
+  | GET    | /me                          | (none — valid token)    | true          | false           | false  |
+  | GET    | /users                       | iam:user:read           | true          | false           | false  |
+  | POST   | /users                       | iam:user:invite         | true          | false           | false  |
+  | GET    | /users/{id}                  | iam:user:read           | true          | false           | false  |
+  | PATCH  | /users/{id}                  | iam:user:update         | true          | false           | false  |
+  | GET    | /groups                      | iam:group:read          | true          | false           | false  |
+  | POST   | /groups                      | iam:group:create        | true          | false           | false  |
+  | POST   | /groups/{id}/permissions     | iam:group:assign_permission | true     | false           | false  |
+  | POST   | /groups/{id}/users           | iam:group:assign_user   | true          | false           | false  |
+  | GET    | /permissions                 | iam:permission:read     | true          | false           | false  |
+  | GET    | /admin/tenants               | admin:tenant:create     | false         | true            | false  |
+  | POST   | /admin/tenants               | admin:tenant:create     | false         | true            | false  |
+  | GET    | /health                      | (none)                  | false         | false           | true   |
+
+  Implementations may add additional routes but must implement all of the above.
+
+  ## /me Response Shape
+
+  The exact JSON structure all implementations must return for GET /me:
+
+    {
+      "sub": "user-uuid",
+      "email": "user@example.com",
+      "display_name": "Alice Example",
+      "tenant_id": "tenant-uuid",
+      "tenant_name": "Acme Corp",
+      "tenant_role": "tenant_admin",
+      "groups": ["iam-admins", "billing-readers"],
+      "permissions": ["iam:user:read", "iam:user:create", "billing:invoice:read"],
+      "acl_ver": 3,
+      "allowed_routes": [
+        {
+          "method": "GET",
+          "path": "/users",
+          "permission": "iam:user:read",
+          "description": "List users in the active tenant"
+        },
+        ...
+      ],
+      "guide_sections": ["User Management", "Billing"],
+      "issued_at": "2025-01-01T00:00:00Z",
+      "expires_at": "2025-01-01T00:15:00Z"
+    }
+
+  Super admin /me response:
+  - tenant_id: null
+  - tenant_role: "super_admin"
+  - groups: []
+  - allowed_routes: includes only /admin/* routes
+
+  ## Fixture Contract
+
+  All implementations load fixture data from
+  examples/canonical-auth/domain/fixtures/ at startup (or test time).
+
+  Fixture files are JSON. The fixture set must include:
+  - At least 2 tenants
+  - At least 1 super_admin user
+  - At least 1 tenant_admin per tenant
+  - At least 2 tenant_members per tenant
+  - At least 3 groups across tenants
+  - At least 5 permissions in the catalog (subset of full catalog)
+  - At least 2 group-permission assignments
+  - At least 2 user-group assignments
+
+  Implementations load fixtures directly; they do not hit a live database
+  in smoke tests. An in-memory store is acceptable for the canonical example.
+
+Target length for spec.md: 160–200 lines.
+
+================================================================================
+PART 3: WRITE THE FIXTURE GENERATOR SCRIPT
+================================================================================
+
+Create: examples/canonical-auth/domain/generate_fixtures.py
+
+This script generates the JSON fixture files. It must be self-contained
+and runnable with only Python standard library (no faker dependency, no
+external DB — these fixtures are small and hardcoded for determinism).
+
+The script generates:
+  examples/canonical-auth/domain/fixtures/users.json
+  examples/canonical-auth/domain/fixtures/tenants.json
+  examples/canonical-auth/domain/fixtures/groups.json
+  examples/canonical-auth/domain/fixtures/permissions.json
+  examples/canonical-auth/domain/fixtures/memberships.json
+
+Fixture data requirements (hardcoded, not random):
+
+  Tenants:
+    - id: "t-acme-0001", slug: "acme", name: "Acme Corp"
+    - id: "t-globex-0001", slug: "globex", name: "Globex Industries"
+
+  Users:
+    - id: "u-super-0001", email: "superadmin@tenantcore.dev",
+      display_name: "Super Admin", tenant_id: null, acl_ver: 1
+    - id: "u-acme-admin-0001", email: "admin@acme.example",
+      display_name: "Acme Admin", tenant_id: "t-acme-0001", acl_ver: 1
+    - id: "u-acme-member-0001", email: "alice@acme.example",
+      display_name: "Alice Member", tenant_id: "t-acme-0001", acl_ver: 1
+    - id: "u-acme-member-0002", email: "bob@acme.example",
+      display_name: "Bob Member", tenant_id: "t-acme-0001", acl_ver: 1
+    - id: "u-globex-admin-0001", email: "admin@globex.example",
+      display_name: "Globex Admin", tenant_id: "t-globex-0001", acl_ver: 1
+    - id: "u-globex-member-0001", email: "carol@globex.example",
+      display_name: "Carol Member", tenant_id: "t-globex-0001", acl_ver: 1
+
+  Memberships:
+    - super_admin membership for u-super-0001 (no tenant_id)
+    - tenant_admin membership for u-acme-admin-0001 in t-acme-0001
+    - tenant_member memberships for alice and bob in t-acme-0001
+    - tenant_admin for u-globex-admin-0001 in t-globex-0001
+    - tenant_member for carol in t-globex-0001
+
+  Groups (all in t-acme-0001 for simplicity; 1 in t-globex-0001):
+    - id: "g-acme-iam-0001", slug: "iam-admins", name: "IAM Admins",
+      tenant_id: "t-acme-0001"
+    - id: "g-acme-billing-0001", slug: "billing-readers", name: "Billing Readers",
+      tenant_id: "t-acme-0001"
+    - id: "g-globex-reports-0001", slug: "report-viewers", name: "Report Viewers",
+      tenant_id: "t-globex-0001"
+
+  Permissions (subset of full catalog — must include these 10 at minimum):
+    iam:user:read, iam:user:create, iam:user:invite,
+    iam:group:read, iam:group:create, iam:group:assign_permission,
+    iam:group:assign_user, iam:permission:read,
+    billing:invoice:read, reports:usage:read
+
+  group_permissions:
+    - iam-admins has: iam:user:read, iam:user:create, iam:user:invite,
+      iam:group:read, iam:group:create, iam:group:assign_permission,
+      iam:group:assign_user, iam:permission:read
+    - billing-readers has: iam:user:read, billing:invoice:read
+    - report-viewers has: reports:usage:read, iam:user:read
+
+  user_groups:
+    - u-acme-member-0001 (alice) → iam-admins
+    - u-acme-member-0002 (bob) → billing-readers
+    - u-globex-member-0001 (carol) → report-viewers
+
+The script writes all fixture files to the fixtures/ subdirectory.
+Add a simple __main__ block. Running python3 generate_fixtures.py should
+regenerate all fixtures.
+
+Also create: examples/canonical-auth/domain/fixtures/.gitkeep
+(so the fixtures directory is tracked even before generate_fixtures.py is run)
+
+After writing the script, run it to generate the fixture files:
+  cd examples/canonical-auth/domain && python3 generate_fixtures.py
+
+Verify the output files exist and are valid JSON.
+
+================================================================================
+PART 4: CREATE FIXTURE FILES
+================================================================================
+
+After running generate_fixtures.py in PART 3, commit the generated JSON files.
+If the script is not yet runnable (e.g., missing dependencies), write the
+fixture JSON files directly to ensure they exist.
+
+Fixture files to commit:
+  examples/canonical-auth/domain/fixtures/users.json
+  examples/canonical-auth/domain/fixtures/tenants.json
+  examples/canonical-auth/domain/fixtures/groups.json
+  examples/canonical-auth/domain/fixtures/permissions.json
+  examples/canonical-auth/domain/fixtures/memberships.json
+
+Each file is a JSON array of objects matching the entity schema in the domain spec.
+
+================================================================================
+PART 5: CREATE examples/canonical-auth/domain/verification-contract.md
+================================================================================
+
+Read examples/canonical-analytics/domain/verification-contract.md for format.
+
+This document defines what a complete canonical auth implementation must prove
+via automated tests. All 8 language implementations are held to this contract.
+
+Required sections:
+
+  # Verification Contract — Canonical Auth Examples
+
+  ## Scope
+  What this contract covers and does not cover.
+
+  ## Required Smoke Tests
+  List each required smoke test with: test name, description, actor,
+  input, expected outcome, and how to fail fast.
+
+  Required tests for each language implementation:
+  1. token_issue_success — valid credentials → signed JWT
+  2. token_invalid_credentials — wrong password → 401
+  3. token_expired_rejection — expired token → 401
+  4. token_stale_acl_ver — valid token, stale acl_ver → 401
+  5. get_me_success — valid token → /me with correct fields
+  6. get_me_unauthorized — missing token → 401
+  7. rbac_permission_granted — user with permission → 200
+  8. rbac_permission_denied — user without permission → 403
+  9. cross_tenant_denial — token from tenant A, request for tenant B → 403
+  10. super_admin_access — super_admin token → /admin/tenants 200
+  11. super_admin_tenant_scoped_denial — super_admin blocked from tenant endpoints
+      that require tenant context (or allowed — document the policy clearly)
+  12. me_allowed_routes_match_permissions — allowed_routes in /me exactly
+      matches routes the user can call (positive + negative spot checks)
+
+  ## Required Unit Tests
+  List unit-level tests each example must include:
+  - token builder: correct claim shape
+  - token builder: expiry within 15 minutes
+  - permission check: exact permission match passes
+  - permission check: missing permission returns false
+  - route registry: all routes have required metadata fields
+  - route registry: coverage check (no permission atoms missing from catalog)
+  - /me response: contains all required fields per domain spec
+  - /me allowed_routes: contains only routes matching user permissions
+
+  ## Parity Commitment
+  Implementation is considered complete when all smoke tests pass and the
+  parity matrix row for this language is fully checked.
+
+Target length: 60–80 lines.
+
+================================================================================
+PART 6: CREATE examples/canonical-auth/domain/parity-matrix.md
+================================================================================
+
+Read examples/canonical-analytics/domain/parity-matrix.md for format.
+
+Create a parity matrix tracking implementation status across all 8 language
+examples. All rows start as [ ] (not started). Implementations in PROMPT_136–139
+will update their respective rows.
+
+Matrix should track:
+  - JWT middleware implemented
+  - Request-scoped auth context
+  - Route metadata registry
+  - All 14 required routes registered
+  - /me JSON response
+  - /me allowed_routes filtered correctly
+  - Super-admin flow (create tenant)
+  - Tenant-admin flows (create group, assign permission, invite user)
+  - Tenant-member flow (read users)
+  - Cross-tenant denial test
+  - Stale acl_ver test
+  - All 12 smoke tests passing
+  - README.md exists with run + test instructions
+
+Languages: Python, TypeScript, Go, Rust, Java, Kotlin, Ruby, Elixir
+
+Format the matrix as a Markdown table with language rows and capability columns.
+Use [ ] for not started, [~] for partial, [x] for complete.
+
+================================================================================
+PART 7: CREATE examples/canonical-auth/CATALOG.md
+================================================================================
+
+Read examples/canonical-analytics/CATALOG.md for format.
+
+Create a CATALOG.md with:
+  - Arc name and one-line description
+  - Table with language, framework, auth library, path, status
+  - All 8 rows with status [ ] (to be updated by PROMPT_136–139)
+  - A "Domain" section pointing to domain/spec.md
+  - A "How to Run Any Example" section (read the README.md in that example's dir)
+  - A "Parity Status" section pointing to domain/parity-matrix.md
+
+================================================================================
+PART 8: CREATE DOMAIN VERIFICATION TESTS
+================================================================================
+
+Create: verification/unit/test_jwt_auth_arc_domain.py
+
+Tests to include:
+
+  class TestDirectoryStructure(unittest.TestCase):
+    - examples/canonical-auth/ exists
+    - examples/canonical-auth/domain/ exists
+    - examples/canonical-auth/CATALOG.md exists
+    - examples/canonical-auth/domain/spec.md exists
+    - examples/canonical-auth/domain/parity-matrix.md exists
+    - examples/canonical-auth/domain/verification-contract.md exists
+    - examples/canonical-auth/domain/fixtures/ exists
+
+  class TestSpecContent(unittest.TestCase):
+    - spec.md contains "## The Permission Catalog" section
+    - spec.md contains "## JWT Claim Shape Standard" section
+    - spec.md contains "## Canonical Flows" section
+    - spec.md contains "## Route Metadata Specification" section
+    - spec.md contains "## /me Response Shape" section
+    - spec.md references all 8 target languages (Python, TypeScript/Go/Rust/Java/Kotlin/Ruby/Elixir)
+    - spec.md contains at least 20 permission atoms (count lines matching pattern)
+    - spec.md contains all 10 required canonical flows (Flow 1 through Flow 10)
+    - spec.md contains at least 12 route entries in route metadata table
+
+  class TestFixtureFiles(unittest.TestCase):
+    - users.json exists and is valid JSON
+    - tenants.json exists and is valid JSON
+    - groups.json exists and is valid JSON
+    - permissions.json exists and is valid JSON
+    - memberships.json exists and is valid JSON
+    - users.json has at least 6 entries
+    - tenants.json has at least 2 entries
+    - groups.json has at least 3 entries
+    - permissions.json has at least 10 entries
+    - memberships.json has at least 5 entries
+
+  class TestParityMatrixContent(unittest.TestCase):
+    - parity-matrix.md mentions all 8 languages
+    - parity-matrix.md has column for "smoke tests passing"
+    - parity-matrix.md has column for "cross-tenant denial"
+
+  class TestCatalogContent(unittest.TestCase):
+    - CATALOG.md mentions all 8 languages
+    - CATALOG.md references parity-matrix.md
+
+End with standard unittest runner pattern.
+
+================================================================================
+PART 9: RUN VERIFICATION AND COMMIT
+================================================================================
+
+Run all verification:
+  python -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
+  python -m unittest verification/unit/test_jwt_auth_arc_domain.py -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+All domain tests must pass. Fix any failures before committing.
+
+Run: python3 scripts/work.py checkpoint
+
+Stage and commit with git add -p:
+
+  [PROMPT_135] JWT auth arc domain spec: entities, flows, fixtures, parity matrix
+
+  - examples/canonical-auth/ — directory skeleton
+  - examples/canonical-auth/domain/spec.md — entity schema, permission catalog,
+    JWT shape, canonical flows, route metadata, /me shape
+  - examples/canonical-auth/domain/generate_fixtures.py
+  - examples/canonical-auth/domain/fixtures/ — 5 fixture JSON files
+  - examples/canonical-auth/domain/parity-matrix.md
+  - examples/canonical-auth/domain/verification-contract.md
+  - examples/canonical-auth/CATALOG.md
+  - verification/unit/test_jwt_auth_arc_domain.py
+
+================================================================================
+ARC PROGRESS AFTER THIS PROMPT
+================================================================================
+
+  PROMPT_134 — Foundation [done]
+  PROMPT_135 — Shared domain spec [this prompt]
+  PROMPT_136 — Python + TypeScript (next)
+  PROMPT_137 — Go + Rust
+  PROMPT_138 — Java + Kotlin
+  PROMPT_139 — Ruby + Elixir
+  PROMPT_140 — Hardening and arc completion

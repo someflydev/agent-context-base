@@ -1,0 +1,981 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one
+fresh coding-assistant session with commit prefixes like `[PROMPT_134]`.
+
+PROMPT_100–112: Terminal Tooling Arc — complete.
+PROMPT_113–118: Schema Validation and Contract Generation Arc — complete.
+PROMPT_119–126: Faker and Synthetic Data Generation Arc — complete.
+PROMPT_127–133: Plotly + HTMX + Tailwind Analytics Arc — complete.
+
+This prompt (PROMPT_134) begins a new arc: JWT Auth, RBAC, and Multi-Tenant
+Backend Patterns. It lays the structural foundation — doctrines, archetypes,
+stacks, skills, workflows, manifests, router updates, and structural tests —
+so that PROMPT_135 through PROMPT_140 can implement canonical examples and
+hardening without debating architecture.
+
+              [JWT AUTH ARC: Prompt 1 of 7 — Foundation]
+
+The arc spans:
+  PROMPT_134 — Foundation: 5 doctrines, 1 archetype, 8 stacks, 4 skills,
+               2 workflows, 1 manifest, router updates, structural tests
+  PROMPT_135 — Shared domain spec: entities, permission catalog, JWT shape,
+               canonical flows, /me shape, fixtures, parity matrix, CATALOG skeleton
+  PROMPT_136 — Python (FastAPI + PyJWT) + TypeScript (Hono + jose)
+  PROMPT_137 — Go (Echo + golang-jwt/jwt) + Rust (Axum + jsonwebtoken)
+  PROMPT_138 — Java (Spring Boot + JJWT) + Kotlin (http4k + JJWT)
+  PROMPT_139 — Ruby (Hanami + ruby-jwt) + Elixir (Phoenix + Joken)
+  PROMPT_140 — Hardening: arc overview, parity runner, router polish,
+               catalog.json, ARCHITECTURE_MAP, memory/concepts, arc summary
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                    (run; study output)
+  4. memory/INDEX.md
+
+Read existing structural files to calibrate before writing anything:
+  5. context/doctrine/core-principles.md              (READ — voice and format model)
+  6. context/doctrine/testing-philosophy.md           (READ — heading style, rule format)
+  7. context/doctrine/smoke-test-philosophy.md        (READ — most-recent doctrine; model)
+  8. context/doctrine/backend-driven-ui-correctness.md (READ — multi-rule format model)
+  9. context/archetypes/polyglot-validation-lab.md    (READ — most-recent archetype; model)
+ 10. context/archetypes/backend-api-service.md        (READ — archetype format model)
+ 11. context/stacks/python-fastapi-uv-ruff-orjson-polars.md (READ — stack format model)
+ 12. context/stacks/go-echo.md                        (READ — Go Echo stack context)
+ 13. context/stacks/rust-axum-modern.md               (READ — Rust stack context)
+ 14. context/stacks/elixir-phoenix.md                 (READ — Elixir stack context)
+ 15. context/stacks/kotlin-http4k-exposed.md          (READ — Kotlin stack; you will create
+                                                        a sibling jwt-auth stack)
+ 16. context/stacks/ruby-hanami.md                    (READ — Ruby stack context)
+ 17. context/router/task-router.md                    (READ — you will add entries)
+ 18. context/router/stack-router.md                   (READ — you will add stack entries)
+ 19. context/router/archetype-router.md               (READ — you will add archetype entries)
+ 20. context/router/alias-catalog.yaml                (READ — you will add aliases)
+ 21. context/skills/schema-validation-lane-selection.md (READ — skill format model)
+ 22. context/skills/canonical-example-selection.md   (READ — skill decision tree format)
+ 23. context/workflows/add-schema-validation-example.md (READ — workflow format)
+ 24. manifests/backend-api-fastapi-polars.yaml        (READ — manifest schema and format)
+ 25. manifests/backend-api-typescript-hono-bun.yaml   (READ — TypeScript manifest context)
+ 26. manifests/backend-api-kotlin-http4k-exposed.yaml (READ — Kotlin manifest context)
+ 27. manifests/backend-api-ruby-hanami.yaml           (READ — Ruby manifest context)
+ 28. docs/ARCHITECTURE_MAP.md                         (READ — orientation; update at end)
+
+Run verification before touching any file:
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+Do NOT begin writing until you have read all of the above and resolved any
+pre-existing failing tests. This prompt does not fix earlier arcs.
+
+================================================================================
+BACKGROUND: THE JWT AUTH, RBAC, AND MULTI-TENANT PATTERNS ARC
+================================================================================
+
+agent-context-base has canonical examples for API services, CLI tools, TUI
+applications, data pipelines, observability, schema validation, synthetic data
+generation, and analytics visualization. It does not yet have a canonical area
+for a concern that underpins nearly every production API: authentication,
+role-based access control, and multi-tenant request scoping.
+
+This arc adds first-class status to JWT-backed auth patterns across 8 backend
+language ecosystems. The canonical examples are constrained and teachable:
+each demonstrates enough to understand the whole pattern without becoming a
+full product build.
+
+THE CORE INSIGHT THIS ARC MUST PRESERVE:
+  JWT tokens are short-lived snapshots of authorization state. The database
+  is the source of truth. Tokens carry effective permissions for fast
+  request-time checks, but the auth system must be able to invalidate stale
+  tokens by version-checking the authorization state. Route metadata — not
+  string literals on routes — is the durable permission namespace. The /me
+  endpoint is not a convenience endpoint; it is the discoverability surface
+  that makes auth self-documenting.
+
+KEY NON-NEGOTIABLES for the arc:
+  - permission naming: {service}:{resource}:{action} — never raw URL paths
+  - database-backed source of truth; token is a short-lived snapshot
+  - asymmetric signing preferred where the library supports it easily
+  - /me endpoint is first-class, not an afterthought
+  - route metadata enables docs, enforcement, and guide generation
+  - tenant-admin composes from a platform-defined permission catalog;
+    tenant-admins do NOT define new permission atoms
+  - super-admin is a global construct, never a tenant-local role
+
+================================================================================
+PART 1: CREATE FIVE DOCTRINE FILES
+================================================================================
+
+Create all five doctrine files. Read core-principles.md for voice (terse,
+opinionated, numbered rules). Read testing-philosophy.md for heading style.
+
+--------------------------------------------------------------------------------
+A. Create: context/doctrine/jwt-auth-request-context.md
+--------------------------------------------------------------------------------
+
+This doctrine defines rules for JWT validation and request-time auth context.
+
+Title: JWT Auth and Request Context
+
+Required sections:
+
+  ## Core Principle
+  3–4 sentences. A JWT token is a short-lived, signed snapshot of
+  authorization state. The database is the source of truth. The token
+  accelerates request-time checks. Stale tokens must be detectable via
+  authorization version tracking (acl_ver or equivalent).
+
+  ## Rules  (number each rule)
+
+  Rule 1 — Validate before trusting.
+    Every protected endpoint must validate the token signature, expiry,
+    issuer, and audience before reading claims. Libraries that make this
+    opt-in are dangerous defaults. The canonical examples always validate
+    all four.
+
+  Rule 2 — Asymmetric signing is preferred.
+    Use RS256 or ES256 when the signing key can be rotated independently
+    of verification. HS256 is acceptable for single-service deployments
+    but must be documented as a deliberate constraint, not a default.
+
+  Rule 3 — Short-lived access tokens only.
+    Access token expiry must be ≤15 minutes in canonical examples. Longer
+    expiry must be justified in inline comments. Refresh token patterns
+    are noted but out of scope for canonical auth examples.
+
+  Rule 4 — Standard claims are not optional.
+    Every token must carry: iss, aud, sub, exp, iat, nbf, jti.
+    Missing any of these is a defect, not a simplification.
+
+  Rule 5 — Auth context is request-scoped, not global.
+    Auth state must be attached to the request context (middleware result,
+    request object, or equivalent per language). Global mutable auth state
+    is forbidden. In frameworks with dependency injection, auth context
+    must flow through the DI container, not a thread-local or process global.
+
+  Rule 6 — Authorization version enables fast invalidation.
+    Tokens should carry an acl_ver claim matching the user's current
+    authorization version. If acl_ver in the token does not match the
+    stored version, the token is treated as expired regardless of exp.
+    Increment acl_ver on any group/permission/membership change.
+
+  Rule 7 — Token claims are a snapshot, not a live query.
+    Embedded permissions are for fast request-time checks. Sensitive or
+    high-stakes operations should still verify against the database.
+    Document which endpoints perform a live check vs. token-only.
+
+  Rule 8 — Tenant context must be explicit.
+    For tenant-scoped tokens, tenant_id must be validated on every request.
+    An endpoint that accepts any valid token without checking tenant context
+    is a cross-tenant access bug, not a feature.
+
+  ## Anti-Patterns
+  A bulleted list of 4–5 things to avoid (long-lived tokens, HS256 in
+  multi-service, skipping nbf/jti, global auth state, raw URL-path strings
+  as permission names).
+
+  ## Canonical Library Choices
+  Brief table: language → preferred JWT library → why → adjacent alternative.
+  Include all 8 languages. See PART 2 for library rationale.
+
+Target length: 65–85 lines.
+
+--------------------------------------------------------------------------------
+B. Create: context/doctrine/rbac-permission-taxonomy.md
+--------------------------------------------------------------------------------
+
+Title: RBAC and Permission Taxonomy
+
+Required sections:
+
+  ## Core Principle
+  The canonical permission namespace uses the form {service}:{resource}:{action}.
+  This namespace is owned by the platform, not by tenant-admins. Tenant-admins
+  compose groups from a catalog of available atoms. They do not define new atoms.
+
+  ## Rules
+
+  Rule 1 — Permission atoms follow {service}:{resource}:{action}.
+    Examples: iam:user:read, iam:group:create, billing:invoice:read,
+    reports:usage:export. Actions are expressive verbs close to CRUD but
+    not restricted to it. Never use raw URL paths as permission identifiers.
+
+  Rule 2 — The permission catalog is platform-owned.
+    The platform defines what permissions exist. Tenant-admins assign
+    permissions to groups. They cannot create permissions that are not
+    in the platform catalog. This prevents permission sprawl and privilege
+    escalation through creative naming.
+
+  Rule 3 — RBAC works through group assignment.
+    Users get permissions because they are in groups. Groups have permission
+    sets. Users are added to groups by tenant-admins. Direct user-permission
+    assignment is not in the canonical model (it creates policy maintenance debt).
+
+  Rule 4 — Super-admin is a global role, not a tenant role.
+    Super-admin capabilities (create tenants, assign tenant-admins, inspect
+    cross-tenant state) must be modeled as a global role. Never add
+    super-admin logic inside the tenant-scoped permission check path.
+
+  Rule 5 — Effective permissions are computed, not stored raw.
+    The user's effective permissions = union of all permissions from all
+    groups the user belongs to within their active tenant. Compute this at
+    token issuance or on demand. Do not store a flat list permanently; recompute
+    when group memberships change.
+
+  Rule 6 — Hierarchical role labels are supplemental, not authoritative.
+    tenant_role (e.g., "admin", "member") in the JWT is a convenience label.
+    Authorization decisions must use the permission list, not the role label.
+    Role labels help UI hints and logging but must never be the sole gate.
+
+  Rule 7 — Permission coverage must be verifiable.
+    Route metadata (see route-metadata-registry.md) enables a check that
+    every protected endpoint has a corresponding permission atom. Missing
+    coverage is a defect, not acceptable drift.
+
+  ## Anti-Patterns
+  4–5 things to avoid: URL-path permissions, tenant-defined atoms,
+  direct user permissions bypassing groups, role-only gates, unchecked
+  permission catalog drift.
+
+  ## Canonical Permission Catalog (example)
+  A small table with at least 10 example permissions across iam, billing,
+  and reports services to illustrate the naming convention concretely.
+
+Target length: 70–90 lines.
+
+--------------------------------------------------------------------------------
+C. Create: context/doctrine/tenant-boundary-enforcement.md
+--------------------------------------------------------------------------------
+
+Title: Tenant Boundary Enforcement
+
+Required sections:
+
+  ## Core Principle
+  Every resource in a multi-tenant system belongs to exactly one tenant.
+  The token's tenant_id claim scopes all operations. No endpoint may read
+  or write resources from a different tenant based on the authenticated
+  token — this must be enforced structurally, not by convention.
+
+  ## Rules
+
+  Rule 1 — tenant_id must be validated at every request boundary.
+    Middleware that extracts auth context must verify the token's tenant_id
+    matches the resource being accessed. Skipping this check for "internal"
+    endpoints is a historical source of real-world breaches.
+
+  Rule 2 — Tenant context flows via the request context, not query params.
+    tenant_id must come from the validated JWT claim, not from a URL
+    parameter or request body field. Accepting tenant_id from the caller
+    allows tenant impersonation.
+
+  Rule 3 — Super-admin calls are explicitly distinguished.
+    A super-admin request that accesses cross-tenant data must go through
+    a separate, explicitly super-admin-gated code path. The tenant-user
+    and tenant-admin path must never include a "unless super-admin" branch.
+    Model these as separate handlers or a clearly-labeled bypass token.
+
+  Rule 4 — Tenant isolation in data access must be structural.
+    Database queries for tenant-scoped data must include a WHERE tenant_id = ?
+    clause derived from the validated auth context, not from the request body.
+    ORMs must be instrumented to ensure this clause is never missing.
+
+  Rule 5 — Membership must be verified, not assumed.
+    Possessing a valid token for tenant X does not automatically mean the user
+    is an active member of tenant X. Membership status should be verified
+    from the database on sensitive operations. Token may carry membership
+    snapshot for speed; always version-check it.
+
+  Rule 6 — Audit every cross-tenant boundary touch.
+    Super-admin operations touching multiple tenants must produce audit events.
+    Log: acting principal, target tenant_id, action, timestamp, outcome.
+
+  ## Anti-Patterns
+  4–5 items: tenant_id from request body, implicit tenant from URL,
+  super-admin branches inside tenant paths, unscoped DB queries,
+  trusting membership without version checks.
+
+Target length: 60–80 lines.
+
+--------------------------------------------------------------------------------
+D. Create: context/doctrine/route-metadata-registry.md
+--------------------------------------------------------------------------------
+
+Title: Route Metadata Registry
+
+Required sections:
+
+  ## Core Principle
+  Every protected route must have a machine-readable metadata record that
+  names its required permission, tenant scope, and documentation context.
+  Route metadata is the durable contract between authorization policy and
+  implementation. Enforcement, docs generation, /me output, and coverage
+  checks all read from this single source.
+
+  ## Canonical Metadata Fields
+  A table:
+  | Field             | Type    | Required | Description                             |
+  | method            | string  | yes      | HTTP method (GET, POST, etc.)           |
+  | path              | string  | yes      | Route path pattern                      |
+  | permission        | string  | yes      | Required permission atom                |
+  | tenant_scoped     | bool    | yes      | Whether tenant_id is enforced           |
+  | description       | string  | yes      | Human-readable description              |
+  | service           | string  | yes      | Owning service name                     |
+  | resource          | string  | yes      | Resource type                           |
+  | action            | string  | yes      | Action verb                             |
+  | htmx_target       | string  | no       | HTMX target selector (if applicable)   |
+  | docs_section      | string  | no       | Docs/guide section name                 |
+  | super_admin_only  | bool    | no       | Only accessible to super-admin          |
+  | public            | bool    | no       | No auth required (explicitly opted in) |
+
+  ## Rules
+
+  Rule 1 — Metadata is the single source of truth for route auth requirements.
+    Middleware that enforces auth must read from the route metadata registry,
+    not from inline annotations that can drift. If metadata says
+    iam:user:read is required, the middleware checks that claim.
+
+  Rule 2 — Every protected route has exactly one required permission.
+    Routes requiring multiple permissions simultaneously are a design smell.
+    Model a higher-level permission atom instead.
+
+  Rule 3 — Public routes are explicitly declared, not implicitly assumed.
+    A route without a metadata record is a defect, not a public endpoint.
+    Public endpoints must be listed in the registry with public: true.
+
+  Rule 4 — Route metadata powers /me output.
+    The /me endpoint must filter the route registry to return only the
+    routes accessible to the calling user based on their effective permissions.
+    This is not a separate list; it is derived from the same registry.
+
+  Rule 5 — Metadata enables a coverage check.
+    A verification script must be able to read the route registry, list all
+    permission atoms referenced, and verify each exists in the permission catalog.
+    Missing atoms are coverage gaps that must be caught in CI.
+
+  Rule 6 — htmx_target documents backend-to-frontend contracts.
+    For HTMX-served routes, htmx_target names the DOM selector the response
+    targets. This field documents the contract so frontend fragment boundaries
+    stay in sync with backend responses.
+
+  ## Anti-Patterns
+  4–5 items: inline permission strings instead of registry, unregistered public
+  routes, routes referencing non-existent permission atoms, /me built from
+  a separate hardcoded list, HTMX targets undocumented.
+
+  ## Navigation
+  The canonical implementation of route metadata in each language lives in
+  examples/canonical-auth/<language>/ — see CATALOG.md for status.
+  The shared route metadata spec is in examples/canonical-auth/domain/spec.md.
+
+Target length: 70–90 lines.
+
+--------------------------------------------------------------------------------
+E. Create: context/doctrine/me-endpoint-discoverability.md
+--------------------------------------------------------------------------------
+
+Title: /me Endpoint and Auth Discoverability
+
+Required sections:
+
+  ## Core Principle
+  The /me endpoint is the primary discoverability surface for authentication
+  and authorization state. A user who calls /me should be able to understand
+  who they are, which tenant they belong to, what groups they are in, what
+  they can do, and which endpoints or UI sections are available to them.
+  /me is not a convenience endpoint — it is the foundation of self-documenting
+  auth systems and HTMX-friendly permission-aware UIs.
+
+  ## Required /me Response Fields
+  A table:
+  | Field              | Type     | Description                                      |
+  | sub                | string   | User subject identifier                          |
+  | email              | string   | User email                                       |
+  | tenant_id          | string   | Active tenant identifier                         |
+  | tenant_name        | string   | Active tenant display name                       |
+  | tenant_role        | string   | Broad role label (admin / member / etc.)         |
+  | groups             | array    | Group slugs or IDs the user belongs to           |
+  | permissions        | array    | Effective permission atoms                       |
+  | acl_ver            | int      | Current authorization version                   |
+  | allowed_routes     | array    | Route metadata records the user may access       |
+  | guide_sections     | array    | Docs/UI sections available to the user           |
+  | issued_at          | string   | Token issuance time (ISO 8601)                   |
+  | expires_at         | string   | Token expiry time (ISO 8601)                     |
+
+  ## Rules
+
+  Rule 1 — /me is computed from the validated token plus live data.
+    The base claims (sub, tenant_id, permissions) come from the validated token.
+    tenant_name, groups, and allowed_routes are derived from the database
+    or route registry at request time. Serving stale /me from a cached token
+    alone is wrong.
+
+  Rule 2 — allowed_routes is filtered, not enumerated.
+    /me must not return all routes. It returns only routes where the required
+    permission is in the user's effective permission list. This filtering is
+    done at request time from the route metadata registry.
+
+  Rule 3 — guide_sections supports HTMX-driven UI.
+    guide_sections is the list of docs/UI sections the user can access,
+    derived from allowed_routes' docs_section fields. A server-rendered HTMX
+    dashboard can render navigation from this list without client-side logic.
+
+  Rule 4 — /me must be protected.
+    /me requires a valid token. It is not public. An unauthenticated caller
+    receives 401.
+
+  Rule 5 — /me response is a teaching tool.
+    The response format should be self-explanatory to a developer reading it
+    for the first time. Field names must not be opaque abbreviations.
+    Description fields in allowed_routes must explain the operation in plain
+    language.
+
+  Rule 6 — /me response may be rendered as HTML.
+    For HTMX backends, /me should support both JSON response (for API clients)
+    and HTML fragment response (for HTMX-driven profile/guide pages).
+    Content negotiation via Accept header is the canonical approach.
+
+  ## Anti-Patterns
+  4–5 items: /me as a simple JWT decode echo, serving /me without token
+  validation, hardcoded allowed_routes list, missing guide_sections,
+  /me rendered only as JSON with no HTMX variant.
+
+  ## Navigation
+  Route metadata registry: context/doctrine/route-metadata-registry.md
+  Domain spec (response shape detail): examples/canonical-auth/domain/spec.md
+  Canonical implementations: examples/canonical-auth/<language>/
+
+Target length: 65–80 lines.
+
+================================================================================
+PART 2: CREATE THE ARCHETYPE
+================================================================================
+
+Create: context/archetypes/tenant-aware-backend-api.md
+
+Read context/archetypes/polyglot-validation-lab.md and
+context/archetypes/backend-api-service.md for format before writing.
+
+This archetype describes a tenant-aware, JWT-protected backend API service.
+
+Required sections:
+
+  # Tenant-Aware Backend API (JWT Auth + RBAC)
+
+  ## Identity
+  Name: tenant-aware-backend-api
+  Domain: Authentication, Authorization, Multi-Tenant SaaS backends
+  Aliases: jwt-protected-api, rbac-api, multi-tenant-api
+
+  ## When To Use This Archetype
+  Use this archetype when:
+  - The service must protect endpoints with JWT-based auth
+  - Multiple tenants share the same service but must be isolated
+  - Role-based access control drives endpoint protection
+  - A /me discoverability endpoint is needed
+  - Route metadata must power docs, enforcement, and guide generation
+
+  Do NOT use this archetype when:
+  - The service is fully public (no auth required)
+  - Auth is handled entirely by a gateway (no token inspection in-service)
+  - Single-user, single-tenant with no RBAC needed
+
+  ## Core Capabilities
+  A bulleted list:
+  - JWT validation middleware (signature, expiry, iss, aud, sub, tenant_id)
+  - Request-scoped auth context (user, tenant, groups, effective permissions)
+  - Route metadata registry (method, path, permission, tenant_scoped, ...)
+  - RBAC enforcement from route metadata (not inline if-chains)
+  - Super-admin path (global, cross-tenant operations)
+  - Tenant-admin path (tenant-scoped user/group/permission management)
+  - Tenant-user path (operations constrained by group assignments)
+  - /me endpoint (JSON + optional HTMX HTML variant)
+  - Permission catalog (platform-owned, tenant-admin composes from it)
+  - Authorization version tracking (acl_ver for fast stale-token detection)
+  - Audit trail for sensitive operations
+  - Smoke tests: token issuance, validation, RBAC enforcement, /me
+
+  ## Directory Shape
+  A brief tree showing the expected layout for a canonical example:
+    <language>/
+      README.md
+      src/ or app/ (language-appropriate)
+        auth/     — JWT middleware, token builder, claim shapes
+        routes/   — protected endpoints with metadata registration
+        domain/   — user, tenant, group, permission models
+        registry/ — route metadata registry
+        me/       — /me handler
+        tests/    — unit and smoke tests
+      fixtures/   — shared fixture JSON loaded at startup
+
+  ## Doctrines Activated
+  - jwt-auth-request-context.md
+  - rbac-permission-taxonomy.md
+  - tenant-boundary-enforcement.md
+  - route-metadata-registry.md
+  - me-endpoint-discoverability.md
+  - testing-philosophy.md
+
+  ## Canonical Examples
+  A table: language → path → status (filled in by PROMPT_136–139)
+
+  ## Stacks
+  List all 8 JWT auth stacks (see PART 3 below).
+
+  ## Routing Questions This Archetype Answers
+  8–10 natural-language questions and where to look.
+
+Target length: 90–110 lines.
+
+================================================================================
+PART 3: CREATE EIGHT STACK FILES
+================================================================================
+
+Create one stack file per language. Read context/stacks/go-echo.md and
+context/stacks/python-fastapi-uv-ruff-orjson-polars.md for format.
+
+For each stack file, required sections are:
+  # <Stack Name>
+  ## Identity (name, language, framework, auth library, aliases)
+  ## Preferred JWT Library (name, why preferred, alternative, why not default)
+  ## Core Dependencies (table or list: library, purpose, version note)
+  ## Auth Architecture (3–5 sentences on how auth is wired in this stack)
+  ## Token Validation Pattern (brief pseudocode or code sketch)
+  ## Request Context Pattern (how auth state is passed to handlers)
+  ## Route Metadata Pattern (how routes are annotated/registered)
+  ## /me Handler Pattern (brief description)
+  ## Testing Approach (how to test auth behavior in this stack)
+  ## Canonical Example Path (examples/canonical-auth/<language>/)
+  ## Known Constraints or Tradeoffs (1–3 bullet points)
+
+Create each file:
+
+  A. context/stacks/python-fastapi-pyjwt-rbac.md
+     Language: Python
+     Framework: FastAPI
+     Auth lib: PyJWT (preferred — battle-tested, minimal API surface,
+                      wide adoption; joserfc is a capable alternative
+                      but less commonly deployed in production)
+     Signing: RS256 by default; HS256 documented as test-only convenience
+     Context: FastAPI Depends() for request-scoped auth context
+     Note: Integrate with existing context/stacks/python-fastapi-uv-ruff.md
+           as a companion — this adds the auth layer, not a replacement
+
+  B. context/stacks/typescript-hono-jose-rbac.md
+     Language: TypeScript
+     Runtime: Bun (preferred) or Node.js
+     Framework: Hono
+     Auth lib: jose (preferred — modern ESM-native, JOSE-spec complete,
+                     runtime-agnostic; jsonwebtoken is Node.js-only, older API)
+     Signing: ES256 by default
+     Context: Hono Context c.set() for request-scoped auth state
+     Note: Aligns with manifests/backend-api-typescript-hono-bun.yaml
+
+  C. context/stacks/go-echo-golang-jwt-rbac.md
+     Language: Go
+     Framework: Echo
+     Auth lib: golang-jwt/jwt (preferred — focused, widely used, idiomatic;
+                               lestrrat-go/jwx is broader JOSE spec coverage
+                               but heavier for simple JWT validation)
+     Signing: RS256 by default
+     Context: Echo BindContext / c.Set() middleware pattern
+     Note: Extends context/stacks/go-echo.md
+
+  D. context/stacks/rust-axum-jsonwebtoken-rbac.md
+     Language: Rust
+     Framework: Axum
+     Auth lib: jsonwebtoken (preferred — most mature, best docs;
+                             jwt-simple is simpler API but less flexibility)
+     Signing: RS256 by default
+     Context: Axum Extension / FromRequestParts for auth context extraction
+     Note: Extends context/stacks/rust-axum-modern.md
+
+  E. context/stacks/java-spring-jjwt-rbac.md
+     Language: Java
+     Framework: Spring Boot
+     Auth lib: JJWT / io.jsonwebtoken (preferred — fluent builder API,
+                                       excellent docs, broad adoption;
+                                       java-jwt/Auth0 is a valid alternative
+                                       but less expressive builder pattern)
+     Signing: RS256 by default
+     Context: Spring Security SecurityContext or custom Filter-based
+     Note: Spring Boot 3.x; no Spring Security OAuth2 server — minimal,
+           teachable custom JWT filter
+
+  F. context/stacks/kotlin-http4k-jjwt-rbac.md
+     Language: Kotlin
+     Framework: http4k
+     Auth lib: JJWT (preferred — same JVM library as Java example, familiar;
+                     jose4j is a solid alternative if JOSE spec completeness needed)
+     Signing: RS256 by default
+     Context: http4k Filter chain for middleware; RequestContext extension
+     Note: Extends context/stacks/kotlin-http4k-exposed.md;
+           aligns with manifests/backend-api-kotlin-http4k-exposed.yaml
+
+  G. context/stacks/ruby-hanami-ruby-jwt-rbac.md
+     Language: Ruby
+     Framework: Hanami (preferred for canonical example;
+                        devise-jwt / warden-jwt_auth noted for Rails context)
+     Auth lib: ruby-jwt (preferred — canonical JWT library for Ruby,
+                         minimal, well-maintained; warden-jwt_auth is a
+                         framework integration layer on top of ruby-jwt)
+     Signing: RS256 by default
+     Context: Rack env or Hanami Action helper for auth context
+     Note: Extends context/stacks/ruby-hanami.md
+
+  H. context/stacks/elixir-phoenix-joken-rbac.md
+     Language: Elixir
+     Framework: Phoenix
+     Auth lib: Joken (preferred — Elixir-native, easy to configure,
+                      composable pipeline; JOSE/erlang-jose is lower-level
+                      and used by Joken internally but rarely used directly)
+     Signing: RS256 by default
+     Context: Phoenix Plug pipeline; conn.assigns for auth context
+     Note: Extends context/stacks/elixir-phoenix.md; NOT LiveView —
+           standard Phoenix controller + HTMX pattern
+
+================================================================================
+PART 4: CREATE FOUR SKILL FILES
+================================================================================
+
+Read context/skills/schema-validation-lane-selection.md for format reference.
+Skills are decision guides, not tutorials. They help a future assistant choose
+the right approach at a decision point.
+
+Create each file:
+
+  A. context/skills/jwt-middleware-implementation.md
+
+     Title: JWT Middleware Implementation
+
+     This skill helps an assistant implement JWT validation middleware correctly
+     in any of the 8 supported language ecosystems.
+
+     Required sections:
+     - When to use this skill (implementing auth middleware, adding JWT protection)
+     - The validation checklist (signature, exp, nbf, iss, aud, sub — all required)
+     - Asymmetric vs symmetric key guidance (when RS256 vs HS256 is appropriate)
+     - Language-specific middleware entry point table:
+       Python → FastAPI Depends() / HTTPBearer
+       TypeScript → Hono middleware c.set()
+       Go → Echo middleware group
+       Rust → Axum FromRequestParts extractor
+       Java → Spring Filter
+       Kotlin → http4k Filter chain
+       Ruby → Rack middleware / Hanami before action
+       Elixir → Phoenix Plug
+     - Error response standard (401 for missing/invalid token, 403 for
+       valid token but insufficient permissions)
+     - Testing pattern: black-box tests with crafted tokens
+     - Anti-patterns (3–4 bullets)
+
+  B. context/skills/permission-catalog-design.md
+
+     Title: Permission Catalog Design
+
+     This skill guides the design of the platform-owned permission catalog.
+
+     Required sections:
+     - When to use this skill (defining new permissions, extending the catalog)
+     - The {service}:{resource}:{action} formula (with examples)
+     - How to determine service boundaries (guideline: one service per subdomain)
+     - How to choose action verbs (read, create, update, delete, export, invite,
+       approve — vs. over-specific verbs that become unmaintainable)
+     - What goes in the catalog vs. what goes in tenant-admin composition
+     - Catalog evolution (adding atoms is safe; removing requires migration plan)
+     - Coverage check: how to verify all route permissions exist in catalog
+     - Anti-patterns (URL paths as permissions, tenant-defined atoms, action explosion)
+
+  C. context/skills/me-endpoint-design.md
+
+     Title: /me Endpoint Design
+
+     This skill guides building the /me discoverability endpoint.
+
+     Required sections:
+     - When to use this skill (adding /me, extending /me output)
+     - The canonical response shape (reference me-endpoint-discoverability.md)
+     - Data sources: token claims vs. live DB lookup (which fields come from where)
+     - allowed_routes computation (filter route registry by user permissions)
+     - guide_sections derivation (from allowed_routes docs_section fields)
+     - JSON vs. HTML variant decision (when to support both, how to negotiate)
+     - HTMX rendering pattern: /me can power nav menus and profile pages
+     - Testing /me: verify allowed_routes matches effective permissions exactly
+     - Anti-patterns (serving /me without validation, hardcoded lists, opaque fields)
+
+  D. context/skills/route-metadata-annotation.md
+
+     Title: Route Metadata Annotation
+
+     This skill guides annotating routes with auth metadata.
+
+     Required sections:
+     - When to use this skill (adding a new protected route, auditing coverage)
+     - The canonical metadata fields (reference route-metadata-registry.md)
+     - Language-specific annotation patterns:
+       Python → dict in route list or decorator argument
+       TypeScript → object alongside router.get(path, handler)
+       Go → struct slice registry
+       Rust → static slice of RouteMetadata structs
+       Java → @RouteMetadata annotation or registry bean
+       Kotlin → data class registry list
+       Ruby → hash registry or DSL
+       Elixir → module attribute list
+     - How middleware reads the registry (match method + path at request time)
+     - How /me reads the registry (filter by permissions at response time)
+     - Coverage check: script to verify all registry entries reference valid permission atoms
+     - Anti-patterns (inline permission strings, separate /me list, missing public declaration)
+
+================================================================================
+PART 5: CREATE TWO WORKFLOW FILES
+================================================================================
+
+Read context/workflows/add-schema-validation-example.md for format reference.
+Workflows are step-by-step procedures, not decision guides.
+
+  A. Create: context/workflows/add-protected-endpoint.md
+
+     Title: Add a Protected Endpoint
+
+     An 8-step workflow for adding a new JWT-protected endpoint to any of the
+     canonical auth examples.
+
+     Steps:
+     1. Define the permission atom (if new: add to permission catalog, increment
+        catalog version, update docs)
+     2. Add the route metadata record to the registry (method, path, permission,
+        tenant_scoped, description, service, resource, action)
+     3. Implement the handler (receive request-scoped auth context, call service)
+     4. Add the route to the framework router (point to existing middleware group)
+     5. Write a unit test: valid token with permission → 200
+     6. Write a unit test: valid token without permission → 403
+     7. Write a unit test: missing token → 401
+     8. Run: python scripts/run_verification.py --tier fast and confirm no regression
+
+     Each step should include a brief note about the most common mistake at
+     that step.
+
+  B. Create: context/workflows/add-tenant-aware-canonical-example.md
+
+     Title: Add a Tenant-Aware Canonical Example
+
+     A 10-step workflow for adding a new language canonical example to
+     examples/canonical-auth/.
+
+     Steps:
+     1. Read examples/canonical-auth/domain/spec.md in full before writing any code
+     2. Read examples/canonical-auth/CATALOG.md and add a row for the new language
+        (status: [ ] in progress)
+     3. Create examples/canonical-auth/<language>/ directory structure per the
+        tenant-aware-backend-api archetype
+     4. Implement JWT middleware using the language stack file as guidance
+     5. Implement request-scoped auth context (user, tenant, permissions, acl_ver)
+     6. Load fixture data from examples/canonical-auth/domain/fixtures/ at startup
+     7. Implement all routes defined in the domain spec route registry
+     8. Implement /me endpoint (JSON variant required; HTML variant recommended)
+     9. Write smoke tests covering: login/token issue, RBAC enforcement, /me output,
+        cross-tenant denial, tenant boundary check
+    10. Update CATALOG.md row to [x], update parity-matrix.md for this language
+
+================================================================================
+PART 6: CREATE THE MANIFEST
+================================================================================
+
+Read manifests/backend-api-fastapi-polars.yaml for manifest schema reference.
+
+Create: manifests/auth-jwt-rbac-polyglot.yaml
+
+This manifest describes the JWT auth canonical example family.
+
+Required fields (use YAML format consistent with existing manifests):
+  name: auth-jwt-rbac-polyglot
+  title: JWT Auth, RBAC, and Multi-Tenant Polyglot Examples
+  description: >
+    Canonical examples of JWT-backed authentication, RBAC with custom claims,
+    and optional multi-tenant support across 8 backend language ecosystems.
+    Each example implements the same domain spec: users, tenants, groups,
+    permissions, a permission catalog, route metadata, and a /me endpoint.
+  category: authentication
+  archetypes:
+    - tenant-aware-backend-api
+  doctrines:
+    - jwt-auth-request-context
+    - rbac-permission-taxonomy
+    - tenant-boundary-enforcement
+    - route-metadata-registry
+    - me-endpoint-discoverability
+  stacks:
+    (list all 8 stack file names without extension)
+  skills:
+    (list all 4 skill file names without extension)
+  workflows:
+    - add-protected-endpoint
+    - add-tenant-aware-canonical-example
+  examples:
+    (list all 8 canonical example paths)
+  languages:
+    - python
+    - typescript
+    - go
+    - rust
+    - java
+    - kotlin
+    - ruby
+    - elixir
+  stability: in-progress
+
+================================================================================
+PART 7: UPDATE ROUTERS
+================================================================================
+
+Read each router file first. Add entries only; do not remove or rewrite existing
+entries. Mark new entries with a comment: # added by PROMPT_134
+
+  A. context/router/archetype-router.md
+     Add routing guidance for: tenant-aware-backend-api
+     Include: when to use it, what it is, where to find it
+
+  B. context/router/stack-router.md
+     Add entries for all 8 JWT auth stacks.
+     Format: question pattern → stack file name → brief reason
+
+  C. context/router/task-router.md
+     Add task entries for common JWT auth questions:
+     - "how do I add JWT auth to my FastAPI app"
+     - "show me RBAC with JWT in Go"
+     - "what is the permission naming standard"
+     - "how do I build a /me endpoint"
+     - "show me multi-tenant JWT examples"
+     - "how do I verify a JWT in Rust / Axum"
+     - "what permission does this route require"
+     - "how do I invalidate stale tokens"
+
+  D. context/router/alias-catalog.yaml
+     Add aliases:
+     - jwt-auth → context/doctrine/jwt-auth-request-context.md
+     - rbac → context/doctrine/rbac-permission-taxonomy.md
+     - tenant-boundary → context/doctrine/tenant-boundary-enforcement.md
+     - route-registry → context/doctrine/route-metadata-registry.md
+     - me-endpoint → context/doctrine/me-endpoint-discoverability.md
+     - jwt-arc → examples/canonical-auth/
+
+================================================================================
+PART 8: CREATE STRUCTURAL TESTS
+================================================================================
+
+Create: verification/unit/test_jwt_auth_arc_foundation.py
+
+This test file verifies that all structural files created in this prompt exist
+and meet minimum content requirements. Use unittest only (not pytest).
+
+Tests to include:
+
+  class TestDoctrineFiles(unittest.TestCase):
+    Verify each of the 5 doctrine files exists and contains:
+    - A "## Rules" section
+    - At least 5 rules (lines starting with "Rule")
+    - An "## Anti-Patterns" section
+
+  class TestArchetypeFile(unittest.TestCase):
+    Verify tenant-aware-backend-api.md exists and contains:
+    - "## Core Capabilities" section
+    - "## Doctrines Activated" section
+    - References to all 5 doctrine file names
+
+  class TestStackFiles(unittest.TestCase):
+    Verify all 8 stack files exist.
+    Verify each contains:
+    - "## Preferred JWT Library" section
+    - "## Auth Architecture" section
+    - A reference to its canonical example path
+
+  class TestSkillFiles(unittest.TestCase):
+    Verify all 4 skill files exist.
+    Verify each contains "## Anti-Patterns" section.
+
+  class TestWorkflowFiles(unittest.TestCase):
+    Verify both workflow files exist.
+    Verify add-protected-endpoint.md contains 8 numbered steps.
+    Verify add-tenant-aware-canonical-example.md contains 10 numbered steps.
+
+  class TestManifest(unittest.TestCase):
+    Verify manifests/auth-jwt-rbac-polyglot.yaml exists.
+    Verify it references all 8 languages.
+
+End with the standard unittest runner pattern used by other test files in
+verification/unit/. Study the existing test files before writing.
+
+================================================================================
+PART 9: ADD A SMALL SECTION TO AGENT.md
+================================================================================
+
+Read AGENT.md in full before writing. Add a brief section near the end,
+after any existing canonical example reference sections:
+
+  ## JWT Auth, RBAC, and Multi-Tenant Patterns
+
+  The jwt-auth arc (PROMPT_134–140) adds canonical examples for JWT-backed
+  authentication and RBAC across 8 backend languages. All examples share the
+  same domain spec, permission catalog, and fixture data.
+
+  Key docs:
+  - context/doctrine/jwt-auth-request-context.md
+  - context/doctrine/rbac-permission-taxonomy.md
+  - context/doctrine/route-metadata-registry.md
+  - context/doctrine/me-endpoint-discoverability.md
+  - examples/canonical-auth/ (after PROMPT_136–139)
+
+  Quick answers:
+  - Permission naming: {service}:{resource}:{action}
+  - Preferred libraries: PyJWT (Python), jose (TS), golang-jwt/jwt (Go),
+    jsonwebtoken (Rust), JJWT (Java/Kotlin), ruby-jwt (Ruby), Joken (Elixir)
+  - /me endpoint: JSON + optional HTMX variant, filtered by effective permissions
+
+Do not reformat or restructure AGENT.md. Only append the new section.
+
+================================================================================
+PART 10: RUN VERIFICATION AND COMMIT
+================================================================================
+
+Run all verification:
+  python -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+All foundation tests must pass. Fix any test failures before committing.
+
+Run: python3 scripts/work.py checkpoint
+
+Stage and commit with git add -p:
+
+  [PROMPT_134] JWT auth arc foundation: doctrines, archetype, stacks, skills, workflows
+
+  - context/doctrine/jwt-auth-request-context.md
+  - context/doctrine/rbac-permission-taxonomy.md
+  - context/doctrine/tenant-boundary-enforcement.md
+  - context/doctrine/route-metadata-registry.md
+  - context/doctrine/me-endpoint-discoverability.md
+  - context/archetypes/tenant-aware-backend-api.md
+  - context/stacks/ — 8 JWT auth stack files
+  - context/skills/ — 4 JWT auth skill files
+  - context/workflows/add-protected-endpoint.md
+  - context/workflows/add-tenant-aware-canonical-example.md
+  - manifests/auth-jwt-rbac-polyglot.yaml
+  - context/router/ — 4 router files updated
+  - AGENT.md — jwt-auth section added
+  - verification/unit/test_jwt_auth_arc_foundation.py
+
+================================================================================
+ARC PROGRESS AFTER THIS PROMPT
+================================================================================
+
+  PROMPT_134 — Foundation [this prompt]
+  PROMPT_135 — Shared domain spec (next)
+  PROMPT_136–139 — Language implementations
+  PROMPT_140 — Hardening and arc completion

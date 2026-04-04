@@ -1,0 +1,687 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one
+fresh coding-assistant session with commit prefixes like `[PROMPT_139]`.
+
+PROMPT_134: JWT Auth Arc — Foundation.
+PROMPT_135: JWT Auth Arc — Shared domain spec.
+PROMPT_136: JWT Auth Arc — Python (FastAPI + PyJWT) and TypeScript (Hono + jose).
+PROMPT_137: JWT Auth Arc — Go (Echo + golang-jwt/jwt) and Rust (Axum + jsonwebtoken).
+PROMPT_138: JWT Auth Arc — Java (Spring Boot + JJWT) and Kotlin (http4k + JJWT).
+
+This prompt (PROMPT_139) implements two language canonical examples:
+  - Ruby: Hanami + ruby-jwt
+  - Elixir: Phoenix + Joken
+
+Both examples must conform to examples/canonical-auth/domain/spec.md.
+Both must implement all required flows, routes, and tests from the verification
+contract in examples/canonical-auth/domain/verification-contract.md.
+
+              [JWT AUTH ARC: Prompt 6 of 7 — Ruby + Elixir Implementations]
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                    (run; study output)
+  4. memory/INDEX.md
+
+Read the full arc foundation before writing any code:
+  5. examples/canonical-auth/domain/spec.md            (READ — all sections; this is your spec)
+  6. examples/canonical-auth/domain/parity-matrix.md   (READ — you will update Ruby + Elixir rows)
+  7. examples/canonical-auth/domain/verification-contract.md (READ — 12 smoke tests required)
+  8. examples/canonical-auth/CATALOG.md                (READ — you will update 2 rows)
+  9. context/doctrine/jwt-auth-request-context.md      (READ)
+ 10. context/doctrine/rbac-permission-taxonomy.md      (READ)
+ 11. context/doctrine/tenant-boundary-enforcement.md   (READ)
+ 12. context/doctrine/route-metadata-registry.md       (READ)
+ 13. context/doctrine/me-endpoint-discoverability.md   (READ)
+ 14. context/stacks/ruby-hanami-ruby-jwt-rbac.md       (READ — Ruby stack guidance)
+ 15. context/stacks/elixir-phoenix-joken-rbac.md       (READ — Elixir stack guidance)
+ 16. context/stacks/ruby-hanami.md                     (READ — existing Ruby conventions)
+ 17. context/stacks/elixir-phoenix.md                  (READ — existing Elixir conventions)
+ 18. manifests/backend-api-ruby-hanami.yaml            (READ — Ruby project conventions)
+ 19. context/archetypes/tenant-aware-backend-api.md    (READ — directory shape)
+
+Also read an existing implementation for reference:
+ 20. examples/canonical-auth/python/src/auth/         (READ — if available)
+
+Run verification before writing any code:
+  python -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
+  python -m unittest verification/unit/test_jwt_auth_arc_domain.py -v
+
+Do NOT begin implementation until both test suites pass.
+
+================================================================================
+BACKGROUND: RUBY AND ELIXIR AUTH PATTERNS
+================================================================================
+
+Ruby (Hanami + ruby-jwt):
+  - ruby-jwt is the canonical JWT library for Ruby. It is the cryptographic
+    base that warden-jwt_auth and devise-jwt build on top of. For this
+    canonical example, use ruby-jwt directly — no Devise, no Warden.
+  - Hanami uses Rack under the hood. JWT validation is implemented as a
+    Rack middleware class.
+  - Auth context is passed via the Rack env hash. Hanami actions can access
+    it through the request object.
+  - ruby-jwt v2.x API: JWT.decode(token, key, true, algorithms: ["RS256"],
+    iss: "tenantcore-auth", verify_iss: true, aud: "tenantcore-api",
+    verify_aud: true, exp_leeway: 0)
+  - The decode call raises JWT::DecodeError and subclasses on failure.
+  - RBAC: Hanami supports before-action hooks — use a before :authenticate!
+    and before :require_permission!(<permission>) pattern.
+
+Elixir (Phoenix + Joken):
+  - Joken is the idiomatic Elixir JWT library. It wraps JOSE/erlang-jose
+    internally but provides a much cleaner Elixir-native API.
+  - A Phoenix Plug pipeline is the canonical auth middleware point.
+  - Auth context is stored in conn.assigns.
+  - Joken configuration: use Joken.Config and define a token_config/0 that
+    specifies claim validators.
+  - JOSE-backed RS256 signing: JOSE.JWK.from_pem(key_pem) → signer.
+  - For the canonical test mode: use HS256 with a test secret set via config.
+  - RBAC: Phoenix Plugs as permission guards:
+      plug :require_permission, "iam:user:read" when action in [:index, :show]
+  - This is NOT a LiveView example. Phoenix controllers + HTMX is the pattern.
+    Refer to context/stacks/elixir-phoenix-joken-rbac.md for the rationale.
+
+================================================================================
+RUBY IMPLEMENTATION
+================================================================================
+
+PART A: Directory Structure
+
+Create: examples/canonical-auth/ruby/
+
+  examples/canonical-auth/ruby/
+    README.md
+    Gemfile
+    Gemfile.lock               (commit this)
+    config.ru                  (Rack entry point; builds Hanami app)
+    lib/
+      tenantcore_auth/
+        app.rb                 (Hanami::App or Rack app builder)
+        auth/
+          jwt_middleware.rb    (Rack middleware: validates JWT, sets auth context)
+          token_service.rb     (issue_token method)
+          auth_context.rb      (AuthContext struct/data class)
+          rbac_helper.rb       (require_permission! helper for actions)
+        domain/
+          in_memory_store.rb   (loads fixtures from JSON; query methods)
+          models.rb            (User, Tenant, Group, Permission structs)
+        routes/
+          auth.rb              (POST /auth/token — Hanami action or Rack handler)
+          me.rb                (GET /me)
+          users.rb             (GET/POST /users, GET/PATCH /users/:id)
+          groups.rb            (GET/POST /groups, etc.)
+          admin.rb             (GET/POST /admin/tenants)
+          health.rb            (GET /health)
+        registry/
+          route_registry.rb    (ROUTE_REGISTRY array of hashes; get_allowed_routes)
+    spec/
+      auth/
+        token_service_spec.rb
+        jwt_middleware_spec.rb
+        me_spec.rb
+      integration/
+        auth_integration_spec.rb
+
+PART B: Key Implementation Requirements
+
+  lib/tenantcore_auth/auth/auth_context.rb:
+    AuthContext = Data.define(
+      :sub, :email, :tenant_id, :tenant_role,
+      :groups, :permissions, :acl_ver,
+      :issued_at, :expires_at
+    ) do
+      def has_permission?(permission) = permissions.include?(permission)
+    end
+
+    Note: Ruby 3.2+ Data.define is preferred. If the target Ruby is < 3.2,
+    use Struct instead. Note the Ruby version requirement in README.
+
+  lib/tenantcore_auth/auth/jwt_middleware.rb:
+    class JwtMiddleware
+      AUTH_CONTEXT_KEY = "tenantcore.auth_context".freeze
+
+      def initialize(app, store:, verify_key:)
+        @app = app; @store = store; @verify_key = verify_key
+      end
+
+      def call(env)
+        token = extract_token(env)
+        if token.nil?
+          env[AUTH_CONTEXT_KEY] = nil
+          return @app.call(env)
+        end
+
+        begin
+          payload, _header = JWT.decode(
+            token, @verify_key, true,
+            algorithms: ["RS256"],
+            iss: "tenantcore-auth", verify_iss: true,
+            aud: "tenantcore-api", verify_aud: true
+          )
+        rescue JWT::DecodeError
+          return [401, {"Content-Type" => "application/json"}, ['{"error":"Unauthorized"}']]
+        end
+
+        user = @store.get_user_by_id(payload["sub"])
+        return [401, ...] unless user
+        return [401, ...] if payload["acl_ver"] != user.acl_ver
+
+        tenant_id = payload["tenant_id"]
+        if tenant_id && !@store.verify_membership(user.id, tenant_id)
+          return [403, {"Content-Type" => "application/json"}, ['{"error":"Forbidden"}']]
+        end
+
+        env[AUTH_CONTEXT_KEY] = AuthContext.new(
+          sub: payload["sub"],
+          email: user.email,
+          tenant_id: tenant_id,
+          tenant_role: payload["tenant_role"],
+          groups: payload["groups"] || [],
+          permissions: payload["permissions"] || [],
+          acl_ver: payload["acl_ver"],
+          issued_at: Time.at(payload["iat"]),
+          expires_at: Time.at(payload["exp"])
+        )
+        @app.call(env)
+      end
+
+      private
+
+      def extract_token(env)
+        auth = env["HTTP_AUTHORIZATION"]
+        auth&.start_with?("Bearer ") ? auth.sub("Bearer ", "").strip : nil
+      end
+    end
+
+  RBAC pattern in Hanami actions:
+    In a base authenticated action:
+      before :authenticate!
+
+      def authenticate!
+        @auth = request.env["tenantcore.auth_context"]
+        halt 401, headers, '{"error":"Unauthorized"}' unless @auth
+      end
+
+    For permission-specific actions, use a parameterized before hook:
+      before :require_permission_iam_user_read
+      def require_permission_iam_user_read
+        halt 403 unless @auth&.has_permission?("iam:user:read")
+      end
+
+    Note: Hanami before hooks do not support parameters in all versions.
+    If using Hanami 2.x, use a helper module pattern. Read the Hanami
+    version installed (Gemfile) and adapt accordingly.
+
+    Alternative for simpler Rack-level implementations:
+    Check permission at the top of each action's handle method:
+      def handle(request, response)
+        authenticate!(request)
+        require_permission!(request, "iam:user:read")
+        # ... handler logic
+      end
+
+  lib/tenantcore_auth/auth/token_service.rb:
+    class TokenService
+      def initialize(signing_key:)
+        @signing_key = signing_key
+      end
+
+      def issue_token(user, store)
+        permissions = store.get_effective_permissions(user.id)
+        groups = store.get_groups_for_user(user.id, user.tenant_id).map(&:slug)
+        tenant_role = store.get_membership_role(user.id, user.tenant_id)
+        now = Time.now.to_i
+
+        payload = {
+          iss: "tenantcore-auth",
+          aud: "tenantcore-api",
+          sub: user.id,
+          exp: now + 900,
+          iat: now,
+          nbf: now,
+          jti: SecureRandom.uuid,
+          tenant_id: user.tenant_id,
+          tenant_role: tenant_role,
+          groups: groups,
+          permissions: permissions,
+          acl_ver: user.acl_ver
+        }
+
+        JWT.encode(payload, @signing_key, "RS256")
+        # test mode: check ENV["TENANTCORE_TEST_SECRET"] → "HS256" + hmac key
+      end
+    end
+
+  lib/tenantcore_auth/registry/route_registry.rb:
+    ROUTE_REGISTRY = [
+      { method: "POST", path: "/auth/token", permission: nil,
+        tenant_scoped: false, description: "Issue JWT token",
+        service: nil, resource: nil, action: nil, public: true },
+      { method: "GET", path: "/me", permission: nil,
+        tenant_scoped: true, description: "Current user context",
+        public: false },
+      # ... all 14 required routes
+    ].freeze
+
+    def self.get_allowed_routes(permissions)
+      ROUTE_REGISTRY.select { |r| r[:public] || permissions.include?(r[:permission]) }
+    end
+
+  lib/tenantcore_auth/domain/in_memory_store.rb:
+    class InMemoryStore
+      def self.load_from_fixtures(fixture_dir)
+        # read users.json, tenants.json, groups.json, permissions.json, memberships.json
+        # using JSON.parse(File.read(...))
+        # build lookup hashes
+        new(users: ..., tenants: ..., ...)
+      end
+
+      def get_user_by_id(id) = @users_by_id[id]
+      def get_user_by_email(email) = @users_by_email[email]
+      def get_tenant_by_id(id) = @tenants_by_id[id]
+      def get_groups_for_user(user_id, tenant_id) = ...
+      def get_effective_permissions(user_id) = ...
+      def verify_membership(user_id, tenant_id) = ...
+      def get_tenant_name(tenant_id) = @tenants_by_id[tenant_id]&.dig(:name)
+      def get_membership_role(user_id, tenant_id) = ...
+    end
+
+PART C: Tests
+
+  Use RSpec (or Minitest if Hanami default). Test discovery should work with:
+    bundle exec rspec
+  or:
+    bundle exec ruby -Ilib -Ispec spec/**/*_spec.rb
+
+  spec/auth/token_service_spec.rb:
+    - produces a decodable JWT
+    - all claims present per spec
+    - expiry is 15 minutes
+    - permissions match store
+
+  spec/integration/auth_integration_spec.rb:
+    All 12 smoke tests from verification contract.
+    Use Rack::Test for integration testing against config.ru.
+
+  spec/auth/me_spec.rb:
+    - /me returns correct fields
+    - allowed_routes filtered by permissions
+    - super_admin /me shape
+
+PART D: README.md
+
+  Required sections:
+  - What it is
+  - Requirements (Ruby 3.2+, Bundler)
+  - How to run: bundle exec rackup
+  - How to test: bundle exec rspec (or ruby -Ilib -Ispec ...)
+  - Token issuance example (curl)
+  - /me example
+  - Teaching notes (ruby-jwt API, Data.define, Rack middleware pattern,
+    in-memory store, devise-jwt note for Rails context)
+
+PART E: Gemfile
+
+  Core dependencies:
+    gem "hanami", "~> 2.1"  (or latest stable; check current version)
+    gem "jwt", "~> 2.8"     (ruby-jwt)
+    gem "json" (stdlib)
+    gem "rack", "~> 3"
+
+  Development/test:
+    gem "rspec"
+    gem "rack-test"
+
+================================================================================
+ELIXIR IMPLEMENTATION
+================================================================================
+
+PART F: Directory Structure
+
+Create: examples/canonical-auth/elixir/
+
+  examples/canonical-auth/elixir/
+    README.md
+    mix.exs
+    config/
+      config.exs
+      test.exs
+      runtime.exs
+    lib/
+      tenantcore_auth/
+        application.ex            (OTP application; starts InMemoryStore GenServer)
+        auth/
+          jwt_plug.ex             (Plug: validates JWT, sets conn.assigns.auth)
+          token_service.ex        (issue_token/2)
+          auth_context.ex         (AuthContext struct + has_permission?/2)
+          rbac_plug.ex            (Plug factory: require_permission)
+        domain/
+          in_memory_store.ex      (GenServer; loads fixtures; query functions)
+          models.ex               (User, Tenant, Group, Permission structs)
+        router.ex                 (Phoenix Router)
+        controllers/
+          auth_controller.ex      (POST /auth/token)
+          me_controller.ex        (GET /me)
+          user_controller.ex      (GET/POST /users, GET/PATCH /users/:id)
+          group_controller.ex     (GET/POST /groups, etc.)
+          admin_controller.ex     (GET/POST /admin/tenants)
+          health_controller.ex    (GET /health)
+        registry/
+          route_registry.ex       (route_registry/0, get_allowed_routes/1)
+    test/
+      tenantcore_auth/
+        token_service_test.exs
+        auth_integration_test.exs
+        me_controller_test.exs
+        support/
+          conn_case.ex
+
+PART G: Key Implementation Requirements
+
+  lib/tenantcore_auth/auth/auth_context.ex:
+    defmodule TenantcoreAuth.Auth.AuthContext do
+      defstruct [:sub, :email, :tenant_id, :tenant_role,
+                 :groups, :permissions, :acl_ver,
+                 :issued_at, :expires_at]
+
+      def has_permission?(%__MODULE__{permissions: perms}, permission) do
+        permission in perms
+      end
+    end
+
+  lib/tenantcore_auth/auth/jwt_plug.ex:
+    defmodule TenantcoreAuth.Auth.JwtPlug do
+      import Plug.Conn
+      alias TenantcoreAuth.Auth.{TokenService, AuthContext}
+      alias TenantcoreAuth.Domain.InMemoryStore
+
+      def init(opts), do: opts
+
+      def call(conn, _opts) do
+        with {:ok, token} <- extract_token(conn),
+             {:ok, claims} <- TokenService.verify_token(token),
+             {:ok, user} <- InMemoryStore.get_user_by_id(claims["sub"]),
+             :ok <- verify_acl_ver(claims, user),
+             :ok <- verify_membership(claims, user) do
+          auth = build_auth_context(claims, user)
+          assign(conn, :auth, auth)
+        else
+          {:error, :missing_token} ->
+            conn  # let route plug handle missing auth
+          {:error, reason} ->
+            conn
+            |> send_resp(401, Jason.encode!(%{error: "Unauthorized", reason: reason}))
+            |> halt()
+        end
+      end
+
+      # private helpers
+    end
+
+  lib/tenantcore_auth/auth/rbac_plug.ex:
+    defmodule TenantcoreAuth.Auth.RbacPlug do
+      import Plug.Conn
+
+      def init(permission), do: permission
+
+      def call(conn, permission) do
+        case conn.assigns[:auth] do
+          nil ->
+            conn |> send_resp(401, Jason.encode!(%{error: "Unauthorized"})) |> halt()
+          auth ->
+            if AuthContext.has_permission?(auth, permission) do
+              conn
+            else
+              conn |> send_resp(403, Jason.encode!(%{error: "Forbidden"})) |> halt()
+            end
+        end
+      end
+    end
+
+  lib/tenantcore_auth/auth/token_service.ex:
+    def issue_token(user, store) do
+      # compute effective permissions from store
+      # build claims map per domain spec
+      # use Joken.Signer.create("RS256", %{"pem" => private_key_pem})
+      # or for test mode: Joken.Signer.create("HS256", test_secret)
+      #
+      # signer = get_signer()
+      # token_config = build_token_config(user, permissions, groups, acl_ver)
+      # {:ok, token, _claims} = Joken.generate_and_sign(token_config, extra_claims, signer)
+      # token
+    end
+
+    def verify_token(token) do
+      # signer = get_verify_signer()
+      # {:ok, claims} = Joken.verify_and_validate(token_config(), token, signer)
+      # Returns {:ok, claims} or {:error, reason}
+    end
+
+    defp get_signer do
+      case System.get_env("TENANTCORE_TEST_SECRET") do
+        nil -> Joken.Signer.create("RS256", %{"pem" => get_private_key()})
+        secret -> Joken.Signer.create("HS256", secret)
+      end
+    end
+
+  lib/tenantcore_auth/router.ex:
+    defmodule TenantcoreAuth.Router do
+      use Phoenix.Router
+      import Plug.Conn
+
+      pipeline :public do
+        plug :accepts, ["json"]
+      end
+
+      pipeline :authenticated do
+        plug :accepts, ["json"]
+        plug TenantcoreAuth.Auth.JwtPlug
+      end
+
+      scope "/", TenantcoreAuth do
+        pipe_through :public
+        post "/auth/token", AuthController, :token
+        get "/health", HealthController, :index
+      end
+
+      scope "/", TenantcoreAuth do
+        pipe_through :authenticated
+        get "/me", MeController, :show
+        get "/users", UserController, :index
+        post "/users", UserController, :create
+        # ... etc per route registry
+      end
+
+      scope "/admin", TenantcoreAuth do
+        pipe_through [:authenticated]
+        # super_admin enforcement inside controller or dedicated pipeline
+        get "/tenants", AdminController, :index
+        post "/tenants", AdminController, :create
+      end
+    end
+
+  RBAC enforcement: use plug in controller actions:
+    defmodule TenantcoreAuth.UserController do
+      use Phoenix.Controller
+      plug TenantcoreAuth.Auth.RbacPlug, "iam:user:read" when action in [:index, :show]
+      plug TenantcoreAuth.Auth.RbacPlug, "iam:user:invite" when action in [:create]
+      plug TenantcoreAuth.Auth.RbacPlug, "iam:user:update" when action in [:update]
+    end
+
+  lib/tenantcore_auth/domain/in_memory_store.ex:
+    defmodule TenantcoreAuth.Domain.InMemoryStore do
+      use GenServer
+
+      def start_link(opts), do: GenServer.start_link(__MODULE__, opts, name: __MODULE__)
+
+      def init(_opts) do
+        fixture_dir = Path.join([__DIR__, "..", "..", "..", "..", "..", "domain", "fixtures"])
+        state = load_fixtures(fixture_dir)
+        {:ok, state}
+      end
+
+      # Public API (synchronous GenServer calls):
+      def get_user_by_id(id), do: GenServer.call(__MODULE__, {:get_user_by_id, id})
+      def get_user_by_email(email), do: GenServer.call(__MODULE__, {:get_user_by_email, email})
+      def get_effective_permissions(user_id), do: GenServer.call(__MODULE__, {:get_effective_permissions, user_id})
+      def verify_membership(user_id, tenant_id), do: GenServer.call(__MODULE__, {:verify_membership, user_id, tenant_id})
+      def get_tenant_name(tenant_id), do: GenServer.call(__MODULE__, {:get_tenant_name, tenant_id})
+      def get_groups_for_user(user_id, tenant_id), do: GenServer.call(__MODULE__, {:get_groups_for_user, user_id, tenant_id})
+
+      # handle_call implementations
+    end
+
+  lib/tenantcore_auth/registry/route_registry.ex:
+    defmodule TenantcoreAuth.Registry.RouteRegistry do
+      def route_registry do
+        [
+          %{method: "POST", path: "/auth/token", permission: nil,
+            tenant_scoped: false, description: "Issue JWT token",
+            service: nil, resource: nil, action: nil, public: true},
+          %{method: "GET", path: "/me", permission: nil,
+            tenant_scoped: true, description: "Current user context", public: false},
+          # ... all 14 required routes per domain spec
+        ]
+      end
+
+      def get_allowed_routes(permissions) do
+        route_registry()
+        |> Enum.filter(fn r -> r.public || r.permission in permissions end)
+      end
+    end
+
+  lib/tenantcore_auth/controllers/me_controller.ex:
+    def show(conn, _params) do
+      auth = conn.assigns.auth
+      tenant_name = InMemoryStore.get_tenant_name(auth.tenant_id)
+      allowed_routes = RouteRegistry.get_allowed_routes(auth.permissions)
+      guide_sections = allowed_routes
+        |> Enum.map(& &1[:docs_section])
+        |> Enum.reject(&is_nil/1)
+        |> Enum.uniq()
+
+      json(conn, %{
+        sub: auth.sub,
+        email: auth.email,
+        tenant_id: auth.tenant_id,
+        tenant_name: tenant_name,
+        tenant_role: auth.tenant_role,
+        groups: auth.groups,
+        permissions: auth.permissions,
+        acl_ver: auth.acl_ver,
+        allowed_routes: allowed_routes,
+        guide_sections: guide_sections,
+        issued_at: DateTime.to_iso8601(auth.issued_at),
+        expires_at: DateTime.to_iso8601(auth.expires_at)
+      })
+    end
+
+PART H: Tests
+
+  Use ExUnit. Tests should run with: mix test
+
+  test/tenantcore_auth/token_service_test.exs:
+    - issue_token produces a valid JWT
+    - all required claims are present
+    - expiry is 15 minutes
+    - permissions match store
+
+  test/tenantcore_auth/auth_integration_test.exs:
+    All 12 smoke tests from verification contract.
+    Use Phoenix.ConnTest and build/0.
+    Generate tokens with TokenService.issue_token/2 against the store.
+
+  test/tenantcore_auth/me_controller_test.exs:
+    - /me returns correct fields
+    - allowed_routes filtered by permissions
+    - super_admin /me shape
+
+PART I: README.md
+
+  Required sections:
+  - What it is
+  - Requirements (Elixir 1.16+, Erlang/OTP 26+, Mix)
+  - How to run: mix phx.server
+  - How to test: mix test
+  - Token issuance example (curl)
+  - /me example
+  - Teaching notes (Joken configuration, GenServer store, Phoenix Plug pipeline,
+    NOT LiveView rationale, RS256/HS256 test mode)
+
+PART J: mix.exs
+
+  Core dependencies:
+    {:phoenix, "~> 1.7"}
+    {:jason, "~> 1.4"}
+    {:joken, "~> 2.6"}
+    {:jose, "~> 1.11"}    (Joken dependency)
+    {:plug_cowboy, "~> 2.7"}
+
+================================================================================
+PARITY MATRIX AND CATALOG UPDATES
+================================================================================
+
+After completing both implementations:
+
+  1. Update examples/canonical-auth/domain/parity-matrix.md:
+     Mark all cells [x] for Ruby and Elixir rows.
+     Any cell that could not be completed: mark [~] with a footnote.
+
+  2. Update examples/canonical-auth/CATALOG.md:
+     Change Ruby and Elixir rows from [ ] to [x].
+
+After this prompt, all 8 language implementations should be complete.
+The full parity matrix should show [x] for all rows if no gaps remain.
+If any row has [~] entries, list them explicitly in the commit message.
+
+================================================================================
+VERIFICATION AND COMMIT
+================================================================================
+
+Run everything:
+  python -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
+  python -m unittest verification/unit/test_jwt_auth_arc_domain.py -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+For Ruby tests (if ruby + bundler are available):
+  cd examples/canonical-auth/ruby && bundle exec rspec
+
+For Elixir tests (if mix is available):
+  cd examples/canonical-auth/elixir && mix test
+
+If a runtime is not available, state the gap clearly in the commit message.
+Do NOT claim implementation is complete if tests have not run.
+
+Run: python3 scripts/work.py checkpoint
+
+Stage and commit with git add -p:
+
+  [PROMPT_139] JWT auth arc: Ruby (Hanami + ruby-jwt) and Elixir (Phoenix + Joken) examples
+
+  - examples/canonical-auth/ruby/ — complete Hanami + ruby-jwt implementation
+  - examples/canonical-auth/elixir/ — complete Phoenix + Joken implementation
+  - examples/canonical-auth/domain/parity-matrix.md — Ruby + Elixir rows updated
+  - examples/canonical-auth/CATALOG.md — Ruby + Elixir rows marked [x]
+  [- List any parity gaps (marked [~]) if present]
+
+================================================================================
+ARC PROGRESS AFTER THIS PROMPT
+================================================================================
+
+  PROMPT_134 — Foundation [done]
+  PROMPT_135 — Shared domain spec [done]
+  PROMPT_136 — Python + TypeScript [done]
+  PROMPT_137 — Go + Rust [done]
+  PROMPT_138 — Java + Kotlin [done]
+  PROMPT_139 — Ruby + Elixir [this prompt]
+  PROMPT_140 — Hardening and arc completion (next)

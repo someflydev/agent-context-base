@@ -1,0 +1,542 @@
+You are working inside the `agent-context-base` repository.
+
+This repository is the meta-scaffold that AI-assisted projects copy when generated.
+It uses a strict prompt-first workflow: each `.prompts/` file is executed in one
+fresh coding-assistant session with commit prefixes like `[PROMPT_137]`.
+
+PROMPT_134: JWT Auth Arc — Foundation.
+PROMPT_135: JWT Auth Arc — Shared domain spec.
+PROMPT_136: JWT Auth Arc — Python (FastAPI + PyJWT) and TypeScript (Hono + jose).
+
+This prompt (PROMPT_137) implements two language canonical examples:
+  - Go: Echo + golang-jwt/jwt
+  - Rust: Axum + jsonwebtoken
+
+Both examples must conform to examples/canonical-auth/domain/spec.md.
+Both must implement all required flows, routes, and tests from the verification
+contract in examples/canonical-auth/domain/verification-contract.md.
+
+              [JWT AUTH ARC: Prompt 4 of 7 — Go + Rust Implementations]
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Read these before starting:
+
+  1. README.md
+  2. docs/context-boot-sequence.md
+  3. python3 scripts/work.py resume                    (run; study output)
+  4. memory/INDEX.md
+
+Read the full arc foundation before writing any code:
+  5. examples/canonical-auth/domain/spec.md            (READ — all sections; this is your spec)
+  6. examples/canonical-auth/domain/parity-matrix.md   (READ — you will update Go + Rust rows)
+  7. examples/canonical-auth/domain/verification-contract.md (READ — 12 smoke tests required)
+  8. examples/canonical-auth/CATALOG.md                (READ — you will update 2 rows)
+  9. context/doctrine/jwt-auth-request-context.md      (READ — all rules)
+ 10. context/doctrine/rbac-permission-taxonomy.md      (READ)
+ 11. context/doctrine/tenant-boundary-enforcement.md   (READ)
+ 12. context/doctrine/route-metadata-registry.md       (READ — canonical metadata fields)
+ 13. context/doctrine/me-endpoint-discoverability.md   (READ — required /me fields)
+ 14. context/stacks/go-echo-golang-jwt-rbac.md         (READ — Go stack guidance)
+ 15. context/stacks/rust-axum-jsonwebtoken-rbac.md     (READ — Rust stack guidance)
+ 16. context/stacks/go-echo.md                         (READ — existing Go Echo conventions)
+ 17. context/stacks/rust-axum-modern.md                (READ — existing Rust conventions)
+ 18. context/archetypes/tenant-aware-backend-api.md    (READ — directory shape)
+
+Also read the Python implementation (if available) for reference on what the
+complete canonical example looks like:
+ 19. examples/canonical-auth/python/src/auth/         (READ — middleware and claims patterns)
+ 20. examples/canonical-auth/python/src/registry/     (READ — route registry pattern)
+
+Run verification before writing any code:
+  python -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
+  python -m unittest verification/unit/test_jwt_auth_arc_domain.py -v
+
+Do NOT begin implementation until both test suites pass.
+
+================================================================================
+BACKGROUND: GO AND RUST AUTH PATTERNS
+================================================================================
+
+Both Go and Rust have strong type systems that should be used to make auth
+context impossible to bypass — not just difficult. In Go, middleware attaches
+AuthContext to the Echo Context and handlers receive it via type-asserted
+context values. In Rust, Axum's FromRequestParts trait makes auth context an
+extractor — handlers that require auth simply declare it as a parameter.
+
+IMPORTANT for Go:
+  - Use golang-jwt/jwt (v5 preferred). This is NOT the same as jwt-go.
+  - Import path: github.com/golang-jwt/jwt/v5
+  - golang-jwt/jwt does NOT have built-in JWKS or OIDC support — that is
+    intentional for this canonical example (single-service, symmetric or
+    asymmetric key loaded from env/file).
+  - Route metadata is a static slice of structs, not a map — iteration
+    order matters for middleware lookup.
+  - lestrrat-go/jwx is noted in the stack file as the alternative — do not
+    use it in the canonical example.
+
+IMPORTANT for Rust:
+  - Use the jsonwebtoken crate (latest stable, 9.x).
+  - Claims struct must derive Deserialize + Serialize.
+  - Decoding errors should map to 401; permission errors to 403.
+  - Axum Extension or a custom FromRequestParts extractor for auth context —
+    the extractor pattern is preferred because it makes auth a compile-time
+    type requirement on handlers that need it.
+  - jwt-simple is noted in the stack file as the alternative — do not use
+    it in the canonical example.
+
+================================================================================
+GO IMPLEMENTATION
+================================================================================
+
+PART A: Directory Structure
+
+Create: examples/canonical-auth/go/
+
+  examples/canonical-auth/go/
+    README.md
+    go.mod
+    go.sum                (generated; commit it)
+    main.go               (main func: creates store, builds app, starts server)
+    internal/
+      auth/
+        middleware.go     (Echo middleware: JWTMiddleware)
+        token.go          (IssueToken function)
+        claims.go         (Claims struct — implements jwt.Claims interface;
+                           AuthContext struct for request lifecycle)
+      domain/
+        store.go          (InMemoryStore: loads fixtures, query methods)
+        models.go         (User, Tenant, Group, Permission structs)
+      routes/
+        auth.go           (POST /auth/token)
+        me.go             (GET /me)
+        users.go          (GET/POST /users, GET/PATCH /users/:id)
+        groups.go         (GET/POST /groups, POST /groups/:id/permissions,
+                           POST /groups/:id/users)
+        admin.go          (GET/POST /admin/tenants)
+        health.go         (GET /health)
+      registry/
+        routes.go         (RouteMetadata struct; ROUTE_REGISTRY slice;
+                           GetAllowedRoutes func)
+    tests/
+      token_test.go
+      auth_test.go
+      me_test.go
+
+PART B: Key Implementation Requirements
+
+  internal/auth/claims.go:
+
+    type Claims struct {
+      jwt.RegisteredClaims
+      TenantID   *string  `json:"tenant_id"`
+      TenantRole string   `json:"tenant_role"`
+      Groups     []string `json:"groups"`
+      Permissions []string `json:"permissions"`
+      ACLVer     int      `json:"acl_ver"`
+    }
+
+    type AuthContext struct {
+      Sub        string
+      Email      string
+      TenantID   *string
+      TenantRole string
+      Groups     []string
+      Permissions []string
+      ACLVer     int
+      IssuedAt   time.Time
+      ExpiresAt  time.Time
+    }
+
+    func (a *AuthContext) HasPermission(permission string) bool
+
+  internal/auth/token.go:
+
+    func IssueToken(user *domain.User, store *domain.InMemoryStore, signingKey interface{}) (string, error)
+    // compute effective permissions via store
+    // build Claims with all standard fields per spec
+    // exp = time.Now().Add(15 * time.Minute)
+    // sign with jwt.NewWithClaims(jwt.SigningMethodRS256, claims).SignedString(key)
+    // for test mode: check TENANTCORE_TEST_SECRET env var → HS256
+
+  internal/auth/middleware.go:
+
+    func JWTMiddleware(store *domain.InMemoryStore, verifyKey interface{}) echo.MiddlewareFunc
+    // - extract Bearer token from Authorization header
+    // - parse with jwt.ParseWithClaims — validate exp, nbf, iss, aud
+    // - return 401 on any parse failure
+    // - load user from store by sub; return 401 if not found
+    // - compare acl_ver; return 401 if stale
+    // - verify tenant membership; return 403 if not active member
+    // - store AuthContext in Echo context: c.Set("auth", &authContext)
+    // - call next
+
+    func RequirePermission(permission string) echo.MiddlewareFunc
+    // reads AuthContext from c.Get("auth"); returns 403 if permission missing
+
+    func RequireSuperAdmin() echo.MiddlewareFunc
+    // reads AuthContext; returns 403 if tenant_role != "super_admin"
+
+  internal/registry/routes.go:
+
+    type RouteMetadata struct {
+      Method       string
+      Path         string
+      Permission   string
+      TenantScoped bool
+      Description  string
+      Service      string
+      Resource     string
+      Action       string
+      Public       bool
+      SuperAdminOnly bool
+    }
+
+    var ROUTE_REGISTRY = []RouteMetadata{ ... }  // all 14 required routes
+
+    func GetAllowedRoutes(permissions []string) []RouteMetadata
+
+  internal/routes/me.go:
+
+    GET /me: reads AuthContext from c.Get("auth").
+    Fetches tenant_name from store.
+    Calls GetAllowedRoutes(auth.Permissions).
+    Returns JSON per domain spec /me shape.
+
+  Route registration in main.go:
+    e := echo.New()
+    // Public routes (no middleware):
+    e.POST("/auth/token", authRoutes.Token)
+    e.GET("/health", healthRoutes.Health)
+    // Protected routes:
+    protected := e.Group("", JWTMiddleware(store, verifyKey))
+    protected.GET("/me", meRoutes.Me)
+    protected.GET("/users", usersRoutes.List, RequirePermission("iam:user:read"))
+    // ... etc per route registry
+
+  internal/domain/store.go:
+    InMemoryStore struct with fields: Users, Tenants, Groups, Permissions,
+    GroupPermissions, UserGroups, Memberships (all loaded from fixture JSON)
+
+    Methods:
+    - GetUserByID(id string) (*User, bool)
+    - GetUserByEmail(email string) (*User, bool)
+    - GetTenantByID(id string) (*Tenant, bool)
+    - GetGroupsForUser(userID, tenantID string) []Group
+    - GetEffectivePermissions(userID string) []string
+    - VerifyMembership(userID, tenantID string) bool
+    - GetTenantName(tenantID string) string
+
+    LoadFromFixtures(fixtureDir string) (*InMemoryStore, error)
+    // reads users.json, tenants.json, etc. from fixtureDir
+    // fixtureDir default: "../../domain/fixtures" (relative to go/ dir)
+
+PART C: Tests
+
+  tests/token_test.go:
+    - TestIssueToken_ClaimsShape: all required claims present
+    - TestIssueToken_Expiry: exp - iat == 900 seconds
+    - TestIssueToken_Permissions: permissions match store effective permissions
+
+  tests/auth_test.go:
+    All 12 smoke tests from verification contract.
+    Use net/http/httptest + Echo test utilities.
+    Generate tokens with IssueToken() against fixture store.
+
+  tests/me_test.go:
+    - TestMeHandler_CorrectFields
+    - TestMeHandler_AllowedRoutesFiltered
+    - TestMeHandler_SuperAdminShape
+
+PART D: README.md
+
+  Required sections:
+  - What it is
+  - Requirements (Go 1.22+)
+  - How to run: go run ./main.go
+  - How to test: go test ./...
+  - Dependencies (go.mod key packages)
+  - Token issuance example (curl)
+  - /me example (curl)
+  - Teaching notes
+
+PART E: go.mod
+
+  Core dependencies:
+    github.com/golang-jwt/jwt/v5
+    github.com/labstack/echo/v4
+    github.com/labstack/echo/v4/middleware (for logger, recover)
+
+  Use go 1.22 or later.
+
+================================================================================
+RUST IMPLEMENTATION
+================================================================================
+
+PART F: Directory Structure
+
+Create: examples/canonical-auth/rust/
+
+  examples/canonical-auth/rust/
+    README.md
+    Cargo.toml
+    src/
+      main.rs               (Axum app factory, route registration)
+      auth/
+        mod.rs
+        middleware.rs       (JWT extractor via FromRequestParts)
+        token.rs            (issue_token function)
+        claims.rs           (Claims struct, AuthContext struct)
+      domain/
+        mod.rs
+        store.rs            (InMemoryStore, loads fixtures via serde_json)
+        models.rs           (User, Tenant, Group, Permission structs)
+      routes/
+        mod.rs
+        auth.rs             (POST /auth/token)
+        me.rs               (GET /me)
+        users.rs            (GET/POST /users, GET/PATCH /users/:id)
+        groups.rs           (GET/POST /groups, POST /groups/:id/permissions,
+                             POST /groups/:id/users)
+        admin.rs            (GET/POST /admin/tenants)
+        health.rs           (GET /health)
+      registry/
+        mod.rs
+        routes.rs           (RouteMetadata struct, ROUTE_REGISTRY, get_allowed_routes)
+    tests/
+      token_tests.rs
+      auth_tests.rs
+      me_tests.rs
+
+PART G: Key Implementation Requirements
+
+  auth/claims.rs:
+
+    #[derive(Debug, Serialize, Deserialize, Clone)]
+    pub struct Claims {
+      pub iss: String,
+      pub aud: String,
+      pub sub: String,
+      pub exp: usize,
+      pub iat: usize,
+      pub nbf: usize,
+      pub jti: String,
+      pub tenant_id: Option<String>,
+      pub tenant_role: String,
+      pub groups: Vec<String>,
+      pub permissions: Vec<String>,
+      pub acl_ver: i32,
+    }
+
+    #[derive(Debug, Clone)]
+    pub struct AuthContext {
+      pub sub: String,
+      pub email: String,
+      pub tenant_id: Option<String>,
+      pub tenant_role: String,
+      pub groups: Vec<String>,
+      pub permissions: Vec<String>,
+      pub acl_ver: i32,
+      pub issued_at: chrono::DateTime<chrono::Utc>,
+      pub expires_at: chrono::DateTime<chrono::Utc>,
+    }
+
+    impl AuthContext {
+      pub fn has_permission(&self, permission: &str) -> bool
+    }
+
+  auth/middleware.rs:
+
+    Implement AuthContext as an Axum extractor:
+
+      impl<S> FromRequestParts<S> for AuthContext
+      where S: Send + Sync
+
+    The extractor:
+    1. Reads Authorization: Bearer <token> header
+    2. Verifies token with jsonwebtoken::decode::<Claims>(token, &key, &validation)
+       where validation checks exp, nbf, iss, aud
+    3. Returns StatusCode::UNAUTHORIZED on any verification failure
+    4. Looks up user from the store (via State<Arc<InMemoryStore>>)
+    5. Compares acl_ver; returns UNAUTHORIZED if stale
+    6. Verifies tenant membership; returns FORBIDDEN if inactive
+    7. Returns AuthContext on success
+
+    Note: Axum's FromRequestParts requires access to the app state.
+    Use the extension-based pattern or pass the store via Extension.
+    Read context/stacks/rust-axum-jsonwebtoken-rbac.md for the
+    recommended approach.
+
+  RBAC enforcement:
+    Permission guards as Axum extractors or middleware:
+
+      pub struct RequirePermission<const PERM: &'static str>(pub AuthContext);
+
+      impl<S, const PERM: &'static str> FromRequestParts<S> for RequirePermission<PERM>
+      // extract AuthContext, check has_permission(PERM); return 403 if missing
+
+    Used in handler signature:
+      async fn list_users(
+          RequirePermission::<"iam:user:read">(auth): RequirePermission<"iam:user:read">,
+          State(store): State<Arc<InMemoryStore>>,
+      ) -> impl IntoResponse
+
+    Note: const generics for permission strings require Rust 1.76+. If this
+    approach is too complex for the canonical example, use a simpler middleware
+    layer approach and document the tradeoff in a comment.
+
+  auth/token.rs:
+
+    pub fn issue_token(user: &User, store: &InMemoryStore, key: &EncodingKey) -> Result<String, JwtError>
+    // compute effective_permissions from store
+    // build Claims with all required fields; exp = now + 900s
+    // jsonwebtoken::encode(&Header::new(Algorithm::RS256), &claims, key)
+    // test mode: check env var TENANTCORE_TEST_SECRET → HS256
+
+  registry/routes.rs:
+
+    #[derive(Debug, Clone, Serialize)]
+    pub struct RouteMetadata {
+      pub method: &'static str,
+      pub path: &'static str,
+      pub permission: &'static str,
+      pub tenant_scoped: bool,
+      pub description: &'static str,
+      pub service: &'static str,
+      pub resource: &'static str,
+      pub action: &'static str,
+      pub public: bool,
+      pub super_admin_only: bool,
+    }
+
+    pub static ROUTE_REGISTRY: &[RouteMetadata] = &[ ... ];
+    pub fn get_allowed_routes(permissions: &[String]) -> Vec<&'static RouteMetadata>
+
+  domain/store.rs:
+
+    pub struct InMemoryStore { ... }
+    impl InMemoryStore {
+      pub fn load_from_fixtures(fixture_dir: &Path) -> Result<Self, ...>
+      pub fn get_user_by_id(&self, id: &str) -> Option<&User>
+      pub fn get_user_by_email(&self, email: &str) -> Option<&User>
+      pub fn get_tenant_by_id(&self, id: &str) -> Option<&Tenant>
+      pub fn get_effective_permissions(&self, user_id: &str) -> Vec<String>
+      pub fn verify_membership(&self, user_id: &str, tenant_id: &str) -> bool
+      pub fn get_tenant_name(&self, tenant_id: &str) -> Option<&str>
+    }
+
+  routes/me.rs:
+    GET /me: takes AuthContext extractor + State(store).
+    Builds /me response per domain spec.
+    Returns Json<serde_json::Value>.
+
+  main.rs app setup:
+    let store = Arc::new(InMemoryStore::load_from_fixtures(...));
+    let app = Router::new()
+      .route("/auth/token", post(auth::token_handler))
+      .route("/health", get(health::health_handler))
+      .route("/me", get(me::me_handler))
+      .route("/users", get(users::list_users))
+      ...
+      .with_state(store);
+
+PART H: Tests
+
+  Integration tests in tests/ directory (Rust integration test convention):
+
+  tests/token_tests.rs:
+    - test_issue_token_claim_shape
+    - test_issue_token_expiry_15_min
+    - test_issue_token_permissions_match_store
+
+  tests/auth_tests.rs:
+    All 12 smoke tests from verification contract.
+    Use axum-test or reqwest with a test server.
+    Generate tokens with issue_token() against fixture store.
+
+  tests/me_tests.rs:
+    - test_me_response_fields
+    - test_me_allowed_routes_filtered
+    - test_me_super_admin_shape
+
+PART I: README.md
+
+  Required sections:
+  - What it is
+  - Requirements (Rust 1.76+ / stable)
+  - How to run: cargo run
+  - How to test: cargo test
+  - Cargo.toml key dependencies
+  - Token issuance example (curl)
+  - /me example
+  - Teaching notes (extractor pattern, const generics tradeoff, in-memory store)
+
+PART J: Cargo.toml
+
+  Core dependencies:
+    axum = { version = "0.7", features = ["macros"] }
+    tokio = { version = "1", features = ["full"] }
+    jsonwebtoken = "9"
+    serde = { version = "1", features = ["derive"] }
+    serde_json = "1"
+    uuid = { version = "1", features = ["v4"] }
+    chrono = { version = "0.4", features = ["serde"] }
+    tower = "0.4"
+    tower-http = { version = "0.5", features = ["trace"] }
+
+================================================================================
+PARITY MATRIX AND CATALOG UPDATES
+================================================================================
+
+After completing both implementations:
+
+  1. Update examples/canonical-auth/domain/parity-matrix.md:
+     Mark all cells [x] for Go and Rust rows.
+     Any cell that could not be completed: mark [~] with a footnote.
+
+  2. Update examples/canonical-auth/CATALOG.md:
+     Change Go and Rust rows from [ ] to [x].
+
+================================================================================
+VERIFICATION AND COMMIT
+================================================================================
+
+Run everything:
+  python -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
+  python -m unittest verification/unit/test_jwt_auth_arc_domain.py -v
+  python scripts/validate_context.py
+  python scripts/run_verification.py --tier fast
+
+For Go tests (if go is available):
+  cd examples/canonical-auth/go && go test ./... -v
+
+For Rust tests (if cargo is available):
+  cd examples/canonical-auth/rust && cargo test
+
+If a runtime is not available, state the gap clearly in the commit message.
+Do NOT claim implementation is complete if tests have not run.
+
+Run: python3 scripts/work.py checkpoint
+
+Stage and commit with git add -p:
+
+  [PROMPT_137] JWT auth arc: Go (Echo + golang-jwt/jwt) and Rust (Axum + jsonwebtoken) examples
+
+  - examples/canonical-auth/go/ — complete Echo + golang-jwt/jwt implementation
+  - examples/canonical-auth/rust/ — complete Axum + jsonwebtoken implementation
+  - examples/canonical-auth/domain/parity-matrix.md — Go + Rust rows updated
+  - examples/canonical-auth/CATALOG.md — Go + Rust rows marked [x]
+
+================================================================================
+ARC PROGRESS AFTER THIS PROMPT
+================================================================================
+
+  PROMPT_134 — Foundation [done]
+  PROMPT_135 — Shared domain spec [done]
+  PROMPT_136 — Python + TypeScript [done]
+  PROMPT_137 — Go + Rust [this prompt]
+  PROMPT_138 — Java + Kotlin (next)
+  PROMPT_139 — Ruby + Elixir
+  PROMPT_140 — Hardening and arc completion
