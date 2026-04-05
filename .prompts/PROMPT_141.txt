@@ -15,6 +15,41 @@ from agent-context-base.
               [GRAFT: Prompt 1 of 1 — Full Implementation]
 
 ================================================================================
+SESSION EXECUTION DISCIPLINE
+================================================================================
+
+Run this entire prompt in one fresh coding-assistant session and stop at its
+boundary. Do not begin the next prompt in the same session.
+
+Before making changes, create a local per-prompt checklist file in `tmp/` and
+keep it updated throughout the session. Do not commit it. Use:
+
+  - `tmp/PROMPT_141_checklist.md`
+
+Use a compact checklist with these headings:
+
+  # PROMPT_141 Checklist
+  - Objective
+  - Planned commit groups
+  - Verification steps
+  - Completion gates
+  - Follow-ups / known gaps
+
+Commit hygiene for this prompt:
+  - Every commit subject must start with `[PROMPT_141]`.
+  - Use Tim Pope style multi-line commit messages: subject line, blank line,
+    then a short body explaining why the grouped change exists and noting any
+    verification gaps.
+  - Wrap commit body lines at 80 characters max.
+  - Do not use CLI hacks that can leave literal `\n` sequences in commit
+    messages; write real multi-line commit text.
+  - Prefer `git add <paths>` when a commit aligns cleanly to whole files.
+  - Use `git add -p` only when you need to separate unrelated hunks in the same
+    file.
+  - Never mix work from different prompts in one commit.
+  - Keep commits logically grouped and small enough to review.
+
+================================================================================
 BOOT SEQUENCE
 ================================================================================
 
@@ -168,7 +203,7 @@ Step F — Print next steps:
     Next steps:
       1. Review the grafted files in {target}
       2. Add the .gitignore entries above
-      3. Commit the grafted files: git add -p && git commit
+      3. Commit the grafted files with deliberate staging and a multi-line message
       4. Open a new session in {target} and run:
            python3 scripts/work.py resume
       5. Then run the analysis prompt:
@@ -272,7 +307,7 @@ near the top of the file, below the dataclass definitions.
     - Read context/TASK.md and context/SESSION.md before starting work.
     - Read memory/INDEX.md when resuming interrupted work.
     - Run work.py checkpoint after meaningful changes and before ending a session.
-    - Commit conventions: one prefix per commit, staged with git add -p.
+    - Commit conventions: one prefix per commit; prefer `git add <paths>` and use `git add -p` only when file-level staging is insufficient.
     - Do not claim completion without running the stated proof path.
     - If proof is unavailable, report blocked or incomplete instead of done.
     Keep it under 35 lines.
@@ -528,7 +563,7 @@ Each prompt file must follow this structure exactly:
 
   Run: python3 scripts/work.py checkpoint
 
-  Stage and commit with git add -p:
+  Stage and commit with deliberate grouping. Use `git add <paths>` when file boundaries are clean; use `git add -p` only when you need to separate mixed hunks in the same file:
 
     [PROMPT_NN] <one-line description matching the prompt title>
 
@@ -582,7 +617,7 @@ COMMIT
 
 Run: python3 scripts/work.py checkpoint
 
-Stage and commit with git add -p:
+Stage and commit with deliberate grouping. Use `git add <paths>` when file boundaries are clean; use `git add -p` only when you need to separate mixed hunks in the same file:
 
   [ANALYZE] Initial ACB analysis — promptset and domain summary
 
@@ -750,7 +785,7 @@ Run: python3 scripts/work.py checkpoint
 COMMIT
 ================================================================================
 
-Stage and commit with git add -p:
+Stage and commit with deliberate grouping. Use `git add <paths>` when file boundaries are clean; use `git add -p` only when you need to separate mixed hunks in the same file:
 
   [PROMPT_141] Add work.py graft command and analyze-and-reverse-engineer template
 

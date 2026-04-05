@@ -32,6 +32,41 @@ Elixir libraries:
   ex_json_schema                       (Lane B: JSON Schema contract workflows)
 
 ================================================================================
+SESSION EXECUTION DISCIPLINE
+================================================================================
+
+Run this entire prompt in one fresh coding-assistant session and stop at its
+boundary. Do not begin the next prompt in the same session.
+
+Before making changes, create a local per-prompt checklist file in `tmp/` and
+keep it updated throughout the session. Do not commit it. Use:
+
+  - `tmp/PROMPT_117_checklist.md`
+
+Use a compact checklist with these headings:
+
+  # PROMPT_117 Checklist
+  - Objective
+  - Planned commit groups
+  - Verification steps
+  - Completion gates
+  - Follow-ups / known gaps
+
+Commit hygiene for this prompt:
+  - Every commit subject must start with `[PROMPT_117]`.
+  - Use Tim Pope style multi-line commit messages: subject line, blank line,
+    then a short body explaining why the grouped change exists and noting any
+    verification gaps.
+  - Wrap commit body lines at 80 characters max.
+  - Do not use CLI hacks that can leave literal `\n` sequences in commit
+    messages; write real multi-line commit text.
+  - Prefer `git add <paths>` when a commit aligns cleanly to whole files.
+  - Use `git add -p` only when you need to separate unrelated hunks in the same
+    file.
+  - Never mix work from different prompts in one commit.
+  - Keep commits logically grouped and small enough to review.
+
+================================================================================
 BOOT SEQUENCE
 ================================================================================
 
@@ -985,7 +1020,7 @@ Manual checks:
 COMMIT DISCIPLINE
 ================================================================================
 
-Use grouped commits prefixed with [PROMPT_117]. Use `git add -p`.
+Use grouped commits prefixed with [PROMPT_117]. Prefer `git add <paths>` when a commit maps cleanly to whole files; use `git add -p` only when a commit would otherwise mix unrelated hunks.
 
   1. [PROMPT_117] add Kotlin Konform (Lane A, DSL) schema validation example
      Stage: examples/canonical-schema-validation/kotlin/konform/

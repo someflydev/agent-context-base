@@ -13,6 +13,41 @@ workflows to reflect the two-layer model (work.py as operator console + PROMPT_M
 as behavioral contract), and adds two new workflows. Do NOT proceed to PROMPT_94.
 
 ================================================================================
+SESSION EXECUTION DISCIPLINE
+================================================================================
+
+Run this entire prompt in one fresh coding-assistant session and stop at its
+boundary. Do not begin the next prompt in the same session.
+
+Before making changes, create a local per-prompt checklist file in `tmp/` and
+keep it updated throughout the session. Do not commit it. Use:
+
+  - `tmp/PROMPT_93_checklist.md`
+
+Use a compact checklist with these headings:
+
+  # PROMPT_93 Checklist
+  - Objective
+  - Planned commit groups
+  - Verification steps
+  - Completion gates
+  - Follow-ups / known gaps
+
+Commit hygiene for this prompt:
+  - Every commit subject must start with `[PROMPT_93]`.
+  - Use Tim Pope style multi-line commit messages: subject line, blank line,
+    then a short body explaining why the grouped change exists and noting any
+    verification gaps.
+  - Wrap commit body lines at 80 characters max.
+  - Do not use CLI hacks that can leave literal `\n` sequences in commit
+    messages; write real multi-line commit text.
+  - Prefer `git add <paths>` when a commit aligns cleanly to whole files.
+  - Use `git add -p` only when you need to separate unrelated hunks in the same
+    file.
+  - Never mix work from different prompts in one commit.
+  - Keep commits logically grouped and small enough to review.
+
+================================================================================
 BOOT SEQUENCE
 ================================================================================
 
@@ -110,7 +145,7 @@ Rules that apply to every prompt session, regardless of which prompt is being ex
 
   3. Commit discipline
      All commits during a session must begin with [PROMPT_XX] matching the active prompt.
-     Use `git add -p` for logical groupings. Never batch changes from different prompts.
+     Use `git add -p` only for logical groupings that cannot be staged cleanly by file. Never batch changes from different prompts.
 
   4. Validation before done
      A prompt is not complete until its stated verification steps pass. Report `blocked`
@@ -154,7 +189,7 @@ A condensed but complete list of what must be true before a prompt is declared d
 Brief but complete rules:
   - Use Tim Pope style multi-line commit messages
   - [PROMPT_XX] prefix on every commit subject
-  - git add -p for logical groupings
+  - git add -p only for logical groupings that share a file
   - No empty commits
   - Do not rename prompt files
 
@@ -368,7 +403,7 @@ Also verify manually:
 COMMIT DISCIPLINE
 ================================================================================
 
-Use grouped commits prefixed with [PROMPT_93]. Use `git add -p`.
+Use grouped commits prefixed with [PROMPT_93]. Prefer `git add <paths>` when a commit maps cleanly to whole files; use `git add -p` only when a commit would otherwise mix unrelated hunks.
 
 Suggested groupings:
 

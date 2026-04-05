@@ -20,6 +20,41 @@ Python has three library surfaces to demonstrate:
   - factory_boy: ORM-style object graph factories (for the graph layer)
 
 ================================================================================
+SESSION EXECUTION DISCIPLINE
+================================================================================
+
+Run this entire prompt in one fresh coding-assistant session and stop at its
+boundary. Do not begin the next prompt in the same session.
+
+Before making changes, create a local per-prompt checklist file in `tmp/` and
+keep it updated throughout the session. Do not commit it. Use:
+
+  - `tmp/PROMPT_121_checklist.md`
+
+Use a compact checklist with these headings:
+
+  # PROMPT_121 Checklist
+  - Objective
+  - Planned commit groups
+  - Verification steps
+  - Completion gates
+  - Follow-ups / known gaps
+
+Commit hygiene for this prompt:
+  - Every commit subject must start with `[PROMPT_121]`.
+  - Use Tim Pope style multi-line commit messages: subject line, blank line,
+    then a short body explaining why the grouped change exists and noting any
+    verification gaps.
+  - Wrap commit body lines at 80 characters max.
+  - Do not use CLI hacks that can leave literal `\n` sequences in commit
+    messages; write real multi-line commit text.
+  - Prefer `git add <paths>` when a commit aligns cleanly to whole files.
+  - Use `git add -p` only when you need to separate unrelated hunks in the same
+    file.
+  - Never mix work from different prompts in one commit.
+  - Keep commits logically grouped and small enough to review.
+
+================================================================================
 BOOT SEQUENCE
 ================================================================================
 
@@ -373,7 +408,7 @@ The validate_output.py run must exit 0.
 COMMIT DISCIPLINE
 ================================================================================
 
-Use grouped commits prefixed [PROMPT_121]. Use `git add -p`.
+Use grouped commits prefixed with [PROMPT_121]. Prefer `git add <paths>` when a commit maps cleanly to whole files; use `git add -p` only when a commit would otherwise mix unrelated hunks.
 
   1. [PROMPT_121] add Python faker pipeline (Faker + multi-locale + custom provider)
      Stage: examples/canonical-faker/python/faker_pipeline/
