@@ -31,12 +31,20 @@ Load one dominant path, not a broad survey.
 ## Guardrails
 
 - Re-read generated `.acb/` boot files at session start.
-- Treat `PLAN.md`, `context/TASK.md`, `context/SESSION.md`, and `context/MEMORY.md` as local runtime state, not doctrine.
-- After `work.py resume`, use its git anchor, recent-change clues, next-step signal, and plan-review signal to decide what to read next. Then read `context/TASK.md`, then `context/SESSION.md`, then `context/MEMORY.md` only if durable repo-local truths matter.
+- Treat `tmp/*.md`, `context/TASK.md`, `context/SESSION.md`, and
+  `context/MEMORY.md` as local runtime state, not doctrine.
+- After `work.py resume`, use its git anchor, recent-change clues, next-step
+  signal, and plan-review signal to decide what to read next. Then read
+  `context/TASK.md`, then `context/SESSION.md`, then `context/MEMORY.md` only
+  if durable repo-local truths matter. Read `tmp/*.md` only when there is an
+  active local action plan or checklist for the current session.
 - After `work.py resume`, check `memory/INDEX.md` and load any `memory/summaries/` artifact relevant to the current work before starting task-specific context loading.
 - Prefer manifests, canonical examples, and validation gates over improvisation.
 - Treat templates as scaffolds, not canonical truth.
 - Use `python3 scripts/work.py checkpoint` after meaningful changes, before ending a session, and before a likely handoff.
+- For session-scoped planning and execution tracking, use markdown files in
+  `tmp/`, for example `tmp/PROMPT_123_checklist.md` or
+  `tmp/runtime-fix-plan.md`. Keep them concise and do not commit them.
 - Update `PLAN.md` only when a `.prompts` megaprompt or major decision materially changes phases or milestones.
 - If a repo provides `PLAN.example.md`, `context/TASK.example.md`, `context/SESSION.example.md`, or `context/MEMORY.example.md`, `init` and `checkpoint` will scaffold missing runtime files from those examples.
 - Do not claim completion without running the stated proof path.
