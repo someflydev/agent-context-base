@@ -32,6 +32,7 @@ python3 scripts/work.py checkpoint
 - `context/TASK.md`: the current active slice. Keep scope, success criteria, immediate steps, blockers, and out-of-scope boundaries concrete.
 - `context/SESSION.md`: compact working state for the next session. Record current status, recent decisions, active files, the next safe step, and what does not need to be reloaded.
 - `context/MEMORY.md`: durable repo-local truths, recurring guardrails, stable commands, and known pitfalls. Do not let it accumulate temporary task sludge.
+- `tmp/*.md`: optional local checklists or ad hoc execution plans for the current session. Keep them concise and do not treat them as roadmap state.
 
 These files are runtime state, not doctrine. They should normally stay ignored and local to the working copy.
 
@@ -54,7 +55,8 @@ If the example file is absent, the tool falls back to its built-in default scaff
 4. Read `context/SESSION.md`.
 5. Read `context/MEMORY.md` only if durable repo-local truths matter.
 6. Read `PLAN.md` when milestone context matters.
-7. Continue into `.acb/` startup files in generated repos when the task needs manifest, spec, or validation context.
+7. Read `tmp/*.md` only when there is an active local checklist or ad hoc session plan relevant to the task.
+8. Continue into `.acb/` startup files in generated repos when the task needs manifest, spec, or validation context.
 
 `resume` should give a fresh assistant a grounded snapshot first: current branch and working-tree breadth, the latest commit anchor, recent changed-file clues, the best visible next step from `context/SESSION.md` or `context/TASK.md`, whether `PLAN.md` likely deserves review, and whether recent work looks like it may deserve promotion into `context/MEMORY.md`.
 
@@ -94,4 +96,5 @@ When `checkpoint` or `status` hints that `context/MEMORY.md` may need promotion,
 
 - committed docs, manifests, `.acb/` specs, and canonical examples remain the durable doctrine surface
 - runtime markdown files are local continuation state
+- `tmp/*.md` is the right place for prompt-session checklists or one-off action plans
 - `.prompts` shape future work, but they only force a `PLAN.md` update when they materially reshape the roadmap

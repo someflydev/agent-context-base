@@ -762,11 +762,13 @@ def print_resume_guidance(script_cmd: str, states: tuple[RuntimeFileState, ...])
         print("- Read `PLAN.md` when milestone context, phase changes, or `.prompts` roadmap shifts matter.")
     else:
         print("- Create `PLAN.md` only when the work needs milestone-level roadmap state.")
+    print("- Keep any ad hoc session checklist or scratch execution plan in `tmp/*.md`, not in `PLAN.md`.")
 
     print("")
     print("Checkpoint reminders:")
     print(f"- Use `{script_cmd} checkpoint` after meaningful changes, before ending a session, and before a likely handoff.")
     print("- Keep `context/SESSION.md` concise and action-oriented.")
+    print("- Use `tmp/*.md` for session-scoped checklists or ad hoc work plans that should stay local.")
     print("- Update `PLAN.md` only when phases, milestones, or the near-to-mid-term roadmap changed materially.")
 
 
@@ -835,6 +837,7 @@ def handle_checkpoint(repo_root: Path, script_cmd: str, force: bool, strict: boo
     print("Checkpoint doctrine:")
     print("- Run checkpoints after meaningful code or doc changes, after a completed subtask, before ending a session, and before switching branches or worktrees.")
     print("- Refresh `context/SESSION.md` when it is stale, bloated, or missing a clear next safe step.")
+    print("- Keep prompt-session checklists or ad hoc execution plans in `tmp/*.md`, not in `PLAN.md`.")
     print("- Refresh `PLAN.md` when a `.prompts` megaprompt or major decision materially changes phases or milestones.")
     print("- Keep `context/MEMORY.md` durable; move active-step sludge back into `context/TASK.md` or `context/SESSION.md`.")
     print("")

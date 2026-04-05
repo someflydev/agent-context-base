@@ -9,11 +9,12 @@ Use this checklist when starting or resuming work.
 3. `context/TASK.md` and `context/SESSION.md` when they exist
 4. `context/MEMORY.md` only if durable repo-local truths matter
 5. `PLAN.md` when milestone context matters
-6. `.acb/SESSION_BOOT.md` when present
-7. `.acb/profile/selection.json` when present
-8. `.acb/specs/AGENT_RULES.md` and `.acb/specs/VALIDATION.md` when present
-9. `.acb/validation/CHECKLIST.md` and `.acb/validation/COVERAGE.md` when present
-10. `README.md` and `docs/` only when they exist and are clearly current
+6. `tmp/*.md` only when there is an active local checklist or ad hoc session plan relevant to the task
+7. `.acb/SESSION_BOOT.md` when present
+8. `.acb/profile/selection.json` when present
+9. `.acb/specs/AGENT_RULES.md` and `.acb/specs/VALIDATION.md` when present
+10. `.acb/validation/CHECKLIST.md` and `.acb/validation/COVERAGE.md` when present
+11. `README.md` and `docs/` only when they exist and are clearly current
 
 ## Quick Commands
 

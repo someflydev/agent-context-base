@@ -6,7 +6,7 @@ This is the deterministic startup contract for assistants working in `agent-cont
 
 1. Read stable entrypoints: `AGENT.md`, `CLAUDE.md`, and `README.md` when present.
 2. Run `python3 scripts/work.py resume` when the repo has a root `scripts/` directory. In compact derived repos without a root `scripts/` directory, run `python3 .acb/scripts/work.py resume`.
-3. Read `context/TASK.md` and `context/SESSION.md` when they exist. Read `context/MEMORY.md` only if durable repo-local truths matter. Read `PLAN.md` when milestone context matters.
+3. Read `context/TASK.md` and `context/SESSION.md` when they exist. Read `context/MEMORY.md` only if durable repo-local truths matter. Read `PLAN.md` when milestone context matters. Read `tmp/*.md` only when there is an active local checklist or ad hoc session plan relevant to the task.
 4. In generated repos, read `.acb/SESSION_BOOT.md`, `.acb/profile/selection.json`, `.acb/specs/AGENT_RULES.md`, and `.acb/specs/VALIDATION.md`.
 5. Read `.acb/validation/CHECKLIST.md` and `.acb/validation/COVERAGE.md` when `.acb/` exists.
 6. Inspect narrow repo signals: lockfiles, root manifests, source entrypoints, Compose files, prompt files, deployment artifacts.
@@ -20,6 +20,7 @@ This is the deterministic startup contract for assistants working in `agent-cont
 - Let `work.py resume` drive triage with its commit anchor, recent-change clues, next-step signal, and plan-review signal before broad reads.
 - Keep `context/SESSION.md` concise and action-oriented.
 - Update `PLAN.md` only when phases or milestones changed materially.
+- Use `tmp/*.md` for session-scoped checklists or scratch plans, not for roadmap state.
 - Prefer one active boundary and one validation path.
 - Treat validation as required before claiming completion.
 - Use `blocked`, `incomplete`, and `done` precisely.
