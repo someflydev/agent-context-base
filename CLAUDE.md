@@ -39,6 +39,7 @@ Load one dominant path, not a broad survey.
   if durable repo-local truths matter. Read `tmp/*.md` only when there is an
   active local action plan or checklist for the current session.
 - After `work.py resume`, check `memory/INDEX.md` and load any `memory/summaries/` artifact relevant to the current work before starting task-specific context loading.
+- Before starting a new prompt session, run `python3 scripts/work.py next` to check the queue, quota state, and whether a resume summary exists.
 - Prefer manifests, canonical examples, and validation gates over improvisation.
 - Treat templates as scaffolds, not canonical truth.
 - Use `python3 scripts/work.py checkpoint` after meaningful changes, before ending a session, and before a likely handoff.
