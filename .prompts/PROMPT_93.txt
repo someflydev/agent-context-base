@@ -12,6 +12,13 @@ This prompt (PROMPT_93) repositions PROMPT_META_RUNNER.txt, updates doctrine and
 workflows to reflect the two-layer model (work.py as operator console + PROMPT_META_RUNNER
 as behavioral contract), and adds two new workflows. Do NOT proceed to PROMPT_94.
 
+Historical rebase note:
+- If the live repo does not actually have the operator-console commands imagined in
+  PROMPT_92, do not invent doctrine around them.
+- Rebase this prompt onto the current `scripts/work.py` reality.
+- Keep repo-root `PLAN.md` roadmap-level only and keep session-scoped checklists or
+  ad hoc plans in `tmp/*.md`.
+
 ================================================================================
 SESSION EXECUTION DISCIPLINE
 ================================================================================
@@ -90,9 +97,9 @@ This assumption does not hold cleanly:
 - They cannot guarantee commit discipline without operator oversight
 - Multi-prompt sequencing from within a single session is drift-prone
 
-The upgrade introduced in PROMPT_92 provides a better answer for the orchestration layer:
-`work.py` (init-project, next, start, pause, done, verify) is the durable local operator
-console. It tracks state between sessions across the real filesystem.
+The historical design introduced in PROMPT_92 proposed `work.py` operator-console
+commands. If the live repo still has only the base runtime-state commands, treat that
+operator-console layer as a proposal to be rebased rather than an already-landed fact.
 
 The repositioning to make in this prompt:
 
@@ -157,21 +164,21 @@ Rules that apply to every prompt session, regardless of which prompt is being ex
 
   6. No auto-sequencing
      When a prompt's completion condition is met, stop and report. Do not move to the
-     next prompt. The operator runs `work.py done` and `work.py next` to manage queue.
+     next prompt. The operator manages sequencing outside the assistant session.
 
 --- SECTION 3: Operator Console Integration ---
 
 Explain the two-layer model:
 
-  - The OPERATOR uses `work.py` commands to manage the prompt queue and session lifecycle.
+  - The OPERATOR uses the live repo workflow to manage sequencing and session lifecycle.
   - The ASSISTANT uses boot docs, work.py resume, memory/, and prompt content to do the work.
-  - These layers are separate. The assistant does not run `work.py start/pause/done` — the
-    operator does.
+  - These layers are separate. Do not assume `work.py start/pause/done` exist unless the
+    repo actually has them.
 
 Provide the expected operator workflow around a session:
-  Before:   work.py next (check readiness), work.py start PROMPT_XX.txt
-  During:   assistant works; operator may run work.py verify at any point
-  After:    operator runs work.py done PROMPT_XX.txt, writes completion summary if needed
+  Before:   review runtime state and pick the next prompt
+  During:   assistant works; operator may inspect or checkpoint as needed
+  After:    write the completion summary and decide what prompt comes next
 
 --- SECTION 4: Artifact Gates ---
 
@@ -257,17 +264,16 @@ Extend it with these new sections:
 
 Add a concise section explaining the two-layer model:
   - The `.prompts/` directory defines what each session does
-  - `scripts/work.py` manages the operator workflow between sessions
-  - These layers are deliberately separate and complementary
+  - `scripts/work.py` manages repo-local runtime continuity between sessions
+  - Any operator-console extensions must match the live repo instead of assumed history
   - The operator drives sequencing; the assistant drives execution
 
 Include the minimal operator loop:
-  1. `work.py next`         — check what to run and whether conditions are ready
-  2. `work.py start PROMPT_XX.txt`  — mark session as started
-  3. Paste prompt into fresh session + run AGENT.md boot sequence
-  4. Execute session; operator may run `work.py verify` at checkpoints
-  5. `work.py done PROMPT_XX.txt`   — mark complete, log commits
-  6. Write memory/summaries/PROMPT_XX_completion.md before moving on
+  1. Run the live `work.py resume` flow and read runtime state
+  2. Paste the chosen prompt into a fresh session + run AGENT.md boot sequence
+  3. Keep any local per-session checklist in `tmp/PROMPT_XX_checklist.md`
+  4. Execute the session and checkpoint normally
+  5. Write memory/summaries/PROMPT_XX_completion.md before moving on
 
 --- Section: Fresh-Session Boundaries ---
 
@@ -374,10 +380,9 @@ PART 6: UPDATE docs/runtime-state-workflow.md
 
 Read the current file. Add a section (or update the existing structure) to cover:
 
-  - The work/ data model and its relationship to the existing runtime state files
-  - The operator-console layer (work.py commands for lifecycle management)
-  - The two-layer model: operator uses work.py, assistant uses boot docs + work.py resume
-  - Where work/ fits relative to PLAN.md / context/TASK.md / context/SESSION.md / context/MEMORY.md
+  - The live runtime-state files and any optional operator-console layer that actually exists
+  - The two-layer model: operator manages sequencing, assistant uses boot docs + work.py resume
+  - Where `tmp/*.md` fits relative to PLAN.md / context/TASK.md / context/SESSION.md / context/MEMORY.md
 
 Do not rewrite the whole file. Add what is genuinely new and missing. Keep the
 existing content intact unless something is now demonstrably incorrect.

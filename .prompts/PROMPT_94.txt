@@ -12,6 +12,13 @@ This prompt (PROMPT_94) hardens startup logging and context visibility. It makes
 session-start experience more explicit and informative without adding complexity.
 Do NOT proceed to PROMPT_95.
 
+Historical rebase note:
+- Rebase this prompt onto the live `scripts/work.py` command surface.
+- Do not assume `work.py next`, quota tracking, or `work/projects/<slug>/WORK_STATE.json`
+  exist unless they are present in the repo being edited.
+- Keep repo-root `PLAN.md` roadmap-level only and keep session-scoped checklists or
+  ad hoc plans in `tmp/*.md`.
+
 ================================================================================
 SESSION EXECUTION DISCIPLINE
 ================================================================================
@@ -136,10 +143,9 @@ The new function should print:
     Posture:              <lean (< 200 total lines) | moderate (200–400) | heavy (> 400)>
     Recommendation:       <no action | review TASK.md/SESSION.md for pruning if heavy>
 
-  Operator Queue (work/ state):
-    Project:       <slug | "not initialized — run work.py init-project">
-    Next Prompt:   <PROMPT_XX.txt | "none" | "work/ not initialized">
-    Quota Ready:   <yes | no — <reason> | "unknown — run work.py log-quota">
+  Local Planning State:
+    tmp/:          <present with active checklist | none relevant>
+    PLAN.md role:  <roadmap only | absent>
 
   Recommended Next Action:
     <one clear sentence: what to read, run, or implement next>
@@ -150,10 +156,9 @@ Implementation notes:
 - `print_session_context_briefing` receives the RepoInspection object (already available)
   plus the repo_root path. Detect memory/ files by checking the filesystem.
 
-- For "Operator Queue": check if work/projects/<slug>/WORK_STATE.json exists.
-  If yes, load it and extract next_prompt. If no, say "not initialized".
-  Use the same `get_project_dir` helper from PROMPT_92. (If that helper does not exist,
-  implement a minimal version inline.)
+- For any local planning-status section, prefer signals the repo actually has today:
+  active `tmp/*.md` files, runtime markdown presence, and git/history clues. Do not
+  invent a `work/` state model if the live repo does not have one.
 
 - For "Complexity Budget": sum the line_count of present runtime files. The thresholds
   (lean/moderate/heavy) are heuristics, not hard limits. Show the number, not just a label.
@@ -188,18 +193,17 @@ debugging context-loading issues. It is NOT written by default.
 If logs/startup/ does not exist, create it when writing.
 
 ================================================================================
-PART 3: ENHANCE work.py next — QUOTA CONTEXT IN BRIEFING
+PART 3: OPTIONAL FOLLOW-ON IF A `next` COMMAND REALLY EXISTS
 ================================================================================
 
-The `work.py next` command (from PROMPT_92) already shows quota state. Enhance it to
-also show the complexity budget for the pending prompt if it can be inferred:
+If the live repo really has a `work.py next` command, it may also show a compact
+complexity note for the pending session:
 
   Complexity Note:
   - The last session's runtime files were <lean|moderate|heavy> (N total lines).
   - If heavy: consider pruning context/SESSION.md before starting the next session.
 
-This is a small addition. Read the current `handle_next` output and add 2-3 lines after
-the quota section.
+Skip this section entirely if no `next` command exists in the repo being edited.
 
 ================================================================================
 PART 4: UPDATE docs/context-boot-sequence.md
@@ -268,7 +272,7 @@ Something like:
   4. run `python3 scripts/work.py resume`
      Read the Session Context Briefing it prints. Use it to decide what to load next:
      if a relevant memory/summaries/ file is shown, load it; if complexity budget
-     is heavy, prune before starting; if quota is not ready, consult work.py next.
+     is heavy, prune before starting.
 
 Keep this to 3–4 lines. Do not restructure the rest of AGENT.md.
 
@@ -303,7 +307,7 @@ Also run the enhanced commands manually and verify the output:
     → Verify the file exists and contains the briefing
 
   python3 scripts/work.py next
-    → Should show the complexity note addition
+    → Only run this if the live repo actually has a `next` command
 
 Verify manually:
   - docs/startup-context-visibility.md exists and is coherent

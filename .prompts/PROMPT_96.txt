@@ -14,6 +14,12 @@ This prompt (PROMPT_96) begins a new arc: STARTUP TRACE / PSEUDO-LOGGING / CONTE
 COMPLEXITY VALIDATION. Your sole task this session is to implement the executable context
 complexity budget model. Do NOT proceed to PROMPT_97.
 
+Historical rebase note:
+- Rebase this prompt onto the live `scripts/work.py` surface before adding
+  `budget-report`.
+- Keep repo-root `PLAN.md` roadmap-level only.
+- Keep any per-session checklist or ad hoc work plan in `tmp/*.md`.
+
 ================================================================================
 SESSION EXECUTION DISCIPLINE
 ================================================================================

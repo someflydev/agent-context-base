@@ -16,6 +16,14 @@ This prompt (PROMPT_98) adds heuristic prompt routing and capability validation:
 `work.py route-check` and canonical juicy-prompt scenario fixtures. Do NOT proceed
 to PROMPT_99.
 
+Historical rebase note:
+- Rebase this prompt onto the live `scripts/work.py` surface before adding
+  `route-check`.
+- Do not assume prior `budget-report`, `startup-trace`, or Session Context Briefing
+  work landed exactly as described here unless the repo confirms it.
+- Keep repo-root `PLAN.md` roadmap-level only and keep per-session checklists or ad
+  hoc plans in `tmp/*.md`.
+
 ================================================================================
 SESSION EXECUTION DISCIPLINE
 ================================================================================

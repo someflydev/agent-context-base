@@ -14,6 +14,14 @@ PROMPT_96: Executable context-complexity-budget model + work.py budget-report
 This prompt (PROMPT_97) adds the startup trace protocol: a structured self-declaration
 format that makes boot sequences inspectable. Do NOT proceed to PROMPT_98.
 
+Historical rebase note:
+- Rebase this prompt onto the live `scripts/work.py` surface before adding
+  `startup-trace`.
+- Do not assume the Session Context Briefing or startup-log behavior already exists
+  unless it is present in the repo being edited.
+- Keep repo-root `PLAN.md` roadmap-level only and keep per-session checklists or ad
+  hoc plans in `tmp/*.md`.
+
 ================================================================================
 SESSION EXECUTION DISCIPLINE
 ================================================================================

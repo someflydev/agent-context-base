@@ -17,6 +17,13 @@ This prompt (PROMPT_99) closes the STARTUP TRACE / PSEUDO-LOGGING / CONTEXT COMP
 VALIDATION arc. It adds derived-repo toggleability, a holistic doc pass, and arc
 completion summaries. This is the final prompt in the PROMPT_96–99 arc.
 
+Historical rebase note:
+- Rebase this prompt onto the live repo instead of assuming PROMPT_96-98 landed
+  exactly as written.
+- Only document or toggle `work.py` capabilities that actually exist.
+- Keep repo-root `PLAN.md` roadmap-level only and keep per-session checklists or ad
+  hoc plans in `tmp/*.md`.
+
 ================================================================================
 SESSION EXECUTION DISCIPLINE
 ================================================================================

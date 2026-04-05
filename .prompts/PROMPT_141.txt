@@ -12,6 +12,12 @@ discipline (session state, memory, commit conventions, the `work.py` tool itself
 and a high-quality starter prompt) into any locally cloned repo without starting
 from agent-context-base.
 
+Historical rebase note:
+- Keep repo-root `PLAN.md` optional and roadmap-level only in grafted repos.
+- Keep per-session checklists or ad hoc work plans in `tmp/*.md`.
+- Do not force new repos to create `PLAN.md` during graft or first analysis unless
+  milestone-level roadmap state is actually warranted.
+
               [GRAFT: Prompt 1 of 1 — Full Implementation]
 
 ================================================================================
@@ -342,8 +348,9 @@ Design principles for this prompt
    conflict with existing ones is not.
 
 2. It produces REAL artifacts, not plans to make artifacts. By the end of the
-   session, there must be at minimum: a PLAN.md, a populated context/TASK.md,
-   and at least one real .prompts/PROMPT_01.txt.
+   session, there must be at minimum: a populated context/TASK.md and at least
+   one real .prompts/PROMPT_01.txt. Add a repo-root PLAN.md only when milestone-
+   level roadmap tracking is actually warranted.
 
 3. It models the domain, not just the tech. A repo that does payroll processing
    deserves a promptset rooted in payroll concepts, not just "add tests" or
@@ -472,13 +479,15 @@ PHASE 3 — ARTIFACT GENERATION
 Write these artifacts. Do not skip any.
 
 --------------------------------------------------------------------------------
-A. PLAN.md (at the repo root)
+A. PLAN.md (at the repo root, only when roadmap-level tracking is warranted)
 --------------------------------------------------------------------------------
 
 If PLAN.md already exists, read it first and decide whether to extend or replace.
 If it is a placeholder, replace it. If it reflects real work, extend it.
+If roadmap-level tracking is not yet warranted, skip PLAN.md and record the active
+slice in context/TASK.md plus any local session checklist in `tmp/*.md` instead.
 
-Write a PLAN.md with:
+When warranted, write a PLAN.md with:
 
   ## Project Summary
   2–4 sentences: what the project is, who it serves, and what phase of development

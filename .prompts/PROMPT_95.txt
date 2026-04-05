@@ -13,6 +13,13 @@ This prompt (PROMPT_95) closes the upgrade arc with tests, verification hardenin
 and future-workstream readiness scaffolding. It is the final prompt in the PROMPT_91–95
 arc and should leave the repo in a clean, well-tested, forward-looking state.
 
+Historical rebase note:
+- Rebase the test plan onto the live `scripts/work.py` surface.
+- Do not add tests for nonexistent operator-console commands unless that command set
+  actually exists in the repo being edited.
+- Keep repo-root `PLAN.md` roadmap-level only and keep session-scoped checklists or
+  ad hoc plans in `tmp/*.md`.
+
 ================================================================================
 SESSION EXECUTION DISCIPLINE
 ================================================================================
@@ -121,13 +128,8 @@ Write tests for:
 Test class: TestWorkStateJSON
 ------------------------------------------------------------------------
 
-Test the WORK_STATE.json data model:
-  - test_work_state_schema: verify a fresh init-project creates a valid WORK_STATE.json
-    with all required fields and correct types
-  - test_work_state_prompt_queue_structure: verify a queue entry has all required fields
-    (prompt_file, status, priority, theme, depends_on, notes)
-  - test_work_state_status_values: verify that status values are from the allowed set
-    (pending, in_progress, paused, done, skipped)
+If the live repo does not have WORK_STATE.json support, replace this block with tests for
+the actual runtime-state files and output signals that `scripts/work.py` currently owns.
 
 ------------------------------------------------------------------------
 Test class: TestWorkCommands (integration-style, using a temp directory)
@@ -136,30 +138,15 @@ Test class: TestWorkCommands (integration-style, using a temp directory)
 Use tempfile.mkdtemp() to create a temporary repo-like directory for tests.
 Create a minimal WORK_STATE.json before each test that needs it.
 
-  - test_init_project_creates_expected_files: verify that init-project creates
-    work/projects/<slug>/ with WORK_STATE.json, RATE_LIMITS.json, SESSION_QUEUE.md,
-    COMMIT_LOG.md, RUN_HISTORY.md, PLAN.md
+  - if `init-project` exists, verify it does not create `work/projects/<slug>/PLAN.md`
+    for prompt-session planning
 
-  - test_init_project_idempotent: running init-project twice should not overwrite
-    existing files (unless --force)
+  - otherwise, expand coverage around `init`, `resume`, `status`, and `checkpoint`
 
   - test_verify_output_contains_expected_sections: run verify and check the output
     contains "Repo cleanliness:", "Commit discipline:", "Validation commands to run:"
 
-  - test_recent_commits_output_format: run recent-commits and check the output contains
-    "Recent Commits (prompt-aware)" and "Prompt coverage:"
-
-  - test_log_quota_updates_rate_limits: run log-quota --assistant claude --used-pct-5h 50
-    and verify RATE_LIMITS.json has the updated field
-
-  - test_start_updates_work_state: run start PROMPT_91.txt and verify WORK_STATE.json
-    has current_prompt = "PROMPT_91.txt" and status = "in_progress"
-
-  - test_pause_updates_work_state: after start, run pause PROMPT_91.txt --reason "test"
-    and verify status = "paused" and RUN_HISTORY.md has a pause entry
-
-  - test_done_updates_work_state: after start + pause + start again, run done
-    PROMPT_91.txt and verify status = "done" and COMMIT_LOG.md is updated
+  - only test command surfaces that actually exist in the repo under test
 
 ------------------------------------------------------------------------
 Test class: TestSessionContextBriefing
@@ -361,7 +348,7 @@ This is the completion summary for this session's work. Use the standard format:
 
 For "Next Recommended Action": name the first prompt in the NEXT arc (likely the
 logging or RBAC workstream, or whatever the operator has queued next). If no specific
-next prompt is known, say "Run `work.py next` to view the current queue."
+next prompt is known, say so directly instead of assuming a queue command exists.
 
 Also create: memory/summaries/PROMPT_91_through_95_arc_summary.md
 
@@ -393,11 +380,8 @@ Also run:
     → Session Context Briefing should now show memory/INDEX.md as present, relevant
       summaries if present, and a meaningful Recommended Next Action.
 
-  python3 scripts/work.py verify
-    → Should show the verification commands to run.
-
-  python3 scripts/work.py recent-commits
-    → Should show [PROMPT_91] through [PROMPT_95] commits in a prompt-aware digest.
+  Only run `verify` or `recent-commits` if those commands actually exist in the repo
+  under test.
 
 ================================================================================
 COMMIT DISCIPLINE

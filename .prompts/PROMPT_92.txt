@@ -11,6 +11,13 @@ This prompt (PROMPT_92) extends `scripts/work.py` with a full operator-console c
 set and creates the `work/` project data model. Your sole task in this session is to
 implement exactly that. Do NOT proceed to PROMPT_93.
 
+Historical rebase note:
+- The current base repo treats repo-root `PLAN.md` as optional roadmap state only.
+- Keep session-scoped checklists or ad hoc execution plans in `tmp/*.md`.
+- Do not reintroduce `work/projects/<slug>/PLAN.md` as a prompt-session planning file.
+- If the live `scripts/work.py` surface differs from this historical prompt, rebase onto
+  the current file instead of assuming every command described below already landed.
+
 ================================================================================
 SESSION EXECUTION DISCIPLINE
 ================================================================================
@@ -93,7 +100,8 @@ This is NOT a framework replacement. The existing four commands remain unchanged
 The new commands add an explicit operator-console layer on top of the existing model.
 
 The data they read and write lives in `work/projects/<slug>/` — a gitignored directory
-that holds local operator state (analogous to the gitignored PLAN.md / context/MEMORY.md).
+that holds local operator state. Do not use it as the home for prompt-session planning;
+that belongs in local `tmp/*.md` files, while repo-root `PLAN.md` stays roadmap-only.
 
 ================================================================================
 ARCHITECTURAL PRINCIPLES FOR THIS EXTENSION
@@ -139,7 +147,6 @@ Structure created by `work.py init-project`:
     projects/
       <slug>/
         WORK_STATE.json
-        PLAN.md
         SESSION_QUEUE.md
         COMMIT_LOG.md
         RATE_LIMITS.json
@@ -289,30 +296,6 @@ Scaffold template:
 | Datetime | Prompt | Event | Assistant | Notes | Head Before | Head After |
 |----------|--------|-------|-----------|-------|-------------|------------|
 
-------------------------------------------------------------------------
-PLAN.md (inside work/projects/<slug>/)
-------------------------------------------------------------------------
-
-Human-readable high-level plan connecting the prompt queue to longer-term goals.
-This is distinct from the repo-root PLAN.md (which is gitignored runtime state).
-The work/projects/<slug>/PLAN.md is also gitignored (inside work/).
-
-Scaffold template:
-
-# Work Plan: <slug>
-
-## Active Phase
--
-
-## Prompt Queue Summary
-See SESSION_QUEUE.md for the full queue.
-
-## Near-Term Goals
--
-
-## Last Updated
--
-
 ================================================================================
 PART 2: NEW COMMANDS
 ================================================================================
@@ -324,6 +307,7 @@ loads and saves WORK_STATE.json.
 Add a helper: `load_work_state(repo_root)` and `save_work_state(repo_root, state_dict)`.
 Add a helper: `get_project_dir(repo_root, slug=None)` that returns the Path to
 work/projects/<slug>/ (defaulting slug to repo root dirname if not specified).
+Keep this directory for operator state only, not for prompt-session plan files.
 
 ------------------------------------------------------------------------
 work.py init-project [--slug SLUG]
@@ -338,8 +322,9 @@ Output:
   - Skipped (exists): <file>   (one line per skipped file)
   - Project dir: <absolute path>
 
-Note in AGENT.md / output: point operators to `work.py init-project` to initialize
-the operator console for a project.
+Do not teach AGENT.md / CLAUDE.md to use this operator-console layer as the home for
+session planning. Keep those files aligned with `tmp/*.md` for checklists and with
+repo-root `PLAN.md` for roadmap-only state.
 
 ------------------------------------------------------------------------
 work.py next [--slug SLUG]
