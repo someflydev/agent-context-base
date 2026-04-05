@@ -66,3 +66,6 @@ tmp/
 logs/
 .qdrant/
 .meili/
+
+# Operator console state (local only)
+work/
