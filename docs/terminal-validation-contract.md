@@ -164,8 +164,8 @@ Terminal smoke tests integrate with verification tiers as follows:
 
 - `--tier fast`: runs smoke tests for implemented terminal examples and must
   pass without network or TTY
-- `--tier slow`: may run backend-dependent integration tests when backends are
-  available
+- `--tier medium` or `--tier heavy`: may run backend-dependent integration
+  tests when backends are available
 - `--tier tui`: is reserved for PTY-based TUI validation added later in the
   arc
 
