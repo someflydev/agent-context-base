@@ -79,6 +79,12 @@ class RecentCommitEntry:
     prompt_prefix: str | None
 
 
+@dataclass(frozen=True)
+class StartupLogResult:
+    path: Path
+    content: str
+
+
 PLACEHOLDER_PATTERNS = (
     re.compile(r"<[^>]+>"),
     re.compile(r"\bTODO\b", flags=re.IGNORECASE),
@@ -239,6 +245,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Summarize the current working situation for a fresh session without mutating files.",
     )
     resume_parser.add_argument("--strict", action="store_true", help="Exit with status 1 when warnings are found.")
+    resume_parser.add_argument(
+        "--write-startup-log",
+        action="store_true",
+        help="Write the Session Context Briefing to logs/startup/<timestamp>-resume.log.",
+    )
 
     checkpoint_parser = subparsers.add_parser(
         "checkpoint",
@@ -449,6 +460,42 @@ def format_optional_pct(value: Any) -> str:
     if isinstance(value, float) and value.is_integer():
         value = int(value)
     return f"{value}%"
+
+
+def runtime_file_presence_text(state: RuntimeFileState) -> str:
+    if not state.exists:
+        return "missing"
+    return f"present ({state.line_count} lines)"
+
+
+def classify_complexity_posture(total_lines: int) -> tuple[str, str]:
+    if total_lines < 200:
+        return "lean", "no action"
+    if total_lines <= 400:
+        return "moderate", "no action"
+    return "heavy", "review TASK.md/SESSION.md for pruning if heavy"
+
+
+def working_tree_summary(git_state: dict[str, object]) -> str:
+    changed_count = len([item for item in git_state.get("changed_files", []) if str(item).strip()])
+    if changed_count == 0:
+        return "clean"
+    staged = int(git_state.get("staged_count", 0))
+    unstaged = int(git_state.get("unstaged_count", 0))
+    return f"{changed_count} changed files ({staged} staged, {unstaged} unstaged)"
+
+
+def plan_role_text(repo_root: Path) -> str:
+    return "roadmap only" if (repo_root / "PLAN.md").exists() else "absent"
+
+
+def active_tmp_checklists(repo_root: Path) -> list[Path]:
+    tmp_dir = repo_root / "tmp"
+    if not tmp_dir.exists():
+        return []
+    candidates = [path for path in tmp_dir.glob("*.md") if path.is_file()]
+    candidates.sort(key=lambda path: path.stat().st_mtime, reverse=True)
+    return [path for path in candidates if "checklist" in path.stem.lower()]
 
 
 def prompt_prefix_from_text(text: str) -> str | None:
@@ -1061,6 +1108,93 @@ def latest_prompt_summary_path(repo_root: Path) -> Path | None:
     return None
 
 
+def latest_relevant_summary_path(repo_root: Path) -> Path | None:
+    return latest_prompt_summary_path(repo_root)
+
+
+def recommended_next_action(repo_root: Path, inspection: RepoInspection) -> str:
+    summary_path = latest_relevant_summary_path(repo_root)
+    runtime_total = sum(state.line_count for state in inspection.states if state.exists)
+    posture, _recommendation = classify_complexity_posture(runtime_total)
+    if summary_path is not None:
+        relative = summary_path.relative_to(repo_root).as_posix()
+        return f"Load {relative} before task-specific context."
+    if posture == "heavy":
+        return "Review and prune context/TASK.md or context/SESSION.md before starting implementation."
+    if inspection.next_step_hint:
+        return f"Read context/TASK.md and context/SESSION.md, then act on: {inspection.next_step_hint}"
+    return "Read context/TASK.md and context/SESSION.md next to establish the active slice and next safe step."
+
+
+def build_session_context_briefing(repo_root: Path, inspection: RepoInspection) -> str:
+    state_by_path = {state.spec.path: state for state in inspection.states}
+    branch = str(inspection.git_state.get("branch", "")).strip() or "unknown"
+    current_local = datetime.now().astimezone().strftime("%Y-%m-%d %H:%M:%S %Z")
+    if inspection.git_anchor is not None:
+        head_text = f"{inspection.git_anchor.commit} - {inspection.git_anchor.subject}"
+    else:
+        head_text = "unavailable"
+
+    memory_index = repo_root / "memory" / "INDEX.md"
+    summaries_dir = repo_root / "memory" / "summaries"
+    summary_files = [path for path in summaries_dir.glob("*.md")] if summaries_dir.exists() else []
+    relevant_summary = latest_relevant_summary_path(repo_root)
+    runtime_total = sum(state.line_count for state in inspection.states if state.exists)
+    posture, posture_recommendation = classify_complexity_posture(runtime_total)
+    tmp_checklists = active_tmp_checklists(repo_root)
+    tmp_text = (
+        f"present with active checklist ({tmp_checklists[0].relative_to(repo_root).as_posix()})"
+        if tmp_checklists
+        else "none relevant"
+    )
+
+    lines = [
+        "=" * 64,
+        "Session Context Briefing",
+        "=" * 64,
+        f"Date:                  {current_local}",
+        f"Repo:                  {repo_root}",
+        f"Branch:                {branch}",
+        f"Head:                  {head_text}",
+        f"Working Tree:          {working_tree_summary(inspection.git_state)}",
+        "",
+        "Runtime State:",
+        f"  PLAN.md:             {runtime_file_presence_text(state_by_path['PLAN.md'])}",
+        f"  context/TASK.md:     {runtime_file_presence_text(state_by_path['context/TASK.md'])}",
+        f"  context/SESSION.md:  {runtime_file_presence_text(state_by_path['context/SESSION.md'])}",
+        f"  context/MEMORY.md:   {runtime_file_presence_text(state_by_path['context/MEMORY.md'])}",
+        "",
+        "Memory Base:",
+        f"  memory/INDEX.md:     {'present' if memory_index.exists() else 'missing'}",
+        f"  memory/summaries/:   {len(summary_files)} files",
+        f"  Relevant summary:    {relevant_summary.name if relevant_summary is not None else 'none'}",
+        "",
+        "Complexity Budget:",
+        f"  Runtime file total:  {runtime_total} lines",
+        f"  Posture:             {posture}",
+        f"  Recommendation:      {posture_recommendation}",
+        "",
+        "Local Planning State:",
+        f"  tmp/:                {tmp_text}",
+        f"  PLAN.md role:        {plan_role_text(repo_root)}",
+        "",
+        "Recommended Next Action:",
+        f"  {recommended_next_action(repo_root, inspection)}",
+        "=" * 64,
+    ]
+    return "\n".join(lines)
+
+
+def write_startup_log(repo_root: Path, briefing: str) -> StartupLogResult:
+    logs_dir = repo_root / "logs" / "startup"
+    logs_dir.mkdir(parents=True, exist_ok=True)
+    timestamp = datetime.now().astimezone().strftime("%Y-%m-%d-%H%M%S")
+    path = logs_dir / f"{timestamp}-resume.log"
+    content = briefing.rstrip() + "\n"
+    path.write_text(content, encoding="utf-8")
+    return StartupLogResult(path=path, content=content)
+
+
 def quota_policy_result(rate_limits: dict[str, Any]) -> tuple[bool, str]:
     assistants = rate_limits.get("assistants", {})
     claude = assistants.get("claude", {})
@@ -1107,6 +1241,12 @@ def ensure_runtime_files(repo_root: Path, *, force: bool) -> list[str]:
 def print_header(title: str) -> None:
     print(title)
     print("=" * len(title))
+
+
+def print_session_context_briefing(repo_root: Path, inspection: RepoInspection) -> str:
+    briefing = build_session_context_briefing(repo_root, inspection)
+    print(briefing)
+    return briefing
 
 
 def print_git_signals(git_state: dict[str, object], git_anchor: GitAnchor | None, recent_change_clues: tuple[str, ...]) -> None:
@@ -1284,6 +1424,13 @@ def handle_next(repo_root: Path, script_cmd: str, slug: str | None) -> int:
     print(f"- Notes:       {notes}")
     print("")
     print(f"Resume Summary:  {summary_path.relative_to(repo_root).as_posix() if summary_path is not None else 'none'}")
+    runtime_total = sum(state.line_count for state in inspection.states if state.exists)
+    posture, _recommendation = classify_complexity_posture(runtime_total)
+    print("")
+    print("Complexity Note:")
+    print(f"- The last session's runtime files were {posture} ({runtime_total} total lines).")
+    if posture == "heavy":
+        print("- If heavy: consider pruning context/SESSION.md before starting the next session.")
     print("")
     print("Recommended Action:")
     if next_prompt is None:
@@ -1589,9 +1736,14 @@ def handle_status(repo_root: Path, script_cmd: str, strict: bool) -> int:
     return 1 if strict and inspection.warnings else 0
 
 
-def handle_resume(repo_root: Path, script_cmd: str, strict: bool) -> int:
+def handle_resume(repo_root: Path, script_cmd: str, strict: bool, write_startup_log_flag: bool) -> int:
     print_header("Runtime Resume")
     inspection = inspect_repo(repo_root)
+    briefing = print_session_context_briefing(repo_root, inspection)
+    if write_startup_log_flag:
+        startup_log = write_startup_log(repo_root, briefing)
+        print(f"Startup log: {startup_log.path.relative_to(repo_root).as_posix()}")
+        print("")
     print_state_summary(repo_root, script_cmd, inspection.states, inspection.git_state, inspection.git_anchor)
     print_git_signals(inspection.git_state, inspection.git_anchor, inspection.recent_change_clues)
     print_inferred_signals(inspection)
@@ -1645,7 +1797,7 @@ def main(argv: list[str]) -> int:
     if args.command == "status":
         return handle_status(repo_root, script_cmd, strict=args.strict)
     if args.command == "resume":
-        return handle_resume(repo_root, script_cmd, strict=args.strict)
+        return handle_resume(repo_root, script_cmd, strict=args.strict, write_startup_log_flag=args.write_startup_log)
     if args.command == "checkpoint":
         return handle_checkpoint(repo_root, script_cmd, force=args.force, strict=args.strict)
     if args.command == "init-project":
