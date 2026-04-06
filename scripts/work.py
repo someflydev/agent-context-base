@@ -85,6 +85,12 @@ class StartupLogResult:
     content: str
 
 
+@dataclass(frozen=True)
+class StartupTraceInfo:
+    path: Path
+    mtime: float
+
+
 PLACEHOLDER_PATTERNS = (
     re.compile(r"<[^>]+>"),
     re.compile(r"\bTODO\b", flags=re.IGNORECASE),
@@ -257,6 +263,44 @@ def build_parser() -> argparse.ArgumentParser:
     )
     checkpoint_parser.add_argument("--force", action="store_true", help="Overwrite existing runtime state files.")
     checkpoint_parser.add_argument("--strict", action="store_true", help="Exit with status 1 when warnings are found.")
+
+    # Nested subparsers keep the CLI grouped under `startup-trace` without adding
+    # extra top-level command noise.
+    startup_trace_parser = subparsers.add_parser(
+        "startup-trace",
+        help="Write or inspect assistant-declared startup trace files.",
+    )
+    startup_trace_subparsers = startup_trace_parser.add_subparsers(dest="startup_trace_command", required=True)
+
+    startup_trace_write_parser = startup_trace_subparsers.add_parser(
+        "write",
+        help="Write a startup trace to logs/startup/<timestamp>-trace.md.",
+    )
+    startup_trace_write_parser.add_argument("--session", required=True, help="Short description of the task or prompt.")
+    startup_trace_write_parser.add_argument("--files", nargs="*", help="Declared files read during boot.")
+    startup_trace_write_parser.add_argument("--entry-point", default="AGENT.md", help="Boot entrypoint used.")
+    startup_trace_write_parser.add_argument("--routers", help="Routers consulted and what they resolved.")
+    startup_trace_write_parser.add_argument("--doctrines", nargs="*", help="Doctrine files loaded during boot.")
+    startup_trace_write_parser.add_argument("--archetype", help="Inferred archetype.")
+    startup_trace_write_parser.add_argument("--primary-stack", help="Inferred primary stack.")
+    startup_trace_write_parser.add_argument("--workflow", help="Selected workflow.")
+    startup_trace_write_parser.add_argument(
+        "--confidence",
+        type=float,
+        help="Routing confidence from 0.0 to 1.0.",
+    )
+    startup_trace_write_parser.add_argument("--warnings", nargs="*", help="Startup warnings to record.")
+
+    startup_trace_show_parser = startup_trace_subparsers.add_parser(
+        "show",
+        help="Show the latest startup trace or list recent traces.",
+    )
+    startup_trace_show_parser.add_argument(
+        "--last",
+        type=int,
+        default=1,
+        help="Number of recent trace files to show or list.",
+    )
 
     budget_report_parser = subparsers.add_parser(
         "budget-report",
@@ -1136,6 +1180,31 @@ def latest_relevant_summary_path(repo_root: Path) -> Path | None:
     return latest_prompt_summary_path(repo_root)
 
 
+def startup_trace_files(repo_root: Path) -> list[StartupTraceInfo]:
+    logs_dir = repo_root / "logs" / "startup"
+    if not logs_dir.exists():
+        return []
+    traces: list[StartupTraceInfo] = []
+    for path in logs_dir.glob("*-trace.md"):
+        try:
+            mtime = path.stat().st_mtime
+        except OSError:
+            continue
+        traces.append(StartupTraceInfo(path=path, mtime=mtime))
+    traces.sort(key=lambda item: item.mtime, reverse=True)
+    return traces
+
+
+def latest_startup_trace_line(repo_root: Path) -> str:
+    traces = startup_trace_files(repo_root)
+    if not traces:
+        return "none found in logs/startup/"
+    latest = traces[0]
+    timestamp = datetime.fromtimestamp(latest.mtime).astimezone().strftime("%Y-%m-%d %H:%M")
+    relative = latest.path.relative_to(repo_root).as_posix()
+    return f"{timestamp} | {relative}"
+
+
 def recommended_next_action(repo_root: Path, inspection: RepoInspection) -> str:
     summary_path = latest_relevant_summary_path(repo_root)
     runtime_total = sum(state.line_count for state in inspection.states if state.exists)
@@ -1192,6 +1261,7 @@ def build_session_context_briefing(repo_root: Path, inspection: RepoInspection) 
         f"  memory/INDEX.md:     {'present' if memory_index.exists() else 'missing'}",
         f"  memory/summaries/:   {len(summary_files)} files",
         f"  Relevant summary:    {relevant_summary.name if relevant_summary is not None else 'none'}",
+        f"  Last Startup Trace:  {latest_startup_trace_line(repo_root)}",
         "",
         "Complexity Budget:",
         f"  Runtime file total:  {runtime_total} lines",
@@ -1217,6 +1287,168 @@ def write_startup_log(repo_root: Path, briefing: str) -> StartupLogResult:
     content = briefing.rstrip() + "\n"
     path.write_text(content, encoding="utf-8")
     return StartupLogResult(path=path, content=content)
+
+
+def confidence_label(confidence: float | None) -> str:
+    if confidence is None:
+        return "not declared"
+    if confidence >= 0.85:
+        return "strong (>= 0.85)"
+    if confidence >= 0.70:
+        return "usable (0.70-0.84)"
+    if confidence >= 0.55:
+        return "weak (0.55-0.69)"
+    return "very weak (< 0.55)"
+
+
+def startup_trace_memory_artifacts(repo_root: Path) -> list[str]:
+    latest_summary = latest_relevant_summary_path(repo_root)
+    summary_line = (
+        f"{latest_summary.relative_to(repo_root).as_posix()}: present"
+        if latest_summary is not None
+        else "memory/summaries/PROMPT_XX_completion.md: not present"
+    )
+    memory_path = repo_root / "context" / "MEMORY.md"
+    memory_line = f"context/MEMORY.md: {'present' if memory_path.exists() else 'missing'}"
+    return [summary_line, memory_line]
+
+
+def startup_trace_budget_estimate(
+    repo_root: Path,
+    files: list[str],
+    primary_stack: str | None,
+    archetype: str | None,
+) -> str:
+    if not files:
+        return "Files: 0   Estimated Profile: unknown"
+    from context_budget import ModifierContext, score_bundle
+
+    modifier_context = ModifierContext(
+        primary_stack=primary_stack,
+        primary_archetype=archetype,
+    )
+    _bundle_score, selected_profile, _cap_violations = score_bundle(files, repo_root, ctx=modifier_context)
+    profile_name = selected_profile.name if selected_profile is not None else "unknown"
+    return f"Files: {len(files)}   Estimated Profile: {profile_name}"
+
+
+def build_startup_trace(
+    repo_root: Path,
+    *,
+    session: str,
+    files: list[str],
+    entry_point: str,
+    routers: str | None,
+    doctrines: list[str] | None,
+    archetype: str | None,
+    primary_stack: str | None,
+    workflow: str | None,
+    confidence: float | None,
+    warnings: list[str] | None,
+) -> str:
+    created = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+    lines = [
+        "=" * 64,
+        "Startup Trace",
+        "=" * 64,
+        f"Created:         {created}",
+        f"Session:         {session}",
+        f"Entry Point:     {entry_point}",
+        "",
+        "Declared Files Read:",
+    ]
+    if files:
+        for index, path in enumerate(files, start=1):
+            lines.append(f"  {index}. {path} -- declared read")
+    else:
+        lines.append("  none declared")
+    lines.extend(
+        [
+            "",
+            "Routers Consulted:",
+            f"  - {routers or 'none'}",
+            "",
+            "Doctrines Loaded:",
+        ]
+    )
+    if doctrines:
+        for doctrine in doctrines:
+            lines.append(f"  - {doctrine}")
+    else:
+        lines.append("  - none beyond boot sequence")
+    lines.extend(
+        [
+            "",
+            "Memory Artifacts Seen:",
+        ]
+    )
+    for item in startup_trace_memory_artifacts(repo_root):
+        lines.append(f"  - {item}")
+    lines.extend(
+        [
+            "",
+            "Budget Estimate:",
+            f"  {startup_trace_budget_estimate(repo_root, files, primary_stack, archetype)}",
+            "  Note: run `work.py budget-report --bundle <files>` for a scored evaluation.",
+            "",
+            "Router Decision:",
+            f"  Archetype:      {archetype or 'not applicable'}",
+            f"  Primary Stack:  {primary_stack or 'not applicable'}",
+            f"  Workflow:       {workflow or 'not applicable'}",
+            f"  Confidence:     {confidence_label(confidence)}",
+            "",
+            "Warnings:",
+        ]
+    )
+    if warnings:
+        for warning in warnings:
+            lines.append(f"  - {warning}")
+    else:
+        lines.append("  - none")
+    lines.append("=" * 64)
+    return "\n".join(lines) + "\n"
+
+
+def write_startup_trace(
+    repo_root: Path,
+    *,
+    session: str,
+    files: list[str],
+    entry_point: str,
+    routers: str | None,
+    doctrines: list[str] | None,
+    archetype: str | None,
+    primary_stack: str | None,
+    workflow: str | None,
+    confidence: float | None,
+    warnings: list[str] | None,
+) -> Path:
+    logs_dir = repo_root / "logs" / "startup"
+    logs_dir.mkdir(parents=True, exist_ok=True)
+    timestamp = datetime.now().astimezone().strftime("%Y-%m-%d-%H%M%S")
+    path = logs_dir / f"{timestamp}-trace.md"
+    content = build_startup_trace(
+        repo_root,
+        session=session,
+        files=files,
+        entry_point=entry_point,
+        routers=routers,
+        doctrines=doctrines,
+        archetype=archetype,
+        primary_stack=primary_stack,
+        workflow=workflow,
+        confidence=confidence,
+        warnings=warnings,
+    )
+    path.write_text(content, encoding="utf-8")
+    return path
+
+
+def read_trace_created_line(path: Path) -> str:
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if line.startswith("Created:"):
+            return line.split(":", 1)[1].strip()
+    return "unknown"
 
 
 def quota_policy_result(rate_limits: dict[str, Any]) -> tuple[bool, str]:
@@ -1926,6 +2158,58 @@ def handle_budget_report(
     return 0
 
 
+def handle_startup_trace_write(
+    repo_root: Path,
+    *,
+    session: str,
+    files: list[str] | None,
+    entry_point: str,
+    routers: str | None,
+    doctrines: list[str] | None,
+    archetype: str | None,
+    primary_stack: str | None,
+    workflow: str | None,
+    confidence: float | None,
+    warnings: list[str] | None,
+) -> int:
+    if confidence is not None and not 0.0 <= confidence <= 1.0:
+        print("Confidence must be between 0.0 and 1.0.")
+        return 1
+    path = write_startup_trace(
+        repo_root,
+        session=session,
+        files=files or [],
+        entry_point=entry_point,
+        routers=routers,
+        doctrines=doctrines,
+        archetype=archetype,
+        primary_stack=primary_stack,
+        workflow=workflow,
+        confidence=confidence,
+        warnings=warnings,
+    )
+    print(path.relative_to(repo_root).as_posix())
+    return 0
+
+
+def handle_startup_trace_show(repo_root: Path, *, last: int) -> int:
+    if last < 1:
+        print("--last must be at least 1.")
+        return 1
+    traces = startup_trace_files(repo_root)
+    if not traces:
+        print("No startup traces found in logs/startup/")
+        return 0
+    selected = traces[:last]
+    if last == 1:
+        print(selected[0].path.read_text(encoding="utf-8").rstrip())
+        return 0
+    for trace in selected:
+        created = read_trace_created_line(trace.path)
+        print(f"{trace.path.name} | {created}")
+    return 0
+
+
 def handle_status(repo_root: Path, script_cmd: str, strict: bool) -> int:
     print_header("Runtime State Status")
     inspection = inspect_repo(repo_root)
@@ -2000,6 +2284,23 @@ def main(argv: list[str]) -> int:
         return handle_resume(repo_root, script_cmd, strict=args.strict, write_startup_log_flag=args.write_startup_log)
     if args.command == "checkpoint":
         return handle_checkpoint(repo_root, script_cmd, force=args.force, strict=args.strict)
+    if args.command == "startup-trace":
+        if args.startup_trace_command == "write":
+            return handle_startup_trace_write(
+                repo_root,
+                session=args.session,
+                files=args.files,
+                entry_point=args.entry_point,
+                routers=args.routers,
+                doctrines=args.doctrines,
+                archetype=args.archetype,
+                primary_stack=args.primary_stack,
+                workflow=args.workflow,
+                confidence=args.confidence,
+                warnings=args.warnings,
+            )
+        if args.startup_trace_command == "show":
+            return handle_startup_trace_show(repo_root, last=args.last)
     if args.command == "budget-report":
         return handle_budget_report(
             repo_root,
