@@ -5,7 +5,7 @@ Shared fixture data for all terminal canonical examples.
 ## Files
 
 - `jobs.json`: 20 job records (5 done, 4 failed, 3 running, 8 pending or long-done)
-- `events.json`: 30 event records (state transitions)
+- `events.json`: 40 event records (state transitions; minimum 2 per job)
 - `config.json`: sample tool configuration
 
 ## Schema

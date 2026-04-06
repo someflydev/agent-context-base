@@ -153,9 +153,9 @@ Example record (include this):
 
 --- 1b. events.json ---
 
-Create a JSON array of 30 event records tracking state transitions for the 20 jobs.
-At least 2 events per job. Cover all 4 event types. Timestamps should be
-chronologically consistent with job records.
+Create a JSON array of at least 40 event records tracking state transitions for
+the 20 jobs. Include at least 2 events per job. Cover all 4 event types.
+Timestamps should be chronologically consistent with job records.
 
 --- 1c. config.json ---
 
@@ -175,7 +175,7 @@ chronologically consistent with job records.
 
   ## Files
   - jobs.json:   20 job records (5 done, 4 failed, 3 running, 8 pending or long-done)
-  - events.json: 30 event records (state transitions)
+  - events.json: at least 40 event records (state transitions; minimum 2 per job)
   - config.json: sample tool configuration
 
   ## Schema
@@ -203,9 +203,14 @@ Tech stack:
   - Python 3.11+
   - Typer for CLI surface
   - Textual for TUI surface
-  - Shared domain core in core/
+  - Shared domain core in core/ or the packaged equivalent taskflow/core/
 
 --- Directory structure ---
+
+The example may use either a flat top-level layout (`core/`, `cli/`, `tui/`)
+or a packaged layout rooted at `taskflow/` (`taskflow/core/`,
+`taskflow/cli/`, `taskflow/tui/`). The packaged layout is preferred when it
+supports a clean editable install and console entry point.
 
   python-typer-textual/
     core/
@@ -424,10 +429,15 @@ cursor navigation — not a full Textual app.
 Tech stack:
   - Click for CLI
   - Blessed for terminal color, cursor, key handling
-  - Shared domain core (can symlink or copy the models/loader/filters from
-    the flagship — or implement independently; both are acceptable)
+  - Shared domain core in core/ or the packaged equivalent taskflow/core/
+    (can symlink or copy the models/loader/filters from the flagship — or
+    implement independently; both are acceptable)
 
 --- Directory structure ---
+
+As with the flagship, this example may use either the flat top-level layout
+shown below or the packaged `taskflow/` equivalent when that better fits the
+project structure.
 
   python-click-blessed/
     core/            # same structure as flagship (independent copy is fine)
@@ -537,7 +547,7 @@ Both must exit 0. All smoke tests must pass without a TTY.
 
 Verify fixture corpus:
   - examples/canonical-terminal/fixtures/jobs.json   (20 records)
-  - examples/canonical-terminal/fixtures/events.json (30 records)
+  - examples/canonical-terminal/fixtures/events.json (at least 40 records)
   - examples/canonical-terminal/fixtures/config.json
   - examples/canonical-terminal/fixtures/README.md
 
@@ -587,8 +597,9 @@ COMPLETION CONDITION
 ================================================================================
 
 Done when:
-  - fixtures/ exists with 4 files (jobs.json/20 records, events.json/30 records,
-    config.json, README.md)
+  - fixtures/ exists with 4 files (jobs.json/20 records,
+    events.json/at least 40 records with minimum 2 per job, config.json,
+    README.md)
   - python-typer-textual/ exists with working code and passing smoke tests
   - python-click-blessed/ exists with working code and passing smoke tests
   - All pytest tests/ pass without a TTY for both examples
