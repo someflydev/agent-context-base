@@ -39,3 +39,14 @@ If a feature crosses those boundaries, pair smoke tests with minimal real-infra 
 - data pipeline: one small input, one transformed output, one write path
 - local RAG system: ingest a tiny corpus and answer one retrieval question
 
+## Terminal Tool Smoke Tests
+
+Terminal tool smoke tests must additionally satisfy:
+
+1. Headless invocation: run with `--no-tui` or equivalent so no TTY is required.
+2. Fixture data: use `examples/canonical-terminal/fixtures/` as the data source.
+3. Output assertion: assert on markers, JSON fields, or exit codes.
+4. No side effects: do not write to permanent storage or use the network.
+
+For the full terminal testing contract, see
+`docs/terminal-validation-contract.md`.
