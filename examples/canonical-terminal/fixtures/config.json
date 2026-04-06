@@ -1,0 +1,7 @@
+{
+  "queue_name": "taskflow-ci",
+  "refresh_interval_s": 5,
+  "max_display_jobs": 20,
+  "default_output": "table",
+  "fixture_mode": true
+}

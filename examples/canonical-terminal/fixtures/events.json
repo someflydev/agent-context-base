@@ -1,0 +1,212 @@
+[
+  {
+    "event_id": "evt-001",
+    "job_id": "job-001",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T10:22:30Z",
+    "message": "Frontend build queued by ci-dispatcher"
+  },
+  {
+    "event_id": "evt-002",
+    "job_id": "job-001",
+    "event_type": "job_started",
+    "timestamp": "2024-01-15T10:23:00Z",
+    "message": "Build started on worker-1"
+  },
+  {
+    "event_id": "evt-003",
+    "job_id": "job-002",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T10:29:20Z",
+    "message": "Test suite queued after build success"
+  },
+  {
+    "event_id": "evt-004",
+    "job_id": "job-002",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-15T10:30:58Z",
+    "message": "Backend test run passed"
+  },
+  {
+    "event_id": "evt-005",
+    "job_id": "job-003",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T10:40:50Z",
+    "message": "Lint step queued by pre-merge pipeline"
+  },
+  {
+    "event_id": "evt-006",
+    "job_id": "job-003",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-15T10:41:12Z",
+    "message": "Python lint completed cleanly"
+  },
+  {
+    "event_id": "evt-007",
+    "job_id": "job-004",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T10:49:30Z",
+    "message": "Rust compile queued after lint stage"
+  },
+  {
+    "event_id": "evt-008",
+    "job_id": "job-004",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-15T10:51:29Z",
+    "message": "Release binary published to artifacts"
+  },
+  {
+    "event_id": "evt-009",
+    "job_id": "job-005",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T11:04:40Z",
+    "message": "Seed job queued by integration workflow"
+  },
+  {
+    "event_id": "evt-010",
+    "job_id": "job-005",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-15T11:05:35Z",
+    "message": "Database seeded successfully"
+  },
+  {
+    "event_id": "evt-011",
+    "job_id": "job-006",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T11:11:30Z",
+    "message": "Staging deploy queued by release manager"
+  },
+  {
+    "event_id": "evt-012",
+    "job_id": "job-006",
+    "event_type": "job_failed",
+    "timestamp": "2024-01-15T11:13:16Z",
+    "message": "Staging deploy failed health check"
+  },
+  {
+    "event_id": "evt-013",
+    "job_id": "job-007",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T11:25:10Z",
+    "message": "Integration suite queued on worker-pool-b"
+  },
+  {
+    "event_id": "evt-014",
+    "job_id": "job-007",
+    "event_type": "job_failed",
+    "timestamp": "2024-01-15T11:27:22Z",
+    "message": "Integration suite failed due to unhealthy dependency"
+  },
+  {
+    "event_id": "evt-015",
+    "job_id": "job-008",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T11:43:20Z",
+    "message": "Asset sync queued by static-site pipeline"
+  },
+  {
+    "event_id": "evt-016",
+    "job_id": "job-008",
+    "event_type": "job_failed",
+    "timestamp": "2024-01-15T11:44:43Z",
+    "message": "Asset sync failed checksum validation"
+  },
+  {
+    "event_id": "evt-017",
+    "job_id": "job-009",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T11:52:50Z",
+    "message": "Cleanup queued during artifact rotation"
+  },
+  {
+    "event_id": "evt-018",
+    "job_id": "job-009",
+    "event_type": "job_failed",
+    "timestamp": "2024-01-15T11:53:21Z",
+    "message": "Cleanup failed on protected cache directory"
+  },
+  {
+    "event_id": "evt-019",
+    "job_id": "job-010",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T11:59:30Z",
+    "message": "Report generation queued by analytics scheduler"
+  },
+  {
+    "event_id": "evt-020",
+    "job_id": "job-010",
+    "event_type": "job_started",
+    "timestamp": "2024-01-15T12:00:00Z",
+    "message": "Report generation started on worker-3"
+  },
+  {
+    "event_id": "evt-021",
+    "job_id": "job-011",
+    "event_type": "job_started",
+    "timestamp": "2024-01-15T12:06:00Z",
+    "message": "Production deploy entered canary stage"
+  },
+  {
+    "event_id": "evt-022",
+    "job_id": "job-012",
+    "event_type": "job_started",
+    "timestamp": "2024-01-15T12:11:00Z",
+    "message": "Search refresh started on go-sync-2"
+  },
+  {
+    "event_id": "evt-023",
+    "job_id": "job-013",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T12:12:10Z",
+    "message": "CLI packaging queued behind running jobs"
+  },
+  {
+    "event_id": "evt-024",
+    "job_id": "job-014",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T12:12:30Z",
+    "message": "Backup job queued in maintenance window"
+  },
+  {
+    "event_id": "evt-025",
+    "job_id": "job-015",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T12:12:45Z",
+    "message": "Cache warming queued after search refresh"
+  },
+  {
+    "event_id": "evt-026",
+    "job_id": "job-016",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T12:13:10Z",
+    "message": "Docs publish queued awaiting approval gate"
+  },
+  {
+    "event_id": "evt-027",
+    "job_id": "job-017",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-15T08:20:12Z",
+    "message": "Load test completed with stable latency"
+  },
+  {
+    "event_id": "evt-028",
+    "job_id": "job-018",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-15T07:38:08Z",
+    "message": "Billing export uploaded to object storage"
+  },
+  {
+    "event_id": "evt-029",
+    "job_id": "job-019",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-15T07:02:01Z",
+    "message": "Search rebuild finished and shards re-opened"
+  },
+  {
+    "event_id": "evt-030",
+    "job_id": "job-020",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-15T05:54:14Z",
+    "message": "Audit log archive written to cold storage"
+  }
+]

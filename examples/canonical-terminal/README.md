@@ -18,6 +18,38 @@ Language examples are added by PROMPT_102-105. See `CATALOG.md` (PROMPT_106)
 for the cross-language index and `DECISION_GUIDE.md` for stack selection
 guidance.
 
+## Implemented Examples
+
+### Python
+
+| Example | Stack | Mode |
+|---------|-------|------|
+| python-typer-textual/ | Typer + Textual | Dual-mode (CLI + TUI) |
+| python-click-blessed/ | Click + Blessed | CLI + light interactive |
+
+## Running Python Examples
+
+```bash
+# Flagship
+cd examples/canonical-terminal/python-typer-textual
+pip install -e .
+taskflow list
+taskflow watch --no-tui
+
+# Secondary
+cd examples/canonical-terminal/python-click-blessed
+pip install -e .
+taskflow list
+```
+
+## Smoke Tests
+
+```bash
+# From each example directory:
+pytest tests/smoke/
+pytest tests/unit/
+```
+
 ## Architecture
 
 All examples share:

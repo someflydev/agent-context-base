@@ -1,0 +1,262 @@
+[
+  {
+    "id": "job-001",
+    "name": "build-frontend",
+    "status": "done",
+    "started_at": "2024-01-15T10:23:00Z",
+    "duration_s": 47.3,
+    "tags": ["frontend", "ci", "build"],
+    "output_lines": [
+      "Step 1/4: Installing dependencies...",
+      "Step 2/4: Running webpack build...",
+      "Step 3/4: Generating sourcemaps...",
+      "Step 4/4: Build complete. 2.4MB bundle."
+    ]
+  },
+  {
+    "id": "job-002",
+    "name": "run-tests",
+    "status": "done",
+    "started_at": "2024-01-15T10:30:00Z",
+    "duration_s": 58.7,
+    "tags": ["ci", "test", "backend"],
+    "output_lines": [
+      "Collecting 182 tests...",
+      "Running unit suite...",
+      "Running integration stubs...",
+      "All tests passed."
+    ]
+  },
+  {
+    "id": "job-003",
+    "name": "lint-python",
+    "status": "done",
+    "started_at": "2024-01-15T10:41:00Z",
+    "duration_s": 12.4,
+    "tags": ["lint", "python", "ci"],
+    "output_lines": [
+      "ruff check src/",
+      "black --check src/",
+      "No style violations found."
+    ]
+  },
+  {
+    "id": "job-004",
+    "name": "compile-rust",
+    "status": "done",
+    "started_at": "2024-01-15T10:50:00Z",
+    "duration_s": 89.1,
+    "tags": ["build", "rust", "backend"],
+    "output_lines": [
+      "cargo build --release",
+      "Compiling worker-core...",
+      "Linking target/release/worker...",
+      "Finished release build."
+    ]
+  },
+  {
+    "id": "job-005",
+    "name": "seed-database",
+    "status": "done",
+    "started_at": "2024-01-15T11:05:00Z",
+    "duration_s": 34.8,
+    "tags": ["db", "backend", "ci"],
+    "output_lines": [
+      "Opening migration transaction...",
+      "Applying seed fixtures...",
+      "Inserted 124 rows across 7 tables."
+    ]
+  },
+  {
+    "id": "job-006",
+    "name": "deploy-staging",
+    "status": "failed",
+    "started_at": "2024-01-15T11:12:00Z",
+    "duration_s": 76.2,
+    "tags": ["deploy", "cd", "infra"],
+    "output_lines": [
+      "Packaging release artifact...",
+      "Uploading image to registry...",
+      "Error: deployment health check timed out."
+    ]
+  },
+  {
+    "id": "job-007",
+    "name": "integration-tests",
+    "status": "failed",
+    "started_at": "2024-01-15T11:26:00Z",
+    "duration_s": 112.6,
+    "tags": ["test", "backend", "db"],
+    "output_lines": [
+      "Booting ephemeral services...",
+      "Running API contract tests...",
+      "Error: expected 200 from /health, received 503."
+    ]
+  },
+  {
+    "id": "job-008",
+    "name": "sync-assets",
+    "status": "failed",
+    "started_at": "2024-01-15T11:44:00Z",
+    "duration_s": 43.9,
+    "tags": ["sync", "frontend", "cd"],
+    "output_lines": [
+      "Scanning asset manifest...",
+      "Uploading 18 changed files...",
+      "Error: checksum mismatch for hero-banner.png."
+    ]
+  },
+  {
+    "id": "job-009",
+    "name": "cleanup-artifacts",
+    "status": "failed",
+    "started_at": "2024-01-15T11:53:00Z",
+    "duration_s": 21.5,
+    "tags": ["cleanup", "infra", "ci"],
+    "output_lines": [
+      "Pruning stale build artifacts...",
+      "Removing orphaned cache entries...",
+      "Error: permission denied on cache/tmp/build-42."
+    ]
+  },
+  {
+    "id": "job-010",
+    "name": "generate-report",
+    "status": "running",
+    "started_at": "2024-01-15T12:00:00Z",
+    "duration_s": null,
+    "tags": ["report", "python", "backend"],
+    "output_lines": [
+      "Loading analytics snapshots...",
+      "Aggregating job throughput by queue..."
+    ]
+  },
+  {
+    "id": "job-011",
+    "name": "deploy-production",
+    "status": "running",
+    "started_at": "2024-01-15T12:06:00Z",
+    "duration_s": null,
+    "tags": ["deploy", "cd", "infra"],
+    "output_lines": [
+      "Preparing blue-green deployment...",
+      "Waiting for canary metrics window..."
+    ]
+  },
+  {
+    "id": "job-012",
+    "name": "refresh-search-index",
+    "status": "running",
+    "started_at": "2024-01-15T12:11:00Z",
+    "duration_s": null,
+    "tags": ["sync", "backend", "go"],
+    "output_lines": [
+      "Reading changed records batch...",
+      "Submitting documents to indexer..."
+    ]
+  },
+  {
+    "id": "job-013",
+    "name": "package-cli",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": ["build", "python", "ci"],
+    "output_lines": [
+      "Queued for packaging worker.",
+      "Waiting on build artifact promotion."
+    ]
+  },
+  {
+    "id": "job-014",
+    "name": "backup-database",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": ["db", "infra", "cleanup"],
+    "output_lines": [
+      "Queued in nightly maintenance window.",
+      "Awaiting primary replica lock."
+    ]
+  },
+  {
+    "id": "job-015",
+    "name": "warm-cache",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": ["backend", "infra", "sync"],
+    "output_lines": [
+      "Queued after index refresh completes.",
+      "No worker assigned yet."
+    ]
+  },
+  {
+    "id": "job-016",
+    "name": "publish-docs",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": ["deploy", "frontend", "report"],
+    "output_lines": [
+      "Queued for docs pipeline.",
+      "Awaiting approval gate."
+    ]
+  },
+  {
+    "id": "job-017",
+    "name": "load-test-api",
+    "status": "done",
+    "started_at": "2024-01-15T08:15:00Z",
+    "duration_s": 312.4,
+    "tags": ["test", "backend", "infra"],
+    "output_lines": [
+      "Provisioning load generators...",
+      "Driving 2k RPS against /api/v1...",
+      "Collecting latency histograms...",
+      "Run complete. p95=184ms."
+    ]
+  },
+  {
+    "id": "job-018",
+    "name": "export-billing-data",
+    "status": "done",
+    "started_at": "2024-01-15T07:30:00Z",
+    "duration_s": 488.0,
+    "tags": ["report", "db", "python"],
+    "output_lines": [
+      "Extracting billing ledger rows...",
+      "Transforming records to parquet...",
+      "Uploading archive to object storage.",
+      "Export complete."
+    ]
+  },
+  {
+    "id": "job-019",
+    "name": "rebuild-search",
+    "status": "done",
+    "started_at": "2024-01-15T06:50:00Z",
+    "duration_s": 721.6,
+    "tags": ["sync", "backend", "infra"],
+    "output_lines": [
+      "Dropping stale search shards...",
+      "Streaming product catalog documents...",
+      "Optimizing shard segments...",
+      "Search rebuild complete."
+    ]
+  },
+  {
+    "id": "job-020",
+    "name": "archive-audit-logs",
+    "status": "done",
+    "started_at": "2024-01-15T05:40:00Z",
+    "duration_s": 854.2,
+    "tags": ["cleanup", "report", "infra"],
+    "output_lines": [
+      "Scanning audit partitions...",
+      "Compressing 14 log segments...",
+      "Writing archive manifest...",
+      "Archive stored in cold tier."
+    ]
+  }
+]
