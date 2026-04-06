@@ -12,6 +12,29 @@ This is the deterministic startup contract for assistants working in `agent-cont
 6. Inspect narrow repo signals: lockfiles, root manifests, source entrypoints, Compose files, prompt files, deployment artifacts.
 7. Route the task and load only the active workflow, stack surface, archetype, and canonical example.
 
+## Session Context Briefing
+
+`work.py resume` now starts with a Session Context Briefing before the older
+resume details. It is the startup overview for the current repo state, not a
+record of everything the assistant must load.
+
+- Repo state shows the current branch, HEAD anchor, and working-tree breadth.
+- Runtime state shows which runtime markdown files exist and how large they are.
+- Memory base shows whether `memory/INDEX.md` exists, how many summary files are
+  present, and whether a recent prompt summary matches the latest git prompt
+  prefix.
+- Complexity budget totals the runtime-file line count and classifies the
+  posture as lean, moderate, or heavy.
+- Local planning state shows whether `tmp/*.md` has an active checklist and
+  whether `PLAN.md` is present for roadmap use.
+- Recommended next action gives one grounded next step based on the visible
+  state, such as loading a relevant summary or pruning runtime notes first.
+
+Use the briefing to decide what to load next. If the complexity budget is
+heavy, prune before broad reading. If a relevant summary exists, load it before
+task-specific context. The briefing is informational: it narrows startup
+choices, but the assistant still decides what additional context is needed.
+
 ## Rules
 
 - Do not start by scanning whole directories.
