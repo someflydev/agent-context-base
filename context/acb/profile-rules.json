@@ -13,6 +13,11 @@
     "archetype-router",
     "repo-signal-hints"
   ],
+  "startup_features": {
+    "budget_report_enabled": false,
+    "startup_trace_enabled": false,
+    "route_check_enabled": false
+  },
   "doctrine_module_map": {
     "core-principles": "validation-first-autonomy",
     "testing-philosophy": "testing-philosophy",

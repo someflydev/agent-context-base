@@ -52,6 +52,37 @@ def _load_rules() -> dict[str, object]:
     return json.loads((repo_root() / "context/acb/profile-rules.json").read_text(encoding="utf-8"))
 
 
+def _default_startup_features() -> dict[str, bool]:
+    return {
+        "budget_report_enabled": False,
+        "startup_trace_enabled": False,
+        "route_check_enabled": False,
+    }
+
+
+def _startup_features_from_rules(rules: dict[str, object]) -> dict[str, bool]:
+    defaults = _default_startup_features()
+    configured = rules.get("startup_features")
+    if not isinstance(configured, dict):
+        return defaults
+    merged = defaults.copy()
+    for key in defaults:
+        if key in configured:
+            merged[key] = bool(configured[key])
+    return merged
+
+
+def _enabled_context_tools(startup_features: dict[str, bool]) -> list[str]:
+    tools: list[str] = []
+    if startup_features.get("budget_report_enabled"):
+        tools.append("- Budget scoring: `python3 scripts/work.py budget-report --bundle <files>`")
+    if startup_features.get("startup_trace_enabled"):
+        tools.append('- Startup trace: `python3 scripts/work.py startup-trace write --session "<task>" --files <files>`')
+    if startup_features.get("route_check_enabled"):
+        tools.append('- Route check: `python3 scripts/work.py route-check "<prompt>"`')
+    return tools
+
+
 def _unique(items: list[str]) -> list[str]:
     result: list[str] = []
     seen: set[str] = set()
@@ -576,6 +607,10 @@ def _render_router_summary(routers: list[str], selection: dict[str, object]) -> 
 
 
 def _render_session_boot(selection: dict[str, object], key_paths: dict[str, str]) -> str:
+    startup_features = selection.get("startup_features")
+    if not isinstance(startup_features, dict):
+        startup_features = _default_startup_features()
+    context_tools = _enabled_context_tools(startup_features)
     lines = [
         "# Session Boot",
         "",
@@ -605,6 +640,15 @@ def _render_session_boot(selection: dict[str, object], key_paths: dict[str, str]
         f"- capabilities: {', '.join(f'`{name}`' for name in selection['capabilities']) or '`none`'}",
         "",
     ]
+    if context_tools:
+        lines.extend(
+            [
+                "## Context Tools",
+                "",
+                *context_tools,
+                "",
+            ]
+        )
     return "\n".join(lines)
 
 
@@ -665,6 +709,7 @@ def build_payload(
         rules=rules,
     )
     routers = infer_routers(rules)
+    startup_features = _startup_features_from_rules(rules)
     selection = {
         "schema_version": 1,
         "archetype": archetype,
@@ -676,6 +721,7 @@ def build_payload(
         "support_services": support_services or [],
         "prompt_first": prompt_first,
         "dokku": dokku,
+        "startup_features": startup_features,
     }
     layer_sources = _build_layer_sources(
         archetype=archetype,
