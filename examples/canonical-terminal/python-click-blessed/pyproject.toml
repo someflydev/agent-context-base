@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "taskflow-py-blessed"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+  "blessed>=1.20",
+  "click>=8.1",
+]
+
+[project.scripts]
+taskflow = "taskflow.cli.main:app"
+
+[tool.setuptools.packages.find]
+include = ["taskflow*"]
