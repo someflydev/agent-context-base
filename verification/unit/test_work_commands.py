@@ -11,6 +11,7 @@ from verification.helpers import REPO_ROOT, run_command
 
 PYTHON = sys.executable
 WORK_SCRIPT = REPO_ROOT / "scripts" / "work.py"
+CONTEXT_BUDGET_SCRIPT = REPO_ROOT / "scripts" / "context_budget.py"
 
 
 def run_work_command(*args: str, cwd: Path) -> tuple[int, str, str]:
@@ -62,6 +63,7 @@ class WorkCommandTestCase(unittest.TestCase):
         repo = Path(temp_dir)
         self._init_git_repo(repo)
         self._write_file(repo, "scripts/work.py", WORK_SCRIPT.read_text(encoding="utf-8"))
+        self._write_file(repo, "scripts/context_budget.py", CONTEXT_BUDGET_SCRIPT.read_text(encoding="utf-8"))
         self._write_file(repo, "README.md", "# Temp Repo\n")
         self._write_file(repo, ".prompts/PROMPT_95.txt", "Test prompt\n")
         self._scaffold_runtime_state(repo)
@@ -144,6 +146,113 @@ class TestSessionContextBriefing(WorkCommandTestCase):
         logs_dir = repo / "logs" / "startup"
         self.assertTrue(logs_dir.exists())
         self.assertEqual(len(list(logs_dir.glob("*-resume.log"))), 1)
+
+    def test_briefing_shows_last_trace(self) -> None:
+        repo = self._create_repo()
+        code, stdout, stderr = run_work_command(
+            "startup-trace",
+            "write",
+            "--session",
+            "trace briefing test",
+            cwd=repo,
+        )
+        self.assertEqual(code, 0, stderr)
+        code, stdout, stderr = run_work_command("resume", cwd=repo)
+        self.assertEqual(code, 0, stderr)
+        self.assertIn("Last Startup Trace:", stdout)
+        self.assertIn("-trace.md", stdout)
+
+
+class TestStartupTraceWrite(WorkCommandTestCase):
+    def test_write_creates_file(self) -> None:
+        repo = self._create_repo()
+        code, stdout, stderr = run_work_command(
+            "startup-trace",
+            "write",
+            "--session",
+            "test trace",
+            cwd=repo,
+        )
+        self.assertEqual(code, 0, stderr)
+        self.assertIn("logs/startup/", stdout)
+        self.assertEqual(len(list((repo / "logs" / "startup").glob("*-trace.md"))), 1)
+
+    def test_write_output_contains_sections(self) -> None:
+        repo = self._create_repo()
+        code, _stdout, stderr = run_work_command(
+            "startup-trace",
+            "write",
+            "--session",
+            "test trace",
+            "--files",
+            "AGENT.md",
+            "README.md",
+            cwd=repo,
+        )
+        self.assertEqual(code, 0, stderr)
+        trace_path = next((repo / "logs" / "startup").glob("*-trace.md"))
+        text = trace_path.read_text(encoding="utf-8")
+        self.assertIn("Startup Trace", text)
+        self.assertIn("Declared Files Read", text)
+        self.assertIn("Budget Estimate", text)
+        self.assertIn("Router Decision", text)
+
+    def test_write_with_files_scores_budget(self) -> None:
+        repo = self._create_repo()
+        code, _stdout, stderr = run_work_command(
+            "startup-trace",
+            "write",
+            "--session",
+            "budget trace",
+            "--files",
+            "AGENT.md",
+            "context/TASK.md",
+            "--primary-stack",
+            "python-fastapi",
+            "--archetype",
+            "backend-api-service",
+            cwd=repo,
+        )
+        self.assertEqual(code, 0, stderr)
+        trace_path = next((repo / "logs" / "startup").glob("*-trace.md"))
+        text = trace_path.read_text(encoding="utf-8")
+        self.assertIn("Estimated Profile:", text)
+        self.assertNotIn("Estimated Profile: unknown", text)
+
+    def test_write_minimal_trace(self) -> None:
+        repo = self._create_repo()
+        code, _stdout, stderr = run_work_command(
+            "startup-trace",
+            "write",
+            "--session",
+            "minimal trace",
+            cwd=repo,
+        )
+        self.assertEqual(code, 0, stderr)
+        trace_path = next((repo / "logs" / "startup").glob("*-trace.md"))
+        self.assertTrue(trace_path.exists())
+
+
+class TestStartupTraceShow(WorkCommandTestCase):
+    def test_show_no_files(self) -> None:
+        repo = self._create_repo()
+        code, stdout, stderr = run_work_command("startup-trace", "show", cwd=repo)
+        self.assertEqual(code, 0, stderr)
+        self.assertIn("No startup traces found", stdout)
+
+    def test_show_after_write(self) -> None:
+        repo = self._create_repo()
+        code, _stdout, stderr = run_work_command(
+            "startup-trace",
+            "write",
+            "--session",
+            "show trace",
+            cwd=repo,
+        )
+        self.assertEqual(code, 0, stderr)
+        code, stdout, stderr = run_work_command("startup-trace", "show", cwd=repo)
+        self.assertEqual(code, 0, stderr)
+        self.assertIn("show trace", stdout)
 
 
 class TestMemoryStructure(unittest.TestCase):
