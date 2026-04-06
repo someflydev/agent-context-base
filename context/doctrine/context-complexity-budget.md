@@ -22,6 +22,10 @@ It must work for current first-class stacks such as FastAPI, Hono plus Bun plus 
 
 Without a budget system, "load minimal context" degrades into style guidance rather than an enforceable control.
 
+> **Executable companion:** `scripts/context_budget.py` implements this cost model
+> as executable Python. Use `python3 scripts/work.py budget-report --bundle <files>`
+> to score a declared bundle against the profiles defined here.
+
 The failure modes are recurring:
 
 - Context sprawl: assistants keep opening adjacent doctrine, similar workflows, extra stack packs, and multiple examples because each file looks individually useful.
