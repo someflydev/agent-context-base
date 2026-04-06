@@ -258,6 +258,15 @@ Examples:
   - start with `context/workflows/add-text-search-to-filter-ui.md`
   - then load `context/workflows/add-sort-order-to-results.md`
   - then load `context/doctrine/search-sort-scroll-layout.md`
+- "Add include/exclude filters and verify the counts"
+  - start with `context/workflows/add-include-exclude-filtering.md`
+  - then load `context/workflows/verify-query-count-correctness.md`
+- "Add a Plotly dashboard view and verify it with Playwright"
+  - start with `context/workflows/add-plotly-backed-query-view.md`
+  - then load `context/workflows/add-playwright-ui-verification.md`
+- "Add a new API source and keep raw payloads for later parsing"
+  - start with `context/workflows/add-api-ingestion-source.md`
+  - then load `context/workflows/add-raw-download-archive.md`
 
 ## Work.py Operator Commands
 
@@ -277,15 +286,6 @@ Examples:
   - run `python3 scripts/work.py recent-commits`
 - "initialize the operator console"
   - run `python3 scripts/work.py init-project`
-- "Add include/exclude filters and verify the counts"
-  - start with `context/workflows/add-include-exclude-filtering.md`
-  - then load `context/workflows/verify-query-count-correctness.md`
-- "Add a Plotly dashboard view and verify it with Playwright"
-  - start with `context/workflows/add-plotly-backed-query-view.md`
-  - then load `context/workflows/add-playwright-ui-verification.md`
-- "Add a new API source and keep raw payloads for later parsing"
-  - start with `context/workflows/add-api-ingestion-source.md`
-  - then load `context/workflows/add-raw-download-archive.md`
 - "Research candidate public data sources and pick between API versus scraping"
   - start with `context/workflows/research-data-sources.md`
   - then load `context/workflows/add-api-ingestion-source.md` or `context/workflows/add-scraping-source.md`
