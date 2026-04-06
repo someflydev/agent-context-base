@@ -71,7 +71,7 @@ Read these before starting:
   8. context/doctrine/context-complexity-budget.md   (READ THE FULL FILE — this is the spec)
   9. context/acb/profile-rules.json
  10. scripts/work.py                       (skim — understand subcommand structure and build_parser)
- 11. verification/unit/test_repo_scripts.py (skim — match test style)
+ 11. verification/scripts/test_repo_scripts.py (skim — match test style)
 
 Reading context-complexity-budget.md in full is mandatory. The implementation must match
 the cost model defined there exactly. Do not improvise a different model.
