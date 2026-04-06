@@ -70,6 +70,10 @@ class TestRouteInference(unittest.TestCase):
         self.assertGreaterEqual(result.confidence, 0.70)
         bundle = suggest_context_bundle(result, REPO_ROOT)
         self.assertIn("manifests/backend-api-fastapi-polars.yaml", bundle)
+        self.assertIn("context/stacks/python-fastapi-uv-ruff-orjson-polars.md", bundle)
+        self.assertNotIn("context/stacks/duckdb-trino-polars.md", bundle)
+        self.assertIn("context/workflows/add-api-endpoint.md", bundle)
+        self.assertNotIn("context/workflows/add-storage-integration.md", bundle)
 
     def test_scenario_2_rag_comparison(self) -> None:
         result = infer_route(SCENARIO_2_PROMPT, REPO_ROOT)
@@ -121,9 +125,25 @@ class TestRouteCheckCommand(unittest.TestCase):
         self.assertEqual(code, 0, stderr)
         self.assertIn("Bundle Comparison", stdout)
 
+    def test_route_check_compare_bundle_simple_api_stays_lean(self) -> None:
+        code, stdout, stderr = run_work_command(
+            "route-check",
+            "--compare-bundle",
+            "AGENT.md",
+            "manifests/backend-api-fastapi-polars.yaml",
+            "context/archetypes/backend-api-service.md",
+            "context/workflows/add-api-endpoint.md",
+            "context/doctrine/context-complexity-budget.md",
+            "context/stacks/python-fastapi-uv-ruff-orjson-polars.md",
+            SCENARIO_1_PROMPT,
+        )
+        self.assertEqual(code, 0, stderr)
+        self.assertNotIn("context/stacks/duckdb-trino-polars.md", stdout)
+        self.assertNotIn("context/workflows/add-storage-integration.md", stdout)
+        self.assertNotIn("Verdict: declared bundle under-loaded", stdout)
+
     def test_route_check_juicy_prompt_warning(self) -> None:
         code, stdout, stderr = run_work_command("route-check", SCENARIO_3_PROMPT)
         self.assertEqual(code, 0, stderr)
         self.assertIn("HEURISTIC", stdout)
         self.assertIn("api, storage, pipelines, scraping", stdout)
-

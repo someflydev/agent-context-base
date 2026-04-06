@@ -462,6 +462,28 @@ def _append_if_exists(paths: list[str], seen: set[str], repo_root: Path, relativ
         paths.append(normalized)
 
 
+def _append_stack_if_exists(paths: list[str], seen: set[str], repo_root: Path, stack_path: str | None) -> bool:
+    if stack_path is None:
+        return False
+    before = len(paths)
+    _append_if_exists(paths, seen, repo_root, stack_path)
+    return len(paths) > before
+
+
+def _workflow_capabilities_for_bundle(inference: RouteInference) -> tuple[str, ...]:
+    if inference.is_likely_juicy or inference.is_multi_capability:
+        return inference.implied_capabilities
+    if "api" in inference.implied_capabilities:
+        return ("api",)
+    if "cli" in inference.implied_capabilities:
+        return ("cli",)
+    if "rag" in inference.implied_capabilities:
+        return ("rag",)
+    if "search" in inference.implied_capabilities:
+        return ("search",)
+    return inference.implied_capabilities[:1]
+
+
 def suggest_context_bundle(inference: RouteInference, repo_root: Path) -> list[str]:
     bundle: list[str] = []
     seen: set[str] = set()
@@ -476,33 +498,32 @@ def suggest_context_bundle(inference: RouteInference, repo_root: Path) -> list[s
     if inference.primary_archetype is not None:
         _append_if_exists(bundle, seen, repo_root, f"context/archetypes/{inference.primary_archetype}.md")
 
-    for capability in inference.implied_capabilities:
+    for capability in _workflow_capabilities_for_bundle(inference):
         for workflow_path in CAPABILITY_WORKFLOW_MAP.get(capability, ()):
             _append_if_exists(bundle, seen, repo_root, workflow_path)
 
     if "cloud-deployment" in inference.implied_capabilities:
         _append_if_exists(bundle, seen, repo_root, "context/doctrine/deployment-philosophy-dokku.md")
 
-    stack_candidates: list[str] = []
+    primary_stack_path: str | None = None
     if metadata is not None:
         if metadata.primary_stack is not None:
-            stack_candidates.append(f"context/stacks/{metadata.primary_stack}.md")
-        for stack_name in metadata.secondary_stacks:
-            stack_candidates.append(f"context/stacks/{stack_name}.md")
+            primary_stack_path = f"context/stacks/{metadata.primary_stack}.md"
 
+    _append_stack_if_exists(bundle, seen, repo_root, primary_stack_path)
+
+    extra_stack_candidates: list[str] = []
     for keyword in inference.keyword_hits:
         stack_path = KEYWORD_STACK_HINTS.get(keyword)
-        if stack_path is not None:
-            stack_candidates.append(stack_path)
+        if stack_path is not None and stack_path != primary_stack_path:
+            extra_stack_candidates.append(stack_path)
 
-    added_stacks = 0
-    for stack_path in stack_candidates:
-        if added_stacks >= 2:
-            break
-        before = len(bundle)
-        _append_if_exists(bundle, seen, repo_root, stack_path)
-        if len(bundle) > before:
-            added_stacks += 1
+    # Keep simple routes lean. Extra stack context is only useful when the
+    # prompt is clearly cross-domain or multi-capability.
+    if inference.is_likely_juicy or inference.is_multi_capability:
+        for stack_path in extra_stack_candidates:
+            if _append_stack_if_exists(bundle, seen, repo_root, stack_path):
+                break
 
     return bundle
 
