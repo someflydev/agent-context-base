@@ -1,0 +1,174 @@
+# Terminal Validation Contract
+
+## Purpose
+
+Defines how terminal tools (CLI, TUI, dual-mode) must be tested to satisfy the
+terminal tooling doctrine in
+`context/doctrine/terminal-ux-first-class.md`.
+
+## 1. CLI Smoke Tests
+
+Every terminal example must include at least one CLI smoke test that:
+
+- invokes the tool in non-interactive (headless) mode
+- loads fixture data from `examples/canonical-terminal/fixtures/`
+- asserts on at least one marker or structured output field
+- passes without a TTY such as `TERM=dumb` or redirected stdout
+- runs in under 5 seconds
+
+Assertion strategies:
+
+- marker-based: output contains `BEGIN_TABLE` / `END_TABLE`,
+  `BEGIN_JOB` / `END_JOB`, or equivalent
+- structured output: use `--output json` and assert on parsed fields
+- exit-code: assert `0` for success and non-zero for error paths
+
+Preferred assertion: `--output json` plus parsed field assertions. Fallback:
+consistent human-readable markers.
+
+## 2. CLI Integration Tests
+
+When a terminal example supports a live backend such as a real database or API,
+integration tests may target that backend. Integration tests:
+
+- live in `tests/integration/`
+- are not required to pass without a live backend
+- are not included in `--tier fast` verification runs
+- must be gated and skipped when the backend is unavailable
+
+## 3. TUI Validation
+
+TUI applications must have a documented validation path. Preferred options:
+
+### Option A: PTY plus pexpect
+
+Use `pexpect` or an equivalent PTY harness to spawn the TUI, send keystrokes,
+capture rendered output, assert on text patterns, and confirm the app exits
+cleanly on `q`.
+
+### Option B: Headless `--no-tui`
+
+The tool accepts `--no-tui` or equivalent to run the same domain flow and print
+fixture-backed results to stdout without entering TUI mode. This is the
+mandatory CI smoke path.
+
+### Option C: Scripted transcript
+
+Provide a documented manual script describing how to launch the tool, which
+keys to press, what screens should appear, and where automation is still
+missing.
+
+Every TUI tool must support Option B even when Option A is also implemented.
+
+## 4. Output Assertion Markers
+
+CLI tools in this repo use marker-based sections when human-readable output is
+selected. Markers make output assertable without parsing ANSI formatting.
+
+Standard markers:
+
+- `<!-- BEGIN_JOBS -->` / `<!-- END_JOBS -->`
+- `<!-- BEGIN_JOB_DETAIL -->` / `<!-- END_JOB_DETAIL -->`
+- `<!-- BEGIN_STATS -->` / `<!-- END_STATS -->`
+- `<!-- BEGIN_ERROR -->` / `<!-- END_ERROR -->`
+
+Alternative marker formats are acceptable when they fit the language surface,
+for example:
+
+- `## BEGIN_JOBS ##` / `## END_JOBS ##`
+- `[BEGIN_JOBS]` / `[END_JOBS]`
+
+Use one consistent marker scheme per example and document it in the example
+README.
+
+## 5. Fixture-First Rule
+
+All smoke tests must load data from
+`examples/canonical-terminal/fixtures/` and never from a live backend. Smoke
+tests must work in:
+
+- CI without a running service
+- offline environments
+- fresh clones without configuration
+
+The shared fixture corpus includes:
+
+- `jobs.json`: 20 job records with varied statuses, tags, and durations
+- `events.json`: 30 event stream records for job state transitions
+- `config.json`: sample tool configuration such as queue name and refresh
+  interval
+
+## 6. Language-Specific Notes
+
+Python (`Typer` + `Textual`, `Click` + `Blessed`):
+
+- `pytest` or `unittest` for CLI smoke tests
+- `pexpect` for PTY-based TUI tests when feasible
+- Textual test helpers for widget-level testing when useful
+
+Rust (`clap` + `ratatui`, `argh` + `tui-realm`):
+
+- `cargo test` for unit and integration tests
+- `ratatui::backend::TestBackend` for draw-output unit tests
+- required non-interactive `--no-tui` path
+
+Go (`Cobra` + `Bubble Tea`, `urfave` + `tview`):
+
+- `go test` for CLI tests
+- Bubble Tea model tests for update and render behavior
+- required non-interactive `--no-tui` path
+
+TypeScript (`Commander` + `Ink`, `Yargs` + `Blessed`):
+
+- `jest` or `vitest` for CLI tests
+- `@ink-testing-library` for rendered component checks
+- required non-interactive `--no-tui` path
+
+Java (`picocli` + `Lanterna`, `JCommander` + `JLine`):
+
+- `JUnit 5` plus `picocli CommandLine` for CLI tests
+- `VirtualTerminal` or `MockTerminal` for TUI unit tests
+- required non-interactive `--no-tui` path
+
+Ruby (`Thor` + `TTY`, `Clamp` + `TTY`):
+
+- `RSpec` or `minitest` for CLI tests
+- `TTY::TestPrompt` for prompt-level headless testing
+- required non-interactive `--no-tui` or `--batch` path
+
+Elixir (`Optimus` + `Ratatouille`, `OptionParser` + `Owl`):
+
+- `ExUnit` for all tests
+- fake backends when the chosen TUI stack supports them
+- required non-interactive `--no-tui` or test-mode override
+
+## 7. Smoke Test Structure Convention
+
+Canonical example smoke tests should be organized as:
+
+```text
+tests/
+  smoke/
+    test_cli_smoke.*   # non-interactive CLI invocations and output assertions
+    test_tui_pty.*     # optional PTY-based TUI validation
+  unit/
+    test_core.*        # domain core unit tests
+```
+
+Language-specific naming variations are acceptable. `tests/smoke/test_cli_smoke.*`
+is mandatory.
+
+## 8. Verification Integration
+
+Terminal smoke tests integrate with verification tiers as follows:
+
+- `--tier fast`: runs smoke tests for implemented terminal examples and must
+  pass without network or TTY
+- `--tier slow`: may run backend-dependent integration tests when backends are
+  available
+- `--tier tui`: is reserved for PTY-based TUI validation added later in the
+  arc
+
+Implementers for later prompts must ensure terminal smoke tests pass under
+`python3 scripts/run_verification.py --tier fast` and register example-specific
+discovery paths in `verification/` when those examples land.
