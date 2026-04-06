@@ -69,7 +69,7 @@ Read these before starting:
   6. memory/INDEX.md
   7. memory/summaries/PROMPT_94_completion.md   (if it exists; else continue)
   8. verification/README.md                (READ CAREFULLY)
-  9. verification/unit/test_repo_scripts.py  (READ THE FULL FILE)
+  9. verification/scripts/test_repo_scripts.py  (READ THE FULL FILE)
  10. scripts/work.py                       (skim — focus on new command handlers)
  11. context/acb/profile-rules.json        (skim — focus on validation_gates structure)
  12. CONTRIBUTOR_PLAYBOOK.md               (READ CAREFULLY — you will update this)
