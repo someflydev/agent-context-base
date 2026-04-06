@@ -7,9 +7,9 @@ hard to tell what runtime files existed, whether the repo state was clean, what
 the complexity posture looked like, or whether a relevant memory summary was
 available when the session began.
 
-The startup visibility model solves that with two levels.
+The startup visibility model solves that with three levels.
 
-## Two-Level Visibility Model
+## Three-Level Visibility Model
 
 ### Level 1: Session Context Briefing
 
@@ -42,6 +42,22 @@ Context Briefing to `logs/startup/<timestamp>-resume.log`.
 This level is optional. It exists for after-the-fact review when an operator
 needs to confirm how a session started or debug context-loading decisions.
 
+### Level 3: Startup Trace
+
+`python3 scripts/work.py startup-trace write` writes a self-declared startup
+trace to `logs/startup/<timestamp>-trace.md`.
+
+It shows:
+
+- what the assistant says it loaded during boot
+- why those files were declared
+- which doctrines or routers were consulted
+- what memory artifacts were seen
+- the estimated budget profile for the declared bundle
+
+This level is optional. It is not automated and not verified. Its purpose is to
+make declared loading discipline inspectable and reviewable after the fact.
+
 ## How To Use It
 
 - Always run `python3 scripts/work.py resume` first in a fresh session.
@@ -52,6 +68,9 @@ needs to confirm how a session started or debug context-loading decisions.
 - If a relevant memory summary exists, load it before deeper repo exploration.
 - Use the recommended-next-action line as the default startup move unless the
   task clearly requires a narrower path.
+- For medium or larger sessions, multi-stack tasks, debugging sessions, or
+  when the operator wants a scored audit of loading discipline, write a startup
+  trace after boot.
 
 ## Interpretation Guide
 
@@ -67,16 +86,10 @@ state readable and compact for the next assistant session.
 
 ## Integration With `memory/` And `work.py`
 
-The briefing is the synthesis point for session start.
+Level 1 is the synthesis point for actual repo state at session start. Level 2
+persists that same state for review. Level 3 records what the assistant
+declares it loaded and can be scored later with `work.py budget-report`.
 
-- It reads runtime-note presence and line counts from the `work.py` repo
-  inspection flow.
-- It reads `memory/INDEX.md` and `memory/summaries/` to show whether durable or
-  prompt-boundary memory exists.
-- It uses recent prompt-prefixed git history to pick the most relevant memory
-  summary.
-- It does not invent hidden state. If a file is missing, the briefing reports it
-  as missing.
-
-`work.py resume` remains the normal assistant entrypoint. The startup visibility
-layer simply makes that first snapshot explicit and reviewable.
+`work.py resume` remains the normal assistant entrypoint. The visibility layer
+does not invent hidden state; it makes startup state and declared loading
+discipline explicit and reviewable.
