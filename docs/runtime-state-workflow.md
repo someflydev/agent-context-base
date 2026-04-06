@@ -24,7 +24,23 @@ python3 scripts/work.py status
 python3 scripts/work.py checkpoint
 ```
 
+Some repos also expose an operator-console layer through the same script, such as:
+
+```bash
+python3 scripts/work.py init-project
+python3 scripts/work.py next
+python3 scripts/work.py start PROMPT_XX.txt --assistant codex
+python3 scripts/work.py pause PROMPT_XX.txt --reason "..."
+python3 scripts/work.py done PROMPT_XX.txt
+python3 scripts/work.py verify
+python3 scripts/work.py recent-commits
+python3 scripts/work.py log-quota --assistant claude --used-pct-5h 45
+```
+
 `resume` and `status` stay read-only. `checkpoint` and `init` may scaffold missing files, but they do not silently replace existing runtime notes unless `--force` is used.
+
+Operator-console commands should be documented from the live repo command set, not
+from historical assumptions about what `work.py` might provide.
 
 ## Canonical Runtime Files
 
@@ -35,6 +51,28 @@ python3 scripts/work.py checkpoint
 - `tmp/*.md`: optional local checklists or ad hoc execution plans for the current session. Keep them concise and do not treat them as roadmap state.
 
 These files are runtime state, not doctrine. They should normally stay ignored and local to the working copy.
+
+Within that model, `tmp/*.md` is the session-scoped scratch layer:
+
+- use `PLAN.md` for roadmap-level phases and milestones
+- use `context/TASK.md` for the active slice
+- use `context/SESSION.md` for the next safe step
+- use `context/MEMORY.md` for durable local repo truths
+- use `tmp/*.md` for ad hoc checklists and short-lived execution plans
+
+Do not use `tmp/*.md` as a second roadmap or as a replacement for prompt-boundary
+summaries.
+
+## Two-Layer Model
+
+This repo separates operator sequencing from assistant execution.
+
+- The operator manages queue state, prompt progression, and any `work.py` operator-console commands that exist.
+- The assistant uses boot docs, `work.py resume`, runtime notes, and memory summaries to execute one bounded session.
+- `.prompts/` defines what a session should do; runtime files and `work.py` carry continuity between sessions.
+
+When the operator-console layer exists, it is still an operator tool. The
+assistant should begin with the normal boot sequence before implementation work.
 
 ## Repo-Local Scaffold Examples
 

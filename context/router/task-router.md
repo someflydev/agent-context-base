@@ -258,6 +258,25 @@ Examples:
   - start with `context/workflows/add-text-search-to-filter-ui.md`
   - then load `context/workflows/add-sort-order-to-results.md`
   - then load `context/doctrine/search-sort-scroll-layout.md`
+
+## Work.py Operator Commands
+
+- "what should I work on next"
+  - run `python3 scripts/work.py next`
+- "start this prompt session"
+  - run `python3 scripts/work.py start PROMPT_XX.txt --assistant ...`
+- "pause the current session"
+  - run `python3 scripts/work.py pause PROMPT_XX.txt --reason "..."`
+- "mark this prompt done"
+  - run `python3 scripts/work.py done PROMPT_XX.txt`
+- "log my quota usage"
+  - run `python3 scripts/work.py log-quota --assistant claude --used-pct-5h N`
+- "is the repo consistent"
+  - run `python3 scripts/work.py verify`
+- "show recent commits"
+  - run `python3 scripts/work.py recent-commits`
+- "initialize the operator console"
+  - run `python3 scripts/work.py init-project`
 - "Add include/exclude filters and verify the counts"
   - start with `context/workflows/add-include-exclude-filtering.md`
   - then load `context/workflows/verify-query-count-correctness.md`
