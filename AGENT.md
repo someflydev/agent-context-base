@@ -10,6 +10,9 @@ Read [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md) first. Thi
 2. [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md)
 3. [`docs/runtime-state-workflow.md`](docs/runtime-state-workflow.md)
 4. run `python3 scripts/work.py resume`
+   Read the Session Context Briefing it prints before loading more files.
+   If it shows a relevant `memory/summaries/` file, load that first.
+   If the complexity budget is heavy, prune before broad startup reading.
 5. Check `memory/INDEX.md` for orientation; if a relevant `memory/summaries/PROMPT_XX_resume.md`
    exists for the work being resumed, read it.
 6. [`docs/usage/SPEC_DRIVEN_ACB_PAYLOADS.md`](docs/usage/SPEC_DRIVEN_ACB_PAYLOADS.md)

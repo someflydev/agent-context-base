@@ -33,6 +33,8 @@ Load one dominant path, not a broad survey.
 - Re-read generated `.acb/` boot files at session start.
 - Treat `tmp/*.md`, `context/TASK.md`, `context/SESSION.md`, and
   `context/MEMORY.md` as local runtime state, not doctrine.
+- After `work.py resume`, read the Session Context Briefing before loading
+  task-specific context. Use it to gauge complexity posture and quota readiness.
 - After `work.py resume`, use its git anchor, recent-change clues, next-step
   signal, and plan-review signal to decide what to read next. Then read
   `context/TASK.md`, then `context/SESSION.md`, then `context/MEMORY.md` only
