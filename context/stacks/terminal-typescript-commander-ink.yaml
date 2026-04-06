@@ -1,0 +1,18 @@
+name: "TypeScript Terminal - Commander + Ink"
+language: typescript
+tier: dual-mode
+cli_lib: commander
+tui_lib: ink
+description: >
+  Flagship TypeScript and Node terminal stack. Commander is a strong structured
+  CLI framework with subcommand support. Ink enables React-style component
+  composition directly in the terminal, using JSX for TUI layout.
+when_to_use: >
+  TypeScript developer tools, operator consoles, or modern devtool workflows
+  where the React component model is already familiar.
+tradeoffs: >
+  Ink requires React and JSX or TSX. The React reconciler in the terminal is
+  elegant but adds cognitive overhead for simple tools. Commander is mature and
+  well-documented.
+canonical_example: examples/canonical-terminal/typescript-commander-ink/
+docs: context/archetypes/terminal-dual-mode.md

@@ -1,0 +1,17 @@
+name: "Rust Terminal - argh + tui-realm"
+language: rust
+tier: dual-mode
+cli_lib: argh
+tui_lib: tui-realm
+description: >
+  Secondary Rust stack. argh is a lighter Google-style argument parser.
+  tui-realm adds an Elm or React-style component model over ratatui with
+  subscriptions and event-driven updates.
+when_to_use: >
+  Rust tools where the CLI is simpler and the TUI benefits from a component
+  and event-driven architecture.
+tradeoffs: >
+  argh is less flexible than clap for complex subcommand trees. tui-realm adds
+  abstraction that helps for larger TUIs but has less community momentum.
+canonical_example: examples/canonical-terminal/rust-argh-tui-realm/
+docs: context/archetypes/terminal-tui.md

@@ -1,0 +1,16 @@
+name: "Ruby Terminal - Clamp + TTY::Reader"
+language: ruby
+tier: cli-plus-raw-input
+cli_lib: clamp
+tui_lib: tty-reader
+description: >
+  Secondary Ruby stack. Clamp is minimal and focused. TTY::Reader provides
+  lower-level keyboard input and ANSI handling primitives.
+when_to_use: >
+  Lighter Ruby CLIs where the interactive element is primarily keyboard input
+  handling without full prompt menus.
+tradeoffs: >
+  TTY::Reader is a building block, not a prompt framework. Better for custom
+  key-driven interactions than for wizard-style menus.
+canonical_example: examples/canonical-terminal/ruby-clamp-tty/
+docs: context/archetypes/cli-tool.md

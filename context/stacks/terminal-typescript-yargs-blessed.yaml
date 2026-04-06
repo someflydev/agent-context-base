@@ -1,0 +1,18 @@
+name: "TypeScript Terminal - Yargs + Blessed"
+language: typescript
+tier: cli-plus-light-tui
+cli_lib: yargs
+tui_lib: blessed
+description: >
+  Secondary TypeScript stack. Yargs excels at command-heavy CLIs with generated
+  help and middleware. Blessed is a classic ncurses-style terminal UI toolkit
+  with a large widget set and direct event handling.
+when_to_use: >
+  TypeScript CLIs needing rich help generation and middleware, paired with a
+  classic ncurses-style TUI instead of a React-oriented approach.
+tradeoffs: >
+  Blessed is less actively maintained than Ink. Yargs has a large API surface.
+  Good choice when the React model is undesirable or the team is unfamiliar
+  with JSX.
+canonical_example: examples/canonical-terminal/typescript-yargs-blessed/
+docs: context/archetypes/cli-tool.md

@@ -1,0 +1,17 @@
+name: "Java Terminal - picocli + Lanterna"
+language: java
+tier: dual-mode
+cli_lib: picocli
+tui_lib: lanterna
+description: >
+  Flagship Java terminal stack. picocli is the strongest modern Java CLI
+  framework with annotation-driven commands, rich help, and completion.
+  Lanterna is a pure-Java TUI library with real text-GUI widgets.
+when_to_use: >
+  JVM-based operator consoles, enterprise tools, or services where terminal
+  access is part of a larger Java system and a real text GUI is needed.
+tradeoffs: >
+  Lanterna uses Swing-style layout concepts adapted to terminals and has a
+  learning curve. picocli is excellent but Java verbosity still applies.
+canonical_example: examples/canonical-terminal/java-picocli-lanterna/
+docs: context/archetypes/terminal-dual-mode.md

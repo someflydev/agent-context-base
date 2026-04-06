@@ -1,0 +1,17 @@
+name: "Go Terminal - Cobra + Bubble Tea"
+language: go
+tier: dual-mode
+cli_lib: cobra
+tui_lib: bubbletea
+description: >
+  Flagship Go terminal stack. Cobra is the dominant structured multi-command Go
+  CLI framework used by kubectl, Hugo, and similar tools. Bubble Tea builds
+  TUIs around an Elm-style model with Init, Update, and View.
+when_to_use: >
+  Go operator consoles, multi-command CLIs with a companion TUI inspector, or
+  tools with a git or kubectl-style command tree.
+tradeoffs: >
+  Bubble Tea's functional model is clean but requires thinking in messages and
+  commands. Cobra adds boilerplate for very simple tools; urfave/cli is lighter.
+canonical_example: examples/canonical-terminal/go-cobra-bubbletea/
+docs: context/archetypes/terminal-dual-mode.md

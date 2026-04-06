@@ -1,0 +1,17 @@
+name: "Rust Terminal - clap + ratatui"
+language: rust
+tier: dual-mode
+cli_lib: clap
+tui_lib: ratatui
+description: >
+  Flagship Rust terminal stack. clap is the dominant Rust CLI parser with
+  derive macros, subcommand trees, and rich help generation. ratatui is the
+  center-of-gravity Rust TUI toolkit with a retained-mode draw loop.
+when_to_use: >
+  High-performance Rust operator dashboards, queue monitors, or any tool
+  needing strong CLI parsing and a production-quality terminal UI.
+tradeoffs: >
+  ratatui requires managing a draw loop and terminal raw mode manually. More
+  boilerplate than higher-level frameworks but maximum control.
+canonical_example: examples/canonical-terminal/rust-clap-ratatui/
+docs: context/archetypes/terminal-dual-mode.md

@@ -1,0 +1,20 @@
+name: "Elixir Terminal - Optimus + Ratatouille"
+language: elixir
+tier: dual-mode
+cli_lib: optimus
+tui_lib: ratatouille
+description: >
+  Flagship Elixir terminal stack. Optimus provides structured CLI parsing.
+  Ratatouille wraps ex_termbox for a declarative TUI with Elm-style rendering.
+  BEAM process supervision can back live data feeds behind the TUI.
+when_to_use: >
+  Elixir or Phoenix shops needing a terminal operator console, process
+  inspector, or event and log monitor where BEAM supervision matters.
+when_not_to_use: >
+  Do not force BEAM supervision into examples where it adds no value. If the
+  example is purely data display without concurrency, keep it simple.
+tradeoffs: >
+  Ratatouille is less actively maintained than ratatui in Rust. ex_termbox may
+  have platform limitations. Use Owl for lighter terminal UI needs.
+canonical_example: examples/canonical-terminal/elixir-optimus-ratatouille/
+docs: context/archetypes/terminal-dual-mode.md

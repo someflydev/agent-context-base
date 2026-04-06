@@ -1,0 +1,17 @@
+name: "Elixir Terminal - OptionParser + Owl"
+language: elixir
+tier: cli-plus-rich-output
+cli_lib: optionparser (built-in)
+tui_lib: owl
+description: >
+  Secondary Elixir stack. OptionParser is the built-in Elixir CLI parser. Owl
+  provides command-line UI for prompting, tables, progress bars, and styled
+  terminal output without a full TUI framework.
+when_to_use: >
+  Elixir Mix tasks, simple escript tools, or operator scripts that need rich
+  CLI output without a full-screen TUI.
+tradeoffs: >
+  Owl is excellent for rich CLI output but not a TUI framework. It does not
+  provide full-screen dashboard capability and is best for simpler tooling.
+canonical_example: examples/canonical-terminal/elixir-optionparser-owl/
+docs: context/archetypes/cli-tool.md

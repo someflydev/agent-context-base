@@ -1,0 +1,17 @@
+name: "Go Terminal - urfave/cli + tview"
+language: go
+tier: dual-mode
+cli_lib: urfave/cli
+tui_lib: tview
+description: >
+  Secondary Go stack. urfave/cli is simpler and smaller than Cobra. tview
+  provides practical high-level widgets such as tables, forms, trees, and
+  lists with a more imperative widget-centric style than Bubble Tea.
+when_to_use: >
+  Go tools where the CLI is simple and the TUI needs rich built-in widgets
+  without building them from scratch.
+tradeoffs: >
+  tview is more imperative and stateful than Bubble Tea's functional purity.
+  urfave/cli has less community tooling than Cobra.
+canonical_example: examples/canonical-terminal/go-urfave-tview/
+docs: context/archetypes/terminal-tui.md

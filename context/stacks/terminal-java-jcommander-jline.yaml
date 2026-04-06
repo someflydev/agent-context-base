@@ -1,0 +1,17 @@
+name: "Java Terminal - JCommander + JLine"
+language: java
+tier: cli-plus-interactive-shell
+cli_lib: jcommander
+tui_lib: jline
+description: >
+  Secondary Java stack. JCommander is a compact annotation-driven parser.
+  JLine provides advanced console input, readline-style editing, completion,
+  and ANSI output that fit shell-oriented workflows.
+when_to_use: >
+  Java tools needing a shell-like interactive REPL, readline editing, tab
+  completion, or command history rather than a full-screen TUI.
+tradeoffs: >
+  JLine is not a TUI framework; it is an interactive console input library.
+  Better for shell-style interactions than for dashboard-style panels.
+canonical_example: examples/canonical-terminal/java-jcommander-jline/
+docs: context/archetypes/cli-tool.md

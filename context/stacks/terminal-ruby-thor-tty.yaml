@@ -1,0 +1,18 @@
+name: "Ruby Terminal - Thor + TTY::Prompt"
+language: ruby
+tier: guided-interactive-cli
+cli_lib: thor
+tui_lib: tty-prompt
+description: >
+  Flagship Ruby terminal stack. Thor is a classic Ruby CLI toolkit for
+  multi-command apps. TTY::Prompt provides interactive prompts, menus, and
+  selection widgets for guided terminal workflows.
+when_to_use: >
+  Ruby operator tools, guided remediation workflows, interactive installers, or
+  configuration wizards where prompt-driven UX is the goal.
+tradeoffs: >
+  Ruby's terminal story favors guided interactive CLIs over full-screen TUI
+  architecture. This fits prompt-driven flows; use a different language for
+  dashboard-style TUI panels.
+canonical_example: examples/canonical-terminal/ruby-thor-tty/
+docs: context/archetypes/terminal-tui.md

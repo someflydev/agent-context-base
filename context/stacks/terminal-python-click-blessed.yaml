@@ -1,0 +1,18 @@
+name: "Python Terminal - Click + Blessed"
+language: python
+tier: cli-plus-light-tui
+cli_lib: click
+tui_lib: blessed
+description: >
+  Secondary Python terminal stack. Click is battle-tested for composable CLI
+  frameworks. Blessed provides lightweight terminal color, cursor movement, and
+  key handling without a full widget framework.
+when_to_use: >
+  Lighter Python CLIs with simple interactive prompts, colored output, or
+  Unix-y workflows where a full TUI framework would be overkill.
+tradeoffs: >
+  Blessed lacks a widget or component model. Better for line-oriented UIs than
+  full-screen panels. Click has a stronger third-party plugin ecosystem than
+  Typer but slightly more ceremony.
+canonical_example: examples/canonical-terminal/python-click-blessed/
+docs: context/archetypes/cli-tool.md
