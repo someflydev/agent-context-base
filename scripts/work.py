@@ -258,6 +258,30 @@ def build_parser() -> argparse.ArgumentParser:
     checkpoint_parser.add_argument("--force", action="store_true", help="Overwrite existing runtime state files.")
     checkpoint_parser.add_argument("--strict", action="store_true", help="Exit with status 1 when warnings are found.")
 
+    budget_report_parser = subparsers.add_parser(
+        "budget-report",
+        help="Score a declared context bundle against the executable complexity budget model.",
+    )
+    budget_report_parser.add_argument("--bundle", nargs="*", help="Explicit bundle file paths.")
+    budget_report_parser.add_argument("--bundle-file", help='JSON file with {"files": [...]} and optional context keys.')
+    budget_report_parser.add_argument("--primary-stack", help="Declared primary stack for direct-match scoring.")
+    budget_report_parser.add_argument("--archetype", help="Declared primary archetype for direct-match scoring.")
+    budget_report_parser.add_argument("--workflow", help="Declared active workflow for direct-match scoring.")
+    budget_report_parser.add_argument("--ambiguity", type=int, default=0, help="Ambiguity level from 0 to 3.")
+    budget_report_parser.add_argument(
+        "--confidence",
+        type=float,
+        default=1.0,
+        help="Routing confidence from 0.0 to 1.0.",
+    )
+    budget_report_parser.add_argument(
+        "--change-surface",
+        type=int,
+        default=1,
+        help="Change surface area bucket from 1 to 4.",
+    )
+    budget_report_parser.add_argument("--json", action="store_true", help="Emit machine-readable JSON output.")
+
     init_project_parser = subparsers.add_parser(
         "init-project",
         help="Initialize local operator-console state for this repo.",
@@ -1334,7 +1358,8 @@ def print_resume_guidance(repo_root: Path, script_cmd: str, states: tuple[Runtim
     print("Checkpoint reminders:")
     print(f"- Use `{script_cmd} checkpoint` after meaningful changes, before ending a session, and before a likely handoff.")
     print("- Keep `context/SESSION.md` concise and action-oriented.")
-    print("- Use `tmp/*.md` for session-scoped checklists or ad hoc work plans that should stay local.")
+    print("- Use `tmp/*.md` for session-scoped checklists or ad hoc work plans that should stay local; make checklist files real markdown checklists with `- [ ]` / `- [x]` items.")
+    print("- If you create a handoff for the next session, use `tmp/HANDOFF.md` and keep it local-only.")
     print("- Update `PLAN.md` only when phases, milestones, or the near-to-mid-term roadmap changed materially.")
 
 
@@ -1774,7 +1799,7 @@ def handle_checkpoint(repo_root: Path, script_cmd: str, force: bool, strict: boo
     print("Checkpoint doctrine:")
     print("- Run checkpoints after meaningful code or doc changes, after a completed subtask, before ending a session, and before switching branches or worktrees.")
     print("- Refresh `context/SESSION.md` when it is stale, bloated, or missing a clear next safe step.")
-    print("- Keep prompt-session checklists or ad hoc execution plans in `tmp/*.md`, not in `PLAN.md`.")
+    print("- Keep prompt-session checklists or ad hoc execution plans in `tmp/*.md`, not in `PLAN.md`; use markdown checkboxes for checklist items.")
     print("- Refresh `PLAN.md` when a `.prompts` megaprompt or major decision materially changes phases or milestones.")
     print("- Keep `context/MEMORY.md` durable; move active-step sludge back into `context/TASK.md` or `context/SESSION.md`.")
     print("")
@@ -1800,6 +1825,20 @@ def main(argv: list[str]) -> int:
         return handle_resume(repo_root, script_cmd, strict=args.strict, write_startup_log_flag=args.write_startup_log)
     if args.command == "checkpoint":
         return handle_checkpoint(repo_root, script_cmd, force=args.force, strict=args.strict)
+    if args.command == "budget-report":
+        return handle_budget_report(
+            repo_root,
+            script_cmd,
+            bundle=args.bundle,
+            bundle_file=args.bundle_file,
+            primary_stack=args.primary_stack,
+            archetype=args.archetype,
+            workflow=args.workflow,
+            ambiguity=args.ambiguity,
+            confidence=args.confidence,
+            change_surface=args.change_surface,
+            json_output=args.json,
+        )
     if args.command == "init-project":
         return handle_init_project(repo_root, slug=args.slug, force=args.force)
     if args.command == "next":
