@@ -11,6 +11,7 @@ This is the deterministic startup contract for assistants working in `agent-cont
 5. Read `.acb/validation/CHECKLIST.md` and `.acb/validation/COVERAGE.md` when `.acb/` exists.
 6. Inspect narrow repo signals: lockfiles, root manifests, source entrypoints, Compose files, prompt files, deployment artifacts.
 7. Route the task and load only the active workflow, stack surface, archetype, and canonical example.
+8. After completing the boot sequence, optionally run `python3 scripts/work.py startup-trace write --session "<task>" --files <files-read>` to record a self-declared startup trace for this session.
 
 ## Session Context Briefing
 
@@ -34,6 +35,10 @@ Use the briefing to decide what to load next. If the complexity budget is
 heavy, prune before broad reading. If a relevant summary exists, load it before
 task-specific context. The briefing is informational: it narrows startup
 choices, but the assistant still decides what additional context is needed.
+
+The startup trace is optional. Use it when the session is medium or larger,
+when the task spans multiple stacks or workflows, or when you need a debugging
+record of declared context loading.
 
 ## Rules
 

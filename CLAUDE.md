@@ -42,6 +42,7 @@ Load one dominant path, not a broad survey.
   active local markdown checkbox checklist or action plan for the current
   session.
 - After `work.py resume`, check `memory/INDEX.md` and load any `memory/summaries/` artifact relevant to the current work before starting task-specific context loading.
+- For medium or larger sessions, use `work.py startup-trace write` to self-declare what was loaded. This feeds into `work.py budget-report` for context scoring.
 - Before starting a new prompt session, run `python3 scripts/work.py next` to check the queue, quota state, and whether a resume summary exists.
 - Prefer manifests, canonical examples, and validation gates over improvisation.
 - Treat templates as scaffolds, not canonical truth.

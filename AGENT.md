@@ -34,6 +34,7 @@ Read [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md) first. Thi
 - Read `memory/INDEX.md` after `work.py resume` when resuming interrupted work or starting a new prompt. Consult `memory/summaries/` for the relevant prompt's context.
 - When working in a generated repo, re-read `.acb/SESSION_BOOT.md`, `.acb/profile/selection.json`, `.acb/specs/AGENT_RULES.md`, and `.acb/specs/VALIDATION.md` at session start.
 - Prefer manifest-defined bundles over improvised loading.
+- When starting a medium or larger session, optionally write a startup trace with `work.py startup-trace write` to record declared context loads for later audit.
 - Validation is mandatory before claiming completion unless the operator explicitly waives it.
 - Use `blocked`, `incomplete`, and `done` precisely.
 - For Tim Pope style multi-line commit messages, write real line breaks in the
