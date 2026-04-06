@@ -3084,6 +3084,36 @@
       "patterns": ["reference", "derived-examples", "orchestration"],
       "rank": 75,
       "stability": "reference"
+    },
+    {
+      "path": "examples/canonical-terminal/README.md",
+      "category": "terminal",
+      "summary": "Stub overview for terminal canonical examples and the shared TaskFlow Monitor domain.",
+      "stacks": [
+        "terminal-python-typer-textual",
+        "terminal-rust-clap-ratatui",
+        "terminal-go-cobra-bubbletea"
+      ],
+      "archetypes": ["terminal-dual-mode", "terminal-tui", "cli-tool"],
+      "workflows": ["add-terminal-example"],
+      "patterns": ["terminal-tooling", "shared-domain-core", "fixture-first"],
+      "rank": 80,
+      "stability": "reference"
+    },
+    {
+      "path": "examples/canonical-terminal/fixtures/.gitkeep",
+      "category": "terminal",
+      "summary": "Tracked placeholder for the shared terminal fixture corpus until PROMPT_102 adds real fixtures.",
+      "stacks": [
+        "terminal-python-typer-textual",
+        "terminal-rust-clap-ratatui",
+        "terminal-go-cobra-bubbletea"
+      ],
+      "archetypes": ["terminal-dual-mode", "terminal-tui"],
+      "workflows": ["add-terminal-example"],
+      "patterns": ["fixture-corpus", "shared-fixtures", "placeholder"],
+      "rank": 60,
+      "stability": "reference"
     }
   ]
 }

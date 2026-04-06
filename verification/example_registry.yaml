@@ -4541,3 +4541,38 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: medium
+  - name: terminal-canonical-readme
+    path: examples/canonical-terminal/README.md
+    language: markdown
+    stack_tags:
+      - terminal-python-typer-textual
+      - terminal-rust-clap-ratatui
+      - terminal-go-cobra-bubbletea
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+      - cli-tool
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - terminal domain and architecture stub documented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-fixtures-placeholder
+    path: examples/canonical-terminal/fixtures/.gitkeep
+    language: text
+    stack_tags:
+      - terminal-python-typer-textual
+      - terminal-rust-clap-ratatui
+      - terminal-go-cobra-bubbletea
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - fixture corpus directory remains tracked before PROMPT_102
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
