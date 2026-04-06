@@ -326,6 +326,22 @@ def build_parser() -> argparse.ArgumentParser:
     )
     budget_report_parser.add_argument("--json", action="store_true", help="Emit machine-readable JSON output.")
 
+    route_check_parser = subparsers.add_parser(
+        "route-check",
+        help="Heuristically infer a prompt's route and suggested context bundle.",
+    )
+    route_check_parser.add_argument("--json", action="store_true", help="Emit machine-readable JSON output.")
+    route_check_parser.add_argument(
+        "--compare-bundle",
+        action="store_true",
+        help="Treat all but the final positional input as declared bundle paths to compare against the suggestion.",
+    )
+    route_check_parser.add_argument(
+        "inputs",
+        nargs="+",
+        help='Prompt text or @path/to/prompt.txt. With --compare-bundle, pass bundle paths first and the prompt input last.',
+    )
+
     init_project_parser = subparsers.add_parser(
         "init-project",
         help="Initialize local operator-console state for this repo.",
@@ -1295,10 +1311,41 @@ def confidence_label(confidence: float | None) -> str:
     if confidence >= 0.85:
         return "strong (>= 0.85)"
     if confidence >= 0.70:
-        return "usable (0.70-0.84)"
+        return "usable"
     if confidence >= 0.55:
-        return "weak (0.55-0.69)"
-    return "very weak (< 0.55)"
+        return "weak"
+    return "very weak"
+
+
+def declared_file_reason(path: str) -> str:
+    normalized = path.replace("\\", "/").lstrip("./")
+    if normalized in {"AGENT.md", "CLAUDE.md"}:
+        return "boot anchor"
+    if normalized == "README.md":
+        return "repo overview"
+    if normalized in {"context/TASK.md", "context/SESSION.md"}:
+        return "runtime state"
+    if normalized == "context/MEMORY.md":
+        return "durable repo memory"
+    if normalized == "memory/INDEX.md":
+        return "memory orientation"
+    if normalized.startswith("memory/summaries/"):
+        return "resume summary"
+    if normalized.startswith("manifests/"):
+        return "manifest selection"
+    if normalized.startswith("context/router/"):
+        return "routing guidance"
+    if normalized.startswith("context/workflows/"):
+        return "workflow selection"
+    if normalized.startswith("context/stacks/"):
+        return "stack surface"
+    if normalized.startswith("context/archetypes/"):
+        return "archetype shape"
+    if normalized.startswith("context/doctrine/"):
+        return "doctrine"
+    if normalized.startswith("docs/"):
+        return "reference doc"
+    return "declared context"
 
 
 def startup_trace_memory_artifacts(repo_root: Path) -> list[str]:
@@ -1359,7 +1406,7 @@ def build_startup_trace(
     ]
     if files:
         for index, path in enumerate(files, start=1):
-            lines.append(f"  {index}. {path} -- declared read")
+            lines.append(f"  {index}. {path} -- {declared_file_reason(path)}")
     else:
         lines.append("  none declared")
     lines.extend(
@@ -2158,6 +2205,203 @@ def handle_budget_report(
     return 0
 
 
+def print_route_check_usage(script_cmd: str) -> None:
+    print("Usage:")
+    print(f'  {script_cmd} route-check "<prompt text>"')
+    print(f"  {script_cmd} route-check @path/to/prompt.txt")
+    print(f'  {script_cmd} route-check --json "<prompt text>"')
+    print(f'  {script_cmd} route-check --compare-bundle path1 path2 ... "<prompt text>"')
+
+
+def resolve_route_prompt(raw_input: str, repo_root: Path) -> tuple[str, str]:
+    if raw_input.startswith("@"):
+        prompt_path = Path(raw_input[1:])
+        if not prompt_path.is_absolute():
+            prompt_path = repo_root / prompt_path
+        if not prompt_path.exists():
+            raise ValueError(f"Prompt file not found: {prompt_path}")
+        try:
+            display_path = prompt_path.relative_to(repo_root).as_posix()
+        except ValueError:
+            display_path = prompt_path.as_posix()
+        return prompt_path.read_text(encoding="utf-8"), f"@{display_path}"
+    return raw_input, raw_input
+
+
+def route_prompt_preview(prompt_text: str, limit: int = 80) -> str:
+    condensed = " ".join(prompt_text.split())
+    if len(condensed) <= limit:
+        return condensed
+    return condensed[: limit - 3].rstrip() + "..."
+
+
+def route_keyword_preview(keyword_hits: dict[str, list[str]]) -> str:
+    if not keyword_hits:
+        return "none"
+    return ", ".join(list(keyword_hits)[:5])
+
+
+def first_workflow_from_bundle(bundle: list[str]) -> str | None:
+    for path in bundle:
+        normalized = path.replace("\\", "/")
+        if normalized.startswith("context/workflows/") and normalized.endswith(".md"):
+            return Path(normalized).stem
+    return None
+
+
+def score_route_bundle(
+    repo_root: Path,
+    bundle: list[str],
+    *,
+    primary_archetype: str | None,
+    workflow: str | None,
+    confidence: float,
+) -> tuple[Any, Any, list[str]]:
+    from context_budget import ModifierContext, score_bundle
+
+    modifier_context = ModifierContext(
+        primary_archetype=primary_archetype,
+        active_workflow=workflow,
+    )
+    return score_bundle(bundle, repo_root, ctx=modifier_context, confidence=confidence)
+
+
+def handle_route_check(
+    repo_root: Path,
+    script_cmd: str,
+    *,
+    inputs: list[str],
+    json_output: bool,
+    compare_bundle: bool,
+) -> int:
+    if not inputs:
+        print_route_check_usage(script_cmd)
+        return 1
+
+    declared_bundle: list[str] = []
+    raw_prompt_input = inputs[0]
+    if compare_bundle:
+        if len(inputs) < 2:
+            print_route_check_usage(script_cmd)
+            return 1
+        declared_bundle = inputs[:-1]
+        raw_prompt_input = inputs[-1]
+
+    try:
+        prompt_text, prompt_source = resolve_route_prompt(raw_prompt_input, repo_root)
+    except ValueError as exc:
+        print(str(exc))
+        return 1
+
+    from context_router import infer_route, route_inference_payload, suggest_context_bundle
+
+    inference = infer_route(prompt_text, repo_root)
+    suggested_bundle = suggest_context_bundle(inference, repo_root)
+    payload = route_inference_payload(inference, repo_root)
+    payload["prompt"] = prompt_text
+    payload["prompt_source"] = prompt_source
+
+    if declared_bundle:
+        active_workflow = first_workflow_from_bundle(suggested_bundle)
+        declared_score, declared_profile, _declared_violations = score_route_bundle(
+            repo_root,
+            declared_bundle,
+            primary_archetype=inference.primary_archetype,
+            workflow=active_workflow,
+            confidence=inference.confidence,
+        )
+        suggested_score, suggested_profile, _suggested_violations = score_route_bundle(
+            repo_root,
+            suggested_bundle,
+            primary_archetype=inference.primary_archetype,
+            workflow=active_workflow,
+            confidence=inference.confidence,
+        )
+        missing_from_declared = [path for path in suggested_bundle if path not in declared_bundle]
+        extra_in_declared = [path for path in declared_bundle if path not in suggested_bundle]
+        if missing_from_declared:
+            verdict = "declared bundle under-loaded"
+        elif extra_in_declared:
+            verdict = "declared bundle over-loaded for this route"
+        else:
+            verdict = "declared bundle aligns with routing"
+        payload["bundle_comparison"] = {
+            "declared_bundle": declared_bundle,
+            "declared_bundle_score": declared_score.total,
+            "declared_bundle_profile": declared_profile.name if declared_profile is not None else None,
+            "suggested_bundle_score": suggested_score.total,
+            "suggested_bundle_profile": suggested_profile.name if suggested_profile is not None else None,
+            "missing_from_declared": missing_from_declared,
+            "extra_in_declared": extra_in_declared,
+            "verdict": verdict,
+        }
+
+    if json_output:
+        print(json.dumps(payload, indent=2))
+        return 0
+
+    print("Route Check (HEURISTIC)")
+    print("=======================")
+    print(f'Prompt:          "{route_prompt_preview(prompt_text)}"')
+    print("")
+    print("Implied Capabilities:")
+    capabilities_text = ", ".join(inference.implied_capabilities) if inference.implied_capabilities else "none"
+    print(f"  {capabilities_text}  (from keywords: {route_keyword_preview(inference.keyword_hits)})")
+    print("")
+    print("Candidate Archetypes:")
+    if inference.candidate_archetypes:
+        for index, archetype in enumerate(inference.candidate_archetypes, start=1):
+            print(f"  {index}. {archetype}")
+    else:
+        print("  none")
+    print("")
+    print("Candidate Manifests:")
+    if inference.candidate_manifests:
+        for index, manifest in enumerate(inference.candidate_manifests, start=1):
+            print(f"  {index}. {manifest}")
+    else:
+        print("  none")
+    print("")
+    print("Routing Decision (HEURISTIC):")
+    print(f"  Primary Archetype:  {inference.primary_archetype or 'none'}")
+    print(f"  Primary Manifest:   {inference.primary_manifest or 'none'}")
+    print(f"  Budget Profile:     {inference.suggested_budget_profile}")
+    print(f"  Confidence:         {confidence_label(inference.confidence)} ({inference.confidence:.2f})")
+    print("")
+    print("Suggested Context Bundle:")
+    if suggested_bundle:
+        for path in suggested_bundle:
+            print(f"  - {path}")
+    else:
+        print("  - none")
+
+    if declared_bundle:
+        comparison = payload["bundle_comparison"]
+        print("")
+        print("Bundle Comparison:")
+        print(
+            "  Declared bundle score:   "
+            f"{comparison['declared_bundle_score']} points ({comparison['declared_bundle_profile'] or 'none'})"
+        )
+        print(
+            "  Suggested bundle score:  "
+            f"{comparison['suggested_bundle_score']} points ({comparison['suggested_bundle_profile'] or 'none'})"
+        )
+        missing = comparison["missing_from_declared"]
+        extra = comparison["extra_in_declared"]
+        print("  Files in suggested not in declared: " + (", ".join(missing) if missing else "none"))
+        print("  Files in declared not in suggested: " + (", ".join(extra) if extra else "none"))
+        print(f"  Verdict: {comparison['verdict']}")
+
+    print("")
+    print("Warnings:")
+    warnings = list(inference.warnings)
+    warnings.append("HEURISTIC: this is not a verified route, only a keyword-based suggestion")
+    for warning in warnings:
+        print(f"  - {warning}")
+    return 0
+
+
 def handle_startup_trace_write(
     repo_root: Path,
     *,
@@ -2314,6 +2558,14 @@ def main(argv: list[str]) -> int:
             confidence=args.confidence,
             change_surface=args.change_surface,
             json_output=args.json,
+        )
+    if args.command == "route-check":
+        return handle_route_check(
+            repo_root,
+            script_cmd,
+            inputs=args.inputs,
+            json_output=args.json,
+            compare_bundle=args.compare_bundle,
         )
     if args.command == "init-project":
         return handle_init_project(repo_root, slug=args.slug, force=args.force)
