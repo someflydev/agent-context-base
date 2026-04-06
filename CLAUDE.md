@@ -46,6 +46,7 @@ Load one dominant path, not a broad survey.
 - For session-scoped planning and execution tracking, use markdown files in
   `tmp/`, for example `tmp/PROMPT_123_checklist.md` or
   `tmp/runtime-fix-plan.md`. Keep them concise and do not commit them.
+- If you create `HANDOFF.md` for the next session, treat it as local-only runtime state and do not commit it.
 - Update `PLAN.md` only when a `.prompts` megaprompt or major decision materially changes phases or milestones.
 - If a repo provides `PLAN.example.md`, `context/TASK.example.md`, `context/SESSION.example.md`, or `context/MEMORY.example.md`, `init` and `checkpoint` will scaffold missing runtime files from those examples.
 - Do not claim completion without running the stated proof path.

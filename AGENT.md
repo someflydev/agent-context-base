@@ -38,6 +38,7 @@ Read [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md) first. Thi
 - For session-scoped planning and execution tracking, use markdown files in
   `tmp/`, for example `tmp/PROMPT_123_checklist.md` or
   `tmp/runtime-fix-plan.md`. Keep them concise and do not commit them.
+- If you create `HANDOFF.md` for the next session, treat it as local-only runtime state and do not commit it.
 - Update `PLAN.md` only when a `.prompts` megaprompt or a major decision materially reshapes phases, milestones, or the near-to-mid-term roadmap.
 - Keep `context/MEMORY.md` durable and clean; keep active-step detail in `context/TASK.md` and `context/SESSION.md`.
 - If a repo provides `PLAN.example.md`, `context/TASK.example.md`, `context/SESSION.example.md`, or `context/MEMORY.example.md`, `init` and `checkpoint` will use those as scaffold sources for missing runtime files.
