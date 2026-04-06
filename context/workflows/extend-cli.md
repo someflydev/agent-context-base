@@ -32,3 +32,11 @@ Use this workflow when adding commands, flags, or output modes to a CLI tool.
 - unclear defaults
 - unstructured output that breaks downstream use
 
+## See Also
+
+For full-screen TUI or dual-mode CLI+TUI tools:
+
+- `context/workflows/add-terminal-example.md`
+- `context/archetypes/terminal-tui.md`
+- `context/archetypes/terminal-dual-mode.md`
+- `context/doctrine/terminal-ux-first-class.md`
