@@ -39,16 +39,20 @@ Load one dominant path, not a broad survey.
   signal, and plan-review signal to decide what to read next. Then read
   `context/TASK.md`, then `context/SESSION.md`, then `context/MEMORY.md` only
   if durable repo-local truths matter. Read `tmp/*.md` only when there is an
-  active local action plan or checklist for the current session.
+  active local markdown checkbox checklist or action plan for the current
+  session.
 - After `work.py resume`, check `memory/INDEX.md` and load any `memory/summaries/` artifact relevant to the current work before starting task-specific context loading.
 - Before starting a new prompt session, run `python3 scripts/work.py next` to check the queue, quota state, and whether a resume summary exists.
 - Prefer manifests, canonical examples, and validation gates over improvisation.
 - Treat templates as scaffolds, not canonical truth.
 - Use `python3 scripts/work.py checkpoint` after meaningful changes, before ending a session, and before a likely handoff.
 - For session-scoped planning and execution tracking, use markdown files in
-  `tmp/`, for example `tmp/PROMPT_123_checklist.md` or
-  `tmp/runtime-fix-plan.md`. Keep them concise and do not commit them.
-- If you create `HANDOFF.md` for the next session, treat it as local-only runtime state and do not commit it.
+  `tmp/`, and make checklist files actual markdown checklists with `- [ ]` /
+  `- [x]` checkboxes so work can be checked off as it is done. For example,
+  use `tmp/PROMPT_123_checklist.md` or `tmp/runtime-fix-plan.md`. Keep them
+  concise and do not commit them.
+- If you create a handoff for the next session, create `tmp/HANDOFF.md`.
+  Treat it as local-only runtime state and do not commit it.
 - Update `PLAN.md` only when a `.prompts` megaprompt or major decision materially changes phases or milestones.
 - If a repo provides `PLAN.example.md`, `context/TASK.example.md`, `context/SESSION.example.md`, or `context/MEMORY.example.md`, `init` and `checkpoint` will scaffold missing runtime files from those examples.
 - Do not claim completion without running the stated proof path.

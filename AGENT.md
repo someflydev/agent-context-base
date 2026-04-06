@@ -29,8 +29,8 @@ Read [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md) first. Thi
   signal, and plan-review signal to decide what to read next. Then read
   `context/TASK.md` and `context/SESSION.md`; read `context/MEMORY.md` only
   when durable repo-local truths matter; read `tmp/*.md` only when there is an
-  active local action plan or checklist for the current session; read `PLAN.md`
-  only when milestone context matters.
+  active local markdown checkbox checklist or action plan for the current
+  session; read `PLAN.md` only when milestone context matters.
 - Read `memory/INDEX.md` after `work.py resume` when resuming interrupted work or starting a new prompt. Consult `memory/summaries/` for the relevant prompt's context.
 - When working in a generated repo, re-read `.acb/SESSION_BOOT.md`, `.acb/profile/selection.json`, `.acb/specs/AGENT_RULES.md`, and `.acb/specs/VALIDATION.md` at session start.
 - Prefer manifest-defined bundles over improvised loading.
@@ -41,9 +41,12 @@ Read [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md) first. Thi
 - Use `python3 scripts/work.py checkpoint` at natural boundaries.
 - Use `python3 scripts/work.py init-project` to initialize the operator console for a project. Use `work.py next` before starting a fresh session to check queue state and quota readiness.
 - For session-scoped planning and execution tracking, use markdown files in
-  `tmp/`, for example `tmp/PROMPT_123_checklist.md` or
-  `tmp/runtime-fix-plan.md`. Keep them concise and do not commit them.
-- If you create `HANDOFF.md` for the next session, treat it as local-only runtime state and do not commit it.
+  `tmp/`, and make checklist files actual markdown checklists with `- [ ]` /
+  `- [x]` checkboxes so work can be checked off as it is done. For example,
+  use `tmp/PROMPT_123_checklist.md` or `tmp/runtime-fix-plan.md`. Keep them
+  concise and do not commit them.
+- If you create a handoff for the next session, create `tmp/HANDOFF.md`.
+  Treat it as local-only runtime state and do not commit it.
 - Update `PLAN.md` only when a `.prompts` megaprompt or a major decision materially reshapes phases, milestones, or the near-to-mid-term roadmap.
 - Keep `context/MEMORY.md` durable and clean; keep active-step detail in `context/TASK.md` and `context/SESSION.md`.
 - If a repo provides `PLAN.example.md`, `context/TASK.example.md`, `context/SESSION.example.md`, or `context/MEMORY.example.md`, `init` and `checkpoint` will use those as scaffold sources for missing runtime files.

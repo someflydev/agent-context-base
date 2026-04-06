@@ -1345,7 +1345,7 @@ def print_resume_guidance(repo_root: Path, script_cmd: str, states: tuple[Runtim
         print("- Read `PLAN.md` when milestone context, phase changes, or `.prompts` roadmap shifts matter.")
     else:
         print("- Create `PLAN.md` only when the work needs milestone-level roadmap state.")
-    print("- Keep any ad hoc session checklist or scratch execution plan in `tmp/*.md`, not in `PLAN.md`.")
+    print("- Keep any ad hoc session checklist or scratch execution plan in `tmp/*.md`, not in `PLAN.md`; use markdown checkboxes for checklist items.")
     print("")
     print("Memory summaries:")
     summary_path = latest_prompt_summary_path(repo_root)
@@ -1748,6 +1748,181 @@ def handle_init(repo_root: Path, force: bool) -> int:
             print(action)
     else:
         print("All canonical runtime files already exist.")
+    return 0
+
+
+def print_budget_report_usage(script_cmd: str) -> None:
+    print(
+        f"usage: {script_cmd} budget-report "
+        "[--bundle path1 path2 ...] [--bundle-file bundle.json] "
+        "[--primary-stack STACK] [--archetype ARCHETYPE] [--workflow WORKFLOW] "
+        "[--ambiguity 0-3] [--confidence 0.0-1.0] [--change-surface 1-4] [--json]"
+    )
+
+
+def _load_budget_bundle_file(bundle_file: Path) -> dict[str, object]:
+    try:
+        payload = json.loads(bundle_file.read_text(encoding="utf-8"))
+    except FileNotFoundError as exc:
+        raise ValueError(f"Bundle file not found: {bundle_file}") from exc
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"Bundle file is not valid JSON: {bundle_file}") from exc
+    if not isinstance(payload, dict):
+        raise ValueError("Bundle file must contain a JSON object.")
+    return payload
+
+
+def _merge_bundle_paths(cli_paths: list[str] | None, bundle_payload: dict[str, object]) -> list[str]:
+    merged: list[str] = []
+    seen: set[str] = set()
+    for source in (bundle_payload.get("files", []), cli_paths or []):
+        if not isinstance(source, list):
+            continue
+        for item in source:
+            if not isinstance(item, str):
+                continue
+            if item in seen:
+                continue
+            seen.add(item)
+            merged.append(item)
+    return merged
+
+
+def _validate_budget_inputs(ambiguity: int, confidence: float, change_surface: int) -> str | None:
+    if not 0 <= ambiguity <= 3:
+        return "Ambiguity must be between 0 and 3."
+    if not 0.0 <= confidence <= 1.0:
+        return "Confidence must be between 0.0 and 1.0."
+    if not 1 <= change_surface <= 4:
+        return "Change surface must be between 1 and 4."
+    return None
+
+
+def handle_budget_report(
+    repo_root: Path,
+    script_cmd: str,
+    bundle: list[str] | None,
+    bundle_file: str | None,
+    primary_stack: str | None,
+    archetype: str | None,
+    workflow: str | None,
+    ambiguity: int,
+    confidence: float,
+    change_surface: int,
+    json_output: bool,
+) -> int:
+    validation_error = _validate_budget_inputs(ambiguity, confidence, change_surface)
+    if validation_error is not None:
+        print(validation_error)
+        return 1
+
+    bundle_payload: dict[str, object] = {}
+    if bundle_file is not None:
+        try:
+            bundle_payload = _load_budget_bundle_file(repo_root / bundle_file if not Path(bundle_file).is_absolute() else Path(bundle_file))
+        except ValueError as exc:
+            print(str(exc))
+            return 1
+
+    merged_bundle = _merge_bundle_paths(bundle, bundle_payload)
+    if not merged_bundle:
+        print_budget_report_usage(script_cmd)
+        return 1
+
+    from context_budget import collect_concept_tags, score_bundle, ModifierContext
+
+    resolved_primary_stack = primary_stack or bundle_payload.get("primary_stack")
+    resolved_archetype = archetype or bundle_payload.get("archetype")
+    resolved_workflow = workflow or bundle_payload.get("workflow")
+    modifier_context = ModifierContext(
+        primary_stack=resolved_primary_stack if isinstance(resolved_primary_stack, str) else None,
+        primary_archetype=resolved_archetype if isinstance(resolved_archetype, str) else None,
+        active_workflow=resolved_workflow if isinstance(resolved_workflow, str) else None,
+    )
+    bundle_score, selected_profile, cap_violations = score_bundle(
+        merged_bundle,
+        repo_root,
+        ctx=modifier_context,
+        ambiguity_level=ambiguity,
+        confidence=confidence,
+        change_surface_area=change_surface,
+    )
+
+    concept_tags = collect_concept_tags([artifact.path for artifact in bundle_score.artifacts])
+    missing_paths = [
+        path
+        for path in merged_bundle
+        if not (Path(path) if Path(path).is_absolute() else repo_root / path).exists()
+    ]
+
+    if json_output:
+        payload = {
+            "bundle_cost": bundle_score.total,
+            "artifact_count": len(bundle_score.artifacts),
+            "selected_profile": selected_profile.name if selected_profile is not None else None,
+            "cap_violations": cap_violations,
+            "diversity_penalty": bundle_score.diversity_penalty,
+            "distinct_concept_tags": bundle_score.distinct_concept_tags,
+            "artifacts": [
+                {"path": artifact.path, "type": artifact.artifact_type, "total_cost": artifact.total_cost}
+                for artifact in bundle_score.artifacts
+            ],
+        }
+        print(json.dumps(payload, indent=2))
+        return 0
+
+    print("Budget Report")
+    print("=============")
+    print(
+        f"Bundle: {len(bundle_score.artifacts)} files  "
+        f"Context: {(modifier_context.primary_stack or 'unspecified')} / "
+        f"{(modifier_context.primary_archetype or 'unspecified')}"
+    )
+    if missing_paths:
+        print("")
+        for path in missing_paths:
+            print(f"Warning: missing file scored with size_cost=0: {path}")
+    print("")
+    print("Artifact Scores:")
+    for artifact in bundle_score.artifacts:
+        notes = f"  [{', '.join(artifact.modifier_notes)}]" if artifact.modifier_notes else ""
+        print(
+            f"  {artifact.path:<48} "
+            f"{artifact.artifact_type:<27} "
+            f"base={artifact.base_cost:<2} size={artifact.size_cost:<2} "
+            f"mods={artifact.modifier_cost:+d} total={artifact.total_cost:<2}{notes}"
+        )
+    print("")
+    print("Bundle Summary:")
+    print(f"  Artifact subtotal:     {bundle_score.subtotal}")
+    print(
+        f"  Diversity penalty:     {bundle_score.diversity_penalty}  "
+        f"({bundle_score.distinct_concept_tags} distinct tags: {', '.join(concept_tags) if concept_tags else 'none'})"
+    )
+    task_level_penalties = (
+        bundle_score.ambiguity_penalty + bundle_score.confidence_penalty + bundle_score.change_surface_penalty
+    )
+    print(
+        f"  Task-level penalties:  {task_level_penalties}  "
+        f"(ambiguity={bundle_score.ambiguity_penalty}, "
+        f"confidence={bundle_score.confidence_penalty}, "
+        f"change_surface={bundle_score.change_surface_penalty})"
+    )
+    print(f"  Total cost:            {bundle_score.total}")
+    print("")
+    print("Profile Fit:")
+    if selected_profile is None:
+        print("  Selected profile:      none")
+        print(f"  Cap violations:        {', '.join(cap_violations) if cap_violations else 'none'}")
+        print("  Recommendation:        exceeds all profiles - split or reduce")
+        return 0
+
+    print(
+        f"  Selected profile:      {selected_profile.name} "
+        f"(max_points={selected_profile.max_points}, max_files={selected_profile.max_files})"
+    )
+    print(f"  Cap violations:        {', '.join(cap_violations) if cap_violations else 'none'}")
+    print(f"  Recommendation:        fits {selected_profile.name}")
     return 0
 
 

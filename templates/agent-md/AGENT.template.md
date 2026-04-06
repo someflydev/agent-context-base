@@ -25,7 +25,7 @@ After that stable pass:
 4. read `context/SESSION.md` if it exists
 5. read `context/MEMORY.md` only if durable repo-local truths matter
 6. read `PLAN.md` when milestone context matters
-7. read `tmp/*.md` only when there is an active local checklist or ad hoc session plan relevant to the task
+7. read `tmp/*.md` only when there is an active local markdown checkbox checklist or ad hoc session plan relevant to the task
 
 Treat the visible root as the active entrypoint and product working surface. Treat `.acb/` as the bounded
 generator-owned assistant support bundle for this repo, not as a second public docs tree.
@@ -79,7 +79,8 @@ Load only:
 - keep `context/SESSION.md` concise and action-oriented
 - keep `context/TASK.md` focused on the current slice
 - keep `context/MEMORY.md` durable and clean
-- keep prompt-session checklists or ad hoc work plans in `tmp/*.md`
+- keep prompt-session checklists or ad hoc work plans in `tmp/*.md`; use real markdown checkboxes (`- [ ]` / `- [x]`) for checklist items
+- if another session is likely and you create a handoff file, create `tmp/HANDOFF.md` and keep it local-only
 - use `python3 scripts/work.py checkpoint` at meaningful stop points when the root script exists; otherwise use `python3 .acb/scripts/work.py checkpoint`
 - if the repo adds `PLAN.example.md`, `context/TASK.example.md`, `context/SESSION.example.md`, or `context/MEMORY.example.md`, expect `init` and `checkpoint` to scaffold missing runtime files from those examples
 - update `PLAN.md` only when a `.prompts` megaprompt or major decision materially reshapes phases or milestones
