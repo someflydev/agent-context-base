@@ -1,380 +1,172 @@
-# SECTION 1 — Purpose
-
-This prompt set builds the `agent-context-base` repository in staged passes:
-
-- `PROMPT_00_s.txt`: system brief for the architecture
-- `PROMPT_01.txt`: base-repo design pass derived from `PROMPT_00_s.txt`
-- `PROMPT_02.txt`: v1 repository implementation pass
-- `PROMPT_03.txt`: v2 enhancement pass
-- `PROMPT_04.txt`: v3 reliability/operations pass
-- `PROMPT_05.txt`: architecture visualization support track
-- `PROMPT_06.txt`: system operating manual support track
-- `PROMPT_07.txt`: context boot sequence support track
-- `PROMPT_08.txt`: context complexity budget support/control track
-
-Successful completion means:
-
-- the core build chain (`00_s -> 01 -> 02 -> 03 -> 04`) has coherent artifacts and prompt-prefixed commits
-- support-track prompts have explicit output targets, coherent artifacts, and prompt-prefixed commits
-- smoke and minimal real-infra integration tests exist and pass whenever a prompt introduces or changes runtime systems, Docker-backed services, APIs, CLIs, data flows, or significant features
-- no prompt is treated as complete from commit history alone
-
-# SECTION 2 — Required Tool Verification
-
-Always verify tools inside the execution loop for the selected prompt. Do not create separate pre-flight or post-flight stages.
-
-Base tools:
-
-- `git`
-- `git add -p`
-
-Detected runtime/tooling expectations from the prompt set:
-
-- Docker and Compose workflows: `docker`
-- Python path: `python3`, `uv`
-- TypeScript/Hono/Bun path: `bun`
-- Rust path: `cargo`
-- Go path: `go`
-- Elixir/Phoenix path: `mix`
-
-Detected test/tool expectations from the prompt set:
-
-- `pytest`
-- stack-native test commands once the repo generates them
-
-Verification policy:
-
-1. Compute the required tool list from the prompt being executed and the artifacts it is expected to touch.
-2. Check each tool with a direct command-path probe.
-3. If any required tool is missing, classify it as:
-   - system-level binary not safely installable in-project
-   - Python package/tool safely installable in an isolated `uv` venv
-4. If and only if exactly one missing tool is a Python package/tool installable with `uv`:
-   1. create `.venv_tools` if missing with `uv venv .venv_tools`
-   2. install the tool with `uv pip install --python .venv_tools/bin/python <tool>`
-   3. re-run verification using `./.venv_tools/bin/<tool>` or `./.venv_tools/bin/python -m <module>`
-5. Never activate the venv.
-6. Stop execution if tooling is still missing after that retry path, or if a missing tool requires a system install.
-
-Prompt-specific guidance:
-
-- `PROMPT_00_s.txt` and `PROMPT_01.txt` can usually run with `git` only unless implementation starts immediately.
-- `PROMPT_02.txt` through `PROMPT_04.txt` should assume `docker`, `python3`, `uv`, and any stack/runtime needed by generated artifacts.
-- `PROMPT_05.txt` through `PROMPT_08.txt` are usually documentation/control artifacts, but they still require `docker` and test tooling if they also update runnable examples, scripts, or validation helpers.
-
-# SECTION 3 — Prompt Classification Summary
-
-Naming convention discovered in this repository:
-
-- system prompt: `PROMPT_00_s.txt`
-- task prompts: `PROMPT_01.txt` through `PROMPT_08.txt`
-- support/meta note: `improvements-before-initial-run.txt`
-
-Suffix-pattern detection:
-
-- `_s`: present (`PROMPT_00_s.txt`)
-- `_t`: not present
-- `_r`: not present
-- mixed suffixes containing more than one of `s`, `t`, `r`: not present
-- system-template files: not present
-
-Current classification:
-
-- System prompts: `PROMPT_00_s.txt`
-- Task prompts: `PROMPT_01.txt`, `PROMPT_02.txt`, `PROMPT_03.txt`, `PROMPT_04.txt`, `PROMPT_05.txt`, `PROMPT_06.txt`, `PROMPT_07.txt`, `PROMPT_08.txt`
-- Templates: none detected
-- Retroactive prompts: none detected
-- System-templates: none detected
-- Meta/support files: `improvements-before-initial-run.txt`
-
-Variables:
-
-- No `{{LIKE_THIS}}` template variables were detected anywhere under `.prompts/`.
-
-Tracks discovered:
-
-- Core build track: `PROMPT_00_s.txt -> PROMPT_01.txt -> PROMPT_02.txt -> PROMPT_03.txt -> PROMPT_04.txt`
-- Support documentation track: `PROMPT_05.txt`, `PROMPT_06.txt`, `PROMPT_07.txt`
-- Control-layer track: `PROMPT_08.txt`
-
-Dependency interpretation:
-
-- `PROMPT_01.txt` explicitly refines `PROMPT_00_s.txt`
-- `PROMPT_02.txt` moves from design into implementation
-- `PROMPT_03.txt` requires the v1 repo from `PROMPT_02.txt`
-- `PROMPT_04.txt` requires the v2-enhanced repo from `PROMPT_03.txt`
-- `PROMPT_05.txt`, `PROMPT_06.txt`, and `PROMPT_07.txt` assume the advanced architecture exists
-- `PROMPT_08.txt` explicitly assumes the operating manual and boot sequence already exist
-
-Runtime/system signals found across the prompt set:
-
-- Docker Compose and isolated dev/test stacks
-- backend APIs
-- CLI tooling
-- smoke tests
-- minimal real-infra integration tests
-- Python/FastAPI/Polars
-- TypeScript/Hono/Bun/Drizzle/TSX
-- Rust/Axum
-- Go/Echo/templ
-- Elixir/Phoenix
-- Redis, MongoDB, DuckDB, Trino, NATS Jetstream, Meilisearch, TimescaleDB, Elasticsearch, Qdrant
-
-Prompt count:
-
-- executable prompt files: 9
-- support note files: 1
-- total `.prompts/` files discovered before meta-runner generation: 10
-
-Chunk groups:
-
-- Not needed for the current set because the prompt count is far below the `> 60` threshold.
-
-# SECTION 4 — Execution Modes
-
-Sequential mode:
-
-- Valid for the core build chain.
-- Use when building the repo from scratch or when the repository has no coherent prompt-execution evidence.
-- Current primary sequence: `00_s -> 01 -> 02 -> 03 -> 04`.
-
-Track mode:
-
-- Use after the core build chain reaches the dependency point needed by the support track.
-- Support documentation track:
-  - `PROMPT_05.txt`: architecture visualization
-  - `PROMPT_06.txt`: operating manual
-  - `PROMPT_07.txt`: boot sequence
-- Control-layer track:
-  - `PROMPT_08.txt`: context complexity budget
-
-Template instantiation mode:
-
-- No `_t` prompt files currently exist, but the runner must support them.
-- Any future template prompt must render into `.prompts/rendered/`.
-- Never overwrite the source template.
-- Use output names derived from the source prompt and render intent.
-- Maintain a render log at `.prompts/rendered/RENDER_LOG.md`.
-- Record source template, rendered file, variables, timestamp, and execution commit.
-
-Chunk mode:
-
-- Dormant for the current repository.
-- Activate only when prompt count exceeds 60, when a single track becomes too large for safe context handling, or when a prompt family splits into clear thematic groups.
-- Chunk by track/theme, not by naive numeric slices.
-
-Resume mode:
-
-- Required for every run.
-- Determine the next prompt from:
-  - prompt file presence
-  - prompt-prefix commit evidence
-  - artifact evidence
-  - dependency readiness
-- Numeric order alone is not sufficient.
-- Treat range-generation commits as advisory only; never assume a range means every prompt in that range was executed.
-- Treat a prompt as completed only when commit-prefix evidence and artifact evidence are coherent.
-
-Current evidence state:
-
-| Prompt | Class | Depends On | Prompt-Prefix Commit Seen | Artifact Evidence | Status |
-| --- | --- | --- | --- | --- | --- |
-| `PROMPT_00_s.txt` | system | none | no | no downstream architecture artifacts | next runnable |
-| `PROMPT_01.txt` | task | `PROMPT_00_s.txt` | no | base-repo design artifacts absent | pending |
-| `PROMPT_02.txt` | task | `PROMPT_01.txt` | no | v1 repo tree absent | blocked by `PROMPT_01.txt` |
-| `PROMPT_03.txt` | task | `PROMPT_02.txt` | no | v2 enhancement artifacts absent | blocked by `PROMPT_02.txt` |
-| `PROMPT_04.txt` | task | `PROMPT_03.txt` | no | v3 reliability artifacts absent | blocked by `PROMPT_03.txt` |
-| `PROMPT_05.txt` | task/support | advanced repo | no | output target unspecified; artifact absent | blocked |
-| `PROMPT_06.txt` | task/support | advanced repo | no | output target unspecified; artifact absent | blocked |
-| `PROMPT_07.txt` | task/support | advanced repo | no | output target unspecified; artifact absent | blocked |
-| `PROMPT_08.txt` | task/control | `PROMPT_06.txt`, `PROMPT_07.txt`, advanced repo | no | budget artifacts absent | blocked |
-
-Git-history interpretation:
-
-- No commit subjects matching `[PROMPT_XX]`, `[PROMPT_XX, AGENT_{role}]`, or range variants were found.
-- Existing history is legacy `[PRE-FLIGHT]` prompt-maintenance work and does not count as execution completion evidence.
-
-Special resume rule for this repository right now:
-
-- Because no prompt-execution evidence exists and `PROMPT_00_s.txt` exists, the next runnable prompt is `PROMPT_00_s.txt`.
-- Recommended first execution mode: Sequential mode with `AGENT_ARCHITECT`.
-
-Target-path safety rule:
-
-- `PROMPT_05.txt`, `PROMPT_06.txt`, and `PROMPT_07.txt` do not currently declare deterministic output file targets.
-- Before running any of those prompts, declare the exact artifact path(s) in the execution note and commit those results to real files.
-- Do not rename prompt files automatically.
-
-# SECTION 5 — Subagent Roles
-
-`AGENT_MAIN`
-
-- Allowed actions: choose execution mode, assign the active subagent, run the prompt loop, coordinate commits, stop on drift
-- Forbidden actions: skipping artifact gates, skipping auditor review, batching multiple prompts into one commit set
-- Required outputs: prompt announcement, execution summary, next-prompt decision
-- Stop conditions: any gate failure, dependency mismatch, missing target path for non-deterministic prompts
-
-`AGENT_ARCHITECT`
-
-- Allowed actions: interpret architecture prompts, map dependencies, write design/control documents, declare output targets for doc-heavy prompts
-- Forbidden actions: inventing new tracks, changing naming conventions, silently relaxing gates
-- Required outputs: dependency-aware design artifact, explicit artifact map, rationale for any inferred target files
-- Stop conditions: contradictory prompt requirements, unresolved artifact target, unsupported mixed suffix interpretation
-
-`AGENT_BUILDER`
-
-- Allowed actions: create or modify repo files, implement scripts/examples/templates/tests, wire runtime/tooling artifacts
-- Forbidden actions: overwriting templates in place, committing without tests when tests are applicable, renaming prompt files automatically
-- Required outputs: changed files, runnable artifacts, smoke/integration tests where applicable
-- Stop conditions: missing tools, failing tests, Docker inconsistency
-
-`AGENT_AUDITOR`
-
-- Allowed actions: verify artifacts, inspect diffs, confirm tests, validate commit prefixes and scope
-- Forbidden actions: ignoring legacy-history ambiguity, marking prompts complete from commits alone
-- Required outputs: pass/fail gate decision, drift notes, test verdict, completion status
-- Stop conditions: gate failure, malformed commit prefix, incoherent artifact evidence
-
-`AGENT_REFACTOR`
-
-- Allowed actions: resolve drift between prompt intent and repo state, tighten existing outputs, improve coherence after a completed stage
-- Forbidden actions: changing prompt numbering, expanding scope into later prompts, retroactively declaring completion without evidence
-- Required outputs: scoped corrective diff plus updated gate results
-- Stop conditions: refactor would cross prompt boundaries or invalidate prior accepted artifacts
-
-# SECTION 6 — Testing Discipline (Smoke & Integration)
-
-This prompt set clearly introduces runtime systems and significant features. Smoke and integration discipline is therefore required.
-
-When prompts introduce or change any of the following:
-
-- Docker or Compose stacks
-- databases, queues, indexes, or vector stores
-- backend services or APIs
-- CLI tools
-- data transformations or indexing pipelines
-- any significant feature crossing a service or persistence boundary
-
-the runner must require:
-
-1. Reusable smoke tests under `tests/smoke/` or `scripts/smoke/`.
-2. Minimal integration tests against real Docker-backed services in the project’s test infrastructure for significant features.
-3. Tests that:
-   - start required services or reuse the project’s isolated Compose stacks
-   - validate connectivity
-   - validate minimal happy-path functionality
-   - exit non-zero on failure
-   - remain idempotent
-4. Passing tests before any commit for that prompt.
-5. Auditor verification of the test result.
-
-Applicability by stage:
-
-- `PROMPT_00_s.txt` and `PROMPT_01.txt`: usually `N/A` unless they directly add runnable artifacts
-- `PROMPT_02.txt`, `PROMPT_03.txt`, `PROMPT_04.txt`: applicable
-- `PROMPT_05.txt`, `PROMPT_06.txt`, `PROMPT_07.txt`, `PROMPT_08.txt`: `N/A` for doc-only work; applicable if they also add runnable examples, scripts, validators, or runtime checks
-
-# SECTION 7 — Artifact Gates
-
-Global gates:
-
-- promised files exist
-- promised sections exist in generated documents
-- template sources remain unmodified unless the prompt explicitly targets the template source
-- no accidental file renames
-- no drift between the prompt’s stated scope and the actual diff
-- smoke/integration tests pass when applicable
-
-Prompt-specific gates:
-
-- `PROMPT_00_s.txt`: produce and commit the architecture/design artifact(s) selected for this repo run; the artifact must cover the required sections from the system brief
-- `PROMPT_01.txt`: artifact must operationalize `PROMPT_00_s.txt` and include the required design outputs, including drafted router-level top files when chosen
-- `PROMPT_02.txt`: the v1 repo tree specified in the prompt must exist and be coherent
-- `PROMPT_03.txt`: the v2 enhancement artifacts must exist, especially canonical examples, richer manifests, and `scripts/new_repo.py`
-- `PROMPT_04.txt`: reliability/operations artifacts must exist and remain coherent with prior routing/manifests/templates
-- `PROMPT_05.txt`, `PROMPT_06.txt`, `PROMPT_07.txt`: execution is blocked until exact output file targets are declared
-- `PROMPT_08.txt`: execution is blocked until `PROMPT_06.txt` and `PROMPT_07.txt` outputs exist coherently and its own output targets are declared
-
-Template safety:
-
-- never overwrite a template to satisfy a render request
-- all template instantiations go to `.prompts/rendered/`
-- maintain render-log provenance
-
-# SECTION 8 — Commit Discipline
-
-After each prompt execution:
-
-- use `git add -p`
-- create logical Tim Pope style grouped commits
-- do not batch changes from different prompts into one commit
-- skip commit if the prompt produced no changes
-
-Each new execution commit must begin with:
-
-`[PROMPT_{num}, AGENT_{role}]`
-
-Rules:
-
-- `{num}` must match the prompt file being executed
-- `{role}` must match the active execution role
-- legacy `[PROMPT_XX]` commits are valid resume evidence only
-- legacy `[PRE-FLIGHT]` commits are maintenance history only
-- commit subjects must not be vague
-
-If one prompt needs multiple commits, every commit for that prompt still uses the same prompt/agent prefix and remains scoped to logically grouped hunks selected with `git add -p`.
-
-# SECTION 9 — Drift Stop Conditions
-
-Pause execution immediately if any of the following occur:
-
-- missing artifacts
-- smoke or integration test failure
-- template overwritten
-- contradictions detected across prompts or outputs
-- malformed commit prefix
-- Docker left inconsistent
-- missing deterministic output target for a prompt that does not declare one
-- context fatigue: if the current session context usage exceeds 40%, pause and suggest the user exit and start a fresh session
-
-# SECTION 10 — Execution Loop
-
-For each prompt, run this loop exactly. Do not introduce separate pre-flight or post-flight phases.
-
-1. Announce prompt + agent.
-2. Execute.
-   - verify the tools required by that prompt
-   - if the prompt lacks deterministic output files, declare the exact target path(s) before editing
-   - implement only the scope implied by the selected prompt and its ready dependencies
-3. Validate artifacts.
-4. Run smoke/integration tests when applicable.
-5. Auditor verification.
-6. Commit with `git add -p`.
-7. Report:
-
-Files Created:
-Files Modified:
-Tests: PASS/FAIL/N/A (Smoke/Integration)
-Context Usage: <current session usage %>
-Drift Events:
-Next Prompt:
-
-Current execution guidance:
-
-- Start with `PROMPT_00_s.txt` using `AGENT_ARCHITECT`.
-- Continue sequentially through `PROMPT_04.txt`.
-- Only then open the support documentation track.
-- Run `PROMPT_08.txt` after `PROMPT_06.txt` and `PROMPT_07.txt` are complete.
-
-# SECTION 11 — Start Procedure
-
-Use this exact start intent:
-
-“Yes proceed using this prompt set. After each prompt run is over, use `git add -p` to make a number of related Tim Pope style multi-line commit messages for the changes. The commit message(s) should each start with \"[PROMPT_{num}, AGENT_{role}]\" (where `{num}` corresponds to the prompt file's number in `.prompts/`). But before starting, make sure you can call some commands you will need. If exactly one missing tool is a Python package/tool that can be installed with `uv` (for example `pytest`), create `.venv_tools`, install it there, and retry tool verification once using the explicit relative tool path under `./.venv_tools/bin/` (without activating the venv). If tooling is still missing (or requires system-level install), stop and suggest fixes and/or installation instructions. Then run the earliest dependency-ready prompt that is not yet completed based on `.prompts/` files and commit-prefix evidence; only start at `PROMPT_00_s.txt` when no prior prompt execution evidence exists. If `PROMPT_00_s.txt` is missing but other prompts exist, the first action must be to offer to generate a detailed/thoughtful `PROMPT_00_s.txt` system prompt by analyzing the entire set first.”
-
-Start result for the repository state observed while generating this runner:
-
-- execution mode: Sequential mode
-- starting prompt: `PROMPT_00_s.txt`
-- starting role: `AGENT_ARCHITECT`
-- reason: no prompt-execution commit evidence exists, no downstream acceptance artifacts exist outside `.prompts/`, and the system prompt is present
+# PROMPT_META_RUNNER
+
+## Section 1: Purpose
+This file is a behavioral contract for one bounded assistant session executing
+one `.prompts/` file inside this repository or a generated repo derived from it.
+It defines how the assistant should behave inside the session:
+- how to boot
+- how to stay within prompt scope
+- how to group commits
+- how to validate work before reporting done
+- how to stop cleanly when drift or blockers appear
+It is not:
+- a multi-session scheduler
+- a quota tracker
+- a test runner
+- a substitute for repo-local runtime state
+- an automation layer that decides what prompt comes next
+Between sessions, the operator uses the live `scripts/work.py` workflow and
+repo-local runtime files to decide sequencing, continuity, and readiness.
+
+## Section 2: Single-Session Invariants
+These rules apply in every prompt session.
+### 1. One Prompt Per Session
+Execute exactly one `.prompts/` file in the session.
+- Start with one active prompt.
+- End when that prompt reaches its completion condition or a stop condition.
+- Do not begin the next prompt in the same session.
+### 2. Boot Before Work
+Read the repo boot instructions before implementation starts.
+Minimum expectation:
+- read `AGENT.md` and `README.md` when present
+- run `python3 scripts/work.py resume` when the repo exposes `scripts/work.py`
+- read `context/TASK.md` and `context/SESSION.md` when present
+- read `memory/INDEX.md` and any relevant `memory/summaries/` handoff before
+  loading broader task context
+- continue into `.acb/` boot files in generated repos when applicable
+Do not start by scanning the whole repository.
+### 3. Commit Discipline
+Every commit created during the session must use the active prompt prefix.
+- Commit subjects must begin with `[PROMPT_XX]`.
+- Use Tim Pope style multi-line commit messages.
+- Use `git add <paths>` when a whole-file grouping is clean.
+- Use `git add -p` only when one file contains multiple logical changes that
+  must be separated.
+- Never batch changes from different prompts in one commit.
+### 4. Validation Before Done
+A prompt is not complete until its required verification steps are handled.
+- Run the verification required by the prompt.
+- If tests are not applicable, say so explicitly.
+- If tests cannot run, report `blocked` or `incomplete`.
+- If tests fail, do not report `done`.
+### 5. Explicit Scope
+Stay within the active prompt's stated completion condition.
+- Touch adjacent files only when required to make the prompt coherent.
+- Do not fold opportunistic cleanup into the same session unless the prompt
+  requires it.
+- Prefer narrow, reviewable changes over "while I am here" expansion.
+### 6. No Auto-Sequencing
+When the prompt is complete, stop and report.
+- Do not open the next prompt.
+- Do not infer the next queue item and start it automatically.
+- Leave prompt-to-prompt progression to the operator.
+
+## Section 3: Operator Console Integration
+This repo uses a two-layer model.
+### Operator Layer
+The operator manages sequencing and continuity between sessions.
+Typical operator responsibilities:
+- run the live `work.py` flow to inspect current state
+- choose the next prompt
+- start, pause, and finish prompt sessions in the local operator console
+- review quota or queue health when the repo supports those commands
+- decide whether another fresh session should begin
+### Assistant Layer
+The assistant executes the chosen prompt inside one bounded session.
+Typical assistant responsibilities:
+- boot from repo instructions
+- read runtime state and relevant memory summaries
+- implement the prompt
+- validate the work
+- report `done`, `blocked`, or `incomplete` truthfully
+These layers are separate.
+- Do not assume `work.py start`, `pause`, `done`, `verify`, `recent-commits`,
+  or `log-quota` exist unless the live repo actually provides them.
+- Use the commands that exist in the repo you are in.
+- Do not invent doctrine around historical prompt assumptions if the code does
+  not support them.
+Expected operator workflow around a session:
+- Before: review runtime state, queue state, and any resume summary
+- During: let the assistant execute one prompt; checkpoint when useful
+- After: write the prompt completion summary and decide what comes next
+
+## Section 4: Artifact Gates
+Before declaring a prompt done, confirm all applicable gates below.
+- required files exist
+- promised content is present
+- placeholders and template stubs are removed
+- committed artifacts match the prompt description
+- verification steps passed, or are documented as blocked or not applicable
+- commit subjects use the correct `[PROMPT_XX]` prefix
+- no unintended template overwrite occurred
+- the prompt's explicit completion condition is satisfied
+If any gate fails, do not report completion.
+
+## Section 5: Commit And File Conventions
+- Use real multi-line commit messages, not escaped newline hacks.
+- Prefix every commit subject with the active `[PROMPT_XX]`.
+- Do not create empty commits.
+- Use `git add -p` only when one file must be split into logical groups.
+- Do not rename prompt files as part of normal execution.
+- Do not overwrite templates or examples accidentally.
+
+## Section 6: Drift Stop Conditions
+Stop and report `blocked` or `incomplete` when any of the following occurs:
+- an artifact required by the prompt is missing and cannot be resolved safely
+- smoke or integration verification fails without a justified reason to defer
+- a template or canonical file would be overwritten unintentionally
+- the change has drifted beyond the prompt's stated completion condition
+- the working session is approaching context limits without a clean finish
+When context pressure forces a stop:
+- write `memory/summaries/PROMPT_XX_resume.md`
+- capture the exact next safe step
+- report `incomplete`
+- stop instead of improvising a second prompt in the same session
+
+## Section 7: Subagent And Role Conventions
+These role names are shorthand for how the assistant is operating.
+### AGENT_ARCHITECT
+- interprets architecture or doctrine prompts
+- declares artifact targets when the prompt is doc-heavy
+- clarifies boundaries before implementation
+### AGENT_BUILDER
+- creates and edits files
+- implements scripts, docs, and tests required by the prompt
+- keeps the working diff aligned to the completion condition
+### AGENT_AUDITOR
+- verifies artifacts and commit scope
+- runs or reviews required checks
+- confirms pass, fail, blocked, or not applicable
+### AGENT_REFACTOR
+- tightens coherence inside an already-bounded prompt scope
+- resolves drift introduced during the current prompt
+- does not expand into later prompts
+Most sessions use one dominant role. Role changes are allowed, but note them in
+the working summary or resume handoff when they matter.
+
+## Section 8: Testing Discipline
+Testing requirements depend on what the prompt changes.
+When the prompt introduces or changes runtime systems, Docker stacks, APIs,
+CLIs, data flows, or significant features:
+- run smoke tests before claiming completion
+- run minimal integration tests when the prompt explicitly requires them or the
+  change obviously crosses real service boundaries
+When the prompt is documentation-only, doctrine-only, or workflow-only:
+- testing may be limited to validation or consistency checks
+- still run any repo-level verification the prompt explicitly requires
+Do not claim a prompt is complete from file edits alone when runtime behavior
+was part of the requested change.
+
+## Section 9: How This File Is Used
+For operators:
+- paste this file into a fresh session before the active prompt when you want
+  the assistant to follow these conventions explicitly
+- use it most often for complex implementation prompts or repo-shaping prompts
+- rely on `scripts/work.py` and repo-local runtime state for sequencing between
+  sessions
+
+For assistants:
+
+- treat this file as standing operating procedure for the current session
+- apply it from the moment it is read until the active prompt ends
+- stop at the prompt boundary and hand control back to the operator
