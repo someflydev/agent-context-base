@@ -30,3 +30,18 @@ Use this archetype for command-line utilities that may read files, call APIs, or
 - output formats that are hard to parse
 - no smoke path for the primary command
 
+## Scope
+
+This archetype covers command-line utilities. For full-screen TUI applications
+or dual-mode CLI+TUI tools, see:
+
+- `context/archetypes/terminal-tui.md`
+- `context/archetypes/terminal-dual-mode.md`
+
+## Additional Doctrine
+
+- `context/doctrine/terminal-ux-first-class.md`
+
+## Terminal Canonical Examples
+
+- See `examples/canonical-terminal/` for language-specific implementations
