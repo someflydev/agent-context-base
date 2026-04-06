@@ -495,6 +495,55 @@ stacks:
     target:
       - context/stacks/rabbitmq.md
       - context/doctrine/broker-selection.md
+  - alias: terminal
+    target:
+      - context/archetypes/terminal-dual-mode.md
+      - context/archetypes/terminal-tui.md
+      - context/archetypes/cli-tool.md
+  - alias: TUI
+    target:
+      - context/archetypes/terminal-tui.md
+      - context/archetypes/terminal-dual-mode.md
+  - alias: dashboard
+    target:
+      - context/archetypes/terminal-tui.md
+      - context/archetypes/terminal-dual-mode.md
+  - alias: operator console
+    target: context/archetypes/terminal-dual-mode.md
+  - alias: job monitor
+    target: context/archetypes/terminal-dual-mode.md
+  - alias: interactive CLI
+    target:
+      - context/archetypes/terminal-dual-mode.md
+      - context/archetypes/cli-tool.md
+  - alias: typer textual
+    target: context/stacks/terminal-python-typer-textual.yaml
+  - alias: click blessed
+    target: context/stacks/terminal-python-click-blessed.yaml
+  - alias: clap ratatui
+    target: context/stacks/terminal-rust-clap-ratatui.yaml
+  - alias: argh tui-realm
+    target: context/stacks/terminal-rust-argh-tui-realm.yaml
+  - alias: cobra bubble tea
+    target: context/stacks/terminal-go-cobra-bubbletea.yaml
+  - alias: urfave tview
+    target: context/stacks/terminal-go-urfave-tview.yaml
+  - alias: commander ink
+    target: context/stacks/terminal-typescript-commander-ink.yaml
+  - alias: yargs blessed
+    target: context/stacks/terminal-typescript-yargs-blessed.yaml
+  - alias: picocli lanterna
+    target: context/stacks/terminal-java-picocli-lanterna.yaml
+  - alias: jcommander jline
+    target: context/stacks/terminal-java-jcommander-jline.yaml
+  - alias: thor tty prompt
+    target: context/stacks/terminal-ruby-thor-tty.yaml
+  - alias: clamp tty reader
+    target: context/stacks/terminal-ruby-clamp-tty.yaml
+  - alias: optimus ratatouille
+    target: context/stacks/terminal-elixir-optimus-ratatouille.yaml
+  - alias: optionparser owl
+    target: context/stacks/terminal-elixir-optionparser-owl.yaml
   - alias: elixir clojure rabbitmq
     target:
       - context/stacks/duo-elixir-clojure.md

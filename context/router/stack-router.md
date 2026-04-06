@@ -188,6 +188,28 @@ Infer the active stack from repo signals, touched files, and user language.
 - "Wire a Qdrant-backed local index"
   - `context/stacks/qdrant.md`
 
+## Terminal Stacks
+
+| Language | Tier | CLI Lib | TUI Lib | Stack file | Canonical example |
+|----------|------|---------|---------|------------|-------------------|
+| Python | dual-mode | typer | textual | `context/stacks/terminal-python-typer-textual.yaml` | `examples/canonical-terminal/python-typer-textual/` |
+| Python | cli-plus-light-tui | click | blessed | `context/stacks/terminal-python-click-blessed.yaml` | `examples/canonical-terminal/python-click-blessed/` |
+| Rust | dual-mode | clap | ratatui | `context/stacks/terminal-rust-clap-ratatui.yaml` | `examples/canonical-terminal/rust-clap-ratatui/` |
+| Rust | dual-mode | argh | tui-realm | `context/stacks/terminal-rust-argh-tui-realm.yaml` | `examples/canonical-terminal/rust-argh-tui-realm/` |
+| Go | dual-mode | cobra | bubbletea | `context/stacks/terminal-go-cobra-bubbletea.yaml` | `examples/canonical-terminal/go-cobra-bubbletea/` |
+| Go | dual-mode | urfave/cli | tview | `context/stacks/terminal-go-urfave-tview.yaml` | `examples/canonical-terminal/go-urfave-tview/` |
+| TypeScript | dual-mode | commander | ink | `context/stacks/terminal-typescript-commander-ink.yaml` | `examples/canonical-terminal/typescript-commander-ink/` |
+| TypeScript | cli-plus-light-tui | yargs | blessed | `context/stacks/terminal-typescript-yargs-blessed.yaml` | `examples/canonical-terminal/typescript-yargs-blessed/` |
+| Java | dual-mode | picocli | lanterna | `context/stacks/terminal-java-picocli-lanterna.yaml` | `examples/canonical-terminal/java-picocli-lanterna/` |
+| Java | cli-plus-interactive-shell | jcommander | jline | `context/stacks/terminal-java-jcommander-jline.yaml` | `examples/canonical-terminal/java-jcommander-jline/` |
+| Ruby | guided-interactive-cli | thor | tty-prompt | `context/stacks/terminal-ruby-thor-tty.yaml` | `examples/canonical-terminal/ruby-thor-tty/` |
+| Ruby | cli-plus-raw-input | clamp | tty-reader | `context/stacks/terminal-ruby-clamp-tty.yaml` | `examples/canonical-terminal/ruby-clamp-tty/` |
+| Elixir | dual-mode | optimus | ratatouille | `context/stacks/terminal-elixir-optimus-ratatouille.yaml` | `examples/canonical-terminal/elixir-optimus-ratatouille/` |
+| Elixir | cli-plus-rich-output | optionparser (built-in) | owl | `context/stacks/terminal-elixir-optionparser-owl.yaml` | `examples/canonical-terminal/elixir-optionparser-owl/` |
+
+See `examples/canonical-terminal/DECISION_GUIDE.md` (PROMPT_106) for deeper
+stack selection guidance.
+
 ## Guardrails
 
 - load only the stacks on the active change path

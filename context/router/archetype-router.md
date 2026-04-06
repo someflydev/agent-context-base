@@ -54,6 +54,17 @@ Infer project shape from the repo goal, not only from language choice.
 - "Set up a three-service repo: Go + Elixir + Python"
   - `context/archetypes/multi-backend-service.md`
 
+## Terminal Tooling
+
+| Signal | Archetype |
+|--------|-----------|
+| "build a CLI tool", "add a command" | `cli-tool` |
+| "build a TUI", "dashboard", "interactive terminal", "terminal UI" | `terminal-tui` |
+| "operator console", "monitor", "inspector", "`--interactive`", dual CLI+TUI | `terminal-dual-mode` |
+
+See `context/doctrine/terminal-ux-first-class.md` for rules that apply to all
+terminal archetypes.
+
 ## Guardrails
 
 - archetype is about project shape, not just framework choice
