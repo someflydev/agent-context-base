@@ -37,6 +37,15 @@ class AcbPayloadTests(unittest.TestCase):
         self.assertIn("api", selection["capabilities"])
         self.assertIn("storage", selection["capabilities"])
         self.assertIn("frontend", selection["capabilities"])
+        self.assertEqual(
+            selection["startup_features"],
+            {
+                "budget_report_enabled": False,
+                "startup_trace_enabled": False,
+                "route_check_enabled": False,
+            },
+        )
+        self.assertNotIn("## Context Tools", files[".acb/SESSION_BOOT.md"])
 
         index = json.loads(files[".acb/INDEX.json"])
         self.assertIn("product", index["layer_sources"])
