@@ -43,10 +43,14 @@ Read `memory/INDEX.md` after `work.py resume` output and after reading `context/
 
 ## Current Contents
 
-- `memory/concepts/README.md` — guide to the concepts tier (no concept files yet)
+- `memory/concepts/README.md` — guide to the concepts tier
+- `memory/concepts/canonical-example-selection.md` — quick orientation for how this repo chooses canonical examples
+- `memory/concepts/prompt-numbering-discipline.md` — strict prompt numbering and filename rules
+- `memory/concepts/verification-gate-overview.md` — fast orientation for the main verification commands
 - `memory/sessions/README.md` — guide to the sessions tier (gitignored; no files yet)
 - `memory/summaries/README.md` — guide to the summaries tier (gitignored)
 - `memory/summaries/PROMPT_90_completion.md` — committed format example (tracked before gitignore was added)
+- `memory/summaries/PROMPT_93_completion.md` — prompt-boundary summary for the prompt-meta-runner and workflow update
 
 ## Contributing
 

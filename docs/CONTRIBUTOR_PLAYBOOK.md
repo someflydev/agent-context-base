@@ -259,6 +259,17 @@ Existing examples include:
 - prompt-first repos
 - automation or deployment-oriented service shapes
 
+## Working with the Operator Console
+
+1. Initialize queue state with `python3 scripts/work.py init-project`, then inspect the next ready prompt with `python3 scripts/work.py next`.
+2. Start a prompt session with `python3 scripts/work.py start PROMPT_XX.txt --assistant <name>` before handing the prompt to an assistant.
+3. During the session, keep active runtime state in `context/TASK.md`, `context/SESSION.md`, `PLAN.md`, and local `work/` files; keep session checklists in `tmp/*.md`.
+4. Pause with `python3 scripts/work.py pause PROMPT_XX.txt --reason "..."` when a fresh session will need a handoff; write `memory/summaries/PROMPT_XX_resume.md` before stopping.
+5. Finish with `python3 scripts/work.py done PROMPT_XX.txt` after commits and summaries are in place; write `memory/summaries/PROMPT_XX_completion.md` for the completed prompt.
+6. Treat `work/`, `context/MEMORY.md`, and `PLAN.md` as local runtime state; treat `memory/concepts/`, committed `memory/summaries/`, and `context/doctrine/` as durable committed knowledge.
+7. Run `python3 -m unittest discover -s verification/unit -p "test_*.py" -v`, `python3 scripts/validate_context.py`, and `python3 scripts/run_verification.py --tier fast` before closing the prompt.
+8. Use `python3 scripts/work.py verify` and `python3 scripts/work.py recent-commits` when you need a queue-aware readiness check or prompt-prefix commit review.
+
 ### Why archetypes matter
 
 Archetypes reduce ambiguity about:
