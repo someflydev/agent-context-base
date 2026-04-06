@@ -21,6 +21,11 @@ Historical rebase note:
   `route-check`.
 - Do not assume prior `budget-report`, `startup-trace`, or Session Context Briefing
   work landed exactly as described here unless the repo confirms it.
+- If the live repo still has the PROMPT_97 startup-trace mismatches, fix them as part
+  of the rebase before building `route-check`:
+  - `Declared Files Read` entries should record a real why-loaded reason in the
+    trace format, not a generic placeholder such as `declared read`
+  - confidence labels should match the PROMPT_97 strings exactly
 - Keep repo-root `PLAN.md` roadmap-level only and keep per-session checklists or ad
   hoc plans in `tmp/*.md`.
 
