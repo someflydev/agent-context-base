@@ -91,6 +91,13 @@ class StartupTraceInfo:
     mtime: float
 
 
+STARTUP_FEATURE_DEFAULTS = {
+    "budget_report_enabled": False,
+    "startup_trace_enabled": False,
+    "route_check_enabled": False,
+}
+
+
 PLACEHOLDER_PATTERNS = (
     re.compile(r"<[^>]+>"),
     re.compile(r"\bTODO\b", flags=re.IGNORECASE),
@@ -1256,6 +1263,7 @@ def build_session_context_briefing(repo_root: Path, inspection: RepoInspection) 
         if tmp_checklists
         else "none relevant"
     )
+    context_tools = session_context_tool_statuses(repo_root)
 
     lines = [
         "=" * 64,
@@ -1284,6 +1292,11 @@ def build_session_context_briefing(repo_root: Path, inspection: RepoInspection) 
         f"  Posture:             {posture}",
         f"  Recommendation:      {posture_recommendation}",
         "",
+        "Context Tools:",
+        f"  budget-report:       {context_tools['budget-report']}",
+        f"  startup-trace:       {context_tools['startup-trace']}",
+        f"  route-check:         {context_tools['route-check']}",
+        "",
         "Local Planning State:",
         f"  tmp/:                {tmp_text}",
         f"  PLAN.md role:        {plan_role_text(repo_root)}",
@@ -1293,6 +1306,39 @@ def build_session_context_briefing(repo_root: Path, inspection: RepoInspection) 
         "=" * 64,
     ]
     return "\n".join(lines)
+
+
+def load_selection_startup_features(repo_root: Path) -> dict[str, bool] | None:
+    selection_path = repo_root / ".acb" / "profile" / "selection.json"
+    if not selection_path.exists():
+        return None
+    try:
+        payload = json.loads(selection_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    configured = payload.get("startup_features")
+    if not isinstance(configured, dict):
+        return STARTUP_FEATURE_DEFAULTS.copy()
+    merged = STARTUP_FEATURE_DEFAULTS.copy()
+    for key in STARTUP_FEATURE_DEFAULTS:
+        if key in configured:
+            merged[key] = bool(configured[key])
+    return merged
+
+
+def session_context_tool_statuses(repo_root: Path) -> dict[str, str]:
+    startup_features = load_selection_startup_features(repo_root)
+    if startup_features is None:
+        return {
+            "budget-report": "available",
+            "startup-trace": "available",
+            "route-check": "available",
+        }
+    return {
+        "budget-report": "available" if startup_features["budget_report_enabled"] else "n/a (disabled)",
+        "startup-trace": "available" if startup_features["startup_trace_enabled"] else "n/a (disabled)",
+        "route-check": "available" if startup_features["route_check_enabled"] else "n/a (disabled)",
+    }
 
 
 def write_startup_log(repo_root: Path, briefing: str) -> StartupLogResult:
