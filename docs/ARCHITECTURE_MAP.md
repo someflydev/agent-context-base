@@ -68,6 +68,19 @@ flowchart LR
     J -->|no, more work| M[incomplete]
 ```
 
+## Context Validation Layer
+
+Three executable tools for context visibility and validation:
+
+| Tool | Command | What it does |
+| --- | --- | --- |
+| Budget model | `work.py budget-report --bundle <files>` | Scores a declared bundle against the cost model in `context-complexity-budget.md`. |
+| Startup trace | `work.py startup-trace write` | Records what the assistant declares it loaded; this is self-reported, not verified. |
+| Route check | `work.py route-check "<prompt>"` | Heuristic capability inference from prompt text; output is always labeled heuristic. |
+
+These tools are optional. Derived repos enable them via `startup_features` in
+`.acb/profile/selection.json`.
+
 ## Future Direction
 
 Clearly future-facing, not implemented yet:

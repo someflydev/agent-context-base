@@ -42,6 +42,16 @@ python3 scripts/work.py log-quota --assistant claude --used-pct-5h 45
 Operator-console commands should be documented from the live repo command set, not
 from historical assumptions about what `work.py` might provide.
 
+Additional validation commands, when enabled in the current repo:
+
+```bash
+python3 scripts/work.py budget-report --bundle <files>
+python3 scripts/work.py startup-trace write --session "<task>" --files <files>
+python3 scripts/work.py route-check "<prompt>"
+```
+
+See `docs/startup-context-visibility.md` for when and how to use these.
+
 ## Canonical Runtime Files
 
 - `PLAN.md`: milestone-level roadmap, major phases, and near-to-mid-term structure. Update it when a `.prompts` megaprompt or major decision materially reshapes milestones or phases. Do not touch it for normal progress inside an already-defined phase.

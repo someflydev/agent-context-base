@@ -93,3 +93,21 @@ declares it loaded and can be scored later with `work.py budget-report`.
 `work.py resume` remains the normal assistant entrypoint. The visibility layer
 does not invent hidden state; it makes startup state and declared loading
 discipline explicit and reviewable.
+
+## Derived Repo Configuration
+
+In generated repos, startup features are enabled via `.acb/profile/selection.json`:
+
+```json
+{
+  "startup_features": {
+    "budget_report_enabled": true,
+    "startup_trace_enabled": true,
+    "route_check_enabled": false
+  }
+}
+```
+
+By default all three are disabled in new generated repos. Enable them
+selectively based on repo complexity and operator preferences. The Session
+Context Briefing reflects which tools are available.
