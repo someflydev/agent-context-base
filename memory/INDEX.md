@@ -51,6 +51,11 @@ Read `memory/INDEX.md` after `work.py resume` output and after reading `context/
 - `memory/summaries/README.md` — guide to the summaries tier (gitignored)
 - `memory/summaries/PROMPT_90_completion.md` — committed format example (tracked before gitignore was added)
 - `memory/summaries/PROMPT_93_completion.md` — prompt-boundary summary for the prompt-meta-runner and workflow update
+- `memory/summaries/PROMPT_95_completion.md` — completion summary for the verification-hardening arc closeout
+- `memory/summaries/PROMPT_97_completion.md` — completion summary for startup trace protocol work
+- `memory/summaries/PROMPT_91_through_95_arc_summary.md` — local arc summary for the explicit memory and operator-console upgrade
+- `memory/summaries/PROMPT_99_completion.md` — local completion summary for startup feature toggleability and arc closeout
+- `memory/summaries/PROMPT_96_through_99_arc_summary.md` — local arc summary for startup trace, pseudo-logging, and context validation
 
 ## Contributing
 
