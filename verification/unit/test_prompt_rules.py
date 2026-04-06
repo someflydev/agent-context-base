@@ -8,8 +8,8 @@ from pathlib import Path
 from verification.helpers import REPO_ROOT
 
 
-PROMPT_PATTERN = re.compile(r"^PROMPT_(\d{2})(?:_([str]+))?\.txt$")
-REFERENCE_PATTERN = re.compile(r"PROMPT_\d{2}(?:_[str]+)?\.txt")
+PROMPT_PATTERN = re.compile(r"^PROMPT_(\d+)(?:_([str]+))?\.txt$")
+REFERENCE_PATTERN = re.compile(r"PROMPT_\d+(?:_[str]+)?\.txt")
 # The base repo intentionally keeps a few authoring and operator helper prompts
 # outside the generated-repo PROMPT_XX sequence. Generated repos should normally
 # only add initial-prompt.txt outside that sequence.

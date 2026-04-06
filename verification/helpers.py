@@ -21,6 +21,7 @@ VERIFICATION_ROOT = REPO_ROOT / "verification"
 
 VALID_VERIFICATION_LEVELS = {
     "draft",
+    "reference",
     "structure-verified",
     "syntax-checked",
     "smoke-verified",
@@ -30,11 +31,12 @@ VALID_VERIFICATION_LEVELS = {
 
 VERIFICATION_LEVEL_SCORES = {
     "draft": 0,
-    "structure-verified": 1,
-    "syntax-checked": 2,
-    "smoke-verified": 3,
-    "behavior-verified": 4,
-    "golden": 5,
+    "reference": 1,
+    "structure-verified": 2,
+    "syntax-checked": 3,
+    "smoke-verified": 4,
+    "behavior-verified": 5,
+    "golden": 6,
 }
 
 CONFIDENCE_SCORES = {
