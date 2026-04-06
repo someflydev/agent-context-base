@@ -36,6 +36,8 @@ Read [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md) first. Thi
 - Prefer manifest-defined bundles over improvised loading.
 - Validation is mandatory before claiming completion unless the operator explicitly waives it.
 - Use `blocked`, `incomplete`, and `done` precisely.
+- For Tim Pope style multi-line commit messages, write real line breaks in the
+  commit body and never include literal `\n` sequences.
 - Use `python3 scripts/work.py checkpoint` at natural boundaries.
 - Use `python3 scripts/work.py init-project` to initialize the operator console for a project. Use `work.py next` before starting a fresh session to check queue state and quota readiness.
 - For session-scoped planning and execution tracking, use markdown files in
