@@ -1,0 +1,72 @@
+schema_version: 2
+name: terminal-dual-mode-base
+description: Base manifest for dual-mode terminal tools with a shared core, a scriptable CLI surface, and an interactive TUI surface.
+archetype: terminal-dual-mode
+primary_stack: terminal-python-typer-textual
+secondary_stacks:
+  - terminal-rust-clap-ratatui
+  - terminal-go-cobra-bubbletea
+  - terminal-typescript-commander-ink
+  - terminal-java-picocli-lanterna
+  - terminal-elixir-optimus-ratatouille
+triggers:
+  - terminal tool
+  - operator console
+  - job monitor
+aliases:
+  - dual mode terminal
+  - cli plus tui
+  - interactive monitor
+required_context:
+  - context/doctrine/terminal-ux-first-class.md
+  - context/doctrine/testing-philosophy.md
+  - context/doctrine/smoke-test-philosophy.md
+  - context/workflows/add-terminal-example.md
+  - context/workflows/extend-cli.md
+  - context/archetypes/terminal-dual-mode.md
+optional_context:
+  - context/archetypes/cli-tool.md
+  - context/archetypes/terminal-tui.md
+  - context/router/stack-router.md
+  - context/router/archetype-router.md
+preferred_examples:
+  - examples/canonical-terminal/README.md
+recommended_templates:
+  - templates/readme/README.template.md
+  - templates/agent-md/AGENT.template.md
+  - templates/claude-md/CLAUDE.template.md
+  - templates/gitignore/.gitignore.template
+  - templates/manifest/profile-summary.template.yaml
+repo_signals:
+  - core/
+  - cli/
+  - tui/
+  - tests/
+task_hints:
+  - add-terminal-example
+  - extend-cli
+warnings:
+  - Keep domain logic in the shared core instead of duplicating it across CLI and TUI entrypoints.
+  - Require a non-interactive smoke path so CI does not depend on a TTY.
+bootstrap_defaults:
+  - include_smoke_tests
+  - include_generated_profile
+compose_files:
+  - docker-compose.yml
+  - docker-compose.test.yml
+compose_project_name_dev: "{repo_slug}"
+compose_project_name_test: "{repo_slug}-test"
+port_band_app_dev: 14000-14099
+port_band_app_test: 15000-15099
+port_band_data_dev: 24000-24099
+port_band_data_test: 25000-25099
+data_isolation:
+  - docker/volumes/dev
+  - docker/volumes/test
+  - destructive test reset flows must stay pointed at docker-compose.test.yml
+dokku_relevance: not-applicable
+smoke_test_expectations:
+  - non-interactive fixture-backed command succeeds
+  - machine-readable output stays assertable
+  - interactive mode remains reachable through documented flags
+prompt_first_support: supported

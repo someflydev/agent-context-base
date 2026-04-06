@@ -1,0 +1,68 @@
+schema_version: 2
+name: terminal-tui-base
+description: Base manifest for full-screen terminal UIs that still require a documented non-interactive fallback for smoke validation.
+archetype: terminal-tui
+primary_stack: terminal-rust-clap-ratatui
+secondary_stacks:
+  - terminal-python-typer-textual
+  - terminal-go-cobra-bubbletea
+  - terminal-java-picocli-lanterna
+  - terminal-elixir-optimus-ratatouille
+triggers:
+  - build a tui
+  - terminal dashboard
+  - interactive terminal ui
+aliases:
+  - terminal tui
+  - dashboard tui
+  - full screen terminal
+required_context:
+  - context/doctrine/terminal-ux-first-class.md
+  - context/doctrine/testing-philosophy.md
+  - context/doctrine/smoke-test-philosophy.md
+  - context/workflows/add-terminal-example.md
+  - context/archetypes/terminal-tui.md
+optional_context:
+  - context/archetypes/terminal-dual-mode.md
+  - context/archetypes/cli-tool.md
+  - context/router/stack-router.md
+  - examples/canonical-terminal/README.md
+preferred_examples:
+  - examples/canonical-terminal/README.md
+recommended_templates:
+  - templates/readme/README.template.md
+  - templates/agent-md/AGENT.template.md
+  - templates/claude-md/CLAUDE.template.md
+  - templates/gitignore/.gitignore.template
+  - templates/manifest/profile-summary.template.yaml
+repo_signals:
+  - core/
+  - tui/
+  - tests/
+task_hints:
+  - add-terminal-example
+warnings:
+  - Even TUI-first examples need a headless smoke path for CI.
+  - Keep rendering concerns out of the shared domain and state core.
+bootstrap_defaults:
+  - include_smoke_tests
+  - include_generated_profile
+compose_files:
+  - docker-compose.yml
+  - docker-compose.test.yml
+compose_project_name_dev: "{repo_slug}"
+compose_project_name_test: "{repo_slug}-test"
+port_band_app_dev: 14100-14199
+port_band_app_test: 15100-15199
+port_band_data_dev: 24100-24199
+port_band_data_test: 25100-25199
+data_isolation:
+  - docker/volumes/dev
+  - docker/volumes/test
+  - destructive test reset flows must stay pointed at docker-compose.test.yml
+dokku_relevance: not-applicable
+smoke_test_expectations:
+  - normalized transcript or fallback output is assertable
+  - fixture-backed path runs without live network access
+  - non-interactive fallback is documented and smoke-tested
+prompt_first_support: supported
