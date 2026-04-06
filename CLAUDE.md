@@ -68,3 +68,7 @@ python scripts/run_verification.py --tier fast
 python scripts/validate_context.py
 python .acb/scripts/acb_verify.py
 ```
+
+Context tools (when available):
+- `python3 scripts/work.py budget-report --bundle <files>` - scored bundle evaluation
+- `python3 scripts/work.py route-check "<prompt>"` - heuristic capability routing

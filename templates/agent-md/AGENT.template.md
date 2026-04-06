@@ -80,6 +80,7 @@ Load only:
 - keep `context/TASK.md` focused on the current slice
 - keep `context/MEMORY.md` durable and clean
 - keep prompt-session checklists or ad hoc work plans in `tmp/*.md`; use real markdown checkboxes (`- [ ]` / `- [x]`) for checklist items
+- when `.acb/SESSION_BOOT.md` includes a `Context Tools` section, those commands are enabled for this repo; otherwise keep startup quiet
 - if another session is likely and you create a handoff file, create `tmp/HANDOFF.md` and keep it local-only
 - use `python3 scripts/work.py checkpoint` at meaningful stop points when the root script exists; otherwise use `python3 .acb/scripts/work.py checkpoint`
 - if the repo adds `PLAN.example.md`, `context/TASK.example.md`, `context/SESSION.example.md`, or `context/MEMORY.example.md`, expect `init` and `checkpoint` to scaffold missing runtime files from those examples

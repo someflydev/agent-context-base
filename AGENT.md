@@ -64,3 +64,5 @@ Read [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md) first. Thi
 - Base repo: `python scripts/validate_context.py`
 - Generated repo: `python .acb/scripts/acb_verify.py`
 - Inspect payload: `python .acb/scripts/acb_inspect.py`
+- Context tools (when available): `python3 scripts/work.py budget-report --bundle <files>` - scored bundle evaluation
+- Context tools (when available): `python3 scripts/work.py route-check "<prompt>"` - heuristic capability routing
