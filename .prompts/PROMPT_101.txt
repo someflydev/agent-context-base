@@ -320,6 +320,9 @@ PART 4: VALIDATION CONTRACT SCHEMA (OPTIONAL BUT RECOMMENDED)
 If the repo uses JSON schemas for validation contracts (inspect verification/ and
 context/validation/ to check), create:
 
+  Match the existing validation-module format in
+  context/validation/archetypes/*.md, including canonical front matter.
+
   context/validation/archetypes/terminal-dual-mode.md
 
   # Validation: terminal-dual-mode
@@ -348,8 +351,8 @@ VERIFICATION
 ================================================================================
 
 Run:
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 Check manually:
   - docs/terminal-validation-contract.md exists with all 8 sections
