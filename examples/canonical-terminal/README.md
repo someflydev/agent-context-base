@@ -27,6 +27,20 @@ guidance.
 | python-typer-textual/ | Typer + Textual | Dual-mode (CLI + TUI) |
 | python-click-blessed/ | Click + Blessed | CLI + light interactive |
 
+### Rust
+
+| Example | Stack | Mode |
+|---------|-------|------|
+| rust-clap-ratatui/ | clap + ratatui | Dual-mode |
+| rust-argh-tui-realm/ | argh + tui-realm | Dual-mode |
+
+### Go
+
+| Example | Stack | Mode |
+|---------|-------|------|
+| go-cobra-bubbletea/ | Cobra + Bubble Tea | Dual-mode |
+| go-urfave-tview/ | urfave/cli + tview | Dual-mode |
+
 ## Running Python Examples
 
 ```bash
@@ -40,6 +54,20 @@ taskflow watch --no-tui
 cd examples/canonical-terminal/python-click-blessed
 pip install -e .
 taskflow list
+```
+
+## Running Rust Examples
+
+```bash
+cd examples/canonical-terminal/rust-clap-ratatui && cargo test
+cd examples/canonical-terminal/rust-argh-tui-realm && cargo test
+```
+
+## Running Go Examples
+
+```bash
+cd examples/canonical-terminal/go-cobra-bubbletea && GOCACHE=/tmp/go-build-cache GOPATH=/tmp/go-path go test ./tests/...
+cd examples/canonical-terminal/go-urfave-tview && GOCACHE=/tmp/go-build-cache GOPATH=/tmp/go-path go test ./tests/...
 ```
 
 ## Smoke Tests

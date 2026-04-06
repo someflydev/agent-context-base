@@ -4546,8 +4546,11 @@ examples:
     language: markdown
     stack_tags:
       - terminal-python-typer-textual
+      - terminal-python-click-blessed
       - terminal-rust-clap-ratatui
+      - terminal-rust-argh-tui-realm
       - terminal-go-cobra-bubbletea
+      - terminal-go-urfave-tview
     archetype_tags:
       - terminal-dual-mode
       - terminal-tui
@@ -4555,7 +4558,7 @@ examples:
     verification_level: reference
     verification_targets:
       - file exists
-      - terminal domain and implemented Python examples documented
+      - terminal domain and implemented Rust, Go, and Python examples documented
     docker_supported: false
     scenario_harness: ""
     confidence: medium
@@ -4565,6 +4568,10 @@ examples:
     stack_tags:
       - terminal-python-typer-textual
       - terminal-python-click-blessed
+      - terminal-rust-clap-ratatui
+      - terminal-rust-argh-tui-realm
+      - terminal-go-cobra-bubbletea
+      - terminal-go-urfave-tview
     archetype_tags:
       - terminal-dual-mode
       - cli-tool
@@ -4581,10 +4588,14 @@ examples:
     stack_tags:
       - terminal-python-typer-textual
       - terminal-python-click-blessed
+      - terminal-rust-clap-ratatui
+      - terminal-rust-argh-tui-realm
+      - terminal-go-cobra-bubbletea
+      - terminal-go-urfave-tview
     archetype_tags:
       - terminal-dual-mode
       - cli-tool
-    verification_level: canonical
+    verification_level: structure-verified
     verification_targets:
       - file exists
       - fixture config is valid json
@@ -4597,10 +4608,14 @@ examples:
     stack_tags:
       - terminal-python-typer-textual
       - terminal-python-click-blessed
+      - terminal-rust-clap-ratatui
+      - terminal-rust-argh-tui-realm
+      - terminal-go-cobra-bubbletea
+      - terminal-go-urfave-tview
     archetype_tags:
       - terminal-dual-mode
       - cli-tool
-    verification_level: canonical
+    verification_level: structure-verified
     verification_targets:
       - file exists
       - event corpus is valid json
@@ -4613,10 +4628,14 @@ examples:
     stack_tags:
       - terminal-python-typer-textual
       - terminal-python-click-blessed
+      - terminal-rust-clap-ratatui
+      - terminal-rust-argh-tui-realm
+      - terminal-go-cobra-bubbletea
+      - terminal-go-urfave-tview
     archetype_tags:
       - terminal-dual-mode
       - cli-tool
-    verification_level: canonical
+    verification_level: structure-verified
     verification_targets:
       - file exists
       - job corpus is valid json
@@ -4686,7 +4705,7 @@ examples:
       - terminal-python-typer-textual
     archetype_tags:
       - terminal-dual-mode
-    verification_level: canonical
+    verification_level: structure-verified
     verification_targets:
       - file exists
       - typer command surface implemented
@@ -4714,7 +4733,7 @@ examples:
       - terminal-python-typer-textual
     archetype_tags:
       - terminal-dual-mode
-    verification_level: canonical
+    verification_level: structure-verified
     verification_targets:
       - file exists
       - shared filtering logic implemented
@@ -4728,7 +4747,7 @@ examples:
       - terminal-python-typer-textual
     archetype_tags:
       - terminal-dual-mode
-    verification_level: canonical
+    verification_level: structure-verified
     verification_targets:
       - file exists
       - fixture loading logic implemented
@@ -4742,7 +4761,7 @@ examples:
       - terminal-python-typer-textual
     archetype_tags:
       - terminal-dual-mode
-    verification_level: canonical
+    verification_level: structure-verified
     verification_targets:
       - file exists
       - taskflow domain models implemented
@@ -4756,7 +4775,7 @@ examples:
       - terminal-python-typer-textual
     archetype_tags:
       - terminal-dual-mode
-    verification_level: canonical
+    verification_level: structure-verified
     verification_targets:
       - file exists
       - stats computation implemented
@@ -4786,7 +4805,7 @@ examples:
     archetype_tags:
       - terminal-dual-mode
       - terminal-tui
-    verification_level: canonical
+    verification_level: structure-verified
     verification_targets:
       - file exists
       - textual app implemented
@@ -4801,7 +4820,7 @@ examples:
     archetype_tags:
       - terminal-dual-mode
       - terminal-tui
-    verification_level: canonical
+    verification_level: structure-verified
     verification_targets:
       - file exists
       - textual widgets implemented
@@ -4815,7 +4834,7 @@ examples:
       - terminal-python-typer-textual
     archetype_tags:
       - terminal-dual-mode
-    verification_level: canonical
+    verification_level: structure-verified
     verification_targets:
       - file exists
       - smoke tests defined
@@ -4829,7 +4848,7 @@ examples:
       - terminal-python-typer-textual
     archetype_tags:
       - terminal-dual-mode
-    verification_level: canonical
+    verification_level: structure-verified
     verification_targets:
       - file exists
       - unit tests defined
@@ -4899,7 +4918,7 @@ examples:
       - terminal-python-click-blessed
     archetype_tags:
       - cli-tool
-    verification_level: canonical
+    verification_level: structure-verified
     verification_targets:
       - file exists
       - click command surface implemented
@@ -4927,7 +4946,7 @@ examples:
       - terminal-python-click-blessed
     archetype_tags:
       - cli-tool
-    verification_level: canonical
+    verification_level: structure-verified
     verification_targets:
       - file exists
       - shared filtering logic implemented
@@ -4941,7 +4960,7 @@ examples:
       - terminal-python-click-blessed
     archetype_tags:
       - cli-tool
-    verification_level: canonical
+    verification_level: structure-verified
     verification_targets:
       - file exists
       - fixture loading logic implemented
@@ -4955,7 +4974,7 @@ examples:
       - terminal-python-click-blessed
     archetype_tags:
       - cli-tool
-    verification_level: canonical
+    verification_level: structure-verified
     verification_targets:
       - file exists
       - taskflow domain models implemented
@@ -4969,7 +4988,7 @@ examples:
       - terminal-python-click-blessed
     archetype_tags:
       - cli-tool
-    verification_level: canonical
+    verification_level: structure-verified
     verification_targets:
       - file exists
       - stats computation implemented
@@ -4997,7 +5016,7 @@ examples:
       - terminal-python-click-blessed
     archetype_tags:
       - cli-tool
-    verification_level: canonical
+    verification_level: structure-verified
     verification_targets:
       - file exists
       - blessed pager implemented
@@ -5011,7 +5030,7 @@ examples:
       - terminal-python-click-blessed
     archetype_tags:
       - cli-tool
-    verification_level: canonical
+    verification_level: structure-verified
     verification_targets:
       - file exists
       - smoke tests defined
@@ -5025,10 +5044,906 @@ examples:
       - terminal-python-click-blessed
     archetype_tags:
       - cli-tool
-    verification_level: canonical
+    verification_level: structure-verified
     verification_targets:
       - file exists
       - unit tests defined
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-clap-ratatui-readme
+    path: examples/canonical-terminal/rust-clap-ratatui/README.md
+    language: markdown
+    stack_tags:
+      - terminal-rust-clap-ratatui
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - example usage documented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-clap-ratatui-cargo
+    path: examples/canonical-terminal/rust-clap-ratatui/Cargo.toml
+    language: toml
+    stack_tags:
+      - terminal-rust-clap-ratatui
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - cargo metadata present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-clap-ratatui-main
+    path: examples/canonical-terminal/rust-clap-ratatui/src/main.rs
+    language: rust
+    stack_tags:
+      - terminal-rust-clap-ratatui
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - clap command surface implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-clap-ratatui-core-mod
+    path: examples/canonical-terminal/rust-clap-ratatui/src/core/mod.rs
+    language: rust
+    stack_tags:
+      - terminal-rust-clap-ratatui
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - core module layout present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-clap-ratatui-core-models
+    path: examples/canonical-terminal/rust-clap-ratatui/src/core/models.rs
+    language: rust
+    stack_tags:
+      - terminal-rust-clap-ratatui
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - domain models implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-clap-ratatui-core-loader
+    path: examples/canonical-terminal/rust-clap-ratatui/src/core/loader.rs
+    language: rust
+    stack_tags:
+      - terminal-rust-clap-ratatui
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - fixture loading implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-clap-ratatui-core-filters
+    path: examples/canonical-terminal/rust-clap-ratatui/src/core/filters.rs
+    language: rust
+    stack_tags:
+      - terminal-rust-clap-ratatui
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - filtering logic implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-clap-ratatui-core-stats
+    path: examples/canonical-terminal/rust-clap-ratatui/src/core/stats.rs
+    language: rust
+    stack_tags:
+      - terminal-rust-clap-ratatui
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - stats computation implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-clap-ratatui-cli-mod
+    path: examples/canonical-terminal/rust-clap-ratatui/src/cli/mod.rs
+    language: rust
+    stack_tags:
+      - terminal-rust-clap-ratatui
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - cli module layout present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-clap-ratatui-cli-commands
+    path: examples/canonical-terminal/rust-clap-ratatui/src/cli/commands.rs
+    language: rust
+    stack_tags:
+      - terminal-rust-clap-ratatui
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - command dispatch implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-clap-ratatui-cli-output
+    path: examples/canonical-terminal/rust-clap-ratatui/src/cli/output.rs
+    language: rust
+    stack_tags:
+      - terminal-rust-clap-ratatui
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - marker output implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-clap-ratatui-tui-mod
+    path: examples/canonical-terminal/rust-clap-ratatui/src/tui/mod.rs
+    language: rust
+    stack_tags:
+      - terminal-rust-clap-ratatui
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - tui module layout present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-clap-ratatui-tui-app
+    path: examples/canonical-terminal/rust-clap-ratatui/src/tui/app.rs
+    language: rust
+    stack_tags:
+      - terminal-rust-clap-ratatui
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - ratatui app implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-clap-ratatui-tui-state
+    path: examples/canonical-terminal/rust-clap-ratatui/src/tui/state.rs
+    language: rust
+    stack_tags:
+      - terminal-rust-clap-ratatui
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - tui state implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-clap-ratatui-tui-ui
+    path: examples/canonical-terminal/rust-clap-ratatui/src/tui/ui.rs
+    language: rust
+    stack_tags:
+      - terminal-rust-clap-ratatui
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - tui rendering implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-clap-ratatui-tests-smoke
+    path: examples/canonical-terminal/rust-clap-ratatui/tests/smoke_cli.rs
+    language: rust
+    stack_tags:
+      - terminal-rust-clap-ratatui
+    archetype_tags:
+      - terminal-dual-mode
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - cargo smoke tests defined
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-argh-tui-realm-readme
+    path: examples/canonical-terminal/rust-argh-tui-realm/README.md
+    language: markdown
+    stack_tags:
+      - terminal-rust-argh-tui-realm
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - example usage documented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-argh-tui-realm-cargo
+    path: examples/canonical-terminal/rust-argh-tui-realm/Cargo.toml
+    language: toml
+    stack_tags:
+      - terminal-rust-argh-tui-realm
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - cargo metadata present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-argh-tui-realm-main
+    path: examples/canonical-terminal/rust-argh-tui-realm/src/main.rs
+    language: rust
+    stack_tags:
+      - terminal-rust-argh-tui-realm
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - argh command surface implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-argh-tui-realm-core-mod
+    path: examples/canonical-terminal/rust-argh-tui-realm/src/core/mod.rs
+    language: rust
+    stack_tags:
+      - terminal-rust-argh-tui-realm
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - core module layout present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-argh-tui-realm-core-models
+    path: examples/canonical-terminal/rust-argh-tui-realm/src/core/models.rs
+    language: rust
+    stack_tags:
+      - terminal-rust-argh-tui-realm
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - domain models implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-argh-tui-realm-core-loader
+    path: examples/canonical-terminal/rust-argh-tui-realm/src/core/loader.rs
+    language: rust
+    stack_tags:
+      - terminal-rust-argh-tui-realm
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - fixture loading implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-argh-tui-realm-core-filters
+    path: examples/canonical-terminal/rust-argh-tui-realm/src/core/filters.rs
+    language: rust
+    stack_tags:
+      - terminal-rust-argh-tui-realm
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - filtering logic implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-argh-tui-realm-core-stats
+    path: examples/canonical-terminal/rust-argh-tui-realm/src/core/stats.rs
+    language: rust
+    stack_tags:
+      - terminal-rust-argh-tui-realm
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - stats computation implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-argh-tui-realm-cli-mod
+    path: examples/canonical-terminal/rust-argh-tui-realm/src/cli/mod.rs
+    language: rust
+    stack_tags:
+      - terminal-rust-argh-tui-realm
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - cli module layout present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-argh-tui-realm-cli-commands
+    path: examples/canonical-terminal/rust-argh-tui-realm/src/cli/commands.rs
+    language: rust
+    stack_tags:
+      - terminal-rust-argh-tui-realm
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - command dispatch implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-argh-tui-realm-cli-output
+    path: examples/canonical-terminal/rust-argh-tui-realm/src/cli/output.rs
+    language: rust
+    stack_tags:
+      - terminal-rust-argh-tui-realm
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - marker output implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-argh-tui-realm-tui-mod
+    path: examples/canonical-terminal/rust-argh-tui-realm/src/tui/mod.rs
+    language: rust
+    stack_tags:
+      - terminal-rust-argh-tui-realm
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - tui module layout present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-argh-tui-realm-tui-app
+    path: examples/canonical-terminal/rust-argh-tui-realm/src/tui/app.rs
+    language: rust
+    stack_tags:
+      - terminal-rust-argh-tui-realm
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - tui app implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-rust-argh-tui-realm-tests-smoke
+    path: examples/canonical-terminal/rust-argh-tui-realm/tests/smoke_cli.rs
+    language: rust
+    stack_tags:
+      - terminal-rust-argh-tui-realm
+    archetype_tags:
+      - terminal-dual-mode
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - cargo smoke tests defined
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-cobra-bubbletea-readme
+    path: examples/canonical-terminal/go-cobra-bubbletea/README.md
+    language: markdown
+    stack_tags:
+      - terminal-go-cobra-bubbletea
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - example usage documented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-cobra-bubbletea-go-mod
+    path: examples/canonical-terminal/go-cobra-bubbletea/go.mod
+    language: go
+    stack_tags:
+      - terminal-go-cobra-bubbletea
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - go module metadata present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-cobra-bubbletea-main
+    path: examples/canonical-terminal/go-cobra-bubbletea/main.go
+    language: go
+    stack_tags:
+      - terminal-go-cobra-bubbletea
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - cobra command surface implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-cobra-bubbletea-cmd-root
+    path: examples/canonical-terminal/go-cobra-bubbletea/cmd/root.go
+    language: go
+    stack_tags:
+      - terminal-go-cobra-bubbletea
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - root command implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-cobra-bubbletea-cmd-list
+    path: examples/canonical-terminal/go-cobra-bubbletea/cmd/list.go
+    language: go
+    stack_tags:
+      - terminal-go-cobra-bubbletea
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - list command implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-cobra-bubbletea-cmd-inspect
+    path: examples/canonical-terminal/go-cobra-bubbletea/cmd/inspect.go
+    language: go
+    stack_tags:
+      - terminal-go-cobra-bubbletea
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - inspect command implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-cobra-bubbletea-cmd-stats
+    path: examples/canonical-terminal/go-cobra-bubbletea/cmd/stats.go
+    language: go
+    stack_tags:
+      - terminal-go-cobra-bubbletea
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - stats command implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-cobra-bubbletea-cmd-watch
+    path: examples/canonical-terminal/go-cobra-bubbletea/cmd/watch.go
+    language: go
+    stack_tags:
+      - terminal-go-cobra-bubbletea
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - watch command implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-cobra-bubbletea-core-models
+    path: examples/canonical-terminal/go-cobra-bubbletea/internal/core/models.go
+    language: go
+    stack_tags:
+      - terminal-go-cobra-bubbletea
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - domain models implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-cobra-bubbletea-core-loader
+    path: examples/canonical-terminal/go-cobra-bubbletea/internal/core/loader.go
+    language: go
+    stack_tags:
+      - terminal-go-cobra-bubbletea
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - fixture loading implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-cobra-bubbletea-core-filters
+    path: examples/canonical-terminal/go-cobra-bubbletea/internal/core/filters.go
+    language: go
+    stack_tags:
+      - terminal-go-cobra-bubbletea
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - filtering logic implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-cobra-bubbletea-core-stats
+    path: examples/canonical-terminal/go-cobra-bubbletea/internal/core/stats.go
+    language: go
+    stack_tags:
+      - terminal-go-cobra-bubbletea
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - stats computation implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-cobra-bubbletea-cli-output
+    path: examples/canonical-terminal/go-cobra-bubbletea/internal/cli/output.go
+    language: go
+    stack_tags:
+      - terminal-go-cobra-bubbletea
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - marker output implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-cobra-bubbletea-tui-messages
+    path: examples/canonical-terminal/go-cobra-bubbletea/internal/tui/messages.go
+    language: go
+    stack_tags:
+      - terminal-go-cobra-bubbletea
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - message definitions present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-cobra-bubbletea-tui-model
+    path: examples/canonical-terminal/go-cobra-bubbletea/internal/tui/model.go
+    language: go
+    stack_tags:
+      - terminal-go-cobra-bubbletea
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - bubbletea model implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-cobra-bubbletea-tui-update
+    path: examples/canonical-terminal/go-cobra-bubbletea/internal/tui/update.go
+    language: go
+    stack_tags:
+      - terminal-go-cobra-bubbletea
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - bubbletea update loop implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-cobra-bubbletea-tui-view
+    path: examples/canonical-terminal/go-cobra-bubbletea/internal/tui/view.go
+    language: go
+    stack_tags:
+      - terminal-go-cobra-bubbletea
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - bubbletea view rendering implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-cobra-bubbletea-tui-run
+    path: examples/canonical-terminal/go-cobra-bubbletea/internal/tui/run.go
+    language: go
+    stack_tags:
+      - terminal-go-cobra-bubbletea
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - bubbletea launcher implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-cobra-bubbletea-tests-smoke
+    path: examples/canonical-terminal/go-cobra-bubbletea/tests/smoke_test.go
+    language: go
+    stack_tags:
+      - terminal-go-cobra-bubbletea
+    archetype_tags:
+      - terminal-dual-mode
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - go smoke tests defined
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-urfave-tview-readme
+    path: examples/canonical-terminal/go-urfave-tview/README.md
+    language: markdown
+    stack_tags:
+      - terminal-go-urfave-tview
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - example usage documented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-urfave-tview-go-mod
+    path: examples/canonical-terminal/go-urfave-tview/go.mod
+    language: go
+    stack_tags:
+      - terminal-go-urfave-tview
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - go module metadata present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-urfave-tview-main
+    path: examples/canonical-terminal/go-urfave-tview/main.go
+    language: go
+    stack_tags:
+      - terminal-go-urfave-tview
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - urfave command surface implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-urfave-tview-cli-app
+    path: examples/canonical-terminal/go-urfave-tview/internal/cli/app.go
+    language: go
+    stack_tags:
+      - terminal-go-urfave-tview
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - urfave app wiring implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-urfave-tview-cli-output
+    path: examples/canonical-terminal/go-urfave-tview/internal/cli/output.go
+    language: go
+    stack_tags:
+      - terminal-go-urfave-tview
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - marker output implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-urfave-tview-core-models
+    path: examples/canonical-terminal/go-urfave-tview/internal/core/models.go
+    language: go
+    stack_tags:
+      - terminal-go-urfave-tview
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - domain models implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-urfave-tview-core-loader
+    path: examples/canonical-terminal/go-urfave-tview/internal/core/loader.go
+    language: go
+    stack_tags:
+      - terminal-go-urfave-tview
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - fixture loading implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-urfave-tview-core-filters
+    path: examples/canonical-terminal/go-urfave-tview/internal/core/filters.go
+    language: go
+    stack_tags:
+      - terminal-go-urfave-tview
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - filtering logic implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-urfave-tview-core-stats
+    path: examples/canonical-terminal/go-urfave-tview/internal/core/stats.go
+    language: go
+    stack_tags:
+      - terminal-go-urfave-tview
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - stats computation implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-urfave-tview-tui-app
+    path: examples/canonical-terminal/go-urfave-tview/internal/tui/app.go
+    language: go
+    stack_tags:
+      - terminal-go-urfave-tview
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - tview dashboard implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-go-urfave-tview-tests-smoke
+    path: examples/canonical-terminal/go-urfave-tview/tests/smoke_test.go
+    language: go
+    stack_tags:
+      - terminal-go-urfave-tview
+    archetype_tags:
+      - terminal-dual-mode
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - go smoke tests defined
     docker_supported: false
     scenario_harness: ""
     confidence: medium
