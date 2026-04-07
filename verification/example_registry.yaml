@@ -6048,6 +6048,155 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: medium
+  - name: terminal-typescript-commander-ink-cli-output
+    path: examples/canonical-terminal/typescript-commander-ink/src/cli/output.ts
+    language: typescript
+    stack_tags:
+      - terminal-typescript-commander-ink
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - cli output formatting implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-typescript-commander-ink-core-filters
+    path: examples/canonical-terminal/typescript-commander-ink/src/core/filters.ts
+    language: typescript
+    stack_tags:
+      - terminal-typescript-commander-ink
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - shared filtering logic implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-typescript-commander-ink-core-models
+    path: examples/canonical-terminal/typescript-commander-ink/src/core/models.ts
+    language: typescript
+    stack_tags:
+      - terminal-typescript-commander-ink
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - taskflow domain models implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-typescript-commander-ink-core-stats
+    path: examples/canonical-terminal/typescript-commander-ink/src/core/stats.ts
+    language: typescript
+    stack_tags:
+      - terminal-typescript-commander-ink
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - stats computation implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-typescript-commander-ink-tui-job-detail
+    path: examples/canonical-terminal/typescript-commander-ink/src/tui/JobDetail.tsx
+    language: tsx
+    stack_tags:
+      - terminal-typescript-commander-ink
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - ink detail pane implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-typescript-commander-ink-tui-job-table
+    path: examples/canonical-terminal/typescript-commander-ink/src/tui/JobTable.tsx
+    language: tsx
+    stack_tags:
+      - terminal-typescript-commander-ink
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - ink job table implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-typescript-commander-ink-tui-stats-bar
+    path: examples/canonical-terminal/typescript-commander-ink/src/tui/StatsBar.tsx
+    language: tsx
+    stack_tags:
+      - terminal-typescript-commander-ink
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - ink stats bar implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-typescript-commander-ink-tui-use-jobs
+    path: examples/canonical-terminal/typescript-commander-ink/src/tui/useJobs.ts
+    language: typescript
+    stack_tags:
+      - terminal-typescript-commander-ink
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - dashboard job loading hook implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-typescript-commander-ink-tests-unit
+    path: examples/canonical-terminal/typescript-commander-ink/tests/unit/core.unit.test.ts
+    language: typescript
+    stack_tags:
+      - terminal-typescript-commander-ink
+    archetype_tags:
+      - terminal-dual-mode
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - vitest unit tests defined
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-typescript-commander-ink-tsconfig
+    path: examples/canonical-terminal/typescript-commander-ink/tsconfig.json
+    language: json
+    stack_tags:
+      - terminal-typescript-commander-ink
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - typescript compiler config present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
   - name: terminal-typescript-yargs-blessed-readme
     path: examples/canonical-terminal/typescript-yargs-blessed/README.md
     language: markdown
@@ -6134,6 +6283,95 @@ examples:
     verification_targets:
       - file exists
       - vitest smoke tests defined
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-typescript-yargs-blessed-cli-output
+    path: examples/canonical-terminal/typescript-yargs-blessed/src/cli/output.ts
+    language: typescript
+    stack_tags:
+      - terminal-typescript-yargs-blessed
+    archetype_tags:
+      - cli-tool
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - cli output formatting implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-typescript-yargs-blessed-core-filters
+    path: examples/canonical-terminal/typescript-yargs-blessed/src/core/filters.ts
+    language: typescript
+    stack_tags:
+      - terminal-typescript-yargs-blessed
+    archetype_tags:
+      - cli-tool
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - shared filtering logic implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-typescript-yargs-blessed-core-models
+    path: examples/canonical-terminal/typescript-yargs-blessed/src/core/models.ts
+    language: typescript
+    stack_tags:
+      - terminal-typescript-yargs-blessed
+    archetype_tags:
+      - cli-tool
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - taskflow domain models implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-typescript-yargs-blessed-core-stats
+    path: examples/canonical-terminal/typescript-yargs-blessed/src/core/stats.ts
+    language: typescript
+    stack_tags:
+      - terminal-typescript-yargs-blessed
+    archetype_tags:
+      - cli-tool
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - stats computation implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-typescript-yargs-blessed-tests-unit
+    path: examples/canonical-terminal/typescript-yargs-blessed/tests/unit/core.unit.test.ts
+    language: typescript
+    stack_tags:
+      - terminal-typescript-yargs-blessed
+    archetype_tags:
+      - cli-tool
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - vitest unit tests defined
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-typescript-yargs-blessed-tsconfig
+    path: examples/canonical-terminal/typescript-yargs-blessed/tsconfig.json
+    language: json
+    stack_tags:
+      - terminal-typescript-yargs-blessed
+    archetype_tags:
+      - cli-tool
+      - terminal-tui
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - typescript compiler config present
     docker_supported: false
     scenario_harness: ""
     confidence: medium
@@ -6226,6 +6464,260 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: medium
+  - name: terminal-java-picocli-lanterna-cli-inspect
+    path: examples/canonical-terminal/java-picocli-lanterna/src/main/java/dev/agentcontext/taskflow/cli/InspectCommand.java
+    language: java
+    stack_tags:
+      - terminal-java-picocli-lanterna
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - inspect subcommand implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-picocli-lanterna-cli-list
+    path: examples/canonical-terminal/java-picocli-lanterna/src/main/java/dev/agentcontext/taskflow/cli/ListCommand.java
+    language: java
+    stack_tags:
+      - terminal-java-picocli-lanterna
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - list subcommand implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-picocli-lanterna-cli-output
+    path: examples/canonical-terminal/java-picocli-lanterna/src/main/java/dev/agentcontext/taskflow/cli/OutputFormatter.java
+    language: java
+    stack_tags:
+      - terminal-java-picocli-lanterna
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - cli output formatting implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-picocli-lanterna-cli-stats
+    path: examples/canonical-terminal/java-picocli-lanterna/src/main/java/dev/agentcontext/taskflow/cli/StatsCommand.java
+    language: java
+    stack_tags:
+      - terminal-java-picocli-lanterna
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - stats subcommand implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-picocli-lanterna-cli-watch
+    path: examples/canonical-terminal/java-picocli-lanterna/src/main/java/dev/agentcontext/taskflow/cli/WatchCommand.java
+    language: java
+    stack_tags:
+      - terminal-java-picocli-lanterna
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - watch subcommand implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-picocli-lanterna-core-config
+    path: examples/canonical-terminal/java-picocli-lanterna/src/main/java/dev/agentcontext/taskflow/core/Config.java
+    language: java
+    stack_tags:
+      - terminal-java-picocli-lanterna
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - fixture configuration implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-picocli-lanterna-core-event
+    path: examples/canonical-terminal/java-picocli-lanterna/src/main/java/dev/agentcontext/taskflow/core/Event.java
+    language: java
+    stack_tags:
+      - terminal-java-picocli-lanterna
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - event model implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-picocli-lanterna-core-fixture-exception
+    path: examples/canonical-terminal/java-picocli-lanterna/src/main/java/dev/agentcontext/taskflow/core/FixtureException.java
+    language: java
+    stack_tags:
+      - terminal-java-picocli-lanterna
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - fixture exception implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-picocli-lanterna-core-job
+    path: examples/canonical-terminal/java-picocli-lanterna/src/main/java/dev/agentcontext/taskflow/core/Job.java
+    language: java
+    stack_tags:
+      - terminal-java-picocli-lanterna
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - taskflow job model implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-picocli-lanterna-core-filter
+    path: examples/canonical-terminal/java-picocli-lanterna/src/main/java/dev/agentcontext/taskflow/core/JobFilter.java
+    language: java
+    stack_tags:
+      - terminal-java-picocli-lanterna
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - shared filtering logic implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-picocli-lanterna-core-status
+    path: examples/canonical-terminal/java-picocli-lanterna/src/main/java/dev/agentcontext/taskflow/core/JobStatus.java
+    language: java
+    stack_tags:
+      - terminal-java-picocli-lanterna
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - job status enum implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-picocli-lanterna-core-stats-model
+    path: examples/canonical-terminal/java-picocli-lanterna/src/main/java/dev/agentcontext/taskflow/core/Stats.java
+    language: java
+    stack_tags:
+      - terminal-java-picocli-lanterna
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - stats model implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-picocli-lanterna-core-stats-computer
+    path: examples/canonical-terminal/java-picocli-lanterna/src/main/java/dev/agentcontext/taskflow/core/StatsComputer.java
+    language: java
+    stack_tags:
+      - terminal-java-picocli-lanterna
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - stats computation implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-picocli-lanterna-tui-job-detail
+    path: examples/canonical-terminal/java-picocli-lanterna/src/main/java/dev/agentcontext/taskflow/tui/JobDetailComponent.java
+    language: java
+    stack_tags:
+      - terminal-java-picocli-lanterna
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - lanterna detail pane implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-picocli-lanterna-tui-job-list
+    path: examples/canonical-terminal/java-picocli-lanterna/src/main/java/dev/agentcontext/taskflow/tui/JobListComponent.java
+    language: java
+    stack_tags:
+      - terminal-java-picocli-lanterna
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - lanterna job list implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-picocli-lanterna-tui-app
+    path: examples/canonical-terminal/java-picocli-lanterna/src/main/java/dev/agentcontext/taskflow/tui/TaskflowApp.java
+    language: java
+    stack_tags:
+      - terminal-java-picocli-lanterna
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - lanterna app bootstrap implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-picocli-lanterna-tests-unit
+    path: examples/canonical-terminal/java-picocli-lanterna/src/test/java/dev/agentcontext/taskflow/CoreTest.java
+    language: java
+    stack_tags:
+      - terminal-java-picocli-lanterna
+    archetype_tags:
+      - terminal-dual-mode
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - junit unit tests defined
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
   - name: terminal-java-jcommander-jline-readme
     path: examples/canonical-terminal/java-jcommander-jline/README.md
     language: markdown
@@ -6312,6 +6804,185 @@ examples:
     verification_targets:
       - file exists
       - junit smoke tests defined
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-jcommander-jline-cli-output
+    path: examples/canonical-terminal/java-jcommander-jline/src/main/java/dev/agentcontext/taskflow/cli/OutputFormatter.java
+    language: java
+    stack_tags:
+      - terminal-java-jcommander-jline
+    archetype_tags:
+      - cli-tool
+      - interactive-shell
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - cli output formatting implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-jcommander-jline-cli-options
+    path: examples/canonical-terminal/java-jcommander-jline/src/main/java/dev/agentcontext/taskflow/cli/TaskflowOptions.java
+    language: java
+    stack_tags:
+      - terminal-java-jcommander-jline
+    archetype_tags:
+      - cli-tool
+      - interactive-shell
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - jcommander option bindings implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-jcommander-jline-core-config
+    path: examples/canonical-terminal/java-jcommander-jline/src/main/java/dev/agentcontext/taskflow/core/Config.java
+    language: java
+    stack_tags:
+      - terminal-java-jcommander-jline
+    archetype_tags:
+      - cli-tool
+      - interactive-shell
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - fixture configuration implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-jcommander-jline-core-event
+    path: examples/canonical-terminal/java-jcommander-jline/src/main/java/dev/agentcontext/taskflow/core/Event.java
+    language: java
+    stack_tags:
+      - terminal-java-jcommander-jline
+    archetype_tags:
+      - cli-tool
+      - interactive-shell
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - event model implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-jcommander-jline-core-fixture-exception
+    path: examples/canonical-terminal/java-jcommander-jline/src/main/java/dev/agentcontext/taskflow/core/FixtureException.java
+    language: java
+    stack_tags:
+      - terminal-java-jcommander-jline
+    archetype_tags:
+      - cli-tool
+      - interactive-shell
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - fixture exception implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-jcommander-jline-core-job
+    path: examples/canonical-terminal/java-jcommander-jline/src/main/java/dev/agentcontext/taskflow/core/Job.java
+    language: java
+    stack_tags:
+      - terminal-java-jcommander-jline
+    archetype_tags:
+      - cli-tool
+      - interactive-shell
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - taskflow job model implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-jcommander-jline-core-filter
+    path: examples/canonical-terminal/java-jcommander-jline/src/main/java/dev/agentcontext/taskflow/core/JobFilter.java
+    language: java
+    stack_tags:
+      - terminal-java-jcommander-jline
+    archetype_tags:
+      - cli-tool
+      - interactive-shell
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - shared filtering logic implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-jcommander-jline-core-status
+    path: examples/canonical-terminal/java-jcommander-jline/src/main/java/dev/agentcontext/taskflow/core/JobStatus.java
+    language: java
+    stack_tags:
+      - terminal-java-jcommander-jline
+    archetype_tags:
+      - cli-tool
+      - interactive-shell
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - job status enum implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-jcommander-jline-core-stats-model
+    path: examples/canonical-terminal/java-jcommander-jline/src/main/java/dev/agentcontext/taskflow/core/Stats.java
+    language: java
+    stack_tags:
+      - terminal-java-jcommander-jline
+    archetype_tags:
+      - cli-tool
+      - interactive-shell
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - stats model implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-jcommander-jline-core-stats-computer
+    path: examples/canonical-terminal/java-jcommander-jline/src/main/java/dev/agentcontext/taskflow/core/StatsComputer.java
+    language: java
+    stack_tags:
+      - terminal-java-jcommander-jline
+    archetype_tags:
+      - cli-tool
+      - interactive-shell
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - stats computation implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-jcommander-jline-repl-completer
+    path: examples/canonical-terminal/java-jcommander-jline/src/main/java/dev/agentcontext/taskflow/repl/TaskflowCompleter.java
+    language: java
+    stack_tags:
+      - terminal-java-jcommander-jline
+    archetype_tags:
+      - cli-tool
+      - interactive-shell
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - repl completion implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-jcommander-jline-tests-unit
+    path: examples/canonical-terminal/java-jcommander-jline/src/test/java/dev/agentcontext/taskflow/CoreTest.java
+    language: java
+    stack_tags:
+      - terminal-java-jcommander-jline
+    archetype_tags:
+      - cli-tool
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - junit unit tests defined
     docker_supported: false
     scenario_harness: ""
     confidence: medium
