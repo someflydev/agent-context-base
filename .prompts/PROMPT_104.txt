@@ -74,6 +74,9 @@ Read these before starting:
  12. examples/canonical-terminal/python-typer-textual/README.md  (domain reference)
 
 Verify PROMPT_100–103 artifacts exist. Confirm fixtures/ has all 4 files.
+Any new example directory added by this prompt must also be registered in
+`examples/catalog.json` and `verification/example_registry.yaml` before final
+verification.
 Do NOT begin implementation until you have read all of the above.
 
 ================================================================================
@@ -473,10 +476,18 @@ Interactive mode (watch without --no-repl):
   - JCommander+JLine: shell-style REPL with readline UX (no panels, just a prompt)
 
 ================================================================================
-PART 5: UPDATE examples/canonical-terminal/README.md
+PART 5: UPDATE shared example metadata and
+examples/canonical-terminal/README.md
 ================================================================================
 
-Add TypeScript and Java sections:
+Update all of these files together:
+  - examples/canonical-terminal/README.md
+  - examples/catalog.json
+  - verification/example_registry.yaml
+
+Register every new TypeScript and Java example directory in both metadata files.
+
+In `examples/canonical-terminal/README.md`, add TypeScript and Java sections:
 
   ### TypeScript
   | Example | Stack | Mode |
@@ -490,13 +501,16 @@ Add TypeScript and Java sections:
   | java-picocli-lanterna/ | picocli + Lanterna | Dual-mode |
   | java-jcommander-jline/ | JCommander + JLine | CLI + REPL shell |
 
+While touching the shared README, broaden the run/smoke guidance so it reads as
+cross-language example validation rather than Python-only pytest instructions.
+
 ================================================================================
 VERIFICATION
 ================================================================================
 
 Run:
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 Also run directly:
   cd examples/canonical-terminal/typescript-commander-ink && npm install && npm test
@@ -522,8 +536,10 @@ COMMIT DISCIPLINE
   4. [PROMPT_104] add Java secondary: JCommander + JLine TaskFlow Monitor
      Stage: examples/canonical-terminal/java-jcommander-jline/
 
-  5. [PROMPT_104] update canonical-terminal README with TS + Java examples
+  5. [PROMPT_104] update canonical-terminal metadata and README for TS + Java
      Stage: examples/canonical-terminal/README.md
+     Stage: examples/catalog.json
+     Stage: verification/example_registry.yaml
 
 ================================================================================
 SCOPE BOUNDARIES
@@ -532,7 +548,7 @@ SCOPE BOUNDARIES
 DO:
   - Create all 4 examples as complete, working, smoke-tested implementations
   - Write smoke tests that pass without TTY
-  - Update README.md
+  - Update README.md plus required example metadata registrations
 
 DO NOT:
   - Begin Ruby or Elixir examples (PROMPT_105)
@@ -555,7 +571,10 @@ Done when:
   - typescript-yargs-blessed/ working, npm test passes
   - java-picocli-lanterna/ working, mvn test passes
   - java-jcommander-jline/ working, mvn test passes
-  - README.md updated with TS + Java sections
-  - validate_context.py and run_verification.py --tier fast pass
+  - README.md updated with TS + Java sections and cross-language smoke guidance
+  - examples/catalog.json and verification/example_registry.yaml updated for
+    every new example directory
+  - python3 scripts/validate_context.py and python3
+    scripts/run_verification.py --tier fast pass
 
 PROMPT_104 complete. PROMPT_105 adds Ruby and Elixir canonical examples.
