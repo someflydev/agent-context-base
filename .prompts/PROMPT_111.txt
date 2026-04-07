@@ -44,6 +44,7 @@ Commit hygiene for this prompt:
   - Use Tim Pope style multi-line commit messages: subject line, blank line,
     then a short body explaining why the grouped change exists and noting any
     verification gaps.
+  - Always use a heredoc with `EOF` when writing multi-line commit messages.
   - Wrap commit body lines at 80 characters max.
   - Do not use CLI hacks that can leave literal `\n` sequences in commit
     messages; write real multi-line commit text.
@@ -51,7 +52,8 @@ Commit hygiene for this prompt:
   - Use `git add -p` only when you need to separate unrelated hunks in the same
     file.
   - Never mix work from different prompts in one commit.
-  - Keep commits logically grouped and small enough to review.
+  - Keep commits logically grouped into coherent chunks that are small enough
+    to review.
 
 ================================================================================
 BOOT SEQUENCE
@@ -63,7 +65,10 @@ Read these before starting:
   2. docs/context-boot-sequence.md
   3. python3 scripts/work.py resume                          (run; study output)
   4. memory/INDEX.md
-  5. memory/summaries/PROMPT_100_through_107_phase1_summary.md   (Phase 1 summary)
+  5. If present, read memory/summaries/PROMPT_100_through_107_phase1_summary.md
+     first as the Phase 1 summary. If absent, use memory/INDEX.md,
+     docs/terminal-validation-contract.md, and
+     examples/canonical-terminal/CATALOG.md as the Phase 1 baseline.
   6. examples/canonical-terminal/CATALOG.md                 (all 14 examples)
   7. examples/canonical-terminal/DECISION_GUIDE.md
   8. context/doctrine/terminal-ux-first-class.md            (should now have Rule 11)
@@ -73,11 +78,11 @@ Read these before starting:
  12. docs/ARCHITECTURE_MAP.md
 
 Run these FIRST before any implementation:
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
-  python -m unittest discover -s verification/terminal -p "test_*.py" -v
-  python scripts/run_terminal_comparison.py
-  python scripts/run_terminal_tests.py --all              (if exists)
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
+  python3 -m unittest discover -s verification/terminal -p "test_*.py" -v
+  python3 scripts/run_terminal_comparison.py
+  python3 scripts/run_terminal_tests.py --all             (if exists)
 
 Record all failures and gaps. Fix them all in this session.
 
@@ -235,7 +240,7 @@ Verify run_terminal_tests.py exists.
 Verify run_terminal_comparison.py exists.
 
 Run all verification terminal tests:
-  python -m unittest discover -s verification/terminal -p "test_*.py" -v
+  python3 -m unittest discover -s verification/terminal -p "test_*.py" -v
 
 Fix any failures.
 
@@ -426,14 +431,17 @@ VERIFICATION — FINAL
 
 Final gate (all must pass):
 
-  python -m unittest discover -s verification/unit -p "test_*.py" -v
-  python -m unittest discover -s verification/terminal -p "test_*.py" -v
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  Before final validation, clean temporary build/test artifacts such as `.venv`,
+  `dist/`, `node_modules`, and `*.egg-info` if they were generated during the
+  session.
+  python3 -m unittest discover -s verification/unit -p "test_*.py" -v
+  python3 -m unittest discover -s verification/terminal -p "test_*.py" -v
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 Also verify:
-  python scripts/run_terminal_comparison.py   → no mismatches among available examples
-  python scripts/work.py resume               → no errors; briefing complete
+  python3 scripts/run_terminal_comparison.py  → no mismatches among available examples
+  python3 scripts/work.py resume              → no errors; briefing complete
 
 ================================================================================
 COMMIT DISCIPLINE

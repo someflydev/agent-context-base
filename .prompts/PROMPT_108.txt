@@ -39,6 +39,7 @@ Commit hygiene for this prompt:
   - Use Tim Pope style multi-line commit messages: subject line, blank line,
     then a short body explaining why the grouped change exists and noting any
     verification gaps.
+  - Always use a heredoc with `EOF` when writing multi-line commit messages.
   - Wrap commit body lines at 80 characters max.
   - Do not use CLI hacks that can leave literal `\n` sequences in commit
     messages; write real multi-line commit text.
@@ -46,7 +47,8 @@ Commit hygiene for this prompt:
   - Use `git add -p` only when you need to separate unrelated hunks in the same
     file.
   - Never mix work from different prompts in one commit.
-  - Keep commits logically grouped and small enough to review.
+  - Keep commits logically grouped into coherent chunks that are small enough
+    to review.
 
 ================================================================================
 BOOT SEQUENCE
@@ -58,7 +60,10 @@ Read these before starting:
   2. docs/context-boot-sequence.md
   3. python3 scripts/work.py resume                          (run; study output)
   4. memory/INDEX.md
-  5. memory/summaries/PROMPT_100_through_107_phase1_summary.md  (READ carefully)
+  5. If present, read memory/summaries/PROMPT_100_through_107_phase1_summary.md
+     carefully first. If absent, use memory/INDEX.md,
+     docs/terminal-validation-contract.md, and
+     examples/canonical-terminal/CATALOG.md as the Phase 1 baseline.
   6. docs/terminal-validation-contract.md                   (PROMPT_101 — your baseline)
   7. context/doctrine/terminal-ux-first-class.md            (Rule 6: PTY validation)
   8. examples/canonical-terminal/CATALOG.md                 (what examples exist)
@@ -148,7 +153,7 @@ examples without needing to know each language's native test runner.
 --- verification/terminal/runner.py ---
 
   CLI entry point:
-    python -m verification.terminal.runner [--example NAME] [--all] [--parallel]
+    python3 -m verification.terminal.runner [--example NAME] [--all] [--parallel]
 
   Output: per-example pass/fail, duration, any assertion errors.
   Summary: N passed, M failed, K skipped (not installed).
@@ -173,12 +178,12 @@ examples without needing to know each language's native test runner.
 --- Integration with run_verification.py ---
 
 Inspect scripts/run_verification.py. Add a "--tier terminal" option that runs:
-  python -m verification.terminal.runner --all
+  python3 -m verification.terminal.runner --all
 
 If adding a new tier is complex, instead add a note in run_verification.py
 and create a standalone script: scripts/run_terminal_tests.py
 
-  Usage: python scripts/run_terminal_tests.py [--example NAME] [--all]
+  Usage: python3 scripts/run_terminal_tests.py [--example NAME] [--all]
 
 ================================================================================
 PART 2: TRANSCRIPT NORMALIZATION
@@ -238,16 +243,16 @@ Create: verification/terminal/README.md
   ## Usage
   ```bash
   # Run all available smoke tests
-  python scripts/run_terminal_tests.py --all
+  python3 scripts/run_terminal_tests.py --all
 
   # Run specific example
-  python scripts/run_terminal_tests.py --example python-typer-textual
+  python3 scripts/run_terminal_tests.py --example python-typer-textual
 
   # Update golden transcripts
-  python scripts/run_terminal_tests.py --all --update-goldens
+  python3 scripts/run_terminal_tests.py --all --update-goldens
 
   # Unittest for harness configuration
-  python -m unittest verification.terminal.test_harness -v
+  python3 -m unittest verification.terminal.test_harness -v
   ```
 
   ## Golden Strategy
@@ -360,13 +365,16 @@ VERIFICATION
 ================================================================================
 
 Run:
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
-  python -m unittest verification.terminal.test_harness -v
-  python -m unittest verification.terminal.test_pty_harness -v
+  Before final validation, clean temporary build/test artifacts such as `.venv`,
+  `dist/`, `node_modules`, and `*.egg-info` if they were generated during the
+  session.
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
+  python3 -m unittest verification.terminal.test_harness -v
+  python3 -m unittest verification.terminal.test_pty_harness -v
 
 If run_terminal_tests.py exists:
-  python scripts/run_terminal_tests.py --all
+  python3 scripts/run_terminal_tests.py --all
 
 All must pass (or skip gracefully for unavailable examples/dependencies).
 

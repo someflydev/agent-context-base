@@ -40,6 +40,7 @@ Commit hygiene for this prompt:
   - Use Tim Pope style multi-line commit messages: subject line, blank line,
     then a short body explaining why the grouped change exists and noting any
     verification gaps.
+  - Always use a heredoc with `EOF` when writing multi-line commit messages.
   - Wrap commit body lines at 80 characters max.
   - Do not use CLI hacks that can leave literal `\n` sequences in commit
     messages; write real multi-line commit text.
@@ -47,7 +48,8 @@ Commit hygiene for this prompt:
   - Use `git add -p` only when you need to separate unrelated hunks in the same
     file.
   - Never mix work from different prompts in one commit.
-  - Keep commits logically grouped and small enough to review.
+  - Keep commits logically grouped into coherent chunks that are small enough
+    to review.
 
 ================================================================================
 BOOT SEQUENCE
@@ -59,7 +61,10 @@ Read these before starting:
   2. docs/context-boot-sequence.md
   3. python3 scripts/work.py resume                          (run; study output)
   4. memory/INDEX.md
-  5. memory/summaries/PROMPT_100_through_107_phase1_summary.md
+  5. If present, read memory/summaries/PROMPT_100_through_107_phase1_summary.md
+     first. If absent, use memory/INDEX.md,
+     docs/terminal-validation-contract.md, and
+     examples/canonical-terminal/CATALOG.md as the Phase 1 baseline.
   6. examples/canonical-terminal/DECISION_GUIDE.md          (PROMPT_106)
   7. examples/canonical-terminal/CATALOG.md                 (PROMPT_106)
   8. verification/terminal/harness.py                       (PROMPT_108)
@@ -275,7 +280,7 @@ Create: verification/terminal/test_comparison.py
 Create: scripts/run_terminal_comparison.py
 
   CLI entry point:
-    python scripts/run_terminal_comparison.py
+    python3 scripts/run_terminal_comparison.py
     Options: --verbose, --example NAME (compare subset)
 
   Output:
@@ -301,7 +306,7 @@ Add a short cross-language consistency note at the end of DECISION_GUIDE.md:
   - The same stats total (stats --output json → total: 20)
   - The same job detail (inspect job-001 → id: "job-001")
 
-  Verify with: python scripts/run_terminal_comparison.py
+  Verify with: python3 scripts/run_terminal_comparison.py
 
   Inconsistencies indicate a domain implementation error in a specific example.
 
@@ -317,7 +322,7 @@ Add one rule at the end (Rule 11):
   When multiple language implementations of the same terminal domain exist
   in canonical-terminal/, they must be behaviorally consistent:
   - Same command + same fixtures → same output structure
-  - Verify with: python scripts/run_terminal_comparison.py
+  - Verify with: python3 scripts/run_terminal_comparison.py
   - A mismatch indicates a domain implementation error, not a language difference.
 
 Update the doctrine's rule count reference if the file mentions "10 rules."
@@ -348,12 +353,15 @@ VERIFICATION
 ================================================================================
 
 Run:
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
-  python -m unittest verification.terminal.test_comparison -v
+  Before final validation, clean temporary build/test artifacts such as `.venv`,
+  `dist/`, `node_modules`, and `*.egg-info` if they were generated during the
+  session.
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
+  python3 -m unittest verification.terminal.test_comparison -v
 
 Also run comparison harness:
-  python scripts/run_terminal_comparison.py
+  python3 scripts/run_terminal_comparison.py
 
 Check manually:
   - docs/terminal-web-parity.md exists (all sections complete)

@@ -37,8 +37,11 @@ Read [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md) first. Thi
 - When starting a medium or larger session, optionally write a startup trace with `work.py startup-trace write` to record declared context loads for later audit.
 - Validation is mandatory before claiming completion unless the operator explicitly waives it.
 - Use `blocked`, `incomplete`, and `done` precisely.
-- For Tim Pope style multi-line commit messages, write real line breaks in the
-  commit body and never include literal `\n` sequences.
+- For Tim Pope style multi-line commit messages, always use a heredoc with
+  `EOF` so the commit body contains real line breaks, and never include literal
+  `\n` sequences.
+- Before committing, group changes into coherent chunks so each commit is a
+  single logical unit with a focused Tim Pope style message.
 - Use `python3 scripts/work.py checkpoint` at natural boundaries.
 - Use `python3 scripts/work.py init-project` to initialize the operator console for a project. Use `work.py next` before starting a fresh session to check queue state and quota readiness.
 - For session-scoped planning and execution tracking, use markdown files in
