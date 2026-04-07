@@ -4551,6 +4551,10 @@ examples:
       - terminal-rust-argh-tui-realm
       - terminal-go-cobra-bubbletea
       - terminal-go-urfave-tview
+      - terminal-typescript-commander-ink
+      - terminal-typescript-yargs-blessed
+      - terminal-java-picocli-lanterna
+      - terminal-java-jcommander-jline
     archetype_tags:
       - terminal-dual-mode
       - terminal-tui
@@ -4572,6 +4576,10 @@ examples:
       - terminal-rust-argh-tui-realm
       - terminal-go-cobra-bubbletea
       - terminal-go-urfave-tview
+      - terminal-typescript-commander-ink
+      - terminal-typescript-yargs-blessed
+      - terminal-java-picocli-lanterna
+      - terminal-java-jcommander-jline
     archetype_tags:
       - terminal-dual-mode
       - cli-tool
@@ -4592,6 +4600,10 @@ examples:
       - terminal-rust-argh-tui-realm
       - terminal-go-cobra-bubbletea
       - terminal-go-urfave-tview
+      - terminal-typescript-commander-ink
+      - terminal-typescript-yargs-blessed
+      - terminal-java-picocli-lanterna
+      - terminal-java-jcommander-jline
     archetype_tags:
       - terminal-dual-mode
       - cli-tool
@@ -5944,6 +5956,362 @@ examples:
     verification_targets:
       - file exists
       - go smoke tests defined
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-typescript-commander-ink-readme
+    path: examples/canonical-terminal/typescript-commander-ink/README.md
+    language: markdown
+    stack_tags:
+      - terminal-typescript-commander-ink
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - example usage documented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-typescript-commander-ink-package
+    path: examples/canonical-terminal/typescript-commander-ink/package.json
+    language: json
+    stack_tags:
+      - terminal-typescript-commander-ink
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - package metadata present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-typescript-commander-ink-cli-main
+    path: examples/canonical-terminal/typescript-commander-ink/src/cli/index.ts
+    language: typescript
+    stack_tags:
+      - terminal-typescript-commander-ink
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - commander command surface implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-typescript-commander-ink-core-loader
+    path: examples/canonical-terminal/typescript-commander-ink/src/core/loader.ts
+    language: typescript
+    stack_tags:
+      - terminal-typescript-commander-ink
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - fixture loading implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-typescript-commander-ink-tui-app
+    path: examples/canonical-terminal/typescript-commander-ink/src/tui/App.tsx
+    language: tsx
+    stack_tags:
+      - terminal-typescript-commander-ink
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - ink app implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-typescript-commander-ink-tests-smoke
+    path: examples/canonical-terminal/typescript-commander-ink/tests/smoke/cli.smoke.test.ts
+    language: typescript
+    stack_tags:
+      - terminal-typescript-commander-ink
+    archetype_tags:
+      - terminal-dual-mode
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - vitest smoke tests defined
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-typescript-yargs-blessed-readme
+    path: examples/canonical-terminal/typescript-yargs-blessed/README.md
+    language: markdown
+    stack_tags:
+      - terminal-typescript-yargs-blessed
+    archetype_tags:
+      - cli-tool
+      - terminal-tui
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - example usage documented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-typescript-yargs-blessed-package
+    path: examples/canonical-terminal/typescript-yargs-blessed/package.json
+    language: json
+    stack_tags:
+      - terminal-typescript-yargs-blessed
+    archetype_tags:
+      - cli-tool
+      - terminal-tui
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - package metadata present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-typescript-yargs-blessed-cli-main
+    path: examples/canonical-terminal/typescript-yargs-blessed/src/cli/index.ts
+    language: typescript
+    stack_tags:
+      - terminal-typescript-yargs-blessed
+    archetype_tags:
+      - cli-tool
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - yargs command surface implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-typescript-yargs-blessed-core-loader
+    path: examples/canonical-terminal/typescript-yargs-blessed/src/core/loader.ts
+    language: typescript
+    stack_tags:
+      - terminal-typescript-yargs-blessed
+    archetype_tags:
+      - cli-tool
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - fixture loading implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-typescript-yargs-blessed-tui-app
+    path: examples/canonical-terminal/typescript-yargs-blessed/src/tui/app.ts
+    language: typescript
+    stack_tags:
+      - terminal-typescript-yargs-blessed
+    archetype_tags:
+      - cli-tool
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - blessed app implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-typescript-yargs-blessed-tests-smoke
+    path: examples/canonical-terminal/typescript-yargs-blessed/tests/smoke/cli.smoke.test.ts
+    language: typescript
+    stack_tags:
+      - terminal-typescript-yargs-blessed
+    archetype_tags:
+      - cli-tool
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - vitest smoke tests defined
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-picocli-lanterna-readme
+    path: examples/canonical-terminal/java-picocli-lanterna/README.md
+    language: markdown
+    stack_tags:
+      - terminal-java-picocli-lanterna
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - example usage documented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-picocli-lanterna-pom
+    path: examples/canonical-terminal/java-picocli-lanterna/pom.xml
+    language: xml
+    stack_tags:
+      - terminal-java-picocli-lanterna
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - maven metadata present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-picocli-lanterna-cli-main
+    path: examples/canonical-terminal/java-picocli-lanterna/src/main/java/dev/agentcontext/taskflow/cli/TaskflowCommand.java
+    language: java
+    stack_tags:
+      - terminal-java-picocli-lanterna
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - picocli command surface implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-picocli-lanterna-core-loader
+    path: examples/canonical-terminal/java-picocli-lanterna/src/main/java/dev/agentcontext/taskflow/core/JobLoader.java
+    language: java
+    stack_tags:
+      - terminal-java-picocli-lanterna
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - fixture loading implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-picocli-lanterna-tui-controller
+    path: examples/canonical-terminal/java-picocli-lanterna/src/main/java/dev/agentcontext/taskflow/tui/TuiController.java
+    language: java
+    stack_tags:
+      - terminal-java-picocli-lanterna
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - lanterna controller implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-picocli-lanterna-tests-smoke
+    path: examples/canonical-terminal/java-picocli-lanterna/src/test/java/dev/agentcontext/taskflow/SmokeCliTest.java
+    language: java
+    stack_tags:
+      - terminal-java-picocli-lanterna
+    archetype_tags:
+      - terminal-dual-mode
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - junit smoke tests defined
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-jcommander-jline-readme
+    path: examples/canonical-terminal/java-jcommander-jline/README.md
+    language: markdown
+    stack_tags:
+      - terminal-java-jcommander-jline
+    archetype_tags:
+      - cli-tool
+      - interactive-shell
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - example usage documented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-jcommander-jline-pom
+    path: examples/canonical-terminal/java-jcommander-jline/pom.xml
+    language: xml
+    stack_tags:
+      - terminal-java-jcommander-jline
+    archetype_tags:
+      - cli-tool
+      - interactive-shell
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - maven metadata present
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-jcommander-jline-cli-main
+    path: examples/canonical-terminal/java-jcommander-jline/src/main/java/dev/agentcontext/taskflow/cli/TaskflowMain.java
+    language: java
+    stack_tags:
+      - terminal-java-jcommander-jline
+    archetype_tags:
+      - cli-tool
+      - interactive-shell
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - jcommander command surface implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-jcommander-jline-core-loader
+    path: examples/canonical-terminal/java-jcommander-jline/src/main/java/dev/agentcontext/taskflow/core/JobLoader.java
+    language: java
+    stack_tags:
+      - terminal-java-jcommander-jline
+    archetype_tags:
+      - cli-tool
+      - interactive-shell
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - fixture loading implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-jcommander-jline-repl-shell
+    path: examples/canonical-terminal/java-jcommander-jline/src/main/java/dev/agentcontext/taskflow/repl/ReplShell.java
+    language: java
+    stack_tags:
+      - terminal-java-jcommander-jline
+    archetype_tags:
+      - cli-tool
+      - interactive-shell
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - jline repl implemented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-java-jcommander-jline-tests-smoke
+    path: examples/canonical-terminal/java-jcommander-jline/src/test/java/dev/agentcontext/taskflow/SmokeCliTest.java
+    language: java
+    stack_tags:
+      - terminal-java-jcommander-jline
+    archetype_tags:
+      - cli-tool
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - junit smoke tests defined
     docker_supported: false
     scenario_harness: ""
     confidence: medium

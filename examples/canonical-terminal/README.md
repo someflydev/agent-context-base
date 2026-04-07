@@ -41,6 +41,20 @@ guidance.
 | go-cobra-bubbletea/ | Cobra + Bubble Tea | Dual-mode |
 | go-urfave-tview/ | urfave/cli + tview | Dual-mode |
 
+### TypeScript
+
+| Example | Stack | Mode |
+|---------|-------|------|
+| typescript-commander-ink/ | Commander + Ink | Dual-mode |
+| typescript-yargs-blessed/ | Yargs + Blessed | CLI + classic TUI |
+
+### Java
+
+| Example | Stack | Mode |
+|---------|-------|------|
+| java-picocli-lanterna/ | picocli + Lanterna | Dual-mode |
+| java-jcommander-jline/ | JCommander + JLine | CLI + REPL shell |
+
 ## Running Python Examples
 
 ```bash
@@ -70,12 +84,30 @@ cd examples/canonical-terminal/go-cobra-bubbletea && GOCACHE=/tmp/go-build-cache
 cd examples/canonical-terminal/go-urfave-tview && GOCACHE=/tmp/go-build-cache GOPATH=/tmp/go-path go test ./tests/...
 ```
 
+## Running TypeScript Examples
+
+```bash
+cd examples/canonical-terminal/typescript-commander-ink && npm install && npm test
+cd examples/canonical-terminal/typescript-yargs-blessed && npm install && npm test
+```
+
+## Running Java Examples
+
+```bash
+cd examples/canonical-terminal/java-picocli-lanterna && mvn test -q
+cd examples/canonical-terminal/java-jcommander-jline && mvn test -q
+```
+
 ## Smoke Tests
 
 ```bash
-# From each example directory:
+# From each example directory, use the language-native fast test command:
 pytest tests/smoke/
 pytest tests/unit/
+cargo test
+go test ./tests/...
+npm test
+mvn test -q
 ```
 
 ## Architecture
