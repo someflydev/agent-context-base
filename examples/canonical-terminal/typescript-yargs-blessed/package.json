@@ -1,0 +1,25 @@
+{
+  "name": "taskflow-ts-blessed",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && vitest run",
+    "taskflow": "node dist/cli/index.js"
+  },
+  "dependencies": {
+    "blessed": "^0.1.81",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@types/blessed": "^0.1.25",
+    "@types/node": "^22.10.2",
+    "@types/yargs": "^17.0.33",
+    "execa": "^9.5.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "bin": {
+    "taskflow": "./dist/cli/index.js"
+  }
+}
