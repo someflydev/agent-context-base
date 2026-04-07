@@ -56,6 +56,8 @@ Read `memory/INDEX.md` after `work.py resume` output and after reading `context/
 - `memory/summaries/PROMPT_91_through_95_arc_summary.md` — local arc summary for the explicit memory and operator-console upgrade
 - `memory/summaries/PROMPT_99_completion.md` — local completion summary for startup feature toggleability and arc closeout
 - `memory/summaries/PROMPT_96_through_99_arc_summary.md` — local arc summary for startup trace, pseudo-logging, and context validation
+- `memory/summaries/PROMPT_107_completion.md` — local completion summary for the terminal tooling Phase 1 hardening pass
+- `memory/summaries/PROMPT_100_through_107_phase1_summary.md` — local arc summary for the terminal tooling Phase 1 buildout and hardening
 
 ## Terminal Tooling Arc (PROMPT_100-111)
 
@@ -66,6 +68,9 @@ Read `memory/INDEX.md` after `work.py resume` output and after reading `context/
 - **Examples**: `examples/canonical-terminal/` (14 examples, 7 languages)
 - **Catalog**: `examples/canonical-terminal/CATALOG.md`
 - **Decision guide**: `examples/canonical-terminal/DECISION_GUIDE.md`
+- **Phase 1 summary**:
+  `memory/summaries/PROMPT_100_through_107_phase1_summary.md`
+- **Phase 1 completion**: `memory/summaries/PROMPT_107_completion.md`
 
 ## Contributing
 
