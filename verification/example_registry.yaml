@@ -4566,6 +4566,64 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: medium
+  - name: terminal-catalog
+    path: examples/canonical-terminal/CATALOG.md
+    language: markdown
+    stack_tags:
+      - terminal-python-typer-textual
+      - terminal-python-click-blessed
+      - terminal-rust-clap-ratatui
+      - terminal-rust-argh-tui-realm
+      - terminal-go-cobra-bubbletea
+      - terminal-go-urfave-tview
+      - terminal-typescript-commander-ink
+      - terminal-typescript-yargs-blessed
+      - terminal-java-picocli-lanterna
+      - terminal-java-jcommander-jline
+      - terminal-ruby-thor-tty
+      - terminal-ruby-clamp-tty
+      - terminal-elixir-optimus-ratatouille
+      - terminal-elixir-optionparser-owl
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+      - cli-tool
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - all 14 terminal examples listed with stack and smoke guidance
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-decision-guide
+    path: examples/canonical-terminal/DECISION_GUIDE.md
+    language: markdown
+    stack_tags:
+      - terminal-python-typer-textual
+      - terminal-python-click-blessed
+      - terminal-rust-clap-ratatui
+      - terminal-rust-argh-tui-realm
+      - terminal-go-cobra-bubbletea
+      - terminal-go-urfave-tview
+      - terminal-typescript-commander-ink
+      - terminal-typescript-yargs-blessed
+      - terminal-java-picocli-lanterna
+      - terminal-java-jcommander-jline
+      - terminal-ruby-thor-tty
+      - terminal-ruby-clamp-tty
+      - terminal-elixir-optimus-ratatouille
+      - terminal-elixir-optionparser-owl
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+      - cli-tool
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - all 7 terminal languages covered with stack selection guidance
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
   - name: terminal-fixtures-readme
     path: examples/canonical-terminal/fixtures/README.md
     language: markdown

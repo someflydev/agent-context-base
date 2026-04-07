@@ -6303,6 +6303,78 @@
       "stability": "reference"
     },
     {
+      "path": "examples/canonical-terminal/CATALOG.md",
+      "category": "terminal",
+      "summary": "Cross-language catalog for the 14 TaskFlow Monitor terminal examples, including stack, mode, install, and smoke-test guidance.",
+      "stacks": [
+        "terminal-python-typer-textual",
+        "terminal-python-click-blessed",
+        "terminal-rust-clap-ratatui",
+        "terminal-rust-argh-tui-realm",
+        "terminal-go-cobra-bubbletea",
+        "terminal-go-urfave-tview",
+        "terminal-typescript-commander-ink",
+        "terminal-typescript-yargs-blessed",
+        "terminal-java-picocli-lanterna",
+        "terminal-java-jcommander-jline",
+        "terminal-ruby-thor-tty",
+        "terminal-ruby-clamp-tty",
+        "terminal-elixir-optimus-ratatouille",
+        "terminal-elixir-optionparser-owl"
+      ],
+      "archetypes": [
+        "terminal-dual-mode",
+        "terminal-tui",
+        "cli-tool"
+      ],
+      "workflows": [
+        "add-terminal-example"
+      ],
+      "patterns": [
+        "terminal-tooling",
+        "catalog",
+        "cross-language-index"
+      ],
+      "rank": 81,
+      "stability": "reference"
+    },
+    {
+      "path": "examples/canonical-terminal/DECISION_GUIDE.md",
+      "category": "terminal",
+      "summary": "Decision guide for choosing the right terminal stack by language, interaction model, and ecosystem constraints.",
+      "stacks": [
+        "terminal-python-typer-textual",
+        "terminal-python-click-blessed",
+        "terminal-rust-clap-ratatui",
+        "terminal-rust-argh-tui-realm",
+        "terminal-go-cobra-bubbletea",
+        "terminal-go-urfave-tview",
+        "terminal-typescript-commander-ink",
+        "terminal-typescript-yargs-blessed",
+        "terminal-java-picocli-lanterna",
+        "terminal-java-jcommander-jline",
+        "terminal-ruby-thor-tty",
+        "terminal-ruby-clamp-tty",
+        "terminal-elixir-optimus-ratatouille",
+        "terminal-elixir-optionparser-owl"
+      ],
+      "archetypes": [
+        "terminal-dual-mode",
+        "terminal-tui",
+        "cli-tool"
+      ],
+      "workflows": [
+        "add-terminal-example"
+      ],
+      "patterns": [
+        "terminal-tooling",
+        "stack-selection",
+        "decision-guide"
+      ],
+      "rank": 79,
+      "stability": "reference"
+    },
+    {
       "path": "examples/canonical-terminal/elixir-optimus-ratatouille/README.md",
       "category": "terminal",
       "summary": "Flagship Elixir terminal example README for the Optimus plus Ratatouille TaskFlow Monitor stack.",
