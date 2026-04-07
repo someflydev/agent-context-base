@@ -26,6 +26,12 @@ node dist/cli/index.js watch
 npm test
 ```
 
+## Validation Approach
+
+Use `node dist/cli/index.js watch --no-tui` for CI smoke coverage. Full-screen
+Ink interaction is currently validated manually per
+`docs/terminal-validation-contract.md`; PTY automation is a Phase 2 follow-up.
+
 ## Architecture
 
 - `src/core/`: fixture loading, filtering, and stats

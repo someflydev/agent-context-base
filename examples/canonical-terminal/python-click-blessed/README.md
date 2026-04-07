@@ -22,6 +22,11 @@ taskflow watch
 taskflow watch --no-tui
 ```
 
+## Validation Approach
+
+Use `taskflow watch --no-tui` for automated smoke coverage. The lightweight
+interactive pager is still validated manually until a PTY harness is added.
+
 ## Difference from Flagship
 
 Typer + Textual provides a widget-based full-screen dashboard.
@@ -31,4 +36,3 @@ Click + Blessed keeps interaction line-oriented and lightweight.
 
 Use this stack when a full dashboard is unnecessary and you mainly need
 scriptable CLI commands plus a small amount of colored interactive navigation.
-

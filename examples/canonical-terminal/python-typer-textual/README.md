@@ -37,8 +37,13 @@ pytest tests/smoke/
 pytest tests/unit/
 ```
 
+## Validation Approach
+
+Use `taskflow watch --no-tui` for CI smoke coverage. Full-screen Textual
+interaction is currently validated manually per
+`docs/terminal-validation-contract.md`; PTY automation is a Phase 2 follow-up.
+
 ## When to Use This Stack
 
 Use Typer + Textual for Python operator consoles that need a scriptable CLI and
 a richer full-screen dashboard.
-

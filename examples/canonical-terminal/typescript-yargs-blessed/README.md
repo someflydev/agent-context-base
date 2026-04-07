@@ -26,6 +26,11 @@ node dist/cli/index.js watch
 npm test
 ```
 
+## Validation Approach
+
+Use `node dist/cli/index.js watch --no-tui` for CI smoke coverage. The
+Blessed dashboard path is still validated manually until a PTY harness lands.
+
 ## When to Use vs Flagship
 
 - Commander + Ink: component-driven React model for terminal UIs

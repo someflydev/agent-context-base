@@ -19,6 +19,12 @@ go build -o taskflow ./...
 go test ./tests/...
 ```
 
+## Validation Approach
+
+Use `./taskflow watch --no-tui` for CI smoke coverage. Full-screen Bubble Tea
+interaction is currently validated manually per
+`docs/terminal-validation-contract.md`; PTY automation is a Phase 2 follow-up.
+
 ## Architecture
 
 - `cmd/`: Cobra command definitions
@@ -26,3 +32,8 @@ go test ./tests/...
 - `internal/cli/`: marker-wrapped human output and JSON rendering
 - `internal/tui/`: Bubble Tea model, update loop, and views
 
+## When to Use
+
+Choose this stack when you need a Go-native command tree with a full-screen TUI
+that still degrades cleanly to non-interactive CLI output for smoke tests and
+automation.

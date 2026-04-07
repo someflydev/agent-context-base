@@ -25,6 +25,12 @@ java -jar target/taskflow.jar watch
 mvn test -q
 ```
 
+## Validation Approach
+
+Use `java -jar target/taskflow.jar watch --no-tui` for CI smoke coverage.
+Full-screen Lanterna interaction is currently validated manually per
+`docs/terminal-validation-contract.md`; PTY automation is a Phase 2 follow-up.
+
 ## When to Use
 
 Use picocli + Lanterna when a JVM team needs both a scriptable CLI and a

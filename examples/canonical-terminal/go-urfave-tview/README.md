@@ -19,8 +19,12 @@ go build -o taskflow ./...
 go test ./tests/...
 ```
 
+## Validation Approach
+
+Use `./taskflow watch --no-tui` for CI smoke coverage. The widget-driven tview
+path is still validated manually until a PTY harness lands.
+
 ## When to Use vs Flagship
 
 - Use Cobra + Bubble Tea for structured command trees and message-driven TUIs.
 - Use urfave/cli + tview for simpler CLIs and direct high-level widgets.
-

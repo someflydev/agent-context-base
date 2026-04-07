@@ -24,6 +24,12 @@ cargo build --release
 cargo test
 ```
 
+## Validation Approach
+
+Use `taskflow watch --no-tui` for CI smoke coverage. Full-screen ratatui
+interaction is currently validated manually per
+`docs/terminal-validation-contract.md`; PTY automation is a Phase 2 follow-up.
+
 ## Architecture
 
 - `src/core/`: domain logic for loading, filtering, and stats
@@ -34,4 +40,3 @@ cargo test
 
 High-performance Rust tools needing both a scriptable CLI and a rich terminal
 UI.
-
