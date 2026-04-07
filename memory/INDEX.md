@@ -57,6 +57,16 @@ Read `memory/INDEX.md` after `work.py resume` output and after reading `context/
 - `memory/summaries/PROMPT_99_completion.md` — local completion summary for startup feature toggleability and arc closeout
 - `memory/summaries/PROMPT_96_through_99_arc_summary.md` — local arc summary for startup trace, pseudo-logging, and context validation
 
+## Terminal Tooling Arc (PROMPT_100-111)
+
+- **Doctrine**: `context/doctrine/terminal-ux-first-class.md` — 10 rules
+- **Archetypes**: `terminal-tui.md`, `terminal-dual-mode.md`
+- **Stacks**: 14 stacks in `context/stacks/terminal-*.yaml`
+- **Validation contract**: `docs/terminal-validation-contract.md`
+- **Examples**: `examples/canonical-terminal/` (14 examples, 7 languages)
+- **Catalog**: `examples/canonical-terminal/CATALOG.md`
+- **Decision guide**: `examples/canonical-terminal/DECISION_GUIDE.md`
+
 ## Contributing
 
 Add to `memory/concepts/` when a finding is durable, curated, and worth committing for
