@@ -81,6 +81,35 @@ Three executable tools for context visibility and validation:
 These tools are optional. Derived repos enable them via `startup_features` in
 `.acb/profile/selection.json`.
 
+## Terminal Tooling Capability Area
+
+Terminal tooling is a first-class capability area covering CLI tools, TUI
+applications, and dual-mode (CLI+TUI) operator consoles.
+
+### Doctrine
+`context/doctrine/terminal-ux-first-class.md` - 10 rules governing terminal examples
+
+### Archetypes
+| Archetype | When |
+| --- | --- |
+| `cli-tool` | Simple command-line utilities |
+| `terminal-tui` | Full-screen TUI applications |
+| `terminal-dual-mode` | CLI + TUI sharing a domain core |
+
+### Stacks
+14 terminal stacks in `context/stacks/terminal-*.yaml` covering Python, Rust,
+Go, TypeScript, Java, Ruby, and Elixir. See `context/router/stack-router.md`
+-> Terminal Stacks section.
+
+### Canonical Examples
+`examples/canonical-terminal/` contains 14 examples across 7 languages. All
+implement the TaskFlow Monitor domain. See `CATALOG.md` and
+`DECISION_GUIDE.md`.
+
+### Validation
+`docs/terminal-validation-contract.md` and
+`verification/scenarios/terminal-smoke-baseline.md`
+
 ## Future Direction
 
 Clearly future-facing, not implemented yet:
