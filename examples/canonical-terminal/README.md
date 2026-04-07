@@ -55,6 +55,20 @@ guidance.
 | java-picocli-lanterna/ | picocli + Lanterna | Dual-mode |
 | java-jcommander-jline/ | JCommander + JLine | CLI + REPL shell |
 
+### Ruby
+
+| Example | Stack | Mode |
+|---------|-------|------|
+| ruby-thor-tty/ | Thor + TTY::Prompt | Guided interactive CLI |
+| ruby-clamp-tty/ | Clamp + TTY::Reader | CLI + raw key pager |
+
+### Elixir
+
+| Example | Stack | Mode |
+|---------|-------|------|
+| elixir-optimus-ratatouille/ | Optimus + Ratatouille | Dual-mode (GenServer-backed) |
+| elixir-optionparser-owl/ | OptionParser + Owl | CLI + rich output |
+
 ## Running Python Examples
 
 ```bash
@@ -98,6 +112,20 @@ cd examples/canonical-terminal/java-picocli-lanterna && mvn test -q
 cd examples/canonical-terminal/java-jcommander-jline && mvn test -q
 ```
 
+## Running Ruby Examples
+
+```bash
+cd examples/canonical-terminal/ruby-thor-tty && bundle install && bundle exec ruby tests/smoke/test_cli_smoke.rb
+cd examples/canonical-terminal/ruby-clamp-tty && bundle install && bundle exec ruby tests/smoke/test_cli_smoke.rb
+```
+
+## Running Elixir Examples
+
+```bash
+cd examples/canonical-terminal/elixir-optimus-ratatouille && mix deps.get && mix test
+cd examples/canonical-terminal/elixir-optionparser-owl && mix deps.get && mix test
+```
+
 ## Smoke Tests
 
 ```bash
@@ -108,6 +136,8 @@ cargo test
 go test ./tests/...
 npm test
 mvn test -q
+bundle exec ruby tests/smoke/test_cli_smoke.rb
+mix test
 ```
 
 ## Architecture
