@@ -14,6 +14,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 import verify_examples  # noqa: E402
+from verification.terminal import runner as terminal_runner  # noqa: E402
 
 
 FAST_MODULES = [
@@ -58,7 +59,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run repository verification by tier.")
     parser.add_argument(
         "--tier",
-        choices=("fast", "medium", "heavy", "all"),
+        choices=("fast", "medium", "heavy", "all", "terminal"),
         default="fast",
         help="Verification tier to run.",
     )
@@ -74,6 +75,8 @@ def modules_for_tier(tier: str) -> list[str]:
         return list(FAST_MODULES)
     if tier == "medium":
         return list(MEDIUM_MODULES)
+    if tier == "terminal":
+        return []
     return list(HEAVY_MODULES)
 
 
@@ -92,6 +95,20 @@ def main(argv: list[str]) -> int:
 
     if args.docker:
         os.environ["VERIFY_DOCKER"] = "1"
+
+    if args.tier == "terminal":
+        if args.stack:
+            parser.error("--stack filters are not supported for --tier terminal")
+        if args.list:
+            print("verification.terminal.runner")
+            return 0
+        terminal_argv: list[str] = []
+        if args.example:
+            for example_name in args.example:
+                terminal_argv.extend(["--example", example_name])
+        else:
+            terminal_argv.append("--all")
+        return terminal_runner.main(terminal_argv)
 
     if args.stack or args.example:
         modules = verify_examples.collect_modules(verify_examples.filtered_entries(args.stack, args.example))
