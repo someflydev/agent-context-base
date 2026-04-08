@@ -166,9 +166,57 @@ Terminal smoke tests integrate with verification tiers as follows:
   pass without network or TTY
 - `--tier medium` or `--tier heavy`: may run backend-dependent integration
   tests when backends are available
-- `--tier tui`: is reserved for PTY-based TUI validation added later in the
-  arc
+- `--tier terminal`: runs the shared cross-language terminal harness and may
+  include PTY-driven validation when dependencies are available
 
 Implementers for later prompts must ensure terminal smoke tests pass under
 `python3 scripts/run_verification.py --tier fast` and register example-specific
 discovery paths in `verification/` when those examples land.
+
+## 9. Phase 2 Additions
+
+Phase 2 adds a shared harness under `verification/terminal/` so terminal
+examples can be validated through one Python entry point instead of language-
+specific test runners.
+
+### Cross-Language Smoke Harness
+
+- `verification/terminal/harness.py` runs per-example smoke commands with a
+  shared timeout, fixture environment, pass/fail contract, and optional golden
+  transcript assertion.
+- `verification/terminal/registry.py` defines the 14 canonical terminal
+  examples and their availability checks so missing toolchains or build
+  artifacts skip gracefully instead of failing the entire run.
+- `python3 scripts/run_terminal_tests.py --all` is the operator-facing entry
+  point.
+
+### Transcript Normalization
+
+`verification/terminal/transcript.py` normalizes timestamps, job identifiers,
+durations, ANSI escape sequences, and trailing whitespace before comparing CLI
+output to golden files stored in `verification/terminal/goldens/`.
+When a golden is missing, the first passing run bootstraps it automatically;
+use `--update-goldens` to intentionally refresh an existing golden.
+
+### PTY Interaction Harness
+
+`verification/terminal/pty_harness.py` provides a scripted PTY interaction
+harness using `pexpect`. Use it to test TUI applications that support
+keyboard-driven exit.
+
+Standard TUI test pattern:
+
+```python
+from verification.terminal.pty_harness import scripted_tui_test, make_watch_script
+
+result = scripted_tui_test(
+    cmd=["taskflow", "watch"],
+    script=make_watch_script(),
+    env={"TASKFLOW_FIXTURES_PATH": "..."},
+)
+assert result is True
+```
+
+PTY tests require `pexpect`. The shared terminal harness is exposed through
+`python3 scripts/run_verification.py --tier terminal` or the standalone
+`python3 scripts/run_terminal_tests.py --all` wrapper.
