@@ -71,6 +71,16 @@ Terminal archetypes, stacks, and examples must be discoverable through:
 Each canonical terminal example must have a manifest entry in `manifests/` or
 be listed in the terminal catalog at `examples/canonical-terminal/CATALOG.md`.
 
+### 11. Cross-Language Behavioral Consistency
+
+When multiple language implementations of the same terminal domain exist in
+`canonical-terminal/`, they must be behaviorally consistent:
+
+- Same command + same fixtures -> same output structure
+- Verify with: `python3 scripts/run_terminal_comparison.py`
+- A mismatch indicates a domain implementation error, not a language
+  difference
+
 ## Anti-Patterns
 
 - TUI-only tool with no scriptable fallback
