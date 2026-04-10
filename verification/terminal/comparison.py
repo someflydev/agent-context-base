@@ -39,6 +39,10 @@ def _check_example_available(example: TerminalExample) -> tuple[bool, str | None
     return True, None
 
 
+def check_example_available(example: TerminalExample) -> tuple[bool, str | None]:
+    return _check_example_available(example)
+
+
 def _extract_fixture_args(example: TerminalExample) -> list[str]:
     tokens = example.smoke_cmd
     if "list" not in tokens:
