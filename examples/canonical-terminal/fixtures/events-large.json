@@ -1,0 +1,2102 @@
+[
+  {
+    "event_id": "evt-large-058",
+    "job_id": "job-020",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T05:39:15Z",
+    "message": "archive-audit-logs queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-059",
+    "job_id": "job-020",
+    "event_type": "job_started",
+    "timestamp": "2024-01-15T05:40:00Z",
+    "message": "archive-audit-logs started on worker-3."
+  },
+  {
+    "event_id": "evt-large-060",
+    "job_id": "job-020",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-15T05:54:14Z",
+    "message": "archive-audit-logs completed successfully after 854.2s. Detailed context: shard rebalance observed transient backpressure, consumer lag exceeded the warning threshold, retry policies were evaluated, and operator-visible diagnostics were preserved for downstream incident review."
+  },
+  {
+    "event_id": "evt-large-055",
+    "job_id": "job-019",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T06:49:15Z",
+    "message": "rebuild-search queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-056",
+    "job_id": "job-019",
+    "event_type": "job_started",
+    "timestamp": "2024-01-15T06:50:00Z",
+    "message": "rebuild-search started on worker-2."
+  },
+  {
+    "event_id": "evt-large-057",
+    "job_id": "job-019",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-15T07:02:01Z",
+    "message": "rebuild-search completed successfully after 721.6s."
+  },
+  {
+    "event_id": "evt-large-052",
+    "job_id": "job-018",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T07:29:15Z",
+    "message": "export-billing-data queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-053",
+    "job_id": "job-018",
+    "event_type": "job_started",
+    "timestamp": "2024-01-15T07:30:00Z",
+    "message": "export-billing-data started on worker-1."
+  },
+  {
+    "event_id": "evt-large-054",
+    "job_id": "job-018",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-15T07:38:08Z",
+    "message": "export-billing-data completed successfully after 488.0s. Detailed context: shard rebalance observed transient backpressure, consumer lag exceeded the warning threshold, retry policies were evaluated, and operator-visible diagnostics were preserved for downstream incident review."
+  },
+  {
+    "event_id": "evt-large-049",
+    "job_id": "job-017",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T08:14:15Z",
+    "message": "load-test-api queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-050",
+    "job_id": "job-017",
+    "event_type": "job_started",
+    "timestamp": "2024-01-15T08:15:00Z",
+    "message": "load-test-api started on worker-9."
+  },
+  {
+    "event_id": "evt-large-051",
+    "job_id": "job-017",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-15T08:20:12Z",
+    "message": "load-test-api completed successfully after 312.4s."
+  },
+  {
+    "event_id": "evt-large-001",
+    "job_id": "job-001",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T10:22:15Z",
+    "message": "build-frontend queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-002",
+    "job_id": "job-001",
+    "event_type": "job_started",
+    "timestamp": "2024-01-15T10:23:00Z",
+    "message": "build-frontend started on worker-2."
+  },
+  {
+    "event_id": "evt-large-003",
+    "job_id": "job-001",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-15T10:23:47Z",
+    "message": "build-frontend completed successfully after 47.3s."
+  },
+  {
+    "event_id": "evt-large-004",
+    "job_id": "job-002",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T10:29:15Z",
+    "message": "run-tests queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-005",
+    "job_id": "job-002",
+    "event_type": "job_started",
+    "timestamp": "2024-01-15T10:30:00Z",
+    "message": "run-tests started on worker-3."
+  },
+  {
+    "event_id": "evt-large-006",
+    "job_id": "job-002",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-15T10:30:58Z",
+    "message": "run-tests completed successfully after 58.7s. Detailed context: shard rebalance observed transient backpressure, consumer lag exceeded the warning threshold, retry policies were evaluated, and operator-visible diagnostics were preserved for downstream incident review."
+  },
+  {
+    "event_id": "evt-large-007",
+    "job_id": "job-003",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T10:40:15Z",
+    "message": "lint-python queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-008",
+    "job_id": "job-003",
+    "event_type": "job_started",
+    "timestamp": "2024-01-15T10:41:00Z",
+    "message": "lint-python started on worker-4."
+  },
+  {
+    "event_id": "evt-large-009",
+    "job_id": "job-003",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-15T10:41:12Z",
+    "message": "lint-python completed successfully after 12.4s."
+  },
+  {
+    "event_id": "evt-large-010",
+    "job_id": "job-004",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T10:49:15Z",
+    "message": "compile-rust queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-011",
+    "job_id": "job-004",
+    "event_type": "job_started",
+    "timestamp": "2024-01-15T10:50:00Z",
+    "message": "compile-rust started on worker-5."
+  },
+  {
+    "event_id": "evt-large-012",
+    "job_id": "job-004",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-15T10:51:29Z",
+    "message": "compile-rust completed successfully after 89.1s. Detailed context: shard rebalance observed transient backpressure, consumer lag exceeded the warning threshold, retry policies were evaluated, and operator-visible diagnostics were preserved for downstream incident review."
+  },
+  {
+    "event_id": "evt-large-013",
+    "job_id": "job-005",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T11:04:15Z",
+    "message": "seed-database queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-014",
+    "job_id": "job-005",
+    "event_type": "job_started",
+    "timestamp": "2024-01-15T11:05:00Z",
+    "message": "seed-database started on worker-6."
+  },
+  {
+    "event_id": "evt-large-015",
+    "job_id": "job-005",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-15T11:05:34Z",
+    "message": "seed-database completed successfully after 34.8s."
+  },
+  {
+    "event_id": "evt-large-016",
+    "job_id": "job-006",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T11:11:15Z",
+    "message": "deploy-staging queued for execution."
+  },
+  {
+    "event_id": "evt-large-017",
+    "job_id": "job-006",
+    "event_type": "job_started",
+    "timestamp": "2024-01-15T11:12:00Z",
+    "message": "deploy-staging began running with dependency fan-out enabled."
+  },
+  {
+    "event_id": "evt-large-018",
+    "job_id": "job-006",
+    "event_type": "job_failed",
+    "timestamp": "2024-01-15T11:13:16Z",
+    "message": "deploy-staging failed during verification: Error: artifact checksum mismatch detected during promotion window. Detailed context: shard rebalance observed transient backpressure, consumer lag exceeded the warning threshold, retry policies were evaluated, and operator-visible diagnostics were preserved for downstream incident review."
+  },
+  {
+    "event_id": "evt-large-019",
+    "job_id": "job-007",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T11:25:15Z",
+    "message": "integration-tests queued for execution."
+  },
+  {
+    "event_id": "evt-large-020",
+    "job_id": "job-007",
+    "event_type": "job_started",
+    "timestamp": "2024-01-15T11:26:00Z",
+    "message": "integration-tests began running with dependency fan-out enabled."
+  },
+  {
+    "event_id": "evt-large-021",
+    "job_id": "job-007",
+    "event_type": "job_failed",
+    "timestamp": "2024-01-15T11:27:52Z",
+    "message": "integration-tests failed during verification: Error: database migration lock exceeded the configured timeout."
+  },
+  {
+    "event_id": "evt-large-022",
+    "job_id": "job-008",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T11:43:15Z",
+    "message": "sync-assets queued for execution."
+  },
+  {
+    "event_id": "evt-large-023",
+    "job_id": "job-008",
+    "event_type": "job_started",
+    "timestamp": "2024-01-15T11:44:00Z",
+    "message": "sync-assets began running with dependency fan-out enabled."
+  },
+  {
+    "event_id": "evt-large-024",
+    "job_id": "job-008",
+    "event_type": "job_failed",
+    "timestamp": "2024-01-15T11:44:43Z",
+    "message": "sync-assets failed during verification: Error: remote executor lost lease while job was in progress. Detailed context: shard rebalance observed transient backpressure, consumer lag exceeded the warning threshold, retry policies were evaluated, and operator-visible diagnostics were preserved for downstream incident review."
+  },
+  {
+    "event_id": "evt-large-025",
+    "job_id": "job-009",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T11:52:15Z",
+    "message": "cleanup-artifacts queued for execution."
+  },
+  {
+    "event_id": "evt-large-026",
+    "job_id": "job-009",
+    "event_type": "job_started",
+    "timestamp": "2024-01-15T11:53:00Z",
+    "message": "cleanup-artifacts began running with dependency fan-out enabled."
+  },
+  {
+    "event_id": "evt-large-027",
+    "job_id": "job-009",
+    "event_type": "job_failed",
+    "timestamp": "2024-01-15T11:53:21Z",
+    "message": "cleanup-artifacts failed during verification: Error: deployment policy rejected the rollout due to metric regression."
+  },
+  {
+    "event_id": "evt-large-028",
+    "job_id": "job-010",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T11:59:15Z",
+    "message": "generate-report queued behind active deployment work."
+  },
+  {
+    "event_id": "evt-large-029",
+    "job_id": "job-010",
+    "event_type": "job_started",
+    "timestamp": "2024-01-15T12:00:00Z",
+    "message": "generate-report started and acquired worker lease."
+  },
+  {
+    "event_id": "evt-large-030",
+    "job_id": "job-010",
+    "event_type": "job_started",
+    "timestamp": "2024-01-15T12:02:00Z",
+    "message": "generate-report is still running and emitting heartbeat telemetry. Detailed context: shard rebalance observed transient backpressure, consumer lag exceeded the warning threshold, retry policies were evaluated, and operator-visible diagnostics were preserved for downstream incident review."
+  },
+  {
+    "event_id": "evt-large-031",
+    "job_id": "job-011",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T12:05:15Z",
+    "message": "deploy-production queued behind active deployment work."
+  },
+  {
+    "event_id": "evt-large-032",
+    "job_id": "job-011",
+    "event_type": "job_started",
+    "timestamp": "2024-01-15T12:06:00Z",
+    "message": "deploy-production started and acquired worker lease."
+  },
+  {
+    "event_id": "evt-large-033",
+    "job_id": "job-011",
+    "event_type": "job_started",
+    "timestamp": "2024-01-15T12:08:00Z",
+    "message": "deploy-production is still running and emitting heartbeat telemetry."
+  },
+  {
+    "event_id": "evt-large-034",
+    "job_id": "job-012",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-15T12:10:15Z",
+    "message": "refresh-search-index queued behind active deployment work."
+  },
+  {
+    "event_id": "evt-large-035",
+    "job_id": "job-012",
+    "event_type": "job_started",
+    "timestamp": "2024-01-15T12:11:00Z",
+    "message": "refresh-search-index started and acquired worker lease."
+  },
+  {
+    "event_id": "evt-large-036",
+    "job_id": "job-012",
+    "event_type": "job_started",
+    "timestamp": "2024-01-15T12:13:00Z",
+    "message": "refresh-search-index is still running and emitting heartbeat telemetry. Detailed context: shard rebalance observed transient backpressure, consumer lag exceeded the warning threshold, retry policies were evaluated, and operator-visible diagnostics were preserved for downstream incident review."
+  },
+  {
+    "event_id": "evt-large-037",
+    "job_id": "job-013",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T01:05:00Z",
+    "message": "package-cli entered the queue."
+  },
+  {
+    "event_id": "evt-large-038",
+    "job_id": "job-013",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T01:07:00Z",
+    "message": "package-cli is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-039",
+    "job_id": "job-013",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T01:10:00Z",
+    "message": "package-cli remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-040",
+    "job_id": "job-014",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T01:10:00Z",
+    "message": "backup-database entered the queue."
+  },
+  {
+    "event_id": "evt-large-041",
+    "job_id": "job-014",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T01:12:00Z",
+    "message": "backup-database is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-042",
+    "job_id": "job-014",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T01:15:00Z",
+    "message": "backup-database remains queued with no worker assigned yet. Detailed context: shard rebalance observed transient backpressure, consumer lag exceeded the warning threshold, retry policies were evaluated, and operator-visible diagnostics were preserved for downstream incident review."
+  },
+  {
+    "event_id": "evt-large-043",
+    "job_id": "job-015",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T01:15:00Z",
+    "message": "warm-cache entered the queue."
+  },
+  {
+    "event_id": "evt-large-044",
+    "job_id": "job-015",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T01:17:00Z",
+    "message": "warm-cache is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-045",
+    "job_id": "job-015",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T01:20:00Z",
+    "message": "warm-cache remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-046",
+    "job_id": "job-016",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T01:20:00Z",
+    "message": "publish-docs entered the queue."
+  },
+  {
+    "event_id": "evt-large-047",
+    "job_id": "job-016",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T01:22:00Z",
+    "message": "publish-docs is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-048",
+    "job_id": "job-016",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T01:25:00Z",
+    "message": "publish-docs remains queued with no worker assigned yet. Detailed context: shard rebalance observed transient backpressure, consumer lag exceeded the warning threshold, retry policies were evaluated, and operator-visible diagnostics were preserved for downstream incident review."
+  },
+  {
+    "event_id": "evt-large-061",
+    "job_id": "job-021",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T02:26:15Z",
+    "message": "ci-monorepo-smoke-validation-for-shared-contract-and-release-gating queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-062",
+    "job_id": "job-021",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T02:27:00Z",
+    "message": "ci-monorepo-smoke-validation-for-shared-contract-and-release-gating started on worker-4."
+  },
+  {
+    "event_id": "evt-large-063",
+    "job_id": "job-021",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-16T02:27:02Z",
+    "message": "ci-monorepo-smoke-validation-for-shared-contract-and-release-gating completed successfully after 2.0s."
+  },
+  {
+    "event_id": "evt-large-064",
+    "job_id": "job-022",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T02:33:15Z",
+    "message": "nightly-analytics-backfill-and-materialized-view-refresh-for-finance queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-065",
+    "job_id": "job-022",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T02:34:00Z",
+    "message": "nightly-analytics-backfill-and-materialized-view-refresh-for-finance started on worker-5."
+  },
+  {
+    "event_id": "evt-large-066",
+    "job_id": "job-022",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-16T02:34:05Z",
+    "message": "nightly-analytics-backfill-and-materialized-view-refresh-for-finance completed successfully after 5.0s."
+  },
+  {
+    "event_id": "evt-large-067",
+    "job_id": "job-023",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T02:40:15Z",
+    "message": "staging-blue-green-deployment-with-preflight-schema-and-canary-checks queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-068",
+    "job_id": "job-023",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T02:41:00Z",
+    "message": "staging-blue-green-deployment-with-preflight-schema-and-canary-checks started on worker-6."
+  },
+  {
+    "event_id": "evt-large-069",
+    "job_id": "job-023",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-16T02:41:08Z",
+    "message": "staging-blue-green-deployment-with-preflight-schema-and-canary-checks completed successfully after 8.5s."
+  },
+  {
+    "event_id": "evt-large-070",
+    "job_id": "job-024",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T02:47:15Z",
+    "message": "cross-region-disaster-recovery-snapshot-integrity-and-restore-drill queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-071",
+    "job_id": "job-024",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T02:48:00Z",
+    "message": "cross-region-disaster-recovery-snapshot-integrity-and-restore-drill started on worker-7."
+  },
+  {
+    "event_id": "evt-large-072",
+    "job_id": "job-024",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-16T02:48:13Z",
+    "message": "cross-region-disaster-recovery-snapshot-integrity-and-restore-drill completed successfully after 13.2s."
+  },
+  {
+    "event_id": "evt-large-073",
+    "job_id": "job-025",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T02:54:15Z",
+    "message": "customer-data-export-redaction-audit-and-compliance-bundle-generation queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-074",
+    "job_id": "job-025",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T02:55:00Z",
+    "message": "customer-data-export-redaction-audit-and-compliance-bundle-generation started on worker-8."
+  },
+  {
+    "event_id": "evt-large-075",
+    "job_id": "job-025",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-16T02:55:21Z",
+    "message": "customer-data-export-redaction-audit-and-compliance-bundle-generation completed successfully after 21.0s."
+  },
+  {
+    "event_id": "evt-large-076",
+    "job_id": "job-026",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T03:01:15Z",
+    "message": "mobile-release-candidate-signing-notarization-and-store-metadata-sync queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-077",
+    "job_id": "job-026",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T03:02:00Z",
+    "message": "mobile-release-candidate-signing-notarization-and-store-metadata-sync started on worker-9."
+  },
+  {
+    "event_id": "evt-large-078",
+    "job_id": "job-026",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-16T03:02:34Z",
+    "message": "mobile-release-candidate-signing-notarization-and-store-metadata-sync completed successfully after 34.7s."
+  },
+  {
+    "event_id": "evt-large-079",
+    "job_id": "job-027",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T03:08:15Z",
+    "message": "observability-pipeline-cardinality-budget-audit-and-metric-shaping queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-080",
+    "job_id": "job-027",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T03:09:00Z",
+    "message": "observability-pipeline-cardinality-budget-audit-and-metric-shaping started on worker-1."
+  },
+  {
+    "event_id": "evt-large-081",
+    "job_id": "job-027",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-16T03:09:55Z",
+    "message": "observability-pipeline-cardinality-budget-audit-and-metric-shaping completed successfully after 55.4s."
+  },
+  {
+    "event_id": "evt-large-082",
+    "job_id": "job-028",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T03:15:15Z",
+    "message": "search-index-hot-shard-rebalancing-and-catalog-consistency-verification queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-083",
+    "job_id": "job-028",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T03:16:00Z",
+    "message": "search-index-hot-shard-rebalancing-and-catalog-consistency-verification started on worker-2."
+  },
+  {
+    "event_id": "evt-large-084",
+    "job_id": "job-028",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-16T03:17:29Z",
+    "message": "search-index-hot-shard-rebalancing-and-catalog-consistency-verification completed successfully after 89.9s."
+  },
+  {
+    "event_id": "evt-large-085",
+    "job_id": "job-029",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T03:22:15Z",
+    "message": "billing-ledger-reconciliation-and-disputed-invoice-evidence-packaging queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-086",
+    "job_id": "job-029",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T03:23:00Z",
+    "message": "billing-ledger-reconciliation-and-disputed-invoice-evidence-packaging started on worker-3."
+  },
+  {
+    "event_id": "evt-large-087",
+    "job_id": "job-029",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-16T03:25:24Z",
+    "message": "billing-ledger-reconciliation-and-disputed-invoice-evidence-packaging completed successfully after 144.0s."
+  },
+  {
+    "event_id": "evt-large-088",
+    "job_id": "job-030",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T03:29:15Z",
+    "message": "security-baseline-rotation-secrets-rollout-and-host-attestation-sweep queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-089",
+    "job_id": "job-030",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T03:30:00Z",
+    "message": "security-baseline-rotation-secrets-rollout-and-host-attestation-sweep started on worker-4."
+  },
+  {
+    "event_id": "evt-large-090",
+    "job_id": "job-030",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-16T03:33:53Z",
+    "message": "security-baseline-rotation-secrets-rollout-and-host-attestation-sweep completed successfully after 233.0s."
+  },
+  {
+    "event_id": "evt-large-091",
+    "job_id": "job-031",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T03:36:15Z",
+    "message": "bootstrap-preview-env-031 queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-092",
+    "job_id": "job-031",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T03:37:00Z",
+    "message": "bootstrap-preview-env-031 started on worker-5."
+  },
+  {
+    "event_id": "evt-large-094",
+    "job_id": "job-032",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T03:43:15Z",
+    "message": "publish-sdk-docs-032 queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-093",
+    "job_id": "job-031",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-16T03:43:17Z",
+    "message": "bootstrap-preview-env-031 completed successfully after 377.0s."
+  },
+  {
+    "event_id": "evt-large-095",
+    "job_id": "job-032",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T03:44:00Z",
+    "message": "publish-sdk-docs-032 started on worker-6."
+  },
+  {
+    "event_id": "evt-large-097",
+    "job_id": "job-033",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T03:50:15Z",
+    "message": "archive-old-exports-033 queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-098",
+    "job_id": "job-033",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T03:51:00Z",
+    "message": "archive-old-exports-033 started on worker-7."
+  },
+  {
+    "event_id": "evt-large-096",
+    "job_id": "job-032",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-16T03:54:10Z",
+    "message": "publish-sdk-docs-032 completed successfully after 610.0s."
+  },
+  {
+    "event_id": "evt-large-100",
+    "job_id": "job-034",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T03:57:15Z",
+    "message": "fanout-tenant-sync-034 queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-101",
+    "job_id": "job-034",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T03:58:00Z",
+    "message": "fanout-tenant-sync-034 started on worker-8."
+  },
+  {
+    "event_id": "evt-large-103",
+    "job_id": "job-035",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T04:04:15Z",
+    "message": "reindex-audit-stream-035 queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-104",
+    "job_id": "job-035",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T04:05:00Z",
+    "message": "reindex-audit-stream-035 started on worker-9."
+  },
+  {
+    "event_id": "evt-large-099",
+    "job_id": "job-033",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-16T04:07:27Z",
+    "message": "archive-old-exports-033 completed successfully after 987.0s."
+  },
+  {
+    "event_id": "evt-large-106",
+    "job_id": "job-036",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T04:11:15Z",
+    "message": "compact-event-store-036 queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-107",
+    "job_id": "job-036",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T04:12:00Z",
+    "message": "compact-event-store-036 started on worker-1."
+  },
+  {
+    "event_id": "evt-large-102",
+    "job_id": "job-034",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-16T04:18:00Z",
+    "message": "fanout-tenant-sync-034 completed successfully after 1200.0s."
+  },
+  {
+    "event_id": "evt-large-109",
+    "job_id": "job-037",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T04:18:15Z",
+    "message": "render-marketing-site-037 queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-110",
+    "job_id": "job-037",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T04:19:00Z",
+    "message": "render-marketing-site-037 started on worker-2."
+  },
+  {
+    "event_id": "evt-large-112",
+    "job_id": "job-038",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T04:25:15Z",
+    "message": "sync-billing-ledger-038 queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-113",
+    "job_id": "job-038",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T04:26:00Z",
+    "message": "sync-billing-ledger-038 started on worker-3."
+  },
+  {
+    "event_id": "evt-large-115",
+    "job_id": "job-039",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T04:32:15Z",
+    "message": "rebalance-job-queues-039 queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-116",
+    "job_id": "job-039",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T04:33:00Z",
+    "message": "rebalance-job-queues-039 started on worker-4."
+  },
+  {
+    "event_id": "evt-large-105",
+    "job_id": "job-035",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-16T04:35:00Z",
+    "message": "reindex-audit-stream-035 completed successfully after 1800.0s."
+  },
+  {
+    "event_id": "evt-large-118",
+    "job_id": "job-040",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T04:39:15Z",
+    "message": "verify-backups-040 queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-119",
+    "job_id": "job-040",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T04:40:00Z",
+    "message": "verify-backups-040 started on worker-5."
+  },
+  {
+    "event_id": "evt-large-121",
+    "job_id": "job-041",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T04:46:15Z",
+    "message": "verify-openapi-contract-041 queued for worker assignment."
+  },
+  {
+    "event_id": "evt-large-122",
+    "job_id": "job-041",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T04:47:00Z",
+    "message": "verify-openapi-contract-041 started on worker-6."
+  },
+  {
+    "event_id": "evt-large-108",
+    "job_id": "job-036",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-16T04:52:00Z",
+    "message": "compact-event-store-036 completed successfully after 2400.0s."
+  },
+  {
+    "event_id": "evt-large-124",
+    "job_id": "job-042",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T04:53:15Z",
+    "message": "publish-worker-image-042 queued for execution."
+  },
+  {
+    "event_id": "evt-large-125",
+    "job_id": "job-042",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T04:54:00Z",
+    "message": "publish-worker-image-042 began running with dependency fan-out enabled."
+  },
+  {
+    "event_id": "evt-large-126",
+    "job_id": "job-042",
+    "event_type": "job_failed",
+    "timestamp": "2024-01-16T04:54:14Z",
+    "message": "publish-worker-image-042 failed during verification: Error: database migration lock exceeded the configured timeout."
+  },
+  {
+    "event_id": "evt-large-127",
+    "job_id": "job-043",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T05:00:15Z",
+    "message": "rotate-api-keys-043 queued for execution."
+  },
+  {
+    "event_id": "evt-large-128",
+    "job_id": "job-043",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T05:01:00Z",
+    "message": "rotate-api-keys-043 began running with dependency fan-out enabled."
+  },
+  {
+    "event_id": "evt-large-129",
+    "job_id": "job-043",
+    "event_type": "job_failed",
+    "timestamp": "2024-01-16T05:01:26Z",
+    "message": "rotate-api-keys-043 failed during verification: Error: remote executor lost lease while job was in progress."
+  },
+  {
+    "event_id": "evt-large-130",
+    "job_id": "job-044",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T05:07:15Z",
+    "message": "snapshot-warehouse-044 queued for execution."
+  },
+  {
+    "event_id": "evt-large-131",
+    "job_id": "job-044",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T05:08:00Z",
+    "message": "snapshot-warehouse-044 began running with dependency fan-out enabled."
+  },
+  {
+    "event_id": "evt-large-132",
+    "job_id": "job-044",
+    "event_type": "job_failed",
+    "timestamp": "2024-01-16T05:08:45Z",
+    "message": "snapshot-warehouse-044 failed during verification: Error: deployment policy rejected the rollout due to metric regression."
+  },
+  {
+    "event_id": "evt-large-111",
+    "job_id": "job-037",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-16T05:09:00Z",
+    "message": "render-marketing-site-037 completed successfully after 3000.0s."
+  },
+  {
+    "event_id": "evt-large-133",
+    "job_id": "job-045",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T05:14:15Z",
+    "message": "rebuild-cdn-cache-045 queued for execution."
+  },
+  {
+    "event_id": "evt-large-134",
+    "job_id": "job-045",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T05:15:00Z",
+    "message": "rebuild-cdn-cache-045 began running with dependency fan-out enabled."
+  },
+  {
+    "event_id": "evt-large-135",
+    "job_id": "job-045",
+    "event_type": "job_failed",
+    "timestamp": "2024-01-16T05:16:18Z",
+    "message": "rebuild-cdn-cache-045 failed during verification: Error: upstream dependency returned HTTP 503 during readiness probe."
+  },
+  {
+    "event_id": "evt-large-114",
+    "job_id": "job-038",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-16T05:21:00Z",
+    "message": "sync-billing-ledger-038 completed successfully after 3300.0s."
+  },
+  {
+    "event_id": "evt-large-136",
+    "job_id": "job-046",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T05:21:15Z",
+    "message": "train-ranking-model-046 queued for execution."
+  },
+  {
+    "event_id": "evt-large-137",
+    "job_id": "job-046",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T05:22:00Z",
+    "message": "train-ranking-model-046 began running with dependency fan-out enabled."
+  },
+  {
+    "event_id": "evt-large-138",
+    "job_id": "job-046",
+    "event_type": "job_failed",
+    "timestamp": "2024-01-16T05:24:00Z",
+    "message": "train-ranking-model-046 failed during verification: Error: artifact checksum mismatch detected during promotion window."
+  },
+  {
+    "event_id": "evt-large-139",
+    "job_id": "job-047",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T05:28:15Z",
+    "message": "refresh-feature-flags-047 queued for execution."
+  },
+  {
+    "event_id": "evt-large-140",
+    "job_id": "job-047",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T05:29:00Z",
+    "message": "refresh-feature-flags-047 began running with dependency fan-out enabled."
+  },
+  {
+    "event_id": "evt-large-117",
+    "job_id": "job-039",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-16T05:30:36Z",
+    "message": "rebalance-job-queues-039 completed successfully after 3456.0s."
+  },
+  {
+    "event_id": "evt-large-141",
+    "job_id": "job-047",
+    "event_type": "job_failed",
+    "timestamp": "2024-01-16T05:32:30Z",
+    "message": "refresh-feature-flags-047 failed during verification: Error: database migration lock exceeded the configured timeout."
+  },
+  {
+    "event_id": "evt-large-142",
+    "job_id": "job-048",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T05:35:15Z",
+    "message": "scan-container-images-048 queued for execution."
+  },
+  {
+    "event_id": "evt-large-143",
+    "job_id": "job-048",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T05:36:00Z",
+    "message": "scan-container-images-048 began running with dependency fan-out enabled."
+  },
+  {
+    "event_id": "evt-large-120",
+    "job_id": "job-040",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-16T05:39:50Z",
+    "message": "verify-backups-040 completed successfully after 3590.0s."
+  },
+  {
+    "event_id": "evt-large-144",
+    "job_id": "job-048",
+    "event_type": "job_failed",
+    "timestamp": "2024-01-16T05:41:05Z",
+    "message": "scan-container-images-048 failed during verification: Error: remote executor lost lease while job was in progress."
+  },
+  {
+    "event_id": "evt-large-145",
+    "job_id": "job-049",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T05:42:15Z",
+    "message": "hydrate-search-cache-049 queued for execution."
+  },
+  {
+    "event_id": "evt-large-146",
+    "job_id": "job-049",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T05:43:00Z",
+    "message": "hydrate-search-cache-049 began running with dependency fan-out enabled."
+  },
+  {
+    "event_id": "evt-large-123",
+    "job_id": "job-041",
+    "event_type": "job_completed",
+    "timestamp": "2024-01-16T05:47:00Z",
+    "message": "verify-openapi-contract-041 completed successfully after 3600.0s."
+  },
+  {
+    "event_id": "evt-large-148",
+    "job_id": "job-050",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T05:49:15Z",
+    "message": "reconcile-webhooks-050 queued for execution."
+  },
+  {
+    "event_id": "evt-large-149",
+    "job_id": "job-050",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T05:50:00Z",
+    "message": "reconcile-webhooks-050 began running with dependency fan-out enabled."
+  },
+  {
+    "event_id": "evt-large-208",
+    "job_id": "job-070",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T05:50:00Z",
+    "message": "reconcile-webhooks-070 entered the queue."
+  },
+  {
+    "event_id": "evt-large-147",
+    "job_id": "job-049",
+    "event_type": "job_failed",
+    "timestamp": "2024-01-16T05:51:32Z",
+    "message": "hydrate-search-cache-049 failed during verification: Error: deployment policy rejected the rollout due to metric regression."
+  },
+  {
+    "event_id": "evt-large-209",
+    "job_id": "job-070",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T05:52:00Z",
+    "message": "reconcile-webhooks-070 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-210",
+    "job_id": "job-070",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T05:55:00Z",
+    "message": "reconcile-webhooks-070 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-211",
+    "job_id": "job-071",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T05:55:00Z",
+    "message": "bootstrap-preview-env-071 entered the queue."
+  },
+  {
+    "event_id": "evt-large-151",
+    "job_id": "job-051",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T05:56:15Z",
+    "message": "bootstrap-preview-env-051 queued for execution."
+  },
+  {
+    "event_id": "evt-large-152",
+    "job_id": "job-051",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T05:57:00Z",
+    "message": "bootstrap-preview-env-051 began running with dependency fan-out enabled."
+  },
+  {
+    "event_id": "evt-large-212",
+    "job_id": "job-071",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T05:57:00Z",
+    "message": "bootstrap-preview-env-071 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-213",
+    "job_id": "job-071",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:00:00Z",
+    "message": "bootstrap-preview-env-071 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-214",
+    "job_id": "job-072",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:00:00Z",
+    "message": "publish-sdk-docs-072 entered the queue."
+  },
+  {
+    "event_id": "evt-large-215",
+    "job_id": "job-072",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:02:00Z",
+    "message": "publish-sdk-docs-072 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-154",
+    "job_id": "job-052",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:03:15Z",
+    "message": "publish-sdk-docs-052 queued for execution."
+  },
+  {
+    "event_id": "evt-large-150",
+    "job_id": "job-050",
+    "event_type": "job_failed",
+    "timestamp": "2024-01-16T06:03:50Z",
+    "message": "reconcile-webhooks-050 failed during verification: Error: upstream dependency returned HTTP 503 during readiness probe."
+  },
+  {
+    "event_id": "evt-large-155",
+    "job_id": "job-052",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T06:04:00Z",
+    "message": "publish-sdk-docs-052 began running with dependency fan-out enabled."
+  },
+  {
+    "event_id": "evt-large-216",
+    "job_id": "job-072",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:05:00Z",
+    "message": "publish-sdk-docs-072 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-217",
+    "job_id": "job-073",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:05:00Z",
+    "message": "archive-old-exports-073 entered the queue."
+  },
+  {
+    "event_id": "evt-large-218",
+    "job_id": "job-073",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:07:00Z",
+    "message": "archive-old-exports-073 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-219",
+    "job_id": "job-073",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:10:00Z",
+    "message": "archive-old-exports-073 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-220",
+    "job_id": "job-074",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:10:00Z",
+    "message": "fanout-tenant-sync-074 entered the queue."
+  },
+  {
+    "event_id": "evt-large-157",
+    "job_id": "job-053",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:10:15Z",
+    "message": "archive-old-exports-053 queued behind active deployment work."
+  },
+  {
+    "event_id": "evt-large-158",
+    "job_id": "job-053",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T06:11:00Z",
+    "message": "archive-old-exports-053 started and acquired worker lease."
+  },
+  {
+    "event_id": "evt-large-221",
+    "job_id": "job-074",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:12:00Z",
+    "message": "fanout-tenant-sync-074 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-159",
+    "job_id": "job-053",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T06:13:00Z",
+    "message": "archive-old-exports-053 is still running and emitting heartbeat telemetry."
+  },
+  {
+    "event_id": "evt-large-222",
+    "job_id": "job-074",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:15:00Z",
+    "message": "fanout-tenant-sync-074 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-223",
+    "job_id": "job-075",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:15:00Z",
+    "message": "reindex-audit-stream-075 entered the queue."
+  },
+  {
+    "event_id": "evt-large-224",
+    "job_id": "job-075",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:17:00Z",
+    "message": "reindex-audit-stream-075 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-160",
+    "job_id": "job-054",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:17:15Z",
+    "message": "fanout-tenant-sync-054 queued behind active deployment work."
+  },
+  {
+    "event_id": "evt-large-161",
+    "job_id": "job-054",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T06:18:00Z",
+    "message": "fanout-tenant-sync-054 started and acquired worker lease."
+  },
+  {
+    "event_id": "evt-large-162",
+    "job_id": "job-054",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T06:20:00Z",
+    "message": "fanout-tenant-sync-054 is still running and emitting heartbeat telemetry."
+  },
+  {
+    "event_id": "evt-large-225",
+    "job_id": "job-075",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:20:00Z",
+    "message": "reindex-audit-stream-075 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-226",
+    "job_id": "job-076",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:20:00Z",
+    "message": "compact-event-store-076 entered the queue."
+  },
+  {
+    "event_id": "evt-large-153",
+    "job_id": "job-051",
+    "event_type": "job_failed",
+    "timestamp": "2024-01-16T06:21:00Z",
+    "message": "bootstrap-preview-env-051 failed during verification: Error: artifact checksum mismatch detected during promotion window."
+  },
+  {
+    "event_id": "evt-large-227",
+    "job_id": "job-076",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:22:00Z",
+    "message": "compact-event-store-076 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-163",
+    "job_id": "job-055",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:24:15Z",
+    "message": "reindex-audit-stream-055 queued behind active deployment work."
+  },
+  {
+    "event_id": "evt-large-164",
+    "job_id": "job-055",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T06:25:00Z",
+    "message": "reindex-audit-stream-055 started and acquired worker lease."
+  },
+  {
+    "event_id": "evt-large-228",
+    "job_id": "job-076",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:25:00Z",
+    "message": "compact-event-store-076 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-229",
+    "job_id": "job-077",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:25:00Z",
+    "message": "render-marketing-site-077 entered the queue."
+  },
+  {
+    "event_id": "evt-large-165",
+    "job_id": "job-055",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T06:27:00Z",
+    "message": "reindex-audit-stream-055 is still running and emitting heartbeat telemetry."
+  },
+  {
+    "event_id": "evt-large-230",
+    "job_id": "job-077",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:27:00Z",
+    "message": "render-marketing-site-077 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-231",
+    "job_id": "job-077",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:30:00Z",
+    "message": "render-marketing-site-077 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-232",
+    "job_id": "job-078",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:30:00Z",
+    "message": "sync-billing-ledger-078 entered the queue."
+  },
+  {
+    "event_id": "evt-large-166",
+    "job_id": "job-056",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:31:15Z",
+    "message": "compact-event-store-056 queued behind active deployment work."
+  },
+  {
+    "event_id": "evt-large-167",
+    "job_id": "job-056",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T06:32:00Z",
+    "message": "compact-event-store-056 started and acquired worker lease."
+  },
+  {
+    "event_id": "evt-large-233",
+    "job_id": "job-078",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:32:00Z",
+    "message": "sync-billing-ledger-078 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-168",
+    "job_id": "job-056",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T06:34:00Z",
+    "message": "compact-event-store-056 is still running and emitting heartbeat telemetry."
+  },
+  {
+    "event_id": "evt-large-234",
+    "job_id": "job-078",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:35:00Z",
+    "message": "sync-billing-ledger-078 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-235",
+    "job_id": "job-079",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:35:00Z",
+    "message": "rebalance-job-queues-079 entered the queue."
+  },
+  {
+    "event_id": "evt-large-156",
+    "job_id": "job-052",
+    "event_type": "job_failed",
+    "timestamp": "2024-01-16T06:35:28Z",
+    "message": "publish-sdk-docs-052 failed during verification: Error: database migration lock exceeded the configured timeout."
+  },
+  {
+    "event_id": "evt-large-236",
+    "job_id": "job-079",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:37:00Z",
+    "message": "rebalance-job-queues-079 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-169",
+    "job_id": "job-057",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:38:15Z",
+    "message": "render-marketing-site-057 queued behind active deployment work."
+  },
+  {
+    "event_id": "evt-large-170",
+    "job_id": "job-057",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T06:39:00Z",
+    "message": "render-marketing-site-057 started and acquired worker lease."
+  },
+  {
+    "event_id": "evt-large-237",
+    "job_id": "job-079",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:40:00Z",
+    "message": "rebalance-job-queues-079 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-238",
+    "job_id": "job-080",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:40:00Z",
+    "message": "verify-backups-080 entered the queue."
+  },
+  {
+    "event_id": "evt-large-171",
+    "job_id": "job-057",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T06:41:00Z",
+    "message": "render-marketing-site-057 is still running and emitting heartbeat telemetry."
+  },
+  {
+    "event_id": "evt-large-239",
+    "job_id": "job-080",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:42:00Z",
+    "message": "verify-backups-080 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-240",
+    "job_id": "job-080",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:45:00Z",
+    "message": "verify-backups-080 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-241",
+    "job_id": "job-081",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:45:00Z",
+    "message": "verify-openapi-contract-081 entered the queue."
+  },
+  {
+    "event_id": "evt-large-172",
+    "job_id": "job-058",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:45:15Z",
+    "message": "sync-billing-ledger-058 queued behind active deployment work."
+  },
+  {
+    "event_id": "evt-large-173",
+    "job_id": "job-058",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T06:46:00Z",
+    "message": "sync-billing-ledger-058 started and acquired worker lease."
+  },
+  {
+    "event_id": "evt-large-242",
+    "job_id": "job-081",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:47:00Z",
+    "message": "verify-openapi-contract-081 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-174",
+    "job_id": "job-058",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T06:48:00Z",
+    "message": "sync-billing-ledger-058 is still running and emitting heartbeat telemetry."
+  },
+  {
+    "event_id": "evt-large-243",
+    "job_id": "job-081",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:50:00Z",
+    "message": "verify-openapi-contract-081 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-244",
+    "job_id": "job-082",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:50:00Z",
+    "message": "publish-worker-image-082 entered the queue."
+  },
+  {
+    "event_id": "evt-large-245",
+    "job_id": "job-082",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:52:00Z",
+    "message": "publish-worker-image-082 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-175",
+    "job_id": "job-059",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:52:15Z",
+    "message": "rebalance-job-queues-059 queued behind active deployment work."
+  },
+  {
+    "event_id": "evt-large-176",
+    "job_id": "job-059",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T06:53:00Z",
+    "message": "rebalance-job-queues-059 started and acquired worker lease."
+  },
+  {
+    "event_id": "evt-large-177",
+    "job_id": "job-059",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T06:55:00Z",
+    "message": "rebalance-job-queues-059 is still running and emitting heartbeat telemetry."
+  },
+  {
+    "event_id": "evt-large-246",
+    "job_id": "job-082",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:55:00Z",
+    "message": "publish-worker-image-082 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-247",
+    "job_id": "job-083",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:55:00Z",
+    "message": "rotate-api-keys-083 entered the queue."
+  },
+  {
+    "event_id": "evt-large-248",
+    "job_id": "job-083",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:57:00Z",
+    "message": "rotate-api-keys-083 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-178",
+    "job_id": "job-060",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T06:59:15Z",
+    "message": "verify-backups-060 queued behind active deployment work."
+  },
+  {
+    "event_id": "evt-large-179",
+    "job_id": "job-060",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T07:00:00Z",
+    "message": "verify-backups-060 started and acquired worker lease."
+  },
+  {
+    "event_id": "evt-large-249",
+    "job_id": "job-083",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:00:00Z",
+    "message": "rotate-api-keys-083 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-250",
+    "job_id": "job-084",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:00:00Z",
+    "message": "snapshot-warehouse-084 entered the queue."
+  },
+  {
+    "event_id": "evt-large-180",
+    "job_id": "job-060",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T07:02:00Z",
+    "message": "verify-backups-060 is still running and emitting heartbeat telemetry."
+  },
+  {
+    "event_id": "evt-large-251",
+    "job_id": "job-084",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:02:00Z",
+    "message": "snapshot-warehouse-084 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-252",
+    "job_id": "job-084",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:05:00Z",
+    "message": "snapshot-warehouse-084 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-253",
+    "job_id": "job-085",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:05:00Z",
+    "message": "rebuild-cdn-cache-085 entered the queue."
+  },
+  {
+    "event_id": "evt-large-181",
+    "job_id": "job-061",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:06:15Z",
+    "message": "verify-openapi-contract-061 queued behind active deployment work."
+  },
+  {
+    "event_id": "evt-large-182",
+    "job_id": "job-061",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T07:07:00Z",
+    "message": "verify-openapi-contract-061 started and acquired worker lease."
+  },
+  {
+    "event_id": "evt-large-254",
+    "job_id": "job-085",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:07:00Z",
+    "message": "rebuild-cdn-cache-085 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-183",
+    "job_id": "job-061",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T07:09:00Z",
+    "message": "verify-openapi-contract-061 is still running and emitting heartbeat telemetry."
+  },
+  {
+    "event_id": "evt-large-255",
+    "job_id": "job-085",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:10:00Z",
+    "message": "rebuild-cdn-cache-085 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-256",
+    "job_id": "job-086",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:10:00Z",
+    "message": "train-ranking-model-086 entered the queue."
+  },
+  {
+    "event_id": "evt-large-257",
+    "job_id": "job-086",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:12:00Z",
+    "message": "train-ranking-model-086 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-184",
+    "job_id": "job-062",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:13:15Z",
+    "message": "publish-worker-image-062 queued behind active deployment work."
+  },
+  {
+    "event_id": "evt-large-185",
+    "job_id": "job-062",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T07:14:00Z",
+    "message": "publish-worker-image-062 started and acquired worker lease."
+  },
+  {
+    "event_id": "evt-large-258",
+    "job_id": "job-086",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:15:00Z",
+    "message": "train-ranking-model-086 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-259",
+    "job_id": "job-087",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:15:00Z",
+    "message": "refresh-feature-flags-087 entered the queue."
+  },
+  {
+    "event_id": "evt-large-186",
+    "job_id": "job-062",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T07:16:00Z",
+    "message": "publish-worker-image-062 is still running and emitting heartbeat telemetry."
+  },
+  {
+    "event_id": "evt-large-260",
+    "job_id": "job-087",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:17:00Z",
+    "message": "refresh-feature-flags-087 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-261",
+    "job_id": "job-087",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:20:00Z",
+    "message": "refresh-feature-flags-087 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-262",
+    "job_id": "job-088",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:20:00Z",
+    "message": "scan-container-images-088 entered the queue."
+  },
+  {
+    "event_id": "evt-large-187",
+    "job_id": "job-063",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:20:15Z",
+    "message": "rotate-api-keys-063 queued behind active deployment work."
+  },
+  {
+    "event_id": "evt-large-188",
+    "job_id": "job-063",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T07:21:00Z",
+    "message": "rotate-api-keys-063 started and acquired worker lease."
+  },
+  {
+    "event_id": "evt-large-263",
+    "job_id": "job-088",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:22:00Z",
+    "message": "scan-container-images-088 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-189",
+    "job_id": "job-063",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T07:23:00Z",
+    "message": "rotate-api-keys-063 is still running and emitting heartbeat telemetry."
+  },
+  {
+    "event_id": "evt-large-264",
+    "job_id": "job-088",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:25:00Z",
+    "message": "scan-container-images-088 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-265",
+    "job_id": "job-089",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:25:00Z",
+    "message": "hydrate-search-cache-089 entered the queue."
+  },
+  {
+    "event_id": "evt-large-266",
+    "job_id": "job-089",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:27:00Z",
+    "message": "hydrate-search-cache-089 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-190",
+    "job_id": "job-064",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:27:15Z",
+    "message": "snapshot-warehouse-064 queued behind active deployment work."
+  },
+  {
+    "event_id": "evt-large-191",
+    "job_id": "job-064",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T07:28:00Z",
+    "message": "snapshot-warehouse-064 started and acquired worker lease."
+  },
+  {
+    "event_id": "evt-large-192",
+    "job_id": "job-064",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T07:30:00Z",
+    "message": "snapshot-warehouse-064 is still running and emitting heartbeat telemetry."
+  },
+  {
+    "event_id": "evt-large-267",
+    "job_id": "job-089",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:30:00Z",
+    "message": "hydrate-search-cache-089 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-268",
+    "job_id": "job-090",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:30:00Z",
+    "message": "reconcile-webhooks-090 entered the queue."
+  },
+  {
+    "event_id": "evt-large-269",
+    "job_id": "job-090",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:32:00Z",
+    "message": "reconcile-webhooks-090 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-193",
+    "job_id": "job-065",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:34:15Z",
+    "message": "rebuild-cdn-cache-065 queued behind active deployment work."
+  },
+  {
+    "event_id": "evt-large-194",
+    "job_id": "job-065",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T07:35:00Z",
+    "message": "rebuild-cdn-cache-065 started and acquired worker lease."
+  },
+  {
+    "event_id": "evt-large-270",
+    "job_id": "job-090",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:35:00Z",
+    "message": "reconcile-webhooks-090 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-271",
+    "job_id": "job-091",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:35:00Z",
+    "message": "bootstrap-preview-env-091 entered the queue."
+  },
+  {
+    "event_id": "evt-large-195",
+    "job_id": "job-065",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T07:37:00Z",
+    "message": "rebuild-cdn-cache-065 is still running and emitting heartbeat telemetry."
+  },
+  {
+    "event_id": "evt-large-272",
+    "job_id": "job-091",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:37:00Z",
+    "message": "bootstrap-preview-env-091 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-273",
+    "job_id": "job-091",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:40:00Z",
+    "message": "bootstrap-preview-env-091 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-274",
+    "job_id": "job-092",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:40:00Z",
+    "message": "publish-sdk-docs-092 entered the queue."
+  },
+  {
+    "event_id": "evt-large-196",
+    "job_id": "job-066",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:41:15Z",
+    "message": "train-ranking-model-066 queued behind active deployment work."
+  },
+  {
+    "event_id": "evt-large-197",
+    "job_id": "job-066",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T07:42:00Z",
+    "message": "train-ranking-model-066 started and acquired worker lease."
+  },
+  {
+    "event_id": "evt-large-275",
+    "job_id": "job-092",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:42:00Z",
+    "message": "publish-sdk-docs-092 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-198",
+    "job_id": "job-066",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T07:44:00Z",
+    "message": "train-ranking-model-066 is still running and emitting heartbeat telemetry."
+  },
+  {
+    "event_id": "evt-large-276",
+    "job_id": "job-092",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:45:00Z",
+    "message": "publish-sdk-docs-092 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-277",
+    "job_id": "job-093",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:45:00Z",
+    "message": "archive-old-exports-093 entered the queue."
+  },
+  {
+    "event_id": "evt-large-278",
+    "job_id": "job-093",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:47:00Z",
+    "message": "archive-old-exports-093 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-199",
+    "job_id": "job-067",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:48:15Z",
+    "message": "refresh-feature-flags-067 queued behind active deployment work."
+  },
+  {
+    "event_id": "evt-large-200",
+    "job_id": "job-067",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T07:49:00Z",
+    "message": "refresh-feature-flags-067 started and acquired worker lease."
+  },
+  {
+    "event_id": "evt-large-279",
+    "job_id": "job-093",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:50:00Z",
+    "message": "archive-old-exports-093 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-280",
+    "job_id": "job-094",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:50:00Z",
+    "message": "fanout-tenant-sync-094 entered the queue."
+  },
+  {
+    "event_id": "evt-large-201",
+    "job_id": "job-067",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T07:51:00Z",
+    "message": "refresh-feature-flags-067 is still running and emitting heartbeat telemetry."
+  },
+  {
+    "event_id": "evt-large-281",
+    "job_id": "job-094",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:52:00Z",
+    "message": "fanout-tenant-sync-094 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-282",
+    "job_id": "job-094",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:55:00Z",
+    "message": "fanout-tenant-sync-094 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-283",
+    "job_id": "job-095",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:55:00Z",
+    "message": "reindex-audit-stream-095 entered the queue."
+  },
+  {
+    "event_id": "evt-large-202",
+    "job_id": "job-068",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:55:15Z",
+    "message": "scan-container-images-068 queued behind active deployment work."
+  },
+  {
+    "event_id": "evt-large-203",
+    "job_id": "job-068",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T07:56:00Z",
+    "message": "scan-container-images-068 started and acquired worker lease."
+  },
+  {
+    "event_id": "evt-large-284",
+    "job_id": "job-095",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T07:57:00Z",
+    "message": "reindex-audit-stream-095 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-204",
+    "job_id": "job-068",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T07:58:00Z",
+    "message": "scan-container-images-068 is still running and emitting heartbeat telemetry."
+  },
+  {
+    "event_id": "evt-large-285",
+    "job_id": "job-095",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T08:00:00Z",
+    "message": "reindex-audit-stream-095 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-286",
+    "job_id": "job-096",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T08:00:00Z",
+    "message": "compact-event-store-096 entered the queue."
+  },
+  {
+    "event_id": "evt-large-287",
+    "job_id": "job-096",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T08:02:00Z",
+    "message": "compact-event-store-096 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-205",
+    "job_id": "job-069",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T08:02:15Z",
+    "message": "hydrate-search-cache-069 queued behind active deployment work."
+  },
+  {
+    "event_id": "evt-large-206",
+    "job_id": "job-069",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T08:03:00Z",
+    "message": "hydrate-search-cache-069 started and acquired worker lease."
+  },
+  {
+    "event_id": "evt-large-207",
+    "job_id": "job-069",
+    "event_type": "job_started",
+    "timestamp": "2024-01-16T08:05:00Z",
+    "message": "hydrate-search-cache-069 is still running and emitting heartbeat telemetry."
+  },
+  {
+    "event_id": "evt-large-288",
+    "job_id": "job-096",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T08:05:00Z",
+    "message": "compact-event-store-096 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-289",
+    "job_id": "job-097",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T08:05:00Z",
+    "message": "render-marketing-site-097 entered the queue."
+  },
+  {
+    "event_id": "evt-large-290",
+    "job_id": "job-097",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T08:07:00Z",
+    "message": "render-marketing-site-097 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-291",
+    "job_id": "job-097",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T08:10:00Z",
+    "message": "render-marketing-site-097 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-292",
+    "job_id": "job-098",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T08:10:00Z",
+    "message": "sync-billing-ledger-098 entered the queue."
+  },
+  {
+    "event_id": "evt-large-293",
+    "job_id": "job-098",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T08:12:00Z",
+    "message": "sync-billing-ledger-098 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-294",
+    "job_id": "job-098",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T08:15:00Z",
+    "message": "sync-billing-ledger-098 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-295",
+    "job_id": "job-099",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T08:15:00Z",
+    "message": "rebalance-job-queues-099 entered the queue."
+  },
+  {
+    "event_id": "evt-large-296",
+    "job_id": "job-099",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T08:17:00Z",
+    "message": "rebalance-job-queues-099 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-297",
+    "job_id": "job-099",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T08:20:00Z",
+    "message": "rebalance-job-queues-099 remains queued with no worker assigned yet."
+  },
+  {
+    "event_id": "evt-large-298",
+    "job_id": "job-100",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T08:20:00Z",
+    "message": "verify-backups-100 entered the queue."
+  },
+  {
+    "event_id": "evt-large-299",
+    "job_id": "job-100",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T08:22:00Z",
+    "message": "verify-backups-100 is still pending while upstream prerequisites finish."
+  },
+  {
+    "event_id": "evt-large-300",
+    "job_id": "job-100",
+    "event_type": "job_queued",
+    "timestamp": "2024-01-16T08:25:00Z",
+    "message": "verify-backups-100 remains queued with no worker assigned yet."
+  }
+]

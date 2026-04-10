@@ -1,0 +1,128 @@
+[
+  {
+    "id": "edge-001",
+    "name": "",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "ci"
+    ],
+    "output_lines": [
+      "Empty name should still serialize."
+    ]
+  },
+  {
+    "id": "edge-002",
+    "name": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "ui"
+    ],
+    "output_lines": [
+      "Extremely long name for truncation checks."
+    ]
+  },
+  {
+    "id": "edge-003",
+    "name": "job\nwith\nnewlines",
+    "status": "failed",
+    "started_at": "2024-01-16T00:00:00Z",
+    "duration_s": 1.0,
+    "tags": [
+      "parser"
+    ],
+    "output_lines": [
+      "Name contains newlines."
+    ]
+  },
+  {
+    "id": "edge-004",
+    "name": "job\twith\ttabs",
+    "status": "failed",
+    "started_at": "2024-01-16T00:01:00Z",
+    "duration_s": 2.0,
+    "tags": [
+      "parser"
+    ],
+    "output_lines": [
+      "Name contains tabs."
+    ]
+  },
+  {
+    "id": "edge-005",
+    "name": "<script>alert()</script>",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "security"
+    ],
+    "output_lines": [
+      "Injection attempt should render as plain text."
+    ]
+  },
+  {
+    "id": "edge-006",
+    "name": "job-with-no-tags",
+    "status": "running",
+    "started_at": "2024-01-16T00:02:00Z",
+    "duration_s": null,
+    "tags": [],
+    "output_lines": [
+      "No tags present."
+    ]
+  },
+  {
+    "id": "edge-007",
+    "name": "job-with-null-output",
+    "status": "running",
+    "started_at": "2024-01-16T00:03:00Z",
+    "duration_s": null,
+    "tags": [
+      "null"
+    ],
+    "output_lines": null
+  },
+  {
+    "id": "edge-008",
+    "name": "job-with-zero-duration",
+    "status": "done",
+    "started_at": "2024-01-16T00:04:00Z",
+    "duration_s": 0,
+    "tags": [
+      "timing"
+    ],
+    "output_lines": [
+      "Completed instantly."
+    ]
+  },
+  {
+    "id": "edge-009",
+    "name": "job-with-huge-duration",
+    "status": "done",
+    "started_at": "2024-01-16T00:05:00Z",
+    "duration_s": 999999,
+    "tags": [
+      "timing"
+    ],
+    "output_lines": [
+      "Completed after an extremely long duration."
+    ]
+  },
+  {
+    "id": "edge-010",
+    "name": "done-without-started-at",
+    "status": "done",
+    "started_at": null,
+    "duration_s": 42,
+    "tags": [
+      "consistency"
+    ],
+    "output_lines": [
+      "Intentionally inconsistent for robustness checks."
+    ]
+  }
+]

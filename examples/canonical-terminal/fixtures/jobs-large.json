@@ -1,0 +1,1878 @@
+[
+  {
+    "id": "job-001",
+    "name": "build-frontend",
+    "status": "done",
+    "started_at": "2024-01-15T10:23:00Z",
+    "duration_s": 47.3,
+    "tags": [
+      "frontend",
+      "ci",
+      "build"
+    ],
+    "output_lines": [
+      "Step 1/4: Installing dependencies...",
+      "Step 2/4: Running webpack build...",
+      "Step 3/4: Generating sourcemaps...",
+      "Step 4/4: Build complete. 2.4MB bundle."
+    ]
+  },
+  {
+    "id": "job-002",
+    "name": "run-tests",
+    "status": "done",
+    "started_at": "2024-01-15T10:30:00Z",
+    "duration_s": 58.7,
+    "tags": [
+      "ci",
+      "test",
+      "backend"
+    ],
+    "output_lines": [
+      "Collecting 182 tests...",
+      "Running unit suite...",
+      "Running integration stubs...",
+      "All tests passed."
+    ]
+  },
+  {
+    "id": "job-003",
+    "name": "lint-python",
+    "status": "done",
+    "started_at": "2024-01-15T10:41:00Z",
+    "duration_s": 12.4,
+    "tags": [
+      "lint",
+      "python",
+      "ci"
+    ],
+    "output_lines": [
+      "ruff check src/",
+      "black --check src/",
+      "No style violations found."
+    ]
+  },
+  {
+    "id": "job-004",
+    "name": "compile-rust",
+    "status": "done",
+    "started_at": "2024-01-15T10:50:00Z",
+    "duration_s": 89.1,
+    "tags": [
+      "build",
+      "rust",
+      "backend"
+    ],
+    "output_lines": [
+      "cargo build --release",
+      "Compiling worker-core...",
+      "Linking target/release/worker...",
+      "Finished release build."
+    ]
+  },
+  {
+    "id": "job-005",
+    "name": "seed-database",
+    "status": "done",
+    "started_at": "2024-01-15T11:05:00Z",
+    "duration_s": 34.8,
+    "tags": [
+      "db",
+      "backend",
+      "ci"
+    ],
+    "output_lines": [
+      "Opening migration transaction...",
+      "Applying seed fixtures...",
+      "Inserted 124 rows across 7 tables."
+    ]
+  },
+  {
+    "id": "job-006",
+    "name": "deploy-staging",
+    "status": "failed",
+    "started_at": "2024-01-15T11:12:00Z",
+    "duration_s": 76.2,
+    "tags": [
+      "deploy",
+      "cd",
+      "infra"
+    ],
+    "output_lines": [
+      "Packaging release artifact...",
+      "Uploading image to registry...",
+      "Error: deployment health check timed out."
+    ]
+  },
+  {
+    "id": "job-007",
+    "name": "integration-tests",
+    "status": "failed",
+    "started_at": "2024-01-15T11:26:00Z",
+    "duration_s": 112.6,
+    "tags": [
+      "test",
+      "backend",
+      "db"
+    ],
+    "output_lines": [
+      "Booting ephemeral services...",
+      "Running API contract tests...",
+      "Error: expected 200 from /health, received 503."
+    ]
+  },
+  {
+    "id": "job-008",
+    "name": "sync-assets",
+    "status": "failed",
+    "started_at": "2024-01-15T11:44:00Z",
+    "duration_s": 43.9,
+    "tags": [
+      "sync",
+      "frontend",
+      "cd"
+    ],
+    "output_lines": [
+      "Scanning asset manifest...",
+      "Uploading 18 changed files...",
+      "Error: checksum mismatch for hero-banner.png."
+    ]
+  },
+  {
+    "id": "job-009",
+    "name": "cleanup-artifacts",
+    "status": "failed",
+    "started_at": "2024-01-15T11:53:00Z",
+    "duration_s": 21.5,
+    "tags": [
+      "cleanup",
+      "infra",
+      "ci"
+    ],
+    "output_lines": [
+      "Pruning stale build artifacts...",
+      "Removing orphaned cache entries...",
+      "Error: permission denied on cache/tmp/build-42."
+    ]
+  },
+  {
+    "id": "job-010",
+    "name": "generate-report",
+    "status": "running",
+    "started_at": "2024-01-15T12:00:00Z",
+    "duration_s": null,
+    "tags": [
+      "report",
+      "python",
+      "backend"
+    ],
+    "output_lines": [
+      "Log line 01: streaming artifact inspection segment 1 complete.",
+      "Log line 02: streaming artifact inspection segment 2 complete.",
+      "Log line 03: streaming artifact inspection segment 3 complete.",
+      "Log line 04: streaming artifact inspection segment 4 complete.",
+      "Log line 05: streaming artifact inspection segment 5 complete.",
+      "Log line 06: streaming artifact inspection segment 6 complete.",
+      "Log line 07: streaming artifact inspection segment 7 complete.",
+      "Log line 08: streaming artifact inspection segment 8 complete.",
+      "Log line 09: streaming artifact inspection segment 9 complete.",
+      "Log line 10: streaming artifact inspection segment 10 complete.",
+      "Log line 11: streaming artifact inspection segment 11 complete.",
+      "Log line 12: streaming artifact inspection segment 12 complete.",
+      "Log line 13: streaming artifact inspection segment 13 complete.",
+      "Log line 14: streaming artifact inspection segment 14 complete.",
+      "Log line 15: streaming artifact inspection segment 15 complete.",
+      "Log line 16: streaming artifact inspection segment 16 complete.",
+      "Log line 17: streaming artifact inspection segment 17 complete.",
+      "Log line 18: streaming artifact inspection segment 18 complete.",
+      "Log line 19: streaming artifact inspection segment 19 complete.",
+      "Log line 20: streaming artifact inspection segment 20 complete.",
+      "Log line 21: streaming artifact inspection segment 21 complete.",
+      "Log line 22: streaming artifact inspection segment 22 complete.",
+      "Log line 23: streaming artifact inspection segment 23 complete.",
+      "Log line 24: streaming artifact inspection segment 24 complete.",
+      "Log line 25: streaming artifact inspection segment 25 complete.",
+      "Log line 26: streaming artifact inspection segment 26 complete.",
+      "Log line 27: streaming artifact inspection segment 27 complete.",
+      "Log line 28: streaming artifact inspection segment 28 complete.",
+      "Log line 29: streaming artifact inspection segment 29 complete.",
+      "Log line 30: streaming artifact inspection segment 30 complete.",
+      "Log line 31: streaming artifact inspection segment 31 complete.",
+      "Log line 32: streaming artifact inspection segment 32 complete.",
+      "Log line 33: streaming artifact inspection segment 33 complete.",
+      "Log line 34: streaming artifact inspection segment 34 complete.",
+      "Log line 35: streaming artifact inspection segment 35 complete.",
+      "Log line 36: streaming artifact inspection segment 36 complete.",
+      "Log line 37: streaming artifact inspection segment 37 complete.",
+      "Log line 38: streaming artifact inspection segment 38 complete.",
+      "Log line 39: streaming artifact inspection segment 39 complete.",
+      "Log line 40: streaming artifact inspection segment 40 complete.",
+      "Log line 41: streaming artifact inspection segment 41 complete.",
+      "Log line 42: streaming artifact inspection segment 42 complete.",
+      "Log line 43: streaming artifact inspection segment 43 complete.",
+      "Log line 44: streaming artifact inspection segment 44 complete.",
+      "Log line 45: streaming artifact inspection segment 45 complete.",
+      "Log line 46: streaming artifact inspection segment 46 complete.",
+      "Log line 47: streaming artifact inspection segment 47 complete.",
+      "Log line 48: streaming artifact inspection segment 48 complete.",
+      "Log line 49: streaming artifact inspection segment 49 complete.",
+      "Log line 50: streaming artifact inspection segment 50 complete.",
+      "Log line 51: streaming artifact inspection segment 51 complete.",
+      "Log line 52: streaming artifact inspection segment 52 complete.",
+      "Log line 53: streaming artifact inspection segment 53 complete.",
+      "Log line 54: streaming artifact inspection segment 54 complete.",
+      "Log line 55: streaming artifact inspection segment 55 complete.",
+      "Log line 56: streaming artifact inspection segment 56 complete.",
+      "Log line 57: streaming artifact inspection segment 57 complete.",
+      "Log line 58: streaming artifact inspection segment 58 complete.",
+      "Log line 59: streaming artifact inspection segment 59 complete.",
+      "Log line 60: streaming artifact inspection segment 60 complete."
+    ]
+  },
+  {
+    "id": "job-011",
+    "name": "deploy-production",
+    "status": "running",
+    "started_at": "2024-01-15T12:06:00Z",
+    "duration_s": null,
+    "tags": [
+      "deploy",
+      "cd",
+      "infra"
+    ],
+    "output_lines": [
+      "Preparing blue-green deployment...",
+      "Waiting for canary metrics window..."
+    ]
+  },
+  {
+    "id": "job-012",
+    "name": "refresh-search-index",
+    "status": "running",
+    "started_at": "2024-01-15T12:11:00Z",
+    "duration_s": null,
+    "tags": [
+      "sync",
+      "backend",
+      "go"
+    ],
+    "output_lines": [
+      "Reading changed records batch...",
+      "Submitting documents to indexer..."
+    ]
+  },
+  {
+    "id": "job-013",
+    "name": "package-cli",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "build",
+      "python",
+      "ci"
+    ],
+    "output_lines": [
+      "Queued for packaging worker.",
+      "Waiting on build artifact promotion."
+    ]
+  },
+  {
+    "id": "job-014",
+    "name": "backup-database",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "db",
+      "infra",
+      "cleanup"
+    ],
+    "output_lines": [
+      "Queued in nightly maintenance window.",
+      "Awaiting primary replica lock."
+    ]
+  },
+  {
+    "id": "job-015",
+    "name": "warm-cache",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "backend",
+      "infra",
+      "sync"
+    ],
+    "output_lines": [
+      "Queued after index refresh completes.",
+      "No worker assigned yet."
+    ]
+  },
+  {
+    "id": "job-016",
+    "name": "publish-docs",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "deploy",
+      "frontend",
+      "report"
+    ],
+    "output_lines": [
+      "Queued for docs pipeline.",
+      "Awaiting approval gate."
+    ]
+  },
+  {
+    "id": "job-017",
+    "name": "load-test-api",
+    "status": "done",
+    "started_at": "2024-01-15T08:15:00Z",
+    "duration_s": 312.4,
+    "tags": [
+      "test",
+      "backend",
+      "infra"
+    ],
+    "output_lines": [
+      "Provisioning load generators...",
+      "Driving 2k RPS against /api/v1...",
+      "Collecting latency histograms...",
+      "Run complete. p95=184ms."
+    ]
+  },
+  {
+    "id": "job-018",
+    "name": "export-billing-data",
+    "status": "done",
+    "started_at": "2024-01-15T07:30:00Z",
+    "duration_s": 488.0,
+    "tags": [
+      "report",
+      "db",
+      "python"
+    ],
+    "output_lines": [
+      "Extracting billing ledger rows...",
+      "Transforming records to parquet...",
+      "Uploading archive to object storage.",
+      "Export complete."
+    ]
+  },
+  {
+    "id": "job-019",
+    "name": "rebuild-search",
+    "status": "done",
+    "started_at": "2024-01-15T06:50:00Z",
+    "duration_s": 721.6,
+    "tags": [
+      "sync",
+      "backend",
+      "infra"
+    ],
+    "output_lines": [
+      "Dropping stale search shards...",
+      "Streaming product catalog documents...",
+      "Optimizing shard segments...",
+      "Search rebuild complete."
+    ]
+  },
+  {
+    "id": "job-020",
+    "name": "archive-audit-logs",
+    "status": "done",
+    "started_at": "2024-01-15T05:40:00Z",
+    "duration_s": 854.2,
+    "tags": [
+      "cleanup",
+      "report",
+      "infra"
+    ],
+    "output_lines": [
+      "Scanning audit partitions...",
+      "Compressing 14 log segments...",
+      "Writing archive manifest...",
+      "Archive stored in cold tier."
+    ]
+  },
+  {
+    "id": "job-021",
+    "name": "ci-monorepo-smoke-validation-for-shared-contract-and-release-gating",
+    "status": "done",
+    "started_at": "2024-01-16T02:27:00Z",
+    "duration_s": 2.0,
+    "tags": [
+      "infra",
+      "sync",
+      "report"
+    ],
+    "output_lines": [
+      "Job job-021 started on worker-4.",
+      "Processed 221 records successfully.",
+      "Completed in 2.0s."
+    ]
+  },
+  {
+    "id": "job-022",
+    "name": "nightly-analytics-backfill-and-materialized-view-refresh-for-finance",
+    "status": "done",
+    "started_at": "2024-01-16T02:34:00Z",
+    "duration_s": 5.0,
+    "tags": [
+      "sync",
+      "report",
+      "frontend"
+    ],
+    "output_lines": [
+      "Job job-022 started on worker-5.",
+      "Processed 222 records successfully.",
+      "Completed in 5.0s."
+    ]
+  },
+  {
+    "id": "job-023",
+    "name": "staging-blue-green-deployment-with-preflight-schema-and-canary-checks",
+    "status": "done",
+    "started_at": "2024-01-16T02:41:00Z",
+    "duration_s": 8.5,
+    "tags": [
+      "report",
+      "frontend",
+      "backend"
+    ],
+    "output_lines": [
+      "Job job-023 started on worker-6.",
+      "Processed 223 records successfully.",
+      "Completed in 8.5s."
+    ]
+  },
+  {
+    "id": "job-024",
+    "name": "cross-region-disaster-recovery-snapshot-integrity-and-restore-drill",
+    "status": "done",
+    "started_at": "2024-01-16T02:48:00Z",
+    "duration_s": 13.2,
+    "tags": [
+      "frontend",
+      "backend",
+      "ci"
+    ],
+    "output_lines": [
+      "Job job-024 started on worker-7.",
+      "Processed 224 records successfully.",
+      "Completed in 13.2s."
+    ]
+  },
+  {
+    "id": "job-025",
+    "name": "customer-data-export-redaction-audit-and-compliance-bundle-generation",
+    "status": "done",
+    "started_at": "2024-01-16T02:55:00Z",
+    "duration_s": 21.0,
+    "tags": [
+      "backend",
+      "ci",
+      "deploy"
+    ],
+    "output_lines": [
+      "Job job-025 started on worker-8.",
+      "Processed 225 records successfully.",
+      "Completed in 21.0s."
+    ]
+  },
+  {
+    "id": "job-026",
+    "name": "mobile-release-candidate-signing-notarization-and-store-metadata-sync",
+    "status": "done",
+    "started_at": "2024-01-16T03:02:00Z",
+    "duration_s": 34.7,
+    "tags": [
+      "ci",
+      "deploy",
+      "db"
+    ],
+    "output_lines": [
+      "Job job-026 started on worker-9.",
+      "Processed 226 records successfully.",
+      "Completed in 34.7s."
+    ]
+  },
+  {
+    "id": "job-027",
+    "name": "observability-pipeline-cardinality-budget-audit-and-metric-shaping",
+    "status": "done",
+    "started_at": "2024-01-16T03:09:00Z",
+    "duration_s": 55.4,
+    "tags": [
+      "deploy",
+      "db",
+      "infra"
+    ],
+    "output_lines": [
+      "Job job-027 started on worker-1.",
+      "Processed 227 records successfully.",
+      "Completed in 55.4s."
+    ]
+  },
+  {
+    "id": "job-028",
+    "name": "search-index-hot-shard-rebalancing-and-catalog-consistency-verification",
+    "status": "done",
+    "started_at": "2024-01-16T03:16:00Z",
+    "duration_s": 89.9,
+    "tags": [
+      "db",
+      "infra",
+      "sync"
+    ],
+    "output_lines": [
+      "Job job-028 started on worker-2.",
+      "Processed 228 records successfully.",
+      "Completed in 89.9s."
+    ]
+  },
+  {
+    "id": "job-029",
+    "name": "billing-ledger-reconciliation-and-disputed-invoice-evidence-packaging",
+    "status": "done",
+    "started_at": "2024-01-16T03:23:00Z",
+    "duration_s": 144.0,
+    "tags": [
+      "infra",
+      "sync",
+      "report"
+    ],
+    "output_lines": [
+      "Job job-029 started on worker-3.",
+      "Processed 229 records successfully.",
+      "Completed in 144.0s."
+    ]
+  },
+  {
+    "id": "job-030",
+    "name": "security-baseline-rotation-secrets-rollout-and-host-attestation-sweep",
+    "status": "done",
+    "started_at": "2024-01-16T03:30:00Z",
+    "duration_s": 233.0,
+    "tags": [
+      "sync",
+      "report",
+      "frontend"
+    ],
+    "output_lines": [
+      "Job job-030 started on worker-4.",
+      "Processed 230 records successfully.",
+      "Completed in 233.0s."
+    ]
+  },
+  {
+    "id": "job-031",
+    "name": "bootstrap-preview-env-031",
+    "status": "done",
+    "started_at": "2024-01-16T03:37:00Z",
+    "duration_s": 377.0,
+    "tags": [
+      "report",
+      "frontend",
+      "backend"
+    ],
+    "output_lines": []
+  },
+  {
+    "id": "job-032",
+    "name": "publish-sdk-docs-032",
+    "status": "done",
+    "started_at": "2024-01-16T03:44:00Z",
+    "duration_s": 610.0,
+    "tags": [
+      "frontend",
+      "backend",
+      "ci"
+    ],
+    "output_lines": []
+  },
+  {
+    "id": "job-033",
+    "name": "archive-old-exports-033",
+    "status": "done",
+    "started_at": "2024-01-16T03:51:00Z",
+    "duration_s": 987.0,
+    "tags": [
+      "backend",
+      "ci",
+      "deploy"
+    ],
+    "output_lines": []
+  },
+  {
+    "id": "job-034",
+    "name": "fanout-tenant-sync-034",
+    "status": "done",
+    "started_at": "2024-01-16T03:58:00Z",
+    "duration_s": 1200.0,
+    "tags": [
+      "ci",
+      "deploy",
+      "db"
+    ],
+    "output_lines": []
+  },
+  {
+    "id": "job-035",
+    "name": "reindex-audit-stream-035",
+    "status": "done",
+    "started_at": "2024-01-16T04:05:00Z",
+    "duration_s": 1800.0,
+    "tags": [
+      "deploy",
+      "db",
+      "infra"
+    ],
+    "output_lines": []
+  },
+  {
+    "id": "job-036",
+    "name": "compact-event-store-036",
+    "status": "done",
+    "started_at": "2024-01-16T04:12:00Z",
+    "duration_s": 2400.0,
+    "tags": [
+      "déploiement",
+      "frontend",
+      "ci"
+    ],
+    "output_lines": [
+      "Job job-036 started on worker-1.",
+      "Processed 236 records successfully.",
+      "Completed in 2400.0s."
+    ]
+  },
+  {
+    "id": "job-037",
+    "name": "render-marketing-site-037",
+    "status": "done",
+    "started_at": "2024-01-16T04:19:00Z",
+    "duration_s": 3000.0,
+    "tags": [
+      "构建",
+      "backend",
+      "build"
+    ],
+    "output_lines": [
+      "Job job-037 started on worker-2.",
+      "Processed 237 records successfully.",
+      "Completed in 3000.0s."
+    ]
+  },
+  {
+    "id": "job-038",
+    "name": "sync-billing-ledger-038",
+    "status": "done",
+    "started_at": "2024-01-16T04:26:00Z",
+    "duration_s": 3300.0,
+    "tags": [
+      "настройка",
+      "infra",
+      "sync"
+    ],
+    "output_lines": [
+      "Job job-038 started on worker-3.",
+      "Processed 238 records successfully.",
+      "Completed in 3300.0s."
+    ]
+  },
+  {
+    "id": "job-039",
+    "name": "rebalance-job-queues-039",
+    "status": "done",
+    "started_at": "2024-01-16T04:33:00Z",
+    "duration_s": 3456.0,
+    "tags": [
+      "テスト",
+      "ci",
+      "test"
+    ],
+    "output_lines": [
+      "Job job-039 started on worker-4.",
+      "Processed 239 records successfully.",
+      "Completed in 3456.0s."
+    ]
+  },
+  {
+    "id": "job-040",
+    "name": "verify-backups-040",
+    "status": "done",
+    "started_at": "2024-01-16T04:40:00Z",
+    "duration_s": 3590.0,
+    "tags": [
+      "🔥",
+      "deploy",
+      "cd"
+    ],
+    "output_lines": [
+      "Job job-040 started on worker-5.",
+      "Processed 240 records successfully.",
+      "Completed in 3590.0s."
+    ]
+  },
+  {
+    "id": "job-041",
+    "name": "verify-openapi-contract-041",
+    "status": "done",
+    "started_at": "2024-01-16T04:47:00Z",
+    "duration_s": 3600.0,
+    "tags": [
+      "backend",
+      "ci",
+      "deploy"
+    ],
+    "output_lines": [
+      "Log line 01: streaming artifact inspection segment 1 complete.",
+      "Log line 02: streaming artifact inspection segment 2 complete.",
+      "Log line 03: streaming artifact inspection segment 3 complete.",
+      "Log line 04: streaming artifact inspection segment 4 complete.",
+      "Log line 05: streaming artifact inspection segment 5 complete.",
+      "Log line 06: streaming artifact inspection segment 6 complete.",
+      "Log line 07: streaming artifact inspection segment 7 complete.",
+      "Log line 08: streaming artifact inspection segment 8 complete.",
+      "Log line 09: streaming artifact inspection segment 9 complete.",
+      "Log line 10: streaming artifact inspection segment 10 complete.",
+      "Log line 11: streaming artifact inspection segment 11 complete.",
+      "Log line 12: streaming artifact inspection segment 12 complete.",
+      "Log line 13: streaming artifact inspection segment 13 complete.",
+      "Log line 14: streaming artifact inspection segment 14 complete.",
+      "Log line 15: streaming artifact inspection segment 15 complete.",
+      "Log line 16: streaming artifact inspection segment 16 complete.",
+      "Log line 17: streaming artifact inspection segment 17 complete.",
+      "Log line 18: streaming artifact inspection segment 18 complete.",
+      "Log line 19: streaming artifact inspection segment 19 complete.",
+      "Log line 20: streaming artifact inspection segment 20 complete.",
+      "Log line 21: streaming artifact inspection segment 21 complete.",
+      "Log line 22: streaming artifact inspection segment 22 complete.",
+      "Log line 23: streaming artifact inspection segment 23 complete.",
+      "Log line 24: streaming artifact inspection segment 24 complete.",
+      "Log line 25: streaming artifact inspection segment 25 complete.",
+      "Log line 26: streaming artifact inspection segment 26 complete.",
+      "Log line 27: streaming artifact inspection segment 27 complete.",
+      "Log line 28: streaming artifact inspection segment 28 complete.",
+      "Log line 29: streaming artifact inspection segment 29 complete.",
+      "Log line 30: streaming artifact inspection segment 30 complete.",
+      "Log line 31: streaming artifact inspection segment 31 complete.",
+      "Log line 32: streaming artifact inspection segment 32 complete.",
+      "Log line 33: streaming artifact inspection segment 33 complete.",
+      "Log line 34: streaming artifact inspection segment 34 complete.",
+      "Log line 35: streaming artifact inspection segment 35 complete.",
+      "Log line 36: streaming artifact inspection segment 36 complete.",
+      "Log line 37: streaming artifact inspection segment 37 complete.",
+      "Log line 38: streaming artifact inspection segment 38 complete.",
+      "Log line 39: streaming artifact inspection segment 39 complete.",
+      "Log line 40: streaming artifact inspection segment 40 complete.",
+      "Log line 41: streaming artifact inspection segment 41 complete.",
+      "Log line 42: streaming artifact inspection segment 42 complete.",
+      "Log line 43: streaming artifact inspection segment 43 complete.",
+      "Log line 44: streaming artifact inspection segment 44 complete.",
+      "Log line 45: streaming artifact inspection segment 45 complete.",
+      "Log line 46: streaming artifact inspection segment 46 complete.",
+      "Log line 47: streaming artifact inspection segment 47 complete.",
+      "Log line 48: streaming artifact inspection segment 48 complete.",
+      "Log line 49: streaming artifact inspection segment 49 complete.",
+      "Log line 50: streaming artifact inspection segment 50 complete.",
+      "Log line 51: streaming artifact inspection segment 51 complete.",
+      "Log line 52: streaming artifact inspection segment 52 complete.",
+      "Log line 53: streaming artifact inspection segment 53 complete.",
+      "Log line 54: streaming artifact inspection segment 54 complete.",
+      "Log line 55: streaming artifact inspection segment 55 complete.",
+      "Log line 56: streaming artifact inspection segment 56 complete.",
+      "Log line 57: streaming artifact inspection segment 57 complete.",
+      "Log line 58: streaming artifact inspection segment 58 complete.",
+      "Log line 59: streaming artifact inspection segment 59 complete.",
+      "Log line 60: streaming artifact inspection segment 60 complete."
+    ]
+  },
+  {
+    "id": "job-042",
+    "name": "publish-worker-image-042",
+    "status": "failed",
+    "started_at": "2024-01-16T04:54:00Z",
+    "duration_s": 14.2,
+    "tags": [
+      "ci",
+      "deploy",
+      "db"
+    ],
+    "output_lines": [
+      "Log line 01: streaming artifact inspection segment 1 complete.",
+      "Log line 02: streaming artifact inspection segment 2 complete.",
+      "Log line 03: streaming artifact inspection segment 3 complete.",
+      "Log line 04: streaming artifact inspection segment 4 complete.",
+      "Log line 05: streaming artifact inspection segment 5 complete.",
+      "Log line 06: streaming artifact inspection segment 6 complete.",
+      "Log line 07: streaming artifact inspection segment 7 complete.",
+      "Log line 08: streaming artifact inspection segment 8 complete.",
+      "Log line 09: streaming artifact inspection segment 9 complete.",
+      "Log line 10: streaming artifact inspection segment 10 complete.",
+      "Log line 11: streaming artifact inspection segment 11 complete.",
+      "Log line 12: streaming artifact inspection segment 12 complete.",
+      "Log line 13: streaming artifact inspection segment 13 complete.",
+      "Log line 14: streaming artifact inspection segment 14 complete.",
+      "Log line 15: streaming artifact inspection segment 15 complete.",
+      "Log line 16: streaming artifact inspection segment 16 complete.",
+      "Log line 17: streaming artifact inspection segment 17 complete.",
+      "Log line 18: streaming artifact inspection segment 18 complete.",
+      "Log line 19: streaming artifact inspection segment 19 complete.",
+      "Log line 20: streaming artifact inspection segment 20 complete.",
+      "Log line 21: streaming artifact inspection segment 21 complete.",
+      "Log line 22: streaming artifact inspection segment 22 complete.",
+      "Log line 23: streaming artifact inspection segment 23 complete.",
+      "Log line 24: streaming artifact inspection segment 24 complete.",
+      "Log line 25: streaming artifact inspection segment 25 complete.",
+      "Log line 26: streaming artifact inspection segment 26 complete.",
+      "Log line 27: streaming artifact inspection segment 27 complete.",
+      "Log line 28: streaming artifact inspection segment 28 complete.",
+      "Log line 29: streaming artifact inspection segment 29 complete.",
+      "Log line 30: streaming artifact inspection segment 30 complete.",
+      "Log line 31: streaming artifact inspection segment 31 complete.",
+      "Log line 32: streaming artifact inspection segment 32 complete.",
+      "Log line 33: streaming artifact inspection segment 33 complete.",
+      "Log line 34: streaming artifact inspection segment 34 complete.",
+      "Log line 35: streaming artifact inspection segment 35 complete.",
+      "Log line 36: streaming artifact inspection segment 36 complete.",
+      "Log line 37: streaming artifact inspection segment 37 complete.",
+      "Log line 38: streaming artifact inspection segment 38 complete.",
+      "Log line 39: streaming artifact inspection segment 39 complete.",
+      "Log line 40: streaming artifact inspection segment 40 complete.",
+      "Log line 41: streaming artifact inspection segment 41 complete.",
+      "Log line 42: streaming artifact inspection segment 42 complete.",
+      "Log line 43: streaming artifact inspection segment 43 complete.",
+      "Log line 44: streaming artifact inspection segment 44 complete.",
+      "Log line 45: streaming artifact inspection segment 45 complete.",
+      "Log line 46: streaming artifact inspection segment 46 complete.",
+      "Log line 47: streaming artifact inspection segment 47 complete.",
+      "Log line 48: streaming artifact inspection segment 48 complete.",
+      "Log line 49: streaming artifact inspection segment 49 complete.",
+      "Log line 50: streaming artifact inspection segment 50 complete.",
+      "Log line 51: streaming artifact inspection segment 51 complete.",
+      "Log line 52: streaming artifact inspection segment 52 complete.",
+      "Log line 53: streaming artifact inspection segment 53 complete.",
+      "Log line 54: streaming artifact inspection segment 54 complete.",
+      "Log line 55: streaming artifact inspection segment 55 complete.",
+      "Log line 56: streaming artifact inspection segment 56 complete.",
+      "Log line 57: streaming artifact inspection segment 57 complete.",
+      "Log line 58: streaming artifact inspection segment 58 complete.",
+      "Log line 59: streaming artifact inspection segment 59 complete.",
+      "Log line 60: streaming artifact inspection segment 60 complete."
+    ]
+  },
+  {
+    "id": "job-043",
+    "name": "rotate-api-keys-043",
+    "status": "failed",
+    "started_at": "2024-01-16T05:01:00Z",
+    "duration_s": 26.5,
+    "tags": [
+      "deploy",
+      "db",
+      "infra"
+    ],
+    "output_lines": [
+      "Log line 01: streaming artifact inspection segment 1 complete.",
+      "Log line 02: streaming artifact inspection segment 2 complete.",
+      "Log line 03: streaming artifact inspection segment 3 complete.",
+      "Log line 04: streaming artifact inspection segment 4 complete.",
+      "Log line 05: streaming artifact inspection segment 5 complete.",
+      "Log line 06: streaming artifact inspection segment 6 complete.",
+      "Log line 07: streaming artifact inspection segment 7 complete.",
+      "Log line 08: streaming artifact inspection segment 8 complete.",
+      "Log line 09: streaming artifact inspection segment 9 complete.",
+      "Log line 10: streaming artifact inspection segment 10 complete.",
+      "Log line 11: streaming artifact inspection segment 11 complete.",
+      "Log line 12: streaming artifact inspection segment 12 complete.",
+      "Log line 13: streaming artifact inspection segment 13 complete.",
+      "Log line 14: streaming artifact inspection segment 14 complete.",
+      "Log line 15: streaming artifact inspection segment 15 complete.",
+      "Log line 16: streaming artifact inspection segment 16 complete.",
+      "Log line 17: streaming artifact inspection segment 17 complete.",
+      "Log line 18: streaming artifact inspection segment 18 complete.",
+      "Log line 19: streaming artifact inspection segment 19 complete.",
+      "Log line 20: streaming artifact inspection segment 20 complete.",
+      "Log line 21: streaming artifact inspection segment 21 complete.",
+      "Log line 22: streaming artifact inspection segment 22 complete.",
+      "Log line 23: streaming artifact inspection segment 23 complete.",
+      "Log line 24: streaming artifact inspection segment 24 complete.",
+      "Log line 25: streaming artifact inspection segment 25 complete.",
+      "Log line 26: streaming artifact inspection segment 26 complete.",
+      "Log line 27: streaming artifact inspection segment 27 complete.",
+      "Log line 28: streaming artifact inspection segment 28 complete.",
+      "Log line 29: streaming artifact inspection segment 29 complete.",
+      "Log line 30: streaming artifact inspection segment 30 complete.",
+      "Log line 31: streaming artifact inspection segment 31 complete.",
+      "Log line 32: streaming artifact inspection segment 32 complete.",
+      "Log line 33: streaming artifact inspection segment 33 complete.",
+      "Log line 34: streaming artifact inspection segment 34 complete.",
+      "Log line 35: streaming artifact inspection segment 35 complete.",
+      "Log line 36: streaming artifact inspection segment 36 complete.",
+      "Log line 37: streaming artifact inspection segment 37 complete.",
+      "Log line 38: streaming artifact inspection segment 38 complete.",
+      "Log line 39: streaming artifact inspection segment 39 complete.",
+      "Log line 40: streaming artifact inspection segment 40 complete.",
+      "Log line 41: streaming artifact inspection segment 41 complete.",
+      "Log line 42: streaming artifact inspection segment 42 complete.",
+      "Log line 43: streaming artifact inspection segment 43 complete.",
+      "Log line 44: streaming artifact inspection segment 44 complete.",
+      "Log line 45: streaming artifact inspection segment 45 complete.",
+      "Log line 46: streaming artifact inspection segment 46 complete.",
+      "Log line 47: streaming artifact inspection segment 47 complete.",
+      "Log line 48: streaming artifact inspection segment 48 complete.",
+      "Log line 49: streaming artifact inspection segment 49 complete.",
+      "Log line 50: streaming artifact inspection segment 50 complete.",
+      "Log line 51: streaming artifact inspection segment 51 complete.",
+      "Log line 52: streaming artifact inspection segment 52 complete.",
+      "Log line 53: streaming artifact inspection segment 53 complete.",
+      "Log line 54: streaming artifact inspection segment 54 complete.",
+      "Log line 55: streaming artifact inspection segment 55 complete.",
+      "Log line 56: streaming artifact inspection segment 56 complete.",
+      "Log line 57: streaming artifact inspection segment 57 complete.",
+      "Log line 58: streaming artifact inspection segment 58 complete.",
+      "Log line 59: streaming artifact inspection segment 59 complete.",
+      "Log line 60: streaming artifact inspection segment 60 complete."
+    ]
+  },
+  {
+    "id": "job-044",
+    "name": "snapshot-warehouse-044",
+    "status": "failed",
+    "started_at": "2024-01-16T05:08:00Z",
+    "duration_s": 45.0,
+    "tags": [
+      "frontend",
+      "backend",
+      "ci",
+      "deploy",
+      "db",
+      "infra",
+      "sync",
+      "report"
+    ],
+    "output_lines": [
+      "Job job-044 started on worker-3.",
+      "Streaming intermediate checkpoint updates...",
+      "Error: database migration lock exceeded the configured timeout."
+    ]
+  },
+  {
+    "id": "job-045",
+    "name": "rebuild-cdn-cache-045",
+    "status": "failed",
+    "started_at": "2024-01-16T05:15:00Z",
+    "duration_s": 78.3,
+    "tags": [
+      "frontend",
+      "backend",
+      "ci",
+      "deploy",
+      "db",
+      "infra",
+      "sync",
+      "report"
+    ],
+    "output_lines": [
+      "Job job-045 started on worker-4.",
+      "Streaming intermediate checkpoint updates...",
+      "Error: remote executor lost lease while job was in progress."
+    ]
+  },
+  {
+    "id": "job-046",
+    "name": "train-ranking-model-046",
+    "status": "failed",
+    "started_at": "2024-01-16T05:22:00Z",
+    "duration_s": 120.7,
+    "tags": [
+      "frontend",
+      "backend",
+      "ci",
+      "deploy",
+      "db",
+      "infra",
+      "sync",
+      "report"
+    ],
+    "output_lines": [
+      "Job job-046 started on worker-5.",
+      "Streaming intermediate checkpoint updates...",
+      "Error: deployment policy rejected the rollout due to metric regression."
+    ]
+  },
+  {
+    "id": "job-047",
+    "name": "refresh-feature-flags-047",
+    "status": "failed",
+    "started_at": "2024-01-16T05:29:00Z",
+    "duration_s": 210.2,
+    "tags": [
+      "report",
+      "frontend",
+      "backend"
+    ],
+    "output_lines": [
+      "Job job-047 started on worker-6.",
+      "Streaming intermediate checkpoint updates...",
+      "Error: upstream dependency returned HTTP 503 during readiness probe."
+    ]
+  },
+  {
+    "id": "job-048",
+    "name": "scan-container-images-048",
+    "status": "failed",
+    "started_at": "2024-01-16T05:36:00Z",
+    "duration_s": 305.0,
+    "tags": [
+      "frontend",
+      "backend",
+      "ci"
+    ],
+    "output_lines": [
+      "Job job-048 started on worker-1.",
+      "Streaming intermediate checkpoint updates...",
+      "Error: artifact checksum mismatch detected during promotion window."
+    ]
+  },
+  {
+    "id": "job-049",
+    "name": "hydrate-search-cache-049",
+    "status": "failed",
+    "started_at": "2024-01-16T05:43:00Z",
+    "duration_s": 512.4,
+    "tags": [
+      "backend",
+      "ci",
+      "deploy"
+    ],
+    "output_lines": [
+      "Job job-049 started on worker-2.",
+      "Streaming intermediate checkpoint updates...",
+      "Error: database migration lock exceeded the configured timeout."
+    ]
+  },
+  {
+    "id": "job-050",
+    "name": "reconcile-webhooks-050",
+    "status": "failed",
+    "started_at": "2024-01-16T05:50:00Z",
+    "duration_s": 830.0,
+    "tags": [
+      "ci",
+      "deploy",
+      "db"
+    ],
+    "output_lines": [
+      "Job job-050 started on worker-3.",
+      "Streaming intermediate checkpoint updates...",
+      "Error: remote executor lost lease while job was in progress."
+    ]
+  },
+  {
+    "id": "job-051",
+    "name": "bootstrap-preview-env-051",
+    "status": "failed",
+    "started_at": "2024-01-16T05:57:00Z",
+    "duration_s": 1440.0,
+    "tags": [
+      "deploy",
+      "db",
+      "infra"
+    ],
+    "output_lines": [
+      "Job job-051 started on worker-4.",
+      "Streaming intermediate checkpoint updates...",
+      "Error: deployment policy rejected the rollout due to metric regression."
+    ]
+  },
+  {
+    "id": "job-052",
+    "name": "publish-sdk-docs-052",
+    "status": "failed",
+    "started_at": "2024-01-16T06:04:00Z",
+    "duration_s": 1888.0,
+    "tags": [
+      "db",
+      "infra",
+      "sync"
+    ],
+    "output_lines": [
+      "Job job-052 started on worker-5.",
+      "Streaming intermediate checkpoint updates...",
+      "Error: upstream dependency returned HTTP 503 during readiness probe."
+    ]
+  },
+  {
+    "id": "job-053",
+    "name": "archive-old-exports-053",
+    "status": "running",
+    "started_at": "2024-01-16T06:11:00Z",
+    "duration_s": null,
+    "tags": [
+      "infra",
+      "sync",
+      "report"
+    ],
+    "output_lines": [
+      "Job job-053 started on worker-4.",
+      "Processing active batch and awaiting downstream acknowledgements."
+    ]
+  },
+  {
+    "id": "job-054",
+    "name": "fanout-tenant-sync-054",
+    "status": "running",
+    "started_at": "2024-01-16T06:18:00Z",
+    "duration_s": null,
+    "tags": [
+      "sync",
+      "report",
+      "frontend"
+    ],
+    "output_lines": [
+      "Job job-054 started on worker-5.",
+      "Processing active batch and awaiting downstream acknowledgements."
+    ]
+  },
+  {
+    "id": "job-055",
+    "name": "reindex-audit-stream-055",
+    "status": "running",
+    "started_at": "2024-01-16T06:25:00Z",
+    "duration_s": null,
+    "tags": [
+      "report",
+      "frontend",
+      "backend"
+    ],
+    "output_lines": [
+      "Job job-055 started on worker-1.",
+      "Processing active batch and awaiting downstream acknowledgements."
+    ]
+  },
+  {
+    "id": "job-056",
+    "name": "compact-event-store-056",
+    "status": "running",
+    "started_at": "2024-01-16T06:32:00Z",
+    "duration_s": null,
+    "tags": [
+      "frontend",
+      "backend",
+      "ci"
+    ],
+    "output_lines": [
+      "Job job-056 started on worker-2.",
+      "Processing active batch and awaiting downstream acknowledgements."
+    ]
+  },
+  {
+    "id": "job-057",
+    "name": "render-marketing-site-057",
+    "status": "running",
+    "started_at": "2024-01-16T06:39:00Z",
+    "duration_s": null,
+    "tags": [
+      "backend",
+      "ci",
+      "deploy"
+    ],
+    "output_lines": [
+      "Job job-057 started on worker-3.",
+      "Processing active batch and awaiting downstream acknowledgements."
+    ]
+  },
+  {
+    "id": "job-058",
+    "name": "sync-billing-ledger-058",
+    "status": "running",
+    "started_at": "2024-01-16T06:46:00Z",
+    "duration_s": null,
+    "tags": [
+      "ci",
+      "deploy",
+      "db"
+    ],
+    "output_lines": [
+      "Job job-058 started on worker-4.",
+      "Processing active batch and awaiting downstream acknowledgements."
+    ]
+  },
+  {
+    "id": "job-059",
+    "name": "rebalance-job-queues-059",
+    "status": "running",
+    "started_at": "2024-01-16T06:53:00Z",
+    "duration_s": null,
+    "tags": [
+      "deploy",
+      "db",
+      "infra"
+    ],
+    "output_lines": [
+      "Job job-059 started on worker-5.",
+      "Processing active batch and awaiting downstream acknowledgements."
+    ]
+  },
+  {
+    "id": "job-060",
+    "name": "verify-backups-060",
+    "status": "running",
+    "started_at": "2024-01-16T07:00:00Z",
+    "duration_s": null,
+    "tags": [
+      "db",
+      "infra",
+      "sync"
+    ],
+    "output_lines": [
+      "Job job-060 started on worker-1.",
+      "Processing active batch and awaiting downstream acknowledgements."
+    ]
+  },
+  {
+    "id": "job-061",
+    "name": "verify-openapi-contract-061",
+    "status": "running",
+    "started_at": "2024-01-16T07:07:00Z",
+    "duration_s": null,
+    "tags": [
+      "infra",
+      "sync",
+      "report"
+    ],
+    "output_lines": [
+      "Job job-061 started on worker-2.",
+      "Processing active batch and awaiting downstream acknowledgements."
+    ]
+  },
+  {
+    "id": "job-062",
+    "name": "publish-worker-image-062",
+    "status": "running",
+    "started_at": "2024-01-16T07:14:00Z",
+    "duration_s": null,
+    "tags": [
+      "sync",
+      "report",
+      "frontend"
+    ],
+    "output_lines": [
+      "Job job-062 started on worker-3.",
+      "Processing active batch and awaiting downstream acknowledgements."
+    ]
+  },
+  {
+    "id": "job-063",
+    "name": "rotate-api-keys-063",
+    "status": "running",
+    "started_at": "2024-01-16T07:21:00Z",
+    "duration_s": null,
+    "tags": [
+      "report",
+      "frontend",
+      "backend"
+    ],
+    "output_lines": [
+      "Job job-063 started on worker-4.",
+      "Processing active batch and awaiting downstream acknowledgements."
+    ]
+  },
+  {
+    "id": "job-064",
+    "name": "snapshot-warehouse-064",
+    "status": "running",
+    "started_at": "2024-01-16T07:28:00Z",
+    "duration_s": null,
+    "tags": [
+      "frontend",
+      "backend",
+      "ci"
+    ],
+    "output_lines": [
+      "Job job-064 started on worker-5.",
+      "Processing active batch and awaiting downstream acknowledgements."
+    ]
+  },
+  {
+    "id": "job-065",
+    "name": "rebuild-cdn-cache-065",
+    "status": "running",
+    "started_at": "2024-01-16T07:35:00Z",
+    "duration_s": null,
+    "tags": [
+      "backend",
+      "ci",
+      "deploy"
+    ],
+    "output_lines": [
+      "Job job-065 started on worker-1.",
+      "Processing active batch and awaiting downstream acknowledgements."
+    ]
+  },
+  {
+    "id": "job-066",
+    "name": "train-ranking-model-066",
+    "status": "running",
+    "started_at": "2024-01-16T07:42:00Z",
+    "duration_s": null,
+    "tags": [
+      "ci",
+      "deploy",
+      "db"
+    ],
+    "output_lines": [
+      "Job job-066 started on worker-2.",
+      "Processing active batch and awaiting downstream acknowledgements."
+    ]
+  },
+  {
+    "id": "job-067",
+    "name": "refresh-feature-flags-067",
+    "status": "running",
+    "started_at": "2024-01-16T07:49:00Z",
+    "duration_s": null,
+    "tags": [
+      "deploy",
+      "db",
+      "infra"
+    ],
+    "output_lines": [
+      "Job job-067 started on worker-3.",
+      "Processing active batch and awaiting downstream acknowledgements."
+    ]
+  },
+  {
+    "id": "job-068",
+    "name": "scan-container-images-068",
+    "status": "running",
+    "started_at": "2024-01-16T07:56:00Z",
+    "duration_s": null,
+    "tags": [
+      "db",
+      "infra",
+      "sync"
+    ],
+    "output_lines": [
+      "Job job-068 started on worker-4.",
+      "Processing active batch and awaiting downstream acknowledgements."
+    ]
+  },
+  {
+    "id": "job-069",
+    "name": "hydrate-search-cache-069",
+    "status": "running",
+    "started_at": "2024-01-16T08:03:00Z",
+    "duration_s": null,
+    "tags": [
+      "infra",
+      "sync",
+      "report"
+    ],
+    "output_lines": [
+      "Job job-069 started on worker-5.",
+      "Processing active batch and awaiting downstream acknowledgements."
+    ]
+  },
+  {
+    "id": "job-070",
+    "name": "reconcile-webhooks-070",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "sync",
+      "report",
+      "frontend"
+    ],
+    "output_lines": [
+      "Job job-070 queued in lane 3.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-071",
+    "name": "bootstrap-preview-env-071",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "report",
+      "frontend",
+      "backend"
+    ],
+    "output_lines": [
+      "Job job-071 queued in lane 4.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-072",
+    "name": "publish-sdk-docs-072",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "frontend",
+      "backend",
+      "ci"
+    ],
+    "output_lines": [
+      "Job job-072 queued in lane 1.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-073",
+    "name": "archive-old-exports-073",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "backend",
+      "ci",
+      "deploy"
+    ],
+    "output_lines": [
+      "Job job-073 queued in lane 2.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-074",
+    "name": "fanout-tenant-sync-074",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "ci",
+      "deploy",
+      "db"
+    ],
+    "output_lines": [
+      "Job job-074 queued in lane 3.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-075",
+    "name": "reindex-audit-stream-075",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "deploy",
+      "db",
+      "infra"
+    ],
+    "output_lines": [
+      "Job job-075 queued in lane 4.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-076",
+    "name": "compact-event-store-076",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "db",
+      "infra",
+      "sync"
+    ],
+    "output_lines": [
+      "Job job-076 queued in lane 1.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-077",
+    "name": "render-marketing-site-077",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "infra",
+      "sync",
+      "report"
+    ],
+    "output_lines": [
+      "Job job-077 queued in lane 2.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-078",
+    "name": "sync-billing-ledger-078",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "sync",
+      "report",
+      "frontend"
+    ],
+    "output_lines": [
+      "Job job-078 queued in lane 3.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-079",
+    "name": "rebalance-job-queues-079",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "report",
+      "frontend",
+      "backend"
+    ],
+    "output_lines": [
+      "Job job-079 queued in lane 4.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-080",
+    "name": "verify-backups-080",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "frontend",
+      "backend",
+      "ci"
+    ],
+    "output_lines": [
+      "Job job-080 queued in lane 1.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-081",
+    "name": "verify-openapi-contract-081",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "backend",
+      "ci",
+      "deploy"
+    ],
+    "output_lines": [
+      "Job job-081 queued in lane 2.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-082",
+    "name": "publish-worker-image-082",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "ci",
+      "deploy",
+      "db"
+    ],
+    "output_lines": [
+      "Job job-082 queued in lane 3.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-083",
+    "name": "rotate-api-keys-083",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "deploy",
+      "db",
+      "infra"
+    ],
+    "output_lines": [
+      "Job job-083 queued in lane 4.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-084",
+    "name": "snapshot-warehouse-084",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "db",
+      "infra",
+      "sync"
+    ],
+    "output_lines": [
+      "Job job-084 queued in lane 1.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-085",
+    "name": "rebuild-cdn-cache-085",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "infra",
+      "sync",
+      "report"
+    ],
+    "output_lines": [
+      "Job job-085 queued in lane 2.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-086",
+    "name": "train-ranking-model-086",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "sync",
+      "report",
+      "frontend"
+    ],
+    "output_lines": [
+      "Job job-086 queued in lane 3.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-087",
+    "name": "refresh-feature-flags-087",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "report",
+      "frontend",
+      "backend"
+    ],
+    "output_lines": [
+      "Job job-087 queued in lane 4.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-088",
+    "name": "scan-container-images-088",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "frontend",
+      "backend",
+      "ci"
+    ],
+    "output_lines": [
+      "Job job-088 queued in lane 1.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-089",
+    "name": "hydrate-search-cache-089",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "backend",
+      "ci",
+      "deploy"
+    ],
+    "output_lines": [
+      "Job job-089 queued in lane 2.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-090",
+    "name": "reconcile-webhooks-090",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "ci",
+      "deploy",
+      "db"
+    ],
+    "output_lines": [
+      "Job job-090 queued in lane 3.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-091",
+    "name": "bootstrap-preview-env-091",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "deploy",
+      "db",
+      "infra"
+    ],
+    "output_lines": [
+      "Job job-091 queued in lane 4.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-092",
+    "name": "publish-sdk-docs-092",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "db",
+      "infra",
+      "sync"
+    ],
+    "output_lines": [
+      "Job job-092 queued in lane 1.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-093",
+    "name": "archive-old-exports-093",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "infra",
+      "sync",
+      "report"
+    ],
+    "output_lines": [
+      "Job job-093 queued in lane 2.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-094",
+    "name": "fanout-tenant-sync-094",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "sync",
+      "report",
+      "frontend"
+    ],
+    "output_lines": [
+      "Job job-094 queued in lane 3.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-095",
+    "name": "reindex-audit-stream-095",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "report",
+      "frontend",
+      "backend"
+    ],
+    "output_lines": [
+      "Job job-095 queued in lane 4.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-096",
+    "name": "compact-event-store-096",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "frontend",
+      "backend",
+      "ci"
+    ],
+    "output_lines": [
+      "Job job-096 queued in lane 1.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-097",
+    "name": "render-marketing-site-097",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "backend",
+      "ci",
+      "deploy"
+    ],
+    "output_lines": [
+      "Job job-097 queued in lane 2.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-098",
+    "name": "sync-billing-ledger-098",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "ci",
+      "deploy",
+      "db"
+    ],
+    "output_lines": [
+      "Job job-098 queued in lane 3.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-099",
+    "name": "rebalance-job-queues-099",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "deploy",
+      "db",
+      "infra"
+    ],
+    "output_lines": [
+      "Job job-099 queued in lane 4.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  },
+  {
+    "id": "job-100",
+    "name": "verify-backups-100",
+    "status": "pending",
+    "started_at": null,
+    "duration_s": null,
+    "tags": [
+      "db",
+      "infra",
+      "sync"
+    ],
+    "output_lines": [
+      "Job job-100 queued in lane 1.",
+      "Awaiting worker assignment and dependency clearance."
+    ]
+  }
+]
