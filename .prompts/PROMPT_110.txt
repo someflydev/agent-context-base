@@ -69,7 +69,7 @@ Read these before starting:
   7. examples/canonical-terminal/CATALOG.md                 (PROMPT_106)
   8. verification/terminal/harness.py                       (PROMPT_108)
   9. context/doctrine/terminal-ux-first-class.md
- 10. Skim context/stacks/backend-api-fastapi-uv-ruff.yaml   (web stack — for comparison)
+ 10. Skim context/stacks/python-fastapi-uv-ruff.md          (web stack — for comparison)
  11. Skim examples/canonical-api/ README (if it exists)      (web examples — for parity)
 
 Do NOT begin implementation until you have read all of the above.
