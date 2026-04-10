@@ -29,7 +29,9 @@ class TestTerminalHarness(unittest.TestCase):
                 self.assertTrue(example.name)
                 self.assertTrue(example.path)
                 self.assertTrue(example.smoke_cmd)
+                self.assertTrue(example.large_corpus_smoke_cmd)
                 self.assertTrue(example.expected_marker)
+                self.assertIsNotNone(example.fixture_validator)
 
     def test_registry_paths_exist(self) -> None:
         for example in TERMINAL_EXAMPLES:
@@ -92,6 +94,24 @@ class TestTerminalHarness(unittest.TestCase):
         self.assertEqual(run_all.call_args.kwargs["golden_dir"], GOLDEN_DIR)
         self.assertFalse(run_all.call_args.kwargs["update_golden"])
 
+    def test_runner_enables_large_corpus_fixture_overrides(self) -> None:
+        result = SmokeResult(
+            exit_code=0,
+            stdout='{"id":"job-001"}',
+            stderr="",
+            duration_s=0.1,
+            passed=True,
+        )
+        with patch("verification.terminal.runner.run_all", return_value={"python-typer-textual": result}) as run_all:
+            exit_code = runner_main(["--example", "python-typer-textual", "--large-corpus"])
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(
+            run_all.call_args.kwargs["fixture_overrides"],
+            {"jobs.json": "jobs-large.json", "events.json": "events-large.json"},
+        )
+        self.assertTrue(run_all.call_args.kwargs["use_large_corpus"])
+
     def test_materialize_fixture_dir_replaces_requested_files(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             fixture_dir = Path(temp_dir)
@@ -121,6 +141,7 @@ class TestTerminalHarness(unittest.TestCase):
             path=REPO_ROOT,
             build_cmd=[],
             smoke_cmd=["taskflow", "list", "--fixtures-path", "/tmp/base", "--output", "json"],
+            large_corpus_smoke_cmd=["taskflow", "list", "--fixtures-path", "/tmp/base", "--output", "json"],
             fixtures_env={"TASKFLOW_FIXTURES_PATH": str(REPO_ROOT / "examples/canonical-terminal/fixtures")},
             expected_marker='"id":',
         )

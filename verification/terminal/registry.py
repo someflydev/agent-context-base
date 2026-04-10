@@ -19,6 +19,21 @@ FIXTURES_DIR = REPO_ROOT / "examples/canonical-terminal/fixtures"
 EXAMPLES_ROOT = REPO_ROOT / "examples/canonical-terminal"
 
 
+def fixture_corpus_available() -> tuple[bool, str | None]:
+    required = [
+        FIXTURES_DIR / "jobs.json",
+        FIXTURES_DIR / "events.json",
+        FIXTURES_DIR / "config.json",
+        FIXTURES_DIR / "jobs-large.json",
+        FIXTURES_DIR / "events-large.json",
+        FIXTURES_DIR / "fixtures-edge-cases.json",
+    ]
+    missing = [path.relative_to(REPO_ROOT) for path in required if not path.exists()]
+    if missing:
+        return False, f"missing fixture corpus files: {', '.join(str(path) for path in missing)}"
+    return True, None
+
+
 def _python_example(name: str, modules: tuple[str, ...]) -> TerminalExample:
     path = EXAMPLES_ROOT / name
     python_executable = python_interpreter_for_example(path)
@@ -35,9 +50,19 @@ def _python_example(name: str, modules: tuple[str, ...]) -> TerminalExample:
             "--output",
             "json",
         ),
+        large_corpus_smoke_cmd=python_cli_command(
+            python_executable,
+            "from taskflow.cli.main import main; main()",
+            "list",
+            "--fixtures-path",
+            str(FIXTURES_DIR),
+            "--output",
+            "json",
+        ),
         fixtures_env={"TASKFLOW_FIXTURES_PATH": str(FIXTURES_DIR)},
         expected_marker='"id":',
         availability_check=lambda path=path, modules=modules: python_modules_available(path, *modules),
+        fixture_validator=fixture_corpus_available,
         extra_env=python_extra_env_for_example(path),
     )
 
@@ -59,9 +84,11 @@ def _rust_example(name: str) -> TerminalExample:
         path=path,
         build_cmd=["cargo", "build"],
         smoke_cmd=[str(binary), "list", "--output", "json"],
+        large_corpus_smoke_cmd=[str(binary), "list", "--output", "json"],
         fixtures_env={"TASKFLOW_FIXTURES_PATH": str(FIXTURES_DIR)},
         expected_marker='"id":',
         availability_check=availability,
+        fixture_validator=fixture_corpus_available,
     )
 
 
@@ -73,9 +100,11 @@ def _go_example(name: str) -> TerminalExample:
         path=path,
         build_cmd=["go", "build", "-o", "taskflow", "./..."],
         smoke_cmd=[str(binary), "list", "--output", "json"],
+        large_corpus_smoke_cmd=[str(binary), "list", "--output", "json"],
         fixtures_env={"TASKFLOW_FIXTURES_PATH": str(FIXTURES_DIR)},
         expected_marker='"id":',
         availability_check=lambda binary=binary: artifact_exists(binary, ["go", "build", "-o", "taskflow", "./..."]),
+        fixture_validator=fixture_corpus_available,
     )
 
 
@@ -93,9 +122,11 @@ def _node_example(name: str) -> TerminalExample:
         path=path,
         build_cmd=["npm", "run", "build"],
         smoke_cmd=["node", str(dist_entry), "list", "--output", "json"],
+        large_corpus_smoke_cmd=["node", str(dist_entry), "list", "--output", "json"],
         fixtures_env={"TASKFLOW_FIXTURES_PATH": str(FIXTURES_DIR)},
         expected_marker='"id":',
         availability_check=availability,
+        fixture_validator=fixture_corpus_available,
     )
 
 
@@ -113,9 +144,11 @@ def _java_example(name: str) -> TerminalExample:
         path=path,
         build_cmd=["mvn", "-q", "package"],
         smoke_cmd=["java", "-jar", str(jar), "list", "--output", "json"],
+        large_corpus_smoke_cmd=["java", "-jar", str(jar), "list", "--output", "json"],
         fixtures_env={"TASKFLOW_FIXTURES_PATH": str(FIXTURES_DIR)},
         expected_marker='"id":',
         availability_check=availability,
+        fixture_validator=fixture_corpus_available,
     )
 
 
@@ -147,9 +180,11 @@ def _ruby_example(name: str) -> TerminalExample:
         path=path,
         build_cmd=["bundle", "install"],
         smoke_cmd=["bundle", "exec", "ruby", str(script), "list", "--output", "json"],
+        large_corpus_smoke_cmd=["bundle", "exec", "ruby", str(script), "list", "--output", "json"],
         fixtures_env={"TASKFLOW_FIXTURES_PATH": str(FIXTURES_DIR)},
         expected_marker='"id":',
         availability_check=availability,
+        fixture_validator=fixture_corpus_available,
     )
 
 
@@ -167,9 +202,11 @@ def _elixir_example(name: str, escript_name: str) -> TerminalExample:
         path=path,
         build_cmd=["mix", "escript.build"],
         smoke_cmd=[str(escript), "list", "--fixtures-path", str(FIXTURES_DIR), "--output", "json"],
+        large_corpus_smoke_cmd=[str(escript), "list", "--fixtures-path", str(FIXTURES_DIR), "--output", "json"],
         fixtures_env={"TASKFLOW_FIXTURES_PATH": str(FIXTURES_DIR)},
         expected_marker='"id":',
         availability_check=availability,
+        fixture_validator=fixture_corpus_available,
     )
 
 

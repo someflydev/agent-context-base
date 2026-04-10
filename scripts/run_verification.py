@@ -26,6 +26,7 @@ FAST_MODULES = [
     "verification.scripts.test_repo_scripts",
     "verification.examples.data.test_yaml_json_examples",
     "verification.examples.data.test_storage_examples",
+    "verification.terminal.test_fixtures",
     # Terminal example smoke suites are expected to join the fast tier as
     # concrete examples land in PROMPT_102 through PROMPT_105.
 ]

@@ -4712,6 +4712,169 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: medium
+  - name: terminal-fixtures-jobs-large
+    path: examples/canonical-terminal/fixtures/jobs-large.json
+    language: json
+    stack_tags:
+      - terminal-python-typer-textual
+      - terminal-python-click-blessed
+      - terminal-rust-clap-ratatui
+      - terminal-rust-argh-tui-realm
+      - terminal-go-cobra-bubbletea
+      - terminal-go-urfave-tview
+      - terminal-typescript-commander-ink
+      - terminal-typescript-yargs-blessed
+      - terminal-java-picocli-lanterna
+      - terminal-java-jcommander-jline
+      - terminal-ruby-thor-tty
+      - terminal-ruby-clamp-tty
+      - terminal-elixir-optimus-ratatouille
+      - terminal-elixir-optionparser-owl
+    archetype_tags:
+      - terminal-dual-mode
+      - cli-tool
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - large job corpus is valid json
+      - fixture validator covers distribution
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-fixtures-events-large
+    path: examples/canonical-terminal/fixtures/events-large.json
+    language: json
+    stack_tags:
+      - terminal-python-typer-textual
+      - terminal-python-click-blessed
+      - terminal-rust-clap-ratatui
+      - terminal-rust-argh-tui-realm
+      - terminal-go-cobra-bubbletea
+      - terminal-go-urfave-tview
+      - terminal-typescript-commander-ink
+      - terminal-typescript-yargs-blessed
+      - terminal-java-picocli-lanterna
+      - terminal-java-jcommander-jline
+      - terminal-ruby-thor-tty
+      - terminal-ruby-clamp-tty
+      - terminal-elixir-optimus-ratatouille
+      - terminal-elixir-optionparser-owl
+    archetype_tags:
+      - terminal-dual-mode
+      - cli-tool
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - large event corpus is valid json
+      - fixture validator covers ordering
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-fixtures-edge-cases
+    path: examples/canonical-terminal/fixtures/fixtures-edge-cases.json
+    language: json
+    stack_tags:
+      - terminal-python-typer-textual
+      - terminal-python-click-blessed
+      - terminal-rust-clap-ratatui
+      - terminal-rust-argh-tui-realm
+      - terminal-go-cobra-bubbletea
+      - terminal-go-urfave-tview
+      - terminal-typescript-commander-ink
+      - terminal-typescript-yargs-blessed
+      - terminal-java-picocli-lanterna
+      - terminal-java-jcommander-jline
+      - terminal-ruby-thor-tty
+      - terminal-ruby-clamp-tty
+      - terminal-elixir-optimus-ratatouille
+      - terminal-elixir-optionparser-owl
+    archetype_tags:
+      - terminal-dual-mode
+      - cli-tool
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - edge-case corpus is valid json
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-fixtures-replay-package
+    path: examples/canonical-terminal/fixtures/replay/__init__.py
+    language: python
+    stack_tags:
+      - terminal-python-typer-textual
+      - terminal-python-click-blessed
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - replay package import path exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-fixtures-replay-stream-python
+    path: examples/canonical-terminal/fixtures/replay/stream.py
+    language: python
+    stack_tags:
+      - terminal-python-typer-textual
+      - terminal-python-click-blessed
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: structure-verified
+    verification_targets:
+      - file exists
+      - replay helpers import
+      - replay_to_state is callable
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-fixtures-replay-stream-go
+    path: examples/canonical-terminal/fixtures/replay/stream.go
+    language: go
+    stack_tags:
+      - terminal-go-cobra-bubbletea
+      - terminal-go-urfave-tview
+    archetype_tags:
+      - terminal-dual-mode
+      - terminal-tui
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - replay struct and loader documented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: terminal-docker-job-api
+    path: examples/canonical-terminal/docker/job_api.py
+    language: python
+    stack_tags:
+      - terminal-python-typer-textual
+      - terminal-python-click-blessed
+      - terminal-rust-clap-ratatui
+      - terminal-rust-argh-tui-realm
+      - terminal-go-cobra-bubbletea
+      - terminal-go-urfave-tview
+      - terminal-typescript-commander-ink
+      - terminal-typescript-yargs-blessed
+      - terminal-java-picocli-lanterna
+      - terminal-java-jcommander-jline
+      - terminal-ruby-thor-tty
+      - terminal-ruby-clamp-tty
+      - terminal-elixir-optimus-ratatouille
+      - terminal-elixir-optionparser-owl
+    archetype_tags:
+      - terminal-dual-mode
+      - cli-tool
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - serves jobs stats and event stream endpoints
+    docker_supported: true
+    scenario_harness: ""
+    confidence: medium
   - name: terminal-python-typer-textual-readme
     path: examples/canonical-terminal/python-typer-textual/README.md
     language: markdown

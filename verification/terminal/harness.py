@@ -29,7 +29,9 @@ class TerminalExample:
     smoke_cmd: list[str]
     fixtures_env: dict[str, str]
     expected_marker: str
+    large_corpus_smoke_cmd: Optional[list[str]] = None
     availability_check: Optional[AvailabilityCheck] = None
+    fixture_validator: Optional[AvailabilityCheck] = None
     extra_env: dict[str, str] = field(default_factory=dict)
 
 
@@ -138,6 +140,7 @@ def run_smoke(
     golden_dir: Optional[Path] = None,
     update_golden: bool = False,
     fixture_overrides: Optional[FixtureOverrides] = None,
+    use_large_corpus: bool = False,
 ) -> SmokeResult:
     if not example.path.exists():
         return SmokeResult(
@@ -163,17 +166,31 @@ def run_smoke(
                 skip_reason=reason,
             )
 
+    if example.fixture_validator is not None:
+        fixtures_ok, reason = example.fixture_validator()
+        if not fixtures_ok:
+            return SmokeResult(
+                exit_code=None,
+                stdout="",
+                stderr="",
+                duration_s=0.0,
+                passed=False,
+                skipped=True,
+                skip_reason=reason,
+            )
+
     env = os.environ.copy()
     env.update(example.fixtures_env)
     env.update(example.extra_env)
     fixture_dir = Path(env["TASKFLOW_FIXTURES_PATH"]) if "TASKFLOW_FIXTURES_PATH" in env else None
+    smoke_cmd = example.large_corpus_smoke_cmd if use_large_corpus and example.large_corpus_smoke_cmd else example.smoke_cmd
 
     with materialize_fixture_dir(fixture_dir, fixture_overrides) if fixture_dir else contextlib.nullcontext(None) as active_fixture_dir:
         if active_fixture_dir is not None:
             env["TASKFLOW_FIXTURES_PATH"] = str(active_fixture_dir)
-            command = rewrite_fixtures_path_args(example.smoke_cmd, active_fixture_dir)
+            command = rewrite_fixtures_path_args(smoke_cmd, active_fixture_dir)
         else:
-            command = list(example.smoke_cmd)
+            command = list(smoke_cmd)
 
         started_at = time.perf_counter()
         try:
@@ -223,6 +240,7 @@ def run_all(
     golden_dir: Optional[Path] = None,
     update_golden: bool = False,
     fixture_overrides: Optional[FixtureOverrides] = None,
+    use_large_corpus: bool = False,
 ) -> dict[str, SmokeResult]:
     if not parallel:
         return {
@@ -231,6 +249,7 @@ def run_all(
                 golden_dir=golden_dir,
                 update_golden=update_golden,
                 fixture_overrides=fixture_overrides,
+                use_large_corpus=use_large_corpus,
             )
             for example in examples
         }
@@ -244,6 +263,7 @@ def run_all(
                 golden_dir=golden_dir,
                 update_golden=update_golden,
                 fixture_overrides=fixture_overrides,
+                use_large_corpus=use_large_corpus,
             ): example.name
             for example in examples
         }

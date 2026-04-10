@@ -11205,6 +11205,219 @@
       ],
       "rank": 70,
       "stability": "reference"
+    },
+    {
+      "path": "examples/canonical-terminal/fixtures/jobs-large.json",
+      "category": "terminal",
+      "summary": "Extended TaskFlow Monitor job corpus with 100 jobs for stress and large-list rendering tests.",
+      "stacks": [
+        "terminal-python-typer-textual",
+        "terminal-python-click-blessed",
+        "terminal-rust-clap-ratatui",
+        "terminal-rust-argh-tui-realm",
+        "terminal-go-cobra-bubbletea",
+        "terminal-go-urfave-tview",
+        "terminal-typescript-commander-ink",
+        "terminal-typescript-yargs-blessed",
+        "terminal-java-picocli-lanterna",
+        "terminal-java-jcommander-jline",
+        "terminal-ruby-thor-tty",
+        "terminal-ruby-clamp-tty",
+        "terminal-elixir-optimus-ratatouille",
+        "terminal-elixir-optionparser-owl"
+      ],
+      "archetypes": [
+        "terminal-dual-mode",
+        "cli-tool"
+      ],
+      "workflows": [
+        "add-terminal-example",
+        "add-smoke-tests"
+      ],
+      "patterns": [
+        "fixture-corpus",
+        "large-corpus",
+        "shared-fixtures"
+      ],
+      "rank": 76,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-terminal/fixtures/events-large.json",
+      "category": "terminal",
+      "summary": "Extended TaskFlow Monitor event stream with 300 replayable events for fixture-backed live-data simulation.",
+      "stacks": [
+        "terminal-python-typer-textual",
+        "terminal-python-click-blessed",
+        "terminal-rust-clap-ratatui",
+        "terminal-rust-argh-tui-realm",
+        "terminal-go-cobra-bubbletea",
+        "terminal-go-urfave-tview",
+        "terminal-typescript-commander-ink",
+        "terminal-typescript-yargs-blessed",
+        "terminal-java-picocli-lanterna",
+        "terminal-java-jcommander-jline",
+        "terminal-ruby-thor-tty",
+        "terminal-ruby-clamp-tty",
+        "terminal-elixir-optimus-ratatouille",
+        "terminal-elixir-optionparser-owl"
+      ],
+      "archetypes": [
+        "terminal-dual-mode",
+        "cli-tool"
+      ],
+      "workflows": [
+        "add-terminal-example",
+        "add-smoke-tests"
+      ],
+      "patterns": [
+        "fixture-corpus",
+        "event-stream",
+        "large-corpus"
+      ],
+      "rank": 77,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-terminal/fixtures/fixtures-edge-cases.json",
+      "category": "terminal",
+      "summary": "Explicit TaskFlow Monitor edge-case records for robustness and escaping tests.",
+      "stacks": [
+        "terminal-python-typer-textual",
+        "terminal-python-click-blessed",
+        "terminal-rust-clap-ratatui",
+        "terminal-rust-argh-tui-realm",
+        "terminal-go-cobra-bubbletea",
+        "terminal-go-urfave-tview",
+        "terminal-typescript-commander-ink",
+        "terminal-typescript-yargs-blessed",
+        "terminal-java-picocli-lanterna",
+        "terminal-java-jcommander-jline",
+        "terminal-ruby-thor-tty",
+        "terminal-ruby-clamp-tty",
+        "terminal-elixir-optimus-ratatouille",
+        "terminal-elixir-optionparser-owl"
+      ],
+      "archetypes": [
+        "terminal-dual-mode",
+        "cli-tool"
+      ],
+      "workflows": [
+        "add-terminal-example",
+        "add-smoke-tests"
+      ],
+      "patterns": [
+        "fixture-corpus",
+        "edge-cases",
+        "shared-fixtures"
+      ],
+      "rank": 71,
+      "stability": "reference"
+    },
+    {
+      "path": "examples/canonical-terminal/fixtures/replay/__init__.py",
+      "category": "terminal",
+      "summary": "Python package entrypoint for fixture-backed event replay helpers.",
+      "stacks": [
+        "terminal-python-typer-textual",
+        "terminal-python-click-blessed"
+      ],
+      "archetypes": [
+        "terminal-dual-mode",
+        "terminal-tui"
+      ],
+      "workflows": [
+        "add-terminal-example"
+      ],
+      "patterns": [
+        "event-stream",
+        "fixture-replay",
+        "python-helper"
+      ],
+      "rank": 63,
+      "stability": "reference"
+    },
+    {
+      "path": "examples/canonical-terminal/fixtures/replay/stream.py",
+      "category": "terminal",
+      "summary": "Python helper module for replaying TaskFlow fixture events and reconstructing snapshot state.",
+      "stacks": [
+        "terminal-python-typer-textual",
+        "terminal-python-click-blessed"
+      ],
+      "archetypes": [
+        "terminal-dual-mode",
+        "terminal-tui"
+      ],
+      "workflows": [
+        "add-terminal-example",
+        "add-smoke-tests"
+      ],
+      "patterns": [
+        "event-stream",
+        "fixture-replay",
+        "python-helper"
+      ],
+      "rank": 69,
+      "stability": "reference"
+    },
+    {
+      "path": "examples/canonical-terminal/fixtures/replay/stream.go",
+      "category": "terminal",
+      "summary": "Go helper module for replaying TaskFlow fixture events in terminal examples.",
+      "stacks": [
+        "terminal-go-cobra-bubbletea",
+        "terminal-go-urfave-tview"
+      ],
+      "archetypes": [
+        "terminal-dual-mode",
+        "terminal-tui"
+      ],
+      "workflows": [
+        "add-terminal-example"
+      ],
+      "patterns": [
+        "event-stream",
+        "fixture-replay",
+        "go-helper"
+      ],
+      "rank": 68,
+      "stability": "reference"
+    },
+    {
+      "path": "examples/canonical-terminal/docker/job_api.py",
+      "category": "terminal",
+      "summary": "Optional fixture-backed HTTP and SSE adapter for exploring live-data terminal modes without a real queue backend.",
+      "stacks": [
+        "terminal-python-typer-textual",
+        "terminal-python-click-blessed",
+        "terminal-rust-clap-ratatui",
+        "terminal-rust-argh-tui-realm",
+        "terminal-go-cobra-bubbletea",
+        "terminal-go-urfave-tview",
+        "terminal-typescript-commander-ink",
+        "terminal-typescript-yargs-blessed",
+        "terminal-java-picocli-lanterna",
+        "terminal-java-jcommander-jline",
+        "terminal-ruby-thor-tty",
+        "terminal-ruby-clamp-tty",
+        "terminal-elixir-optimus-ratatouille",
+        "terminal-elixir-optionparser-owl"
+      ],
+      "archetypes": [
+        "terminal-dual-mode",
+        "cli-tool"
+      ],
+      "workflows": [
+        "add-terminal-example"
+      ],
+      "patterns": [
+        "docker-live-data",
+        "fixture-api",
+        "event-stream"
+      ],
+      "rank": 64,
+      "stability": "reference"
     }
   ]
 }

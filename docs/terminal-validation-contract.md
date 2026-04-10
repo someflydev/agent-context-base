@@ -220,3 +220,9 @@ assert result is True
 PTY tests require `pexpect`. The shared terminal harness is exposed through
 `python3 scripts/run_verification.py --tier terminal` or the standalone
 `python3 scripts/run_terminal_tests.py --all` wrapper.
+
+## 10. Optional: Docker Live-Data Mode
+
+A minimal fixture-backed HTTP API is available in
+`examples/canonical-terminal/docker/` for exploring live-data modes. This is
+not required for any smoke test and must remain optional.
