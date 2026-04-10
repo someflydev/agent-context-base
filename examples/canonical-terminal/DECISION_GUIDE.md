@@ -155,3 +155,16 @@ are sufficient.
 - `context/doctrine/terminal-ux-first-class.md`
 - `context/router/stack-router.md` (terminal stacks section)
 - `CATALOG.md` (this directory)
+
+## Cross-Language Consistency Contract
+
+All 14 TaskFlow Monitor examples share the same fixture corpus and CLI command
+surface. For the same command with the same fixtures, they must return:
+
+- The same job count (`list --output json` -> 20 items)
+- The same stats total (`stats --output json` -> `total: 20`)
+- The same job detail (`inspect job-001` -> `id: "job-001"`)
+
+Verify with: `python3 scripts/run_terminal_comparison.py`
+
+Inconsistencies indicate a domain implementation error in a specific example.
