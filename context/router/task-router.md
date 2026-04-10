@@ -229,6 +229,19 @@ Route from what the user is trying to do, not from internal file names.
 - "show the canonical workflow examples", "post-flight checklist example", "handoff snapshot example"
   - load `examples/canonical-workflows/README.md`
 
+## Terminal vs Web Decision
+
+When asked to build an operator tool, inspector, or monitor:
+
+| If the request emphasizes... | Route to |
+|------------------------------|----------|
+| "CLI", "command-line", "scriptable", "CI-friendly" | `terminal-dual-mode` or `cli-tool` |
+| "dashboard", "web UI", "browser", "multi-user" | `backend-api-service` + frontend |
+| "both CLI and web", "API + operator tool" | both: `terminal-dual-mode` + `backend-api-service` |
+| "interactive", "TUI", "terminal dashboard" | `terminal-tui` or `terminal-dual-mode` |
+
+See `docs/terminal-web-parity.md` for detailed guidance.
+
 ## Compound Requests
 
 If a request spans two workflows, pick the dominant one first and load the second only if needed.
