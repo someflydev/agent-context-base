@@ -1,14 +1,16 @@
 from __future__ import annotations
 
+import contextlib
 import os
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Callable, Optional, Tuple
+from typing import Callable, Iterator, Mapping, Optional, Tuple, Union
 
 from verification.terminal.transcript import assert_transcript
 
@@ -16,6 +18,7 @@ from verification.terminal.transcript import assert_transcript
 REPO_ROOT = Path(__file__).resolve().parents[2]
 GOLDEN_DIR = Path(__file__).resolve().parent / "goldens"
 AvailabilityCheck = Callable[[], Tuple[bool, Optional[str]]]
+FixtureOverrides = Mapping[str, Union[str, Path]]
 
 
 @dataclass
@@ -96,11 +99,45 @@ def artifact_exists(path: Path, build_cmd: list[str]) -> Tuple[bool, Optional[st
     return False, f"missing required artifact {path.relative_to(REPO_ROOT)}"
 
 
+@contextlib.contextmanager
+def materialize_fixture_dir(
+    fixture_dir: Path,
+    overrides: Optional[FixtureOverrides] = None,
+) -> Iterator[Path]:
+    resolved_dir = fixture_dir.expanduser().resolve()
+    if not overrides:
+        yield resolved_dir
+        return
+
+    with tempfile.TemporaryDirectory(prefix="terminal-fixtures-") as temp_dir:
+        temp_path = Path(temp_dir)
+        for source in resolved_dir.iterdir():
+            if source.is_file():
+                shutil.copy2(source, temp_path / source.name)
+
+        for canonical_name, override_source in overrides.items():
+            source_path = Path(override_source)
+            if not source_path.is_absolute():
+                source_path = resolved_dir / source_path
+            shutil.copy2(source_path.resolve(), temp_path / canonical_name)
+
+        yield temp_path
+
+
+def rewrite_fixtures_path_args(command: list[str], fixture_dir: Path) -> list[str]:
+    rewritten = list(command)
+    for index, token in enumerate(rewritten[:-1]):
+        if token == "--fixtures-path":
+            rewritten[index + 1] = str(fixture_dir)
+    return rewritten
+
+
 def run_smoke(
     example: TerminalExample,
     *,
     golden_dir: Optional[Path] = None,
     update_golden: bool = False,
+    fixture_overrides: Optional[FixtureOverrides] = None,
 ) -> SmokeResult:
     if not example.path.exists():
         return SmokeResult(
@@ -129,31 +166,39 @@ def run_smoke(
     env = os.environ.copy()
     env.update(example.fixtures_env)
     env.update(example.extra_env)
+    fixture_dir = Path(env["TASKFLOW_FIXTURES_PATH"]) if "TASKFLOW_FIXTURES_PATH" in env else None
 
-    started_at = time.perf_counter()
-    try:
-        completed = subprocess.run(
-            example.smoke_cmd,
-            cwd=example.path,
-            env=env,
-            stdin=subprocess.DEVNULL,
-            capture_output=True,
-            text=True,
-            timeout=30,
-            check=False,
-        )
-        duration_s = time.perf_counter() - started_at
-    except subprocess.TimeoutExpired as error:
-        duration_s = time.perf_counter() - started_at
-        stdout = error.stdout or ""
-        stderr = error.stderr or ""
-        return SmokeResult(
-            exit_code=None,
-            stdout=stdout,
-            stderr=f"{stderr}\nsmoke command timed out after 30 seconds".strip(),
-            duration_s=duration_s,
-            passed=False,
-        )
+    with materialize_fixture_dir(fixture_dir, fixture_overrides) if fixture_dir else contextlib.nullcontext(None) as active_fixture_dir:
+        if active_fixture_dir is not None:
+            env["TASKFLOW_FIXTURES_PATH"] = str(active_fixture_dir)
+            command = rewrite_fixtures_path_args(example.smoke_cmd, active_fixture_dir)
+        else:
+            command = list(example.smoke_cmd)
+
+        started_at = time.perf_counter()
+        try:
+            completed = subprocess.run(
+                command,
+                cwd=example.path,
+                env=env,
+                stdin=subprocess.DEVNULL,
+                capture_output=True,
+                text=True,
+                timeout=30,
+                check=False,
+            )
+            duration_s = time.perf_counter() - started_at
+        except subprocess.TimeoutExpired as error:
+            duration_s = time.perf_counter() - started_at
+            stdout = error.stdout or ""
+            stderr = error.stderr or ""
+            return SmokeResult(
+                exit_code=None,
+                stdout=stdout,
+                stderr=f"{stderr}\nsmoke command timed out after 30 seconds".strip(),
+                duration_s=duration_s,
+                passed=False,
+            )
 
     passed = completed.returncode == 0 and example.expected_marker in completed.stdout
     stderr = completed.stderr
@@ -177,17 +222,29 @@ def run_all(
     *,
     golden_dir: Optional[Path] = None,
     update_golden: bool = False,
+    fixture_overrides: Optional[FixtureOverrides] = None,
 ) -> dict[str, SmokeResult]:
     if not parallel:
         return {
-            example.name: run_smoke(example, golden_dir=golden_dir, update_golden=update_golden)
+            example.name: run_smoke(
+                example,
+                golden_dir=golden_dir,
+                update_golden=update_golden,
+                fixture_overrides=fixture_overrides,
+            )
             for example in examples
         }
 
     results: dict[str, SmokeResult] = {}
     with ThreadPoolExecutor(max_workers=min(8, max(1, len(examples)))) as executor:
         futures = {
-            executor.submit(run_smoke, example, golden_dir=golden_dir, update_golden=update_golden): example.name
+            executor.submit(
+                run_smoke,
+                example,
+                golden_dir=golden_dir,
+                update_golden=update_golden,
+                fixture_overrides=fixture_overrides,
+            ): example.name
             for example in examples
         }
         for future in as_completed(futures):

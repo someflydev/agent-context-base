@@ -1,15 +1,16 @@
 from __future__ import annotations
 
-import importlib.util
-import sys
 import unittest
 from pathlib import Path
 
+from verification.terminal.harness import python_extra_env_for_example, python_interpreter_for_example, python_modules_available
 from verification.terminal.pty_harness import PEXPECT_AVAILABLE, PtySession, make_watch_script, scripted_tui_test
 
 
-TEXTUAL_INSTALLED = importlib.util.find_spec("textual") is not None
-TYPER_INSTALLED = importlib.util.find_spec("typer") is not None
+PYTHON_TEXTUAL_ROOT = (
+    Path(__file__).resolve().parents[2]
+    / "examples/canonical-terminal/python-typer-textual"
+)
 
 
 class TestPtyHarness(unittest.TestCase):
@@ -22,15 +23,16 @@ class TestPtyHarness(unittest.TestCase):
         self.assertIsInstance(script, list)
         self.assertEqual(len(script), 3)
 
-    @unittest.skipUnless(PEXPECT_AVAILABLE and TEXTUAL_INSTALLED and TYPER_INSTALLED, "requires pexpect and textual")
     def test_python_textual_tui(self) -> None:
-        root = (
-            Path(__file__).resolve().parents[2]
-            / "examples/canonical-terminal/python-typer-textual"
-        )
-        fixtures = root.parent / "fixtures"
+        if not PEXPECT_AVAILABLE:
+            self.skipTest("requires pexpect")
+        available, reason = python_modules_available(PYTHON_TEXTUAL_ROOT, "textual", "typer")
+        if not available:
+            self.skipTest(reason or "python-typer-textual runtime is unavailable")
+
+        fixtures = PYTHON_TEXTUAL_ROOT.parent / "fixtures"
         command = [
-            sys.executable,
+            python_interpreter_for_example(PYTHON_TEXTUAL_ROOT),
             "-c",
             "from taskflow.cli.main import main; main()",
             "watch",
@@ -38,10 +40,10 @@ class TestPtyHarness(unittest.TestCase):
             str(fixtures),
         ]
         env = {
-            "PYTHONPATH": str(root),
             "TASKFLOW_FIXTURES_PATH": str(fixtures),
             "TERM": "xterm-256color",
         }
+        env.update(python_extra_env_for_example(PYTHON_TEXTUAL_ROOT))
         self.assertTrue(scripted_tui_test(command, make_watch_script(), env=env))
 
 

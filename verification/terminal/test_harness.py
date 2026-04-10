@@ -6,7 +6,17 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from verification.terminal.harness import GOLDEN_DIR, REPO_ROOT, SmokeResult, python_extra_env_for_example, python_interpreter_for_example
+from verification.terminal.harness import (
+    GOLDEN_DIR,
+    REPO_ROOT,
+    SmokeResult,
+    TerminalExample,
+    materialize_fixture_dir,
+    python_extra_env_for_example,
+    python_interpreter_for_example,
+    rewrite_fixtures_path_args,
+    run_smoke,
+)
 from verification.terminal.registry import TERMINAL_EXAMPLES
 from verification.terminal.runner import main as runner_main
 
@@ -81,6 +91,54 @@ class TestTerminalHarness(unittest.TestCase):
         self.assertEqual(exit_code, 0)
         self.assertEqual(run_all.call_args.kwargs["golden_dir"], GOLDEN_DIR)
         self.assertFalse(run_all.call_args.kwargs["update_golden"])
+
+    def test_materialize_fixture_dir_replaces_requested_files(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            fixture_dir = Path(temp_dir)
+            (fixture_dir / "jobs.json").write_text('["base-jobs"]', encoding="utf-8")
+            (fixture_dir / "jobs-large.json").write_text('["large-jobs"]', encoding="utf-8")
+            (fixture_dir / "events.json").write_text('["base-events"]', encoding="utf-8")
+            (fixture_dir / "config.json").write_text('{"queue_name":"taskflow"}', encoding="utf-8")
+
+            with materialize_fixture_dir(fixture_dir, {"jobs.json": "jobs-large.json"}) as active_dir:
+                self.assertEqual((active_dir / "jobs.json").read_text(encoding="utf-8"), '["large-jobs"]')
+                self.assertEqual((active_dir / "events.json").read_text(encoding="utf-8"), '["base-events"]')
+                self.assertEqual((active_dir / "config.json").read_text(encoding="utf-8"), '{"queue_name":"taskflow"}')
+
+    def test_rewrite_fixtures_path_args_updates_cli_flag(self) -> None:
+        rewritten = rewrite_fixtures_path_args(
+            ["taskflow", "list", "--fixtures-path", "/tmp/base", "--output", "json"],
+            Path("/tmp/override"),
+        )
+        self.assertEqual(
+            rewritten,
+            ["taskflow", "list", "--fixtures-path", "/tmp/override", "--output", "json"],
+        )
+
+    def test_run_smoke_uses_materialized_fixture_dir_for_env_and_command(self) -> None:
+        example = TerminalExample(
+            name="fixture-test",
+            path=REPO_ROOT,
+            build_cmd=[],
+            smoke_cmd=["taskflow", "list", "--fixtures-path", "/tmp/base", "--output", "json"],
+            fixtures_env={"TASKFLOW_FIXTURES_PATH": str(REPO_ROOT / "examples/canonical-terminal/fixtures")},
+            expected_marker='"id":',
+        )
+        completed = type(
+            "CompletedProcessLike",
+            (),
+            {"returncode": 0, "stdout": '{"id":"job-001"}', "stderr": ""},
+        )()
+
+        with patch("verification.terminal.harness.subprocess.run", return_value=completed) as run:
+            result = run_smoke(example, fixture_overrides={"jobs.json": "jobs.json"})
+
+        self.assertTrue(result.passed)
+        command = run.call_args.args[0]
+        env = run.call_args.kwargs["env"]
+        self.assertEqual(command[2], "--fixtures-path")
+        self.assertNotEqual(command[3], "/tmp/base")
+        self.assertEqual(env["TASKFLOW_FIXTURES_PATH"], command[3])
 
 
 if __name__ == "__main__":
