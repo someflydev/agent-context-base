@@ -87,7 +87,7 @@ Terminal tooling is a first-class capability area covering CLI tools, TUI
 applications, and dual-mode (CLI+TUI) operator consoles.
 
 ### Doctrine
-`context/doctrine/terminal-ux-first-class.md` - 10 rules governing terminal examples
+`context/doctrine/terminal-ux-first-class.md` - 11 rules governing terminal examples
 
 ### Archetypes
 | Archetype | When |

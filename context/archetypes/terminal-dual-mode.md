@@ -13,7 +13,7 @@ the same domain/application core.
 
 ## Required Doctrine
 
-- `context/doctrine/terminal-ux-first-class.md` (ALL 10 rules apply here)
+- `context/doctrine/terminal-ux-first-class.md` (ALL 11 rules apply here)
 - `context/doctrine/testing-philosophy.md`
 - `context/doctrine/smoke-test-philosophy.md`
 
@@ -43,6 +43,8 @@ that needs both scriptable and interactive modes, prefer this archetype.
 
 - CLI smoke test (non-interactive, fixture-backed)
 - TUI scripted test via PTY harness (language-dependent)
+- `verification/terminal/pty_harness.py` for shared PTY automation
+- `verification/terminal/` for shared harness and comparison coverage
 - `python scripts/run_verification.py --tier fast`
 
 ## Common Pitfalls

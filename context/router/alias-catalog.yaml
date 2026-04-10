@@ -512,6 +512,12 @@ stacks:
     target: context/archetypes/terminal-dual-mode.md
   - alias: job monitor
     target: context/archetypes/terminal-dual-mode.md
+  - alias: queue monitor
+    target: context/archetypes/terminal-dual-mode.md
+  - alias: inspector
+    target:
+      - context/archetypes/terminal-tui.md
+      - context/archetypes/terminal-dual-mode.md
   - alias: interactive CLI
     target:
       - context/archetypes/terminal-dual-mode.md

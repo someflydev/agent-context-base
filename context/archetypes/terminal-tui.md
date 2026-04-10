@@ -26,7 +26,9 @@ by keyboard input, with panels, tables, detail views, and event loops.
 ## Routing
 
 When asked to build a TUI dashboard, monitoring console, or interactive
-inspector, prefer this archetype over `cli-tool`.
+inspector, prefer this archetype over `cli-tool`. Route explicit dashboard or
+inspector requests here before considering dual-mode unless the user also asks
+for a scriptable CLI surface.
 
 ## Language Stack Options
 
@@ -39,13 +41,16 @@ See `context/router/stack-router.md` -> terminal stacks section.
 - `examples/canonical-terminal/go-cobra-bubbletea/`
 - `examples/canonical-terminal/typescript-commander-ink/`
 - `examples/canonical-terminal/java-picocli-lanterna/`
+- `examples/canonical-terminal/ruby-thor-tty/`
 - `examples/canonical-terminal/elixir-optimus-ratatouille/`
 
 ## Validation Path
 
 - `python scripts/run_verification.py --tier fast`
 - smoke tests in each example's `tests/` directory
-- PTY harness guidance in `docs/terminal-validation-contract.md` (PROMPT_101)
+- PTY harness guidance in `docs/terminal-validation-contract.md`
+- shared PTY tooling in `verification/terminal/pty_harness.py`
+- shared terminal harness coverage in `verification/terminal/`
 
 ## Common Pitfalls
 

@@ -13,24 +13,27 @@ much as service APIs or browser UIs.
 
 CLI and TUI surfaces must wrap a shared application core, not duplicate logic.
 The core handles data loading, filtering, and state. Surfaces handle rendering
-only.
+only. Anti-pattern example: a `watch` TUI command reimplements filtering logic
+that the `list --output json` CLI path already owns.
 
 ### 2. Non-Interactive Mode is Mandatory
 
 Every tool with a TUI mode must also work in non-interactive (CLI/headless)
-mode. Accept `--no-tui`, `--output json`, or equivalent. CI pipelines must not
-require a TTY.
+mode. Accept `--no-tui`, `--no-interactive`, `--output json`, or an equivalent
+headless path. CI pipelines must not require a TTY.
 
 ### 3. Fixture-First Validation
 
 Baseline validation must not depend on live network or OS state. Use fixture
-files for the canonical happy path. Live backends are optional extensions.
+files from `examples/canonical-terminal/fixtures/` for the canonical happy
+path. Live backends are optional extensions.
 
 ### 4. Output Assertion Discipline
 
 CLI output must be assertable. Prefer marker-tagged sections such as
-`BEGIN_TABLE` / `END_TABLE` or structured JSON for machine-readable output. TUI
-output is asserted via normalized transcripts or PTY harness.
+`## BEGIN_JOBS ##` / `## END_JOBS ##` and expose `--output json` for
+machine-readable output. TUI output is asserted via normalized transcripts or a
+PTY harness.
 
 ### 5. Smoke Test Requirement
 
@@ -40,12 +43,15 @@ Every terminal example must have at least one smoke test that:
 - loads fixtures, not live data
 - asserts on at least one marker or structured output field
 - passes without a TTY (usable in CI)
+- completes quickly enough for routine fast verification
 
 ### 6. PTY Validation for TUI
 
 TUI applications must have a documented path for scripted or PTY-based
-interaction testing. If no PTY harness is available for a language, document
-the manual validation approach and add a TODO for automation.
+interaction testing. Prefer `pexpect` plus
+`verification/terminal/pty_harness.py` for shared PTY automation. If no PTY
+harness is available for a language, document the manual validation approach
+and add a TODO for automation.
 
 ### 7. Shared Fixture Corpus
 
@@ -56,7 +62,8 @@ consistency and cross-example test transferability.
 ### 8. Stack Alignment
 
 Each terminal example must declare its stack (language + CLI library + TUI
-library) in the stack file and must be reachable from the stack-router.
+library) in `context/stacks/terminal-*.yaml` and must be reachable from the
+stack-router.
 
 ### 9. Router Discoverability
 
@@ -68,8 +75,9 @@ Terminal archetypes, stacks, and examples must be discoverable through:
 
 ### 10. Manifest Registration
 
-Each canonical terminal example must have a manifest entry in `manifests/` or
-be listed in the terminal catalog at `examples/canonical-terminal/CATALOG.md`.
+Each canonical terminal example must be represented through `manifests/`
+coverage and be listed in the terminal catalog at
+`examples/canonical-terminal/CATALOG.md`.
 
 ### 11. Cross-Language Behavioral Consistency
 

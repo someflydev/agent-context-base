@@ -34,7 +34,7 @@ dual-mode) to `examples/canonical-terminal/`.
 
 ## Related Doctrine
 
-- `context/doctrine/terminal-ux-first-class.md` (ALL 10 rules)
+- `context/doctrine/terminal-ux-first-class.md` (ALL 11 rules)
 - `context/doctrine/smoke-test-philosophy.md`
 
 ## Common Pitfalls

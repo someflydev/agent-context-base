@@ -60,7 +60,7 @@ Infer project shape from the repo goal, not only from language choice.
 |--------|-----------|
 | "build a CLI tool", "add a command" | `cli-tool` |
 | "build a TUI", "dashboard", "interactive terminal", "terminal UI" | `terminal-tui` |
-| "operator console", "monitor", "inspector", "`--interactive`", dual CLI+TUI | `terminal-dual-mode` |
+| "operator console", "job monitor", "queue monitor", "inspector", "`--interactive`", "dual CLI+TUI" | `terminal-dual-mode` |
 
 See `context/doctrine/terminal-ux-first-class.md` for rules that apply to all
 terminal archetypes.
