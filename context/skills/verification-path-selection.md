@@ -13,6 +13,8 @@ Use this skill to determine which verification level a given change surface requ
    - **pure logic, transforms, parsing** → unit test, no docker needed
    - **boot health, happy path** → smoke test, can run without full infra
      → load `context/workflows/add-smoke-tests.md`
+   - **terminal output (CLI, TUI, or dual-mode)** → terminal validation path
+     → load `context/skills/terminal-validation-path-selection.md`
 3. when the change surface spans two types (e.g., storage write plus a new route), load the workflow for each surface
 4. escalation rule: when in doubt between two levels, use the higher-confidence level
 5. verification is not complete until a test, harness, or check was actually run — generation alone is not verification
@@ -24,6 +26,8 @@ Use this skill to determine which verification level a given change surface requ
 - "what verification does this change need"
 - "is a unit test sufficient"
 - "which workflow for testing this"
+- "which test level for a terminal tool"
+- "do I need a PTY test or a smoke test"
 
 ## Avoid
 
@@ -31,3 +35,7 @@ Use this skill to determine which verification level a given change surface requ
 - claiming a smoke test covers a storage boundary
 - skipping verification because "the logic is simple"
 - treating plausible generation as equivalent to a passing test run
+
+## See Also
+
+- `terminal-validation-path-selection.md` — full decision tree for terminal changes

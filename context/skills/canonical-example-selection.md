@@ -30,5 +30,10 @@ If no stack-matching canonical example exists:
 - treating templates as if they were canonical examples
 - treating language-agnostic doctrine as if it were a stack-specific implementation
 - treating a Python example as the default answer for a Go, Rust, TypeScript, Elixir, Nim, Zig, or Crystal request
+- treating `examples/canonical-cli/` as equivalent to `examples/canonical-terminal/` when the task explicitly targets CLI tooling, TUI, or dual-mode patterns — use `context/skills/terminal-example-selection.md` for terminal tasks
 - creating a new example when the pattern is still unstable
 - preferring a lower-verified example when a higher-verified nearby option exists
+
+## See Also
+
+- `terminal-example-selection.md` — for CLI, TUI, and dual-mode terminal examples
