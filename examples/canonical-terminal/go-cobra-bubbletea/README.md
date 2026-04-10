@@ -3,6 +3,12 @@
 Flagship Go dual-mode terminal example. Cobra handles the command tree and
 Bubble Tea drives the interactive watch dashboard.
 
+## Stack
+
+- CLI: Cobra
+- TUI: Bubble Tea
+- Go 1.23+
+
 ## Usage
 
 ```bash

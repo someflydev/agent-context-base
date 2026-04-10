@@ -26,6 +26,18 @@ java -jar target/taskflow.jar watch
 mvn test -q
 ```
 
+## Validation Approach
+
+Use `java -jar target/taskflow.jar watch --no-repl` for CI smoke coverage.
+JLine-driven interactive shell behavior is validated manually until PTY
+automation is expanded for Java.
+
+## Architecture
+
+- `src/main/java/.../core/`: shared fixture-backed domain logic
+- `src/main/java/.../cli/`: JCommander entrypoint and output formatting
+- `src/main/java/.../repl/`: JLine shell loop, completion, and watch commands
+
 ## When to Use vs Flagship
 
 - picocli + Lanterna: full-screen dashboard with panels

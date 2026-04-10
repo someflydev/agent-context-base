@@ -31,6 +31,12 @@ npm test
 Use `node dist/cli/index.js watch --no-tui` for CI smoke coverage. The
 Blessed dashboard path is still validated manually until a PTY harness lands.
 
+## Architecture
+
+- `src/core.ts`: shared fixture-backed domain logic
+- `src/cli/`: yargs command wiring and output formatters
+- `src/tui/`: Blessed screen and widget composition
+
 ## When to Use vs Flagship
 
 - Commander + Ink: component-driven React model for terminal UIs

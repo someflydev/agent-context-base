@@ -27,6 +27,17 @@ mix escript.build
 mix test
 ```
 
+## Validation Approach
+
+Use `./taskflow_owl watch --no-tui` for CI smoke coverage. Owl-based terminal
+output stays scriptable, so PTY automation is optional rather than mandatory.
+
+## Architecture
+
+- `lib/taskflow/cli.ex`: OptionParser-driven command routing and output helpers
+- `test/smoke/`: fixture-backed smoke coverage
+- `test/unit/`: core filtering and stats assertions
+
 ## When to Use vs Flagship
 
 - `Optimus + Ratatouille`: structured CLI + full-screen TUI + GenServer-backed refresh

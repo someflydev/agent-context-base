@@ -34,7 +34,7 @@ Use `./taskflow watch --no-tui` for CI smoke coverage. Full-screen
 Ratatouille interaction is currently validated manually per
 `docs/terminal-validation-contract.md`; PTY automation is a Phase 2 follow-up.
 
-## BEAM Architecture
+## Architecture
 
 `Taskflow.JobStore` is a GenServer that owns the current job list and supports a
 refresh message. That makes the TUI refresh path honest to BEAM strengths

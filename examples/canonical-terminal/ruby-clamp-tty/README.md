@@ -29,6 +29,12 @@ bundle exec ruby tests/smoke/test_cli_smoke.rb
 bundle exec ruby tests/unit/test_core.rb
 ```
 
+## Architecture
+
+- `lib/taskflow/core.rb`: shared fixture-backed job loading and stats logic
+- `lib/taskflow/cli.rb`: Clamp command definitions and output formatting
+- `lib/taskflow/watch.rb`: TTY::Reader-driven watch loop
+
 ## When to Use vs Flagship
 
 - `Thor + TTY::Prompt`: guided menus, select dialogs, wizard flows

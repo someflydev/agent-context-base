@@ -29,6 +29,12 @@ bundle exec ruby tests/smoke/test_cli_smoke.rb
 bundle exec ruby tests/unit/test_core.rb
 ```
 
+## Architecture
+
+- `lib/taskflow/core.rb`: shared fixture-backed job loading and stats logic
+- `lib/taskflow/cli.rb`: Thor command surface and output formatting
+- `lib/taskflow/watch.rb`: TTY::Prompt-guided interactive watch flow
+
 ## Ruby Terminal Philosophy
 
 Ruby shines at guided interactive workflows: prompts, menus, confirmations, and

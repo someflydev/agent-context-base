@@ -29,6 +29,12 @@ cargo test
 Use `taskflow watch --no-tui` for CI smoke coverage. The component-driven TUI
 path is still validated manually until a PTY harness lands.
 
+## Architecture
+
+- `src/core.rs`: shared fixture-backed domain logic
+- `src/cli.rs`: argh command parsing and output formatting
+- `src/tui.rs`: tui-realm component tree and event loop
+
 ## When to Use vs Flagship
 
 - Use clap + ratatui for richer subcommand ergonomics and direct control.

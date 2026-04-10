@@ -22,10 +22,22 @@ taskflow watch
 taskflow watch --no-tui
 ```
 
+## Testing
+
+```bash
+python -m unittest discover -s tests -p "test_*.py"
+```
+
 ## Validation Approach
 
 Use `taskflow watch --no-tui` for automated smoke coverage. The lightweight
 interactive pager is still validated manually until a PTY harness is added.
+
+## Architecture
+
+- `taskflow/core.py`: shared fixture-backed domain logic
+- `taskflow/cli.py`: Click command surface and output rendering
+- `taskflow/watch.py`: lightweight Blessed-powered interactive watch mode
 
 ## Difference from Flagship
 
