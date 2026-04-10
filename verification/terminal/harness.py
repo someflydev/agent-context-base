@@ -136,6 +136,7 @@ def run_smoke(
             example.smoke_cmd,
             cwd=example.path,
             env=env,
+            stdin=subprocess.DEVNULL,
             capture_output=True,
             text=True,
             timeout=30,
