@@ -110,6 +110,9 @@ implement the TaskFlow Monitor domain. See `CATALOG.md` and
 `docs/terminal-validation-contract.md` and
 `verification/scenarios/terminal-smoke-baseline.md`
 
+Skills: `context/skills/terminal-example-selection.md`,
+`context/skills/terminal-validation-path-selection.md`
+
 ## Future Direction
 
 Clearly future-facing, not implemented yet:

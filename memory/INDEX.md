@@ -65,6 +65,8 @@ Read `memory/INDEX.md` after `work.py resume` output and after reading `context/
 - **Archetypes**: `terminal-tui.md`, `terminal-dual-mode.md`
 - **Stacks**: 14 stacks in `context/stacks/terminal-*.yaml`
 - **Validation contract**: `docs/terminal-validation-contract.md`
+- [Terminal Example Selection](../context/skills/terminal-example-selection.md) — select CLI/TUI/dual-mode examples
+- [Terminal Validation Path Selection](../context/skills/terminal-validation-path-selection.md) — choose terminal test approach
 - **Examples**: `examples/canonical-terminal/` (14 examples, 7 languages)
 - **Catalog**: `examples/canonical-terminal/CATALOG.md`
 - **Decision guide**: `examples/canonical-terminal/DECISION_GUIDE.md`
