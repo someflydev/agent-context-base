@@ -11,17 +11,17 @@
 
 | Status | Library | Lane | Path | Notes |
 | --- | --- | --- | --- | --- |
-| [ ] | Pydantic | C | python/pydantic/ | Hybrid: type=validator=schema |
-| [ ] | marshmallow | A | python/marshmallow/ | Explicit schema, serialization |
+| [x] | Pydantic | C | python/pydantic/ | Hybrid: type=validator=schema |
+| [x] | marshmallow | A | python/marshmallow/ | Explicit schema, serialization |
 
 ## TypeScript
 
 | Status | Library | Lane | Path | Notes |
 | --- | --- | --- | --- | --- |
-| [ ] | Zod | C | typescript/zod/ | Mainstream hybrid |
-| [ ] | Valibot | A | typescript/valibot/ | Modular, lightweight |
-| [ ] | io-ts | A | typescript/io-ts/ | Codec/FP approach |
-| [ ] | TypeBox + Ajv | B | typescript/typebox-ajv/ | Contract-first, JSON Schema |
+| [x] | Zod | C | typescript/zod/ | Mainstream hybrid |
+| [x] | Valibot | A | typescript/valibot/ | Modular, lightweight |
+| [x] | io-ts | A | typescript/io-ts/ | Codec/FP approach |
+| [x] | TypeBox + Ajv | B | typescript/typebox-ajv/ | Contract-first, JSON Schema |
 
 ## Go
 

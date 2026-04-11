@@ -11704,6 +11704,182 @@
       "patterns": ["fixture-corpus", "edge-fixture", "boundary-case"],
       "rank": 66,
       "stability": "reference"
+    },
+    {
+      "path": "examples/canonical-schema-validation/python/pydantic/__init__.py",
+      "category": "schema-validation",
+      "summary": "Package marker for the canonical Pydantic Lane C example.",
+      "stacks": ["schema-validation-python"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-c", "python", "package-marker"],
+      "rank": 60,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/python/pydantic/models.py",
+      "category": "schema-validation",
+      "summary": "Canonical Pydantic implementation of all five WorkspaceSyncContext models with Lane C validation and schema generation patterns.",
+      "stacks": ["schema-validation-python"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-c", "python", "pydantic", "hybrid-model"],
+      "rank": 95,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/python/pydantic/schema_export.py",
+      "category": "schema-validation",
+      "summary": "Pydantic schema export and drift-check script showing JSON Schema generation from the same model definitions.",
+      "stacks": ["schema-validation-python"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-c", "schema-export", "drift-check"],
+      "rank": 88,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/python/marshmallow/__init__.py",
+      "category": "schema-validation",
+      "summary": "Package marker for the canonical marshmallow Lane A example.",
+      "stacks": ["schema-validation-python"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "python", "package-marker"],
+      "rank": 60,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/python/marshmallow/schemas.py",
+      "category": "schema-validation",
+      "summary": "Canonical marshmallow schema set showing explicit Schema objects, nested validation, and manual tagged dispatch.",
+      "stacks": ["schema-validation-python"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "python", "marshmallow", "explicit-schema"],
+      "rank": 94,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/typescript/zod/package.json",
+      "category": "schema-validation",
+      "summary": "Dependency manifest for the canonical Zod Lane C example and local schema-export runner.",
+      "stacks": ["schema-validation-typescript"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-c", "typescript", "dependency-manifest"],
+      "rank": 76,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/typescript/zod/tsconfig.json",
+      "category": "schema-validation",
+      "summary": "TypeScript compiler configuration for the canonical Zod validation example.",
+      "stacks": ["schema-validation-typescript"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-c", "typescript", "compiler-config"],
+      "rank": 72,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/typescript/zod/src/models.ts",
+      "category": "schema-validation",
+      "summary": "Canonical Zod model set covering all WorkspaceSyncContext models with discriminated unions and superRefine rules.",
+      "stacks": ["schema-validation-typescript"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-c", "typescript", "zod", "hybrid-model"],
+      "rank": 95,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/typescript/zod/src/schema_export.ts",
+      "category": "schema-validation",
+      "summary": "Zod schema export example showing JSON Schema generation plus an Ajv drift check against the shared fixtures.",
+      "stacks": ["schema-validation-typescript"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-c", "schema-export", "drift-check"],
+      "rank": 88,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/typescript/valibot/package.json",
+      "category": "schema-validation",
+      "summary": "Dependency manifest for the canonical Valibot runtime-validation example.",
+      "stacks": ["schema-validation-typescript"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "typescript", "dependency-manifest"],
+      "rank": 75,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/typescript/valibot/src/models.ts",
+      "category": "schema-validation",
+      "summary": "Valibot example emphasizing pipe-based runtime validation and tree-shakeable checks for the two most complex models.",
+      "stacks": ["schema-validation-typescript"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "typescript", "valibot", "runtime-validation"],
+      "rank": 89,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/typescript/io-ts/package.json",
+      "category": "schema-validation",
+      "summary": "Dependency manifest for the canonical io-ts codec example.",
+      "stacks": ["schema-validation-typescript"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "typescript", "dependency-manifest"],
+      "rank": 75,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/typescript/io-ts/src/codecs.ts",
+      "category": "schema-validation",
+      "summary": "io-ts codec example showing explicit Either-based decoding and refined codec construction for cross-field rules.",
+      "stacks": ["schema-validation-typescript"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "typescript", "io-ts", "codec-model"],
+      "rank": 92,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/typescript/typebox-ajv/package.json",
+      "category": "schema-validation",
+      "summary": "Dependency manifest for the canonical TypeBox plus Ajv contract-first example.",
+      "stacks": ["schema-validation-typescript"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-b", "typescript", "dependency-manifest"],
+      "rank": 75,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/typescript/typebox-ajv/src/schemas.ts",
+      "category": "schema-validation",
+      "summary": "TypeBox schema definitions showing JSON Schema native contracts and TypeScript type extraction via Static<>.",
+      "stacks": ["schema-validation-typescript"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-b", "typescript", "typebox", "contract-first"],
+      "rank": 91,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/typescript/typebox-ajv/src/validate.ts",
+      "category": "schema-validation",
+      "summary": "Ajv integration example validating shared fixtures directly against a TypeBox JSON Schema object.",
+      "stacks": ["schema-validation-typescript"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-b", "typescript", "ajv", "drift-check"],
+      "rank": 87,
+      "stability": "canonical"
     }
   ]
 }

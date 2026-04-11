@@ -8172,3 +8172,163 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: medium
+  - name: schema-validation-python-pydantic-package
+    path: examples/canonical-schema-validation/python/pydantic/__init__.py
+    language: python
+    stack_tags: [schema-validation-python]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, package import marker]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-python-pydantic-models
+    path: examples/canonical-schema-validation/python/pydantic/models.py
+    language: python
+    stack_tags: [schema-validation-python]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, python syntax valid, pydantic models defined]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-python-pydantic-schema-export
+    path: examples/canonical-schema-validation/python/pydantic/schema_export.py
+    language: python
+    stack_tags: [schema-validation-python]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, python syntax valid, schema export entrypoint]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-python-marshmallow-package
+    path: examples/canonical-schema-validation/python/marshmallow/__init__.py
+    language: python
+    stack_tags: [schema-validation-python]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, package import marker]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-python-marshmallow-schemas
+    path: examples/canonical-schema-validation/python/marshmallow/schemas.py
+    language: python
+    stack_tags: [schema-validation-python]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, python syntax valid, marshmallow schemas defined]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-typescript-zod-package
+    path: examples/canonical-schema-validation/typescript/zod/package.json
+    language: json
+    stack_tags: [schema-validation-typescript]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, package manifest valid json]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-typescript-zod-tsconfig
+    path: examples/canonical-schema-validation/typescript/zod/tsconfig.json
+    language: json
+    stack_tags: [schema-validation-typescript]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, tsconfig valid json]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-typescript-zod-models
+    path: examples/canonical-schema-validation/typescript/zod/src/models.ts
+    language: typescript
+    stack_tags: [schema-validation-typescript]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, zod schemas defined, lane c patterns documented]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-typescript-zod-schema-export
+    path: examples/canonical-schema-validation/typescript/zod/src/schema_export.ts
+    language: typescript
+    stack_tags: [schema-validation-typescript]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, schema export script present, drift check present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-typescript-valibot-package
+    path: examples/canonical-schema-validation/typescript/valibot/package.json
+    language: json
+    stack_tags: [schema-validation-typescript]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, package manifest valid json]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-typescript-valibot-models
+    path: examples/canonical-schema-validation/typescript/valibot/src/models.ts
+    language: typescript
+    stack_tags: [schema-validation-typescript]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, valibot schemas defined, pipe-based validation shown]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-typescript-io-ts-package
+    path: examples/canonical-schema-validation/typescript/io-ts/package.json
+    language: json
+    stack_tags: [schema-validation-typescript]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, package manifest valid json]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-typescript-io-ts-codecs
+    path: examples/canonical-schema-validation/typescript/io-ts/src/codecs.ts
+    language: typescript
+    stack_tags: [schema-validation-typescript]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, codec model documented, Either decode flow shown]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-typescript-typebox-ajv-package
+    path: examples/canonical-schema-validation/typescript/typebox-ajv/package.json
+    language: json
+    stack_tags: [schema-validation-typescript]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, package manifest valid json]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-typescript-typebox-ajv-schemas
+    path: examples/canonical-schema-validation/typescript/typebox-ajv/src/schemas.ts
+    language: typescript
+    stack_tags: [schema-validation-typescript]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, typebox schemas defined, json schema native note present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-typescript-typebox-ajv-validate
+    path: examples/canonical-schema-validation/typescript/typebox-ajv/src/validate.ts
+    language: typescript
+    stack_tags: [schema-validation-typescript]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, ajv integration present, fixture validation shown]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
