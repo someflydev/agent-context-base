@@ -1,0 +1,11 @@
+{
+  "name": "canonical-schema-validation-valibot",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "valibot": "^0.42.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}
