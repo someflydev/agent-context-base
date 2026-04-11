@@ -40,6 +40,11 @@ Read [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md) first. Thi
 - For Tim Pope style multi-line commit messages, always use a heredoc with
   `EOF` so the commit body contains real line breaks, and never include literal
   `\n` sequences.
+- When updating an existing `.prompts/PROMPT_{num}.txt` file, use a commit
+  subject prefix of `[UPDATE PROMPT_{num}]` instead of the base prompt prefix.
+- Do not add `memory/summaries/` or `memory/sessions/` file entries to
+  `memory/INDEX.md`; those directories are gitignored and should only be
+  described at the tier level, not indexed file-by-file.
 - Before committing, group changes into coherent chunks so each commit is a
   single logical unit with a focused Tim Pope style message.
 - Use `python3 scripts/work.py checkpoint` at natural boundaries.

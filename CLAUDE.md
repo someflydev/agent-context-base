@@ -58,14 +58,22 @@ Load one dominant path, not a broad survey.
 - If a repo provides `PLAN.example.md`, `context/TASK.example.md`, `context/SESSION.example.md`, or `context/MEMORY.example.md`, `init` and `checkpoint` will scaffold missing runtime files from those examples.
 - Do not claim completion without running the stated proof path.
 - If proof is unavailable, report the work as `blocked` or `incomplete` instead of `done`.
+- For Tim Pope style multi-line commit messages, always use a heredoc with
+  `EOF` so the commit body contains real line breaks, and never include literal
+  `\n` sequences.
+- When updating an existing `.prompts/PROMPT_{num}.txt` file, use a commit
+  subject prefix of `[UPDATE PROMPT_{num}]` instead of the base prompt prefix.
+- Do not add `memory/summaries/` or `memory/sessions/` file entries to
+  `memory/INDEX.md`; those directories are gitignored and should only be
+  described at the tier level, not indexed file-by-file.
 
 ## Verification
 
 Verification scripts use `unittest`, not `pytest`.
 
 ```bash
-python scripts/run_verification.py --tier fast
-python scripts/validate_context.py
+python3 scripts/run_verification.py --tier fast
+python3 scripts/validate_context.py
 python .acb/scripts/acb_verify.py
 ```
 
