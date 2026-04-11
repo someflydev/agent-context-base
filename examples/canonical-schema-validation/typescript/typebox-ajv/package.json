@@ -1,0 +1,12 @@
+{
+  "name": "canonical-schema-validation-typebox-ajv",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@sinclair/typebox": "^0.34.28",
+    "ajv": "^8.17.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}
