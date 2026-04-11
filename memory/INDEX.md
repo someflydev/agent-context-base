@@ -67,6 +67,9 @@ Read `memory/INDEX.md` after `work.py resume` output and after reading `context/
 - [Contract Generation Path Selection](../context/skills/contract-generation-path-selection.md) — schema export + drift detection
 - [Schema Validation Stacks](../context/stacks/) — `schema-validation-{language}.yaml` for 7 languages
 - [Polyglot Validation Lab Archetype](../context/archetypes/polyglot-validation-lab.md) — cross-language validation comparison surface
+- [Domain Model Spec](../examples/canonical-schema-validation/domain/models.md) — WorkspaceSyncContext: 5 models, 23 fixtures
+- [Parity Rules](../examples/canonical-schema-validation/PARITY.md) — cross-language consistency contract
+- [Example Catalog](../examples/canonical-schema-validation/CATALOG.md) — all planned/implemented examples by language, library, lane
 
 ## Contributing
 

@@ -123,6 +123,8 @@ Skills: `context/skills/schema-validation-lane-selection.md`,
 Manifest: `manifests/schema-validation-polyglot.yaml`
 Workflow: `context/workflows/add-schema-validation-example.md`
 Examples: `examples/canonical-schema-validation/` (created in PROMPT_114)
+Corpus: `examples/canonical-schema-validation/domain/` —
+WorkspaceSyncContext domain with 23 fixtures (11 valid, 8 invalid, 4 edge)
 
 ## Future Direction
 
