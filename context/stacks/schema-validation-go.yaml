@@ -1,0 +1,36 @@
+name: schema-validation-go
+language: go
+tier: validation-lab
+description: |
+  Go treats runtime validation and contract generation as more separate concerns
+  than Python or TypeScript. The common pattern is runtime checks on structs
+  plus external OpenAPI or JSON Schema tooling for interoperability artifacts.
+
+lanes:
+  runtime_validation:
+    primary: "go-playground/validator — tag-based struct validation"
+    secondary: "ozzo-validation — code-driven explicit validation rules"
+  contract_generation:
+    primary: "OpenAPI/JSON Schema generation via ecosystem tooling — kin-openapi, swaggo, or manual schema composition"
+    notes: "Go usually externalizes contract generation instead of deriving it from the same construct that enforces runtime rules"
+  hybrid_type_driven:
+    primary: "not applicable"
+    notes: "Go has no mainstream library that unifies type definition, validation, and schema export in the Pydantic or Zod sense"
+
+when_to_use: |
+  Use this stack when the task needs Go examples for boundary validation,
+  struct-tag versus code-rule comparison, or an explicit explanation of Go's
+  externalized contract-generation path.
+
+tradeoffs: |
+  - go-playground/validator is conventional and lightweight, but tags can become opaque for complex rules
+  - ozzo-validation is more explicit in code, but it is less idiomatic for teams expecting tag-based struct validation
+  - Contract generation in Go is powerful, but it is fragmented across external tooling rather than one dominant library
+  - Go is strong for clear separation of concerns and weak for hybrid Lane C ergonomics
+
+canonical_example: "(will be examples/canonical-schema-validation/go/ — created in PROMPT_114)"
+
+docs:
+  - https://github.com/go-playground/validator
+  - https://github.com/go-ozzo/ozzo-validation
+  - https://github.com/getkin/kin-openapi

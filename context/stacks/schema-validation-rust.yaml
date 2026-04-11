@@ -1,0 +1,36 @@
+name: schema-validation-rust
+language: rust
+tier: validation-lab
+description: |
+  Rust separates data shape, runtime rules, and contract export more explicitly
+  than most ecosystems. That separation makes Rust a strong teaching surface for
+  the difference between validation lanes and serialization-aligned contracts.
+
+lanes:
+  runtime_validation:
+    primary: "validator — derive-based struct validation"
+    secondary: "garde — modeled validation with richer rule DSL"
+  contract_generation:
+    primary: "serde + schemars — serde defines the serialization shape and schemars derives JSON Schema aligned with that representation"
+    notes: "schemars is a contract tool, not a validator; use it for interoperability artifacts and OpenAPI-adjacent schema export"
+  hybrid_type_driven:
+    primary: "not applicable"
+    notes: "Rust favors explicit separation: serde for shape, validator or garde for runtime rules, schemars for contract export"
+
+when_to_use: |
+  Use this stack when the task needs a sharp distinction between runtime
+  validation and contract generation, especially when teaching why serde +
+  schemars belongs in Lane B instead of Lane A.
+
+tradeoffs: |
+  - validator is familiar and derive-friendly, but garde offers a richer DSL for more modeled rule sets
+  - serde + schemars is excellent for contract generation, but it does not enforce runtime validation rules by itself
+  - Rust's separation of concerns improves clarity, but it gives up the single-definition convenience seen in Python and TypeScript
+  - Contract drift matters most when serde serialization attributes change and schema export is not rechecked
+
+canonical_example: "(will be examples/canonical-schema-validation/rust/ — created in PROMPT_114)"
+
+docs:
+  - https://docs.rs/validator/
+  - https://docs.rs/garde/
+  - https://docs.rs/schemars/

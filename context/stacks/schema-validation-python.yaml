@@ -1,0 +1,36 @@
+name: schema-validation-python
+language: python
+tier: validation-lab
+description: |
+  Python has a strong hybrid lane through Pydantic and a durable explicit-schema
+  lane through marshmallow. It is one of the clearest ecosystems for comparing
+  runtime validation, schema export, and type-driven modeling in one language.
+
+lanes:
+  runtime_validation:
+    primary: "Pydantic — hybrid type-driven validation + JSON Schema generation"
+    secondary: "marshmallow — explicit schema objects, serialization-first"
+  contract_generation:
+    primary: "Pydantic — model_json_schema() exports JSON Schema from model definitions"
+    notes: "marshmallow-jsonschema provides a separate contract-export path for marshmallow schemas"
+  hybrid_type_driven:
+    primary: "Pydantic — type definition IS the validator IS the schema source"
+    notes: "Python is one of the strongest fits for a single-definition validation + contract model"
+
+when_to_use: |
+  Use this stack when the task needs Python examples for runtime validation,
+  JSON Schema export, or a side-by-side comparison between explicit schemas and
+  type-driven models. It is the anchor stack for the schema-validation arc.
+
+tradeoffs: |
+  - Pydantic is ergonomic and unified, but it can hide serialization assumptions if the operator needs explicit schema objects
+  - marshmallow is explicit and flexible, but it separates data models from schema definitions
+  - Pydantic is better for hybrid Lane C teaching; marshmallow is better for explicit schema object comparisons
+  - Schema export is first-class in Pydantic and more add-on oriented in marshmallow
+
+canonical_example: "(will be examples/canonical-schema-validation/python/ — created in PROMPT_114)"
+
+docs:
+  - https://docs.pydantic.dev/
+  - https://marshmallow.readthedocs.io/
+  - https://github.com/fuhrysteve/marshmallow-jsonschema

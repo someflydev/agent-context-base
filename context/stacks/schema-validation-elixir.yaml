@@ -1,0 +1,36 @@
+name: schema-validation-elixir
+language: elixir
+tier: validation-lab
+description: |
+  Elixir validation is firmly runtime-oriented and often centered on casting
+  plus validation pipelines. It is a good contrast case because contract
+  generation and typespecs remain more separate than in hybrid ecosystems.
+
+lanes:
+  runtime_validation:
+    primary: "Ecto.Changeset — dominant application-boundary validation in Elixir and Phoenix"
+    secondary: "Norm — declarative spec/schema-oriented alternative"
+  contract_generation:
+    primary: "ex_json_schema — JSON Schema validation and contract workflows"
+    notes: "Elixir separates casting and validation explicitly, and contract export does not come from typespecs"
+  hybrid_type_driven:
+    primary: "not applicable"
+    notes: "Elixir is dynamically typed; typespecs help tooling, but validation and contract behavior remain runtime concerns"
+
+when_to_use: |
+  Use this stack when the task needs Elixir examples for runtime data casting,
+  validation pipelines, or a comparison between application-boundary changesets
+  and schema-oriented contract workflows.
+
+tradeoffs: |
+  - Ecto.Changeset is the dominant runtime path, but it is tied to Elixir application patterns rather than generic schema export
+  - Norm offers a more declarative schema style, but it is not the mainstream Phoenix boundary pattern
+  - ex_json_schema supports contract workflows, but it is separate from the most common validation path
+  - Elixir is strong for explicit runtime pipelines and weak for hybrid Lane C unification
+
+canonical_example: "(will be examples/canonical-schema-validation/elixir/ — created in PROMPT_114)"
+
+docs:
+  - https://hexdocs.pm/ecto/Ecto.Changeset.html
+  - https://hexdocs.pm/norm/Norm.html
+  - https://hexdocs.pm/ex_json_schema/readme.html

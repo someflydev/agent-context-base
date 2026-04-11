@@ -1,0 +1,36 @@
+name: schema-validation-ruby
+language: ruby
+tier: validation-lab
+description: |
+  Ruby's dry-rb ecosystem separates schema definition from higher-level
+  validation contracts. That makes Ruby useful for teaching the difference
+  between schema shape work and richer rule evaluation in a dynamic language.
+
+lanes:
+  runtime_validation:
+    primary: "dry-validation — rich rule-based validation contracts"
+    secondary: "dry-schema — lower-level schema definition used by dry-validation"
+  contract_generation:
+    primary: "JSON Schema via custom schema export or json_schemer integration"
+    notes: "dry-rb separates schema definition from validation logic, so contract export is a separate concern rather than an automatic byproduct"
+  hybrid_type_driven:
+    primary: "not applicable"
+    notes: "Ruby's dynamic type system means hybrid flows rely on explicit coercion and schema objects, not static inference"
+
+when_to_use: |
+  Use this stack when the task needs Ruby examples for rule-based validation,
+  schema-versus-contract separation, or comparisons against more unified
+  ecosystems such as Pydantic or Zod.
+
+tradeoffs: |
+  - dry-validation is strong for expressive domain rules, but it depends on a lower-level schema layer rather than one unified type definition
+  - dry-schema is useful on its own, but it is not the same thing as a full validation contract
+  - Ruby can express rich runtime behavior, but contract generation is more explicit and less automatic than in hybrid ecosystems
+  - Dynamic typing makes the boundary between coercion and validation especially important to document
+
+canonical_example: "(will be examples/canonical-schema-validation/ruby/ — created in PROMPT_114)"
+
+docs:
+  - https://dry-rb.org/gems/dry-validation/
+  - https://dry-rb.org/gems/dry-schema/
+  - https://github.com/davishmcclurg/json_schemer

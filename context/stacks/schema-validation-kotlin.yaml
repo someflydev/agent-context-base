@@ -1,0 +1,36 @@
+name: schema-validation-kotlin
+language: kotlin
+tier: validation-lab
+description: |
+  Kotlin validation spans a Kotlin-first DSL path and the standard JVM
+  annotation ecosystem. It is a good comparison surface because Konform and
+  Hibernate Validator encode meaningfully different philosophies.
+
+lanes:
+  runtime_validation:
+    primary: "Konform — Kotlin-first DSL validation, no annotations"
+    secondary: "Hibernate Validator / Jakarta Bean Validation — annotation-based JVM ecosystem standard"
+  contract_generation:
+    primary: "OpenAPI generation via SpringDoc, Swagger annotations, or kotlinx.serialization + schema tooling"
+    notes: "Kotlin contract generation is usually framework-level or serializer-driven rather than derived from the validation DSL itself"
+  hybrid_type_driven:
+    primary: "not applicable in the Pydantic/Zod sense"
+    notes: "Konform models rules cleanly but does not generate schemas; Hibernate Validator integrates with the Bean Validation spec instead"
+
+when_to_use: |
+  Use this stack when the task needs Kotlin validation guidance that compares
+  DSL-based validation with annotation-based validation and explains the JVM
+  contract-generation path honestly.
+
+tradeoffs: |
+  - Konform is expressive and Kotlin-native, but it does not double as a schema generator
+  - Hibernate Validator integrates deeply with Spring and Jakarta stacks, but annotations can scatter rules across model classes
+  - Kotlin's OpenAPI path is strong in framework contexts and weaker as a standalone inline schema derivation story
+  - The right comparison is Konform versus Hibernate Validator, not Kotlin DSL versus "generic Java annotations"
+
+canonical_example: "(will be examples/canonical-schema-validation/kotlin/ — created in PROMPT_114)"
+
+docs:
+  - https://www.konform.io/
+  - https://hibernate.org/validator/
+  - https://springdoc.org/

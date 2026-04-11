@@ -1,0 +1,37 @@
+name: schema-validation-typescript
+language: typescript
+tier: validation-lab
+description: |
+  TypeScript spans three distinct philosophies in one ecosystem: ergonomic
+  schema-first validation through Zod, lightweight modular validation through
+  Valibot, and contract-first JSON Schema flows through TypeBox + Ajv.
+
+lanes:
+  runtime_validation:
+    primary: "Zod — mainstream TS-first schema + runtime validation"
+    secondary: "Valibot — modular, lightweight alternative"
+  contract_generation:
+    primary: "TypeBox + Ajv — JSON-Schema-shaped, contract-first lane"
+    notes: "Zod can export JSON Schema via zod-to-json-schema, while TypeBox schemas are JSON Schema natively"
+  hybrid_type_driven:
+    primary: "Zod — infers static TS type from schema definition"
+    notes: "io-ts is a distinct codec approach with runtime decode/encode behavior and static typing, not a Zod clone"
+
+when_to_use: |
+  Use this stack when the task needs TypeScript validation guidance that
+  distinguishes runtime ergonomics from contract-native schema generation. It
+  is the clearest comparison surface for Zod, io-ts, Valibot, and TypeBox.
+
+tradeoffs: |
+  - Zod is the ergonomic default, but its JSON Schema path is an export layer rather than the native representation
+  - TypeBox + Ajv is stronger for Lane B contract-first work because the schema is already JSON Schema shaped
+  - Valibot keeps runtime validation lightweight, but it is less dominant in teaching material than Zod
+  - io-ts is more FP-oriented and codec-centric, which improves explicit decoding at the cost of approachability
+
+canonical_example: "(will be examples/canonical-schema-validation/typescript/ — created in PROMPT_114)"
+
+docs:
+  - https://zod.dev/
+  - https://valibot.dev/
+  - https://github.com/gcanti/io-ts
+  - https://github.com/sinclairzx81/typebox
