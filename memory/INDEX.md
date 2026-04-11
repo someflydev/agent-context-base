@@ -74,6 +74,14 @@ Read `memory/INDEX.md` after `work.py resume` output and after reading `context/
   `memory/summaries/PROMPT_100_through_107_phase1_summary.md`
 - **Phase 1 completion**: `memory/summaries/PROMPT_107_completion.md`
 
+## Schema Validation Arc
+
+- [Schema Validation Doctrine](../context/doctrine/schema-validation-contracts.md) — three-lane model: runtime / contract / hybrid
+- [Schema Validation Lane Selection](../context/skills/schema-validation-lane-selection.md) — route to Lane A/B/C per language
+- [Contract Generation Path Selection](../context/skills/contract-generation-path-selection.md) — schema export + drift detection
+- [Schema Validation Stacks](../context/stacks/) — `schema-validation-{language}.yaml` for 7 languages
+- [Polyglot Validation Lab Archetype](../context/archetypes/polyglot-validation-lab.md) — cross-language validation comparison surface
+
 ## Contributing
 
 Add to `memory/concepts/` when a finding is durable, curated, and worth committing for

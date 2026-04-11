@@ -113,6 +113,17 @@ implement the TaskFlow Monitor domain. See `CATALOG.md` and
 Skills: `context/skills/terminal-example-selection.md`,
 `context/skills/terminal-validation-path-selection.md`
 
+## Schema Validation and Contract Generation Arc
+
+Doctrine: `context/doctrine/schema-validation-contracts.md`
+Archetype: `context/archetypes/polyglot-validation-lab.md`
+Stacks: `context/stacks/schema-validation-{python,typescript,go,rust,kotlin,ruby,elixir}.yaml`
+Skills: `context/skills/schema-validation-lane-selection.md`,
+`context/skills/contract-generation-path-selection.md`
+Manifest: `manifests/schema-validation-polyglot.yaml`
+Workflow: `context/workflows/add-schema-validation-example.md`
+Examples: `examples/canonical-schema-validation/` (created in PROMPT_114)
+
 ## Future Direction
 
 Clearly future-facing, not implemented yet:
