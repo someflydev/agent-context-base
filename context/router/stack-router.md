@@ -210,6 +210,23 @@ Infer the active stack from repo signals, touched files, and user language.
 See `examples/canonical-terminal/DECISION_GUIDE.md` (PROMPT_106) for deeper
 stack selection guidance.
 
+## Schema Validation
+
+- `schema-validation-python`
+  - Pydantic, marshmallow, runtime + contract lane
+- `schema-validation-typescript`
+  - Zod, Valibot, io-ts, TypeBox + Ajv; hybrid + contract lanes
+- `schema-validation-go`
+  - go-playground/validator, ozzo-validation; runtime + external contract
+- `schema-validation-rust`
+  - validator, garde, serde + schemars; runtime + contract lanes
+- `schema-validation-kotlin`
+  - Konform, Hibernate Validator; runtime + JVM contract path
+- `schema-validation-ruby`
+  - dry-validation, dry-schema; runtime + schema lane
+- `schema-validation-elixir`
+  - Ecto.Changeset, Norm, ex_json_schema; runtime + contract lane
+
 ## Guardrails
 
 - load only the stacks on the active change path

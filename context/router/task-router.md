@@ -117,6 +117,32 @@ Route from what the user is trying to do, not from internal file names.
   - load `context/skills/manifest-selection.md`
 - "which test level", "should this be a smoke test or integration test", "what verification does this change need", "is a unit test sufficient here"
   - load `context/skills/verification-path-selection.md`
+- "validate data at runtime", "check constraints at runtime", "boundary validation"
+  - load the dominant `context/stacks/schema-validation-{language}.yaml` stack for Lane A
+- "generate JSON Schema from types", "export schema from models", "contract artifact from types"
+  - load the dominant `context/stacks/schema-validation-{language}.yaml` stack for Lane B
+- "export OpenAPI from models", "openapi from types", "schema-driven api contract"
+  - load the dominant `context/stacks/schema-validation-{language}.yaml` stack for Lane B
+- "compare Pydantic and marshmallow", "python schema validation comparison"
+  - load `context/archetypes/polyglot-validation-lab.md`
+  - load `context/stacks/schema-validation-python.yaml`
+- "compare Zod and io-ts", "typescript validation library comparison"
+  - load `context/archetypes/polyglot-validation-lab.md`
+  - load `context/stacks/schema-validation-typescript.yaml`
+- "compare Konform and Hibernate Validator", "kotlin validation comparison"
+  - load `context/archetypes/polyglot-validation-lab.md`
+  - load `context/stacks/schema-validation-kotlin.yaml`
+- "explain serde + schemars", "why is schemars not a validator", "rust contract generation path"
+  - load `context/archetypes/polyglot-validation-lab.md`
+  - load `context/stacks/schema-validation-rust.yaml`
+  - load `context/doctrine/schema-validation-contracts.md`
+- "cross-language schema validation", "polyglot validation lab", "compare validation libraries across languages"
+  - load `context/archetypes/polyglot-validation-lab.md`
+- "drift detection between schema and runtime", "schema drift versus validator behavior"
+  - load `context/doctrine/schema-validation-contracts.md`
+  - load the dominant `context/stacks/schema-validation-{language}.yaml` stack for Lane B
+- "add a schema validation example", "new schema validation canonical example"
+  - load `context/workflows/add-schema-validation-example.md`
 - "what context do I need", "what to load for this task", "required vs optional context", "how to assemble the context bundle"
   - load `context/skills/context-bundle-assembly.md`
 - "how to read MEMORY.md", "is this MEMORY.md stale", "what to write in MEMORY.md", "update the continuity file", "memory is out of date"
