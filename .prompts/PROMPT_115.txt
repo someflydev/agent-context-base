@@ -85,9 +85,9 @@ Read relevant existing canonical examples for style reference:
  13. examples/canonical-api/  (SKIM one Python and one TypeScript example for code style)
 
 Run verification before touching any code:
-  python -m unittest discover -s verification/schema-validation -p "test_*.py" -v
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 -m unittest discover -s verification/schema-validation -p "test_*.py" -v
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 Do NOT begin writing until you have read all of the above.
 
@@ -201,7 +201,7 @@ Demonstrate Lane C schema export. Write a script that:
      a known-valid fixture and a known-invalid fixture using jsonschema.validate()
      (or equivalent)
 
-Add a __main__ block so this can be run: python schema_export.py
+Add a __main__ block so this can be run: python3 schema_export.py
 
 The script must import from models.py. Keep it under 80 lines.
 
@@ -227,8 +227,8 @@ Required sections:
   more control over serialization steps.
 
   ## Running
-  python schema_export.py
-  python -m pytest / python -m unittest (point to smoke tests)
+  python3 schema_export.py
+  python3 -m unittest (point to smoke tests)
 
   ## Smoke Tests
   Point to verification/schema-validation/python/test_pydantic.py
@@ -304,7 +304,7 @@ Required sections:
   for type-safe model-driven workflows. Neither is universally better.
 
   ## Running
-  python -c "from schemas import WorkspaceConfigSchema; ..."
+  python3 -c "from schemas import WorkspaceConfigSchema; ..."
 
   ## Smoke Tests
   Point to verification/schema-validation/python/test_marshmallow.py
@@ -369,7 +369,11 @@ a TypeScript type (static), a runtime validator, and a JSON Schema (contract)."
 --- package.json ---
 
 Include dependencies: zod, zod-to-json-schema (or note if using built-in).
-Add scripts: "validate": "ts-node src/schema_export.ts", "test": "jest" (or ts-node).
+Include a local devDependency for ts-node if any package script or README command
+invokes it directly.
+Add scripts that prefer local tooling, for example:
+  "validate": "npx ts-node src/schema_export.ts"
+  "test": "jest" (or another repo-local TypeScript runner)
 Use TypeScript 5.x.
 
 --- README.md ---
@@ -395,7 +399,8 @@ Use TypeScript 5.x.
   similar hybrid approach. Zod has a larger ecosystem and more middleware.
 
   ## Running
-  ts-node src/schema_export.ts
+  npm run validate
+  or: npx ts-node src/schema_export.ts
 
 ================================================================================
 PART 4: TYPESCRIPT — VALIBOT (Lane A)
@@ -632,8 +637,8 @@ Test class: TestMarshmallowReviewRequest
 --- TypeScript smoke tests ---
 
 For TypeScript: write test_zod.py and test_io_ts.py as Python subprocess-based
-tests that invoke the TypeScript code via node/ts-node and assert on exit code
-or stdout output.
+tests that invoke the TypeScript code via node plus repo-local tooling such as
+`npm run validate` or `npx ts-node`, and assert on exit code or stdout output.
 
 test_zod.py:
   Test class: TestZodSmoke
@@ -655,10 +660,12 @@ test_io_ts.py:
   - test_readme_distinguishes_from_zod
     Assert README.md contains "not" and ("Zod" or "simpler").
 
-Note: Full ts-node execution requires the TypeScript toolchain to be installed.
-The Python-based tests are structural smoke tests. If you want runtime execution
-tests for TypeScript, add a shell script (run_ts_tests.sh) and invoke it from a
-separate test class that skips if node/ts-node are not available.
+Note: Full TypeScript runtime execution requires the project-local toolchain to
+be installed. The Python-based tests are structural smoke tests. If you want
+runtime execution tests for TypeScript, add a shell script (run_ts_tests.sh)
+that uses `npm run validate` or `npx ts-node`, and invoke it from a separate
+test class that skips if node or the local TypeScript toolchain are not
+available.
 
 ================================================================================
 PART 8: UPDATE CATALOG.md
@@ -682,10 +689,10 @@ VERIFICATION
 
 Final gate (all must pass):
 
-  python -m unittest discover -s verification/schema-validation -p "test_*.py" -v
-  python -m unittest discover -s verification/unit -p "test_*.py" -v
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 -m unittest discover -s verification/schema-validation -p "test_*.py" -v
+  python3 -m unittest discover -s verification/unit -p "test_*.py" -v
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 Manual checks:
   - All Python tests run without requiring external services
@@ -765,6 +772,6 @@ Done when:
   - verification/schema-validation/python/test_marshmallow.py passes all tests
   - verification/schema-validation/typescript/ structural tests pass
   - CATALOG.md shows 6 examples as [x]
-  - python scripts/validate_context.py passes
+  - python3 scripts/validate_context.py passes
 
 PROMPT_116 will implement Go and Rust.

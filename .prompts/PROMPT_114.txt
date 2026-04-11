@@ -929,7 +929,7 @@ Final gate (all must pass):
 
 Manual checks:
   - All 23 fixture files exist and are valid JSON
-  - CATALOG.md lists all 18 planned examples across 7 languages
+  - CATALOG.md lists all 19 planned examples across 7 languages
   - PARITY.md has the 7 universally-required rules and documented divergences
   - domain/models.md covers all 5 models with cross-field rules
   - All fixture validation tests pass
@@ -969,7 +969,7 @@ SCOPE BOUNDARIES
 DO:
   - Create all fixtures exactly as specified — future language examples depend on these
   - Create domain/models.md as the authoritative spec — do not deviate
-  - Create CATALOG.md with all 18 planned examples listed (status: planned)
+  - Create CATALOG.md with all 19 planned examples listed (status: planned)
   - Create PARITY.md with 7 universally-required rules
   - Write fixture validation tests using unittest only
 
