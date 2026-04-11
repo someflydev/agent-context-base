@@ -7882,3 +7882,293 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: medium
+  - name: schema-validation-catalog
+    path: examples/canonical-schema-validation/CATALOG.md
+    language: markdown
+    stack_tags:
+      - schema-validation-python
+      - schema-validation-typescript
+      - schema-validation-go
+      - schema-validation-rust
+      - schema-validation-kotlin
+      - schema-validation-ruby
+      - schema-validation-elixir
+    archetype_tags:
+      - polyglot-validation-lab
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - planned libraries and lanes listed
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-parity
+    path: examples/canonical-schema-validation/PARITY.md
+    language: markdown
+    stack_tags:
+      - schema-validation-python
+      - schema-validation-typescript
+      - schema-validation-go
+      - schema-validation-rust
+      - schema-validation-kotlin
+      - schema-validation-ruby
+      - schema-validation-elixir
+    archetype_tags:
+      - polyglot-validation-lab
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - parity rules and divergences documented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-domain-models
+    path: examples/canonical-schema-validation/domain/models.md
+    language: markdown
+    stack_tags:
+      - schema-validation-python
+      - schema-validation-typescript
+      - schema-validation-go
+      - schema-validation-rust
+      - schema-validation-kotlin
+      - schema-validation-ruby
+      - schema-validation-elixir
+    archetype_tags:
+      - polyglot-validation-lab
+    verification_level: reference
+    verification_targets:
+      - file exists
+      - five canonical models documented
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-valid-ingestion-source-http-poll
+    path: examples/canonical-schema-validation/domain/fixtures/valid/ingestion_source_http_poll.json
+    language: json
+    stack_tags: [schema-validation-python, schema-validation-typescript, schema-validation-go, schema-validation-rust, schema-validation-kotlin, schema-validation-ruby, schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, valid json fixture]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-valid-ingestion-source-webhook-push
+    path: examples/canonical-schema-validation/domain/fixtures/valid/ingestion_source_webhook_push.json
+    language: json
+    stack_tags: [schema-validation-python, schema-validation-typescript, schema-validation-go, schema-validation-rust, schema-validation-kotlin, schema-validation-ruby, schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, valid json fixture]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-valid-review-request-critical
+    path: examples/canonical-schema-validation/domain/fixtures/valid/review_request_critical.json
+    language: json
+    stack_tags: [schema-validation-python, schema-validation-typescript, schema-validation-go, schema-validation-rust, schema-validation-kotlin, schema-validation-ruby, schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, valid json fixture]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-valid-review-request-normal
+    path: examples/canonical-schema-validation/domain/fixtures/valid/review_request_normal.json
+    language: json
+    stack_tags: [schema-validation-python, schema-validation-typescript, schema-validation-go, schema-validation-rust, schema-validation-kotlin, schema-validation-ruby, schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, valid json fixture]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-valid-sync-run-pending
+    path: examples/canonical-schema-validation/domain/fixtures/valid/sync_run_pending.json
+    language: json
+    stack_tags: [schema-validation-python, schema-validation-typescript, schema-validation-go, schema-validation-rust, schema-validation-kotlin, schema-validation-ruby, schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, valid json fixture]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-valid-sync-run-succeeded
+    path: examples/canonical-schema-validation/domain/fixtures/valid/sync_run_succeeded.json
+    language: json
+    stack_tags: [schema-validation-python, schema-validation-typescript, schema-validation-go, schema-validation-rust, schema-validation-kotlin, schema-validation-ruby, schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, valid json fixture]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-valid-webhook-payload-sync-completed
+    path: examples/canonical-schema-validation/domain/fixtures/valid/webhook_payload_sync_completed.json
+    language: json
+    stack_tags: [schema-validation-python, schema-validation-typescript, schema-validation-go, schema-validation-rust, schema-validation-kotlin, schema-validation-ruby, schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, valid json fixture]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-valid-webhook-payload-sync-failed
+    path: examples/canonical-schema-validation/domain/fixtures/valid/webhook_payload_sync_failed.json
+    language: json
+    stack_tags: [schema-validation-python, schema-validation-typescript, schema-validation-go, schema-validation-rust, schema-validation-kotlin, schema-validation-ruby, schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, valid json fixture]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-valid-webhook-payload-workspace-suspended
+    path: examples/canonical-schema-validation/domain/fixtures/valid/webhook_payload_workspace_suspended.json
+    language: json
+    stack_tags: [schema-validation-python, schema-validation-typescript, schema-validation-go, schema-validation-rust, schema-validation-kotlin, schema-validation-ruby, schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, valid json fixture]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-valid-workspace-config-basic
+    path: examples/canonical-schema-validation/domain/fixtures/valid/workspace_config_basic.json
+    language: json
+    stack_tags: [schema-validation-python, schema-validation-typescript, schema-validation-go, schema-validation-rust, schema-validation-kotlin, schema-validation-ruby, schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, valid json fixture]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-valid-workspace-config-full
+    path: examples/canonical-schema-validation/domain/fixtures/valid/workspace_config_full.json
+    language: json
+    stack_tags: [schema-validation-python, schema-validation-typescript, schema-validation-go, schema-validation-rust, schema-validation-kotlin, schema-validation-ruby, schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, valid json fixture]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-invalid-ingestion-source-poll-interval-missing
+    path: examples/canonical-schema-validation/domain/fixtures/invalid/ingestion_source_poll_interval_missing.json
+    language: json
+    stack_tags: [schema-validation-python, schema-validation-typescript, schema-validation-go, schema-validation-rust, schema-validation-kotlin, schema-validation-ruby, schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, invalid-domain but valid json fixture]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-invalid-review-request-critical-no-due-date
+    path: examples/canonical-schema-validation/domain/fixtures/invalid/review_request_critical_no_due_date.json
+    language: json
+    stack_tags: [schema-validation-python, schema-validation-typescript, schema-validation-go, schema-validation-rust, schema-validation-kotlin, schema-validation-ruby, schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, invalid-domain but valid json fixture]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-invalid-review-request-no-reviewers
+    path: examples/canonical-schema-validation/domain/fixtures/invalid/review_request_no_reviewers.json
+    language: json
+    stack_tags: [schema-validation-python, schema-validation-typescript, schema-validation-go, schema-validation-rust, schema-validation-kotlin, schema-validation-ruby, schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, invalid-domain but valid json fixture]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-invalid-sync-run-duration-missing-when-finished
+    path: examples/canonical-schema-validation/domain/fixtures/invalid/sync_run_duration_missing_when_finished.json
+    language: json
+    stack_tags: [schema-validation-python, schema-validation-typescript, schema-validation-go, schema-validation-rust, schema-validation-kotlin, schema-validation-ruby, schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, invalid-domain but valid json fixture]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-invalid-sync-run-timestamps-inverted
+    path: examples/canonical-schema-validation/domain/fixtures/invalid/sync_run_timestamps_inverted.json
+    language: json
+    stack_tags: [schema-validation-python, schema-validation-typescript, schema-validation-go, schema-validation-rust, schema-validation-kotlin, schema-validation-ruby, schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, invalid-domain but valid json fixture]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-invalid-webhook-payload-bad-signature-format
+    path: examples/canonical-schema-validation/domain/fixtures/invalid/webhook_payload_bad_signature_format.json
+    language: json
+    stack_tags: [schema-validation-python, schema-validation-typescript, schema-validation-go, schema-validation-rust, schema-validation-kotlin, schema-validation-ruby, schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, invalid-domain but valid json fixture]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-invalid-workspace-config-bad-slug
+    path: examples/canonical-schema-validation/domain/fixtures/invalid/workspace_config_bad_slug.json
+    language: json
+    stack_tags: [schema-validation-python, schema-validation-typescript, schema-validation-go, schema-validation-rust, schema-validation-kotlin, schema-validation-ruby, schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, invalid-domain but valid json fixture]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-invalid-workspace-config-plan-too-many-runs
+    path: examples/canonical-schema-validation/domain/fixtures/invalid/workspace_config_plan_too_many_runs.json
+    language: json
+    stack_tags: [schema-validation-python, schema-validation-typescript, schema-validation-go, schema-validation-rust, schema-validation-kotlin, schema-validation-ruby, schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, invalid-domain but valid json fixture]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-edge-review-request-duplicate-content-ids
+    path: examples/canonical-schema-validation/domain/fixtures/edge/review_request_duplicate_content_ids.json
+    language: json
+    stack_tags: [schema-validation-python, schema-validation-typescript, schema-validation-go, schema-validation-rust, schema-validation-kotlin, schema-validation-ruby, schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, edge-case valid json fixture]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-edge-sync-run-zero-records
+    path: examples/canonical-schema-validation/domain/fixtures/edge/sync_run_zero_records.json
+    language: json
+    stack_tags: [schema-validation-python, schema-validation-typescript, schema-validation-go, schema-validation-rust, schema-validation-kotlin, schema-validation-ruby, schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, edge-case valid json fixture]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-edge-webhook-payload-unknown-event-type
+    path: examples/canonical-schema-validation/domain/fixtures/edge/webhook_payload_unknown_event_type.json
+    language: json
+    stack_tags: [schema-validation-python, schema-validation-typescript, schema-validation-go, schema-validation-rust, schema-validation-kotlin, schema-validation-ruby, schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, edge-case valid json fixture]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-edge-workspace-config-max-tags
+    path: examples/canonical-schema-validation/domain/fixtures/edge/workspace_config_max_tags.json
+    language: json
+    stack_tags: [schema-validation-python, schema-validation-typescript, schema-validation-go, schema-validation-rust, schema-validation-kotlin, schema-validation-ruby, schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, edge-case valid json fixture]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
