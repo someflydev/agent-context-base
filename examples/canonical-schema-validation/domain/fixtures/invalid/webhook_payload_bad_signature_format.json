@@ -1,0 +1,12 @@
+{
+  "event_type": "sync.completed",
+  "payload_version": "v2",
+  "timestamp": "2024-01-15T10:05:31Z",
+  "signature": "not-a-hex-string",
+  "data": {
+    "run_id": "660e8400-e29b-41d4-a716-446655440002",
+    "workspace_id": "550e8400-e29b-41d4-a716-446655440001",
+    "duration_ms": 1000,
+    "records_ingested": 10
+  }
+}

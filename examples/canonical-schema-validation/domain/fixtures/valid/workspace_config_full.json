@@ -1,0 +1,17 @@
+{
+  "id": "550e8400-e29b-41d4-a716-446655440002",
+  "name": "Enterprise Workspace Full",
+  "slug": "enterprise-full",
+  "owner_email": "ops@enterprise.example.com",
+  "plan": "enterprise",
+  "max_sync_runs": 500,
+  "settings": {
+    "retry_max": 5,
+    "timeout_seconds": 1800,
+    "notify_on_failure": false,
+    "webhook_url": "https://hooks.enterprise.example.com/notify"
+  },
+  "tags": ["prod", "tier-1", "monitored"],
+  "created_at": "2023-06-01T08:00:00Z",
+  "suspended_until": null
+}

@@ -1,0 +1,11 @@
+{
+  "run_id": "660e8400-e29b-41d4-a716-446655440011",
+  "workspace_id": "550e8400-e29b-41d4-a716-446655440001",
+  "status": "succeeded",
+  "trigger": "scheduled",
+  "started_at": "2024-01-15T10:00:00Z",
+  "finished_at": "2024-01-15T10:05:30Z",
+  "duration_ms": null,
+  "records_ingested": 100,
+  "error_code": null
+}

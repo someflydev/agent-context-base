@@ -1,0 +1,10 @@
+{
+  "source_id": "770e8400-e29b-41d4-a716-446655440002",
+  "source_type": "webhook_push",
+  "config": {
+    "path": "/webhooks/partner-events",
+    "secret": "whsec_abc123def456"
+  },
+  "enabled": true,
+  "poll_interval_seconds": null
+}

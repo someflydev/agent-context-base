@@ -1,0 +1,12 @@
+{
+  "id": "550e8400-e29b-41d4-a716-446655440010",
+  "name": "Bad Slug Workspace",
+  "slug": "Bad Slug! Has spaces",
+  "owner_email": "admin@test.example.com",
+  "plan": "free",
+  "max_sync_runs": 5,
+  "settings": {"retry_max": 1, "timeout_seconds": 60, "notify_on_failure": false, "webhook_url": null},
+  "tags": [],
+  "created_at": "2024-01-15T00:00:00Z",
+  "suspended_until": null
+}

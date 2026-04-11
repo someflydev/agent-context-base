@@ -1,0 +1,12 @@
+{
+  "request_id": "880e8400-e29b-41d4-a716-446655440001",
+  "workspace_id": "550e8400-e29b-41d4-a716-446655440001",
+  "reviewer_emails": ["alice@acme.example.com", "bob@acme.example.com"],
+  "content_ids": [
+    "990e8400-e29b-41d4-a716-446655440001",
+    "990e8400-e29b-41d4-a716-446655440002"
+  ],
+  "priority": "normal",
+  "due_at": null,
+  "notes": "Please review the new ingestion source configuration."
+}

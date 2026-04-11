@@ -1,0 +1,11 @@
+{
+  "source_id": "770e8400-e29b-41d4-a716-446655440010",
+  "source_type": "http_poll",
+  "config": {
+    "url": "https://api.partner.example.com/events",
+    "method": "GET",
+    "headers": {}
+  },
+  "enabled": true,
+  "poll_interval_seconds": null
+}
