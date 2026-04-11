@@ -1,0 +1,12 @@
+{
+  "name": "canonical-schema-validation-io-ts",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "fp-ts": "^2.16.9",
+    "io-ts": "^2.2.22"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}
