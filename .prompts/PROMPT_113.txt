@@ -80,7 +80,7 @@ Read existing structural files to calibrate before writing anything:
   8. context/archetypes/polyglot-lab.md               (READ — you will decide whether to
                                                         extend this or create a sibling)
   9. context/archetypes/terminal-tui.md               (READ — recent archetype; model format)
- 10. context/stacks/backend-api-go-echo.yaml          (READ — stack file format)
+ 10. context/stacks/go-echo.md                        (READ — stack file format)
  11. context/stacks/terminal-python-typer-textual.yaml (READ — if it exists; recent stack)
  12. context/router/archetype-router.md               (READ — you will add routing entries)
  13. context/router/stack-router.md                   (READ — you will add stack entries)
@@ -91,8 +91,8 @@ Read existing structural files to calibrate before writing anything:
  18. context/workflows/add-terminal-example.md        (READ — workflow format; if exists)
 
 Run verification before touching any file:
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 Do NOT begin writing until you have read all of the above.
 
@@ -293,7 +293,7 @@ PART 3: CREATE 7 STACK FILES
 ================================================================================
 
 Create one stack YAML file per language. Each file belongs in context/stacks/.
-Read backend-api-go-echo.yaml for format. Read terminal-python-typer-textual.yaml
+Read go-echo.md for format. Read terminal-python-typer-textual.yaml
 (or any recent terminal stack) for a more recent example if it exists.
 
 Naming convention: schema-validation-{language}.yaml
@@ -750,8 +750,8 @@ Required sections:
        example reveals a cross-language divergence from the parity rules.
 
     8. Run verification gates before committing:
-         python -m unittest discover -s verification/schema-validation -p "test_*.py" -v
-         python scripts/validate_context.py
+         python3 -m unittest discover -s verification/schema-validation -p "test_*.py" -v
+         python3 scripts/validate_context.py
 
   ## Lane-Specific Notes
 
@@ -863,9 +863,9 @@ VERIFICATION
 
 Final gate (all must pass):
 
-  python -m unittest discover -s verification/unit -p "test_*.py" -v
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 -m unittest discover -s verification/unit -p "test_*.py" -v
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 Manual checks:
   - All 7 stack files exist and parse as valid YAML
@@ -949,7 +949,7 @@ Done when:
   - context/skills/contract-generation-path-selection.md exists with required sections
   - context/workflows/add-schema-validation-example.md exists covering all 3 lanes
   - verification/unit/test_schema_validation_structure.py passes (all tests green)
-  - python scripts/validate_context.py passes
+  - python3 scripts/validate_context.py passes
   - docs/ARCHITECTURE_MAP.md and memory/INDEX.md reference the arc
 
 The structural layer is now complete. PROMPT_114 will build the shared corpus.
