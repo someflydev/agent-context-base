@@ -82,8 +82,8 @@ Look at existing corpus/fixture patterns in the repo:
  13. Any existing fixture files under verification/fixtures/ or examples/
 
 Run verification before touching any file:
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 Do NOT begin writing until you have read all of the above.
 
@@ -922,10 +922,10 @@ VERIFICATION
 
 Final gate (all must pass):
 
-  python -m unittest discover -s verification/schema-validation -p "test_*.py" -v
-  python -m unittest discover -s verification/unit -p "test_*.py" -v
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 -m unittest discover -s verification/schema-validation -p "test_*.py" -v
+  python3 -m unittest discover -s verification/unit -p "test_*.py" -v
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 Manual checks:
   - All 23 fixture files exist and are valid JSON
@@ -992,7 +992,7 @@ Done when:
   - CATALOG.md lists 18 examples across 7 languages with status [ ] (planned)
   - PARITY.md has 7 universally-required rules and a documented divergences table
   - verification/schema-validation/test_fixtures.py passes all tests
-  - python -m unittest discover -s verification/unit passes (PROMPT_113 tests still green)
-  - python scripts/validate_context.py passes
+  - python3 -m unittest discover -s verification/unit passes (PROMPT_113 tests still green)
+  - python3 scripts/validate_context.py passes
 
 The shared corpus is now established. PROMPT_115 will implement Python and TypeScript.
