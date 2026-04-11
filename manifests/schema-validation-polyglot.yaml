@@ -1,0 +1,92 @@
+schema_version: 2
+name: schema-validation-polyglot
+description: Cross-language canonical example area for runtime validation, contract generation, and hybrid type-driven flows across Python, TypeScript, Go, Rust, Kotlin, Ruby, and Elixir.
+archetype: polyglot-validation-lab
+primary_stack: schema-validation-python
+secondary_stacks:
+  - schema-validation-typescript
+  - schema-validation-go
+  - schema-validation-rust
+  - schema-validation-kotlin
+  - schema-validation-ruby
+  - schema-validation-elixir
+triggers:
+  - schema validation
+  - contract generation
+  - runtime validation
+  - pydantic marshmallow comparison
+  - zod io-ts validation
+  - konform hibernate validator
+  - serde schemars rust
+  - json schema export
+  - cross-language validation
+  - dry-validation ruby
+  - ecto changeset elixir
+  - polyglot validation lab
+aliases:
+  - validation-polyglot
+  - cross-language schema
+  - schema-validation-arc
+required_context:
+  - context/doctrine/schema-validation-contracts.md
+  - context/archetypes/polyglot-validation-lab.md
+  - context/skills/schema-validation-lane-selection.md
+  - context/skills/contract-generation-path-selection.md
+optional_context:
+  - context/stacks/schema-validation-python.yaml
+  - context/stacks/schema-validation-typescript.yaml
+  - context/stacks/schema-validation-go.yaml
+  - context/stacks/schema-validation-rust.yaml
+  - context/stacks/schema-validation-kotlin.yaml
+  - context/stacks/schema-validation-ruby.yaml
+  - context/stacks/schema-validation-elixir.yaml
+  - context/workflows/add-schema-validation-example.md
+  - memory/INDEX.md
+preferred_examples:
+  - examples/canonical-api/fastapi-endpoint-example.py
+recommended_templates:
+  - templates/readme/README.template.md
+  - templates/agent-md/AGENT.template.md
+  - templates/claude-md/CLAUDE.template.md
+  - templates/gitignore/.gitignore.template
+  - templates/manifest/profile-summary.template.yaml
+repo_signals:
+  - schema validation
+  - json schema export
+  - openapi from models
+  - pydantic
+  - zod
+  - schemars
+task_hints:
+  - validate-data-at-runtime
+  - generate-json-schema-from-types
+  - export-openapi-from-models
+  - compare-schema-validation-libraries
+  - add-schema-validation-example
+warnings:
+  - Do not conflate runtime validation with contract generation; route to Lane A, B, or C explicitly.
+  - Treat serde plus schemars as a contract-generation path, not a runtime validator.
+  - Examples and shared fixtures live in PROMPT_114 and later; this manifest defines the foundation only.
+bootstrap_defaults:
+  - include_docker_compose
+  - include_smoke_tests
+  - include_generated_profile
+compose_files:
+  - docker-compose.yml
+  - docker-compose.test.yml
+compose_project_name_dev: "{repo_slug}-validation"
+compose_project_name_test: "{repo_slug}-validation-test"
+port_band_app_dev: 14100-14199
+port_band_app_test: 15100-15199
+port_band_data_dev: 24100-24199
+port_band_data_test: 25100-25199
+data_isolation:
+  - docker/volumes/dev
+  - docker/volumes/test
+  - validation fixture and generated artifact checks must stay isolated from test data resets
+dokku_relevance: not-applicable
+smoke_test_expectations:
+  - verify one valid fixture and one invalid fixture for each example
+  - verify schema export structure when Lane B is in scope
+  - verify drift-sensitive paths when runtime validation and exported contracts coexist
+prompt_first_support: supported

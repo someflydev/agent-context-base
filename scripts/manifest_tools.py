@@ -72,6 +72,7 @@ ARCHETYPE_PATHS = {
     "multi-source-sync-platform": "context/archetypes/multi-source-sync-platform.md",
     "multi-storage-experiment": "context/archetypes/multi-storage-experiment.md",
     "polyglot-lab": "context/archetypes/polyglot-lab.md",
+    "polyglot-validation-lab": "context/archetypes/polyglot-validation-lab.md",
     "dokku-deployable-service": "context/archetypes/dokku-deployable-service.md",
 }
 
@@ -121,6 +122,13 @@ STACK_PATHS = {
     "terminal-ruby-clamp-tty": "context/stacks/terminal-ruby-clamp-tty.yaml",
     "terminal-elixir-optimus-ratatouille": "context/stacks/terminal-elixir-optimus-ratatouille.yaml",
     "terminal-elixir-optionparser-owl": "context/stacks/terminal-elixir-optionparser-owl.yaml",
+    "schema-validation-python": "context/stacks/schema-validation-python.yaml",
+    "schema-validation-typescript": "context/stacks/schema-validation-typescript.yaml",
+    "schema-validation-go": "context/stacks/schema-validation-go.yaml",
+    "schema-validation-rust": "context/stacks/schema-validation-rust.yaml",
+    "schema-validation-kotlin": "context/stacks/schema-validation-kotlin.yaml",
+    "schema-validation-ruby": "context/stacks/schema-validation-ruby.yaml",
+    "schema-validation-elixir": "context/stacks/schema-validation-elixir.yaml",
 }
 
 VALID_SUPPORT_LEVELS = {"first-class", "supported", "optional", "not-applicable"}
