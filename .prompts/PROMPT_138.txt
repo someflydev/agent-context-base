@@ -86,8 +86,8 @@ Also read an existing implementation for reference:
  20. examples/canonical-auth/go/internal/auth/        (READ — if available)
 
 Run verification before writing any code:
-  python -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
-  python -m unittest verification/unit/test_jwt_auth_arc_domain.py -v
+  python3 -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
+  python3 -m unittest verification/unit/test_jwt_auth_arc_domain.py -v
 
 Do NOT begin implementation until both test suites pass.
 
@@ -592,10 +592,10 @@ VERIFICATION AND COMMIT
 ================================================================================
 
 Run everything:
-  python -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
-  python -m unittest verification/unit/test_jwt_auth_arc_domain.py -v
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
+  python3 -m unittest verification/unit/test_jwt_auth_arc_domain.py -v
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 For Java tests (if mvn is available):
   cd examples/canonical-auth/java && mvn test

@@ -86,9 +86,9 @@ Read existing Go and Rust canonical examples if present:
  13. examples/canonical-api/ (SKIM any Go or Rust example for code style and project layout)
 
 Run verification before touching any code:
-  python -m unittest discover -s verification/schema-validation -p "test_*.py" -v
-  python -m unittest discover -s verification/unit -p "test_*.py" -v
-  python scripts/validate_context.py
+  python3 -m unittest discover -s verification/schema-validation -p "test_*.py" -v
+  python3 -m unittest discover -s verification/unit -p "test_*.py" -v
+  python3 scripts/validate_context.py
 
 Do NOT begin writing until you have read all of the above.
 
@@ -756,10 +756,10 @@ VERIFICATION
 
 Final gate (all must pass):
 
-  python -m unittest discover -s verification/schema-validation -p "test_*.py" -v
-  python -m unittest discover -s verification/unit -p "test_*.py" -v
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 -m unittest discover -s verification/schema-validation -p "test_*.py" -v
+  python3 -m unittest discover -s verification/unit -p "test_*.py" -v
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 Critical manual checks:
   - rust/serde-schemars/src/models.rs does NOT contain #[validate or #[garde

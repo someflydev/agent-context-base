@@ -77,8 +77,8 @@ Read the arc foundation and domain spec:
  13. examples/canonical-faker/CATALOG.md              (READ — mark Python as in-progress)
 
 Run verification before touching any example files:
-  python -m unittest verification/faker/test_domain_spec.py -v
-  python -m unittest verification/unit/test_faker_arc_foundation.py -v
+  python3 -m unittest verification/faker/test_domain_spec.py -v
+  python3 -m unittest verification/unit/test_faker_arc_foundation.py -v
 
 Both must pass.
 
@@ -273,7 +273,7 @@ Create: examples/canonical-faker/python/generate.py
 
 A simple CLI using argparse. Usage:
 
-  python generate.py --pipeline faker|mimesis|factory --profile smoke|small|medium|large
+  python3 generate.py --pipeline faker|mimesis|factory --profile smoke|small|medium|large
                      --output-dir ./output [--seed N] [--format jsonl|csv|both]
 
 Arguments:
@@ -298,7 +298,7 @@ Create: examples/canonical-faker/python/README.md
 Required content:
   - What these examples demonstrate
   - Library matrix (Faker, Mimesis, factory_boy)
-  - Quick start: pip install -r requirements.txt && python generate.py
+  - Quick start: pip install -r requirements.txt && python3 generate.py
   - Profile descriptions and typical run times
   - Explanation of why relational integrity is handled explicitly, not by the faker lib
   - Link to domain/schema.md and domain/generation-order.md
@@ -371,7 +371,7 @@ Test class: TestPythonFakerExample
     Run the factory graph smoke profile. Assert output files exist.
 
 Run with:
-  python -m unittest verification/faker/python/test_python_faker.py -v
+  python3 -m unittest verification/faker/python/test_python_faker.py -v
 
 ================================================================================
 PART 9: UPDATE CATALOG
@@ -388,19 +388,19 @@ VERIFICATION
 
 After all parts are complete:
 
-  python -m unittest verification/faker/python/test_python_faker.py -v
-  python -m unittest verification/faker/test_domain_spec.py -v
-  python -m unittest verification/unit/test_faker_arc_foundation.py -v
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 -m unittest verification/faker/python/test_python_faker.py -v
+  python3 -m unittest verification/faker/test_domain_spec.py -v
+  python3 -m unittest verification/unit/test_faker_arc_foundation.py -v
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 All five must pass (with acceptable SKIP for missing optional installs).
 
 Manual smoke run:
   cd examples/canonical-faker/python
   pip install -r requirements.txt
-  python generate.py --pipeline faker --profile smoke --output-dir ./output
-  python ../../domain/validate_output.py --input-dir ./output/smoke
+  python3 generate.py --pipeline faker --profile smoke --output-dir ./output
+  python3 ../../domain/validate_output.py --input-dir ./output/smoke
 
 The validate_output.py run must exit 0.
 
@@ -459,6 +459,6 @@ Done when:
   - Smoke profile is reproducible (two runs with seed=42 produce identical output)
   - verification/faker/python/test_python_faker.py passes (or skips cleanly)
   - CATALOG.md shows Python as [x] PROMPT_121
-  - python scripts/validate_context.py passes
+  - python3 scripts/validate_context.py passes
 
 PROMPT_122 implements JavaScript/TypeScript and Go canonical examples.

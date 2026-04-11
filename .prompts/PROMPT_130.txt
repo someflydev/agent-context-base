@@ -84,11 +84,11 @@ Check the fixture files:
  20. examples/canonical-analytics/domain/fixtures/small.json (READ — verify exists)
 
 If fixture files do not exist, run:
-  python examples/canonical-analytics/domain/generate_fixtures.py --profiles smoke,small
+  python3 examples/canonical-analytics/domain/generate_fixtures.py --profiles smoke,small
 
 Run verification before touching anything:
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 Do NOT begin writing until the fixture files exist and verification passes.
 
@@ -469,8 +469,8 @@ Run all tests:
   go test -tags smoke ./tests/smoke/...  — must all pass
 
 Run base repo verification:
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 Update parity-matrix.md:
   Mark Go column as [x] for all completed rows (or [~] for partial).

@@ -84,9 +84,9 @@ Read existing fixture/verification patterns:
  17. examples/canonical-analytics/domain/verification-contract.md (READ — format model)
 
 Run verification before touching any file:
-  python -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 Do NOT begin writing until all foundation tests pass. If test_jwt_auth_arc_foundation.py
 does not exist, PROMPT_134 is incomplete — resolve that first.
@@ -669,10 +669,10 @@ PART 9: RUN VERIFICATION AND COMMIT
 ================================================================================
 
 Run all verification:
-  python -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
-  python -m unittest verification/unit/test_jwt_auth_arc_domain.py -v
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
+  python3 -m unittest verification/unit/test_jwt_auth_arc_domain.py -v
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 All domain tests must pass. Fix any failures before committing.
 

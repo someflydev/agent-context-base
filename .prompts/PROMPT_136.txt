@@ -80,9 +80,9 @@ Read the full arc foundation before writing any code:
  17. context/stacks/python-fastapi-uv-ruff-orjson-polars.md (READ — Python conventions)
 
 Run verification before writing any code:
-  python -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
-  python -m unittest verification/unit/test_jwt_auth_arc_domain.py -v
-  python scripts/validate_context.py
+  python3 -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
+  python3 -m unittest verification/unit/test_jwt_auth_arc_domain.py -v
+  python3 scripts/validate_context.py
 
 Do NOT begin implementation until both test suites pass. This prompt does not
 fix PROMPT_134 or PROMPT_135 gaps — resolve those first.
@@ -267,7 +267,7 @@ PART D: README.md
   - What it is (one paragraph)
   - Requirements (python, uv)
   - How to run: uv run uvicorn src.main:app --reload
-  - How to test: uv run pytest tests/ -v (or python -m unittest)
+  - How to test: uv run pytest tests/ -v (or python3 -m unittest)
   - Key files and what they do
   - Token issuance: example curl call to /auth/token
   - /me: example curl call
@@ -450,10 +450,10 @@ VERIFICATION AND COMMIT
 ================================================================================
 
 Run everything:
-  python -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
-  python -m unittest verification/unit/test_jwt_auth_arc_domain.py -v
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
+  python3 -m unittest verification/unit/test_jwt_auth_arc_domain.py -v
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 For Python tests (if uv is available):
   cd examples/canonical-auth/python && uv run python -m pytest tests/ -v

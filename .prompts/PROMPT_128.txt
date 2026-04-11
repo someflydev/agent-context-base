@@ -84,8 +84,8 @@ Read format reference files:
  18. examples/catalog.json                                (READ — registry format)
 
 Run verification before touching any file:
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 If faker arc Python example is missing or broken, resolve the gap before
 proceeding. This prompt depends on it for seed data. Document any gap found.
@@ -448,7 +448,7 @@ Create: examples/canonical-analytics/domain/verification-contract.md
   ## Parity Alignment Check (required before marking complete)
 
   Run the arc's parity check runner (PROMPT_133 will create it):
-    python verification/analytics/run_parity_check.py --stack <python|go|rust|elixir>
+    python3 verification/analytics/run_parity_check.py --stack <python|go|rust|elixir>
 
 ================================================================================
 PART 6: CREATE PAGE LAYOUT SPEC
@@ -543,7 +543,7 @@ PART 8: GENERATE FIXTURE FILES (SMOKE + SMALL)
 After creating generate_fixtures.py (Part 1), run it to generate at minimum
 the smoke and small fixture files:
 
-  python examples/canonical-analytics/domain/generate_fixtures.py \
+  python3 examples/canonical-analytics/domain/generate_fixtures.py \
     --profiles smoke,small \
     --output examples/canonical-analytics/domain/fixtures/
 
@@ -623,9 +623,9 @@ PART 10: RUN VERIFICATION AND COMMIT
 ================================================================================
 
 Run:
-  python -m unittest verification/unit/test_plotly_htmx_arc_domain.py -v
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 -m unittest verification/unit/test_plotly_htmx_arc_domain.py -v
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 All tests must pass before committing.
 

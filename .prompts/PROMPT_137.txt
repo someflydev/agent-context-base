@@ -86,8 +86,8 @@ complete canonical example looks like:
  20. examples/canonical-auth/python/src/registry/     (READ — route registry pattern)
 
 Run verification before writing any code:
-  python -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
-  python -m unittest verification/unit/test_jwt_auth_arc_domain.py -v
+  python3 -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
+  python3 -m unittest verification/unit/test_jwt_auth_arc_domain.py -v
 
 Do NOT begin implementation until both test suites pass.
 
@@ -539,10 +539,10 @@ VERIFICATION AND COMMIT
 ================================================================================
 
 Run everything:
-  python -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
-  python -m unittest verification/unit/test_jwt_auth_arc_domain.py -v
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
+  python3 -m unittest verification/unit/test_jwt_auth_arc_domain.py -v
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 For Go tests (if go is available):
   cd examples/canonical-auth/go && go test ./... -v

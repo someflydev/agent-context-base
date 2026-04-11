@@ -90,10 +90,10 @@ Read recent arc docs for format reference:
  15. memory/summaries/PROMPT_100_through_111_arc_summary.md (READ — if it exists; format model)
 
 Run full verification audit before touching anything:
-  python -m unittest discover -s verification/schema-validation -p "test_*.py" -v
-  python -m unittest discover -s verification/unit -p "test_*.py" -v
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 -m unittest discover -s verification/schema-validation -p "test_*.py" -v
+  python3 -m unittest discover -s verification/unit -p "test_*.py" -v
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 Do NOT begin writing until you have read all of the above and resolved any
 failing tests from earlier prompts. This prompt does not fix PROMPT_115–117
@@ -717,10 +717,10 @@ Required sections:
   ## Proof Path (all must pass for the arc to be considered complete)
 
   A checkable list:
-    [ ] python -m unittest discover -s verification/unit -p "test_*.py" -v
-    [ ] python -m unittest discover -s verification/schema-validation -p "test_*.py" -v
-    [ ] python scripts/validate_context.py
-    [ ] python scripts/run_verification.py --tier fast
+    [ ] python3 -m unittest discover -s verification/unit -p "test_*.py" -v
+    [ ] python3 -m unittest discover -s verification/schema-validation -p "test_*.py" -v
+    [ ] python3 scripts/validate_context.py
+    [ ] python3 scripts/run_verification.py --tier fast
     [ ] examples/canonical-schema-validation/CATALOG.md shows all 18 as [x]
     [ ] memory/concepts/schema-validation-arc.md exists and is committed
     [ ] docs/schema-validation-arc-overview.md exists
@@ -739,19 +739,19 @@ PART 10: FINAL VERIFICATION SWEEP
 
 Run the full verification suite in sequence. Record and fix any failures.
 
-  Step 1: python -m unittest discover -s verification/unit -p "test_*.py" -v
+  Step 1: python3 -m unittest discover -s verification/unit -p "test_*.py" -v
     Fix any failures from PROMPT_113 structural tests before proceeding.
 
-  Step 2: python -m unittest discover -s verification/schema-validation -p "test_*.py" -v
+  Step 2: python3 -m unittest discover -s verification/schema-validation -p "test_*.py" -v
     Fix any failures from PROMPT_114 fixture tests or PROMPT_115-117 smoke tests.
 
-  Step 3: python scripts/validate_context.py
+  Step 3: python3 scripts/validate_context.py
     Fix any context structural issues.
 
-  Step 4: python scripts/run_verification.py --tier fast
+  Step 4: python3 scripts/run_verification.py --tier fast
     Fix any fast-tier failures.
 
-  Step 5: python verification/schema-validation/run_parity_check.py
+  Step 5: python3 verification/schema-validation/run_parity_check.py
     Review output. Document any SKIP entries as expected (non-Python toolchains).
     Investigate any FAIL entries.
 
@@ -764,11 +764,11 @@ VERIFICATION
 
 Final gate (all must pass):
 
-  python -m unittest discover -s verification/unit -p "test_*.py" -v
-  python -m unittest discover -s verification/schema-validation -p "test_*.py" -v
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
-  python verification/schema-validation/run_parity_check.py
+  python3 -m unittest discover -s verification/unit -p "test_*.py" -v
+  python3 -m unittest discover -s verification/schema-validation -p "test_*.py" -v
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
+  python3 verification/schema-validation/run_parity_check.py
 
 Manual checks:
   - docs/schema-validation-arc-overview.md exists and covers all 3 lanes

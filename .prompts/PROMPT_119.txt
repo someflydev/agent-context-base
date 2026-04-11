@@ -92,8 +92,8 @@ Read existing structural files to calibrate before writing anything:
  18. memory/concepts/schema-validation-arc.md         (READ — durable knowledge artifact model)
 
 Run verification before touching any file:
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 Do NOT begin writing until you have read all of the above.
 
@@ -521,7 +521,7 @@ Required steps:
   9. Add smoke tests under verification/faker/{language}/
  10. Run the smoke profile and confirm validation report passes
  11. Update examples/canonical-faker/CATALOG.md — mark the example
- 12. Run python scripts/validate_context.py
+ 12. Run python3 scripts/validate_context.py
  13. Commit with [PROMPT_XXX] prefix
 
 Include a "Scope Boundaries" section:
@@ -546,7 +546,7 @@ The manifest must describe:
   - canonical_examples: examples/canonical-faker/ (by language)
   - skills: list of 2
   - workflow: context/workflows/add-faker-example.md
-  - verification: python scripts/run_verification.py --tier fast
+  - verification: python3 scripts/run_verification.py --tier fast
   - arc_status: in-progress (PROMPT_119 — foundation)
   - arc_prompts: PROMPT_119 through PROMPT_126
 
@@ -625,7 +625,7 @@ Tests to implement:
     Assert it contains "synthetic-data-generator".
 
 Use unittest. Run with:
-  python -m unittest verification/unit/test_faker_arc_foundation.py -v
+  python3 -m unittest verification/unit/test_faker_arc_foundation.py -v
 
 ================================================================================
 VERIFICATION
@@ -633,9 +633,9 @@ VERIFICATION
 
 After all parts are complete:
 
-  python -m unittest verification/unit/test_faker_arc_foundation.py -v
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 -m unittest verification/unit/test_faker_arc_foundation.py -v
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 All three must pass before committing.
 
@@ -711,8 +711,8 @@ Done when:
   - manifests/faker-polyglot.yaml exists
   - All three routers have new entries
   - verification/unit/test_faker_arc_foundation.py passes
-  - python scripts/validate_context.py passes
-  - python scripts/run_verification.py --tier fast passes
+  - python3 scripts/validate_context.py passes
+  - python3 scripts/run_verification.py --tier fast passes
 
 This prompt has no implementation deliverables — only knowledge artifacts.
 PROMPT_120 begins the domain design and shared infrastructure work.

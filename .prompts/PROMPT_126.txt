@@ -84,10 +84,10 @@ Read arc docs created in earlier prompts:
  14. memory/concepts/schema-validation-arc.md         (READ — durable knowledge format model)
 
 Run full verification audit before touching anything:
-  python -m unittest discover -s verification/faker -p "test_*.py" -v
-  python -m unittest verification/unit/test_faker_arc_foundation.py -v
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 -m unittest discover -s verification/faker -p "test_*.py" -v
+  python3 -m unittest verification/unit/test_faker_arc_foundation.py -v
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 Do NOT begin writing until you have read all of the above and resolved any
 failing tests from earlier prompts. This prompt does not fix PROMPT_121–125
@@ -555,7 +555,7 @@ Required sections:
 
   ## Validation
   All examples produce JSONL output that can be validated:
-    python domain/validate_output.py --input-dir {language}/output/smoke
+    python3 domain/validate_output.py --input-dir {language}/output/smoke
 
 ================================================================================
 PART 9: WRITE ARC COMPLETION SUMMARY
@@ -610,11 +610,11 @@ Required sections:
 
   ## Proof Path
 
-  [ ] python -m unittest discover -s verification/unit -p "test_*.py" -v
-  [ ] python -m unittest discover -s verification/faker -p "test_*.py" -v
-  [ ] python scripts/validate_context.py
-  [ ] python scripts/run_verification.py --tier fast
-  [ ] python verification/faker/run_parity_check.py
+  [ ] python3 -m unittest discover -s verification/unit -p "test_*.py" -v
+  [ ] python3 -m unittest discover -s verification/faker -p "test_*.py" -v
+  [ ] python3 scripts/validate_context.py
+  [ ] python3 scripts/run_verification.py --tier fast
+  [ ] python3 verification/faker/run_parity_check.py
   [ ] examples/canonical-faker/CATALOG.md shows all 10 as [x]
   [ ] memory/concepts/faker-arc.md exists and is committed
   [ ] docs/faker-arc-overview.md exists
@@ -633,11 +633,11 @@ PART 10: FINAL VERIFICATION SWEEP
 
 Run the full verification suite in sequence. Record and fix any failures.
 
-  Step 1: python -m unittest verification/unit/test_faker_arc_foundation.py -v
-  Step 2: python -m unittest discover -s verification/faker -p "test_*.py" -v
-  Step 3: python scripts/validate_context.py
-  Step 4: python scripts/run_verification.py --tier fast
-  Step 5: python verification/faker/run_parity_check.py
+  Step 1: python3 -m unittest verification/unit/test_faker_arc_foundation.py -v
+  Step 2: python3 -m unittest discover -s verification/faker -p "test_*.py" -v
+  Step 3: python3 scripts/validate_context.py
+  Step 4: python3 scripts/run_verification.py --tier fast
+  Step 5: python3 verification/faker/run_parity_check.py
     Review output. Document SKIP entries as expected (non-Python toolchains).
     Investigate any FAIL entries.
 
@@ -649,11 +649,11 @@ VERIFICATION
 ================================================================================
 
 Final gate:
-  python -m unittest verification/unit/test_faker_arc_foundation.py -v
-  python -m unittest discover -s verification/faker -p "test_*.py" -v
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
-  python verification/faker/run_parity_check.py
+  python3 -m unittest verification/unit/test_faker_arc_foundation.py -v
+  python3 -m unittest discover -s verification/faker -p "test_*.py" -v
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
+  python3 verification/faker/run_parity_check.py
 
 Manual checks:
   - docs/faker-arc-overview.md exists and covers all 10 languages

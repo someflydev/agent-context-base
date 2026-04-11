@@ -85,11 +85,11 @@ Check fixture files:
  19. examples/canonical-analytics/domain/fixtures/small.json
 
 If fixtures missing:
-  python examples/canonical-analytics/domain/generate_fixtures.py --profiles smoke,small
+  python3 examples/canonical-analytics/domain/generate_fixtures.py --profiles smoke,small
 
 Run verification:
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 ================================================================================
 BACKGROUND: ELIXIR TEACHING SURFACE AND HTMX vs LIVEVIEW
@@ -583,8 +583,8 @@ PART 10: RUN VERIFICATION AND UPDATE PARITY
 
   mix test              — must pass
   mix compile --warnings-as-errors  — fix all compilation warnings
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 Update parity-matrix.md: mark Elixir column [x] (or [~] for partial).
 Update CATALOG.md: mark Elixir row [x].

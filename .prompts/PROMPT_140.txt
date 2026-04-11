@@ -89,10 +89,10 @@ Read arc overview format models from previous arcs:
  20. memory/concepts/schema-validation-arc.md (READ — if it exists; durable knowledge format)
 
 Run full verification audit before touching anything:
-  python -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
-  python -m unittest verification/unit/test_jwt_auth_arc_domain.py -v
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
+  python3 -m unittest verification/unit/test_jwt_auth_arc_domain.py -v
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 Do NOT begin writing until all passing tests from earlier prompts still pass.
 This prompt does not fix PROMPT_134–139 gaps — resolve those first.
@@ -664,11 +664,11 @@ PART 8: RUN FULL VERIFICATION AND COMMIT
 ================================================================================
 
 Run everything:
-  python -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
-  python -m unittest verification/unit/test_jwt_auth_arc_domain.py -v
-  python verification/auth/run_parity_check.py
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 -m unittest verification/unit/test_jwt_auth_arc_foundation.py -v
+  python3 -m unittest verification/unit/test_jwt_auth_arc_domain.py -v
+  python3 verification/auth/run_parity_check.py
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 All arc-specific tests must pass. Fix any test regressions before committing.
 

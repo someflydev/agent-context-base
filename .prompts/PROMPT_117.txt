@@ -93,9 +93,9 @@ Read existing Kotlin, Ruby, or Elixir canonical examples if present:
      example for code style norms)
 
 Run verification before touching any code:
-  python -m unittest discover -s verification/schema-validation -p "test_*.py" -v
-  python -m unittest discover -s verification/unit -p "test_*.py" -v
-  python scripts/validate_context.py
+  python3 -m unittest discover -s verification/schema-validation -p "test_*.py" -v
+  python3 -m unittest discover -s verification/unit -p "test_*.py" -v
+  python3 scripts/validate_context.py
 
 Do NOT begin writing until you have read all of the above.
 
@@ -1004,10 +1004,10 @@ VERIFICATION
 
 Final gate (all must pass):
 
-  python -m unittest discover -s verification/schema-validation -p "test_*.py" -v
-  python -m unittest discover -s verification/unit -p "test_*.py" -v
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 -m unittest discover -s verification/schema-validation -p "test_*.py" -v
+  python3 -m unittest discover -s verification/unit -p "test_*.py" -v
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 Manual checks:
   - Konform Models.kt has NO @field: annotations
@@ -1084,7 +1084,7 @@ Done when:
   - Elixir ex-json-schema has workspace_config.schema.json committed
   - All smoke tests pass (structural checks pass without toolchain)
   - CATALOG.md shows all 18 examples as [x]
-  - python scripts/validate_context.py passes
+  - python3 scripts/validate_context.py passes
 
 PROMPT_118 will harden the arc: docs, navigation, drift detection, parity matrix
 runner, router polish, and the final arc completion summary.

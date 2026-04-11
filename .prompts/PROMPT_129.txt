@@ -78,11 +78,11 @@ Read the shared domain spec:
  19. examples/canonical-analytics/domain/fixtures/small.json (READ — verify it exists and is valid)
 
 Run verification before touching anything:
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 If the fixture files do not exist, run:
-  python examples/canonical-analytics/domain/generate_fixtures.py --profiles smoke,small
+  python3 examples/canonical-analytics/domain/generate_fixtures.py --profiles smoke,small
 
 Do NOT begin writing until all fixture files exist and both verification scripts pass.
 
@@ -447,16 +447,16 @@ PART 9: RUN VERIFICATION AND UPDATE PARITY
 
 Run all tests:
   cd examples/canonical-analytics/python/
-  python -m pytest tests/ -v
+  python3 -m pytest tests/ -v
 
 All tests must pass. If any tests fail, fix them before proceeding.
 
 Verify smoke fixture coverage:
-  python examples/canonical-analytics/domain/generate_fixtures.py --check smoke
+  python3 examples/canonical-analytics/domain/generate_fixtures.py --check smoke
 
 Run base repo verification:
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 Update parity-matrix.md:
   Mark Python column as [x] for all rows where this implementation is complete.

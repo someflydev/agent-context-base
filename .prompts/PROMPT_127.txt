@@ -100,8 +100,8 @@ Read existing structural files to calibrate before writing anything:
  26. docs/ARCHITECTURE_MAP.md                          (READ — orientation; update at end)
 
 Run verification before touching any file:
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 Do NOT begin writing until you have read all of the above and resolved any
 pre-existing failing tests. This prompt does not fix earlier arcs.
@@ -842,7 +842,7 @@ page, including chart type selection, builder testing, and HTMX fragment wiring.
     Plotly figure with at least one trace and a non-empty axis title.
 
   Step 8 — Run verification.
-    python scripts/run_verification.py --tier fast
+    python3 scripts/run_verification.py --tier fast
 
   ## Outputs
     - aggregation function with unit test
@@ -976,9 +976,9 @@ PART 10: RUN VERIFICATION AND COMMIT
 ================================================================================
 
 Run:
-  python -m unittest verification/unit/test_plotly_htmx_arc_foundation.py -v
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 -m unittest verification/unit/test_plotly_htmx_arc_foundation.py -v
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 All tests must pass before committing.
 

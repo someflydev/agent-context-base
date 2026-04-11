@@ -69,8 +69,8 @@ Read existing canonical examples for directory pattern reference:
  10. examples/canonical-schema-validation/CATALOG.md       (READ — CATALOG format)
 
 Run verification before touching any file:
-  python -m unittest verification/unit/test_faker_arc_foundation.py -v
-  python scripts/run_verification.py --tier fast
+  python3 -m unittest verification/unit/test_faker_arc_foundation.py -v
+  python3 scripts/run_verification.py --tier fast
 
 All foundation tests must pass before this prompt begins.
 
@@ -491,7 +491,7 @@ Implementation:
     - Optional --json flag that outputs a machine-readable report
 
 CLI:
-  python examples/canonical-faker/domain/validate_output.py \
+  python3 examples/canonical-faker/domain/validate_output.py \
     --input-dir output/smoke/python \
     [--json]
 
@@ -621,10 +621,10 @@ VERIFICATION
 
 After all parts are complete:
 
-  python -m unittest verification/faker/test_domain_spec.py -v
-  python -m unittest verification/unit/test_faker_arc_foundation.py -v
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 -m unittest verification/faker/test_domain_spec.py -v
+  python3 -m unittest verification/unit/test_faker_arc_foundation.py -v
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 Manual checks:
   - examples/canonical-faker/domain/schema.md has all 7 entities defined
@@ -688,7 +688,7 @@ Done when:
   - CATALOG.md has all 10 languages listed
   - verification/faker/test_domain_spec.py passes fully
   - verification/unit/test_faker_arc_foundation.py still passes
-  - python scripts/validate_context.py passes
+  - python3 scripts/validate_context.py passes
 
 PROMPT_121 will implement the full Python canonical example (Faker + Mimesis
 + factory_boy) using generation_patterns.py as the foundation.

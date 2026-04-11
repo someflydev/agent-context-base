@@ -75,8 +75,8 @@ Read arc foundation and domain spec:
  14. examples/canonical-faker/CATALOG.md              (READ — current state)
 
 Run verification before touching any example files:
-  python -m unittest verification/faker/python/test_python_faker.py -v
-  python -m unittest verification/faker/go/test_go_faker.py -v
+  python3 -m unittest verification/faker/python/test_python_faker.py -v
+  python3 -m unittest verification/faker/go/test_go_faker.py -v
 
 Both must pass (Python and Go must be [x] before this prompt begins).
 
@@ -545,7 +545,7 @@ Create: examples/canonical-faker/rust/README.md
   - Seeding via rand::SeedableRng
   - Quick start: cargo run -- --profile smoke
   - How to test: cargo test
-  - How to validate: python ../../domain/validate_output.py --input-dir ./output/smoke
+  - How to validate: python3 ../../domain/validate_output.py --input-dir ./output/smoke
   - Note: no database, no async, pure generation pipeline
 
 Create: examples/canonical-faker/java/README.md
@@ -578,12 +578,12 @@ VERIFICATION
 
 After all parts are complete:
 
-  python -m unittest verification/faker/rust/test_rust_faker.py -v
-  python -m unittest verification/faker/java/test_java_faker.py -v
-  python -m unittest verification/faker/kotlin/test_kotlin_faker.py -v
-  python -m unittest verification/faker/python/test_python_faker.py -v
-  python scripts/validate_context.py
-  python scripts/run_verification.py --tier fast
+  python3 -m unittest verification/faker/rust/test_rust_faker.py -v
+  python3 -m unittest verification/faker/java/test_java_faker.py -v
+  python3 -m unittest verification/faker/kotlin/test_kotlin_faker.py -v
+  python3 -m unittest verification/faker/python/test_python_faker.py -v
+  python3 scripts/validate_context.py
+  python3 scripts/run_verification.py --tier fast
 
 If Rust toolchain available:
   cd examples/canonical-faker/rust && cargo test
