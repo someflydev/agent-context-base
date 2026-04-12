@@ -26,5 +26,5 @@ and is the more common teaching default.
 ## Running
 ```bash
 npm run validate
-npx ts-node src/schema_export.ts
+node --import tsx src/schema_export.ts
 ```

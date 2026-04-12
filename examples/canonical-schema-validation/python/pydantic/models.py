@@ -100,7 +100,7 @@ class WorkspaceConfig(BaseModel):
 
     id: UUID
     name: str = Field(min_length=3, max_length=100)
-    slug: str
+    slug: str = Field(pattern=SLUG_RE.pattern)
     owner_email: str
     plan: PlanEnum
     max_sync_runs: int = Field(ge=1, le=1000)

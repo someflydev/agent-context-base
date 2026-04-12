@@ -3,15 +3,17 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "validate": "npx ts-node src/schema_export.ts"
+    "validate": "node --import tsx src/schema_export.ts"
   },
   "dependencies": {
     "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
     "zod": "^3.24.1",
     "zod-to-json-schema": "^3.24.1"
   },
   "devDependencies": {
     "ts-node": "^10.9.2",
+    "tsx": "^4.19.3",
     "typescript": "^5.8.3"
   }
 }

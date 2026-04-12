@@ -95,31 +95,38 @@ const WorkspaceSuspendedDataSchema = z.object({
   reason: z.enum(["policy_violation", "payment_failure", "manual"]),
 });
 
-const WebhookDataSchema = z.discriminatedUnion("event_type", [
-  SyncCompletedDataSchema,
-  SyncFailedDataSchema,
-  WorkspaceSuspendedDataSchema,
-]);
+const SyncCompletedPayloadSchema = z.object({
+  event_type: z.literal("sync.completed"),
+  payload_version: z.enum(["v1", "v2", "v3"]),
+  timestamp: z.string().datetime(),
+  signature: z.string().regex(hex64Regex),
+  data: SyncCompletedDataSchema.omit({ event_type: true }),
+});
+
+const SyncFailedPayloadSchema = z.object({
+  event_type: z.literal("sync.failed"),
+  payload_version: z.enum(["v1", "v2", "v3"]),
+  timestamp: z.string().datetime(),
+  signature: z.string().regex(hex64Regex),
+  data: SyncFailedDataSchema.omit({ event_type: true }),
+});
+
+const WorkspaceSuspendedPayloadSchema = z.object({
+  event_type: z.literal("workspace.suspended"),
+  payload_version: z.enum(["v1", "v2", "v3"]),
+  timestamp: z.string().datetime(),
+  signature: z.string().regex(hex64Regex),
+  data: WorkspaceSuspendedDataSchema.omit({ event_type: true }),
+});
 
 /**
  * Lane C WebhookPayload schema using a discriminated union for the tagged data variants.
  */
-export const WebhookPayloadSchema = z
-  .object({
-    event_type: z.enum(["sync.completed", "sync.failed", "workspace.suspended"]),
-    payload_version: z.enum(["v1", "v2", "v3"]),
-    timestamp: z.string().datetime(),
-    signature: z.string().regex(hex64Regex),
-    data: z.record(z.unknown()),
-  })
-  .superRefine((value, ctx) => {
-    const parsed = WebhookDataSchema.safeParse({ event_type: value.event_type, ...value.data });
-    if (!parsed.success) {
-      for (const issue of parsed.error.issues) {
-        ctx.addIssue({ ...issue, path: ["data", ...issue.path.filter((part) => part !== "event_type")] });
-      }
-    }
-  });
+export const WebhookPayloadSchema = z.discriminatedUnion("event_type", [
+  SyncCompletedPayloadSchema,
+  SyncFailedPayloadSchema,
+  WorkspaceSuspendedPayloadSchema,
+]);
 
 const HttpPollConfigSchema = z.object({
   source_type: z.literal("http_poll"),
@@ -147,38 +154,47 @@ const DatabaseCdcConfigSchema = z.object({
   cursor_field: z.string().min(1),
 });
 
-const IngestionConfigSchema = z.discriminatedUnion("source_type", [
-  HttpPollConfigSchema,
-  WebhookPushConfigSchema,
-  FileWatchConfigSchema,
-  DatabaseCdcConfigSchema,
-]);
+const HttpPollSourceSchema = z.object({
+  source_type: z.literal("http_poll"),
+  source_id: z.string().uuid(),
+  config: HttpPollConfigSchema.omit({ source_type: true }),
+  enabled: z.boolean(),
+  poll_interval_seconds: z.number().int().min(60),
+});
+
+const WebhookPushSourceSchema = z.object({
+  source_type: z.literal("webhook_push"),
+  source_id: z.string().uuid(),
+  config: WebhookPushConfigSchema.omit({ source_type: true }),
+  enabled: z.boolean(),
+  poll_interval_seconds: z.null(),
+});
+
+const FileWatchSourceSchema = z.object({
+  source_type: z.literal("file_watch"),
+  source_id: z.string().uuid(),
+  config: FileWatchConfigSchema.omit({ source_type: true }),
+  enabled: z.boolean(),
+  poll_interval_seconds: z.null(),
+});
+
+const DatabaseCdcSourceSchema = z.object({
+  source_type: z.literal("database_cdc"),
+  source_id: z.string().uuid(),
+  config: DatabaseCdcConfigSchema.omit({ source_type: true }),
+  enabled: z.boolean(),
+  poll_interval_seconds: z.null(),
+});
 
 /**
  * Lane C IngestionSource schema with a discriminated union plus cross-field checks.
  */
-export const IngestionSourceSchema = z
-  .object({
-    source_id: z.string().uuid(),
-    source_type: z.enum(["http_poll", "webhook_push", "file_watch", "database_cdc"]),
-    config: z.record(z.unknown()),
-    enabled: z.boolean(),
-    poll_interval_seconds: z.number().int().min(60).nullable(),
-  })
-  .superRefine((value, ctx) => {
-    const parsed = IngestionConfigSchema.safeParse({ source_type: value.source_type, ...value.config });
-    if (!parsed.success) {
-      for (const issue of parsed.error.issues) {
-        ctx.addIssue({ ...issue, path: ["config", ...issue.path.filter((part) => part !== "source_type")] });
-      }
-    }
-    if (value.source_type === "http_poll" && value.poll_interval_seconds === null) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "http_poll sources require poll_interval_seconds", path: ["poll_interval_seconds"] });
-    }
-    if (value.source_type !== "http_poll" && value.poll_interval_seconds !== null) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "poll_interval_seconds must be null for non-http_poll sources", path: ["poll_interval_seconds"] });
-    }
-  });
+export const IngestionSourceSchema = z.discriminatedUnion("source_type", [
+  HttpPollSourceSchema,
+  WebhookPushSourceSchema,
+  FileWatchSourceSchema,
+  DatabaseCdcSourceSchema,
+]);
 
 /**
  * Lane C ReviewRequest schema with duplicate checks and critical due-date rules.

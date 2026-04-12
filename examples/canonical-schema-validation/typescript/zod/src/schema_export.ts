@@ -4,6 +4,7 @@ Lane C demonstration: one Zod schema definition yields a TypeScript type
 */
 
 import Ajv from "ajv";
+import addFormats from "ajv-formats";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -14,6 +15,7 @@ import { WorkspaceConfigSchema } from "./models.js";
 const here = dirname(fileURLToPath(import.meta.url));
 const fixtures = join(here, "../../../domain/fixtures");
 const ajv = new Ajv();
+addFormats(ajv);
 
 const validFixture = JSON.parse(readFileSync(join(fixtures, "valid/workspace_config_full.json"), "utf-8"));
 const invalidFixture = JSON.parse(readFileSync(join(fixtures, "invalid/workspace_config_bad_slug.json"), "utf-8"));
