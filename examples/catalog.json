@@ -11849,6 +11849,17 @@
       "stability": "canonical"
     },
     {
+      "path": "examples/canonical-schema-validation/typescript/io-ts/src/smoke.ts",
+      "category": "schema-validation",
+      "summary": "Runnable io-ts smoke entrypoint that decodes valid and invalid fixtures through the codec surface.",
+      "stacks": ["schema-validation-typescript"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "typescript", "io-ts", "runtime-smoke"],
+      "rank": 82,
+      "stability": "canonical"
+    },
+    {
       "path": "examples/canonical-schema-validation/typescript/typebox-ajv/package.json",
       "category": "schema-validation",
       "summary": "Dependency manifest for the canonical TypeBox plus Ajv contract-first example.",

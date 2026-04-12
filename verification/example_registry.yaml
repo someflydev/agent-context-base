@@ -8302,6 +8302,16 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: medium
+  - name: schema-validation-typescript-io-ts-smoke
+    path: examples/canonical-schema-validation/typescript/io-ts/src/smoke.ts
+    language: typescript
+    stack_tags: [schema-validation-typescript]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, runtime smoke entrypoint present, codec decode exercised]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
   - name: schema-validation-typescript-typebox-ajv-package
     path: examples/canonical-schema-validation/typescript/typebox-ajv/package.json
     language: json
