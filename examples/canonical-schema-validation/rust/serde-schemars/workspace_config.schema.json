@@ -1,0 +1,124 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "PlanType": {
+      "enum": [
+        "free",
+        "pro",
+        "enterprise"
+      ],
+      "type": "string"
+    },
+    "SettingsBlock": {
+      "properties": {
+        "notify_on_failure": {
+          "description": "Whether failures trigger notifications.",
+          "type": "boolean"
+        },
+        "retry_max": {
+          "description": "Maximum retry count from 0 to 10.",
+          "format": "uint8",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "timeout_seconds": {
+          "description": "Timeout in seconds from 10 to 3600.",
+          "format": "uint16",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "webhook_url": {
+          "description": "Optional webhook endpoint when notifications are mirrored.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "notify_on_failure",
+        "retry_max",
+        "timeout_seconds",
+        "webhook_url"
+      ],
+      "type": "object"
+    }
+  },
+  "properties": {
+    "created_at": {
+      "description": "Workspace creation timestamp in RFC 3339 format.",
+      "format": "date-time",
+      "type": "string"
+    },
+    "id": {
+      "description": "Workspace UUID as serialized on the wire.",
+      "type": "string"
+    },
+    "max_sync_runs": {
+      "description": "Maximum allowed sync runs for the workspace.",
+      "format": "uint32",
+      "maximum": 1000,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "name": {
+      "description": "Human-friendly workspace name.",
+      "maxLength": 100,
+      "minLength": 3,
+      "type": "string"
+    },
+    "owner_email": {
+      "description": "Primary owner email address.",
+      "format": "email",
+      "type": "string"
+    },
+    "plan": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/PlanType"
+        }
+      ],
+      "description": "Plan tier selector."
+    },
+    "settings": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/SettingsBlock"
+        }
+      ],
+      "description": "Nested runtime settings block."
+    },
+    "slug": {
+      "description": "Slug used in URLs and CLI references.",
+      "pattern": "^[a-z][a-z0-9-]{1,48}[a-z0-9]$",
+      "type": "string"
+    },
+    "suspended_until": {
+      "description": "Optional suspension end timestamp. Omitted when absent.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "tags": {
+      "description": "Operator-defined workspace tags.",
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "created_at",
+    "id",
+    "max_sync_runs",
+    "name",
+    "owner_email",
+    "plan",
+    "settings",
+    "slug",
+    "tags"
+  ],
+  "title": "WorkspaceConfig",
+  "type": "object"
+}
