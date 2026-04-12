@@ -8342,3 +8342,173 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: medium
+  - name: schema-validation-go-go-playground-main
+    path: examples/canonical-schema-validation/go/go-playground-validator/main.go
+    language: go
+    stack_tags: [schema-validation-go]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: smoke-verified
+    verification_targets: [file exists, go run smoke entrypoint present, valid and invalid fixture paths exercised]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-go-go-playground-models
+    path: examples/canonical-schema-validation/go/go-playground-validator/models/models.go
+    language: go
+    stack_tags: [schema-validation-go]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, workspace models defined, struct tag validation surface present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-go-go-playground-validate
+    path: examples/canonical-schema-validation/go/go-playground-validator/validate/validate.go
+    language: go
+    stack_tags: [schema-validation-go]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, cross-field helpers present, discriminated-union dispatch present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-go-ozzo-models
+    path: examples/canonical-schema-validation/go/ozzo-validation/models/models.go
+    language: go
+    stack_tags: [schema-validation-go]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, clean data carrier structs present, json tags present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-go-ozzo-validate
+    path: examples/canonical-schema-validation/go/ozzo-validation/validate/validate.go
+    language: go
+    stack_tags: [schema-validation-go]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: smoke-verified
+    verification_targets: [file exists, ozzo validation rules present, go test passes]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-go-ozzo-validate-test
+    path: examples/canonical-schema-validation/go/ozzo-validation/validate/validate_test.go
+    language: go
+    stack_tags: [schema-validation-go]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: smoke-verified
+    verification_targets: [file exists, nested webhook payload rejection covered, go test passes]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-go-openapi-models
+    path: examples/canonical-schema-validation/go/openapi-generation/models/models.go
+    language: go
+    stack_tags: [schema-validation-go]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, swaggo annotations present, workspace contract model documented]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-go-openapi-export
+    path: examples/canonical-schema-validation/go/openapi-generation/schema_export.go
+    language: go
+    stack_tags: [schema-validation-go]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: smoke-verified
+    verification_targets: [file exists, schema export present, drift check executed]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-go-openapi-schema
+    path: examples/canonical-schema-validation/go/openapi-generation/workspace_config.schema.json
+    language: json
+    stack_tags: [schema-validation-go]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, valid json schema artifact, workspace properties present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-rust-validator-main
+    path: examples/canonical-schema-validation/rust/validator/src/main.rs
+    language: rust
+    stack_tags: [schema-validation-rust]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: smoke-verified
+    verification_targets: [file exists, cargo run smoke entrypoint present, valid and invalid fixtures exercised]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-rust-validator-models
+    path: examples/canonical-schema-validation/rust/validator/src/models.rs
+    language: rust
+    stack_tags: [schema-validation-rust]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, serde and validator separation present, cross-field helpers defined]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-rust-garde-main
+    path: examples/canonical-schema-validation/rust/garde/src/main.rs
+    language: rust
+    stack_tags: [schema-validation-rust]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: smoke-verified
+    verification_targets: [file exists, cargo run smoke entrypoint present, garde runtime checks exercised]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-rust-garde-models
+    path: examples/canonical-schema-validation/rust/garde/src/models.rs
+    language: rust
+    stack_tags: [schema-validation-rust]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, garde DSL present, inner and pattern rules present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-rust-serde-schemars-main
+    path: examples/canonical-schema-validation/rust/serde-schemars/src/main.rs
+    language: rust
+    stack_tags: [schema-validation-rust]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: smoke-verified
+    verification_targets: [file exists, cargo run exports schema, drift check executed]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-rust-serde-schemars-models
+    path: examples/canonical-schema-validation/rust/serde-schemars/src/models.rs
+    language: rust
+    stack_tags: [schema-validation-rust]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, JsonSchema derives present, runtime-validator attributes absent]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-rust-serde-schemars-export
+    path: examples/canonical-schema-validation/rust/serde-schemars/src/schema_export.rs
+    language: rust
+    stack_tags: [schema-validation-rust]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, schema export helper present, contract enrichment present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-rust-serde-schemars-schema
+    path: examples/canonical-schema-validation/rust/serde-schemars/workspace_config.schema.json
+    language: json
+    stack_tags: [schema-validation-rust]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, valid json schema artifact, workspace properties present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium

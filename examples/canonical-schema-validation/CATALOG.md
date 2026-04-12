@@ -27,17 +27,17 @@
 
 | Status | Library | Lane | Path | Notes |
 | --- | --- | --- | --- | --- |
-| [ ] | go-playground/validator | A | go/go-playground-validator/ | Tag-based struct validation |
-| [ ] | ozzo-validation | A | go/ozzo-validation/ | Code-driven explicit rules |
-| [ ] | OpenAPI generation | B | go/openapi-generation/ | External contract lane; swaggo |
+| [x] | go-playground/validator | A | go/go-playground-validator/ | Tag-based struct validation |
+| [x] | ozzo-validation | A | go/ozzo-validation/ | Code-driven explicit rules |
+| [x] | OpenAPI generation | B | go/openapi-generation/ | External contract lane; swaggo |
 
 ## Rust
 
 | Status | Library | Lane | Path | Notes |
 | --- | --- | --- | --- | --- |
-| [ ] | validator | A | rust/validator/ | Derive-based struct validation |
-| [ ] | garde | A | rust/garde/ | Richer rule DSL |
-| [ ] | serde + schemars | B | rust/serde-schemars/ | CONTRACT lane: JSON Schema from serde |
+| [x] | validator | A | rust/validator/ | Derive-based struct validation |
+| [x] | garde | A | rust/garde/ | Richer rule DSL |
+| [x] | serde + schemars | B | rust/serde-schemars/ | CONTRACT lane: JSON Schema from serde |
 
 ## Kotlin
 

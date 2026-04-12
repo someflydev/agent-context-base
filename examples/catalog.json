@@ -11891,6 +11891,193 @@
       "patterns": ["lane-b", "typescript", "ajv", "drift-check"],
       "rank": 87,
       "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/go/go-playground-validator/main.go",
+      "category": "schema-validation",
+      "summary": "Runnable Go go-playground/validator smoke entrypoint that checks one valid and one invalid WorkspaceConfig fixture.",
+      "stacks": ["schema-validation-go"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "go", "tag-based", "runtime-smoke"],
+      "rank": 83,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/go/go-playground-validator/models/models.go",
+      "category": "schema-validation",
+      "summary": "Go go-playground/validator model set using struct tags for field rules and explicit domain enums for WorkspaceSyncContext.",
+      "stacks": ["schema-validation-go"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "go", "struct-tags", "runtime-validation"],
+      "rank": 92,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/go/go-playground-validator/validate/validate.go",
+      "category": "schema-validation",
+      "summary": "Go tag-based validation helpers showing where cross-field checks and discriminated-union dispatch escape struct tags.",
+      "stacks": ["schema-validation-go"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "go", "cross-field", "manual-dispatch"],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/go/ozzo-validation/models/models.go",
+      "category": "schema-validation",
+      "summary": "Go ozzo-validation data models kept free of validation tags so rules stay in code.",
+      "stacks": ["schema-validation-go"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "go", "ozzo-validation", "clean-structs"],
+      "rank": 88,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/go/ozzo-validation/validate/validate.go",
+      "category": "schema-validation",
+      "summary": "ozzo-validation example with explicit Validate-style functions and readable cross-field rule blocks.",
+      "stacks": ["schema-validation-go"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "go", "ozzo-validation", "code-driven-rules"],
+      "rank": 91,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/go/ozzo-validation/validate/validate_test.go",
+      "category": "schema-validation",
+      "summary": "Focused Go test covering ozzo webhook payload validation, including rejection of malformed nested event data.",
+      "stacks": ["schema-validation-go"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "go", "ozzo-validation", "behavior-test"],
+      "rank": 80,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/go/openapi-generation/models/models.go",
+      "category": "schema-validation",
+      "summary": "Go contract-lane model annotated with swaggo-style comments to show comment-driven OpenAPI metadata.",
+      "stacks": ["schema-validation-go"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-b", "go", "swaggo", "contract-generation"],
+      "rank": 84,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/go/openapi-generation/schema_export.go",
+      "category": "schema-validation",
+      "summary": "Go schema export entrypoint that writes a JSON Schema artifact and drift-checks shared fixtures against it.",
+      "stacks": ["schema-validation-go"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-b", "go", "schema-export", "drift-check"],
+      "rank": 89,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/go/openapi-generation/workspace_config.schema.json",
+      "category": "schema-validation",
+      "summary": "Committed Go Lane B JSON Schema baseline for WorkspaceConfig interoperability and drift detection.",
+      "stacks": ["schema-validation-go"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-b", "go", "json-schema", "baseline-artifact"],
+      "rank": 86,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/rust/validator/src/main.rs",
+      "category": "schema-validation",
+      "summary": "Runnable Rust validator smoke entrypoint that deserializes shared fixtures and then applies derive-based and cross-field checks.",
+      "stacks": ["schema-validation-rust"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "rust", "validator", "runtime-smoke"],
+      "rank": 84,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/rust/validator/src/models.rs",
+      "category": "schema-validation",
+      "summary": "Rust validator example showing serde for shape, validator for field rules, and explicit cross-field helpers for WorkspaceSyncContext.",
+      "stacks": ["schema-validation-rust"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "rust", "validator", "three-library-separation"],
+      "rank": 94,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/rust/garde/src/main.rs",
+      "category": "schema-validation",
+      "summary": "Runnable garde smoke entrypoint exercising richer derive-based validation on the shared Rust fixtures.",
+      "stacks": ["schema-validation-rust"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "rust", "garde", "runtime-smoke"],
+      "rank": 83,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/rust/garde/src/models.rs",
+      "category": "schema-validation",
+      "summary": "Rust garde model set highlighting inner() collection rules, inline patterns, and explicit cross-field helpers.",
+      "stacks": ["schema-validation-rust"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "rust", "garde", "richer-dsl"],
+      "rank": 92,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/rust/serde-schemars/src/main.rs",
+      "category": "schema-validation",
+      "summary": "Rust contract-lane runner that exports schemars output, writes the committed schema file, and performs a drift check.",
+      "stacks": ["schema-validation-rust"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-b", "rust", "schemars", "drift-check"],
+      "rank": 86,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/rust/serde-schemars/src/models.rs",
+      "category": "schema-validation",
+      "summary": "Rust serde plus schemars contract models that intentionally omit runtime-validator annotations and follow the wire-format view.",
+      "stacks": ["schema-validation-rust"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-b", "rust", "serde", "contract-lane"],
+      "rank": 93,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/rust/serde-schemars/src/schema_export.rs",
+      "category": "schema-validation",
+      "summary": "Schema export helper that enriches raw schemars output with domain constraints before JSON Schema drift validation.",
+      "stacks": ["schema-validation-rust"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-b", "rust", "schema-export", "contract-enrichment"],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/rust/serde-schemars/workspace_config.schema.json",
+      "category": "schema-validation",
+      "summary": "Committed Rust serde plus schemars JSON Schema artifact used as the Lane B baseline for drift checks.",
+      "stacks": ["schema-validation-rust"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-b", "rust", "json-schema", "baseline-artifact"],
+      "rank": 87,
+      "stability": "canonical"
     }
   ]
 }
