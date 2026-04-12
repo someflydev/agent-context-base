@@ -1,0 +1,56 @@
+{
+  "$comment": "WorkspaceSyncContext domain - WorkspaceConfig schema. Used by Elixir ex_json_schema Lane B example and by drift-detection tests.",
+  "$id": "https://example.com/workspace-sync-context/elixir/workspace_config.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "WorkspaceConfig",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "format": "uuid" },
+    "name": { "type": "string", "minLength": 3, "maxLength": 100 },
+    "slug": { "type": "string", "pattern": "^[a-z][a-z0-9-]{1,48}[a-z0-9]$" },
+    "owner_email": { "type": "string", "format": "email" },
+    "plan": { "type": "string", "enum": ["free", "pro", "enterprise"] },
+    "max_sync_runs": { "type": "integer", "minimum": 1, "maximum": 1000 },
+    "settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "retry_max": { "type": "integer", "minimum": 0, "maximum": 10 },
+        "timeout_seconds": { "type": "integer", "minimum": 10, "maximum": 3600 },
+        "notify_on_failure": { "type": "boolean" },
+        "webhook_url": {
+          "anyOf": [
+            { "type": "string", "format": "uri" },
+            { "type": "null" }
+          ]
+        }
+      },
+      "required": ["retry_max", "timeout_seconds", "notify_on_failure", "webhook_url"]
+    },
+    "tags": {
+      "type": "array",
+      "maxItems": 20,
+      "items": { "type": "string", "minLength": 1, "maxLength": 50 }
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "suspended_until": {
+      "anyOf": [
+        { "type": "string", "format": "date-time" },
+        { "type": "null" }
+      ]
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "slug",
+    "owner_email",
+    "plan",
+    "max_sync_runs",
+    "settings",
+    "tags",
+    "created_at",
+    "suspended_until"
+  ]
+}
