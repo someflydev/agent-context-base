@@ -65,7 +65,7 @@ def _python_has_modules(python_bin: Path, *modules: str) -> bool:
 
 
 def runtime_python_or_skip(
-    test_case: unittest.TestCase,
+    test_case: unittest.TestCase | type[unittest.TestCase],
     *modules: str,
 ) -> Path:
     current_python = Path(sys.executable)
@@ -77,7 +77,7 @@ def runtime_python_or_skip(
         return venv_python
 
     if shutil.which("uv") is None:
-        test_case.skipTest(
+        raise unittest.SkipTest(
             f"missing Python modules {modules} and uv is unavailable for repo-local runtime setup"
         )
 
@@ -86,7 +86,7 @@ def runtime_python_or_skip(
         "uv pip install --python .venv-schema-validation/bin/python "
         f"-r {REQUIREMENTS_FILE.relative_to(REPO_ROOT)}"
     )
-    test_case.skipTest(
+    raise unittest.SkipTest(
         f"missing Python modules {modules}; install repo-local runtime with: {install_hint}"
     )
 
