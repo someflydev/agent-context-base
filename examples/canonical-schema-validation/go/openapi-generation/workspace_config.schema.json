@@ -1,0 +1,112 @@
+{
+  "$comment": "Generated for the WorkspaceSyncContext domain. Go openapi-generation Lane B example. Validate against domain/fixtures/valid/ and domain/fixtures/invalid/.",
+  "$id": "https://example.com/workspace_config.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "created_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "id": {
+      "format": "uuid",
+      "type": "string"
+    },
+    "max_sync_runs": {
+      "maximum": 1000,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "name": {
+      "maxLength": 100,
+      "minLength": 3,
+      "type": "string"
+    },
+    "owner_email": {
+      "format": "email",
+      "type": "string"
+    },
+    "plan": {
+      "enum": [
+        "free",
+        "pro",
+        "enterprise"
+      ],
+      "type": "string"
+    },
+    "settings": {
+      "additionalProperties": false,
+      "properties": {
+        "notify_on_failure": {
+          "type": "boolean"
+        },
+        "retry_max": {
+          "maximum": 10,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "timeout_seconds": {
+          "maximum": 3600,
+          "minimum": 10,
+          "type": "integer"
+        },
+        "webhook_url": {
+          "anyOf": [
+            {
+              "format": "uri",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "retry_max",
+        "timeout_seconds",
+        "notify_on_failure",
+        "webhook_url"
+      ],
+      "type": "object"
+    },
+    "slug": {
+      "pattern": "^[a-z][a-z0-9-]{1,48}[a-z0-9]$",
+      "type": "string"
+    },
+    "suspended_until": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "tags": {
+      "items": {
+        "maxLength": 50,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxItems": 20,
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "slug",
+    "owner_email",
+    "plan",
+    "max_sync_runs",
+    "settings",
+    "tags",
+    "created_at",
+    "suspended_until"
+  ],
+  "title": "WorkspaceConfig",
+  "type": "object"
+}
