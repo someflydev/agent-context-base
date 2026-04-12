@@ -109,3 +109,40 @@ def run_python_snippet(
         msg=f"python runtime check failed\nstdout:\n{completed.stdout}\nstderr:\n{completed.stderr}",
     )
     return completed
+
+
+def _command_available(*command: str) -> bool:
+    completed = subprocess.run(
+        list(command),
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return completed.returncode == 0
+
+
+def ruby_or_skip(test_case: unittest.TestCase | type[unittest.TestCase], *requires: str) -> str:
+    ruby = shutil.which("ruby")
+    if ruby is None:
+        raise unittest.SkipTest("ruby is not installed")
+    code = " ; ".join([f"require {module!r}" for module in requires])
+    if requires and not _command_available(ruby, "-e", code):
+        raise unittest.SkipTest(f"ruby runtime is missing gems: {requires}")
+    return ruby
+
+
+def mix_or_skip(test_case: unittest.TestCase | type[unittest.TestCase], example_dir: Path) -> str:
+    mix = shutil.which("mix")
+    if mix is None:
+        raise unittest.SkipTest("mix is not installed")
+    if not (example_dir / "mix.lock").exists() and not (example_dir / "deps").exists():
+        raise unittest.SkipTest(f"mix dependencies are not vendored in {example_dir}")
+    return mix
+
+
+def gradle_or_skip(test_case: unittest.TestCase | type[unittest.TestCase]) -> str:
+    gradle = shutil.which("gradle")
+    if gradle is None:
+        raise unittest.SkipTest("gradle is not installed")
+    return gradle
