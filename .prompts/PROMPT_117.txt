@@ -986,6 +986,9 @@ PART 9: UPDATE CATALOG.md
 ================================================================================
 
 Update examples/canonical-schema-validation/CATALOG.md.
+Update examples/catalog.json for every new example file added in this prompt.
+Update verification/example_registry.yaml for every new example file added in
+this prompt so `python3 scripts/validate_context.py` can pass.
 
 Change status to [x] for:
   Kotlin / Konform              → [x]
@@ -1048,8 +1051,10 @@ Use grouped commits prefixed with [PROMPT_117]. Prefer `git add <paths>` when a 
             verification/schema-validation/ruby/,
             verification/schema-validation/elixir/
 
-  9. [PROMPT_117] update CATALOG.md — all 18 examples implemented
-     Stage: examples/canonical-schema-validation/CATALOG.md
+  9. [PROMPT_117] update schema-validation catalog and registry metadata
+     Stage: examples/canonical-schema-validation/CATALOG.md,
+            examples/catalog.json,
+            verification/example_registry.yaml
 
 ================================================================================
 SCOPE BOUNDARIES
