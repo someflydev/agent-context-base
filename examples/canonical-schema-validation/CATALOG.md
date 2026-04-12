@@ -43,23 +43,23 @@
 
 | Status | Library | Lane | Path | Notes |
 | --- | --- | --- | --- | --- |
-| [ ] | Konform | A | kotlin/konform/ | Kotlin-first DSL |
-| [ ] | Hibernate Validator | A | kotlin/hibernate-validator/ | JVM annotation standard |
+| [x] | Konform | A | kotlin/konform/ | Kotlin-first DSL |
+| [x] | Hibernate Validator | A | kotlin/hibernate-validator/ | JVM annotation standard |
 
 ## Ruby
 
 | Status | Library | Lane | Path | Notes |
 | --- | --- | --- | --- | --- |
-| [ ] | dry-validation | A | ruby/dry-validation/ | Rich rule contracts |
-| [ ] | dry-schema | A/B | ruby/dry-schema/ | Schema layer; JSON Schema output |
+| [x] | dry-validation | A | ruby/dry-validation/ | Rich rule contracts |
+| [x] | dry-schema | A/B | ruby/dry-schema/ | Schema layer; JSON Schema output |
 
 ## Elixir
 
 | Status | Library | Lane | Path | Notes |
 | --- | --- | --- | --- | --- |
-| [ ] | Ecto.Changeset | A | elixir/ecto-changeset/ | Dominant boundary validator |
-| [ ] | Norm | A | elixir/norm/ | Declarative spec alternative |
-| [ ] | ex_json_schema | B | elixir/ex-json-schema/ | JSON Schema contract lane |
+| [x] | Ecto.Changeset | A | elixir/ecto-changeset/ | Dominant boundary validator |
+| [x] | Norm | A | elixir/norm/ | Declarative spec alternative |
+| [x] | ex_json_schema | B | elixir/ex-json-schema/ | JSON Schema contract lane |
 
 ## Cross-Language Summary
 

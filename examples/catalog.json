@@ -12078,6 +12078,248 @@
       "patterns": ["lane-b", "rust", "json-schema", "baseline-artifact"],
       "rank": 87,
       "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/kotlin/konform/src/main/kotlin/Main.kt",
+      "category": "schema-validation",
+      "summary": "Kotlin Konform smoke entrypoint loading shared fixtures and printing pass or fail outcomes for Lane A DSL validation.",
+      "stacks": ["schema-validation-kotlin"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "kotlin", "konform", "runtime-smoke"],
+      "rank": 84,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/kotlin/konform/src/main/kotlin/models/Models.kt",
+      "category": "schema-validation",
+      "summary": "Kotlin WorkspaceSyncContext model set using clean data classes, enums, and sealed unions without validation annotations.",
+      "stacks": ["schema-validation-kotlin"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "kotlin", "konform", "clean-models"],
+      "rank": 92,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/kotlin/konform/src/main/kotlin/validation/Validators.kt",
+      "category": "schema-validation",
+      "summary": "Konform validator set demonstrating field constraints and addConstraint-based cross-field rules for the shared Kotlin models.",
+      "stacks": ["schema-validation-kotlin"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "kotlin", "konform", "cross-field-rules"],
+      "rank": 95,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/kotlin/hibernate-validator/src/main/kotlin/Main.kt",
+      "category": "schema-validation",
+      "summary": "Kotlin Hibernate Validator runner that builds a Jakarta validator and prints violations for shared WorkspaceConfig fixtures.",
+      "stacks": ["schema-validation-kotlin"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "kotlin", "hibernate-validator", "runtime-smoke"],
+      "rank": 83,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/kotlin/hibernate-validator/src/main/kotlin/models/Models.kt",
+      "category": "schema-validation",
+      "summary": "Kotlin Jakarta Bean Validation model set showing field annotations plus a custom class-level constraint for plan limits.",
+      "stacks": ["schema-validation-kotlin"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "kotlin", "hibernate-validator", "annotation-models"],
+      "rank": 94,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/ruby/dry-validation/contracts/workspace_config_contract.rb",
+      "category": "schema-validation",
+      "summary": "dry-validation contract for WorkspaceConfig with slug, email, nested settings, tag, and plan-tier rules.",
+      "stacks": ["schema-validation-ruby"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "ruby", "dry-validation", "contract-rules"],
+      "rank": 94,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/ruby/dry-validation/contracts/sync_run_contract.rb",
+      "category": "schema-validation",
+      "summary": "dry-validation SyncRun contract showing timestamp ordering, duration requirements, and failed-status error-code checks.",
+      "stacks": ["schema-validation-ruby"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "ruby", "dry-validation", "cross-field-rules"],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/ruby/dry-validation/contracts/webhook_payload_contract.rb",
+      "category": "schema-validation",
+      "summary": "Ruby webhook contract documenting manual discriminated-union dispatch on event_type within dry-validation rule blocks.",
+      "stacks": ["schema-validation-ruby"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "ruby", "dry-validation", "manual-union-dispatch"],
+      "rank": 88,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/ruby/dry-validation/contracts/ingestion_source_contract.rb",
+      "category": "schema-validation",
+      "summary": "Ruby ingestion-source contract validating source-type-specific config keys and http_poll interval behavior.",
+      "stacks": ["schema-validation-ruby"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "ruby", "dry-validation", "source-dispatch"],
+      "rank": 87,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/ruby/dry-validation/contracts/review_request_contract.rb",
+      "category": "schema-validation",
+      "summary": "Ruby review-request contract covering email validation, uniqueness checks, and the critical-priority due_at rule.",
+      "stacks": ["schema-validation-ruby"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "ruby", "dry-validation", "review-rules"],
+      "rank": 89,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/ruby/dry-validation/main.rb",
+      "category": "schema-validation",
+      "summary": "Ruby dry-validation smoke runner that executes shared valid and invalid fixtures across the contract set.",
+      "stacks": ["schema-validation-ruby"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "ruby", "dry-validation", "runtime-smoke"],
+      "rank": 83,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/ruby/dry-schema/schemas/workspace_config_schema.rb",
+      "category": "schema-validation",
+      "summary": "dry-schema structural definition for WorkspaceConfig showing the lower-level Ruby schema layer beneath dry-validation contracts.",
+      "stacks": ["schema-validation-ruby"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "lane-b", "ruby", "dry-schema"],
+      "rank": 92,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/ruby/dry-schema/schemas/sync_run_schema.rb",
+      "category": "schema-validation",
+      "summary": "Ruby dry-schema SyncRun structure focused on type and range constraints without semantic cross-field logic.",
+      "stacks": ["schema-validation-ruby"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "lane-b", "ruby", "structural-schema"],
+      "rank": 86,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/ruby/dry-schema/schema_export.rb",
+      "category": "schema-validation",
+      "summary": "Ruby schema export entrypoint that prints a JSON Schema view when the dry-schema extension is available.",
+      "stacks": ["schema-validation-ruby"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-b", "ruby", "dry-schema", "schema-export"],
+      "rank": 85,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/elixir/ecto-changeset/lib/workspace_sync_context/workspace_config.ex",
+      "category": "schema-validation",
+      "summary": "Elixir Ecto.Changeset WorkspaceConfig module showing embedded settings, cast, validation, and plan-tier helper rules.",
+      "stacks": ["schema-validation-elixir"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "elixir", "ecto-changeset", "cast-validate-pipeline"],
+      "rank": 95,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/elixir/ecto-changeset/lib/workspace_sync_context/sync_run.ex",
+      "category": "schema-validation",
+      "summary": "Elixir SyncRun changeset with private cross-field helpers for timestamp, duration, and error-code behavior.",
+      "stacks": ["schema-validation-elixir"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "elixir", "ecto-changeset", "cross-field-rules"],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/elixir/ecto-changeset/lib/workspace_sync_context/webhook_payload.ex",
+      "category": "schema-validation",
+      "summary": "Elixir webhook payload changeset documenting manual data-map validation for discriminated union event types.",
+      "stacks": ["schema-validation-elixir"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "elixir", "ecto-changeset", "manual-union-dispatch"],
+      "rank": 88,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/elixir/ecto-changeset/lib/workspace_sync_context/ingestion_source.ex",
+      "category": "schema-validation",
+      "summary": "Elixir ingestion-source changeset showing config-shape dispatch and poll interval enforcement by source type.",
+      "stacks": ["schema-validation-elixir"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "elixir", "ecto-changeset", "source-dispatch"],
+      "rank": 87,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/elixir/ecto-changeset/lib/workspace_sync_context/review_request.ex",
+      "category": "schema-validation",
+      "summary": "Elixir review-request changeset covering list cardinality, uniqueness, email formatting, and critical due dates.",
+      "stacks": ["schema-validation-elixir"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "elixir", "ecto-changeset", "review-rules"],
+      "rank": 89,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/elixir/norm/lib/workspace_sync_context/specs.ex",
+      "category": "schema-validation",
+      "summary": "Elixir Norm spec module expressing declarative workspace and sync-run conformance with custom whole-map predicates.",
+      "stacks": ["schema-validation-elixir"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-a", "elixir", "norm", "declarative-specs"],
+      "rank": 92,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/elixir/ex-json-schema/lib/schema_validator.ex",
+      "category": "schema-validation",
+      "summary": "Elixir contract-lane helper that loads a JSON Schema document and validates shared fixtures with ex_json_schema.",
+      "stacks": ["schema-validation-elixir"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-b", "elixir", "ex-json-schema", "contract-validation"],
+      "rank": 88,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-schema-validation/elixir/ex-json-schema/workspace_config.schema.json",
+      "category": "schema-validation",
+      "summary": "Committed Elixir Lane B WorkspaceConfig JSON Schema artifact for cross-language contract checks.",
+      "stacks": ["schema-validation-elixir"],
+      "archetypes": ["polyglot-validation-lab"],
+      "workflows": ["add-schema-validation-example"],
+      "patterns": ["lane-b", "elixir", "json-schema", "baseline-artifact"],
+      "rank": 86,
+      "stability": "canonical"
     }
   ]
 }

@@ -56,5 +56,6 @@ Fixture corpus verification lives in
 [`verification/schema-validation/`](../../verification/schema-validation/).
 The first shared entry point is
 `python3 -m unittest discover -s verification/schema-validation -p "test_*.py" -v`.
-Language-specific smoke tests will be added alongside the examples in
-PROMPT_115 through PROMPT_117.
+Language-specific smoke coverage now exists for Python, TypeScript, Go, Rust,
+Kotlin, Ruby, and Elixir, with runtime execution gated on local toolchain
+availability where dependency installation would otherwise be required.

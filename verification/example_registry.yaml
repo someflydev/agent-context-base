@@ -8512,3 +8512,223 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: medium
+  - name: schema-validation-kotlin-konform-main
+    path: examples/canonical-schema-validation/kotlin/konform/src/main/kotlin/Main.kt
+    language: kotlin
+    stack_tags: [schema-validation-kotlin]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: smoke-verified
+    verification_targets: [file exists, gradle run entrypoint present, valid and invalid fixtures exercised]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-kotlin-konform-models
+    path: examples/canonical-schema-validation/kotlin/konform/src/main/kotlin/models/Models.kt
+    language: kotlin
+    stack_tags: [schema-validation-kotlin]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, data classes present, enums and sealed unions defined]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-kotlin-konform-validators
+    path: examples/canonical-schema-validation/kotlin/konform/src/main/kotlin/validation/Validators.kt
+    language: kotlin
+    stack_tags: [schema-validation-kotlin]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, Konform DSL present, addConstraint cross-field rules present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-kotlin-hibernate-main
+    path: examples/canonical-schema-validation/kotlin/hibernate-validator/src/main/kotlin/Main.kt
+    language: kotlin
+    stack_tags: [schema-validation-kotlin]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: smoke-verified
+    verification_targets: [file exists, validator factory entrypoint present, shared fixtures exercised]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-kotlin-hibernate-models
+    path: examples/canonical-schema-validation/kotlin/hibernate-validator/src/main/kotlin/models/Models.kt
+    language: kotlin
+    stack_tags: [schema-validation-kotlin]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, Jakarta annotations present, custom class-level validator present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-ruby-dry-validation-workspace
+    path: examples/canonical-schema-validation/ruby/dry-validation/contracts/workspace_config_contract.rb
+    language: ruby
+    stack_tags: [schema-validation-ruby]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, contract class present, slug and plan-tier rules present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-ruby-dry-validation-sync-run
+    path: examples/canonical-schema-validation/ruby/dry-validation/contracts/sync_run_contract.rb
+    language: ruby
+    stack_tags: [schema-validation-ruby]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, sync run cross-field rules present, status-specific error handling present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-ruby-dry-validation-webhook
+    path: examples/canonical-schema-validation/ruby/dry-validation/contracts/webhook_payload_contract.rb
+    language: ruby
+    stack_tags: [schema-validation-ruby]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, discriminated union rule present, signature validation present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-ruby-dry-validation-ingestion
+    path: examples/canonical-schema-validation/ruby/dry-validation/contracts/ingestion_source_contract.rb
+    language: ruby
+    stack_tags: [schema-validation-ruby]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, source-type dispatch present, poll interval rule present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-ruby-dry-validation-review
+    path: examples/canonical-schema-validation/ruby/dry-validation/contracts/review_request_contract.rb
+    language: ruby
+    stack_tags: [schema-validation-ruby]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, reviewer and content list rules present, critical due_at rule present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-ruby-dry-validation-main
+    path: examples/canonical-schema-validation/ruby/dry-validation/main.rb
+    language: ruby
+    stack_tags: [schema-validation-ruby]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: smoke-verified
+    verification_targets: [file exists, ruby smoke entrypoint present, valid and invalid fixtures exercised]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-ruby-dry-schema-workspace
+    path: examples/canonical-schema-validation/ruby/dry-schema/schemas/workspace_config_schema.rb
+    language: ruby
+    stack_tags: [schema-validation-ruby]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, Dry::Schema JSON definition present, structural rules present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-ruby-dry-schema-sync-run
+    path: examples/canonical-schema-validation/ruby/dry-schema/schemas/sync_run_schema.rb
+    language: ruby
+    stack_tags: [schema-validation-ruby]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, sync run structural schema present, numeric bounds present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-ruby-dry-schema-export
+    path: examples/canonical-schema-validation/ruby/dry-schema/schema_export.rb
+    language: ruby
+    stack_tags: [schema-validation-ruby]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, schema export helper present, extension fallback documented]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-elixir-ecto-workspace
+    path: examples/canonical-schema-validation/elixir/ecto-changeset/lib/workspace_sync_context/workspace_config.ex
+    language: elixir
+    stack_tags: [schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, embedded schema present, cast and plan-limit validation present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-elixir-ecto-sync-run
+    path: examples/canonical-schema-validation/elixir/ecto-changeset/lib/workspace_sync_context/sync_run.ex
+    language: elixir
+    stack_tags: [schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, sync run changeset present, timestamp and error code helpers present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-elixir-ecto-webhook
+    path: examples/canonical-schema-validation/elixir/ecto-changeset/lib/workspace_sync_context/webhook_payload.ex
+    language: elixir
+    stack_tags: [schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, event_type validation present, manual union dispatch present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-elixir-ecto-ingestion
+    path: examples/canonical-schema-validation/elixir/ecto-changeset/lib/workspace_sync_context/ingestion_source.ex
+    language: elixir
+    stack_tags: [schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, config-shape dispatch present, poll interval rule present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-elixir-ecto-review
+    path: examples/canonical-schema-validation/elixir/ecto-changeset/lib/workspace_sync_context/review_request.ex
+    language: elixir
+    stack_tags: [schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, uniqueness and email checks present, due_at rule present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-elixir-norm-specs
+    path: examples/canonical-schema-validation/elixir/norm/lib/workspace_sync_context/specs.ex
+    language: elixir
+    stack_tags: [schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, Norm specs present, custom whole-map predicates present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-elixir-ex-json-schema-validator
+    path: examples/canonical-schema-validation/elixir/ex-json-schema/lib/schema_validator.ex
+    language: elixir
+    stack_tags: [schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, schema loader present, schema validation helper present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: schema-validation-elixir-ex-json-schema-schema
+    path: examples/canonical-schema-validation/elixir/ex-json-schema/workspace_config.schema.json
+    language: json
+    stack_tags: [schema-validation-elixir]
+    archetype_tags: [polyglot-validation-lab]
+    verification_level: structure-verified
+    verification_targets: [file exists, valid json schema artifact, workspace properties present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
