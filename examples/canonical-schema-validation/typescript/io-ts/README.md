@@ -19,3 +19,8 @@ when codec composition matters more than authoring ergonomics.
 ## What io-ts is NOT
 io-ts is not a simpler Zod. It is a different philosophy centered on codecs,
 explicit decode results, and composable functional validation.
+
+## Running
+```bash
+npm run smoke
+```

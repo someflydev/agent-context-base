@@ -12,7 +12,7 @@ Use io-ts when you want codec algebra and explicit error typing.
 Do not use it expecting a simpler Zod.
 */
 
-import * as E from "fp-ts/Either";
+import * as E from "fp-ts/lib/Either.js";
 import * as t from "io-ts";
 
 const slugRegex = /^[a-z][a-z0-9-]{1,48}[a-z0-9]$/;

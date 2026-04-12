@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import unittest
 
+from verification.schema_validation_runtime import run_npm_script
 from verification.terminal.harness import REPO_ROOT
 
 
@@ -23,6 +24,10 @@ class TestIoTsSmoke(unittest.TestCase):
         readme = (IO_TS_DIR / "README.md").read_text(encoding="utf-8")
         self.assertIn("not", readme.lower())
         self.assertRegex(readme, r"Zod|simpler")
+
+    def test_io_ts_runtime_smoke_script(self) -> None:
+        completed = run_npm_script(self, IO_TS_DIR, "smoke")
+        self.assertIn("io-ts smoke checks passed", completed.stdout)
 
 
 if __name__ == "__main__":

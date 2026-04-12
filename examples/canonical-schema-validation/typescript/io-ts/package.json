@@ -2,11 +2,16 @@
   "name": "canonical-schema-validation-io-ts",
   "private": true,
   "type": "module",
+  "scripts": {
+    "smoke": "node --import tsx src/smoke.ts"
+  },
   "dependencies": {
     "fp-ts": "^2.16.9",
     "io-ts": "^2.2.22"
   },
   "devDependencies": {
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.3",
     "typescript": "^5.8.3"
   }
 }

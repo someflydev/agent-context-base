@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 import unittest
 
+from verification.schema_validation_runtime import run_npm_script
 from verification.terminal.harness import REPO_ROOT
 
 
@@ -22,6 +23,10 @@ class TestZodSmoke(unittest.TestCase):
     def test_zod_readme_mentions_lane_c(self) -> None:
         readme = (ZOD_DIR / "README.md").read_text(encoding="utf-8")
         self.assertRegex(readme.lower(), r"lane c|hybrid")
+
+    def test_zod_runtime_validate_script(self) -> None:
+        completed = run_npm_script(self, ZOD_DIR, "validate")
+        self.assertIn("schema export and drift checks passed", completed.stdout)
 
 
 if __name__ == "__main__":
