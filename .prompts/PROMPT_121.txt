@@ -70,7 +70,7 @@ Read the arc foundation and domain spec:
   6. context/skills/synthetic-dataset-design.md       (READ — 7-step pipeline)
   7. context/stacks/faker-python.yaml                 (READ — Python stack spec)
   8. examples/canonical-faker/domain/schema.md        (READ — entity graph and constraints)
-  9. examples/canonical-faker/domain/generation-order.md (READ — canonical 7-stage order)
+  9. examples/canonical-faker/domain/generation-order.md (READ — canonical 6-stage order)
  10. examples/canonical-faker/domain/seed-registry.md (READ — smoke seed = 42)
  11. examples/canonical-faker/domain/profiles.md      (READ — row count targets)
  12. examples/canonical-faker/domain/generation_patterns.py (READ — reference implementation)
@@ -151,12 +151,12 @@ This module extends domain/generation_patterns.py with Faker-specific idioms.
 
 Do not duplicate what generation_patterns.py already provides.
 Import and reuse:
-  from examples.canonical_faker.domain.generation_patterns import (
-      Profile, generate_dataset, write_jsonl, write_csv, validate_dataset
-  )
+  Load and reuse `examples/canonical-faker/domain/generation_patterns.py`
+  directly via a local helper or `importlib.util.spec_from_file_location(...)`
+  so the Python example can import the shared module without relying on a
+  non-existent `examples.canonical_faker` package path.
 
-If importing via relative path is cleaner in this context, use that. The key
-requirement is no duplication of the generation logic.
+The key requirement is no duplication of the generation logic.
 
 This file must demonstrate Faker-specific features NOT in the base module:
   1. Locale-aware generation: use Faker with multiple locales simultaneously.
@@ -215,7 +215,7 @@ Mimesis-specific demonstrations:
 The module must expose: run_mimesis_pipeline(profile: Profile, output_dir: Path)
 
 The relational graph layer (memberships, projects, audit_events) must follow
-the same 7-stage ordering as generation_patterns.py, even if atomic field
+the same 6-stage ordering as generation_patterns.py, even if atomic field
 generation uses Mimesis instead of Faker.
 
 IMPORTANT: Mimesis alone does not handle relational integrity. The graph layer
@@ -334,21 +334,24 @@ Test class: TestPythonFakerExample
     Assert it contains "argparse" and "--pipeline" and "--profile".
 
   test_faker_pipeline_importable
-    import examples.canonical_faker.python.faker_pipeline.generators
+    Load `examples/canonical-faker/python/faker_pipeline/generators.py` via
+    `importlib.util.spec_from_file_location(...)` and execute it
     (catches syntax errors)
 
   test_mimesis_pipeline_importable
-    import examples.canonical_faker.python.mimesis_pipeline.generators
+    Load `examples/canonical-faker/python/mimesis_pipeline/generators.py` via
+    `importlib.util.spec_from_file_location(...)`
 
   test_factory_graph_importable
-    import examples.canonical_faker.python.factory_graph.factories
+    Load `examples/canonical-faker/python/factory_graph/factories.py` via
+    `importlib.util.spec_from_file_location(...)`
 
   test_faker_smoke_profile_runs
     Skip if faker is not installed (try/except ImportError).
-    from examples.canonical_faker.python.faker_pipeline.generators import run_faker_pipeline
+    Load the Faker pipeline module via `importlib` and call `run_faker_pipeline`.
     import tempfile, pathlib
     with tempfile.TemporaryDirectory() as tmpdir:
-        run_faker_pipeline(profile=Profile.SMOKE, output_dir=pathlib.Path(tmpdir))
+        run_faker_pipeline(profile=Profile.SMOKE(), output_dir=pathlib.Path(tmpdir))
         assert (pathlib.Path(tmpdir) / "organizations.jsonl").exists()
         assert (pathlib.Path(tmpdir) / "audit_events.jsonl").exists()
 
@@ -400,7 +403,7 @@ Manual smoke run:
   cd examples/canonical-faker/python
   pip install -r requirements.txt
   python3 generate.py --pipeline faker --profile smoke --output-dir ./output
-  python3 ../../domain/validate_output.py --input-dir ./output/smoke
+  python3 ../domain/validate_output.py --input-dir ./output/smoke
 
 The validate_output.py run must exit 0.
 
