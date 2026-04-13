@@ -57,6 +57,79 @@ def _summary(report: ValidationReport) -> str:
     return json.dumps(payload, indent=2, sort_keys=True)
 
 
+def _canonical_keys() -> dict[str, tuple[str, ...]]:
+    return {
+        "organizations": (
+            "id",
+            "name",
+            "slug",
+            "plan",
+            "region",
+            "created_at",
+            "owner_email",
+            "sequence",
+        ),
+        "users": (
+            "id",
+            "email",
+            "full_name",
+            "locale",
+            "timezone",
+            "created_at",
+            "sequence",
+        ),
+        "memberships": (
+            "id",
+            "org_id",
+            "user_id",
+            "role",
+            "joined_at",
+            "invited_by",
+            "user_email",
+        ),
+        "projects": (
+            "id",
+            "org_id",
+            "name",
+            "status",
+            "created_by",
+            "created_at",
+        ),
+        "audit_events": (
+            "id",
+            "org_id",
+            "user_id",
+            "project_id",
+            "action",
+            "resource_type",
+            "resource_id",
+            "ts",
+        ),
+        "api_keys": (
+            "id",
+            "org_id",
+            "created_by",
+            "name",
+            "key_prefix",
+            "created_at",
+            "last_used_at",
+        ),
+        "invitations": (
+            "id",
+            "org_id",
+            "invited_email",
+            "role",
+            "invited_by",
+            "expires_at",
+            "accepted_at",
+        ),
+    }
+
+
+def _select_fields(row: dict, entity: str) -> dict:
+    return {key: row[key] for key in _canonical_keys()[entity]}
+
+
 def run_factory_graph(
     profile: Profile, output_dir: Path, formats: tuple[str, ...] = ("jsonl",)
 ) -> ValidationReport:
@@ -66,18 +139,25 @@ def run_factory_graph(
     use_seed(profile.seed)
 
     org_count = profile.num_orgs
-    organizations = OrganizationFactory.create_batch(org_count)
-    users = UserFactory.create_batch(profile.num_users, seed=profile.seed)
+    raw_organizations = [
+        OrganizationFactory(enterprise_org=(profile.name == "small" and index == 0))
+        for index in range(org_count)
+    ]
+    organizations = [_select_fields(row, "organizations") for row in raw_organizations]
+    users = [
+        _select_fields(row, "users")
+        for row in UserFactory.create_batch(profile.num_users, seed=profile.seed)
+    ]
     memberships: list[dict] = []
     org_member_map: dict[str, list[str]] = {}
     users_by_index = {index: user for index, user in enumerate(users)}
 
     for org_index, org in enumerate(organizations):
-        count = 3 if profile.name == "smoke" else min(10, org.get("initial_member_count", 6))
+        count = 3 if profile.name == "smoke" else (10 if org["plan"] == "enterprise" else 6)
         member_ids: list[str] = []
         for offset in range(count):
             user = users_by_index[(org_index * count + offset) % len(users)]
-            membership = MembershipFactory(org=org, user=user)
+            membership = _select_fields(MembershipFactory(org=org, user=user), "memberships")
             if offset == 0:
                 membership["role"] = "owner"
                 membership["invited_by"] = None
@@ -97,13 +177,20 @@ def run_factory_graph(
         org_users = [users_by_id[user_id] for user_id in org_member_map[org["id"]]]
         for project_index in range(3 if profile.name == "smoke" else 5):
             creator = org_users[project_index % len(org_users)]
-            project = ProjectFactory(org=org, creator=creator)
+            project = _select_fields(ProjectFactory(org=org, creator=creator), "projects")
             projects.append(project)
             for event_index in range(5 if profile.name == "smoke" else 10):
                 actor = org_users[event_index % len(org_users)]
-                audit_events.append(AuditEventFactory(org=org, user=actor, project=project))
-        api_keys.append(ApiKeyFactory(org=org, creator=org_users[0]))
-        invitations.append(InvitationFactory(org=org, inviter=org_users[0]))
+                audit_events.append(
+                    _select_fields(
+                        AuditEventFactory(org=org, user=actor, project=project),
+                        "audit_events",
+                    )
+                )
+        api_keys.append(_select_fields(ApiKeyFactory(org=org, creator=org_users[0]), "api_keys"))
+        invitations.append(
+            _select_fields(InvitationFactory(org=org, inviter=org_users[0]), "invitations")
+        )
 
     dataset = {
         "profile": profile.name,

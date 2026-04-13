@@ -54,26 +54,29 @@ if factory is not None:
 
     class OrganizationFactory(_BaseFactory):
         class Params:
+            initial_member_count = 6
             enterprise_org = factory.Trait(
                 plan="enterprise",
                 initial_member_count=12,
             )
 
         id = factory.Sequence(lambda n: str(domain.uuid.UUID(int=n + 1, version=4)))
-        name = factory.Sequence(lambda n: f"TenantCore Org {n}")
+        name = factory.Faker("company")
         slug = factory.LazyAttribute(lambda obj: domain._slugify(obj["name"]))
         plan = factory.Iterator(["free", "pro", "enterprise"])
         region = factory.Iterator(["us-east", "us-west", "eu-west", "ap-southeast"])
         created_at = factory.LazyFunction(lambda: domain._iso(domain.BASE_TIME - timedelta(days=365)))
-        owner_email = factory.Sequence(lambda n: f"owner_{n}@example.com")
+        owner_email = factory.Faker("company_email")
         sequence = factory.Sequence(int)
-        initial_member_count = 6
 
 
     class UserFactory(_BaseFactory):
+        class Params:
+            seed = None
+
         id = factory.Sequence(lambda n: str(domain.uuid.UUID(int=1000 + n, version=4)))
         email = factory.Sequence(lambda n: f"user_{n}@example.com")
-        full_name = factory.Sequence(lambda n: f"User {n}")
+        full_name = factory.Faker("name")
         locale = "en-US"
         timezone = "America/New_York"
         created_at = factory.LazyFunction(lambda: domain._iso(domain.BASE_TIME - timedelta(days=400)))
@@ -81,86 +84,96 @@ if factory is not None:
 
 
     class MembershipFactory(_BaseFactory):
-        org = factory.SubFactory(OrganizationFactory)
-        user = factory.SubFactory(UserFactory)
+        class Params:
+            org = factory.SubFactory(OrganizationFactory)
+            user = factory.SubFactory(UserFactory)
+
         id = factory.Sequence(lambda n: str(domain.uuid.UUID(int=2000 + n, version=4)))
-        org_id = factory.LazyAttribute(lambda obj: obj["org"]["id"])
-        user_id = factory.LazyAttribute(lambda obj: obj["user"]["id"])
+        org_id = factory.LazyAttribute(lambda obj: obj.org["id"])
+        user_id = factory.LazyAttribute(lambda obj: obj.user["id"])
         role = "member"
         joined_at = factory.LazyAttribute(
             lambda obj: domain._iso(
-                datetime.fromisoformat(obj["org"]["created_at"].replace("Z", "+00:00"))
+                datetime.fromisoformat(obj.org["created_at"].replace("Z", "+00:00"))
                 + timedelta(days=7)
             )
         )
         invited_by = None
-        user_email = factory.LazyAttribute(lambda obj: obj["user"]["email"])
+        user_email = factory.LazyAttribute(lambda obj: obj.user["email"])
 
 
     class ProjectFactory(_BaseFactory):
-        org = factory.SubFactory(OrganizationFactory)
-        creator = factory.SubFactory(UserFactory)
+        class Params:
+            org = factory.SubFactory(OrganizationFactory)
+            creator = factory.SubFactory(UserFactory)
+
         id = factory.Sequence(lambda n: str(domain.uuid.UUID(int=3000 + n, version=4)))
-        org_id = factory.LazyAttribute(lambda obj: obj["org"]["id"])
+        org_id = factory.LazyAttribute(lambda obj: obj.org["id"])
         name = factory.Sequence(lambda n: f"Project {n}")
         status = "active"
-        created_by = factory.LazyAttribute(lambda obj: obj["creator"]["id"])
+        created_by = factory.LazyAttribute(lambda obj: obj.creator["id"])
         created_at = factory.LazyAttribute(
             lambda obj: domain._iso(
-                datetime.fromisoformat(obj["org"]["created_at"].replace("Z", "+00:00"))
+                datetime.fromisoformat(obj.org["created_at"].replace("Z", "+00:00"))
                 + timedelta(days=14)
             )
         )
 
 
     class ApiKeyFactory(_BaseFactory):
-        org = factory.SubFactory(OrganizationFactory)
-        creator = factory.SubFactory(UserFactory)
+        class Params:
+            org = factory.SubFactory(OrganizationFactory)
+            creator = factory.SubFactory(UserFactory)
+
         id = factory.Sequence(lambda n: str(domain.uuid.UUID(int=4000 + n, version=4)))
-        org_id = factory.LazyAttribute(lambda obj: obj["org"]["id"])
-        created_by = factory.LazyAttribute(lambda obj: obj["creator"]["id"])
-        name = factory.Sequence(lambda n: f"API key {n}")
+        org_id = factory.LazyAttribute(lambda obj: obj.org["id"])
+        created_by = factory.LazyAttribute(lambda obj: obj.creator["id"])
+        name = factory.Faker("catch_phrase")
         key_prefix = factory.Sequence(lambda n: f"tc_{n:08x}"[:11])
         created_at = factory.LazyAttribute(
             lambda obj: domain._iso(
-                datetime.fromisoformat(obj["org"]["created_at"].replace("Z", "+00:00"))
+                datetime.fromisoformat(obj.org["created_at"].replace("Z", "+00:00"))
                 + timedelta(days=21)
             )
         )
         last_used_at = factory.LazyAttribute(
             lambda obj: domain._iso(
-                datetime.fromisoformat(obj["created_at"].replace("Z", "+00:00"))
+                datetime.fromisoformat(obj.created_at.replace("Z", "+00:00"))
                 + timedelta(days=1)
             )
         )
 
 
     class InvitationFactory(_BaseFactory):
-        org = factory.SubFactory(OrganizationFactory)
-        inviter = factory.SubFactory(UserFactory)
+        class Params:
+            org = factory.SubFactory(OrganizationFactory)
+            inviter = factory.SubFactory(UserFactory)
+
         id = factory.Sequence(lambda n: str(domain.uuid.UUID(int=5000 + n, version=4)))
-        org_id = factory.LazyAttribute(lambda obj: obj["org"]["id"])
+        org_id = factory.LazyAttribute(lambda obj: obj.org["id"])
         invited_email = factory.Sequence(lambda n: f"invite_{n}@example.com")
         role = "member"
-        invited_by = factory.LazyAttribute(lambda obj: obj["inviter"]["id"])
+        invited_by = factory.LazyAttribute(lambda obj: obj.inviter["id"])
         expires_at = factory.LazyFunction(lambda: domain._iso(domain.BASE_TIME + timedelta(days=14)))
         accepted_at = None
 
 
     class AuditEventFactory(_BaseFactory):
-        org = factory.SubFactory(OrganizationFactory)
-        user = factory.SubFactory(UserFactory)
-        project = factory.SubFactory(ProjectFactory)
+        class Params:
+            org = factory.SubFactory(OrganizationFactory)
+            user = factory.SubFactory(UserFactory)
+            project = factory.SubFactory(ProjectFactory)
+
         id = factory.Sequence(lambda n: str(domain.uuid.UUID(int=6000 + n, version=4)))
-        org_id = factory.LazyAttribute(lambda obj: obj["org"]["id"])
-        user_id = factory.LazyAttribute(lambda obj: obj["user"]["id"])
-        project_id = factory.LazyAttribute(lambda obj: obj["project"]["id"])
+        org_id = factory.LazyAttribute(lambda obj: obj.org["id"])
+        user_id = factory.LazyAttribute(lambda obj: obj.user["id"])
+        project_id = factory.LazyAttribute(lambda obj: obj.project["id"])
         action = "updated"
         resource_type = "project"
-        resource_id = factory.LazyAttribute(lambda obj: obj["project"]["id"])
+        resource_id = factory.LazyAttribute(lambda obj: obj.project["id"])
         ts = factory.LazyAttribute(
             lambda obj: domain._iso(
-                datetime.fromisoformat(obj["project"]["created_at"].replace("Z", "+00:00"))
+                datetime.fromisoformat(obj.project["created_at"].replace("Z", "+00:00"))
                 + timedelta(days=1)
             )
         )

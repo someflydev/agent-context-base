@@ -141,6 +141,13 @@ class TestPythonFakerExample(unittest.TestCase):
             self.assertTrue((Path(tmpdir) / "organizations.jsonl").exists())
             self.assertTrue((Path(tmpdir) / "audit_events.jsonl").exists())
 
+    def test_factory_graph_source_sanitizes_helper_fields(self) -> None:
+        path = PYTHON_DIR / "factory_graph" / "runner.py"
+        text = path.read_text(encoding="utf-8")
+        self.assertIn("_select_fields", text)
+        self.assertIn("UserFactory.create_batch(profile.num_users, seed=profile.seed)", text)
+        self.assertIn("OrganizationFactory(enterprise_org=", text)
+
 
 if __name__ == "__main__":
     unittest.main()
