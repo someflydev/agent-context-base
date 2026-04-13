@@ -69,7 +69,7 @@ Read arc foundation and domain spec:
   8. context/stacks/faker-java.yaml                   (READ — Java stack)
   9. context/stacks/faker-kotlin.yaml                 (READ — Kotlin stack)
  10. examples/canonical-faker/domain/schema.md        (READ — entity graph)
- 11. examples/canonical-faker/domain/generation-order.md (READ — 7-stage order)
+ 11. examples/canonical-faker/domain/generation-order.md (READ — current 6-stage, 7-step order)
  12. examples/canonical-faker/domain/seed-registry.md (READ — smoke seed = 42)
  13. examples/canonical-faker/python/faker_pipeline/generators.py (READ — reference)
  14. examples/canonical-faker/CATALOG.md              (READ — current state)
