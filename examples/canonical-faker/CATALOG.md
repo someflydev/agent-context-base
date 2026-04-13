@@ -8,7 +8,7 @@ All examples generate the TenantCore domain described in `domain/schema.md`.
 
 | Language | Primary Library | Secondary/Graph Library | Status | Path |
 | --- | --- | --- | --- | --- |
-| Python | Faker + Mimesis | factory_boy | [ ] PROMPT_121 | python/ |
+| Python | Faker + Mimesis | factory_boy | [x] PROMPT_121 | python/ |
 | JavaScript | `@faker-js/faker` | Chance | [ ] PROMPT_122 | javascript/ |
 | Go | gofakeit | go-faker/faker | [ ] PROMPT_122 | go/ |
 | Rust | fake (fake-rs) | - | [ ] PROMPT_123 | rust/ |
