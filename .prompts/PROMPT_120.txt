@@ -427,7 +427,7 @@ This module must implement:
      0–5 per org. invited_email must NOT be an existing member's email.
 
   9. generate_dataset(profile: Profile) -> dict:
-     Runs all eight stages in the canonical order.
+     Runs all generation stages in the canonical order.
      Returns: {"organizations": [...], "users": [...], ...}
      Must use a single seeded Faker instance and single seeded random.Random.
      Must pass validate_dataset() before returning.
@@ -530,7 +530,7 @@ Required content:
   ## Domain Artifacts
 
   - domain/schema.md          — entity graph, field definitions, constraints
-  - domain/generation-order.md — canonical 7-stage generation sequence
+  - domain/generation-order.md — canonical 6-stage generation sequence
   - domain/seed-registry.md   — canonical seeds by profile
   - domain/profiles.md        — row count targets per profile
   - domain/generation_patterns.py — Python reference implementation
@@ -589,25 +589,24 @@ Test class: TestFakerDomainSpec
     Assert it contains all 10 languages.
 
   test_generation_patterns_importable
-    import examples.canonical_faker.domain.generation_patterns
+    Load `examples/canonical-faker/domain/generation_patterns.py` via
+    `importlib.util.spec_from_file_location(...)` and execute the module.
     (This catches syntax errors before any language toolchain is involved.)
 
   test_smoke_profile_runs
-    from examples.canonical_faker.domain.generation_patterns import (
-        Profile, generate_dataset
-    )
-    dataset = generate_dataset(Profile.SMOKE)
+    Load the module from
+    `examples/canonical-faker/domain/generation_patterns.py` via `importlib`.
+    dataset = module.generate_dataset(module.Profile.SMOKE())
     assert dataset["report"].ok
     assert len(dataset["organizations"]) == 3
     assert len(dataset["users"]) == 10
     assert len(dataset["memberships"]) >= 3
 
   test_smoke_profile_reproducible
-    from examples.canonical_faker.domain.generation_patterns import (
-        Profile, generate_dataset
-    )
-    d1 = generate_dataset(Profile.SMOKE)
-    d2 = generate_dataset(Profile.SMOKE)
+    Load the module from
+    `examples/canonical-faker/domain/generation_patterns.py` via `importlib`.
+    d1 = module.generate_dataset(module.Profile.SMOKE())
+    d2 = module.generate_dataset(module.Profile.SMOKE())
     assert d1["organizations"] == d2["organizations"]
     assert d1["audit_events"] == d2["audit_events"]
 
@@ -628,7 +627,7 @@ After all parts are complete:
 
 Manual checks:
   - examples/canonical-faker/domain/schema.md has all 7 entities defined
-  - examples/canonical-faker/domain/generation-order.md has 7 stages
+  - examples/canonical-faker/domain/generation-order.md has Stages 1 through 6
   - generation_patterns.py smoke profile runs without errors
   - validate_output.py runs with --help without errors
   - CATALOG.md shows all 10 languages as [ ]
