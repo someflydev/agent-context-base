@@ -66,7 +66,7 @@ Read the arc foundation and domain spec:
   7. context/stacks/faker-javascript.yaml             (READ — JS/TS stack)
   8. context/stacks/faker-go.yaml                     (READ — Go stack)
   9. examples/canonical-faker/domain/schema.md        (READ — entity graph)
- 10. examples/canonical-faker/domain/generation-order.md (READ — 7-stage order)
+ 10. examples/canonical-faker/domain/generation-order.md (READ — 6-stage order)
  11. examples/canonical-faker/domain/seed-registry.md (READ — smoke seed = 42)
  12. examples/canonical-faker/domain/profiles.md      (READ — row count targets)
  13. examples/canonical-faker/python/faker_pipeline/generators.py (READ — reference impl)
@@ -189,7 +189,7 @@ This module is the key Chance demonstration. Use the `chance` library for:
 
 A-5. src/pipeline.ts
 
-Implement the full TenantCore generation pipeline in 7 stages.
+Implement the full TenantCore generation pipeline in 6 stages.
 Use @faker-js/faker for all atomic field generation.
 Use distributions.ts for all distribution decisions.
 
