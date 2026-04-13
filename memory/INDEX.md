@@ -69,7 +69,10 @@ Read `memory/INDEX.md` after `work.py resume` output and after reading `context/
 - [Polyglot Validation Lab Archetype](../context/archetypes/polyglot-validation-lab.md) — cross-language validation comparison surface
 - [Domain Model Spec](../examples/canonical-schema-validation/domain/models.md) — WorkspaceSyncContext: 5 models, 23 fixtures
 - [Parity Rules](../examples/canonical-schema-validation/PARITY.md) — cross-language consistency contract
-- [Example Catalog](../examples/canonical-schema-validation/CATALOG.md) — all planned/implemented examples by language, library, lane
+- [Example Catalog](../examples/canonical-schema-validation/CATALOG.md) — all 18 examples [x] by language, library, lane (PROMPT_117)
+- [Arc Overview](../docs/schema-validation-arc-overview.md) — single-read arc summary for future sessions
+- [Drift Detection Guide](../docs/schema-validation-drift-detection.md) — CI strategies for schema drift
+- [Arc Durable Knowledge](../memory/concepts/schema-validation-arc.md) — committed facts about the arc
 
 ## Contributing
 

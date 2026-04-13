@@ -113,18 +113,21 @@ implement the TaskFlow Monitor domain. See `CATALOG.md` and
 Skills: `context/skills/terminal-example-selection.md`,
 `context/skills/terminal-validation-path-selection.md`
 
-## Schema Validation and Contract Generation Arc
+## Schema Validation and Contract Generation Arc (PROMPT_113–118)
 
-Doctrine: `context/doctrine/schema-validation-contracts.md`
-Archetype: `context/archetypes/polyglot-validation-lab.md`
-Stacks: `context/stacks/schema-validation-{python,typescript,go,rust,kotlin,ruby,elixir}.yaml`
-Skills: `context/skills/schema-validation-lane-selection.md`,
-`context/skills/contract-generation-path-selection.md`
-Manifest: `manifests/schema-validation-polyglot.yaml`
-Workflow: `context/workflows/add-schema-validation-example.md`
-Examples: `examples/canonical-schema-validation/` (created in PROMPT_114)
-Corpus: `examples/canonical-schema-validation/domain/` —
-WorkspaceSyncContext domain with 23 fixtures (11 valid, 8 invalid, 4 edge)
+- Doctrine: `context/doctrine/schema-validation-contracts.md` (8 rules, 3 lanes)
+- Archetype: `context/archetypes/polyglot-validation-lab.md`
+- Stacks: `context/stacks/schema-validation-{python,typescript,go,rust,kotlin,ruby,elixir}.yaml`
+- Skills: `context/skills/schema-validation-lane-selection.md`,
+  `context/skills/contract-generation-path-selection.md`
+- Manifest: `manifests/schema-validation-polyglot.yaml`
+- Workflow: `context/workflows/add-schema-validation-example.md`
+- Examples: `examples/canonical-schema-validation/` (18 examples, 7 languages, 3 lanes)
+- Corpus: `examples/canonical-schema-validation/domain/` (5 models, 23 fixtures)
+- Docs: `docs/schema-validation-arc-overview.md`,
+  `docs/schema-validation-drift-detection.md`
+- Tests: `verification/schema-validation/` (fixture tests, parity runner)
+- Status: COMPLETE (PROMPT_118)
 
 ## Future Direction
 
