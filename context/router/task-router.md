@@ -138,9 +138,30 @@ Route from what the user is trying to do, not from internal file names.
   - load `context/doctrine/schema-validation-contracts.md`
 - "cross-language schema validation", "polyglot validation lab", "compare validation libraries across languages"
   - load `context/archetypes/polyglot-validation-lab.md`
+- "show me rust contract generation examples", "rust contract-generation examples", "rust json schema example"
+  - load `context/archetypes/polyglot-validation-lab.md`
+  - load `context/stacks/schema-validation-rust.yaml`
+  - recommend `examples/canonical-schema-validation/rust/serde-schemars/`
+- "show me python runtime validation examples", "python runtime-validation examples", "python validator examples"
+  - load `context/archetypes/polyglot-validation-lab.md`
+  - load `context/stacks/schema-validation-python.yaml`
+  - recommend `examples/canonical-schema-validation/python/pydantic/` or `examples/canonical-schema-validation/python/marshmallow/`
+- "compare zod vs pydantic", "zod versus pydantic", "typescript and python hybrid validators"
+  - load `context/archetypes/polyglot-validation-lab.md`
+  - load `context/skills/schema-validation-lane-selection.md`
+  - recommend `examples/canonical-schema-validation/typescript/zod/` and `examples/canonical-schema-validation/python/pydantic/`
 - "drift detection between schema and runtime", "schema drift versus validator behavior"
   - load `context/doctrine/schema-validation-contracts.md`
   - load the dominant `context/stacks/schema-validation-{language}.yaml` stack for Lane B
+- "show the best interoperability-oriented examples", "interoperability-oriented schema examples", "best contract generation examples"
+  - load `context/archetypes/polyglot-validation-lab.md`
+  - recommend Lane B examples: `examples/canonical-schema-validation/rust/serde-schemars/`, `examples/canonical-schema-validation/typescript/typebox-ajv/`, `examples/canonical-schema-validation/elixir/ex-json-schema/`, `examples/canonical-schema-validation/go/openapi-generation/`
+- "show the best teaching-oriented examples", "teaching-oriented schema examples", "best examples for learning validation and schema together"
+  - load `context/archetypes/polyglot-validation-lab.md`
+  - recommend Lane C examples: `examples/canonical-schema-validation/python/pydantic/`, `examples/canonical-schema-validation/typescript/zod/`
+- "detect drift between runtime behavior and exported contract", "schema drift detection guide", "how do i catch schema drift in ci"
+  - load `docs/schema-validation-drift-detection.md`
+  - load `context/skills/contract-generation-path-selection.md`
 - "add a schema validation example", "new schema validation canonical example"
   - load `context/workflows/add-schema-validation-example.md`
 - "what context do I need", "what to load for this task", "required vs optional context", "how to assemble the context bundle"
