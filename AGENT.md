@@ -31,6 +31,11 @@ Read [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md) first. Thi
   when durable repo-local truths matter; read `tmp/*.md` only when there is an
   active local markdown checkbox checklist or action plan for the current
   session; read `PLAN.md` only when milestone context matters.
+- After reading `context/TASK.md` and `context/SESSION.md`, refresh them when
+  they are stale relative to the current prompt boundary, recent commits, or
+  active changed-file surface. Do not assume `work.py checkpoint` rewrites
+  stale runtime notes automatically; update the files when the active slice or
+  next safe step has changed.
 - Read `memory/INDEX.md` after `work.py resume` when resuming interrupted work or starting a new prompt. Consult `memory/summaries/` for the relevant prompt's context.
 - When working in a generated repo, re-read `.acb/SESSION_BOOT.md`, `.acb/profile/selection.json`, `.acb/specs/AGENT_RULES.md`, and `.acb/specs/VALIDATION.md` at session start.
 - Prefer manifest-defined bundles over improvised loading.
@@ -48,6 +53,8 @@ Read [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md) first. Thi
 - Before committing, group changes into coherent chunks so each commit is a
   single logical unit with a focused Tim Pope style message.
 - Use `python3 scripts/work.py checkpoint` at natural boundaries.
+- `python3 scripts/work.py checkpoint` is a review point, not a guarantee that
+  `context/TASK.md` or `context/SESSION.md` will be rewritten for you.
 - Use `python3 scripts/work.py init-project` to initialize the operator console for a project. Use `work.py next` before starting a fresh session to check queue state and quota readiness.
 - For session-scoped planning and execution tracking, use markdown files in
   `tmp/`, and make checklist files actual markdown checklists with `- [ ]` /

@@ -41,12 +41,19 @@ Load one dominant path, not a broad survey.
   if durable repo-local truths matter. Read `tmp/*.md` only when there is an
   active local markdown checkbox checklist or action plan for the current
   session.
+- After reading `context/TASK.md` and `context/SESSION.md`, refresh them when
+  they are stale relative to the current prompt boundary, recent commits, or
+  active changed-file surface. Do not assume `work.py checkpoint` rewrites
+  stale runtime notes automatically; update them when the active slice or next
+  safe step has changed.
 - After `work.py resume`, check `memory/INDEX.md` and load any `memory/summaries/` artifact relevant to the current work before starting task-specific context loading.
 - For medium or larger sessions, use `work.py startup-trace write` to self-declare what was loaded. This feeds into `work.py budget-report` for context scoring.
 - Before starting a new prompt session, run `python3 scripts/work.py next` to check the queue, quota state, and whether a resume summary exists.
 - Prefer manifests, canonical examples, and validation gates over improvisation.
 - Treat templates as scaffolds, not canonical truth.
 - Use `python3 scripts/work.py checkpoint` after meaningful changes, before ending a session, and before a likely handoff.
+- `python3 scripts/work.py checkpoint` is a review point, not a guarantee that
+  `context/TASK.md` or `context/SESSION.md` will be rewritten for you.
 - For session-scoped planning and execution tracking, use markdown files in
   `tmp/`, and make checklist files actual markdown checklists with `- [ ]` /
   `- [x]` checkboxes so work can be checked off as it is done. For example,
