@@ -5,6 +5,8 @@ import subprocess
 import tempfile
 import unittest
 import os
+import json
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 
@@ -15,6 +17,7 @@ GO_ENV = {
     "GOCACHE": "/tmp/go-build",
     "GOMODCACHE": "/tmp/go-mod-cache",
 }
+BASE_TIME = datetime(2026, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
 
 
 class TestGoFakerExample(unittest.TestCase):
@@ -74,6 +77,55 @@ class TestGoFakerExample(unittest.TestCase):
                 cwd=GO_DIR,
                 check=True,
             )
+            invitations_path = Path(tmpdir) / "smoke" / "invitations.jsonl"
+            if invitations_path.exists():
+                for line in invitations_path.read_text(encoding="utf-8").splitlines():
+                    invitation = json.loads(line)
+                    expires_at = datetime.fromisoformat(
+                        invitation["expires_at"].replace("Z", "+00:00")
+                    )
+                    self.assertGreater(expires_at, BASE_TIME)
+                    self.assertLessEqual(
+                        expires_at, BASE_TIME + timedelta(days=30)
+                    )
+
+    def test_struct_tag_pipeline_is_seed_deterministic_if_available(self) -> None:
+        if shutil.which("go") is None:
+            self.skipTest("go is not installed")
+        with tempfile.TemporaryDirectory() as tmpdir:
+            first_output = Path(tmpdir) / "first"
+            second_output = Path(tmpdir) / "second"
+            for target in (first_output, second_output):
+                subprocess.run(
+                    [
+                        "go",
+                        "run",
+                        "./cmd/generate/",
+                        "-profile",
+                        "smoke",
+                        "-pipeline",
+                        "structtag",
+                        "-output",
+                        str(target),
+                    ],
+                    cwd=GO_DIR,
+                    check=True,
+                    env=GO_ENV,
+                )
+            for name in (
+                "organizations.jsonl",
+                "users.jsonl",
+                "memberships.jsonl",
+                "projects.jsonl",
+                "audit_events.jsonl",
+                "api_keys.jsonl",
+                "invitations.jsonl",
+                "smoke-report.json",
+            ):
+                self.assertEqual(
+                    (first_output / "smoke" / name).read_text(encoding="utf-8"),
+                    (second_output / "smoke" / name).read_text(encoding="utf-8"),
+                )
 
 
 if __name__ == "__main__":

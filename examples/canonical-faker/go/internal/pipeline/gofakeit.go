@@ -14,6 +14,8 @@ import (
 	"github.com/brianvoe/gofakeit/v6"
 )
 
+const invitationExpiryWindowDays = 30
+
 func GenerateWithGoFakeIt(profile profiles.Profile) (domain.Dataset, error) {
 	fake := gofakeit.New(int64(profile.Seed))
 	// The RNG that shapes weighted distributions is seeded separately but with
@@ -158,13 +160,14 @@ func GenerateWithGoFakeIt(profile profiles.Profile) (domain.Dataset, error) {
 				value := pools.ISO(pools.BaseTime.Add(-time.Duration(rng.Intn(180)+1) * 24 * time.Hour))
 				acceptedAt = &value
 			}
+			expiresAt := pools.BaseTime.Add(time.Duration(rng.Intn(invitationExpiryWindowDays)+1) * 24 * time.Hour)
 			invitations = append(invitations, domain.Invitation{
 				ID:           fake.UUID(),
 				OrgID:        organization.ID,
 				InvitedEmail: email,
 				Role:         distributions.WeightedInvitationRole(rng),
 				InvitedBy:    memberIDs[rng.Intn(len(memberIDs))],
-				ExpiresAt:    pools.ISO(fake.FutureDate()),
+				ExpiresAt:    pools.ISO(expiresAt),
 				AcceptedAt:   acceptedAt,
 			})
 		}

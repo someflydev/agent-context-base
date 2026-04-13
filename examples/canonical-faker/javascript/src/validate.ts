@@ -156,8 +156,12 @@ export function validateDataset(dataset: Dataset): ValidationReport {
     if ((memberEmails.get(invitation.org_id) ?? new Set<string>()).has(invitation.invited_email.toLowerCase())) {
       violations.push(`Rule I violated by invitation ${invitation.id}`)
     }
-    if (fromIso(invitation.expires_at) <= BASE_TIME) {
+    const expiresAt = fromIso(invitation.expires_at)
+    if (expiresAt <= BASE_TIME) {
       violations.push(`invitation expiry must be in the future: ${invitation.id}`)
+    }
+    if (expiresAt > new Date(BASE_TIME.getTime() + 30 * 86400 * 1000)) {
+      violations.push(`invitation expiry must be within 30 days: ${invitation.id}`)
     }
     if (invitation.accepted_at !== null && fromIso(invitation.accepted_at) > BASE_TIME) {
       violations.push(`invitation accepted_at must be in the past: ${invitation.id}`)

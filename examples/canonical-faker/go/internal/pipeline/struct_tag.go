@@ -1,7 +1,9 @@
 package pipeline
 
 import (
+	"math/rand"
 	"strings"
+	"sync"
 
 	"github.com/agent-context-base/canonical-faker-go/internal/domain"
 	"github.com/agent-context-base/canonical-faker-go/internal/profiles"
@@ -9,9 +11,9 @@ import (
 )
 
 type UserTagged struct {
-	ID       string `faker:"uuid_hyphenated"`
-	Email    string `faker:"email"`
-	FullName string `faker:"name"`
+	Email     string `faker:"email"`
+	FirstName string `faker:"first_name"`
+	LastName  string `faker:"last_name"`
 }
 
 // go-faker/faker populates individual struct fields. Relational graph integrity
@@ -22,13 +24,32 @@ func GenerateWithStructTag(profile profiles.Profile) (domain.Dataset, error) {
 	if err != nil {
 		return domain.Dataset{}, err
 	}
+	configureStructTagSources(profile.Seed)
 	for index := range dataset.Users {
 		tagged := UserTagged{}
 		if err := gofaker.FakeData(&tagged); err != nil {
 			return domain.Dataset{}, err
 		}
 		dataset.Users[index].Email = strings.ToLower(tagged.Email)
-		dataset.Users[index].FullName = tagged.FullName
+		dataset.Users[index].FullName = strings.TrimSpace(tagged.FirstName + " " + tagged.LastName)
 	}
 	return dataset, nil
+}
+
+func configureStructTagSources(seed int) {
+	gofaker.SetRandomSource(gofaker.NewSafeSource(rand.NewSource(int64(seed))))
+	gofaker.SetCryptoSource(&lockedReader{
+		rng: rand.New(rand.NewSource(int64(seed) + 1)),
+	})
+}
+
+type lockedReader struct {
+	mu  sync.Mutex
+	rng *rand.Rand
+}
+
+func (reader *lockedReader) Read(p []byte) (int, error) {
+	reader.mu.Lock()
+	defer reader.mu.Unlock()
+	return reader.rng.Read(p)
 }

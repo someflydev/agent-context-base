@@ -3,6 +3,7 @@ package validate
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/agent-context-base/canonical-faker-go/internal/domain"
 	"github.com/agent-context-base/canonical-faker-go/internal/pools"
@@ -117,8 +118,12 @@ func Dataset(dataset domain.Dataset) ValidationReport {
 		if memberEmails[invitation.OrgID][strings.ToLower(invitation.InvitedEmail)] {
 			violations = append(violations, "Rule I violated by invitation "+invitation.ID)
 		}
-		if !pools.ParseISO(invitation.ExpiresAt).After(pools.BaseTime) {
+		expiresAt := pools.ParseISO(invitation.ExpiresAt)
+		if !expiresAt.After(pools.BaseTime) {
 			violations = append(violations, "invitation expiry must be in the future: "+invitation.ID)
+		}
+		if expiresAt.After(pools.BaseTime.Add(30 * 24 * time.Hour)) {
+			violations = append(violations, "invitation expiry must be within 30 days: "+invitation.ID)
 		}
 		if invitation.AcceptedAt != nil && pools.ParseISO(*invitation.AcceptedAt).After(pools.BaseTime) {
 			violations = append(violations, "invitation accepted_at must be in the past: "+invitation.ID)
