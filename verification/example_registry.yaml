@@ -8932,3 +8932,243 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: medium
+  - name: canonical-faker-javascript-readme
+    path: examples/canonical-faker/javascript/README.md
+    language: markdown
+    stack_tags: [faker-javascript]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: reference
+    verification_targets: [file exists, quick start documented, seed discipline documented]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-javascript-package
+    path: examples/canonical-faker/javascript/package.json
+    language: json
+    stack_tags: [faker-javascript]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, faker dependency listed, chance dependency listed, jest script present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-javascript-tsconfig
+    path: examples/canonical-faker/javascript/tsconfig.json
+    language: json
+    stack_tags: [faker-javascript]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, NodeNext configured, test sources included]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-javascript-domain
+    path: examples/canonical-faker/javascript/src/domain.ts
+    language: typescript
+    stack_tags: [faker-javascript]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, tenantcore interfaces defined, validation report type defined]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-javascript-profiles
+    path: examples/canonical-faker/javascript/src/profiles.ts
+    language: typescript
+    stack_tags: [faker-javascript]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, canonical profiles defined, seed values match registry]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-javascript-pools
+    path: examples/canonical-faker/javascript/src/pools.ts
+    language: typescript
+    stack_tags: [faker-javascript]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, pool helpers defined, output writers present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-javascript-distributions
+    path: examples/canonical-faker/javascript/src/distributions.ts
+    language: typescript
+    stack_tags: [faker-javascript]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, weighted helpers defined, edge-case helper present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-javascript-pipeline
+    path: examples/canonical-faker/javascript/src/pipeline.ts
+    language: typescript
+    stack_tags: [faker-javascript]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, seeded faker pipeline defined, graph generation stages present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-javascript-validate
+    path: examples/canonical-faker/javascript/src/validate.ts
+    language: typescript
+    stack_tags: [faker-javascript]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, cross-field validation defined, counts reported]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-javascript-index
+    path: examples/canonical-faker/javascript/src/index.ts
+    language: typescript
+    stack_tags: [faker-javascript]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, cli usage present, exit on validation failure]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-javascript-smoke-test
+    path: examples/canonical-faker/javascript/__tests__/smoke.test.ts
+    language: typescript
+    stack_tags: [faker-javascript]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, reproducibility test present, validation test present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-javascript-output-gitignore
+    path: examples/canonical-faker/javascript/output/.gitignore
+    language: text
+    stack_tags: [faker-javascript]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: reference
+    verification_targets: [file exists, generated output ignored]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-go-readme
+    path: examples/canonical-faker/go/README.md
+    language: markdown
+    stack_tags: [faker-go]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: reference
+    verification_targets: [file exists, quick start documented, contrast documented]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-go-mod
+    path: examples/canonical-faker/go/go.mod
+    language: go
+    stack_tags: [faker-go]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [file exists, gofakeit dependency listed, go-faker dependency listed]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-go-types
+    path: examples/canonical-faker/go/internal/domain/types.go
+    language: go
+    stack_tags: [faker-go]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, tenantcore structs defined, json tags present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-go-profiles
+    path: examples/canonical-faker/go/internal/profiles/profiles.go
+    language: go
+    stack_tags: [faker-go]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, canonical profiles defined, seed override supported]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-go-pools
+    path: examples/canonical-faker/go/internal/pools/pools.go
+    language: go
+    stack_tags: [faker-go]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, pool helpers defined, jsonl writer present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-go-distributions
+    path: examples/canonical-faker/go/internal/distributions/distributions.go
+    language: go
+    stack_tags: [faker-go]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, weighted helpers defined, skewed count helpers present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-go-gofakeit-pipeline
+    path: examples/canonical-faker/go/internal/pipeline/gofakeit.go
+    language: go
+    stack_tags: [faker-go]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, seeded gofakeit instance defined, graph generation stages present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-go-struct-tag-pipeline
+    path: examples/canonical-faker/go/internal/pipeline/struct_tag.go
+    language: go
+    stack_tags: [faker-go]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, struct-tag contrast documented, fake data call present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-go-validate
+    path: examples/canonical-faker/go/internal/validate/validate.go
+    language: go
+    stack_tags: [faker-go]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, validation report defined, fk checks present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-go-generate-cli
+    path: examples/canonical-faker/go/cmd/generate/main.go
+    language: go
+    stack_tags: [faker-go]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, flag cli defined, pipeline switch present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-go-output-gitignore
+    path: examples/canonical-faker/go/output/.gitignore
+    language: text
+    stack_tags: [faker-go]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: reference
+    verification_targets: [file exists, generated output ignored]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-go-verification
+    path: verification/faker/go/test_go_faker.py
+    language: python
+    stack_tags: [faker-go]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, build check present, smoke validation path present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
