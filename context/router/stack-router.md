@@ -227,6 +227,29 @@ stack selection guidance.
 - `schema-validation-elixir`
   - Ecto.Changeset, Norm, ex_json_schema; runtime + contract lane
 
+## Faker And Synthetic Data
+
+- `faker-python`
+  - `context/stacks/faker-python.yaml`
+- `faker-javascript`
+  - `context/stacks/faker-javascript.yaml`
+- `faker-go`
+  - `context/stacks/faker-go.yaml`
+- `faker-rust`
+  - `context/stacks/faker-rust.yaml`
+- `faker-java`
+  - `context/stacks/faker-java.yaml`
+- `faker-kotlin`
+  - `context/stacks/faker-kotlin.yaml`
+- `faker-scala`
+  - `context/stacks/faker-scala.yaml`
+- `faker-ruby`
+  - `context/stacks/faker-ruby.yaml`
+- `faker-php`
+  - `context/stacks/faker-php.yaml`
+- `faker-elixir`
+  - `context/stacks/faker-elixir.yaml`
+
 ## Guardrails
 
 - load only the stacks on the active change path

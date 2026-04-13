@@ -24,6 +24,8 @@ Infer project shape from the repo goal, not only from language choice.
   - `context/archetypes/polyglot-lab.md`
 - cross-language validation comparison, schema export teaching, library ergonomic comparison (Pydantic vs marshmallow, Zod vs io-ts, Konform vs Hibernate Validator, serde+schemars contract lane), building parity matrices across languages
   - `context/archetypes/polyglot-validation-lab.md`
+- seed data generator, synthetic dataset builder, fixture graph generator, demo data generator, benchmark dataset builder
+  - `context/archetypes/synthetic-data-generator.md`
 - two backend services coordinating, multi-language backend system, Go and Python together, Elixir and Rust together, polyglot production service, services in different languages with a seam
   - `context/archetypes/multi-backend-service.md`
 - single deployable service with Dokku emphasis, `Procfile`, `app.json`, or release commands

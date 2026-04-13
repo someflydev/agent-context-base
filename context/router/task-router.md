@@ -164,6 +164,14 @@ Route from what the user is trying to do, not from internal file names.
   - load `context/skills/contract-generation-path-selection.md`
 - "add a schema validation example", "new schema validation canonical example"
   - load `context/workflows/add-schema-validation-example.md`
+- "generate seed data", "realistic test data", "synthetic dataset", "fake data pipeline", "relational fixture generation"
+  - load `context/doctrine/synthetic-data-realism.md`
+  - load `context/skills/synthetic-dataset-design.md`
+  - load `context/stacks/faker-{language}.yaml` for the target language
+- "choose a faker library", "what faker library should I use", "faker library comparison"
+  - load `context/skills/faker-library-selection.md`
+- "add a faker example", "add a synthetic data example"
+  - load `context/workflows/add-faker-example.md`
 - "what context do I need", "what to load for this task", "required vs optional context", "how to assemble the context bundle"
   - load `context/skills/context-bundle-assembly.md`
 - "how to read MEMORY.md", "is this MEMORY.md stale", "what to write in MEMORY.md", "update the continuity file", "memory is out of date"
