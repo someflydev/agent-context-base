@@ -11,9 +11,9 @@ All examples generate the TenantCore domain described in `domain/schema.md`.
 | Python | Faker + Mimesis | factory_boy | [x] PROMPT_121 | python/ |
 | JavaScript | `@faker-js/faker` | Chance | [x] PROMPT_122 | javascript/ |
 | Go | gofakeit | go-faker/faker | [x] PROMPT_122 | go/ |
-| Rust | fake (fake-rs) | - | [ ] PROMPT_123 | rust/ |
-| Java | Datafaker | - | [ ] PROMPT_123 | java/ |
-| Kotlin | kotlin-faker | Datafaker | [ ] PROMPT_123 | kotlin/ |
+| Rust | fake (fake-rs) | - | [x] PROMPT_123 | rust/ |
+| Java | Datafaker | - | [x] PROMPT_123 | java/ |
+| Kotlin | kotlin-faker | Datafaker | [x] PROMPT_123 | kotlin/ |
 | Ruby | faker | ffaker | [ ] PROMPT_124 | ruby/ |
 | PHP | FakerPHP/Faker | Nelmio Alice | [ ] PROMPT_124 | php/ |
 | Scala | Datafaker (JVM) | - | [ ] PROMPT_125 | scala/ |
