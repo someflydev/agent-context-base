@@ -8812,3 +8812,123 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: medium
+  - name: canonical-faker-python-readme
+    path: examples/canonical-faker/python/README.md
+    language: markdown
+    stack_tags: [faker-python]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: reference
+    verification_targets: [file exists, pipeline matrix documented, quick start documented]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-python-requirements
+    path: examples/canonical-faker/python/requirements.txt
+    language: text
+    stack_tags: [faker-python]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [file exists, faker dependency listed, mimesis dependency listed, factory_boy dependency listed]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-python-profiles
+    path: examples/canonical-faker/python/profiles.py
+    language: python
+    stack_tags: [faker-python]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, canonical profile resolver defined, seed override supported]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-python-generate
+    path: examples/canonical-faker/python/generate.py
+    language: python
+    stack_tags: [faker-python]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, argparse cli defined, pipeline switch present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-python-faker-init
+    path: examples/canonical-faker/python/faker_pipeline/__init__.py
+    language: python
+    stack_tags: [faker-python]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, faker run function exported]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-python-faker-generators
+    path: examples/canonical-faker/python/faker_pipeline/generators.py
+    language: python
+    stack_tags: [faker-python]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, custom provider defined, multi-locale pipeline defined]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-python-mimesis-init
+    path: examples/canonical-faker/python/mimesis_pipeline/__init__.py
+    language: python
+    stack_tags: [faker-python]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, mimesis run function exported]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-python-mimesis-generators
+    path: examples/canonical-faker/python/mimesis_pipeline/generators.py
+    language: python
+    stack_tags: [faker-python]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, schema generator defined, graph layer defined]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-python-factory-init
+    path: examples/canonical-faker/python/factory_graph/__init__.py
+    language: python
+    stack_tags: [faker-python]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, factory runner exported]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-python-factory-factories
+    path: examples/canonical-faker/python/factory_graph/factories.py
+    language: python
+    stack_tags: [faker-python]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, factory classes defined, seed helper defined]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-python-factory-runner
+    path: examples/canonical-faker/python/factory_graph/runner.py
+    language: python
+    stack_tags: [faker-python]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, smoke runner defined, validation write path present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-python-output-gitignore
+    path: examples/canonical-faker/python/output/.gitignore
+    language: text
+    stack_tags: [faker-python]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: reference
+    verification_targets: [file exists, generated output ignored]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium

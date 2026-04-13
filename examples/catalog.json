@@ -12408,6 +12408,138 @@
       "patterns": ["validator", "jsonl", "cross-language"],
       "rank": 82,
       "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/python/README.md",
+      "category": "seed-data",
+      "summary": "Python reference README for TenantCore showing the Faker, Mimesis, and factory_boy pipelines plus quick-start usage.",
+      "stacks": ["faker-python"],
+      "archetypes": ["synthetic-data-generator"],
+      "workflows": ["add-faker-example"],
+      "patterns": ["python-reference", "readme", "pipeline-matrix"],
+      "rank": 78,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/python/requirements.txt",
+      "category": "seed-data",
+      "summary": "Minimal Python dependency manifest for the canonical TenantCore faker example.",
+      "stacks": ["faker-python"],
+      "archetypes": ["synthetic-data-generator"],
+      "workflows": ["add-faker-example"],
+      "patterns": ["dependencies", "python", "runtime-manifest"],
+      "rank": 77,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/python/profiles.py",
+      "category": "seed-data",
+      "summary": "Shared Python profile wrapper that resolves canonical TenantCore smoke, small, medium, and large profile objects with optional seed overrides.",
+      "stacks": ["faker-python"],
+      "archetypes": ["synthetic-data-generator"],
+      "workflows": ["add-faker-example"],
+      "patterns": ["profiles", "seed-override", "shared-helper"],
+      "rank": 80,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/python/generate.py",
+      "category": "seed-data",
+      "summary": "Argparse-driven CLI that selects the Python Faker, Mimesis, or factory_boy TenantCore pipeline and writes profile-scoped output.",
+      "stacks": ["faker-python"],
+      "archetypes": ["synthetic-data-generator"],
+      "workflows": ["add-faker-example"],
+      "patterns": ["cli", "pipeline-switch", "validation-summary"],
+      "rank": 83,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/python/faker_pipeline/__init__.py",
+      "category": "seed-data",
+      "summary": "Package entrypoint for the Python Faker TenantCore pipeline.",
+      "stacks": ["faker-python"],
+      "archetypes": ["synthetic-data-generator"],
+      "workflows": ["add-faker-example"],
+      "patterns": ["python-package", "faker-pipeline"],
+      "rank": 68,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/python/faker_pipeline/generators.py",
+      "category": "seed-data",
+      "summary": "Primary Python Faker generator showing multi-locale records, custom providers, edge-case users, and shared graph validation.",
+      "stacks": ["faker-python"],
+      "archetypes": ["synthetic-data-generator"],
+      "workflows": ["add-faker-example"],
+      "patterns": ["faker", "multi-locale", "custom-provider", "edge-cases"],
+      "rank": 89,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/python/mimesis_pipeline/__init__.py",
+      "category": "seed-data",
+      "summary": "Package entrypoint for the Python Mimesis TenantCore pipeline.",
+      "stacks": ["faker-python"],
+      "archetypes": ["synthetic-data-generator"],
+      "workflows": ["add-faker-example"],
+      "patterns": ["python-package", "mimesis-pipeline"],
+      "rank": 68,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/python/mimesis_pipeline/generators.py",
+      "category": "seed-data",
+      "summary": "Python Mimesis generator that demonstrates schema-based organization generation with an explicit TenantCore relational graph layer.",
+      "stacks": ["faker-python"],
+      "archetypes": ["synthetic-data-generator"],
+      "workflows": ["add-faker-example"],
+      "patterns": ["mimesis", "schema-based-generation", "batched-creation"],
+      "rank": 87,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/python/factory_graph/__init__.py",
+      "category": "seed-data",
+      "summary": "Package entrypoint for the Python factory_boy TenantCore graph runner.",
+      "stacks": ["faker-python"],
+      "archetypes": ["synthetic-data-generator"],
+      "workflows": ["add-faker-example"],
+      "patterns": ["python-package", "factory-graph"],
+      "rank": 68,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/python/factory_graph/factories.py",
+      "category": "seed-data",
+      "summary": "Declarative factory_boy definitions for TenantCore organizations, users, memberships, projects, keys, invitations, and audit events.",
+      "stacks": ["faker-python"],
+      "archetypes": ["synthetic-data-generator"],
+      "workflows": ["add-faker-example"],
+      "patterns": ["factory-boy", "subfactory", "lazy-attributes", "traits"],
+      "rank": 86,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/python/factory_graph/runner.py",
+      "category": "seed-data",
+      "summary": "Smoke-scale factory_boy runner that materializes TenantCore dict output, validates it, and writes JSONL or CSV files.",
+      "stacks": ["faker-python"],
+      "archetypes": ["synthetic-data-generator"],
+      "workflows": ["add-faker-example"],
+      "patterns": ["factory-boy", "runner", "smoke-fixtures"],
+      "rank": 84,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/python/output/.gitignore",
+      "category": "seed-data",
+      "summary": "Keeps generated Python TenantCore output out of git while preserving the canonical output directory.",
+      "stacks": ["faker-python"],
+      "archetypes": ["synthetic-data-generator"],
+      "workflows": ["add-faker-example"],
+      "patterns": ["gitignore", "generated-output", "python-example"],
+      "rank": 66,
+      "stability": "reference"
     }
   ]
 }
