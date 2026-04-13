@@ -1,0 +1,32 @@
+name: faker-java
+language: java
+tier: synthetic-data
+description: |
+  Java uses provider-based faker generation with an explicit orchestration layer
+  for deterministic seeded graph construction and export.
+
+primary_faker_library:
+  name: Datafaker
+  repo_url: https://github.com/datafaker-net/datafaker
+  description: Modern JVM faker with broad provider coverage and a clear replacement path for older java-faker guidance.
+
+secondary_library:
+  name: none
+  repo_url: ""
+  description: Datafaker is the clear primary choice for modern Java in this arc.
+
+output_formats:
+  - JSONL
+  - CSV
+  - SQL seed
+
+notes: |
+  The key teaching point in Java is not provider coverage but the relational
+  orchestration layer built above those providers. Keep seeded replay explicit
+  and document the parent-first graph order.
+
+examples:
+  - TBD: PROMPT_123 examples/canonical-faker/java/
+
+verification:
+  - python3 -m unittest discover -s verification/faker/java -p "test_*.py" -v

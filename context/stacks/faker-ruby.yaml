@@ -1,0 +1,33 @@
+name: faker-ruby
+language: ruby
+tier: synthetic-data
+description: |
+  Ruby has a mature faker culture and strong fixture-generation traditions, but
+  this arc keeps the focus on raw relational output rather than ORM-bound test
+  factories.
+
+primary_faker_library:
+  name: faker
+  repo_url: https://github.com/faker-ruby/faker
+  description: Community-standard Ruby faker with broad category coverage and locale support.
+
+secondary_library:
+  name: ffaker
+  repo_url: https://github.com/ffaker/ffaker
+  description: Faster, simpler alternative with narrower coverage that is useful for comparison and legacy context.
+
+output_formats:
+  - JSONL
+  - CSV
+  - Ruby fixture script
+
+notes: |
+  Ruby teams will often think in FactoryBot terms, but this arc teaches raw
+  output generation first. Mention the Rails fixture path in docs without
+  letting ORM-specific patterns dominate the generator design.
+
+examples:
+  - TBD: PROMPT_124 examples/canonical-faker/ruby/
+
+verification:
+  - python3 -m unittest discover -s verification/faker/ruby -p "test_*.py" -v

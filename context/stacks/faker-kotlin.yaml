@@ -1,0 +1,32 @@
+name: faker-kotlin
+language: kotlin
+tier: synthetic-data
+description: |
+  Kotlin combines a Kotlin-native faker DSL with JVM interoperability options,
+  making it a good surface for contrasting idiomatic Kotlin generation with the
+  broader JVM provider model.
+
+primary_faker_library:
+  name: kotlin-faker
+  repo_url: https://github.com/serpro69/kotlin-faker
+  description: Kotlin-native DSL-style faker with an idiomatic API and good readability for explicit generation code.
+
+secondary_library:
+  name: Datafaker
+  repo_url: https://github.com/datafaker-net/datafaker
+  description: JVM-interoperable fallback when Java familiarity or provider compatibility matters more than Kotlin DSL style.
+
+output_formats:
+  - JSONL
+  - CSV
+
+notes: |
+  Show the Kotlin-native style first and use Datafaker as the pragmatic JVM
+  contrast. If chunked writes benefit from coroutines, keep the concurrency
+  layer simple and deterministic rather than clever.
+
+examples:
+  - TBD: PROMPT_123 examples/canonical-faker/kotlin/
+
+verification:
+  - python3 -m unittest discover -s verification/faker/kotlin -p "test_*.py" -v

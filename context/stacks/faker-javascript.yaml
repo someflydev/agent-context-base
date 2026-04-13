@@ -1,0 +1,33 @@
+name: faker-javascript
+language: javascript
+tier: synthetic-data
+description: |
+  JavaScript targets a Node.js CLI generator built around deterministic seeded
+  random flows, realistic atomic fields, and explicit graph orchestration for
+  relational output.
+
+primary_faker_library:
+  name: "@faker-js/faker"
+  repo_url: https://github.com/faker-js/faker
+  description: Community-maintained faker with broad locale coverage and modern package ergonomics.
+
+secondary_library:
+  name: Chance
+  repo_url: https://github.com/chancejs/chance
+  description: Lightweight probability and repeatable RNG helper that is useful for weighted picks and custom distributions.
+
+output_formats:
+  - JSONL
+  - CSV
+  - Node.js script
+
+notes: |
+  Target a Node.js CLI surface. Use `@faker-js/faker` for field generation and
+  Chance when distribution shaping or repeated weighted sampling is clearer with
+  a dedicated probability helper.
+
+examples:
+  - TBD: PROMPT_122 examples/canonical-faker/javascript/
+
+verification:
+  - python3 -m unittest discover -s verification/faker/javascript -p "test_*.py" -v

@@ -1,0 +1,33 @@
+name: faker-scala
+language: scala
+tier: synthetic-data
+description: |
+  Scala has a thinner native faker ecosystem than Python or JavaScript, so the
+  stack guidance must be explicit about when Scala-native options are adequate
+  and when JVM interop is the pragmatic answer.
+
+primary_faker_library:
+  name: scala-faker
+  repo_url: https://github.com/irevive/scala-faker
+  description: Scala-native faker option when the project prefers a direct Scala API and the maintenance state remains acceptable.
+
+secondary_library:
+  name: Datafaker
+  repo_url: https://github.com/datafaker-net/datafaker
+  description: Widely maintained JVM fallback that is often the safer production teaching choice for Scala teams.
+
+output_formats:
+  - JSONL
+  - CSV
+
+notes: |
+  State plainly that the Scala faker ecosystem is thinner than adjacent JVM
+  ecosystems. Recommend Datafaker interop when maintenance confidence matters,
+  and wrap the graph pipeline in a simple iterator or stream abstraction rather
+  than hiding ordering logic in functional indirection.
+
+examples:
+  - TBD: PROMPT_125 examples/canonical-faker/scala/
+
+verification:
+  - python3 -m unittest discover -s verification/faker/scala -p "test_*.py" -v

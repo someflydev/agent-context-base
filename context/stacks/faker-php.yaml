@@ -1,0 +1,33 @@
+name: faker-php
+language: php
+tier: synthetic-data
+description: |
+  PHP combines a maintained faker provider library with a distinct declarative
+  fixture graph option, making it one of the clearest ecosystems for comparing
+  imperative and fixture-definition styles.
+
+primary_faker_library:
+  name: FakerPHP/Faker
+  repo_url: https://github.com/FakerPHP/Faker
+  description: Maintained PHP faker fork with provider-based generation and locale support.
+
+secondary_library:
+  name: Nelmio Alice
+  repo_url: https://github.com/nelmio/alice
+  description: Declarative relational fixture language with references, ranges, and optional values.
+
+output_formats:
+  - JSONL
+  - CSV
+  - Alice YAML fixture files
+
+notes: |
+  PHP's distinguishing teaching surface is the contrast between imperative
+  FakerPHP code and Alice fixture declarations. Show both approaches while
+  keeping the relational rules and seed discipline explicit.
+
+examples:
+  - TBD: PROMPT_124 examples/canonical-faker/php/
+
+verification:
+  - python3 -m unittest discover -s verification/faker/php -p "test_*.py" -v

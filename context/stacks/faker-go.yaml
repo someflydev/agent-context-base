@@ -1,0 +1,31 @@
+name: faker-go
+language: go
+tier: synthetic-data
+description: |
+  Go is a good fit for deterministic relational generators that need simple
+  binaries, explicit data structures, and predictable write pipelines.
+
+primary_faker_library:
+  name: gofakeit
+  repo_url: https://github.com/brianvoe/gofakeit
+  description: Broad category coverage, explicit functional API, and straightforward seeded generator support.
+
+secondary_library:
+  name: go-faker/faker
+  repo_url: https://github.com/go-faker/faker
+  description: Struct-tag-driven field population that contrasts with explicit imperative generation.
+
+output_formats:
+  - JSONL
+  - CSV
+
+notes: |
+  Use `gofakeit` for the main pipeline and deterministic seeding through an
+  explicit RNG. Show `go-faker/faker` as a contrasting tag-based style rather
+  than the primary orchestration path.
+
+examples:
+  - TBD: PROMPT_122 examples/canonical-faker/go/
+
+verification:
+  - python3 -m unittest discover -s verification/faker/go -p "test_*.py" -v

@@ -1,0 +1,38 @@
+name: faker-python
+language: python
+tier: synthetic-data
+description: |
+  Python is the reference stack for the faker arc. It combines mature faker
+  libraries with strong file I/O ergonomics, making it the parity anchor for
+  deterministic relational dataset generation across the arc.
+
+primary_faker_library:
+  name: Faker
+  repo_url: https://github.com/joke2k/faker
+  description: Realistic, locale-aware, broad category coverage with a mature ecosystem.
+
+secondary_library:
+  name: Mimesis
+  repo_url: https://github.com/lk-geimfari/mimesis
+  description: Fast, strongly typed, and suited for custom providers or schema-driven generation.
+
+optional_graph_library:
+  name: factory_boy
+  repo_url: https://github.com/FactoryBoy/factory_boy
+  description: ORM-style factory declarations that can clarify graph construction when raw imperative code becomes noisy.
+
+output_formats:
+  - JSONL
+  - CSV
+  - SQL seed
+
+notes: |
+  Python is the reference implementation for this arc and should land first.
+  Prefer Faker or Mimesis for atomic fields and keep the relational graph layer
+  explicit. All cross-language parity checks will compare against Python output.
+
+examples:
+  - TBD: PROMPT_121 examples/canonical-faker/python/
+
+verification:
+  - python3 -m unittest discover -s verification/faker/python -p "test_*.py" -v

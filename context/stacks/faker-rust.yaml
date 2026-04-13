@@ -1,0 +1,32 @@
+name: faker-rust
+language: rust
+tier: synthetic-data
+description: |
+  Rust emphasizes typed record generation, deterministic control over the RNG,
+  and explicit orchestration for relational layers that sit above atomic value
+  generation.
+
+primary_faker_library:
+  name: fake
+  repo_url: https://github.com/cksac/fake-rs
+  description: Typed generation with derive support and a flexible seeded generation model.
+
+secondary_library:
+  name: none
+  repo_url: ""
+  description: fake-rs already covers the main typed and builder-oriented generation patterns.
+
+output_formats:
+  - JSONL
+  - CSV
+
+notes: |
+  Use fake-rs derive macros for atomic field population, but keep the graph
+  layer explicit in builder or orchestration code. Optional parquet-oriented
+  write paths can be noted in docs, but JSONL and CSV remain the baseline.
+
+examples:
+  - TBD: PROMPT_123 examples/canonical-faker/rust/
+
+verification:
+  - python3 -m unittest discover -s verification/faker/rust -p "test_*.py" -v

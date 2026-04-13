@@ -1,0 +1,33 @@
+name: faker-elixir
+language: elixir
+tier: synthetic-data
+description: |
+  Elixir favors functional pipelines and stream-oriented generation, with a
+  natural delivery surface through Mix tasks and optional factory support for
+  teams already using Ecto.
+
+primary_faker_library:
+  name: Faker
+  repo_url: https://github.com/elixirs/faker
+  description: Standard Elixir community faker library with struct-friendly value generation.
+
+secondary_library:
+  name: ExMachina
+  repo_url: https://github.com/thoughtbot/ex_machina
+  description: Factory-based approach that is useful when the example benefits from declarative graph assembly around Ecto concepts.
+
+output_formats:
+  - JSONL
+  - CSV
+  - Mix seed script
+
+notes: |
+  Keep the pipeline functional with `Enum` or `Stream` and emphasize deterministic
+  seeded flows. Use ExMachina only when factory declarations materially clarify
+  the graph layer instead of obscuring it behind framework assumptions.
+
+examples:
+  - TBD: PROMPT_125 examples/canonical-faker/elixir/
+
+verification:
+  - python3 -m unittest discover -s verification/faker/elixir -p "test_*.py" -v
