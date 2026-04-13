@@ -12320,6 +12320,94 @@
       "patterns": ["lane-b", "elixir", "json-schema", "baseline-artifact"],
       "rank": 86,
       "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/README.md",
+      "category": "seed-data",
+      "summary": "Top-level orientation for the TenantCore canonical faker arc and its shared domain contract.",
+      "stacks": ["faker-python", "faker-javascript", "faker-go", "faker-rust", "faker-java", "faker-kotlin", "faker-ruby", "faker-php", "faker-scala", "faker-elixir"],
+      "archetypes": ["synthetic-data-generator"],
+      "workflows": ["add-faker-example"],
+      "patterns": ["faker-arc", "shared-domain", "readme"],
+      "rank": 70,
+      "stability": "reference"
+    },
+    {
+      "path": "examples/canonical-faker/CATALOG.md",
+      "category": "seed-data",
+      "summary": "Planning catalog for the canonical faker arc covering all ten language implementations and their primary libraries.",
+      "stacks": ["faker-python", "faker-javascript", "faker-go", "faker-rust", "faker-java", "faker-kotlin", "faker-ruby", "faker-php", "faker-scala", "faker-elixir"],
+      "archetypes": ["synthetic-data-generator"],
+      "workflows": ["add-faker-example"],
+      "patterns": ["catalog", "language-matrix", "cross-language"],
+      "rank": 74,
+      "stability": "reference"
+    },
+    {
+      "path": "examples/canonical-faker/domain/schema.md",
+      "category": "seed-data",
+      "summary": "Authoritative TenantCore domain specification covering the shared entity graph, field constraints, and cross-field rules for the faker arc.",
+      "stacks": ["faker-python", "faker-javascript", "faker-go", "faker-rust", "faker-java", "faker-kotlin", "faker-ruby", "faker-php", "faker-scala", "faker-elixir"],
+      "archetypes": ["synthetic-data-generator"],
+      "workflows": ["add-faker-example"],
+      "patterns": ["shared-domain", "entity-graph", "cross-field-rules"],
+      "rank": 81,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/domain/generation-order.md",
+      "category": "seed-data",
+      "summary": "Canonical six-stage parent-first generation contract for TenantCore datasets across all faker implementations.",
+      "stacks": ["faker-python", "faker-javascript", "faker-go", "faker-rust", "faker-java", "faker-kotlin", "faker-ruby", "faker-php", "faker-scala", "faker-elixir"],
+      "archetypes": ["synthetic-data-generator"],
+      "workflows": ["add-faker-example"],
+      "patterns": ["generation-order", "parent-first", "id-pools"],
+      "rank": 80,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/domain/seed-registry.md",
+      "category": "seed-data",
+      "summary": "Canonical seed registry defining the stable smoke, small, medium, and large seeds for reproducible faker output.",
+      "stacks": ["faker-python", "faker-javascript", "faker-go", "faker-rust", "faker-java", "faker-kotlin", "faker-ruby", "faker-php", "faker-scala", "faker-elixir"],
+      "archetypes": ["synthetic-data-generator"],
+      "workflows": ["add-faker-example"],
+      "patterns": ["seed-registry", "reproducibility", "profiles"],
+      "rank": 76,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/domain/profiles.md",
+      "category": "seed-data",
+      "summary": "Normative profile table for TenantCore row-count targets across smoke, small, medium, and large faker runs.",
+      "stacks": ["faker-python", "faker-javascript", "faker-go", "faker-rust", "faker-java", "faker-kotlin", "faker-ruby", "faker-php", "faker-scala", "faker-elixir"],
+      "archetypes": ["synthetic-data-generator"],
+      "workflows": ["add-faker-example"],
+      "patterns": ["profiles", "scale-targets", "row-counts"],
+      "rank": 75,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/domain/generation_patterns.py",
+      "category": "seed-data",
+      "summary": "Python reference implementation for deterministic TenantCore dataset generation, validation, and JSONL or CSV export.",
+      "stacks": ["faker-python"],
+      "archetypes": ["synthetic-data-generator"],
+      "workflows": ["add-faker-example"],
+      "patterns": ["reference-implementation", "seeded-generation", "validation-report"],
+      "rank": 84,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/domain/validate_output.py",
+      "category": "seed-data",
+      "summary": "Language-agnostic JSONL validator for TenantCore output that checks FK integrity, uniqueness, and cross-field rules.",
+      "stacks": ["faker-python", "faker-javascript", "faker-go", "faker-rust", "faker-java", "faker-kotlin", "faker-ruby", "faker-php", "faker-scala", "faker-elixir"],
+      "archetypes": ["synthetic-data-generator"],
+      "workflows": ["add-faker-example"],
+      "patterns": ["validator", "jsonl", "cross-language"],
+      "rank": 82,
+      "stability": "canonical"
     }
   ]
 }

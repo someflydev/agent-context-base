@@ -8732,3 +8732,83 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: medium
+  - name: canonical-faker-readme
+    path: examples/canonical-faker/README.md
+    language: markdown
+    stack_tags: [faker-python, faker-javascript, faker-go, faker-rust, faker-java, faker-kotlin, faker-ruby, faker-php, faker-scala, faker-elixir]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: reference
+    verification_targets: [file exists, tenantcore arc described]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-catalog
+    path: examples/canonical-faker/CATALOG.md
+    language: markdown
+    stack_tags: [faker-python, faker-javascript, faker-go, faker-rust, faker-java, faker-kotlin, faker-ruby, faker-php, faker-scala, faker-elixir]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: reference
+    verification_targets: [file exists, all planned languages listed]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-domain-schema
+    path: examples/canonical-faker/domain/schema.md
+    language: markdown
+    stack_tags: [faker-python, faker-javascript, faker-go, faker-rust, faker-java, faker-kotlin, faker-ruby, faker-php, faker-scala, faker-elixir]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: reference
+    verification_targets: [file exists, tenantcore entities documented, cross-field rules documented]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-generation-order
+    path: examples/canonical-faker/domain/generation-order.md
+    language: markdown
+    stack_tags: [faker-python, faker-javascript, faker-go, faker-rust, faker-java, faker-kotlin, faker-ruby, faker-php, faker-scala, faker-elixir]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: reference
+    verification_targets: [file exists, six stages documented]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-seed-registry
+    path: examples/canonical-faker/domain/seed-registry.md
+    language: markdown
+    stack_tags: [faker-python, faker-javascript, faker-go, faker-rust, faker-java, faker-kotlin, faker-ruby, faker-php, faker-scala, faker-elixir]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: reference
+    verification_targets: [file exists, canonical seeds documented]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-profiles
+    path: examples/canonical-faker/domain/profiles.md
+    language: markdown
+    stack_tags: [faker-python, faker-javascript, faker-go, faker-rust, faker-java, faker-kotlin, faker-ruby, faker-php, faker-scala, faker-elixir]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: reference
+    verification_targets: [file exists, profile counts documented]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-generation-patterns
+    path: examples/canonical-faker/domain/generation_patterns.py
+    language: python
+    stack_tags: [faker-python]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, deterministic generation helpers defined, validation report path present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: canonical-faker-validate-output
+    path: examples/canonical-faker/domain/validate_output.py
+    language: python
+    stack_tags: [faker-python, faker-javascript, faker-go, faker-rust, faker-java, faker-kotlin, faker-ruby, faker-php, faker-scala, faker-elixir]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: structure-verified
+    verification_targets: [parses, cli defined, fk validation entrypoint present]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
