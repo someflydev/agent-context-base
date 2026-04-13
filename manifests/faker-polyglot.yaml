@@ -1,0 +1,78 @@
+schema_version: 2
+name: faker-polyglot
+description: Cross-language synthetic data generation examples for deterministic relational faker workflows.
+archetype: synthetic-data-generator
+primary_stack: faker-python
+secondary_stacks:
+  - faker-javascript
+  - faker-go
+  - faker-rust
+  - faker-java
+  - faker-kotlin
+  - faker-scala
+  - faker-ruby
+  - faker-php
+  - faker-elixir
+triggers:
+  - synthetic dataset
+  - fake data pipeline
+  - realistic seed data
+aliases:
+  - faker polyglot
+  - relational faker examples
+required_context:
+  - context/doctrine/synthetic-data-realism.md
+  - context/archetypes/synthetic-data-generator.md
+  - context/workflows/add-faker-example.md
+optional_context:
+  - context/skills/faker-library-selection.md
+  - context/skills/synthetic-dataset-design.md
+  - context/stacks/faker-python.yaml
+  - context/stacks/faker-javascript.yaml
+  - context/stacks/faker-go.yaml
+  - context/stacks/faker-rust.yaml
+  - context/stacks/faker-java.yaml
+  - context/stacks/faker-kotlin.yaml
+  - context/stacks/faker-scala.yaml
+  - context/stacks/faker-ruby.yaml
+  - context/stacks/faker-php.yaml
+  - context/stacks/faker-elixir.yaml
+preferred_examples:
+  - examples/canonical-prompts/prompt-first-layout-example.md
+  - examples/canonical-workflows/post-flight-refinement-checklist.md
+  - examples/canonical-schema-validation/CATALOG.md
+recommended_templates:
+  - templates/manifest/profile-summary.template.yaml
+  - templates/prompt-first/PROMPTS.md.template
+repo_signals:
+  - examples/canonical-faker/
+  - context/doctrine/synthetic-data-realism.md
+task_hints:
+  - generate seed data
+  - choose faker library
+  - add faker example
+warnings:
+  - Faker libraries generate atomic values, not relational systems.
+  - Parent-first ordering, deterministic seeds, and validation are mandatory.
+  - Arc status: in-progress foundation established in PROMPT_119, with canonical implementations planned for PROMPT_120 through PROMPT_126.
+bootstrap_defaults:
+  - include_prompt_first
+  - include_generated_profile
+  - include_smoke_tests
+compose_files:
+  - docker-compose.yml
+  - docker-compose.test.yml
+compose_project_name_dev: "{repo_slug}"
+compose_project_name_test: "{repo_slug}-test"
+port_band_app_dev: 14000-14099
+port_band_app_test: 15000-15099
+port_band_data_dev: 24000-24099
+port_band_data_test: 25000-25099
+data_isolation:
+  - docker/volumes/dev
+  - docker/volumes/test
+dokku_relevance: not-applicable
+smoke_test_expectations:
+  - run python3 scripts/run_verification.py --tier fast
+  - keep the foundation structural tests passing
+prompt_first_support: supported

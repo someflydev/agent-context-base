@@ -73,6 +73,7 @@ ARCHETYPE_PATHS = {
     "multi-storage-experiment": "context/archetypes/multi-storage-experiment.md",
     "polyglot-lab": "context/archetypes/polyglot-lab.md",
     "polyglot-validation-lab": "context/archetypes/polyglot-validation-lab.md",
+    "synthetic-data-generator": "context/archetypes/synthetic-data-generator.md",
     "dokku-deployable-service": "context/archetypes/dokku-deployable-service.md",
 }
 
@@ -129,6 +130,16 @@ STACK_PATHS = {
     "schema-validation-kotlin": "context/stacks/schema-validation-kotlin.yaml",
     "schema-validation-ruby": "context/stacks/schema-validation-ruby.yaml",
     "schema-validation-elixir": "context/stacks/schema-validation-elixir.yaml",
+    "faker-python": "context/stacks/faker-python.yaml",
+    "faker-javascript": "context/stacks/faker-javascript.yaml",
+    "faker-go": "context/stacks/faker-go.yaml",
+    "faker-rust": "context/stacks/faker-rust.yaml",
+    "faker-java": "context/stacks/faker-java.yaml",
+    "faker-kotlin": "context/stacks/faker-kotlin.yaml",
+    "faker-scala": "context/stacks/faker-scala.yaml",
+    "faker-ruby": "context/stacks/faker-ruby.yaml",
+    "faker-php": "context/stacks/faker-php.yaml",
+    "faker-elixir": "context/stacks/faker-elixir.yaml",
 }
 
 VALID_SUPPORT_LEVELS = {"first-class", "supported", "optional", "not-applicable"}
