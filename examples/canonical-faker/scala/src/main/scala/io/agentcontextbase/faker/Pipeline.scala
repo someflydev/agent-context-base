@@ -213,7 +213,7 @@ object Pipeline {
           val createdAt = Instant.ofEpochMilli(createdAtInstant).toString
           
           val lastUsedAtInstant = createdAtInstant + (rng.nextDouble() * (now - createdAtInstant)).toLong
-          val lastUsedAt = if (rng.nextBoolean()) Instant.ofEpochMilli(lastUsedAtInstant).toString else ""
+          val lastUsedAt = if (rng.nextBoolean()) Instant.ofEpochMilli(lastUsedAtInstant).toString else null
 
           ApiKey(
             id = Pools.deterministicUuid(rng),
@@ -253,7 +253,7 @@ object Pipeline {
           val baseDateStr = "2024-01-01T00:00:00Z"
           val baseDateInstant = Instant.parse(baseDateStr)
           val expiresAt = baseDateInstant.plusSeconds(rng.nextInt(30) * 86400L).toString
-          val acceptedAt = if (rng.nextDouble() < 0.4) baseDateInstant.minusSeconds(rng.nextInt(30) * 86400L).toString else ""
+          val acceptedAt = if (rng.nextDouble() < 0.4) baseDateInstant.minusSeconds(rng.nextInt(30) * 86400L).toString else null
 
           Invitation(
             id = Pools.deterministicUuid(rng),
