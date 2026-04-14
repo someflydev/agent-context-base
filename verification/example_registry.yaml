@@ -9802,3 +9802,193 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: medium
+  - name: examples-canonical-faker-elixir-lib-mix-tasks-generate-ex
+    path: examples/canonical-faker/elixir/lib/mix/tasks/generate.ex
+    language: elixir
+    stack_tags: [faker-elixir]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-elixir-lib-tenant_core-distributions-ex
+    path: examples/canonical-faker/elixir/lib/tenant_core/distributions.ex
+    language: elixir
+    stack_tags: [faker-elixir]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-elixir-lib-tenant_core-domain-ex
+    path: examples/canonical-faker/elixir/lib/tenant_core/domain.ex
+    language: elixir
+    stack_tags: [faker-elixir]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-elixir-lib-tenant_core-ex_machina_pipeline-ex
+    path: examples/canonical-faker/elixir/lib/tenant_core/ex_machina_pipeline.ex
+    language: elixir
+    stack_tags: [faker-elixir]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-elixir-lib-tenant_core-output-ex
+    path: examples/canonical-faker/elixir/lib/tenant_core/output.ex
+    language: elixir
+    stack_tags: [faker-elixir]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-elixir-lib-tenant_core-pipeline-ex
+    path: examples/canonical-faker/elixir/lib/tenant_core/pipeline.ex
+    language: elixir
+    stack_tags: [faker-elixir]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-elixir-lib-tenant_core-pools-ex
+    path: examples/canonical-faker/elixir/lib/tenant_core/pools.ex
+    language: elixir
+    stack_tags: [faker-elixir]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-elixir-lib-tenant_core-profiles-ex
+    path: examples/canonical-faker/elixir/lib/tenant_core/profiles.ex
+    language: elixir
+    stack_tags: [faker-elixir]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-elixir-lib-tenant_core-validate-ex
+    path: examples/canonical-faker/elixir/lib/tenant_core/validate.ex
+    language: elixir
+    stack_tags: [faker-elixir]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-elixir-test-tenant_core-smoke_test-exs
+    path: examples/canonical-faker/elixir/test/tenant_core/smoke_test.exs
+    language: elixir
+    stack_tags: [faker-elixir]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-elixir-test-test_helper-exs
+    path: examples/canonical-faker/elixir/test/test_helper.exs
+    language: elixir
+    stack_tags: [faker-elixir]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-scala-src-main-scala-io-agentcontextbase-faker-Distributions-scala
+    path: examples/canonical-faker/scala/src/main/scala/io/agentcontextbase/faker/Distributions.scala
+    language: scala
+    stack_tags: [faker-scala]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-scala-src-main-scala-io-agentcontextbase-faker-Domain-scala
+    path: examples/canonical-faker/scala/src/main/scala/io/agentcontextbase/faker/Domain.scala
+    language: scala
+    stack_tags: [faker-scala]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-scala-src-main-scala-io-agentcontextbase-faker-Main-scala
+    path: examples/canonical-faker/scala/src/main/scala/io/agentcontextbase/faker/Main.scala
+    language: scala
+    stack_tags: [faker-scala]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-scala-src-main-scala-io-agentcontextbase-faker-Pipeline-scala
+    path: examples/canonical-faker/scala/src/main/scala/io/agentcontextbase/faker/Pipeline.scala
+    language: scala
+    stack_tags: [faker-scala]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-scala-src-main-scala-io-agentcontextbase-faker-Pools-scala
+    path: examples/canonical-faker/scala/src/main/scala/io/agentcontextbase/faker/Pools.scala
+    language: scala
+    stack_tags: [faker-scala]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-scala-src-main-scala-io-agentcontextbase-faker-Profile-scala
+    path: examples/canonical-faker/scala/src/main/scala/io/agentcontextbase/faker/Profile.scala
+    language: scala
+    stack_tags: [faker-scala]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-scala-src-main-scala-io-agentcontextbase-faker-Validate-scala
+    path: examples/canonical-faker/scala/src/main/scala/io/agentcontextbase/faker/Validate.scala
+    language: scala
+    stack_tags: [faker-scala]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-scala-src-test-scala-io-agentcontextbase-faker-SmokeTest-scala
+    path: examples/canonical-faker/scala/src/test/scala/io/agentcontextbase/faker/SmokeTest.scala
+    language: scala
+    stack_tags: [faker-scala]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
