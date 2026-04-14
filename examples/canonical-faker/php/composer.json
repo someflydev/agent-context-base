@@ -1,0 +1,14 @@
+{
+  "require": {
+    "fakerphp/faker": "^1.23",
+    "nelmio/alice": "^3.13"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^11.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "AgentContextBase\\Faker\\": "src/"
+    }
+  }
+}
