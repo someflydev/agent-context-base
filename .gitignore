@@ -69,3 +69,6 @@ logs/
 
 # Operator console state (local only)
 work/
+
+# Generated faker output
+examples/canonical-faker/*/output/
