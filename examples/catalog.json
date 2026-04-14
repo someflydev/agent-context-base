@@ -11423,10 +11423,26 @@
       "path": "examples/canonical-schema-validation/CATALOG.md",
       "category": "schema-validation",
       "summary": "Planning catalog for the canonical schema-validation arc covering languages, libraries, and validation lanes.",
-      "stacks": ["schema-validation-python", "schema-validation-typescript", "schema-validation-go", "schema-validation-rust", "schema-validation-kotlin", "schema-validation-ruby", "schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["catalog", "lane-matrix", "cross-language"],
+      "stacks": [
+        "schema-validation-python",
+        "schema-validation-typescript",
+        "schema-validation-go",
+        "schema-validation-rust",
+        "schema-validation-kotlin",
+        "schema-validation-ruby",
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "catalog",
+        "lane-matrix",
+        "cross-language"
+      ],
       "rank": 72,
       "stability": "reference"
     },
@@ -11434,10 +11450,26 @@
       "path": "examples/canonical-schema-validation/PARITY.md",
       "category": "schema-validation",
       "summary": "Cross-language parity contract for the WorkspaceSyncContext validation corpus and documented divergences.",
-      "stacks": ["schema-validation-python", "schema-validation-typescript", "schema-validation-go", "schema-validation-rust", "schema-validation-kotlin", "schema-validation-ruby", "schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["parity-rules", "cross-language", "documented-divergence"],
+      "stacks": [
+        "schema-validation-python",
+        "schema-validation-typescript",
+        "schema-validation-go",
+        "schema-validation-rust",
+        "schema-validation-kotlin",
+        "schema-validation-ruby",
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "parity-rules",
+        "cross-language",
+        "documented-divergence"
+      ],
       "rank": 74,
       "stability": "canonical"
     },
@@ -11445,10 +11477,26 @@
       "path": "examples/canonical-schema-validation/domain/models.md",
       "category": "schema-validation",
       "summary": "Language-agnostic WorkspaceSyncContext domain specification defining the five canonical models and cross-field rules.",
-      "stacks": ["schema-validation-python", "schema-validation-typescript", "schema-validation-go", "schema-validation-rust", "schema-validation-kotlin", "schema-validation-ruby", "schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["shared-domain", "model-spec", "cross-language"],
+      "stacks": [
+        "schema-validation-python",
+        "schema-validation-typescript",
+        "schema-validation-go",
+        "schema-validation-rust",
+        "schema-validation-kotlin",
+        "schema-validation-ruby",
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "shared-domain",
+        "model-spec",
+        "cross-language"
+      ],
       "rank": 79,
       "stability": "canonical"
     },
@@ -11456,10 +11504,26 @@
       "path": "examples/canonical-schema-validation/domain/fixtures/valid/ingestion_source_http_poll.json",
       "category": "schema-validation",
       "summary": "Valid WorkspaceSyncContext fixture for an HTTP polling ingestion source.",
-      "stacks": ["schema-validation-python", "schema-validation-typescript", "schema-validation-go", "schema-validation-rust", "schema-validation-kotlin", "schema-validation-ruby", "schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["fixture-corpus", "valid-fixture", "discriminated-union"],
+      "stacks": [
+        "schema-validation-python",
+        "schema-validation-typescript",
+        "schema-validation-go",
+        "schema-validation-rust",
+        "schema-validation-kotlin",
+        "schema-validation-ruby",
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "fixture-corpus",
+        "valid-fixture",
+        "discriminated-union"
+      ],
       "rank": 68,
       "stability": "canonical"
     },
@@ -11467,10 +11531,26 @@
       "path": "examples/canonical-schema-validation/domain/fixtures/valid/ingestion_source_webhook_push.json",
       "category": "schema-validation",
       "summary": "Valid WorkspaceSyncContext fixture for a webhook push ingestion source.",
-      "stacks": ["schema-validation-python", "schema-validation-typescript", "schema-validation-go", "schema-validation-rust", "schema-validation-kotlin", "schema-validation-ruby", "schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["fixture-corpus", "valid-fixture", "discriminated-union"],
+      "stacks": [
+        "schema-validation-python",
+        "schema-validation-typescript",
+        "schema-validation-go",
+        "schema-validation-rust",
+        "schema-validation-kotlin",
+        "schema-validation-ruby",
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "fixture-corpus",
+        "valid-fixture",
+        "discriminated-union"
+      ],
       "rank": 68,
       "stability": "canonical"
     },
@@ -11478,10 +11558,26 @@
       "path": "examples/canonical-schema-validation/domain/fixtures/valid/review_request_critical.json",
       "category": "schema-validation",
       "summary": "Valid critical ReviewRequest fixture with a required due date present.",
-      "stacks": ["schema-validation-python", "schema-validation-typescript", "schema-validation-go", "schema-validation-rust", "schema-validation-kotlin", "schema-validation-ruby", "schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["fixture-corpus", "valid-fixture", "cross-field-rule"],
+      "stacks": [
+        "schema-validation-python",
+        "schema-validation-typescript",
+        "schema-validation-go",
+        "schema-validation-rust",
+        "schema-validation-kotlin",
+        "schema-validation-ruby",
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "fixture-corpus",
+        "valid-fixture",
+        "cross-field-rule"
+      ],
       "rank": 68,
       "stability": "canonical"
     },
@@ -11489,10 +11585,26 @@
       "path": "examples/canonical-schema-validation/domain/fixtures/valid/review_request_normal.json",
       "category": "schema-validation",
       "summary": "Valid normal-priority ReviewRequest fixture with reviewers and content IDs populated.",
-      "stacks": ["schema-validation-python", "schema-validation-typescript", "schema-validation-go", "schema-validation-rust", "schema-validation-kotlin", "schema-validation-ruby", "schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["fixture-corpus", "valid-fixture", "collection-constraints"],
+      "stacks": [
+        "schema-validation-python",
+        "schema-validation-typescript",
+        "schema-validation-go",
+        "schema-validation-rust",
+        "schema-validation-kotlin",
+        "schema-validation-ruby",
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "fixture-corpus",
+        "valid-fixture",
+        "collection-constraints"
+      ],
       "rank": 68,
       "stability": "canonical"
     },
@@ -11500,10 +11612,26 @@
       "path": "examples/canonical-schema-validation/domain/fixtures/valid/sync_run_pending.json",
       "category": "schema-validation",
       "summary": "Valid pending SyncRun fixture showing explicit null timestamps before work starts.",
-      "stacks": ["schema-validation-python", "schema-validation-typescript", "schema-validation-go", "schema-validation-rust", "schema-validation-kotlin", "schema-validation-ruby", "schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["fixture-corpus", "valid-fixture", "nullable-fields"],
+      "stacks": [
+        "schema-validation-python",
+        "schema-validation-typescript",
+        "schema-validation-go",
+        "schema-validation-rust",
+        "schema-validation-kotlin",
+        "schema-validation-ruby",
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "fixture-corpus",
+        "valid-fixture",
+        "nullable-fields"
+      ],
       "rank": 68,
       "stability": "canonical"
     },
@@ -11511,10 +11639,26 @@
       "path": "examples/canonical-schema-validation/domain/fixtures/valid/sync_run_succeeded.json",
       "category": "schema-validation",
       "summary": "Valid succeeded SyncRun fixture with timestamps, duration, and records ingested.",
-      "stacks": ["schema-validation-python", "schema-validation-typescript", "schema-validation-go", "schema-validation-rust", "schema-validation-kotlin", "schema-validation-ruby", "schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["fixture-corpus", "valid-fixture", "cross-field-rule"],
+      "stacks": [
+        "schema-validation-python",
+        "schema-validation-typescript",
+        "schema-validation-go",
+        "schema-validation-rust",
+        "schema-validation-kotlin",
+        "schema-validation-ruby",
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "fixture-corpus",
+        "valid-fixture",
+        "cross-field-rule"
+      ],
       "rank": 69,
       "stability": "canonical"
     },
@@ -11522,10 +11666,26 @@
       "path": "examples/canonical-schema-validation/domain/fixtures/valid/webhook_payload_sync_completed.json",
       "category": "schema-validation",
       "summary": "Valid webhook payload fixture for a completed sync event.",
-      "stacks": ["schema-validation-python", "schema-validation-typescript", "schema-validation-go", "schema-validation-rust", "schema-validation-kotlin", "schema-validation-ruby", "schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["fixture-corpus", "valid-fixture", "discriminated-union"],
+      "stacks": [
+        "schema-validation-python",
+        "schema-validation-typescript",
+        "schema-validation-go",
+        "schema-validation-rust",
+        "schema-validation-kotlin",
+        "schema-validation-ruby",
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "fixture-corpus",
+        "valid-fixture",
+        "discriminated-union"
+      ],
       "rank": 69,
       "stability": "canonical"
     },
@@ -11533,10 +11693,26 @@
       "path": "examples/canonical-schema-validation/domain/fixtures/valid/webhook_payload_sync_failed.json",
       "category": "schema-validation",
       "summary": "Valid webhook payload fixture for a failed sync event.",
-      "stacks": ["schema-validation-python", "schema-validation-typescript", "schema-validation-go", "schema-validation-rust", "schema-validation-kotlin", "schema-validation-ruby", "schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["fixture-corpus", "valid-fixture", "discriminated-union"],
+      "stacks": [
+        "schema-validation-python",
+        "schema-validation-typescript",
+        "schema-validation-go",
+        "schema-validation-rust",
+        "schema-validation-kotlin",
+        "schema-validation-ruby",
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "fixture-corpus",
+        "valid-fixture",
+        "discriminated-union"
+      ],
       "rank": 69,
       "stability": "canonical"
     },
@@ -11544,10 +11720,26 @@
       "path": "examples/canonical-schema-validation/domain/fixtures/valid/webhook_payload_workspace_suspended.json",
       "category": "schema-validation",
       "summary": "Valid webhook payload fixture for a suspended workspace event.",
-      "stacks": ["schema-validation-python", "schema-validation-typescript", "schema-validation-go", "schema-validation-rust", "schema-validation-kotlin", "schema-validation-ruby", "schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["fixture-corpus", "valid-fixture", "discriminated-union"],
+      "stacks": [
+        "schema-validation-python",
+        "schema-validation-typescript",
+        "schema-validation-go",
+        "schema-validation-rust",
+        "schema-validation-kotlin",
+        "schema-validation-ruby",
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "fixture-corpus",
+        "valid-fixture",
+        "discriminated-union"
+      ],
       "rank": 69,
       "stability": "canonical"
     },
@@ -11555,10 +11747,26 @@
       "path": "examples/canonical-schema-validation/domain/fixtures/valid/workspace_config_basic.json",
       "category": "schema-validation",
       "summary": "Valid baseline WorkspaceConfig fixture for a pro-plan workspace.",
-      "stacks": ["schema-validation-python", "schema-validation-typescript", "schema-validation-go", "schema-validation-rust", "schema-validation-kotlin", "schema-validation-ruby", "schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["fixture-corpus", "valid-fixture", "workspace-config"],
+      "stacks": [
+        "schema-validation-python",
+        "schema-validation-typescript",
+        "schema-validation-go",
+        "schema-validation-rust",
+        "schema-validation-kotlin",
+        "schema-validation-ruby",
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "fixture-corpus",
+        "valid-fixture",
+        "workspace-config"
+      ],
       "rank": 69,
       "stability": "canonical"
     },
@@ -11566,10 +11774,26 @@
       "path": "examples/canonical-schema-validation/domain/fixtures/valid/workspace_config_full.json",
       "category": "schema-validation",
       "summary": "Valid fuller WorkspaceConfig fixture for an enterprise-plan workspace.",
-      "stacks": ["schema-validation-python", "schema-validation-typescript", "schema-validation-go", "schema-validation-rust", "schema-validation-kotlin", "schema-validation-ruby", "schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["fixture-corpus", "valid-fixture", "workspace-config"],
+      "stacks": [
+        "schema-validation-python",
+        "schema-validation-typescript",
+        "schema-validation-go",
+        "schema-validation-rust",
+        "schema-validation-kotlin",
+        "schema-validation-ruby",
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "fixture-corpus",
+        "valid-fixture",
+        "workspace-config"
+      ],
       "rank": 70,
       "stability": "canonical"
     },
@@ -11577,10 +11801,26 @@
       "path": "examples/canonical-schema-validation/domain/fixtures/invalid/ingestion_source_poll_interval_missing.json",
       "category": "schema-validation",
       "summary": "Invalid ingestion source fixture missing poll_interval_seconds for an http_poll source.",
-      "stacks": ["schema-validation-python", "schema-validation-typescript", "schema-validation-go", "schema-validation-rust", "schema-validation-kotlin", "schema-validation-ruby", "schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["fixture-corpus", "invalid-fixture", "cross-field-rule"],
+      "stacks": [
+        "schema-validation-python",
+        "schema-validation-typescript",
+        "schema-validation-go",
+        "schema-validation-rust",
+        "schema-validation-kotlin",
+        "schema-validation-ruby",
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "fixture-corpus",
+        "invalid-fixture",
+        "cross-field-rule"
+      ],
       "rank": 68,
       "stability": "canonical"
     },
@@ -11588,10 +11828,26 @@
       "path": "examples/canonical-schema-validation/domain/fixtures/invalid/review_request_critical_no_due_date.json",
       "category": "schema-validation",
       "summary": "Invalid critical ReviewRequest fixture missing the required due date.",
-      "stacks": ["schema-validation-python", "schema-validation-typescript", "schema-validation-go", "schema-validation-rust", "schema-validation-kotlin", "schema-validation-ruby", "schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["fixture-corpus", "invalid-fixture", "cross-field-rule"],
+      "stacks": [
+        "schema-validation-python",
+        "schema-validation-typescript",
+        "schema-validation-go",
+        "schema-validation-rust",
+        "schema-validation-kotlin",
+        "schema-validation-ruby",
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "fixture-corpus",
+        "invalid-fixture",
+        "cross-field-rule"
+      ],
       "rank": 68,
       "stability": "canonical"
     },
@@ -11599,10 +11855,26 @@
       "path": "examples/canonical-schema-validation/domain/fixtures/invalid/review_request_no_reviewers.json",
       "category": "schema-validation",
       "summary": "Invalid ReviewRequest fixture with an empty reviewer list.",
-      "stacks": ["schema-validation-python", "schema-validation-typescript", "schema-validation-go", "schema-validation-rust", "schema-validation-kotlin", "schema-validation-ruby", "schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["fixture-corpus", "invalid-fixture", "collection-constraints"],
+      "stacks": [
+        "schema-validation-python",
+        "schema-validation-typescript",
+        "schema-validation-go",
+        "schema-validation-rust",
+        "schema-validation-kotlin",
+        "schema-validation-ruby",
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "fixture-corpus",
+        "invalid-fixture",
+        "collection-constraints"
+      ],
       "rank": 68,
       "stability": "canonical"
     },
@@ -11610,10 +11882,26 @@
       "path": "examples/canonical-schema-validation/domain/fixtures/invalid/sync_run_duration_missing_when_finished.json",
       "category": "schema-validation",
       "summary": "Invalid SyncRun fixture where a finished run omits duration_ms.",
-      "stacks": ["schema-validation-python", "schema-validation-typescript", "schema-validation-go", "schema-validation-rust", "schema-validation-kotlin", "schema-validation-ruby", "schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["fixture-corpus", "invalid-fixture", "cross-field-rule"],
+      "stacks": [
+        "schema-validation-python",
+        "schema-validation-typescript",
+        "schema-validation-go",
+        "schema-validation-rust",
+        "schema-validation-kotlin",
+        "schema-validation-ruby",
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "fixture-corpus",
+        "invalid-fixture",
+        "cross-field-rule"
+      ],
       "rank": 68,
       "stability": "canonical"
     },
@@ -11621,10 +11909,26 @@
       "path": "examples/canonical-schema-validation/domain/fixtures/invalid/sync_run_timestamps_inverted.json",
       "category": "schema-validation",
       "summary": "Invalid SyncRun fixture with finished_at earlier than started_at.",
-      "stacks": ["schema-validation-python", "schema-validation-typescript", "schema-validation-go", "schema-validation-rust", "schema-validation-kotlin", "schema-validation-ruby", "schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["fixture-corpus", "invalid-fixture", "cross-field-rule"],
+      "stacks": [
+        "schema-validation-python",
+        "schema-validation-typescript",
+        "schema-validation-go",
+        "schema-validation-rust",
+        "schema-validation-kotlin",
+        "schema-validation-ruby",
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "fixture-corpus",
+        "invalid-fixture",
+        "cross-field-rule"
+      ],
       "rank": 68,
       "stability": "canonical"
     },
@@ -11632,10 +11936,26 @@
       "path": "examples/canonical-schema-validation/domain/fixtures/invalid/webhook_payload_bad_signature_format.json",
       "category": "schema-validation",
       "summary": "Invalid webhook payload fixture with a malformed signature string.",
-      "stacks": ["schema-validation-python", "schema-validation-typescript", "schema-validation-go", "schema-validation-rust", "schema-validation-kotlin", "schema-validation-ruby", "schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["fixture-corpus", "invalid-fixture", "format-validation"],
+      "stacks": [
+        "schema-validation-python",
+        "schema-validation-typescript",
+        "schema-validation-go",
+        "schema-validation-rust",
+        "schema-validation-kotlin",
+        "schema-validation-ruby",
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "fixture-corpus",
+        "invalid-fixture",
+        "format-validation"
+      ],
       "rank": 68,
       "stability": "canonical"
     },
@@ -11643,10 +11963,26 @@
       "path": "examples/canonical-schema-validation/domain/fixtures/invalid/workspace_config_bad_slug.json",
       "category": "schema-validation",
       "summary": "Invalid WorkspaceConfig fixture with a slug that violates the allowed pattern.",
-      "stacks": ["schema-validation-python", "schema-validation-typescript", "schema-validation-go", "schema-validation-rust", "schema-validation-kotlin", "schema-validation-ruby", "schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["fixture-corpus", "invalid-fixture", "pattern-validation"],
+      "stacks": [
+        "schema-validation-python",
+        "schema-validation-typescript",
+        "schema-validation-go",
+        "schema-validation-rust",
+        "schema-validation-kotlin",
+        "schema-validation-ruby",
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "fixture-corpus",
+        "invalid-fixture",
+        "pattern-validation"
+      ],
       "rank": 69,
       "stability": "canonical"
     },
@@ -11654,10 +11990,26 @@
       "path": "examples/canonical-schema-validation/domain/fixtures/invalid/workspace_config_plan_too_many_runs.json",
       "category": "schema-validation",
       "summary": "Invalid WorkspaceConfig fixture violating the plan-based max_sync_runs rule.",
-      "stacks": ["schema-validation-python", "schema-validation-typescript", "schema-validation-go", "schema-validation-rust", "schema-validation-kotlin", "schema-validation-ruby", "schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["fixture-corpus", "invalid-fixture", "cross-field-rule"],
+      "stacks": [
+        "schema-validation-python",
+        "schema-validation-typescript",
+        "schema-validation-go",
+        "schema-validation-rust",
+        "schema-validation-kotlin",
+        "schema-validation-ruby",
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "fixture-corpus",
+        "invalid-fixture",
+        "cross-field-rule"
+      ],
       "rank": 69,
       "stability": "canonical"
     },
@@ -11665,10 +12017,26 @@
       "path": "examples/canonical-schema-validation/domain/fixtures/edge/review_request_duplicate_content_ids.json",
       "category": "schema-validation",
       "summary": "Edge ReviewRequest fixture with duplicate content IDs to expose dedup-rule differences.",
-      "stacks": ["schema-validation-python", "schema-validation-typescript", "schema-validation-go", "schema-validation-rust", "schema-validation-kotlin", "schema-validation-ruby", "schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["fixture-corpus", "edge-fixture", "documented-divergence"],
+      "stacks": [
+        "schema-validation-python",
+        "schema-validation-typescript",
+        "schema-validation-go",
+        "schema-validation-rust",
+        "schema-validation-kotlin",
+        "schema-validation-ruby",
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "fixture-corpus",
+        "edge-fixture",
+        "documented-divergence"
+      ],
       "rank": 66,
       "stability": "reference"
     },
@@ -11676,10 +12044,26 @@
       "path": "examples/canonical-schema-validation/domain/fixtures/edge/sync_run_zero_records.json",
       "category": "schema-validation",
       "summary": "Edge SyncRun fixture where a successful run ingests zero records.",
-      "stacks": ["schema-validation-python", "schema-validation-typescript", "schema-validation-go", "schema-validation-rust", "schema-validation-kotlin", "schema-validation-ruby", "schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["fixture-corpus", "edge-fixture", "boundary-case"],
+      "stacks": [
+        "schema-validation-python",
+        "schema-validation-typescript",
+        "schema-validation-go",
+        "schema-validation-rust",
+        "schema-validation-kotlin",
+        "schema-validation-ruby",
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "fixture-corpus",
+        "edge-fixture",
+        "boundary-case"
+      ],
       "rank": 66,
       "stability": "reference"
     },
@@ -11687,10 +12071,26 @@
       "path": "examples/canonical-schema-validation/domain/fixtures/edge/webhook_payload_unknown_event_type.json",
       "category": "schema-validation",
       "summary": "Edge webhook payload fixture with an unknown event_type to expose enum strictness differences.",
-      "stacks": ["schema-validation-python", "schema-validation-typescript", "schema-validation-go", "schema-validation-rust", "schema-validation-kotlin", "schema-validation-ruby", "schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["fixture-corpus", "edge-fixture", "documented-divergence"],
+      "stacks": [
+        "schema-validation-python",
+        "schema-validation-typescript",
+        "schema-validation-go",
+        "schema-validation-rust",
+        "schema-validation-kotlin",
+        "schema-validation-ruby",
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "fixture-corpus",
+        "edge-fixture",
+        "documented-divergence"
+      ],
       "rank": 66,
       "stability": "reference"
     },
@@ -11698,10 +12098,26 @@
       "path": "examples/canonical-schema-validation/domain/fixtures/edge/workspace_config_max_tags.json",
       "category": "schema-validation",
       "summary": "Edge WorkspaceConfig fixture at the maximum allowed tag count.",
-      "stacks": ["schema-validation-python", "schema-validation-typescript", "schema-validation-go", "schema-validation-rust", "schema-validation-kotlin", "schema-validation-ruby", "schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["fixture-corpus", "edge-fixture", "boundary-case"],
+      "stacks": [
+        "schema-validation-python",
+        "schema-validation-typescript",
+        "schema-validation-go",
+        "schema-validation-rust",
+        "schema-validation-kotlin",
+        "schema-validation-ruby",
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "fixture-corpus",
+        "edge-fixture",
+        "boundary-case"
+      ],
       "rank": 66,
       "stability": "reference"
     },
@@ -11709,10 +12125,20 @@
       "path": "examples/canonical-schema-validation/python/pydantic/__init__.py",
       "category": "schema-validation",
       "summary": "Package marker for the canonical Pydantic Lane C example.",
-      "stacks": ["schema-validation-python"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-c", "python", "package-marker"],
+      "stacks": [
+        "schema-validation-python"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-c",
+        "python",
+        "package-marker"
+      ],
       "rank": 60,
       "stability": "canonical"
     },
@@ -11720,10 +12146,21 @@
       "path": "examples/canonical-schema-validation/python/pydantic/models.py",
       "category": "schema-validation",
       "summary": "Canonical Pydantic implementation of all five WorkspaceSyncContext models with Lane C validation and schema generation patterns.",
-      "stacks": ["schema-validation-python"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-c", "python", "pydantic", "hybrid-model"],
+      "stacks": [
+        "schema-validation-python"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-c",
+        "python",
+        "pydantic",
+        "hybrid-model"
+      ],
       "rank": 95,
       "stability": "canonical"
     },
@@ -11731,10 +12168,20 @@
       "path": "examples/canonical-schema-validation/python/pydantic/schema_export.py",
       "category": "schema-validation",
       "summary": "Pydantic schema export and drift-check script showing JSON Schema generation from the same model definitions.",
-      "stacks": ["schema-validation-python"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-c", "schema-export", "drift-check"],
+      "stacks": [
+        "schema-validation-python"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-c",
+        "schema-export",
+        "drift-check"
+      ],
       "rank": 88,
       "stability": "canonical"
     },
@@ -11742,10 +12189,20 @@
       "path": "examples/canonical-schema-validation/python/marshmallow/__init__.py",
       "category": "schema-validation",
       "summary": "Package marker for the canonical marshmallow Lane A example.",
-      "stacks": ["schema-validation-python"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "python", "package-marker"],
+      "stacks": [
+        "schema-validation-python"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "python",
+        "package-marker"
+      ],
       "rank": 60,
       "stability": "canonical"
     },
@@ -11753,10 +12210,21 @@
       "path": "examples/canonical-schema-validation/python/marshmallow/schemas.py",
       "category": "schema-validation",
       "summary": "Canonical marshmallow schema set showing explicit Schema objects, nested validation, and manual tagged dispatch.",
-      "stacks": ["schema-validation-python"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "python", "marshmallow", "explicit-schema"],
+      "stacks": [
+        "schema-validation-python"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "python",
+        "marshmallow",
+        "explicit-schema"
+      ],
       "rank": 94,
       "stability": "canonical"
     },
@@ -11764,10 +12232,20 @@
       "path": "examples/canonical-schema-validation/typescript/zod/package.json",
       "category": "schema-validation",
       "summary": "Dependency manifest for the canonical Zod Lane C example and local schema-export runner.",
-      "stacks": ["schema-validation-typescript"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-c", "typescript", "dependency-manifest"],
+      "stacks": [
+        "schema-validation-typescript"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-c",
+        "typescript",
+        "dependency-manifest"
+      ],
       "rank": 76,
       "stability": "canonical"
     },
@@ -11775,10 +12253,20 @@
       "path": "examples/canonical-schema-validation/typescript/zod/tsconfig.json",
       "category": "schema-validation",
       "summary": "TypeScript compiler configuration for the canonical Zod validation example.",
-      "stacks": ["schema-validation-typescript"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-c", "typescript", "compiler-config"],
+      "stacks": [
+        "schema-validation-typescript"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-c",
+        "typescript",
+        "compiler-config"
+      ],
       "rank": 72,
       "stability": "canonical"
     },
@@ -11786,10 +12274,21 @@
       "path": "examples/canonical-schema-validation/typescript/zod/src/models.ts",
       "category": "schema-validation",
       "summary": "Canonical Zod model set covering all WorkspaceSyncContext models with discriminated unions and superRefine rules.",
-      "stacks": ["schema-validation-typescript"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-c", "typescript", "zod", "hybrid-model"],
+      "stacks": [
+        "schema-validation-typescript"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-c",
+        "typescript",
+        "zod",
+        "hybrid-model"
+      ],
       "rank": 95,
       "stability": "canonical"
     },
@@ -11797,10 +12296,20 @@
       "path": "examples/canonical-schema-validation/typescript/zod/src/schema_export.ts",
       "category": "schema-validation",
       "summary": "Zod schema export example showing JSON Schema generation plus an Ajv drift check against the shared fixtures.",
-      "stacks": ["schema-validation-typescript"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-c", "schema-export", "drift-check"],
+      "stacks": [
+        "schema-validation-typescript"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-c",
+        "schema-export",
+        "drift-check"
+      ],
       "rank": 88,
       "stability": "canonical"
     },
@@ -11808,10 +12317,20 @@
       "path": "examples/canonical-schema-validation/typescript/valibot/package.json",
       "category": "schema-validation",
       "summary": "Dependency manifest for the canonical Valibot runtime-validation example.",
-      "stacks": ["schema-validation-typescript"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "typescript", "dependency-manifest"],
+      "stacks": [
+        "schema-validation-typescript"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "typescript",
+        "dependency-manifest"
+      ],
       "rank": 75,
       "stability": "canonical"
     },
@@ -11819,10 +12338,21 @@
       "path": "examples/canonical-schema-validation/typescript/valibot/src/models.ts",
       "category": "schema-validation",
       "summary": "Valibot example emphasizing pipe-based runtime validation and tree-shakeable checks for the two most complex models.",
-      "stacks": ["schema-validation-typescript"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "typescript", "valibot", "runtime-validation"],
+      "stacks": [
+        "schema-validation-typescript"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "typescript",
+        "valibot",
+        "runtime-validation"
+      ],
       "rank": 89,
       "stability": "canonical"
     },
@@ -11830,10 +12360,20 @@
       "path": "examples/canonical-schema-validation/typescript/io-ts/package.json",
       "category": "schema-validation",
       "summary": "Dependency manifest for the canonical io-ts codec example.",
-      "stacks": ["schema-validation-typescript"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "typescript", "dependency-manifest"],
+      "stacks": [
+        "schema-validation-typescript"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "typescript",
+        "dependency-manifest"
+      ],
       "rank": 75,
       "stability": "canonical"
     },
@@ -11841,10 +12381,21 @@
       "path": "examples/canonical-schema-validation/typescript/io-ts/src/codecs.ts",
       "category": "schema-validation",
       "summary": "io-ts codec example showing explicit Either-based decoding and refined codec construction for cross-field rules.",
-      "stacks": ["schema-validation-typescript"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "typescript", "io-ts", "codec-model"],
+      "stacks": [
+        "schema-validation-typescript"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "typescript",
+        "io-ts",
+        "codec-model"
+      ],
       "rank": 92,
       "stability": "canonical"
     },
@@ -11852,10 +12403,21 @@
       "path": "examples/canonical-schema-validation/typescript/io-ts/src/smoke.ts",
       "category": "schema-validation",
       "summary": "Runnable io-ts smoke entrypoint that decodes valid and invalid fixtures through the codec surface.",
-      "stacks": ["schema-validation-typescript"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "typescript", "io-ts", "runtime-smoke"],
+      "stacks": [
+        "schema-validation-typescript"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "typescript",
+        "io-ts",
+        "runtime-smoke"
+      ],
       "rank": 82,
       "stability": "canonical"
     },
@@ -11863,10 +12425,20 @@
       "path": "examples/canonical-schema-validation/typescript/typebox-ajv/package.json",
       "category": "schema-validation",
       "summary": "Dependency manifest for the canonical TypeBox plus Ajv contract-first example.",
-      "stacks": ["schema-validation-typescript"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-b", "typescript", "dependency-manifest"],
+      "stacks": [
+        "schema-validation-typescript"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-b",
+        "typescript",
+        "dependency-manifest"
+      ],
       "rank": 75,
       "stability": "canonical"
     },
@@ -11874,10 +12446,21 @@
       "path": "examples/canonical-schema-validation/typescript/typebox-ajv/src/schemas.ts",
       "category": "schema-validation",
       "summary": "TypeBox schema definitions showing JSON Schema native contracts and TypeScript type extraction via Static<>.",
-      "stacks": ["schema-validation-typescript"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-b", "typescript", "typebox", "contract-first"],
+      "stacks": [
+        "schema-validation-typescript"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-b",
+        "typescript",
+        "typebox",
+        "contract-first"
+      ],
       "rank": 91,
       "stability": "canonical"
     },
@@ -11885,10 +12468,21 @@
       "path": "examples/canonical-schema-validation/typescript/typebox-ajv/src/validate.ts",
       "category": "schema-validation",
       "summary": "Ajv integration example validating shared fixtures directly against a TypeBox JSON Schema object.",
-      "stacks": ["schema-validation-typescript"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-b", "typescript", "ajv", "drift-check"],
+      "stacks": [
+        "schema-validation-typescript"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-b",
+        "typescript",
+        "ajv",
+        "drift-check"
+      ],
       "rank": 87,
       "stability": "canonical"
     },
@@ -11896,10 +12490,21 @@
       "path": "examples/canonical-schema-validation/go/go-playground-validator/main.go",
       "category": "schema-validation",
       "summary": "Runnable Go go-playground/validator smoke entrypoint that checks one valid and one invalid WorkspaceConfig fixture.",
-      "stacks": ["schema-validation-go"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "go", "tag-based", "runtime-smoke"],
+      "stacks": [
+        "schema-validation-go"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "go",
+        "tag-based",
+        "runtime-smoke"
+      ],
       "rank": 83,
       "stability": "canonical"
     },
@@ -11907,10 +12512,21 @@
       "path": "examples/canonical-schema-validation/go/go-playground-validator/models/models.go",
       "category": "schema-validation",
       "summary": "Go go-playground/validator model set using struct tags for field rules and explicit domain enums for WorkspaceSyncContext.",
-      "stacks": ["schema-validation-go"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "go", "struct-tags", "runtime-validation"],
+      "stacks": [
+        "schema-validation-go"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "go",
+        "struct-tags",
+        "runtime-validation"
+      ],
       "rank": 92,
       "stability": "canonical"
     },
@@ -11918,10 +12534,21 @@
       "path": "examples/canonical-schema-validation/go/go-playground-validator/validate/validate.go",
       "category": "schema-validation",
       "summary": "Go tag-based validation helpers showing where cross-field checks and discriminated-union dispatch escape struct tags.",
-      "stacks": ["schema-validation-go"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "go", "cross-field", "manual-dispatch"],
+      "stacks": [
+        "schema-validation-go"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "go",
+        "cross-field",
+        "manual-dispatch"
+      ],
       "rank": 90,
       "stability": "canonical"
     },
@@ -11929,10 +12556,21 @@
       "path": "examples/canonical-schema-validation/go/ozzo-validation/models/models.go",
       "category": "schema-validation",
       "summary": "Go ozzo-validation data models kept free of validation tags so rules stay in code.",
-      "stacks": ["schema-validation-go"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "go", "ozzo-validation", "clean-structs"],
+      "stacks": [
+        "schema-validation-go"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "go",
+        "ozzo-validation",
+        "clean-structs"
+      ],
       "rank": 88,
       "stability": "canonical"
     },
@@ -11940,10 +12578,21 @@
       "path": "examples/canonical-schema-validation/go/ozzo-validation/validate/validate.go",
       "category": "schema-validation",
       "summary": "ozzo-validation example with explicit Validate-style functions and readable cross-field rule blocks.",
-      "stacks": ["schema-validation-go"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "go", "ozzo-validation", "code-driven-rules"],
+      "stacks": [
+        "schema-validation-go"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "go",
+        "ozzo-validation",
+        "code-driven-rules"
+      ],
       "rank": 91,
       "stability": "canonical"
     },
@@ -11951,10 +12600,21 @@
       "path": "examples/canonical-schema-validation/go/ozzo-validation/validate/validate_test.go",
       "category": "schema-validation",
       "summary": "Focused Go test covering ozzo webhook payload validation, including rejection of malformed nested event data.",
-      "stacks": ["schema-validation-go"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "go", "ozzo-validation", "behavior-test"],
+      "stacks": [
+        "schema-validation-go"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "go",
+        "ozzo-validation",
+        "behavior-test"
+      ],
       "rank": 80,
       "stability": "canonical"
     },
@@ -11962,10 +12622,21 @@
       "path": "examples/canonical-schema-validation/go/openapi-generation/models/models.go",
       "category": "schema-validation",
       "summary": "Go contract-lane model annotated with swaggo-style comments to show comment-driven OpenAPI metadata.",
-      "stacks": ["schema-validation-go"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-b", "go", "swaggo", "contract-generation"],
+      "stacks": [
+        "schema-validation-go"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-b",
+        "go",
+        "swaggo",
+        "contract-generation"
+      ],
       "rank": 84,
       "stability": "canonical"
     },
@@ -11973,10 +12644,21 @@
       "path": "examples/canonical-schema-validation/go/openapi-generation/schema_export.go",
       "category": "schema-validation",
       "summary": "Go schema export entrypoint that writes a JSON Schema artifact and drift-checks shared fixtures against it.",
-      "stacks": ["schema-validation-go"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-b", "go", "schema-export", "drift-check"],
+      "stacks": [
+        "schema-validation-go"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-b",
+        "go",
+        "schema-export",
+        "drift-check"
+      ],
       "rank": 89,
       "stability": "canonical"
     },
@@ -11984,10 +12666,21 @@
       "path": "examples/canonical-schema-validation/go/openapi-generation/workspace_config.schema.json",
       "category": "schema-validation",
       "summary": "Committed Go Lane B JSON Schema baseline for WorkspaceConfig interoperability and drift detection.",
-      "stacks": ["schema-validation-go"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-b", "go", "json-schema", "baseline-artifact"],
+      "stacks": [
+        "schema-validation-go"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-b",
+        "go",
+        "json-schema",
+        "baseline-artifact"
+      ],
       "rank": 86,
       "stability": "canonical"
     },
@@ -11995,10 +12688,21 @@
       "path": "examples/canonical-schema-validation/rust/validator/src/main.rs",
       "category": "schema-validation",
       "summary": "Runnable Rust validator smoke entrypoint that deserializes shared fixtures and then applies derive-based and cross-field checks.",
-      "stacks": ["schema-validation-rust"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "rust", "validator", "runtime-smoke"],
+      "stacks": [
+        "schema-validation-rust"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "rust",
+        "validator",
+        "runtime-smoke"
+      ],
       "rank": 84,
       "stability": "canonical"
     },
@@ -12006,10 +12710,21 @@
       "path": "examples/canonical-schema-validation/rust/validator/src/models.rs",
       "category": "schema-validation",
       "summary": "Rust validator example showing serde for shape, validator for field rules, and explicit cross-field helpers for WorkspaceSyncContext.",
-      "stacks": ["schema-validation-rust"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "rust", "validator", "three-library-separation"],
+      "stacks": [
+        "schema-validation-rust"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "rust",
+        "validator",
+        "three-library-separation"
+      ],
       "rank": 94,
       "stability": "canonical"
     },
@@ -12017,10 +12732,21 @@
       "path": "examples/canonical-schema-validation/rust/garde/src/main.rs",
       "category": "schema-validation",
       "summary": "Runnable garde smoke entrypoint exercising richer derive-based validation on the shared Rust fixtures.",
-      "stacks": ["schema-validation-rust"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "rust", "garde", "runtime-smoke"],
+      "stacks": [
+        "schema-validation-rust"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "rust",
+        "garde",
+        "runtime-smoke"
+      ],
       "rank": 83,
       "stability": "canonical"
     },
@@ -12028,10 +12754,21 @@
       "path": "examples/canonical-schema-validation/rust/garde/src/models.rs",
       "category": "schema-validation",
       "summary": "Rust garde model set highlighting inner() collection rules, inline patterns, and explicit cross-field helpers.",
-      "stacks": ["schema-validation-rust"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "rust", "garde", "richer-dsl"],
+      "stacks": [
+        "schema-validation-rust"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "rust",
+        "garde",
+        "richer-dsl"
+      ],
       "rank": 92,
       "stability": "canonical"
     },
@@ -12039,10 +12776,21 @@
       "path": "examples/canonical-schema-validation/rust/serde-schemars/src/main.rs",
       "category": "schema-validation",
       "summary": "Rust contract-lane runner that exports schemars output, writes the committed schema file, and performs a drift check.",
-      "stacks": ["schema-validation-rust"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-b", "rust", "schemars", "drift-check"],
+      "stacks": [
+        "schema-validation-rust"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-b",
+        "rust",
+        "schemars",
+        "drift-check"
+      ],
       "rank": 86,
       "stability": "canonical"
     },
@@ -12050,10 +12798,21 @@
       "path": "examples/canonical-schema-validation/rust/serde-schemars/src/models.rs",
       "category": "schema-validation",
       "summary": "Rust serde plus schemars contract models that intentionally omit runtime-validator annotations and follow the wire-format view.",
-      "stacks": ["schema-validation-rust"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-b", "rust", "serde", "contract-lane"],
+      "stacks": [
+        "schema-validation-rust"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-b",
+        "rust",
+        "serde",
+        "contract-lane"
+      ],
       "rank": 93,
       "stability": "canonical"
     },
@@ -12061,10 +12820,21 @@
       "path": "examples/canonical-schema-validation/rust/serde-schemars/src/schema_export.rs",
       "category": "schema-validation",
       "summary": "Schema export helper that enriches raw schemars output with domain constraints before JSON Schema drift validation.",
-      "stacks": ["schema-validation-rust"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-b", "rust", "schema-export", "contract-enrichment"],
+      "stacks": [
+        "schema-validation-rust"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-b",
+        "rust",
+        "schema-export",
+        "contract-enrichment"
+      ],
       "rank": 90,
       "stability": "canonical"
     },
@@ -12072,10 +12842,21 @@
       "path": "examples/canonical-schema-validation/rust/serde-schemars/workspace_config.schema.json",
       "category": "schema-validation",
       "summary": "Committed Rust serde plus schemars JSON Schema artifact used as the Lane B baseline for drift checks.",
-      "stacks": ["schema-validation-rust"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-b", "rust", "json-schema", "baseline-artifact"],
+      "stacks": [
+        "schema-validation-rust"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-b",
+        "rust",
+        "json-schema",
+        "baseline-artifact"
+      ],
       "rank": 87,
       "stability": "canonical"
     },
@@ -12083,10 +12864,21 @@
       "path": "examples/canonical-schema-validation/kotlin/konform/src/main/kotlin/Main.kt",
       "category": "schema-validation",
       "summary": "Kotlin Konform smoke entrypoint loading shared fixtures and printing pass or fail outcomes for Lane A DSL validation.",
-      "stacks": ["schema-validation-kotlin"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "kotlin", "konform", "runtime-smoke"],
+      "stacks": [
+        "schema-validation-kotlin"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "kotlin",
+        "konform",
+        "runtime-smoke"
+      ],
       "rank": 84,
       "stability": "canonical"
     },
@@ -12094,10 +12886,21 @@
       "path": "examples/canonical-schema-validation/kotlin/konform/src/main/kotlin/models/Models.kt",
       "category": "schema-validation",
       "summary": "Kotlin WorkspaceSyncContext model set using clean data classes, enums, and sealed unions without validation annotations.",
-      "stacks": ["schema-validation-kotlin"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "kotlin", "konform", "clean-models"],
+      "stacks": [
+        "schema-validation-kotlin"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "kotlin",
+        "konform",
+        "clean-models"
+      ],
       "rank": 92,
       "stability": "canonical"
     },
@@ -12105,10 +12908,21 @@
       "path": "examples/canonical-schema-validation/kotlin/konform/src/main/kotlin/validation/Validators.kt",
       "category": "schema-validation",
       "summary": "Konform validator set demonstrating field constraints and addConstraint-based cross-field rules for the shared Kotlin models.",
-      "stacks": ["schema-validation-kotlin"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "kotlin", "konform", "cross-field-rules"],
+      "stacks": [
+        "schema-validation-kotlin"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "kotlin",
+        "konform",
+        "cross-field-rules"
+      ],
       "rank": 95,
       "stability": "canonical"
     },
@@ -12116,10 +12930,21 @@
       "path": "examples/canonical-schema-validation/kotlin/hibernate-validator/src/main/kotlin/Main.kt",
       "category": "schema-validation",
       "summary": "Kotlin Hibernate Validator runner that builds a Jakarta validator and prints violations for shared WorkspaceConfig fixtures.",
-      "stacks": ["schema-validation-kotlin"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "kotlin", "hibernate-validator", "runtime-smoke"],
+      "stacks": [
+        "schema-validation-kotlin"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "kotlin",
+        "hibernate-validator",
+        "runtime-smoke"
+      ],
       "rank": 83,
       "stability": "canonical"
     },
@@ -12127,10 +12952,21 @@
       "path": "examples/canonical-schema-validation/kotlin/hibernate-validator/src/main/kotlin/models/Models.kt",
       "category": "schema-validation",
       "summary": "Kotlin Jakarta Bean Validation model set showing field annotations plus a custom class-level constraint for plan limits.",
-      "stacks": ["schema-validation-kotlin"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "kotlin", "hibernate-validator", "annotation-models"],
+      "stacks": [
+        "schema-validation-kotlin"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "kotlin",
+        "hibernate-validator",
+        "annotation-models"
+      ],
       "rank": 94,
       "stability": "canonical"
     },
@@ -12138,10 +12974,21 @@
       "path": "examples/canonical-schema-validation/ruby/dry-validation/contracts/workspace_config_contract.rb",
       "category": "schema-validation",
       "summary": "dry-validation contract for WorkspaceConfig with slug, email, nested settings, tag, and plan-tier rules.",
-      "stacks": ["schema-validation-ruby"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "ruby", "dry-validation", "contract-rules"],
+      "stacks": [
+        "schema-validation-ruby"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "ruby",
+        "dry-validation",
+        "contract-rules"
+      ],
       "rank": 94,
       "stability": "canonical"
     },
@@ -12149,10 +12996,21 @@
       "path": "examples/canonical-schema-validation/ruby/dry-validation/contracts/sync_run_contract.rb",
       "category": "schema-validation",
       "summary": "dry-validation SyncRun contract showing timestamp ordering, duration requirements, and failed-status error-code checks.",
-      "stacks": ["schema-validation-ruby"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "ruby", "dry-validation", "cross-field-rules"],
+      "stacks": [
+        "schema-validation-ruby"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "ruby",
+        "dry-validation",
+        "cross-field-rules"
+      ],
       "rank": 90,
       "stability": "canonical"
     },
@@ -12160,10 +13018,21 @@
       "path": "examples/canonical-schema-validation/ruby/dry-validation/contracts/webhook_payload_contract.rb",
       "category": "schema-validation",
       "summary": "Ruby webhook contract documenting manual discriminated-union dispatch on event_type within dry-validation rule blocks.",
-      "stacks": ["schema-validation-ruby"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "ruby", "dry-validation", "manual-union-dispatch"],
+      "stacks": [
+        "schema-validation-ruby"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "ruby",
+        "dry-validation",
+        "manual-union-dispatch"
+      ],
       "rank": 88,
       "stability": "canonical"
     },
@@ -12171,10 +13040,21 @@
       "path": "examples/canonical-schema-validation/ruby/dry-validation/contracts/ingestion_source_contract.rb",
       "category": "schema-validation",
       "summary": "Ruby ingestion-source contract validating source-type-specific config keys and http_poll interval behavior.",
-      "stacks": ["schema-validation-ruby"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "ruby", "dry-validation", "source-dispatch"],
+      "stacks": [
+        "schema-validation-ruby"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "ruby",
+        "dry-validation",
+        "source-dispatch"
+      ],
       "rank": 87,
       "stability": "canonical"
     },
@@ -12182,10 +13062,21 @@
       "path": "examples/canonical-schema-validation/ruby/dry-validation/contracts/review_request_contract.rb",
       "category": "schema-validation",
       "summary": "Ruby review-request contract covering email validation, uniqueness checks, and the critical-priority due_at rule.",
-      "stacks": ["schema-validation-ruby"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "ruby", "dry-validation", "review-rules"],
+      "stacks": [
+        "schema-validation-ruby"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "ruby",
+        "dry-validation",
+        "review-rules"
+      ],
       "rank": 89,
       "stability": "canonical"
     },
@@ -12193,10 +13084,21 @@
       "path": "examples/canonical-schema-validation/ruby/dry-validation/main.rb",
       "category": "schema-validation",
       "summary": "Ruby dry-validation smoke runner that executes shared valid and invalid fixtures across the contract set.",
-      "stacks": ["schema-validation-ruby"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "ruby", "dry-validation", "runtime-smoke"],
+      "stacks": [
+        "schema-validation-ruby"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "ruby",
+        "dry-validation",
+        "runtime-smoke"
+      ],
       "rank": 83,
       "stability": "canonical"
     },
@@ -12204,10 +13106,21 @@
       "path": "examples/canonical-schema-validation/ruby/dry-schema/schemas/workspace_config_schema.rb",
       "category": "schema-validation",
       "summary": "dry-schema structural definition for WorkspaceConfig showing the lower-level Ruby schema layer beneath dry-validation contracts.",
-      "stacks": ["schema-validation-ruby"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "lane-b", "ruby", "dry-schema"],
+      "stacks": [
+        "schema-validation-ruby"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "lane-b",
+        "ruby",
+        "dry-schema"
+      ],
       "rank": 92,
       "stability": "canonical"
     },
@@ -12215,10 +13128,21 @@
       "path": "examples/canonical-schema-validation/ruby/dry-schema/schemas/sync_run_schema.rb",
       "category": "schema-validation",
       "summary": "Ruby dry-schema SyncRun structure focused on type and range constraints without semantic cross-field logic.",
-      "stacks": ["schema-validation-ruby"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "lane-b", "ruby", "structural-schema"],
+      "stacks": [
+        "schema-validation-ruby"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "lane-b",
+        "ruby",
+        "structural-schema"
+      ],
       "rank": 86,
       "stability": "canonical"
     },
@@ -12226,10 +13150,21 @@
       "path": "examples/canonical-schema-validation/ruby/dry-schema/schema_export.rb",
       "category": "schema-validation",
       "summary": "Ruby schema export entrypoint that prints a JSON Schema view when the dry-schema extension is available.",
-      "stacks": ["schema-validation-ruby"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-b", "ruby", "dry-schema", "schema-export"],
+      "stacks": [
+        "schema-validation-ruby"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-b",
+        "ruby",
+        "dry-schema",
+        "schema-export"
+      ],
       "rank": 85,
       "stability": "canonical"
     },
@@ -12237,10 +13172,21 @@
       "path": "examples/canonical-schema-validation/elixir/ecto-changeset/lib/workspace_sync_context/workspace_config.ex",
       "category": "schema-validation",
       "summary": "Elixir Ecto.Changeset WorkspaceConfig module showing embedded settings, cast, validation, and plan-tier helper rules.",
-      "stacks": ["schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "elixir", "ecto-changeset", "cast-validate-pipeline"],
+      "stacks": [
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "elixir",
+        "ecto-changeset",
+        "cast-validate-pipeline"
+      ],
       "rank": 95,
       "stability": "canonical"
     },
@@ -12248,10 +13194,21 @@
       "path": "examples/canonical-schema-validation/elixir/ecto-changeset/lib/workspace_sync_context/sync_run.ex",
       "category": "schema-validation",
       "summary": "Elixir SyncRun changeset with private cross-field helpers for timestamp, duration, and error-code behavior.",
-      "stacks": ["schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "elixir", "ecto-changeset", "cross-field-rules"],
+      "stacks": [
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "elixir",
+        "ecto-changeset",
+        "cross-field-rules"
+      ],
       "rank": 90,
       "stability": "canonical"
     },
@@ -12259,10 +13216,21 @@
       "path": "examples/canonical-schema-validation/elixir/ecto-changeset/lib/workspace_sync_context/webhook_payload.ex",
       "category": "schema-validation",
       "summary": "Elixir webhook payload changeset documenting manual data-map validation for discriminated union event types.",
-      "stacks": ["schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "elixir", "ecto-changeset", "manual-union-dispatch"],
+      "stacks": [
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "elixir",
+        "ecto-changeset",
+        "manual-union-dispatch"
+      ],
       "rank": 88,
       "stability": "canonical"
     },
@@ -12270,10 +13238,21 @@
       "path": "examples/canonical-schema-validation/elixir/ecto-changeset/lib/workspace_sync_context/ingestion_source.ex",
       "category": "schema-validation",
       "summary": "Elixir ingestion-source changeset showing config-shape dispatch and poll interval enforcement by source type.",
-      "stacks": ["schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "elixir", "ecto-changeset", "source-dispatch"],
+      "stacks": [
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "elixir",
+        "ecto-changeset",
+        "source-dispatch"
+      ],
       "rank": 87,
       "stability": "canonical"
     },
@@ -12281,10 +13260,21 @@
       "path": "examples/canonical-schema-validation/elixir/ecto-changeset/lib/workspace_sync_context/review_request.ex",
       "category": "schema-validation",
       "summary": "Elixir review-request changeset covering list cardinality, uniqueness, email formatting, and critical due dates.",
-      "stacks": ["schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "elixir", "ecto-changeset", "review-rules"],
+      "stacks": [
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "elixir",
+        "ecto-changeset",
+        "review-rules"
+      ],
       "rank": 89,
       "stability": "canonical"
     },
@@ -12292,10 +13282,21 @@
       "path": "examples/canonical-schema-validation/elixir/norm/lib/workspace_sync_context/specs.ex",
       "category": "schema-validation",
       "summary": "Elixir Norm spec module expressing declarative workspace and sync-run conformance with custom whole-map predicates.",
-      "stacks": ["schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-a", "elixir", "norm", "declarative-specs"],
+      "stacks": [
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-a",
+        "elixir",
+        "norm",
+        "declarative-specs"
+      ],
       "rank": 92,
       "stability": "canonical"
     },
@@ -12303,10 +13304,21 @@
       "path": "examples/canonical-schema-validation/elixir/ex-json-schema/lib/schema_validator.ex",
       "category": "schema-validation",
       "summary": "Elixir contract-lane helper that loads a JSON Schema document and validates shared fixtures with ex_json_schema.",
-      "stacks": ["schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-b", "elixir", "ex-json-schema", "contract-validation"],
+      "stacks": [
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-b",
+        "elixir",
+        "ex-json-schema",
+        "contract-validation"
+      ],
       "rank": 88,
       "stability": "canonical"
     },
@@ -12314,10 +13326,21 @@
       "path": "examples/canonical-schema-validation/elixir/ex-json-schema/workspace_config.schema.json",
       "category": "schema-validation",
       "summary": "Committed Elixir Lane B WorkspaceConfig JSON Schema artifact for cross-language contract checks.",
-      "stacks": ["schema-validation-elixir"],
-      "archetypes": ["polyglot-validation-lab"],
-      "workflows": ["add-schema-validation-example"],
-      "patterns": ["lane-b", "elixir", "json-schema", "baseline-artifact"],
+      "stacks": [
+        "schema-validation-elixir"
+      ],
+      "archetypes": [
+        "polyglot-validation-lab"
+      ],
+      "workflows": [
+        "add-schema-validation-example"
+      ],
+      "patterns": [
+        "lane-b",
+        "elixir",
+        "json-schema",
+        "baseline-artifact"
+      ],
       "rank": 86,
       "stability": "canonical"
     },
@@ -12325,10 +13348,29 @@
       "path": "examples/canonical-faker/README.md",
       "category": "seed-data",
       "summary": "Top-level orientation for the TenantCore canonical faker arc and its shared domain contract.",
-      "stacks": ["faker-python", "faker-javascript", "faker-go", "faker-rust", "faker-java", "faker-kotlin", "faker-ruby", "faker-php", "faker-scala", "faker-elixir"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["faker-arc", "shared-domain", "readme"],
+      "stacks": [
+        "faker-python",
+        "faker-javascript",
+        "faker-go",
+        "faker-rust",
+        "faker-java",
+        "faker-kotlin",
+        "faker-ruby",
+        "faker-php",
+        "faker-scala",
+        "faker-elixir"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "faker-arc",
+        "shared-domain",
+        "readme"
+      ],
       "rank": 70,
       "stability": "reference"
     },
@@ -12336,10 +13378,29 @@
       "path": "examples/canonical-faker/CATALOG.md",
       "category": "seed-data",
       "summary": "Planning catalog for the canonical faker arc covering all ten language implementations and their primary libraries.",
-      "stacks": ["faker-python", "faker-javascript", "faker-go", "faker-rust", "faker-java", "faker-kotlin", "faker-ruby", "faker-php", "faker-scala", "faker-elixir"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["catalog", "language-matrix", "cross-language"],
+      "stacks": [
+        "faker-python",
+        "faker-javascript",
+        "faker-go",
+        "faker-rust",
+        "faker-java",
+        "faker-kotlin",
+        "faker-ruby",
+        "faker-php",
+        "faker-scala",
+        "faker-elixir"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "catalog",
+        "language-matrix",
+        "cross-language"
+      ],
       "rank": 74,
       "stability": "reference"
     },
@@ -12347,10 +13408,29 @@
       "path": "examples/canonical-faker/domain/schema.md",
       "category": "seed-data",
       "summary": "Authoritative TenantCore domain specification covering the shared entity graph, field constraints, and cross-field rules for the faker arc.",
-      "stacks": ["faker-python", "faker-javascript", "faker-go", "faker-rust", "faker-java", "faker-kotlin", "faker-ruby", "faker-php", "faker-scala", "faker-elixir"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["shared-domain", "entity-graph", "cross-field-rules"],
+      "stacks": [
+        "faker-python",
+        "faker-javascript",
+        "faker-go",
+        "faker-rust",
+        "faker-java",
+        "faker-kotlin",
+        "faker-ruby",
+        "faker-php",
+        "faker-scala",
+        "faker-elixir"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "shared-domain",
+        "entity-graph",
+        "cross-field-rules"
+      ],
       "rank": 81,
       "stability": "canonical"
     },
@@ -12358,10 +13438,29 @@
       "path": "examples/canonical-faker/domain/generation-order.md",
       "category": "seed-data",
       "summary": "Canonical six-stage parent-first generation contract for TenantCore datasets across all faker implementations.",
-      "stacks": ["faker-python", "faker-javascript", "faker-go", "faker-rust", "faker-java", "faker-kotlin", "faker-ruby", "faker-php", "faker-scala", "faker-elixir"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["generation-order", "parent-first", "id-pools"],
+      "stacks": [
+        "faker-python",
+        "faker-javascript",
+        "faker-go",
+        "faker-rust",
+        "faker-java",
+        "faker-kotlin",
+        "faker-ruby",
+        "faker-php",
+        "faker-scala",
+        "faker-elixir"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "generation-order",
+        "parent-first",
+        "id-pools"
+      ],
       "rank": 80,
       "stability": "canonical"
     },
@@ -12369,10 +13468,29 @@
       "path": "examples/canonical-faker/domain/seed-registry.md",
       "category": "seed-data",
       "summary": "Canonical seed registry defining the stable smoke, small, medium, and large seeds for reproducible faker output.",
-      "stacks": ["faker-python", "faker-javascript", "faker-go", "faker-rust", "faker-java", "faker-kotlin", "faker-ruby", "faker-php", "faker-scala", "faker-elixir"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["seed-registry", "reproducibility", "profiles"],
+      "stacks": [
+        "faker-python",
+        "faker-javascript",
+        "faker-go",
+        "faker-rust",
+        "faker-java",
+        "faker-kotlin",
+        "faker-ruby",
+        "faker-php",
+        "faker-scala",
+        "faker-elixir"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "seed-registry",
+        "reproducibility",
+        "profiles"
+      ],
       "rank": 76,
       "stability": "canonical"
     },
@@ -12380,10 +13498,29 @@
       "path": "examples/canonical-faker/domain/profiles.md",
       "category": "seed-data",
       "summary": "Normative profile table for TenantCore row-count targets across smoke, small, medium, and large faker runs.",
-      "stacks": ["faker-python", "faker-javascript", "faker-go", "faker-rust", "faker-java", "faker-kotlin", "faker-ruby", "faker-php", "faker-scala", "faker-elixir"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["profiles", "scale-targets", "row-counts"],
+      "stacks": [
+        "faker-python",
+        "faker-javascript",
+        "faker-go",
+        "faker-rust",
+        "faker-java",
+        "faker-kotlin",
+        "faker-ruby",
+        "faker-php",
+        "faker-scala",
+        "faker-elixir"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "profiles",
+        "scale-targets",
+        "row-counts"
+      ],
       "rank": 75,
       "stability": "canonical"
     },
@@ -12391,10 +13528,20 @@
       "path": "examples/canonical-faker/domain/generation_patterns.py",
       "category": "seed-data",
       "summary": "Python reference implementation for deterministic TenantCore dataset generation, validation, and JSONL or CSV export.",
-      "stacks": ["faker-python"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["reference-implementation", "seeded-generation", "validation-report"],
+      "stacks": [
+        "faker-python"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "reference-implementation",
+        "seeded-generation",
+        "validation-report"
+      ],
       "rank": 84,
       "stability": "canonical"
     },
@@ -12402,10 +13549,29 @@
       "path": "examples/canonical-faker/domain/validate_output.py",
       "category": "seed-data",
       "summary": "Language-agnostic JSONL validator for TenantCore output that checks FK integrity, uniqueness, and cross-field rules.",
-      "stacks": ["faker-python", "faker-javascript", "faker-go", "faker-rust", "faker-java", "faker-kotlin", "faker-ruby", "faker-php", "faker-scala", "faker-elixir"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["validator", "jsonl", "cross-language"],
+      "stacks": [
+        "faker-python",
+        "faker-javascript",
+        "faker-go",
+        "faker-rust",
+        "faker-java",
+        "faker-kotlin",
+        "faker-ruby",
+        "faker-php",
+        "faker-scala",
+        "faker-elixir"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "validator",
+        "jsonl",
+        "cross-language"
+      ],
       "rank": 82,
       "stability": "canonical"
     },
@@ -12413,10 +13579,20 @@
       "path": "examples/canonical-faker/python/README.md",
       "category": "seed-data",
       "summary": "Python reference README for TenantCore showing the Faker, Mimesis, and factory_boy pipelines plus quick-start usage.",
-      "stacks": ["faker-python"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["python-reference", "readme", "pipeline-matrix"],
+      "stacks": [
+        "faker-python"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "python-reference",
+        "readme",
+        "pipeline-matrix"
+      ],
       "rank": 78,
       "stability": "canonical"
     },
@@ -12424,10 +13600,20 @@
       "path": "examples/canonical-faker/python/requirements.txt",
       "category": "seed-data",
       "summary": "Minimal Python dependency manifest for the canonical TenantCore faker example.",
-      "stacks": ["faker-python"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["dependencies", "python", "runtime-manifest"],
+      "stacks": [
+        "faker-python"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "dependencies",
+        "python",
+        "runtime-manifest"
+      ],
       "rank": 77,
       "stability": "canonical"
     },
@@ -12435,10 +13621,20 @@
       "path": "examples/canonical-faker/python/profiles.py",
       "category": "seed-data",
       "summary": "Shared Python profile wrapper that resolves canonical TenantCore smoke, small, medium, and large profile objects with optional seed overrides.",
-      "stacks": ["faker-python"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["profiles", "seed-override", "shared-helper"],
+      "stacks": [
+        "faker-python"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "profiles",
+        "seed-override",
+        "shared-helper"
+      ],
       "rank": 80,
       "stability": "canonical"
     },
@@ -12446,10 +13642,20 @@
       "path": "examples/canonical-faker/python/generate.py",
       "category": "seed-data",
       "summary": "Argparse-driven CLI that selects the Python Faker, Mimesis, or factory_boy TenantCore pipeline and writes profile-scoped output.",
-      "stacks": ["faker-python"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["cli", "pipeline-switch", "validation-summary"],
+      "stacks": [
+        "faker-python"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "cli",
+        "pipeline-switch",
+        "validation-summary"
+      ],
       "rank": 83,
       "stability": "canonical"
     },
@@ -12457,10 +13663,19 @@
       "path": "examples/canonical-faker/python/faker_pipeline/__init__.py",
       "category": "seed-data",
       "summary": "Package entrypoint for the Python Faker TenantCore pipeline.",
-      "stacks": ["faker-python"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["python-package", "faker-pipeline"],
+      "stacks": [
+        "faker-python"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "python-package",
+        "faker-pipeline"
+      ],
       "rank": 68,
       "stability": "canonical"
     },
@@ -12468,10 +13683,21 @@
       "path": "examples/canonical-faker/python/faker_pipeline/generators.py",
       "category": "seed-data",
       "summary": "Primary Python Faker generator showing multi-locale records, custom providers, edge-case users, and shared graph validation.",
-      "stacks": ["faker-python"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["faker", "multi-locale", "custom-provider", "edge-cases"],
+      "stacks": [
+        "faker-python"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "faker",
+        "multi-locale",
+        "custom-provider",
+        "edge-cases"
+      ],
       "rank": 89,
       "stability": "canonical"
     },
@@ -12479,10 +13705,19 @@
       "path": "examples/canonical-faker/python/mimesis_pipeline/__init__.py",
       "category": "seed-data",
       "summary": "Package entrypoint for the Python Mimesis TenantCore pipeline.",
-      "stacks": ["faker-python"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["python-package", "mimesis-pipeline"],
+      "stacks": [
+        "faker-python"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "python-package",
+        "mimesis-pipeline"
+      ],
       "rank": 68,
       "stability": "canonical"
     },
@@ -12490,10 +13725,20 @@
       "path": "examples/canonical-faker/python/mimesis_pipeline/generators.py",
       "category": "seed-data",
       "summary": "Python Mimesis generator that demonstrates schema-based organization generation with an explicit TenantCore relational graph layer.",
-      "stacks": ["faker-python"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["mimesis", "schema-based-generation", "batched-creation"],
+      "stacks": [
+        "faker-python"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "mimesis",
+        "schema-based-generation",
+        "batched-creation"
+      ],
       "rank": 87,
       "stability": "canonical"
     },
@@ -12501,10 +13746,19 @@
       "path": "examples/canonical-faker/python/factory_graph/__init__.py",
       "category": "seed-data",
       "summary": "Package entrypoint for the Python factory_boy TenantCore graph runner.",
-      "stacks": ["faker-python"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["python-package", "factory-graph"],
+      "stacks": [
+        "faker-python"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "python-package",
+        "factory-graph"
+      ],
       "rank": 68,
       "stability": "canonical"
     },
@@ -12512,10 +13766,21 @@
       "path": "examples/canonical-faker/python/factory_graph/factories.py",
       "category": "seed-data",
       "summary": "Declarative factory_boy definitions for TenantCore organizations, users, memberships, projects, keys, invitations, and audit events.",
-      "stacks": ["faker-python"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["factory-boy", "subfactory", "lazy-attributes", "traits"],
+      "stacks": [
+        "faker-python"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "factory-boy",
+        "subfactory",
+        "lazy-attributes",
+        "traits"
+      ],
       "rank": 86,
       "stability": "canonical"
     },
@@ -12523,10 +13788,20 @@
       "path": "examples/canonical-faker/python/factory_graph/runner.py",
       "category": "seed-data",
       "summary": "Smoke-scale factory_boy runner that materializes TenantCore dict output, validates it, and writes JSONL or CSV files.",
-      "stacks": ["faker-python"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["factory-boy", "runner", "smoke-fixtures"],
+      "stacks": [
+        "faker-python"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "factory-boy",
+        "runner",
+        "smoke-fixtures"
+      ],
       "rank": 84,
       "stability": "canonical"
     },
@@ -12534,10 +13809,20 @@
       "path": "examples/canonical-faker/python/output/.gitignore",
       "category": "seed-data",
       "summary": "Keeps generated Python TenantCore output out of git while preserving the canonical output directory.",
-      "stacks": ["faker-python"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["gitignore", "generated-output", "python-example"],
+      "stacks": [
+        "faker-python"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "gitignore",
+        "generated-output",
+        "python-example"
+      ],
       "rank": 66,
       "stability": "reference"
     },
@@ -12545,10 +13830,20 @@
       "path": "examples/canonical-faker/javascript/README.md",
       "category": "seed-data",
       "summary": "TypeScript README for the TenantCore generator using @faker-js/faker for field values and Chance for weighted distributions.",
-      "stacks": ["faker-javascript"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["readme", "typescript", "weighted-distributions"],
+      "stacks": [
+        "faker-javascript"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "readme",
+        "typescript",
+        "weighted-distributions"
+      ],
       "rank": 78,
       "stability": "canonical"
     },
@@ -12556,10 +13851,20 @@
       "path": "examples/canonical-faker/javascript/package.json",
       "category": "seed-data",
       "summary": "Node package manifest for the canonical TypeScript TenantCore faker example.",
-      "stacks": ["faker-javascript"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["dependencies", "node", "test-manifest"],
+      "stacks": [
+        "faker-javascript"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "dependencies",
+        "node",
+        "test-manifest"
+      ],
       "rank": 77,
       "stability": "canonical"
     },
@@ -12567,10 +13872,20 @@
       "path": "examples/canonical-faker/javascript/tsconfig.json",
       "category": "seed-data",
       "summary": "TypeScript compiler settings for the ESM TenantCore example and Jest smoke tests.",
-      "stacks": ["faker-javascript"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["typescript", "esm", "compiler-config"],
+      "stacks": [
+        "faker-javascript"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "typescript",
+        "esm",
+        "compiler-config"
+      ],
       "rank": 70,
       "stability": "canonical"
     },
@@ -12578,10 +13893,20 @@
       "path": "examples/canonical-faker/javascript/src/domain.ts",
       "category": "seed-data",
       "summary": "TenantCore entity interfaces and validation report types for the TypeScript generator.",
-      "stacks": ["faker-javascript"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["domain-types", "typescript", "entity-graph"],
+      "stacks": [
+        "faker-javascript"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "domain-types",
+        "typescript",
+        "entity-graph"
+      ],
       "rank": 80,
       "stability": "canonical"
     },
@@ -12589,10 +13914,20 @@
       "path": "examples/canonical-faker/javascript/src/profiles.ts",
       "category": "seed-data",
       "summary": "Canonical smoke, small, medium, and large profile constants for the TypeScript faker example.",
-      "stacks": ["faker-javascript"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["profiles", "seed-override", "typescript"],
+      "stacks": [
+        "faker-javascript"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "profiles",
+        "seed-override",
+        "typescript"
+      ],
       "rank": 76,
       "stability": "canonical"
     },
@@ -12600,10 +13935,20 @@
       "path": "examples/canonical-faker/javascript/src/pools.ts",
       "category": "seed-data",
       "summary": "Pool helpers for stable IDs, org membership maps, and JSONL or CSV export in the TypeScript generator.",
-      "stacks": ["faker-javascript"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["pool-pattern", "writers", "graph-indexes"],
+      "stacks": [
+        "faker-javascript"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "pool-pattern",
+        "writers",
+        "graph-indexes"
+      ],
       "rank": 82,
       "stability": "canonical"
     },
@@ -12611,10 +13956,20 @@
       "path": "examples/canonical-faker/javascript/src/distributions.ts",
       "category": "seed-data",
       "summary": "Chance-based weighted pickers and skewed count helpers for the TypeScript TenantCore generator.",
-      "stacks": ["faker-javascript"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["chance", "weighted-sampling", "edge-cases"],
+      "stacks": [
+        "faker-javascript"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "chance",
+        "weighted-sampling",
+        "edge-cases"
+      ],
       "rank": 86,
       "stability": "canonical"
     },
@@ -12622,10 +13977,20 @@
       "path": "examples/canonical-faker/javascript/src/pipeline.ts",
       "category": "seed-data",
       "summary": "Main @faker-js/faker pipeline that generates the full TenantCore graph in documented stage order.",
-      "stacks": ["faker-javascript"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["faker", "pipeline", "relational-integrity"],
+      "stacks": [
+        "faker-javascript"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "faker",
+        "pipeline",
+        "relational-integrity"
+      ],
       "rank": 89,
       "stability": "canonical"
     },
@@ -12633,10 +13998,20 @@
       "path": "examples/canonical-faker/javascript/src/validate.ts",
       "category": "seed-data",
       "summary": "TypeScript FK and cross-field validator that enforces the shared TenantCore rules A through I.",
-      "stacks": ["faker-javascript"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["validator", "cross-field-rules", "typescript"],
+      "stacks": [
+        "faker-javascript"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "validator",
+        "cross-field-rules",
+        "typescript"
+      ],
       "rank": 85,
       "stability": "canonical"
     },
@@ -12644,10 +14019,20 @@
       "path": "examples/canonical-faker/javascript/src/index.ts",
       "category": "seed-data",
       "summary": "CLI entrypoint for selecting a profile, output format, and target directory for the TypeScript generator.",
-      "stacks": ["faker-javascript"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["cli", "profile-switch", "output-format"],
+      "stacks": [
+        "faker-javascript"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "cli",
+        "profile-switch",
+        "output-format"
+      ],
       "rank": 83,
       "stability": "canonical"
     },
@@ -12655,10 +14040,20 @@
       "path": "examples/canonical-faker/javascript/__tests__/smoke.test.ts",
       "category": "seed-data",
       "summary": "Jest smoke tests for deterministic output, FK integrity, and non-uniform organization plans.",
-      "stacks": ["faker-javascript"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["jest", "smoke-tests", "reproducibility"],
+      "stacks": [
+        "faker-javascript"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "jest",
+        "smoke-tests",
+        "reproducibility"
+      ],
       "rank": 84,
       "stability": "canonical"
     },
@@ -12666,10 +14061,20 @@
       "path": "examples/canonical-faker/javascript/output/.gitignore",
       "category": "seed-data",
       "summary": "Keeps generated JavaScript TenantCore output out of git while preserving the output directory.",
-      "stacks": ["faker-javascript"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["gitignore", "generated-output", "javascript-example"],
+      "stacks": [
+        "faker-javascript"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "gitignore",
+        "generated-output",
+        "javascript-example"
+      ],
       "rank": 66,
       "stability": "reference"
     },
@@ -12677,10 +14082,20 @@
       "path": "examples/canonical-faker/go/README.md",
       "category": "seed-data",
       "summary": "Go README explaining the gofakeit pipeline, struct-tag contrast, and explicit seed management.",
-      "stacks": ["faker-go"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["readme", "go", "struct-tag-contrast"],
+      "stacks": [
+        "faker-go"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "readme",
+        "go",
+        "struct-tag-contrast"
+      ],
       "rank": 78,
       "stability": "canonical"
     },
@@ -12688,10 +14103,20 @@
       "path": "examples/canonical-faker/go/go.mod",
       "category": "seed-data",
       "summary": "Go module manifest for the canonical TenantCore faker example using gofakeit and go-faker.",
-      "stacks": ["faker-go"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["dependencies", "go", "module-manifest"],
+      "stacks": [
+        "faker-go"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "dependencies",
+        "go",
+        "module-manifest"
+      ],
       "rank": 77,
       "stability": "canonical"
     },
@@ -12699,10 +14124,20 @@
       "path": "examples/canonical-faker/go/internal/domain/types.go",
       "category": "seed-data",
       "summary": "TenantCore Go struct definitions with JSON tags matching the shared schema.",
-      "stacks": ["faker-go"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["domain-types", "go", "json-tags"],
+      "stacks": [
+        "faker-go"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "domain-types",
+        "go",
+        "json-tags"
+      ],
       "rank": 80,
       "stability": "canonical"
     },
@@ -12710,10 +14145,20 @@
       "path": "examples/canonical-faker/go/internal/profiles/profiles.go",
       "category": "seed-data",
       "summary": "Canonical profile constants and seed override handling for the Go faker example.",
-      "stacks": ["faker-go"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["profiles", "seed-override", "go"],
+      "stacks": [
+        "faker-go"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "profiles",
+        "seed-override",
+        "go"
+      ],
       "rank": 76,
       "stability": "canonical"
     },
@@ -12721,10 +14166,20 @@
       "path": "examples/canonical-faker/go/internal/pools/pools.go",
       "category": "seed-data",
       "summary": "Pool helpers and JSONL writer utilities for stable relational generation in Go.",
-      "stacks": ["faker-go"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["pool-pattern", "writers", "graph-indexes"],
+      "stacks": [
+        "faker-go"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "pool-pattern",
+        "writers",
+        "graph-indexes"
+      ],
       "rank": 82,
       "stability": "canonical"
     },
@@ -12732,10 +14187,20 @@
       "path": "examples/canonical-faker/go/internal/distributions/distributions.go",
       "category": "seed-data",
       "summary": "Weighted distribution helpers built on math/rand for plans, regions, roles, and skewed counts in Go.",
-      "stacks": ["faker-go"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["weighted-sampling", "math-rand", "skewed-counts"],
+      "stacks": [
+        "faker-go"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "weighted-sampling",
+        "math-rand",
+        "skewed-counts"
+      ],
       "rank": 85,
       "stability": "canonical"
     },
@@ -12743,10 +14208,20 @@
       "path": "examples/canonical-faker/go/internal/pipeline/gofakeit.go",
       "category": "seed-data",
       "summary": "Primary gofakeit-based TenantCore pipeline showing explicit RNG isolation and parent-first graph generation.",
-      "stacks": ["faker-go"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["gofakeit", "pipeline", "seed-isolation"],
+      "stacks": [
+        "faker-go"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "gofakeit",
+        "pipeline",
+        "seed-isolation"
+      ],
       "rank": 89,
       "stability": "canonical"
     },
@@ -12754,10 +14229,20 @@
       "path": "examples/canonical-faker/go/internal/pipeline/struct_tag.go",
       "category": "seed-data",
       "summary": "Struct-tag contrast layer showing where go-faker helps and where orchestration still owns graph integrity.",
-      "stacks": ["faker-go"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["struct-tags", "contrast", "atomic-fields"],
+      "stacks": [
+        "faker-go"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "struct-tags",
+        "contrast",
+        "atomic-fields"
+      ],
       "rank": 84,
       "stability": "canonical"
     },
@@ -12765,10 +14250,20 @@
       "path": "examples/canonical-faker/go/internal/validate/validate.go",
       "category": "seed-data",
       "summary": "Go validation report builder for FK integrity, uniqueness, temporal order, and TenantCore rules A through I.",
-      "stacks": ["faker-go"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["validator", "cross-field-rules", "go"],
+      "stacks": [
+        "faker-go"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "validator",
+        "cross-field-rules",
+        "go"
+      ],
       "rank": 85,
       "stability": "canonical"
     },
@@ -12776,10 +14271,20 @@
       "path": "examples/canonical-faker/go/cmd/generate/main.go",
       "category": "seed-data",
       "summary": "Flag-driven CLI for profile selection, pipeline choice, output format, and seed overrides in the Go example.",
-      "stacks": ["faker-go"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["cli", "flag-package", "pipeline-switch"],
+      "stacks": [
+        "faker-go"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "cli",
+        "flag-package",
+        "pipeline-switch"
+      ],
       "rank": 83,
       "stability": "canonical"
     },
@@ -12787,10 +14292,20 @@
       "path": "examples/canonical-faker/go/output/.gitignore",
       "category": "seed-data",
       "summary": "Keeps generated Go TenantCore output out of git while preserving the output directory.",
-      "stacks": ["faker-go"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["gitignore", "generated-output", "go-example"],
+      "stacks": [
+        "faker-go"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "gitignore",
+        "generated-output",
+        "go-example"
+      ],
       "rank": 66,
       "stability": "reference"
     },
@@ -12798,10 +14313,20 @@
       "path": "verification/faker/go/test_go_faker.py",
       "category": "seed-data",
       "summary": "Structural and optional runtime verification for the Go TenantCore example, including build and smoke checks.",
-      "stacks": ["faker-go"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["python-verifier", "go-build", "smoke-run"],
+      "stacks": [
+        "faker-go"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "python-verifier",
+        "go-build",
+        "smoke-run"
+      ],
       "rank": 86,
       "stability": "canonical"
     },
@@ -12809,10 +14334,20 @@
       "path": "examples/canonical-faker/rust/README.md",
       "category": "seed-data",
       "summary": "Rust README for the fake-rs builder example, covering derive macros, pool ownership, and seeded replay.",
-      "stacks": ["faker-rust"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["readme", "rust", "builder-pattern"],
+      "stacks": [
+        "faker-rust"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "readme",
+        "rust",
+        "builder-pattern"
+      ],
       "rank": 79,
       "stability": "canonical"
     },
@@ -12820,10 +14355,20 @@
       "path": "examples/canonical-faker/rust/Cargo.toml",
       "category": "seed-data",
       "summary": "Cargo manifest for the canonical Rust TenantCore faker example using fake-rs and rand.",
-      "stacks": ["faker-rust"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["dependencies", "rust", "cargo-manifest"],
+      "stacks": [
+        "faker-rust"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "dependencies",
+        "rust",
+        "cargo-manifest"
+      ],
       "rank": 77,
       "stability": "canonical"
     },
@@ -12831,10 +14376,20 @@
       "path": "examples/canonical-faker/rust/src/domain.rs",
       "category": "seed-data",
       "summary": "Serde-ready TenantCore Rust structs with snake_case JSON alignment for the canonical dataset.",
-      "stacks": ["faker-rust"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["domain-types", "rust", "serde"],
+      "stacks": [
+        "faker-rust"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "domain-types",
+        "rust",
+        "serde"
+      ],
       "rank": 80,
       "stability": "canonical"
     },
@@ -12842,10 +14397,20 @@
       "path": "examples/canonical-faker/rust/src/profiles.rs",
       "category": "seed-data",
       "summary": "Canonical profile constants and seed override handling for the Rust faker example.",
-      "stacks": ["faker-rust"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["profiles", "seed-override", "rust"],
+      "stacks": [
+        "faker-rust"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "profiles",
+        "seed-override",
+        "rust"
+      ],
       "rank": 76,
       "stability": "canonical"
     },
@@ -12853,10 +14418,20 @@
       "path": "examples/canonical-faker/rust/src/pools.rs",
       "category": "seed-data",
       "summary": "Rust pool helpers, deterministic UUID generation, and JSONL writers for stable relational output.",
-      "stacks": ["faker-rust"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["pool-pattern", "writers", "graph-indexes"],
+      "stacks": [
+        "faker-rust"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "pool-pattern",
+        "writers",
+        "graph-indexes"
+      ],
       "rank": 82,
       "stability": "canonical"
     },
@@ -12864,10 +14439,20 @@
       "path": "examples/canonical-faker/rust/src/distributions.rs",
       "category": "seed-data",
       "summary": "Weighted helper functions for plans, regions, roles, and skewed counts in the Rust example.",
-      "stacks": ["faker-rust"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["weighted-sampling", "rand", "skewed-counts"],
+      "stacks": [
+        "faker-rust"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "weighted-sampling",
+        "rand",
+        "skewed-counts"
+      ],
       "rank": 84,
       "stability": "canonical"
     },
@@ -12875,10 +14460,20 @@
       "path": "examples/canonical-faker/rust/src/pipeline.rs",
       "category": "seed-data",
       "summary": "Builder-driven fake-rs pipeline showing explicit stage ordering, pool ownership, and typed orchestration in Rust.",
-      "stacks": ["faker-rust"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["builder-pattern", "pipeline", "fake-rs"],
+      "stacks": [
+        "faker-rust"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "builder-pattern",
+        "pipeline",
+        "fake-rs"
+      ],
       "rank": 90,
       "stability": "canonical"
     },
@@ -12886,10 +14481,20 @@
       "path": "examples/canonical-faker/rust/src/validate.rs",
       "category": "seed-data",
       "summary": "Rust validation report builder for TenantCore FK integrity, uniqueness, and rules A through I.",
-      "stacks": ["faker-rust"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["validator", "cross-field-rules", "rust"],
+      "stacks": [
+        "faker-rust"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "validator",
+        "cross-field-rules",
+        "rust"
+      ],
       "rank": 86,
       "stability": "canonical"
     },
@@ -12897,10 +14502,20 @@
       "path": "examples/canonical-faker/rust/src/main.rs",
       "category": "seed-data",
       "summary": "CLI entry point for the Rust example with profile selection, seed overrides, and JSONL output.",
-      "stacks": ["faker-rust"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["cli", "std-env", "jsonl-output"],
+      "stacks": [
+        "faker-rust"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "cli",
+        "std-env",
+        "jsonl-output"
+      ],
       "rank": 82,
       "stability": "canonical"
     },
@@ -12908,10 +14523,20 @@
       "path": "examples/canonical-faker/rust/tests/smoke_test.rs",
       "category": "seed-data",
       "summary": "Rust smoke tests covering row counts, validation pass status, and deterministic replay.",
-      "stacks": ["faker-rust"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["tests", "smoke", "reproducibility"],
+      "stacks": [
+        "faker-rust"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "tests",
+        "smoke",
+        "reproducibility"
+      ],
       "rank": 83,
       "stability": "canonical"
     },
@@ -12919,10 +14544,20 @@
       "path": "examples/canonical-faker/rust/output/.gitignore",
       "category": "seed-data",
       "summary": "Keeps generated Rust TenantCore output out of git while preserving the output directory.",
-      "stacks": ["faker-rust"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["gitignore", "generated-output", "rust-example"],
+      "stacks": [
+        "faker-rust"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "gitignore",
+        "generated-output",
+        "rust-example"
+      ],
       "rank": 66,
       "stability": "reference"
     },
@@ -12930,10 +14565,20 @@
       "path": "verification/faker/rust/test_rust_faker.py",
       "category": "seed-data",
       "summary": "Structural and optional runtime verification for the Rust TenantCore example, including cargo build, tests, and smoke output validation.",
-      "stacks": ["faker-rust"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["python-verifier", "cargo-build", "smoke-run"],
+      "stacks": [
+        "faker-rust"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "python-verifier",
+        "cargo-build",
+        "smoke-run"
+      ],
       "rank": 87,
       "stability": "canonical"
     },
@@ -12941,10 +14586,20 @@
       "path": "examples/canonical-faker/java/README.md",
       "category": "seed-data",
       "summary": "Java README for the Datafaker TenantCore example, focused on seeded relational orchestration rather than frameworks.",
-      "stacks": ["faker-java"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["readme", "java", "orchestration-layer"],
+      "stacks": [
+        "faker-java"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "readme",
+        "java",
+        "orchestration-layer"
+      ],
       "rank": 78,
       "stability": "canonical"
     },
@@ -12952,10 +14607,20 @@
       "path": "examples/canonical-faker/java/pom.xml",
       "category": "seed-data",
       "summary": "Maven build for the canonical Java TenantCore faker example using Datafaker, Jackson, and JUnit 5.",
-      "stacks": ["faker-java"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["dependencies", "java", "maven-manifest"],
+      "stacks": [
+        "faker-java"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "dependencies",
+        "java",
+        "maven-manifest"
+      ],
       "rank": 77,
       "stability": "canonical"
     },
@@ -12963,10 +14628,20 @@
       "path": "examples/canonical-faker/java/src/main/java/io/agentcontextbase/faker/domain/TenantCoreEntities.java",
       "category": "seed-data",
       "summary": "Java 17 record definitions for the full TenantCore entity graph and dataset wrapper.",
-      "stacks": ["faker-java"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["domain-types", "java-records", "tenantcore"],
+      "stacks": [
+        "faker-java"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "domain-types",
+        "java-records",
+        "tenantcore"
+      ],
       "rank": 80,
       "stability": "canonical"
     },
@@ -12974,10 +14649,20 @@
       "path": "examples/canonical-faker/java/src/main/java/io/agentcontextbase/faker/profiles/Profile.java",
       "category": "seed-data",
       "summary": "Canonical profile constants and seed override handling for the Java faker example.",
-      "stacks": ["faker-java"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["profiles", "seed-override", "java"],
+      "stacks": [
+        "faker-java"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "profiles",
+        "seed-override",
+        "java"
+      ],
       "rank": 76,
       "stability": "canonical"
     },
@@ -12985,10 +14670,20 @@
       "path": "examples/canonical-faker/java/src/main/java/io/agentcontextbase/faker/pools/IdPools.java",
       "category": "seed-data",
       "summary": "Pool helpers, graph indexes, deterministic IDs, and JSONL writers for the Java example.",
-      "stacks": ["faker-java"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["pool-pattern", "writers", "graph-indexes"],
+      "stacks": [
+        "faker-java"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "pool-pattern",
+        "writers",
+        "graph-indexes"
+      ],
       "rank": 82,
       "stability": "canonical"
     },
@@ -12996,10 +14691,20 @@
       "path": "examples/canonical-faker/java/src/main/java/io/agentcontextbase/faker/distributions/Distributions.java",
       "category": "seed-data",
       "summary": "Weighted distribution helpers built on java.util.Random for the Java example.",
-      "stacks": ["faker-java"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["weighted-sampling", "java-util-random", "skewed-counts"],
+      "stacks": [
+        "faker-java"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "weighted-sampling",
+        "java-util-random",
+        "skewed-counts"
+      ],
       "rank": 84,
       "stability": "canonical"
     },
@@ -13007,10 +14712,20 @@
       "path": "examples/canonical-faker/java/src/main/java/io/agentcontextbase/faker/pipeline/TenantCorePipeline.java",
       "category": "seed-data",
       "summary": "Primary Datafaker pipeline for TenantCore, showing explicit ID pools, temporal realism, and cross-field validation hooks in Java.",
-      "stacks": ["faker-java"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["datafaker", "pipeline", "explicit-pools"],
+      "stacks": [
+        "faker-java"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "datafaker",
+        "pipeline",
+        "explicit-pools"
+      ],
       "rank": 90,
       "stability": "canonical"
     },
@@ -13018,10 +14733,20 @@
       "path": "examples/canonical-faker/java/src/main/java/io/agentcontextbase/faker/validate/ValidationReport.java",
       "category": "seed-data",
       "summary": "Java validation report record used by the TenantCore verification path.",
-      "stacks": ["faker-java"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["validator", "report", "java"],
+      "stacks": [
+        "faker-java"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "validator",
+        "report",
+        "java"
+      ],
       "rank": 78,
       "stability": "canonical"
     },
@@ -13029,10 +14754,20 @@
       "path": "examples/canonical-faker/java/src/main/java/io/agentcontextbase/faker/Main.java",
       "category": "seed-data",
       "summary": "Flag-style CLI entry point for the Java example with profile selection and JSONL export.",
-      "stacks": ["faker-java"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["cli", "main-class", "jsonl-output"],
+      "stacks": [
+        "faker-java"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "cli",
+        "main-class",
+        "jsonl-output"
+      ],
       "rank": 82,
       "stability": "canonical"
     },
@@ -13040,10 +14775,20 @@
       "path": "examples/canonical-faker/java/src/test/java/io/agentcontextbase/faker/SmokeTest.java",
       "category": "seed-data",
       "summary": "JUnit smoke tests covering organization counts, validation pass status, and deterministic replay for the Java example.",
-      "stacks": ["faker-java"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["tests", "smoke", "reproducibility"],
+      "stacks": [
+        "faker-java"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "tests",
+        "smoke",
+        "reproducibility"
+      ],
       "rank": 83,
       "stability": "canonical"
     },
@@ -13051,10 +14796,20 @@
       "path": "examples/canonical-faker/java/output/.gitignore",
       "category": "seed-data",
       "summary": "Keeps generated Java TenantCore output out of git while preserving the output directory.",
-      "stacks": ["faker-java"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["gitignore", "generated-output", "java-example"],
+      "stacks": [
+        "faker-java"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "gitignore",
+        "generated-output",
+        "java-example"
+      ],
       "rank": 66,
       "stability": "reference"
     },
@@ -13062,10 +14817,20 @@
       "path": "verification/faker/java/test_java_faker.py",
       "category": "seed-data",
       "summary": "Structural and optional runtime verification for the Java TenantCore example, including Maven compile and smoke tests.",
-      "stacks": ["faker-java"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["python-verifier", "maven-build", "smoke-run"],
+      "stacks": [
+        "faker-java"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "python-verifier",
+        "maven-build",
+        "smoke-run"
+      ],
       "rank": 86,
       "stability": "canonical"
     },
@@ -13073,10 +14838,20 @@
       "path": "examples/canonical-faker/kotlin/README.md",
       "category": "seed-data",
       "summary": "Kotlin README describing the Kotlin-first pipeline surface and the Datafaker JVM interop contrast.",
-      "stacks": ["faker-kotlin"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["readme", "kotlin", "interop-contrast"],
+      "stacks": [
+        "faker-kotlin"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "readme",
+        "kotlin",
+        "interop-contrast"
+      ],
       "rank": 78,
       "stability": "canonical"
     },
@@ -13084,10 +14859,20 @@
       "path": "examples/canonical-faker/kotlin/build.gradle.kts",
       "category": "seed-data",
       "summary": "Gradle build for the canonical Kotlin TenantCore faker example with kotlin-faker, Datafaker, Jackson, and JUnit.",
-      "stacks": ["faker-kotlin"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["dependencies", "kotlin", "gradle-manifest"],
+      "stacks": [
+        "faker-kotlin"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "dependencies",
+        "kotlin",
+        "gradle-manifest"
+      ],
       "rank": 77,
       "stability": "canonical"
     },
@@ -13095,10 +14880,20 @@
       "path": "examples/canonical-faker/kotlin/settings.gradle.kts",
       "category": "seed-data",
       "summary": "Gradle settings for the canonical Kotlin TenantCore faker example.",
-      "stacks": ["faker-kotlin"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["settings", "kotlin", "gradle"],
+      "stacks": [
+        "faker-kotlin"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "settings",
+        "kotlin",
+        "gradle"
+      ],
       "rank": 70,
       "stability": "canonical"
     },
@@ -13106,10 +14901,20 @@
       "path": "examples/canonical-faker/kotlin/src/main/kotlin/io/agentcontextbase/faker/domain/Entities.kt",
       "category": "seed-data",
       "summary": "Kotlin data classes for the TenantCore entity graph with snake_case JSON annotations.",
-      "stacks": ["faker-kotlin"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["domain-types", "kotlin-data-classes", "json-property"],
+      "stacks": [
+        "faker-kotlin"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "domain-types",
+        "kotlin-data-classes",
+        "json-property"
+      ],
       "rank": 80,
       "stability": "canonical"
     },
@@ -13117,10 +14922,20 @@
       "path": "examples/canonical-faker/kotlin/src/main/kotlin/io/agentcontextbase/faker/profiles/Profile.kt",
       "category": "seed-data",
       "summary": "Canonical profile constants and seed override handling for the Kotlin faker example.",
-      "stacks": ["faker-kotlin"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["profiles", "seed-override", "kotlin"],
+      "stacks": [
+        "faker-kotlin"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "profiles",
+        "seed-override",
+        "kotlin"
+      ],
       "rank": 76,
       "stability": "canonical"
     },
@@ -13128,10 +14943,20 @@
       "path": "examples/canonical-faker/kotlin/src/main/kotlin/io/agentcontextbase/faker/pools/IdPools.kt",
       "category": "seed-data",
       "summary": "Pool helpers, graph indexes, deterministic IDs, and JSONL writers for the Kotlin example.",
-      "stacks": ["faker-kotlin"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["pool-pattern", "writers", "graph-indexes"],
+      "stacks": [
+        "faker-kotlin"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "pool-pattern",
+        "writers",
+        "graph-indexes"
+      ],
       "rank": 82,
       "stability": "canonical"
     },
@@ -13139,10 +14964,20 @@
       "path": "examples/canonical-faker/kotlin/src/main/kotlin/io/agentcontextbase/faker/distributions/Distributions.kt",
       "category": "seed-data",
       "summary": "Weighted helper functions for plans, regions, roles, and skewed counts in the Kotlin example.",
-      "stacks": ["faker-kotlin"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["weighted-sampling", "kotlin-random", "skewed-counts"],
+      "stacks": [
+        "faker-kotlin"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "weighted-sampling",
+        "kotlin-random",
+        "skewed-counts"
+      ],
       "rank": 84,
       "stability": "canonical"
     },
@@ -13150,10 +14985,20 @@
       "path": "examples/canonical-faker/kotlin/src/main/kotlin/io/agentcontextbase/faker/validate/Validate.kt",
       "category": "seed-data",
       "summary": "Kotlin validation report builder for FK integrity, uniqueness, and TenantCore rules A through I.",
-      "stacks": ["faker-kotlin"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["validator", "cross-field-rules", "kotlin"],
+      "stacks": [
+        "faker-kotlin"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "validator",
+        "cross-field-rules",
+        "kotlin"
+      ],
       "rank": 86,
       "stability": "canonical"
     },
@@ -13161,10 +15006,20 @@
       "path": "examples/canonical-faker/kotlin/src/main/kotlin/io/agentcontextbase/faker/pipeline/KotlinFakerPipeline.kt",
       "category": "seed-data",
       "summary": "Primary Kotlin-first TenantCore pipeline using deterministic Kotlin collections, pool maps, and replayable random decisions.",
-      "stacks": ["faker-kotlin"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["pipeline", "kotlin-first", "explicit-pools"],
+      "stacks": [
+        "faker-kotlin"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "pipeline",
+        "kotlin-first",
+        "explicit-pools"
+      ],
       "rank": 89,
       "stability": "canonical"
     },
@@ -13172,10 +15027,20 @@
       "path": "examples/canonical-faker/kotlin/src/main/kotlin/io/agentcontextbase/faker/pipeline/DatafakerPipeline.kt",
       "category": "seed-data",
       "summary": "Short Datafaker interop demonstration for Kotlin teams that share JVM faker dependencies with Java services.",
-      "stacks": ["faker-kotlin"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["datafaker", "interop", "jvm-contrast"],
+      "stacks": [
+        "faker-kotlin"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "datafaker",
+        "interop",
+        "jvm-contrast"
+      ],
       "rank": 79,
       "stability": "canonical"
     },
@@ -13183,10 +15048,20 @@
       "path": "examples/canonical-faker/kotlin/src/main/kotlin/io/agentcontextbase/faker/Main.kt",
       "category": "seed-data",
       "summary": "CLI entry point for the Kotlin example with profile selection, validation, and JSONL export.",
-      "stacks": ["faker-kotlin"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["cli", "kotlin-main", "jsonl-output"],
+      "stacks": [
+        "faker-kotlin"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "cli",
+        "kotlin-main",
+        "jsonl-output"
+      ],
       "rank": 82,
       "stability": "canonical"
     },
@@ -13194,10 +15069,20 @@
       "path": "examples/canonical-faker/kotlin/src/test/kotlin/io/agentcontextbase/faker/SmokeTest.kt",
       "category": "seed-data",
       "summary": "Kotlin smoke tests covering organization counts, validation pass status, and deterministic replay.",
-      "stacks": ["faker-kotlin"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["tests", "smoke", "reproducibility"],
+      "stacks": [
+        "faker-kotlin"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "tests",
+        "smoke",
+        "reproducibility"
+      ],
       "rank": 83,
       "stability": "canonical"
     },
@@ -13205,10 +15090,20 @@
       "path": "examples/canonical-faker/kotlin/output/.gitignore",
       "category": "seed-data",
       "summary": "Keeps generated Kotlin TenantCore output out of git while preserving the output directory.",
-      "stacks": ["faker-kotlin"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["gitignore", "generated-output", "kotlin-example"],
+      "stacks": [
+        "faker-kotlin"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "gitignore",
+        "generated-output",
+        "kotlin-example"
+      ],
       "rank": 66,
       "stability": "reference"
     },
@@ -13216,11 +15111,496 @@
       "path": "verification/faker/kotlin/test_kotlin_faker.py",
       "category": "seed-data",
       "summary": "Structural and optional runtime verification for the Kotlin TenantCore example, including Gradle build and smoke tests.",
-      "stacks": ["faker-kotlin"],
-      "archetypes": ["synthetic-data-generator"],
-      "workflows": ["add-faker-example"],
-      "patterns": ["python-verifier", "gradle-build", "smoke-run"],
+      "stacks": [
+        "faker-kotlin"
+      ],
+      "archetypes": [
+        "synthetic-data-generator"
+      ],
+      "workflows": [
+        "add-faker-example"
+      ],
+      "patterns": [
+        "python-verifier",
+        "gradle-build",
+        "smoke-run"
+      ],
       "rank": 86,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/php/alice/memberships.yaml",
+      "category": "faker",
+      "summary": "Canonical faker example for php",
+      "stacks": [
+        "php-faker"
+      ],
+      "archetypes": [
+        "synthetic-data"
+      ],
+      "workflows": [
+        "generate-faker-dataset"
+      ],
+      "patterns": [
+        "faker"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/php/alice/organizations.yaml",
+      "category": "faker",
+      "summary": "Canonical faker example for php",
+      "stacks": [
+        "php-faker"
+      ],
+      "archetypes": [
+        "synthetic-data"
+      ],
+      "workflows": [
+        "generate-faker-dataset"
+      ],
+      "patterns": [
+        "faker"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/php/alice/users.yaml",
+      "category": "faker",
+      "summary": "Canonical faker example for php",
+      "stacks": [
+        "php-faker"
+      ],
+      "archetypes": [
+        "synthetic-data"
+      ],
+      "workflows": [
+        "generate-faker-dataset"
+      ],
+      "patterns": [
+        "faker"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/php/alice/README.md",
+      "category": "faker",
+      "summary": "Canonical faker example for php",
+      "stacks": [
+        "php-faker"
+      ],
+      "archetypes": [
+        "synthetic-data"
+      ],
+      "workflows": [
+        "generate-faker-dataset"
+      ],
+      "patterns": [
+        "faker"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/php/composer.json",
+      "category": "faker",
+      "summary": "Canonical faker example for php",
+      "stacks": [
+        "php-faker"
+      ],
+      "archetypes": [
+        "synthetic-data"
+      ],
+      "workflows": [
+        "generate-faker-dataset"
+      ],
+      "patterns": [
+        "faker"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/php/generate.php",
+      "category": "faker",
+      "summary": "Canonical faker example for php",
+      "stacks": [
+        "php-faker"
+      ],
+      "archetypes": [
+        "synthetic-data"
+      ],
+      "workflows": [
+        "generate-faker-dataset"
+      ],
+      "patterns": [
+        "faker"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/php/src/Distributions/Distributions.php",
+      "category": "faker",
+      "summary": "Canonical faker example for php",
+      "stacks": [
+        "php-faker"
+      ],
+      "archetypes": [
+        "synthetic-data"
+      ],
+      "workflows": [
+        "generate-faker-dataset"
+      ],
+      "patterns": [
+        "faker"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/php/src/Domain/Entities.php",
+      "category": "faker",
+      "summary": "Canonical faker example for php",
+      "stacks": [
+        "php-faker"
+      ],
+      "archetypes": [
+        "synthetic-data"
+      ],
+      "workflows": [
+        "generate-faker-dataset"
+      ],
+      "patterns": [
+        "faker"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/php/src/Pipeline/TenantCorePipeline.php",
+      "category": "faker",
+      "summary": "Canonical faker example for php",
+      "stacks": [
+        "php-faker"
+      ],
+      "archetypes": [
+        "synthetic-data"
+      ],
+      "workflows": [
+        "generate-faker-dataset"
+      ],
+      "patterns": [
+        "faker"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/php/src/Pools/IdPools.php",
+      "category": "faker",
+      "summary": "Canonical faker example for php",
+      "stacks": [
+        "php-faker"
+      ],
+      "archetypes": [
+        "synthetic-data"
+      ],
+      "workflows": [
+        "generate-faker-dataset"
+      ],
+      "patterns": [
+        "faker"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/php/src/Profiles/Profile.php",
+      "category": "faker",
+      "summary": "Canonical faker example for php",
+      "stacks": [
+        "php-faker"
+      ],
+      "archetypes": [
+        "synthetic-data"
+      ],
+      "workflows": [
+        "generate-faker-dataset"
+      ],
+      "patterns": [
+        "faker"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/php/src/Validate/Validator.php",
+      "category": "faker",
+      "summary": "Canonical faker example for php",
+      "stacks": [
+        "php-faker"
+      ],
+      "archetypes": [
+        "synthetic-data"
+      ],
+      "workflows": [
+        "generate-faker-dataset"
+      ],
+      "patterns": [
+        "faker"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/php/tests/SmokeTest.php",
+      "category": "faker",
+      "summary": "Canonical faker example for php",
+      "stacks": [
+        "php-faker"
+      ],
+      "archetypes": [
+        "synthetic-data"
+      ],
+      "workflows": [
+        "generate-faker-dataset"
+      ],
+      "patterns": [
+        "faker"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/php/README.md",
+      "category": "faker",
+      "summary": "Canonical faker example for php",
+      "stacks": [
+        "php-faker"
+      ],
+      "archetypes": [
+        "synthetic-data"
+      ],
+      "workflows": [
+        "generate-faker-dataset"
+      ],
+      "patterns": [
+        "faker"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/ruby/README.md",
+      "category": "faker",
+      "summary": "Canonical faker example for ruby",
+      "stacks": [
+        "ruby-faker"
+      ],
+      "archetypes": [
+        "synthetic-data"
+      ],
+      "workflows": [
+        "generate-faker-dataset"
+      ],
+      "patterns": [
+        "faker"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/ruby/generate.rb",
+      "category": "faker",
+      "summary": "Canonical faker example for ruby",
+      "stacks": [
+        "ruby-faker"
+      ],
+      "archetypes": [
+        "synthetic-data"
+      ],
+      "workflows": [
+        "generate-faker-dataset"
+      ],
+      "patterns": [
+        "faker"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/ruby/lib/distributions.rb",
+      "category": "faker",
+      "summary": "Canonical faker example for ruby",
+      "stacks": [
+        "ruby-faker"
+      ],
+      "archetypes": [
+        "synthetic-data"
+      ],
+      "workflows": [
+        "generate-faker-dataset"
+      ],
+      "patterns": [
+        "faker"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/ruby/lib/domain.rb",
+      "category": "faker",
+      "summary": "Canonical faker example for ruby",
+      "stacks": [
+        "ruby-faker"
+      ],
+      "archetypes": [
+        "synthetic-data"
+      ],
+      "workflows": [
+        "generate-faker-dataset"
+      ],
+      "patterns": [
+        "faker"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/ruby/lib/faker_pipeline.rb",
+      "category": "faker",
+      "summary": "Canonical faker example for ruby",
+      "stacks": [
+        "ruby-faker"
+      ],
+      "archetypes": [
+        "synthetic-data"
+      ],
+      "workflows": [
+        "generate-faker-dataset"
+      ],
+      "patterns": [
+        "faker"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/ruby/lib/ffaker_pipeline.rb",
+      "category": "faker",
+      "summary": "Canonical faker example for ruby",
+      "stacks": [
+        "ruby-faker"
+      ],
+      "archetypes": [
+        "synthetic-data"
+      ],
+      "workflows": [
+        "generate-faker-dataset"
+      ],
+      "patterns": [
+        "faker"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/ruby/lib/pools.rb",
+      "category": "faker",
+      "summary": "Canonical faker example for ruby",
+      "stacks": [
+        "ruby-faker"
+      ],
+      "archetypes": [
+        "synthetic-data"
+      ],
+      "workflows": [
+        "generate-faker-dataset"
+      ],
+      "patterns": [
+        "faker"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/ruby/lib/profiles.rb",
+      "category": "faker",
+      "summary": "Canonical faker example for ruby",
+      "stacks": [
+        "ruby-faker"
+      ],
+      "archetypes": [
+        "synthetic-data"
+      ],
+      "workflows": [
+        "generate-faker-dataset"
+      ],
+      "patterns": [
+        "faker"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/ruby/lib/validate.rb",
+      "category": "faker",
+      "summary": "Canonical faker example for ruby",
+      "stacks": [
+        "ruby-faker"
+      ],
+      "archetypes": [
+        "synthetic-data"
+      ],
+      "workflows": [
+        "generate-faker-dataset"
+      ],
+      "patterns": [
+        "faker"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/ruby/spec/smoke_spec.rb",
+      "category": "faker",
+      "summary": "Canonical faker example for ruby",
+      "stacks": [
+        "ruby-faker"
+      ],
+      "archetypes": [
+        "synthetic-data"
+      ],
+      "workflows": [
+        "generate-faker-dataset"
+      ],
+      "patterns": [
+        "faker"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-faker/ruby/Gemfile",
+      "category": "faker",
+      "summary": "Canonical faker example for ruby",
+      "stacks": [
+        "ruby-faker"
+      ],
+      "archetypes": [
+        "synthetic-data"
+      ],
+      "workflows": [
+        "generate-faker-dataset"
+      ],
+      "patterns": [
+        "faker"
+      ],
+      "rank": 100,
       "stability": "canonical"
     }
   ]
