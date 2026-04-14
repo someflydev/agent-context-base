@@ -1,6 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
 use chrono::{DateTime, Duration, Utc};
+use fake::faker::address::en::{CityName, CountryName};
 use fake::{Dummy, Fake, Faker};
 use rand::prelude::SliceRandom;
 use rand::rngs::StdRng;
@@ -22,7 +23,9 @@ const KEY_ALPHABET: &[u8] = b"abcdefghijklmnopqrstuvwxyz0123456789";
 
 #[derive(Debug, Clone, Dummy)]
 pub struct AddressSnapshot {
+    #[dummy(faker = "CityName()")]
     pub city: String,
+    #[dummy(faker = "CountryName()")]
     pub country: String,
 }
 

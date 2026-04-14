@@ -68,7 +68,7 @@ Read arc foundation and domain spec:
   7. context/stacks/faker-ruby.yaml                   (READ — Ruby stack)
   8. context/stacks/faker-php.yaml                    (READ — PHP stack)
   9. examples/canonical-faker/domain/schema.md        (READ — entity graph)
- 10. examples/canonical-faker/domain/generation-order.md (READ — 7-stage order)
+ 10. examples/canonical-faker/domain/generation-order.md (READ — current 6-stage, 7-step order)
  11. examples/canonical-faker/domain/seed-registry.md (READ — smoke seed = 42)
  12. examples/canonical-faker/python/faker_pipeline/generators.py (READ — reference)
  13. examples/canonical-faker/CATALOG.md              (READ — current state)
@@ -367,7 +367,7 @@ Example:
       slug: '<slug()>'
       plan: '<randomElement(["free","pro","enterprise"])>'
       region: '<randomElement(["us-east","us-west","eu-west","ap-southeast"])>'
-      created_at: '<dateTimeBetween("-3 years", "now")->format("c")'
+      created_at: '<dateTimeBetween("-3 years", "now")->format("c")>'
       owner_email: '<safeEmail()>'
 
 alice/users.yaml:

@@ -2,21 +2,28 @@
 
 This example keeps two JVM paths side by side:
 
-- `KotlinFakerPipeline.kt` for the Kotlin-first pipeline surface
+- `KotlinFakerPipeline.kt` for the Kotlin-first pipeline surface using the
+  kotlin-faker DSL and seeded `fakerConfig`
 - `DatafakerPipeline.kt` for Java-library interop notes and shared-provider teams
 
 ## What It Demonstrates
 
 - Kotlin data classes with snake_case JSON annotations
-- `buildList`/collection-first graph construction and deterministic `Random(seed)`
+- kotlin-faker DSL calls such as `faker.company.name()` and `faker.name.name()`
+- collection-first graph construction and deterministic `Random(seed)`
 - the kotlin-faker vs Datafaker tradeoff, documented honestly
 - validation before output
 
 ## Seeding Note
 
-The primary pipeline keeps seed flow explicit with `kotlin.random.Random(seed)`.
-That makes the smoke profile replayable even if teams later swap in deeper
-kotlin-faker provider calls. The secondary Datafaker file shows JVM interop.
+The primary pipeline keeps seed flow explicit in two places:
+
+- `fakerConfig { randomSeed = seed }` for kotlin-faker field generation
+- `kotlin.random.Random(seed)` for weighted distributions and pool decisions
+
+That split mirrors the same pattern used in the other language examples. The
+secondary Datafaker file shows JVM interop when a team already shares Java
+faker dependencies.
 
 ## Quick Start
 

@@ -34,6 +34,8 @@ class TestKotlinFakerExample(unittest.TestCase):
         datafaker_path = KOTLIN_DIR / "src" / "main" / "kotlin" / "io" / "agentcontextbase" / "faker" / "pipeline" / "DatafakerPipeline.kt"
         self.assertTrue(kotlin_path.exists())
         self.assertTrue(datafaker_path.exists())
+        kotlin_text = kotlin_path.read_text(encoding="utf-8")
+        self.assertTrue("io.github.serpro69.kfaker" in kotlin_text or "fakerConfig" in kotlin_text)
         text = datafaker_path.read_text(encoding="utf-8")
         self.assertTrue("kotlin-faker" in text or "DSL" in text or "idiomatic" in text)
 

@@ -1,5 +1,7 @@
 package io.agentcontextbase.faker.pipeline
 
+import io.github.serpro69.kfaker.Faker
+import io.github.serpro69.kfaker.fakerConfig
 import io.agentcontextbase.faker.distributions.Distributions
 import io.agentcontextbase.faker.domain.ApiKey
 import io.agentcontextbase.faker.domain.AuditEvent
@@ -25,6 +27,12 @@ private const val KEY_ALPHABET = "abcdefghijklmnopqrstuvwxyz0123456789"
 object KotlinFakerPipeline {
     fun generate(profile: Profile): TenantCoreDataset {
         val random = Random(profile.seed)
+        val faker = Faker(
+            fakerConfig {
+                randomSeed = profile.seed
+                locale = "en"
+            },
+        )
         val organizations = mutableListOf<Organization>()
         val users = mutableListOf<User>()
         val memberships = mutableListOf<Membership>()
@@ -39,10 +47,8 @@ object KotlinFakerPipeline {
         val keyPrefixes = mutableSetOf<String>()
         val orgMemberMap = mutableMapOf<String, List<String>>()
 
-        kotlinFakerAvailabilityNote()
-
         repeat(profile.numOrgs) { index ->
-            val baseName = "TenantCore Org ${index + 1}"
+            val baseName = "${faker.company.name()} ${index + 1}"
             val baseSlug = IdPools.slugify(baseName)
             var slug = baseSlug
             var suffix = 2
@@ -68,7 +74,7 @@ object KotlinFakerPipeline {
             users += User(
                 id = IdPools.deterministicId(random),
                 email = uniqueEmail(userEmails, localHint, "${locale.lowercase().replace("-", "")}.tenantcore-example.test", random),
-                fullName = if (edgeCase) EDGE_CASE_NAMES[index % EDGE_CASE_NAMES.size] else "Tenant User ${index + 1}",
+                fullName = if (edgeCase) EDGE_CASE_NAMES[index % EDGE_CASE_NAMES.size] else faker.name.name(),
                 locale = locale,
                 timezone = if (edgeCase) "UTC" else IdPools.TIMEZONE_BY_LOCALE.getValue(locale),
                 createdAt = IdPools.boundedPast(random).toString(),
@@ -98,7 +104,7 @@ object KotlinFakerPipeline {
                 projects += Project(
                     id = IdPools.deterministicId(random),
                     orgId = organization.id,
-                    name = "Project ${index + 1} ${organization.slug}",
+                    name = "${faker.commerce.productName()} ${index + 1}",
                     status = Distributions.weightedProjectStatus(random),
                     createdBy = memberIds.random(random),
                     createdAt = IdPools.between(random, java.time.Instant.parse(organization.createdAt), IdPools.BASE_TIME).toString(),
@@ -123,7 +129,7 @@ object KotlinFakerPipeline {
                     id = IdPools.deterministicId(random),
                     orgId = organization.id,
                     createdBy = memberIds.random(random),
-                    name = "token-${organization.slug}",
+                    name = "${faker.company.buzzword()} token",
                     keyPrefix = prefix,
                     createdAt = createdAt.toString(),
                     lastUsedAt = if (random.nextDouble() < 0.7) IdPools.between(random, createdAt, IdPools.BASE_TIME).toString() else null,
@@ -202,13 +208,4 @@ object KotlinFakerPipeline {
 
     private fun randomKey(random: Random): String =
         buildString(8) { repeat(8) { append(KEY_ALPHABET[random.nextInt(KEY_ALPHABET.length)]) } }
-
-    private fun kotlinFakerAvailabilityNote(): String =
-        try {
-            // kotlin-faker offers a more idiomatic Kotlin DSL than Java-style providers.
-            Class.forName("io.github.serpro69.kfaker.Faker")
-            "kotlin-faker DSL available"
-        } catch (_: Throwable) {
-            "kotlin-faker DSL unavailable"
-        }
 }

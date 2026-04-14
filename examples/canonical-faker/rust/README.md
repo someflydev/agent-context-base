@@ -2,7 +2,8 @@
 
 This example shows two distinct Rust surfaces:
 
-- `fake-rs` derive support on a non-relational `AddressSnapshot`
+- `fake-rs` derive support on a non-relational `AddressSnapshot` with
+  explicit `CityName()` / `CountryName()` field providers
 - a `PipelineBuilder` that keeps the TenantCore relational graph explicit
 
 Rust makes the pool pattern hard to ignore. The generator cannot pretend that
