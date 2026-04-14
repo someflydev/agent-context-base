@@ -74,6 +74,14 @@ Read `memory/INDEX.md` after `work.py resume` output and after reading `context/
 - [Drift Detection Guide](../docs/schema-validation-drift-detection.md) — CI strategies for schema drift
 - [Arc Durable Knowledge](../memory/concepts/schema-validation-arc.md) — committed facts about the arc
 
+## Faker and Synthetic Data Generation Arc
+
+- [Arc Overview](../docs/faker-arc-overview.md) — single-read arc summary for future sessions
+- [Doctrine](../context/doctrine/synthetic-data-realism.md) — 7 generation rules
+- [Domain Spec](../examples/canonical-faker/domain/schema.md) — TenantCore entity graph
+- [CATALOG](../examples/canonical-faker/CATALOG.md) — all 10 examples (all [x] as of PROMPT_125)
+- [Arc Durable Knowledge](../memory/concepts/faker-arc.md) — committed facts about the arc
+
 ## Contributing
 
 Add to `memory/concepts/` when a finding is durable, curated, and worth committing for
