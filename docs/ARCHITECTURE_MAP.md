@@ -129,6 +129,21 @@ Skills: `context/skills/terminal-example-selection.md`,
 - Tests: `verification/schema-validation/` (fixture tests, parity runner)
 - Status: COMPLETE (PROMPT_118)
 
+## Faker and Synthetic Data Generation Arc (PROMPT_119–126)
+
+- Doctrine:   `context/doctrine/synthetic-data-realism.md` (7 rules)
+- Archetype:  `context/archetypes/synthetic-data-generator.md`
+- Stacks:     `context/stacks/faker-{python,javascript,go,rust,java,kotlin,scala,ruby,php,elixir}.yaml` (10 stacks)
+- Skills:     `context/skills/faker-library-selection.md`, `context/skills/synthetic-dataset-design.md`
+- Workflow:   `context/workflows/add-faker-example.md`
+- Manifest:   `manifests/faker-polyglot.yaml`
+- Domain:     `examples/canonical-faker/domain/` (TenantCore, 7 entities, 4 profiles)
+- Examples:   `examples/canonical-faker/` (10 examples, 10 languages)
+- Validator:  `examples/canonical-faker/domain/validate_output.py`
+- Docs:       `docs/faker-arc-overview.md`
+- Tests:      `verification/faker/` (per-language + parity runner)
+- Status:     COMPLETE (PROMPT_126)
+
 ## Future Direction
 
 Clearly future-facing, not implemented yet:
