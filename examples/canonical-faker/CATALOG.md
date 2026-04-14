@@ -14,8 +14,8 @@ All examples generate the TenantCore domain described in `domain/schema.md`.
 | Rust | fake (fake-rs) | - | [x] PROMPT_123 | rust/ |
 | Java | Datafaker | - | [x] PROMPT_123 | java/ |
 | Kotlin | kotlin-faker | Datafaker | [x] PROMPT_123 | kotlin/ |
-| Ruby | faker | ffaker | [ ] PROMPT_124 | ruby/ |
-| PHP | FakerPHP/Faker | Nelmio Alice | [ ] PROMPT_124 | php/ |
+| Ruby | faker | ffaker | [x] PROMPT_124 | ruby/ |
+| PHP | FakerPHP/Faker | Nelmio Alice | [x] PROMPT_124 | php/ |
 | Scala | Datafaker (JVM) | - | [ ] PROMPT_125 | scala/ |
 | Elixir | Faker | ExMachina | [ ] PROMPT_125 | elixir/ |
 

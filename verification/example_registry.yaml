@@ -9552,3 +9552,253 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: medium
+  - name: examples-canonical-faker-php-alice-memberships-yaml
+    path: examples/canonical-faker/php/alice/memberships.yaml
+    language: yaml
+    stack_tags: [faker-php]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-php-alice-organizations-yaml
+    path: examples/canonical-faker/php/alice/organizations.yaml
+    language: yaml
+    stack_tags: [faker-php]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-php-alice-users-yaml
+    path: examples/canonical-faker/php/alice/users.yaml
+    language: yaml
+    stack_tags: [faker-php]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-php-alice-README-md
+    path: examples/canonical-faker/php/alice/README.md
+    language: markdown
+    stack_tags: [faker-php]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-php-composer-json
+    path: examples/canonical-faker/php/composer.json
+    language: json
+    stack_tags: [faker-php]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-php-generate-php
+    path: examples/canonical-faker/php/generate.php
+    language: php
+    stack_tags: [faker-php]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-php-src-Distributions-Distributions-php
+    path: examples/canonical-faker/php/src/Distributions/Distributions.php
+    language: php
+    stack_tags: [faker-php]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-php-src-Domain-Entities-php
+    path: examples/canonical-faker/php/src/Domain/Entities.php
+    language: php
+    stack_tags: [faker-php]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-php-src-Pipeline-TenantCorePipeline-php
+    path: examples/canonical-faker/php/src/Pipeline/TenantCorePipeline.php
+    language: php
+    stack_tags: [faker-php]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-php-src-Pools-IdPools-php
+    path: examples/canonical-faker/php/src/Pools/IdPools.php
+    language: php
+    stack_tags: [faker-php]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-php-src-Profiles-Profile-php
+    path: examples/canonical-faker/php/src/Profiles/Profile.php
+    language: php
+    stack_tags: [faker-php]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-php-src-Validate-Validator-php
+    path: examples/canonical-faker/php/src/Validate/Validator.php
+    language: php
+    stack_tags: [faker-php]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-php-tests-SmokeTest-php
+    path: examples/canonical-faker/php/tests/SmokeTest.php
+    language: php
+    stack_tags: [faker-php]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-php-README-md
+    path: examples/canonical-faker/php/README.md
+    language: markdown
+    stack_tags: [faker-php]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-ruby-README-md
+    path: examples/canonical-faker/ruby/README.md
+    language: markdown
+    stack_tags: [faker-ruby]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-ruby-generate-rb
+    path: examples/canonical-faker/ruby/generate.rb
+    language: ruby
+    stack_tags: [faker-ruby]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-ruby-lib-distributions-rb
+    path: examples/canonical-faker/ruby/lib/distributions.rb
+    language: ruby
+    stack_tags: [faker-ruby]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-ruby-lib-domain-rb
+    path: examples/canonical-faker/ruby/lib/domain.rb
+    language: ruby
+    stack_tags: [faker-ruby]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-ruby-lib-faker_pipeline-rb
+    path: examples/canonical-faker/ruby/lib/faker_pipeline.rb
+    language: ruby
+    stack_tags: [faker-ruby]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-ruby-lib-ffaker_pipeline-rb
+    path: examples/canonical-faker/ruby/lib/ffaker_pipeline.rb
+    language: ruby
+    stack_tags: [faker-ruby]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-ruby-lib-pools-rb
+    path: examples/canonical-faker/ruby/lib/pools.rb
+    language: ruby
+    stack_tags: [faker-ruby]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-ruby-lib-profiles-rb
+    path: examples/canonical-faker/ruby/lib/profiles.rb
+    language: ruby
+    stack_tags: [faker-ruby]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-ruby-lib-validate-rb
+    path: examples/canonical-faker/ruby/lib/validate.rb
+    language: ruby
+    stack_tags: [faker-ruby]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-ruby-spec-smoke_spec-rb
+    path: examples/canonical-faker/ruby/spec/smoke_spec.rb
+    language: ruby
+    stack_tags: [faker-ruby]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
+  - name: examples-canonical-faker-ruby-Gemfile
+    path: examples/canonical-faker/ruby/Gemfile
+    language: ruby
+    stack_tags: [faker-ruby]
+    archetype_tags: [synthetic-data-generator]
+    verification_level: syntax-checked
+    verification_targets: [file exists]
+    docker_supported: false
+    scenario_harness: ""
+    confidence: medium
