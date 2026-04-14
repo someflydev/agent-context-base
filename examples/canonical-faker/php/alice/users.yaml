@@ -1,0 +1,8 @@
+AgentContextBase\Faker\Domain\User:
+  user_{1..10}:
+    id: '<uuid()>'
+    email: '<unique()->safeEmail()>'
+    full_name: '<name()>'
+    locale: '<randomElement(["en-US","en-GB","de-DE","fr-FR"])>'
+    timezone: '<timezone()>'
+    created_at: '<dateTimeBetween("-3 years", "now")->format("c")>'

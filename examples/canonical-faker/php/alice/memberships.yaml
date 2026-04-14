@@ -1,0 +1,8 @@
+AgentContextBase\Faker\Domain\Membership:
+  membership_{1..18}:
+    id: '<uuid()>'
+    org_id: '@organization_<numberBetween(1,3)>->id'
+    user_id: '@user_<numberBetween(1,10)>->id'
+    role: '<randomElement(["owner","admin","member","viewer"])>'
+    joined_at: '<dateTimeBetween("-2 years", "now")->format("c")>'
+    invited_by: null

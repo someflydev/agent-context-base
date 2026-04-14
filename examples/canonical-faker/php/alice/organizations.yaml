@@ -1,0 +1,9 @@
+AgentContextBase\Faker\Domain\Organization:
+  organization_{1..3}:
+    id: '<uuid()>'
+    name: '<company()>'
+    slug: '<slug()>'
+    plan: '<randomElement(["free","pro","enterprise"])>'
+    region: '<randomElement(["us-east","us-west","eu-west","ap-southeast"])>'
+    created_at: '<dateTimeBetween("-3 years", "now")->format("c")>'
+    owner_email: '<safeEmail()>'
