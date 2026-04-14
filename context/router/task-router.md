@@ -172,6 +172,31 @@ Route from what the user is trying to do, not from internal file names.
   - load `context/skills/faker-library-selection.md`
 - "add a faker example", "add a synthetic data example"
   - load `context/workflows/add-faker-example.md`
+- "Show me Python realistic data generation", "python faker pipeline"
+  - load `context/stacks/faker-python.yaml`
+  - recommend `examples/canonical-faker/python/`
+- "Show declarative fixture generation", "php alice declarative"
+  - load `context/stacks/faker-php.yaml`
+  - recommend `examples/canonical-faker/php/alice/`
+- "Show how to enforce FK integrity on top of faker", "faker referential integrity"
+  - load `context/doctrine/synthetic-data-realism.md`
+  - load `context/skills/synthetic-dataset-design.md`
+  - recommend `examples/canonical-faker/domain/generation_patterns.py`
+- "Which faker library for a Go project?", "go faker library selection"
+  - load `context/skills/faker-library-selection.md`
+  - load `context/stacks/faker-go.yaml`
+- "Show deterministic/reproducible data generation", "faker seed reproducibility"
+  - load `context/doctrine/synthetic-data-realism.md`
+  - recommend `examples/canonical-faker/domain/seed-registry.md`
+- "Generate 50,000 rows for a benchmark", "large volume fake data"
+  - load `context/doctrine/synthetic-data-realism.md`
+  - recommend `examples/canonical-faker/domain/profiles.md`
+- "Show weighted distributions in data generation", "skewed faker distribution"
+  - load `context/doctrine/synthetic-data-realism.md`
+  - recommend `examples/canonical-faker/domain/generation_patterns.py`
+- "Compare faker with Mimesis", "faker versus mimesis"
+  - load `context/stacks/faker-python.yaml`
+  - recommend `examples/canonical-faker/python/mimesis_pipeline/README.md`
 - "what context do I need", "what to load for this task", "required vs optional context", "how to assemble the context bundle"
   - load `context/skills/context-bundle-assembly.md`
 - "how to read MEMORY.md", "is this MEMORY.md stale", "what to write in MEMORY.md", "update the continuity file", "memory is out of date"
