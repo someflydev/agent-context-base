@@ -794,6 +794,14 @@ stacks:
       - context/doctrine/multi-backend-coordination.md
       - context/archetypes/multi-backend-service.md
       - context/stacks/coordination-seam-patterns.md
+  - alias: fastapi jinja2 plotly
+    target: context/stacks/python-fastapi-jinja2-htmx-plotly.md
+  - alias: go echo templ plotly
+    target: context/stacks/go-echo-templ-htmx-plotly.md
+  - alias: rust axum askama plotly
+    target: context/stacks/rust-axum-askama-htmx-plotly.md
+  - alias: elixir phoenix htmx plotly
+    target: context/stacks/elixir-phoenix-htmx-plotly.md
 
 archetypes:
   - alias: backend api
@@ -830,6 +838,8 @@ archetypes:
     target: context/archetypes/local-rag-system.md
   - alias: storage lab
     target: context/archetypes/multi-storage-experiment.md
+  - alias: analytics workbench
+    target: context/archetypes/analytics-workbench.md
 
 capabilities:
   - alias: broker selection
@@ -1144,8 +1154,10 @@ capabilities:
     target: examples/canonical-integration-tests/playwright-filter-counts-example.spec.ts
   - alias: playwright split filter panel example
     target: examples/canonical-integration-tests/playwright-split-filter-panel-example.spec.ts
-  - alias: fastapi db integration test example
+  - alias: fastapidb integration test example
     target: examples/canonical-integration-tests/fastapi-db-integration-test-example.py
+  - alias: add visualization panel
+    target: context/workflows/add-visualization-panel.md
 
 manifests:
   - alias: fastapi backend api manifest

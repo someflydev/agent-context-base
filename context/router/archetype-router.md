@@ -30,6 +30,8 @@ Infer project shape from the repo goal, not only from language choice.
   - `context/archetypes/multi-backend-service.md`
 - single deployable service with Dokku emphasis, `Procfile`, `app.json`, or release commands
   - `context/archetypes/dokku-deployable-service.md`
+- charts, filters, drilldowns, HTMX-driven analytics, operations analytics, product analytics, server-rendered dashboard with Plotly and Tailwind
+  - `context/archetypes/analytics-workbench.md`
 
 ## Routing Examples
 

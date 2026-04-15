@@ -74,6 +74,16 @@ Read [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md) first. Thi
 - Make storage, queue, search, and deployment assumptions explicit before generation.
 - Pass the operator prompt through `--initial-prompt-text` or `--initial-prompt-file` whenever possible.
 
+## Dogfooding Repo Artifacts
+
+When implementing a new arc, prefer dogfooding existing repo artifacts over building parallel infrastructure.
+
+- Seed data for new canonical examples should use the canonical-faker domain (`examples/canonical-faker/`) and its generation helpers where they exist.
+- New doctrines should reference and build on related existing doctrines rather than repeating or silently contradicting them.
+- New skills and workflows should link to existing skills and workflows they depend on.
+
+Dogfooding is not optional: it is the mechanism that keeps the repo's artifacts coherent and its context system trustworthy. A new example that builds parallel seed infrastructure is a signal that the canonical-faker arc's outputs are not usable — which is itself a bug to fix.
+
 ## Verification
 
 - Base repo: `python scripts/validate_context.py`

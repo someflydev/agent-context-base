@@ -308,6 +308,20 @@ Route from what the user is trying to do, not from internal file names.
   - load `context/workflows/add-seed-data.md`
 - "show the canonical workflow examples", "post-flight checklist example", "handoff snapshot example"
   - load `examples/canonical-workflows/README.md`
+- "choose a chart type", "which chart for this data", "best chart for time series", "best chart for category comparison", "chart type guide", "what chart should I use"
+  - load `context/skills/chart-type-selection.md`
+- "design a figure builder", "testable plotly figure", "separate aggregation from chart", "plotly figure builder pattern", "how to structure chart construction"
+  - load `context/skills/plotly-figure-builder-design.md`
+- "add a visualization panel", "add a chart panel to a page", "add a new chart view", "add plotly to server-rendered page", "add htmx chart panel"
+  - load `context/workflows/add-visualization-panel.md`
+  - load `context/doctrine/plotly-htmx-server-rendered-viz.md`
+- "plotly visualization doctrine", "chart anti-patterns", "server-side figure model", "why not ship raw data to browser", "htmx fragment scope for charts"
+  - load `context/doctrine/plotly-htmx-server-rendered-viz.md`
+- "tailwind styling rules", "tailwind utility classes for filter ui", "tailwind in server-rendered analytics"
+  - load `context/doctrine/tailwind-utility-first.md`
+- "analytics workbench archetype", "ops analytics app", "product analytics service", "server-rendered analytics with htmx and plotly"
+  - load `context/archetypes/analytics-workbench.md`
+  - load `context/doctrine/plotly-htmx-server-rendered-viz.md`
 
 ## Terminal vs Web Decision
 

@@ -32,6 +32,14 @@ Infer the active stack from repo signals, touched files, and user language.
   - load `context/stacks/elixir-phoenix.md`
 - `Gemfile`, `config.ru`, `app/router.rb`, `app/actions/**/*.rb`, `hanami`
   - load `context/stacks/ruby-hanami.md`
+- `jinja2`, `Jinja2`, `TemplateResponse`, Python + HTMX + Tailwind rendering
+  - load `context/stacks/python-fastapi-jinja2-htmx-plotly.md`
+- `go.mod`, `echo`, `templ`, `.templ`, Go server-rendered HTMX analytics
+  - load `context/stacks/go-echo-templ-htmx-plotly.md`
+- `Cargo.toml`, `askama`, Rust server-rendered HTMX analytics
+  - load `context/stacks/rust-axum-askama-htmx-plotly.md`
+- `mix.exs`, Phoenix controllers (non-LiveView), `HX-Request`, Elixir HTMX analytics
+  - load `context/stacks/elixir-phoenix-htmx-plotly.md`
 
 ## Storage And Infra Signals
 
