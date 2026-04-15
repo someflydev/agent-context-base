@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Workbench - {{ view_name }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans">
+    <nav class="bg-white border-b border-gray-200 px-4 py-2.5">
+        <div class="flex flex-wrap items-center justify-between">
+            <a href="/" class="text-xl font-semibold">Analytics</a>
+            <div class="flex space-x-4">
+                <a href="/trends" class="px-3 py-2 rounded {% if view_name == 'Trends' %}bg-blue-100 text-blue-700{% else %}text-gray-600 hover:bg-gray-100{% endif %}">Trends</a>
+                <a href="/services" class="px-3 py-2 rounded {% if view_name == 'Services' %}bg-blue-100 text-blue-700{% else %}text-gray-600 hover:bg-gray-100{% endif %}">Services</a>
+                <a href="/distributions" class="px-3 py-2 rounded {% if view_name == 'Distributions' %}bg-blue-100 text-blue-700{% else %}text-gray-600 hover:bg-gray-100{% endif %}">Distributions</a>
+                <a href="/heatmap" class="px-3 py-2 rounded {% if view_name == 'Heatmap' %}bg-blue-100 text-blue-700{% else %}text-gray-600 hover:bg-gray-100{% endif %}">Heatmap</a>
+                <a href="/funnel" class="px-3 py-2 rounded {% if view_name == 'Funnel' %}bg-blue-100 text-blue-700{% else %}text-gray-600 hover:bg-gray-100{% endif %}">Funnel</a>
+                <a href="/incidents" class="px-3 py-2 rounded {% if view_name == 'Incidents' %}bg-blue-100 text-blue-700{% else %}text-gray-600 hover:bg-gray-100{% endif %}">Incidents</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="flex h-[calc(100vh-65px)] overflow-hidden">
+        <!-- Sidebar Filter Panel -->
+        <aside class="w-72 flex-shrink-0 border-r bg-white p-4 overflow-y-auto">
+            <form method="get" hx-get="/fragments/chart" hx-target="#chart-container" hx-swap="innerHTML" hx-push-url="true">
+                <input type="hidden" name="view" value="{{ view_name }}">
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Date From</label>
+                    <input type="date" name="date_from" value="{{ active_filters.date_from }}" class="border rounded p-1 w-full text-sm">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Date To</label>
+                    <input type="date" name="date_to" value="{{ active_filters.date_to }}" class="border rounded p-1 w-full text-sm">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Services</label>
+                    <select name="services" multiple class="border rounded p-1 min-h-[80px] w-full text-sm">
+                        {% for s in services_list %}
+                        <option value="{{ s.id }}" {% if s.id in active_filters.services %}selected{% endif %}>{{ s.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Environment</label>
+                    <select name="environment" multiple class="border rounded p-1 min-h-[80px] w-full text-sm">
+                        {% for e in environments_list %}
+                        <option value="{{ e.id }}" {% if e.id in active_filters.environment %}selected{% endif %}>{{ e.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                {% if view_name == 'Incidents' %}
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Severity</label>
+                    <select name="severity" multiple class="border rounded p-1 min-h-[80px] w-full text-sm">
+                        {% for s in severity_levels_list %}
+                        <option value="{{ s.id }}" {% if s.id in active_filters.severity %}selected{% endif %}>{{ s.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% endif %}
+                
+                <button type="submit" class="bg-blue-600 text-white w-full px-4 py-2 rounded hover:bg-blue-700 text-sm font-medium" 
+                        hx-get="/fragments/summary" hx-target="#summary-card" hx-swap="outerHTML" hx-include="closest form">
+                    Apply Filters
+                </button>
+            </form>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto p-6">
+            <div class="flex justify-between items-start mb-6">
+                <h1 class="text-2xl font-bold">{{ view_name }}</h1>
+                {% include 'fragments/summary.html' %}
+            </div>
+            
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    
+    <footer class="border-t bg-white px-4 py-2 text-xs text-gray-500 flex justify-between">
+        <span>Fixture: {{ fixture_info.profile }}</span>
+        <span>Seed: {{ fixture_info.seed }}</span>
+    </footer>
+
+    <script>
+      function renderPlotly(containerId, figureJsonStr) {
+          if (!figureJsonStr) return;
+          try {
+              var figure = JSON.parse(figureJsonStr);
+              Plotly.newPlot(containerId, figure.data, figure.layout);
+          } catch(e) {
+              console.error("Error rendering chart:", e);
+          }
+      }
+      
+      document.addEventListener("DOMContentLoaded", function() {
+          var chartDiv = document.getElementById("chart-panel");
+          if (chartDiv && chartDiv.dataset.figure) {
+              renderPlotly("chart-panel", chartDiv.dataset.figure);
+          }
+          var boxDiv = document.getElementById("chart-panel-box");
+          if (boxDiv && boxDiv.dataset.figure) {
+              renderPlotly("chart-panel-box", boxDiv.dataset.figure);
+          }
+      });
+      
+      document.addEventListener("htmx:afterSwap", function(evt) {
+          if (evt.detail.target.id === "chart-container" || evt.detail.target.id === "content-panel") {
+              var chartDiv = document.getElementById("chart-panel");
+              if (chartDiv && chartDiv.dataset.figure) {
+                  renderPlotly("chart-panel", chartDiv.dataset.figure);
+              }
+              var boxDiv = document.getElementById("chart-panel-box");
+              if (boxDiv && boxDiv.dataset.figure) {
+                  renderPlotly("chart-panel-box", boxDiv.dataset.figure);
+              }
+          }
+      });
+    </script>
+</body>
+</html>

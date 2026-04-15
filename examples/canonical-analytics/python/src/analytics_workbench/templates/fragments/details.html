@@ -1,0 +1,28 @@
+<div class="bg-white p-4 rounded shadow-sm border border-gray-200 h-full">
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="font-semibold text-gray-800">Recent Incidents</h3>
+        <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded">{{ service_name }}</span>
+    </div>
+    
+    {% if not details %}
+    <p class="text-sm text-gray-500 italic">No recent incidents found.</p>
+    {% else %}
+    <div class="space-y-3">
+        {% for inc in details %}
+        <div class="border-l-2 {% if inc.severity == 'critical' %}border-red-500{% elif inc.severity == 'high' %}border-orange-500{% elif inc.severity == 'medium' %}border-yellow-500{% else %}border-blue-500{% endif %} pl-3 py-1">
+            <div class="flex justify-between items-start">
+                <span class="text-sm font-medium text-gray-800">{{ inc.id }}</span>
+                <span class="text-xs text-gray-500">{{ inc.timestamp[:10] }}</span>            </div>
+            <div class="text-xs text-gray-500 mt-1">
+                Environment: {{ inc.environment }}<br>
+                {% if inc.time_to_resolve_mins %}
+                MTTR: {{ inc.time_to_resolve_mins }} mins
+                {% else %}
+                Ongoing
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>

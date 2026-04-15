@@ -1,0 +1,48 @@
+<div id="summary-card" class="bg-white border rounded shadow-sm p-4 w-64">
+    <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Summary</h3>
+    
+    {% if summary.total_events is defined %}
+    <div class="mb-2"><span class="text-xs text-gray-500">Total Events:</span> <span class="font-medium">{{ summary.total_events }}</span></div>
+    {% endif %}
+    
+    {% if summary.total_samples is defined %}
+    <div class="mb-2"><span class="text-xs text-gray-500">Total Samples:</span> <span class="font-medium">{{ summary.total_samples }}</span></div>
+    {% endif %}
+    
+    {% if summary.total_sessions is defined %}
+    <div class="mb-2"><span class="text-xs text-gray-500">Total Sessions:</span> <span class="font-medium">{{ summary.total_sessions }}</span></div>
+    {% endif %}
+    
+    {% if summary.total_incidents is defined %}
+    <div class="mb-2"><span class="text-xs text-gray-500">Total Incidents:</span> <span class="font-medium">{{ summary.total_incidents }}</span></div>
+    {% endif %}
+    
+    {% if summary.date_range %}
+    <div class="mb-2"><span class="text-xs text-gray-500">Date Range:</span> <span class="text-sm">{{ summary.date_range }}</span></div>
+    {% endif %}
+    
+    {% if summary.overall_conversion %}
+    <div class="mb-2"><span class="text-xs text-gray-500">Conversion:</span> <span class="text-sm">{{ summary.overall_conversion }}</span></div>
+    {% endif %}
+    
+    {% if summary.p50 %}
+    <div class="grid grid-cols-2 gap-2 mt-2">
+        <div><span class="text-xs text-gray-500">P50:</span> <span class="text-sm">{{ summary.p50 }}</span></div>
+        <div><span class="text-xs text-gray-500">P95:</span> <span class="text-sm">{{ summary.p95 }}</span></div>
+    </div>
+    {% endif %}
+    
+    {% if active_filters %}
+    <div class="mt-3 pt-3 border-t border-gray-100">
+        <span class="text-xs text-gray-500 block mb-1">Active Filters:</span>
+        <div class="flex flex-wrap gap-1">
+            {% if active_filters.services %}<span class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-xs">Services: {{ active_filters.services|length }}</span>{% endif %}
+            {% if active_filters.environment %}<span class="px-2 py-0.5 bg-green-50 text-green-600 rounded text-xs">Env: {{ active_filters.environment|length }}</span>{% endif %}
+            {% if active_filters.severity %}<span class="px-2 py-0.5 bg-red-50 text-red-600 rounded text-xs">Sev: {{ active_filters.severity|length }}</span>{% endif %}
+            {% if not active_filters.services and not active_filters.environment and not active_filters.severity %}
+            <span class="text-xs text-gray-400 italic">None</span>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>

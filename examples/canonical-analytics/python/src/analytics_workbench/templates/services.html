@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex gap-6">
+    <div id="chart-container" class="bg-white p-4 rounded shadow-sm border border-gray-200 flex-1">
+        {% include 'fragments/chart.html' %}
+    </div>
+    <!-- Example drilldown panel placeholder -->
+    <div id="detail-panel-container" class="w-80">
+        <!-- user could click a bar to load details here -->
+        <div class="bg-white p-4 rounded shadow-sm border border-gray-200 h-full">
+            <h3 class="font-semibold text-gray-700 mb-2">Details</h3>
+            <p class="text-sm text-gray-500">Select a service to view incidents</p>
+            <button hx-get="/fragments/details?view=Services&service=frontend-web" hx-target="#detail-panel-container" class="mt-4 text-sm text-blue-600 hover:underline">Load sample details</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
