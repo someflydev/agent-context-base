@@ -16134,6 +16134,816 @@
       ],
       "rank": 100,
       "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/pyproject.toml",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/generate_tests.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/tests/smoke/test_routes_smoke.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/tests/unit/test_analytics_incidents.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/tests/unit/test_charts_incident.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/tests/unit/test_analytics_services.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/tests/unit/test_analytics_funnel.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/tests/unit/test_charts_heatmap.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/tests/unit/test_analytics_heatmap.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/tests/unit/test_charts_latency.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/tests/unit/test_analytics_distributions.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/tests/unit/test_charts_time_series.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/tests/unit/test_charts_funnel.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/tests/unit/test_charts_service_bar.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/tests/unit/test_filters.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/tests/unit/test_analytics_events.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/config.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/__init__.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/main.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/filters.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/charts/service_bar.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/charts/incident_bar.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/charts/time_series.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/charts/__init__.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/charts/funnel_chart.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/charts/latency_boxplot.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/charts/heatmap_chart.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/charts/latency_histogram.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/templates/index.html",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/templates/base.html",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/templates/trends.html",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/templates/distributions.html",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/templates/funnel.html",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/templates/incidents.html",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/templates/heatmap.html",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/templates/services.html",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/templates/fragments/details.html",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/templates/fragments/chart.html",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/templates/fragments/summary.html",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/data/models.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/data/__init__.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/data/loader.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/routes/health.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/routes/__init__.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/routes/pages.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/routes/utils.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/routes/fragments.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/analytics/heatmap.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/analytics/services.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/analytics/events.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/analytics/__init__.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/analytics/distributions.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/analytics/funnel.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/python/src/analytics_workbench/analytics/incidents.py",
+      "category": "analytics",
+      "summary": "Python canonical analytics workbench implementation.",
+      "stacks": [
+        "python-fastapi-uv-ruff-orjson-polars"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [],
+      "patterns": [],
+      "rank": 50,
+      "stability": "canonical"
     }
   ]
 }

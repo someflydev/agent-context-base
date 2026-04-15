@@ -10082,3 +10082,705 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: low
+  - name: analytics-pyproject-toml
+    path: examples/canonical-analytics/python/pyproject.toml
+    language: toml
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-generate_tests-py
+    path: examples/canonical-analytics/python/generate_tests.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-tests-smoke-test_routes_smoke-py
+    path: examples/canonical-analytics/python/tests/smoke/test_routes_smoke.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-tests-unit-test_analytics_incidents-py
+    path: examples/canonical-analytics/python/tests/unit/test_analytics_incidents.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-tests-unit-test_charts_incident-py
+    path: examples/canonical-analytics/python/tests/unit/test_charts_incident.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-tests-unit-test_analytics_services-py
+    path: examples/canonical-analytics/python/tests/unit/test_analytics_services.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-tests-unit-test_analytics_funnel-py
+    path: examples/canonical-analytics/python/tests/unit/test_analytics_funnel.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-tests-unit-test_charts_heatmap-py
+    path: examples/canonical-analytics/python/tests/unit/test_charts_heatmap.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-tests-unit-test_analytics_heatmap-py
+    path: examples/canonical-analytics/python/tests/unit/test_analytics_heatmap.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-tests-unit-test_charts_latency-py
+    path: examples/canonical-analytics/python/tests/unit/test_charts_latency.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-tests-unit-test_analytics_distributions-py
+    path: examples/canonical-analytics/python/tests/unit/test_analytics_distributions.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-tests-unit-test_charts_time_series-py
+    path: examples/canonical-analytics/python/tests/unit/test_charts_time_series.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-tests-unit-test_charts_funnel-py
+    path: examples/canonical-analytics/python/tests/unit/test_charts_funnel.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-tests-unit-test_charts_service_bar-py
+    path: examples/canonical-analytics/python/tests/unit/test_charts_service_bar.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-tests-unit-test_filters-py
+    path: examples/canonical-analytics/python/tests/unit/test_filters.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-tests-unit-test_analytics_events-py
+    path: examples/canonical-analytics/python/tests/unit/test_analytics_events.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-config-py
+    path: examples/canonical-analytics/python/src/analytics_workbench/config.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-__init__-py
+    path: examples/canonical-analytics/python/src/analytics_workbench/__init__.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-main-py
+    path: examples/canonical-analytics/python/src/analytics_workbench/main.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-filters-py
+    path: examples/canonical-analytics/python/src/analytics_workbench/filters.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-charts-service_bar-py
+    path: examples/canonical-analytics/python/src/analytics_workbench/charts/service_bar.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-charts-incident_bar-py
+    path: examples/canonical-analytics/python/src/analytics_workbench/charts/incident_bar.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-charts-time_series-py
+    path: examples/canonical-analytics/python/src/analytics_workbench/charts/time_series.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-charts-__init__-py
+    path: examples/canonical-analytics/python/src/analytics_workbench/charts/__init__.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-charts-funnel_chart-py
+    path: examples/canonical-analytics/python/src/analytics_workbench/charts/funnel_chart.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-charts-latency_boxplot-py
+    path: examples/canonical-analytics/python/src/analytics_workbench/charts/latency_boxplot.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-charts-heatmap_chart-py
+    path: examples/canonical-analytics/python/src/analytics_workbench/charts/heatmap_chart.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-charts-latency_histogram-py
+    path: examples/canonical-analytics/python/src/analytics_workbench/charts/latency_histogram.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-templates-index-html
+    path: examples/canonical-analytics/python/src/analytics_workbench/templates/index.html
+    language: html
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-templates-base-html
+    path: examples/canonical-analytics/python/src/analytics_workbench/templates/base.html
+    language: html
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-templates-trends-html
+    path: examples/canonical-analytics/python/src/analytics_workbench/templates/trends.html
+    language: html
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-templates-distributions-html
+    path: examples/canonical-analytics/python/src/analytics_workbench/templates/distributions.html
+    language: html
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-templates-funnel-html
+    path: examples/canonical-analytics/python/src/analytics_workbench/templates/funnel.html
+    language: html
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-templates-incidents-html
+    path: examples/canonical-analytics/python/src/analytics_workbench/templates/incidents.html
+    language: html
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-templates-heatmap-html
+    path: examples/canonical-analytics/python/src/analytics_workbench/templates/heatmap.html
+    language: html
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-templates-services-html
+    path: examples/canonical-analytics/python/src/analytics_workbench/templates/services.html
+    language: html
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-templates-fragments-details-html
+    path: examples/canonical-analytics/python/src/analytics_workbench/templates/fragments/details.html
+    language: html
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-templates-fragments-chart-html
+    path: examples/canonical-analytics/python/src/analytics_workbench/templates/fragments/chart.html
+    language: html
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-templates-fragments-summary-html
+    path: examples/canonical-analytics/python/src/analytics_workbench/templates/fragments/summary.html
+    language: html
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-data-models-py
+    path: examples/canonical-analytics/python/src/analytics_workbench/data/models.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-data-__init__-py
+    path: examples/canonical-analytics/python/src/analytics_workbench/data/__init__.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-data-loader-py
+    path: examples/canonical-analytics/python/src/analytics_workbench/data/loader.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-routes-health-py
+    path: examples/canonical-analytics/python/src/analytics_workbench/routes/health.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-routes-__init__-py
+    path: examples/canonical-analytics/python/src/analytics_workbench/routes/__init__.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-routes-pages-py
+    path: examples/canonical-analytics/python/src/analytics_workbench/routes/pages.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-routes-utils-py
+    path: examples/canonical-analytics/python/src/analytics_workbench/routes/utils.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-routes-fragments-py
+    path: examples/canonical-analytics/python/src/analytics_workbench/routes/fragments.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-analytics-heatmap-py
+    path: examples/canonical-analytics/python/src/analytics_workbench/analytics/heatmap.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-analytics-services-py
+    path: examples/canonical-analytics/python/src/analytics_workbench/analytics/services.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-analytics-events-py
+    path: examples/canonical-analytics/python/src/analytics_workbench/analytics/events.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-analytics-__init__-py
+    path: examples/canonical-analytics/python/src/analytics_workbench/analytics/__init__.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-analytics-distributions-py
+    path: examples/canonical-analytics/python/src/analytics_workbench/analytics/distributions.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-analytics-funnel-py
+    path: examples/canonical-analytics/python/src/analytics_workbench/analytics/funnel.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
+  - name: analytics-src-analytics_workbench-analytics-incidents-py
+    path: examples/canonical-analytics/python/src/analytics_workbench/analytics/incidents.py
+    language: python
+    stack_tags:
+      - python-fastapi-uv-ruff-orjson-polars
+    archetype_tags:
+      - interactive-data-service
+    verification_level: syntax-checked
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+    confidence: high
