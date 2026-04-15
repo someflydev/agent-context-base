@@ -1,0 +1,3336 @@
+{
+  "events": [
+    {
+      "id": "46685257-bdd6-40fb-8667-1ad11c80317f",
+      "timestamp": "2025-11-22T00:00:00",
+      "environment": "production",
+      "service": "billing-api",
+      "count": 18
+    },
+    {
+      "id": "8b9d2434-e465-4150-bd9c-66b3ad3c2d6d",
+      "timestamp": "2025-12-26T00:00:00",
+      "environment": "production",
+      "service": "search-worker",
+      "count": 5
+    },
+    {
+      "id": "815ef6d1-3b8f-4a18-b7f8-a88b17fc695a",
+      "timestamp": "2025-12-31T00:00:00",
+      "environment": "production",
+      "service": "billing-api",
+      "count": 92
+    },
+    {
+      "id": "96da1dac-72ff-4d2a-b86e-cbe06b65a6a4",
+      "timestamp": "2025-11-28T00:00:00",
+      "environment": "staging",
+      "service": "auth-service",
+      "count": 98
+    },
+    {
+      "id": "47229389-571a-4876-ac30-7511b2b9437a",
+      "timestamp": "2025-12-22T00:00:00",
+      "environment": "production",
+      "service": "billing-api",
+      "count": 98
+    },
+    {
+      "id": "18c26797-6142-4a7d-97be-31111a2a73ed",
+      "timestamp": "2025-12-11T00:00:00",
+      "environment": "staging",
+      "service": "user-dashboard",
+      "count": 78
+    },
+    {
+      "id": "759cde66-bacf-43d0-8b1f-9163ce9ff57f",
+      "timestamp": "2025-12-16T00:00:00",
+      "environment": "production",
+      "service": "search-worker",
+      "count": 11
+    },
+    {
+      "id": "9e574f7a-a0ee-49ae-9453-dd324b0dbb41",
+      "timestamp": "2025-11-27T00:00:00",
+      "environment": "staging",
+      "service": "billing-api",
+      "count": 91
+    },
+    {
+      "id": "c5e7ce8a-3a57-4a8e-a948-8d990bbb2599",
+      "timestamp": "2025-12-28T00:00:00",
+      "environment": "staging",
+      "service": "auth-service",
+      "count": 30
+    },
+    {
+      "id": "a2bc372f-7412-4293-8729-4739614ff3d7",
+      "timestamp": "2025-12-26T00:00:00",
+      "environment": "staging",
+      "service": "billing-api",
+      "count": 48
+    },
+    {
+      "id": "b3aa7efe-4458-4885-ab90-99a435a240ae",
+      "timestamp": "2025-12-10T00:00:00",
+      "environment": "production",
+      "service": "billing-api",
+      "count": 69
+    },
+    {
+      "id": "451b4cf3-6123-4df7-b656-af7229d4beef",
+      "timestamp": "2025-12-17T00:00:00",
+      "environment": "production",
+      "service": "user-dashboard",
+      "count": 99
+    },
+    {
+      "id": "ce177b4e-0837-48a3-9261-a7ab3aa2e4f9",
+      "timestamp": "2025-12-29T00:00:00",
+      "environment": "staging",
+      "service": "search-worker",
+      "count": 35
+    },
+    {
+      "id": "9132b63e-f162-47e4-a9c3-49e03602f8ac",
+      "timestamp": "2025-12-28T00:00:00",
+      "environment": "staging",
+      "service": "billing-api",
+      "count": 84
+    },
+    {
+      "id": "a491f0b2-ea1f-4a65-a27a-984d654821d0",
+      "timestamp": "2025-12-01T00:00:00",
+      "environment": "staging",
+      "service": "billing-api",
+      "count": 34
+    },
+    {
+      "id": "89fa6a68-8fb5-427b-beb7-99193f22faf8",
+      "timestamp": "2025-12-24T00:00:00",
+      "environment": "staging",
+      "service": "search-worker",
+      "count": 75
+    },
+    {
+      "id": "ff5e9ff0-ff50-4de4-b825-67b85cabcc97",
+      "timestamp": "2025-12-07T00:00:00",
+      "environment": "production",
+      "service": "search-worker",
+      "count": 12
+    },
+    {
+      "id": "a0a04dc4-2720-4bdf-9c11-f735dc713d96",
+      "timestamp": "2025-12-29T00:00:00",
+      "environment": "production",
+      "service": "search-worker",
+      "count": 77
+    },
+    {
+      "id": "ff01cf99-988c-44c9-a1b1-cd2262801c45",
+      "timestamp": "2025-12-28T00:00:00",
+      "environment": "staging",
+      "service": "user-dashboard",
+      "count": 71
+    },
+    {
+      "id": "ae849217-1d53-434b-b881-39b9ae270da7",
+      "timestamp": "2026-01-01T00:00:00",
+      "environment": "staging",
+      "service": "user-dashboard",
+      "count": 15
+    },
+    {
+      "id": "00d4af59-7427-4ca3-a87d-06ca6f4cc69a",
+      "timestamp": "2025-12-14T00:00:00",
+      "environment": "staging",
+      "service": "billing-api",
+      "count": 65
+    },
+    {
+      "id": "d777a477-4c66-40a8-a013-ac6ededa4e16",
+      "timestamp": "2025-12-26T00:00:00",
+      "environment": "production",
+      "service": "billing-api",
+      "count": 48
+    },
+    {
+      "id": "ec24a3c5-c754-408f-b418-8f3f8a14be62",
+      "timestamp": "2025-12-22T00:00:00",
+      "environment": "production",
+      "service": "user-dashboard",
+      "count": 63
+    },
+    {
+      "id": "e0f3eab0-5cec-4eb5-add9-68311ca35cfb",
+      "timestamp": "2025-12-31T00:00:00",
+      "environment": "staging",
+      "service": "billing-api",
+      "count": 8
+    },
+    {
+      "id": "14296c07-f26b-4776-913e-4de2e0c53cb8",
+      "timestamp": "2025-12-17T00:00:00",
+      "environment": "production",
+      "service": "search-worker",
+      "count": 9
+    },
+    {
+      "id": "a8e56e0c-20de-435d-a031-d750c40db9b4",
+      "timestamp": "2025-11-28T00:00:00",
+      "environment": "staging",
+      "service": "billing-api",
+      "count": 34
+    },
+    {
+      "id": "f6e07cc0-6c52-449f-9b49-bd26df57c59a",
+      "timestamp": "2025-11-29T00:00:00",
+      "environment": "production",
+      "service": "billing-api",
+      "count": 92
+    },
+    {
+      "id": "a65e688e-abf3-4d39-bec2-1bbe66245bfa",
+      "timestamp": "2025-12-13T00:00:00",
+      "environment": "staging",
+      "service": "search-worker",
+      "count": 67
+    },
+    {
+      "id": "1064005c-3985-43cf-bf76-be1d1efa2197",
+      "timestamp": "2025-12-04T00:00:00",
+      "environment": "staging",
+      "service": "auth-service",
+      "count": 76
+    },
+    {
+      "id": "01d74256-3860-4ab6-96a4-02f23ae8cc93",
+      "timestamp": "2025-11-27T00:00:00",
+      "environment": "production",
+      "service": "auth-service",
+      "count": 30
+    },
+    {
+      "id": "5496f63c-dc11-40c1-880a-adfbe7c99b26",
+      "timestamp": "2025-12-28T00:00:00",
+      "environment": "production",
+      "service": "billing-api",
+      "count": 36
+    },
+    {
+      "id": "b92da22b-21df-406f-8a0b-3c3336d8393a",
+      "timestamp": "2025-12-01T00:00:00",
+      "environment": "staging",
+      "service": "billing-api",
+      "count": 61
+    },
+    {
+      "id": "a8b317fa-18d0-452b-9825-bc5430beb45f",
+      "timestamp": "2025-12-06T00:00:00",
+      "environment": "staging",
+      "service": "user-dashboard",
+      "count": 55
+    },
+    {
+      "id": "0dde29a6-baa4-471a-9d24-67ac778eedb3",
+      "timestamp": "2025-12-06T00:00:00",
+      "environment": "production",
+      "service": "auth-service",
+      "count": 52
+    },
+    {
+      "id": "3fa7f104-1bf9-4e27-9c96-925eccf3a171",
+      "timestamp": "2025-12-11T00:00:00",
+      "environment": "production",
+      "service": "billing-api",
+      "count": 69
+    },
+    {
+      "id": "474ebc19-2ef9-4276-ac00-6f6123e2fcb4",
+      "timestamp": "2025-12-04T00:00:00",
+      "environment": "staging",
+      "service": "billing-api",
+      "count": 10
+    },
+    {
+      "id": "8ce21ea3-db20-456e-9c81-5fe7ceda8bbb",
+      "timestamp": "2025-12-04T00:00:00",
+      "environment": "production",
+      "service": "auth-service",
+      "count": 84
+    },
+    {
+      "id": "17e011b7-f810-4383-83c7-2ba8d605e770",
+      "timestamp": "2025-11-28T00:00:00",
+      "environment": "production",
+      "service": "billing-api",
+      "count": 53
+    },
+    {
+      "id": "66aa9385-dd59-4a71-b6b8-24817b3a4e3e",
+      "timestamp": "2025-12-01T00:00:00",
+      "environment": "production",
+      "service": "billing-api",
+      "count": 49
+    },
+    {
+      "id": "ed3049cf-43e4-48fc-a3f2-ae24fc3d3348",
+      "timestamp": "2026-01-01T00:00:00",
+      "environment": "staging",
+      "service": "user-dashboard",
+      "count": 55
+    },
+    {
+      "id": "27a0c3d7-7c96-4f79-b7e9-9acaa97065e1",
+      "timestamp": "2025-11-27T00:00:00",
+      "environment": "production",
+      "service": "user-dashboard",
+      "count": 28
+    },
+    {
+      "id": "0f9aea4b-8acd-4e10-bc59-4585944528c0",
+      "timestamp": "2025-12-29T00:00:00",
+      "environment": "staging",
+      "service": "auth-service",
+      "count": 7
+    },
+    {
+      "id": "da4bd9ca-eb5c-4467-80ba-cd647a0ecfea",
+      "timestamp": "2025-11-25T00:00:00",
+      "environment": "production",
+      "service": "auth-service",
+      "count": 66
+    },
+    {
+      "id": "98543881-118a-4d29-af92-3996d9f195d0",
+      "timestamp": "2025-12-27T00:00:00",
+      "environment": "production",
+      "service": "billing-api",
+      "count": 52
+    },
+    {
+      "id": "3f07f814-91d6-4f78-a3e9-de99f10c718b",
+      "timestamp": "2025-12-25T00:00:00",
+      "environment": "production",
+      "service": "auth-service",
+      "count": 54
+    },
+    {
+      "id": "ef48e8d5-50fd-4d3f-85d5-169590b2b633",
+      "timestamp": "2025-11-25T00:00:00",
+      "environment": "staging",
+      "service": "billing-api",
+      "count": 86
+    },
+    {
+      "id": "21813d25-6552-48a6-83ff-50113d1a85dd",
+      "timestamp": "2025-12-12T00:00:00",
+      "environment": "staging",
+      "service": "search-worker",
+      "count": 41
+    },
+    {
+      "id": "ff9ab5c2-9f04-4aed-b552-332702627f73",
+      "timestamp": "2025-12-28T00:00:00",
+      "environment": "production",
+      "service": "auth-service",
+      "count": 69
+    },
+    {
+      "id": "eeea163e-21e8-4c68-83e4-2caf8181a8cc",
+      "timestamp": "2025-12-19T00:00:00",
+      "environment": "staging",
+      "service": "auth-service",
+      "count": 32
+    },
+    {
+      "id": "d5704f32-702c-4d20-a862-18b848f4ef12",
+      "timestamp": "2025-12-09T00:00:00",
+      "environment": "staging",
+      "service": "auth-service",
+      "count": 86
+    },
+    {
+      "id": "1a84a51a-a9d3-47c7-ae87-905e4ca415ea",
+      "timestamp": "2025-11-27T00:00:00",
+      "environment": "production",
+      "service": "user-dashboard",
+      "count": 15
+    },
+    {
+      "id": "45b89cd9-27cb-4f2a-8da0-1097be0f051b",
+      "timestamp": "2025-12-26T00:00:00",
+      "environment": "staging",
+      "service": "billing-api",
+      "count": 92
+    },
+    {
+      "id": "da587e8a-a25d-4b29-afff-cfd2341ef40b",
+      "timestamp": "2025-12-11T00:00:00",
+      "environment": "staging",
+      "service": "search-worker",
+      "count": 33
+    },
+    {
+      "id": "d450281c-6c6f-4633-a260-772317a0df49",
+      "timestamp": "2025-12-29T00:00:00",
+      "environment": "staging",
+      "service": "auth-service",
+      "count": 1
+    },
+    {
+      "id": "fad409e2-a319-4cb4-a17d-65a0c56811cd",
+      "timestamp": "2025-12-11T00:00:00",
+      "environment": "staging",
+      "service": "billing-api",
+      "count": 95
+    },
+    {
+      "id": "8f9797b0-6d7c-43c9-b4a6-9f3c8d3aed99",
+      "timestamp": "2025-12-04T00:00:00",
+      "environment": "production",
+      "service": "auth-service",
+      "count": 10
+    },
+    {
+      "id": "5e84f058-d5a8-44eb-8939-23de8babce3b",
+      "timestamp": "2025-12-23T00:00:00",
+      "environment": "production",
+      "service": "search-worker",
+      "count": 17
+    },
+    {
+      "id": "eededb07-e623-4689-9d59-cd2a4eea04e7",
+      "timestamp": "2025-12-30T00:00:00",
+      "environment": "production",
+      "service": "user-dashboard",
+      "count": 27
+    },
+    {
+      "id": "c7b5b2bc-5a8a-4eca-9a50-aec3aabc25fa",
+      "timestamp": "2025-12-17T00:00:00",
+      "environment": "staging",
+      "service": "billing-api",
+      "count": 31
+    },
+    {
+      "id": "2d534dd0-cf8e-4c5a-8cc5-6569f9e8a369",
+      "timestamp": "2025-12-22T00:00:00",
+      "environment": "staging",
+      "service": "auth-service",
+      "count": 23
+    },
+    {
+      "id": "cd5f4822-6966-48aa-ae49-f329c84a7b28",
+      "timestamp": "2025-12-11T00:00:00",
+      "environment": "production",
+      "service": "user-dashboard",
+      "count": 21
+    },
+    {
+      "id": "dbccc477-09e9-4b0a-9f46-529061ee411a",
+      "timestamp": "2025-12-26T00:00:00",
+      "environment": "staging",
+      "service": "billing-api",
+      "count": 26
+    },
+    {
+      "id": "cb9bc326-d20e-4c17-8e20-fd1a598336e3",
+      "timestamp": "2025-12-03T00:00:00",
+      "environment": "production",
+      "service": "billing-api",
+      "count": 4
+    },
+    {
+      "id": "dd463c09-4752-47aa-9408-f9ac6601ddd0",
+      "timestamp": "2025-12-20T00:00:00",
+      "environment": "production",
+      "service": "user-dashboard",
+      "count": 45
+    },
+    {
+      "id": "d7fa2d8d-fb2c-4025-adf4-e62d6651529e",
+      "timestamp": "2025-11-30T00:00:00",
+      "environment": "staging",
+      "service": "auth-service",
+      "count": 15
+    },
+    {
+      "id": "fbc9f87a-f668-4617-94a1-875d2db69edb",
+      "timestamp": "2025-12-16T00:00:00",
+      "environment": "staging",
+      "service": "auth-service",
+      "count": 14
+    },
+    {
+      "id": "c9535b63-ba81-4dd9-987e-f3446f3f920c",
+      "timestamp": "2025-11-24T00:00:00",
+      "environment": "staging",
+      "service": "search-worker",
+      "count": 78
+    },
+    {
+      "id": "939b462d-e645-4129-a29c-2ae31d9af659",
+      "timestamp": "2025-11-30T00:00:00",
+      "environment": "production",
+      "service": "user-dashboard",
+      "count": 6
+    },
+    {
+      "id": "ce777f00-ecf2-4e76-8519-7ff4006ed6e3",
+      "timestamp": "2025-12-05T00:00:00",
+      "environment": "production",
+      "service": "user-dashboard",
+      "count": 56
+    },
+    {
+      "id": "5487fd4f-ebb7-4385-aa0b-7b14f2e9702d",
+      "timestamp": "2025-12-28T00:00:00",
+      "environment": "staging",
+      "service": "auth-service",
+      "count": 93
+    },
+    {
+      "id": "688c7015-aab9-4e49-8f2d-479681d2c7de",
+      "timestamp": "2025-12-13T00:00:00",
+      "environment": "staging",
+      "service": "search-worker",
+      "count": 90
+    },
+    {
+      "id": "6ba25efe-311c-4eb6-a095-eef68dedf9fb",
+      "timestamp": "2025-12-14T00:00:00",
+      "environment": "staging",
+      "service": "billing-api",
+      "count": 79
+    },
+    {
+      "id": "d56f0350-8c45-4ce2-a7f4-8ad54d0b0d1a",
+      "timestamp": "2025-11-26T00:00:00",
+      "environment": "production",
+      "service": "user-dashboard",
+      "count": 37
+    },
+    {
+      "id": "9b4e2c24-9479-41e6-8927-7d9b6e0d2648",
+      "timestamp": "2025-12-19T00:00:00",
+      "environment": "staging",
+      "service": "search-worker",
+      "count": 57
+    },
+    {
+      "id": "7922bac2-82dc-4c8e-b6b5-229aacf5e81e",
+      "timestamp": "2025-12-04T00:00:00",
+      "environment": "production",
+      "service": "auth-service",
+      "count": 37
+    },
+    {
+      "id": "55cee5db-9e87-404c-a208-6977a9f25336",
+      "timestamp": "2025-11-30T00:00:00",
+      "environment": "production",
+      "service": "billing-api",
+      "count": 87
+    },
+    {
+      "id": "25b8fd4b-32fa-4de8-8e7a-e7f639820cff",
+      "timestamp": "2025-12-13T00:00:00",
+      "environment": "production",
+      "service": "auth-service",
+      "count": 32
+    },
+    {
+      "id": "12a4def0-c4bb-47a9-9988-68dd9c7c7377",
+      "timestamp": "2025-12-02T00:00:00",
+      "environment": "staging",
+      "service": "search-worker",
+      "count": 81
+    },
+    {
+      "id": "624c69b6-b244-45a7-b7e5-848131c681ec",
+      "timestamp": "2025-11-26T00:00:00",
+      "environment": "staging",
+      "service": "search-worker",
+      "count": 32
+    },
+    {
+      "id": "e4855aa1-016b-4287-b008-05cca7f36ae9",
+      "timestamp": "2025-12-23T00:00:00",
+      "environment": "production",
+      "service": "search-worker",
+      "count": 29
+    },
+    {
+      "id": "8498e113-b227-462c-b53d-4330cdda24ba",
+      "timestamp": "2025-12-21T00:00:00",
+      "environment": "staging",
+      "service": "auth-service",
+      "count": 72
+    },
+    {
+      "id": "74daaebf-1f11-4b76-992c-9227eadf5085",
+      "timestamp": "2025-12-17T00:00:00",
+      "environment": "production",
+      "service": "search-worker",
+      "count": 86
+    },
+    {
+      "id": "513a7052-986f-4025-8f15-ba58fce68504",
+      "timestamp": "2025-11-29T00:00:00",
+      "environment": "staging",
+      "service": "search-worker",
+      "count": 71
+    },
+    {
+      "id": "dc8aee30-be60-43f7-a8be-9288e5af6e39",
+      "timestamp": "2025-12-04T00:00:00",
+      "environment": "staging",
+      "service": "search-worker",
+      "count": 34
+    },
+    {
+      "id": "c40c5d91-46fd-4062-a33d-c7afd701410d",
+      "timestamp": "2025-12-17T00:00:00",
+      "environment": "staging",
+      "service": "billing-api",
+      "count": 36
+    },
+    {
+      "id": "3c07c574-4925-4af1-b6aa-e05b13d5f2f7",
+      "timestamp": "2025-12-04T00:00:00",
+      "environment": "staging",
+      "service": "user-dashboard",
+      "count": 41
+    },
+    {
+      "id": "3b33f3d8-269c-4696-a36c-7b8714a0bccb",
+      "timestamp": "2025-11-28T00:00:00",
+      "environment": "staging",
+      "service": "billing-api",
+      "count": 91
+    },
+    {
+      "id": "54b4a482-6858-4eba-aa34-c85410714d51",
+      "timestamp": "2025-12-19T00:00:00",
+      "environment": "staging",
+      "service": "search-worker",
+      "count": 8
+    },
+    {
+      "id": "e7a37e81-63b4-408b-ab8e-869fd5385b0e",
+      "timestamp": "2025-12-19T00:00:00",
+      "environment": "production",
+      "service": "search-worker",
+      "count": 62
+    },
+    {
+      "id": "c0e3befd-4c71-40fe-9a0c-dd7cf1578470",
+      "timestamp": "2026-01-01T00:00:00",
+      "environment": "staging",
+      "service": "search-worker",
+      "count": 69
+    },
+    {
+      "id": "3875394c-e5d6-46e6-9a6e-c2f5ccc42903",
+      "timestamp": "2025-11-28T00:00:00",
+      "environment": "staging",
+      "service": "billing-api",
+      "count": 35
+    },
+    {
+      "id": "560c95ee-638c-454c-876e-2bba7c5308bf",
+      "timestamp": "2025-12-05T00:00:00",
+      "environment": "staging",
+      "service": "billing-api",
+      "count": 60
+    },
+    {
+      "id": "06e745f9-88bc-439c-9f4c-3b79fb10987f",
+      "timestamp": "2025-12-24T00:00:00",
+      "environment": "staging",
+      "service": "auth-service",
+      "count": 11
+    },
+    {
+      "id": "2e85cb21-7631-4e9d-9de9-f86322bd3388",
+      "timestamp": "2025-12-05T00:00:00",
+      "environment": "production",
+      "service": "user-dashboard",
+      "count": 49
+    },
+    {
+      "id": "56666f9f-53ac-4ab9-b467-2cd9362f5e5c",
+      "timestamp": "2025-12-12T00:00:00",
+      "environment": "staging",
+      "service": "user-dashboard",
+      "count": 97
+    },
+    {
+      "id": "78660765-14f7-4e8d-95bc-b8d04094dded",
+      "timestamp": "2025-12-06T00:00:00",
+      "environment": "production",
+      "service": "auth-service",
+      "count": 45
+    },
+    {
+      "id": "f510ab53-c7fe-439f-9190-f938a66fd7f7",
+      "timestamp": "2025-12-18T00:00:00",
+      "environment": "production",
+      "service": "auth-service",
+      "count": 32
+    },
+    {
+      "id": "2702878b-9f0f-4a8d-8537-9ff6d6d7b3b8",
+      "timestamp": "2025-12-20T00:00:00",
+      "environment": "production",
+      "service": "billing-api",
+      "count": 61
+    },
+    {
+      "id": "770c7798-37cc-463b-b2a0-345990604f62",
+      "timestamp": "2025-12-25T00:00:00",
+      "environment": "staging",
+      "service": "user-dashboard",
+      "count": 22
+    },
+    {
+      "id": "b7e6427c-bf78-4e3f-b6b7-51f79b749245",
+      "timestamp": "2025-11-24T00:00:00",
+      "environment": "production",
+      "service": "billing-api",
+      "count": 40
+    },
+    {
+      "id": "4fdc6e1b-edcb-4cb6-8692-dc639424aed5",
+      "timestamp": "2025-12-26T00:00:00",
+      "environment": "staging",
+      "service": "search-worker",
+      "count": 92
+    },
+    {
+      "id": "d4a057a7-b0cc-4b3b-9793-b9b413748146",
+      "timestamp": "2025-12-20T00:00:00",
+      "environment": "production",
+      "service": "auth-service",
+      "count": 90
+    },
+    {
+      "id": "ce3714af-99b4-4350-af2b-99b4d9acd158",
+      "timestamp": "2025-12-13T00:00:00",
+      "environment": "production",
+      "service": "auth-service",
+      "count": 45
+    },
+    {
+      "id": "11a72609-5edd-4bbf-a959-76636daa2e68",
+      "timestamp": "2025-11-28T00:00:00",
+      "environment": "staging",
+      "service": "auth-service",
+      "count": 54
+    },
+    {
+      "id": "5cb85aed-f5f6-4c97-aefb-63b11b049863",
+      "timestamp": "2025-12-01T00:00:00",
+      "environment": "staging",
+      "service": "billing-api",
+      "count": 56
+    },
+    {
+      "id": "a6846099-f729-4951-8591-31d2bbda0242",
+      "timestamp": "2025-12-21T00:00:00",
+      "environment": "staging",
+      "service": "search-worker",
+      "count": 60
+    },
+    {
+      "id": "44b591f7-97ac-4aa8-bb24-88a3d36357b6",
+      "timestamp": "2025-12-05T00:00:00",
+      "environment": "staging",
+      "service": "billing-api",
+      "count": 12
+    },
+    {
+      "id": "c01f36bf-3e6d-458b-b367-c28de1b294de",
+      "timestamp": "2025-12-15T00:00:00",
+      "environment": "staging",
+      "service": "search-worker",
+      "count": 44
+    },
+    {
+      "id": "2e8d0e87-5334-40e6-99d8-0b8d7e8adee7",
+      "timestamp": "2025-12-31T00:00:00",
+      "environment": "staging",
+      "service": "billing-api",
+      "count": 46
+    },
+    {
+      "id": "989d9d4a-e15c-4666-8797-b2c957207246",
+      "timestamp": "2025-12-16T00:00:00",
+      "environment": "staging",
+      "service": "auth-service",
+      "count": 67
+    },
+    {
+      "id": "680bac63-b856-4035-bdc9-829015eabb27",
+      "timestamp": "2025-12-20T00:00:00",
+      "environment": "staging",
+      "service": "billing-api",
+      "count": 89
+    },
+    {
+      "id": "72bb912d-7da6-4785-b63b-4dc3a559e463",
+      "timestamp": "2025-12-02T00:00:00",
+      "environment": "production",
+      "service": "auth-service",
+      "count": 38
+    },
+    {
+      "id": "4e6384bb-3e49-4f43-b118-f68d6786d506",
+      "timestamp": "2025-12-18T00:00:00",
+      "environment": "staging",
+      "service": "search-worker",
+      "count": 71
+    },
+    {
+      "id": "bef59fe6-ff23-4d5f-aced-d15d58007c02",
+      "timestamp": "2025-11-29T00:00:00",
+      "environment": "staging",
+      "service": "user-dashboard",
+      "count": 90
+    },
+    {
+      "id": "3b048a8b-405b-4dc9-8e7e-d827455ac762",
+      "timestamp": "2025-12-03T00:00:00",
+      "environment": "production",
+      "service": "billing-api",
+      "count": 41
+    },
+    {
+      "id": "c31edbbc-f36c-462b-892e-6161be2d740a",
+      "timestamp": "2025-12-25T00:00:00",
+      "environment": "production",
+      "service": "billing-api",
+      "count": 28
+    },
+    {
+      "id": "fa02eaec-96ef-4ad6-b97e-670346c8adfe",
+      "timestamp": "2025-12-02T00:00:00",
+      "environment": "staging",
+      "service": "auth-service",
+      "count": 25
+    },
+    {
+      "id": "4d6168bd-2def-4193-9c62-b3a23a3c563e",
+      "timestamp": "2025-12-14T00:00:00",
+      "environment": "production",
+      "service": "billing-api",
+      "count": 36
+    },
+    {
+      "id": "4ac9778d-8da8-4ee4-8df5-6ac6f96b648a",
+      "timestamp": "2025-12-30T00:00:00",
+      "environment": "production",
+      "service": "search-worker",
+      "count": 14
+    },
+    {
+      "id": "7a8d03aa-782a-45e0-88ca-765192f5df7b",
+      "timestamp": "2026-01-01T00:00:00",
+      "environment": "staging",
+      "service": "user-dashboard",
+      "count": 24
+    },
+    {
+      "id": "7a4c75d4-dc99-404c-b0e9-8b3b40a26c60",
+      "timestamp": "2025-12-29T00:00:00",
+      "environment": "production",
+      "service": "auth-service",
+      "count": 52
+    },
+    {
+      "id": "afbb411a-a123-4a8c-93b7-a88612f70c97",
+      "timestamp": "2025-12-01T00:00:00",
+      "environment": "production",
+      "service": "billing-api",
+      "count": 20
+    },
+    {
+      "id": "fe716b14-15ce-4a66-8dc8-2a1ef2f9e5fa",
+      "timestamp": "2025-11-26T00:00:00",
+      "environment": "production",
+      "service": "auth-service",
+      "count": 72
+    },
+    {
+      "id": "9e50aa42-ca6d-4da1-989b-c4da9b37a22b",
+      "timestamp": "2025-12-06T00:00:00",
+      "environment": "production",
+      "service": "search-worker",
+      "count": 58
+    },
+    {
+      "id": "fd72b050-96a9-454f-9c33-e1f94c1f55ab",
+      "timestamp": "2025-12-04T00:00:00",
+      "environment": "staging",
+      "service": "user-dashboard",
+      "count": 73
+    },
+    {
+      "id": "bd767e35-f5c9-4047-9c10-c5720f6b40d0",
+      "timestamp": "2025-11-23T00:00:00",
+      "environment": "production",
+      "service": "billing-api",
+      "count": 81
+    },
+    {
+      "id": "2834e4c0-14c8-43b4-a911-d19243bfd931",
+      "timestamp": "2025-12-19T00:00:00",
+      "environment": "production",
+      "service": "billing-api",
+      "count": 71
+    },
+    {
+      "id": "735435ea-6894-4b8d-80af-5b3a2812859a",
+      "timestamp": "2025-12-28T00:00:00",
+      "environment": "staging",
+      "service": "user-dashboard",
+      "count": 5
+    },
+    {
+      "id": "b3f6fe0d-4860-4b32-b4fb-0eb949c13de7",
+      "timestamp": "2025-12-18T00:00:00",
+      "environment": "staging",
+      "service": "auth-service",
+      "count": 88
+    },
+    {
+      "id": "ca8f3653-c9af-48f8-83b9-da13ec856f37",
+      "timestamp": "2025-12-18T00:00:00",
+      "environment": "production",
+      "service": "search-worker",
+      "count": 15
+    },
+    {
+      "id": "e88da719-2624-4b40-a5cb-63a2398d1ca6",
+      "timestamp": "2025-11-28T00:00:00",
+      "environment": "staging",
+      "service": "billing-api",
+      "count": 10
+    },
+    {
+      "id": "9854ce4e-4ebf-45c3-8ae9-b4a72a79ea68",
+      "timestamp": "2025-12-29T00:00:00",
+      "environment": "staging",
+      "service": "search-worker",
+      "count": 16
+    },
+    {
+      "id": "670acc5c-b321-4f21-8dd8-eb85b04d3376",
+      "timestamp": "2025-12-03T00:00:00",
+      "environment": "staging",
+      "service": "search-worker",
+      "count": 57
+    },
+    {
+      "id": "6e996e3e-e3b1-47fc-8a34-50fc9918ee46",
+      "timestamp": "2025-12-27T00:00:00",
+      "environment": "staging",
+      "service": "user-dashboard",
+      "count": 4
+    },
+    {
+      "id": "d6016237-ac9e-4156-b63f-ce413a9aca5e",
+      "timestamp": "2025-12-27T00:00:00",
+      "environment": "production",
+      "service": "user-dashboard",
+      "count": 74
+    },
+    {
+      "id": "7872bdeb-2cd9-4cbb-819a-d58cc35b1c8c",
+      "timestamp": "2025-12-30T00:00:00",
+      "environment": "staging",
+      "service": "user-dashboard",
+      "count": 24
+    },
+    {
+      "id": "7de1bdfe-d072-4b5c-a281-40446f962882",
+      "timestamp": "2025-11-25T00:00:00",
+      "environment": "production",
+      "service": "search-worker",
+      "count": 45
+    },
+    {
+      "id": "1ac70ec0-ab8d-4eb4-9230-dfbd5553b2fe",
+      "timestamp": "2025-12-06T00:00:00",
+      "environment": "production",
+      "service": "user-dashboard",
+      "count": 53
+    },
+    {
+      "id": "668409e3-f1f8-443e-a99f-131849c8a43f",
+      "timestamp": "2025-12-01T00:00:00",
+      "environment": "production",
+      "service": "search-worker",
+      "count": 12
+    },
+    {
+      "id": "f85e06a1-1dad-49b2-92c2-1221409d3602",
+      "timestamp": "2025-12-12T00:00:00",
+      "environment": "staging",
+      "service": "auth-service",
+      "count": 85
+    },
+    {
+      "id": "300568d2-0de0-41a6-a9ca-97d2764414fd",
+      "timestamp": "2025-11-28T00:00:00",
+      "environment": "staging",
+      "service": "search-worker",
+      "count": 81
+    },
+    {
+      "id": "445dcc38-341c-4494-8d36-6dfcc28ebd70",
+      "timestamp": "2025-12-04T00:00:00",
+      "environment": "production",
+      "service": "user-dashboard",
+      "count": 57
+    },
+    {
+      "id": "a14923c2-f920-464c-8763-fcd01f15c7b6",
+      "timestamp": "2025-12-01T00:00:00",
+      "environment": "production",
+      "service": "billing-api",
+      "count": 40
+    },
+    {
+      "id": "17dc8eff-6872-43f9-8d60-593603802b70",
+      "timestamp": "2025-11-27T00:00:00",
+      "environment": "production",
+      "service": "auth-service",
+      "count": 60
+    },
+    {
+      "id": "7f95897c-276a-46ce-9507-55d9a5d04d53",
+      "timestamp": "2025-12-25T00:00:00",
+      "environment": "staging",
+      "service": "user-dashboard",
+      "count": 54
+    },
+    {
+      "id": "74eff545-3e65-4603-b8e3-654bfaf14ff0",
+      "timestamp": "2025-12-02T00:00:00",
+      "environment": "production",
+      "service": "search-worker",
+      "count": 25
+    },
+    {
+      "id": "22f235f2-e11b-468d-bf0d-073d821c1336",
+      "timestamp": "2025-11-24T00:00:00",
+      "environment": "production",
+      "service": "user-dashboard",
+      "count": 99
+    },
+    {
+      "id": "81fb18b3-c9a7-491f-af2a-e71357021049",
+      "timestamp": "2025-12-06T00:00:00",
+      "environment": "staging",
+      "service": "auth-service",
+      "count": 37
+    },
+    {
+      "id": "ffb8102d-9475-4bc9-9641-8cedd664d264",
+      "timestamp": "2025-12-13T00:00:00",
+      "environment": "staging",
+      "service": "billing-api",
+      "count": 58
+    },
+    {
+      "id": "8d4a75b8-551a-48ea-985a-0afa7bfdcc12",
+      "timestamp": "2025-11-28T00:00:00",
+      "environment": "staging",
+      "service": "search-worker",
+      "count": 42
+    }
+  ],
+  "sessions": [
+    {
+      "id": "b28f41de-fb14-4bc3-b04b-8590de9e3757",
+      "duration_ms": 2056,
+      "environment": "staging",
+      "funnel_stage": "signed_up"
+    },
+    {
+      "id": "0b2c782a-6928-4e92-868a-152fdb23aa8c",
+      "duration_ms": 2706,
+      "environment": "staging",
+      "funnel_stage": "completed_purchase"
+    },
+    {
+      "id": "cada4f80-a9e7-42d4-bd08-b32c62d60e93",
+      "duration_ms": 1346,
+      "environment": "staging",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "9716108e-f721-49bb-8096-27182051acef",
+      "duration_ms": 2819,
+      "environment": "production",
+      "funnel_stage": "completed_purchase"
+    },
+    {
+      "id": "74f93d17-e912-44bf-86a4-bae41986b4b2",
+      "duration_ms": 225,
+      "environment": "production",
+      "funnel_stage": "completed_purchase"
+    },
+    {
+      "id": "2784378f-f84f-46b3-a79f-bfafdef57689",
+      "duration_ms": 712,
+      "environment": "staging",
+      "funnel_stage": "added_payment"
+    },
+    {
+      "id": "65c17795-b155-46bc-9f8d-ed9756abf2f1",
+      "duration_ms": 757,
+      "environment": "staging",
+      "funnel_stage": "completed_purchase"
+    },
+    {
+      "id": "b7fddd71-a075-4927-9110-b492f4427e0b",
+      "duration_ms": 4097,
+      "environment": "production",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "ebc2026f-af34-4f65-a193-c4b23c19e71d",
+      "duration_ms": 2454,
+      "environment": "production",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "c2a79689-1933-418c-ba74-57616f18c108",
+      "duration_ms": 923,
+      "environment": "staging",
+      "funnel_stage": "signed_up"
+    },
+    {
+      "id": "0769165f-e746-4cb9-8ca9-cf07b1aa0f6a",
+      "duration_ms": 476,
+      "environment": "staging",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "6e417d47-5ff5-45ea-9bc4-40f14b1a269b",
+      "duration_ms": 1292,
+      "environment": "production",
+      "funnel_stage": "completed_purchase"
+    },
+    {
+      "id": "2e183554-cae2-4e66-ae8a-781390e0a95b",
+      "duration_ms": 1492,
+      "environment": "production",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "9ea556aa-61ee-4c5b-9eef-580f9c07a751",
+      "duration_ms": 2072,
+      "environment": "staging",
+      "funnel_stage": "signed_up"
+    },
+    {
+      "id": "4104a8b5-a34d-47c5-b60d-ebbb3b70b3a1",
+      "duration_ms": 3864,
+      "environment": "staging",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "e6b5a92c-771a-4655-8dfc-6ee0e61ede90",
+      "duration_ms": 2456,
+      "environment": "production",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "fcd6bdca-5876-4d09-b1fa-f665711533f3",
+      "duration_ms": 4913,
+      "environment": "staging",
+      "funnel_stage": "completed_purchase"
+    },
+    {
+      "id": "d865d69a-74f3-4103-8006-6ff2b0b862ef",
+      "duration_ms": 2574,
+      "environment": "production",
+      "funnel_stage": "completed_purchase"
+    },
+    {
+      "id": "3cb98350-1b4d-40fe-bbb3-8605da743152",
+      "duration_ms": 3224,
+      "environment": "staging",
+      "funnel_stage": "added_payment"
+    },
+    {
+      "id": "059dd55d-4b94-4e30-b303-f438fe2110d0",
+      "duration_ms": 3342,
+      "environment": "staging",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "c73f6e1b-af90-4e3c-9d75-0e9890e0b95f",
+      "duration_ms": 501,
+      "environment": "staging",
+      "funnel_stage": "added_payment"
+    },
+    {
+      "id": "9b689c88-3ae9-49fe-8c82-18dac696f5e6",
+      "duration_ms": 2986,
+      "environment": "production",
+      "funnel_stage": "signed_up"
+    },
+    {
+      "id": "c16d83ed-ad81-48bd-8029-13ec9ef2b93e",
+      "duration_ms": 1220,
+      "environment": "production",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "088a93ec-70d9-49f8-89e2-60744f1639a0",
+      "duration_ms": 4847,
+      "environment": "staging",
+      "funnel_stage": "signed_up"
+    },
+    {
+      "id": "53a3dd5a-4b8c-4bdc-a8dd-5e5a1712fb16",
+      "duration_ms": 3503,
+      "environment": "production",
+      "funnel_stage": "signed_up"
+    },
+    {
+      "id": "e05fb8bc-8a16-406c-8958-e75e21d53971",
+      "duration_ms": 3097,
+      "environment": "staging",
+      "funnel_stage": "signed_up"
+    },
+    {
+      "id": "f1b64afe-d31e-4f1a-a9ff-1cae41c8ca8c",
+      "duration_ms": 4047,
+      "environment": "staging",
+      "funnel_stage": "added_payment"
+    },
+    {
+      "id": "f6802cdb-77e4-40c7-9d7b-c313cde22f1c",
+      "duration_ms": 716,
+      "environment": "production",
+      "funnel_stage": "signed_up"
+    },
+    {
+      "id": "aca5e2fd-b966-442a-ad23-8d36dc322c97",
+      "duration_ms": 3355,
+      "environment": "staging",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "43b38eb4-0390-4c5d-a502-d6a2ca6a2224",
+      "duration_ms": 4495,
+      "environment": "production",
+      "funnel_stage": "completed_purchase"
+    },
+    {
+      "id": "ac1e86d8-bfbf-497b-ac3e-7b0d5e5ba13d",
+      "duration_ms": 2247,
+      "environment": "staging",
+      "funnel_stage": "added_payment"
+    },
+    {
+      "id": "78b2b549-3bdb-409e-acc2-16a01bbc91f7",
+      "duration_ms": 305,
+      "environment": "staging",
+      "funnel_stage": "signed_up"
+    },
+    {
+      "id": "d2e82f38-a2a9-44d8-902e-fde5a5cc8bf7",
+      "duration_ms": 3903,
+      "environment": "staging",
+      "funnel_stage": "completed_purchase"
+    },
+    {
+      "id": "f23e323d-0b9b-4934-a3c8-6d301dde7969",
+      "duration_ms": 404,
+      "environment": "staging",
+      "funnel_stage": "completed_purchase"
+    },
+    {
+      "id": "e3236d1a-3c1b-4acc-98e1-93311dba1267",
+      "duration_ms": 4503,
+      "environment": "production",
+      "funnel_stage": "completed_purchase"
+    },
+    {
+      "id": "f30a9e32-aba4-4c03-9efa-9c5b7421ff46",
+      "duration_ms": 4525,
+      "environment": "staging",
+      "funnel_stage": "signed_up"
+    },
+    {
+      "id": "19597b5a-a7a8-4636-aa35-df59e2aa7a5d",
+      "duration_ms": 4108,
+      "environment": "staging",
+      "funnel_stage": "added_payment"
+    },
+    {
+      "id": "379efc6e-5edb-4d3c-b0b6-3bcf08601833",
+      "duration_ms": 3732,
+      "environment": "staging",
+      "funnel_stage": "signed_up"
+    },
+    {
+      "id": "fb1e143b-196f-4dfa-9cd8-fe1adafec8a9",
+      "duration_ms": 3109,
+      "environment": "staging",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "f7dc67e0-3097-4b2b-86a0-2a9b65ec7acd",
+      "duration_ms": 1100,
+      "environment": "staging",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "a3b5cece-a446-4e72-b64c-911aa9ab364a",
+      "duration_ms": 4991,
+      "environment": "production",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "fd235def-3e5a-47e3-9560-db22c96b5edb",
+      "duration_ms": 1131,
+      "environment": "production",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "350843f0-8de0-4fc2-83e1-5a85d46ef104",
+      "duration_ms": 4903,
+      "environment": "production",
+      "funnel_stage": "signed_up"
+    },
+    {
+      "id": "c9e48e8c-25c6-4c45-863d-04ee541c7a86",
+      "duration_ms": 4982,
+      "environment": "production",
+      "funnel_stage": "added_payment"
+    },
+    {
+      "id": "fcce96f6-250a-4578-bbe9-4499dbc080fd",
+      "duration_ms": 1164,
+      "environment": "staging",
+      "funnel_stage": "signed_up"
+    },
+    {
+      "id": "06998731-ddcf-4766-a93b-12cd1c24220e",
+      "duration_ms": 1179,
+      "environment": "production",
+      "funnel_stage": "added_payment"
+    },
+    {
+      "id": "96bf10ab-3ce9-45e7-89d6-a63bca3c6f5f",
+      "duration_ms": 2752,
+      "environment": "production",
+      "funnel_stage": "signed_up"
+    },
+    {
+      "id": "bde13c1b-2073-4f6d-8d6a-05b343ef2016",
+      "duration_ms": 3548,
+      "environment": "production",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "5cae9610-c72c-4fe3-b2c2-2a1679eb4168",
+      "duration_ms": 4304,
+      "environment": "production",
+      "funnel_stage": "completed_purchase"
+    },
+    {
+      "id": "9d77a45e-f206-4269-b8b7-7c0780fb9296",
+      "duration_ms": 455,
+      "environment": "staging",
+      "funnel_stage": "completed_purchase"
+    },
+    {
+      "id": "0f9240e1-07f9-4d05-b6ca-6b8ba4b1f991",
+      "duration_ms": 4023,
+      "environment": "staging",
+      "funnel_stage": "completed_purchase"
+    },
+    {
+      "id": "b65feea9-7d82-4264-9ba3-62e7afa415e5",
+      "duration_ms": 3733,
+      "environment": "production",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "10d08d11-25f9-44bf-9bb9-61555275eb94",
+      "duration_ms": 1133,
+      "environment": "staging",
+      "funnel_stage": "added_payment"
+    },
+    {
+      "id": "87d292a6-98ee-4c2b-be9f-ecaa6182f347",
+      "duration_ms": 2515,
+      "environment": "staging",
+      "funnel_stage": "completed_purchase"
+    },
+    {
+      "id": "1d4a3d81-b3a7-40e0-8b08-587d1963c26d",
+      "duration_ms": 4616,
+      "environment": "production",
+      "funnel_stage": "completed_purchase"
+    },
+    {
+      "id": "69efafb1-3a7e-4e14-a359-eee173991a47",
+      "duration_ms": 2876,
+      "environment": "staging",
+      "funnel_stage": "completed_purchase"
+    },
+    {
+      "id": "50032b35-1857-4baf-bac7-e2b96a7e4c36",
+      "duration_ms": 3596,
+      "environment": "staging",
+      "funnel_stage": "added_payment"
+    },
+    {
+      "id": "afd380c4-2713-482c-b41e-a3ac5fd23109",
+      "duration_ms": 3985,
+      "environment": "production",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "6e8f75a1-17dd-4d81-95da-705cd4ef00aa",
+      "duration_ms": 891,
+      "environment": "staging",
+      "funnel_stage": "signed_up"
+    },
+    {
+      "id": "f4e559e5-9622-4348-8f5a-e9d38e6e5003",
+      "duration_ms": 4700,
+      "environment": "staging",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "aa53c19c-dfa4-4b9f-9a85-6750692ac139",
+      "duration_ms": 3564,
+      "environment": "production",
+      "funnel_stage": "added_payment"
+    },
+    {
+      "id": "1a85910d-5a05-4c11-8ffc-a6b199b479d4",
+      "duration_ms": 4834,
+      "environment": "production",
+      "funnel_stage": "signed_up"
+    },
+    {
+      "id": "d8e7012f-3968-4c81-bb70-c3b8a81fdec3",
+      "duration_ms": 986,
+      "environment": "staging",
+      "funnel_stage": "added_payment"
+    },
+    {
+      "id": "92f837d4-4750-4f1d-833a-1f6c1d691fba",
+      "duration_ms": 1952,
+      "environment": "staging",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "d4578ad9-a867-4096-add8-77c89be71737",
+      "duration_ms": 2290,
+      "environment": "production",
+      "funnel_stage": "signed_up"
+    },
+    {
+      "id": "4f199ec0-c32d-4526-b3e4-110a45f50c52",
+      "duration_ms": 2883,
+      "environment": "staging",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "90fa6b57-24ac-4130-9eaf-528d2e709838",
+      "duration_ms": 3383,
+      "environment": "production",
+      "funnel_stage": "signed_up"
+    },
+    {
+      "id": "07d924ce-f8c8-4fae-a217-8f84bdb025ff",
+      "duration_ms": 851,
+      "environment": "production",
+      "funnel_stage": "completed_purchase"
+    },
+    {
+      "id": "284bf962-5744-4596-b422-21676b7a2460",
+      "duration_ms": 3131,
+      "environment": "staging",
+      "funnel_stage": "added_payment"
+    },
+    {
+      "id": "98a21f1c-914d-4fae-b100-13a7c6deb2f0",
+      "duration_ms": 795,
+      "environment": "production",
+      "funnel_stage": "signed_up"
+    },
+    {
+      "id": "0cbd3c03-9e2a-44ac-8122-b5b3284c03d2",
+      "duration_ms": 768,
+      "environment": "staging",
+      "funnel_stage": "completed_purchase"
+    },
+    {
+      "id": "9b69554d-7c54-435f-ac8c-3b6aa974d079",
+      "duration_ms": 3721,
+      "environment": "staging",
+      "funnel_stage": "added_payment"
+    },
+    {
+      "id": "1d2324e6-8329-40b7-8143-f426372f871a",
+      "duration_ms": 2927,
+      "environment": "staging",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "97d7a560-adb1-4670-ad9f-b00d4882d73c",
+      "duration_ms": 4086,
+      "environment": "staging",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "996d5c50-fc04-4168-a52f-fb493873e57f",
+      "duration_ms": 548,
+      "environment": "production",
+      "funnel_stage": "signed_up"
+    },
+    {
+      "id": "c47104c0-3613-4e15-b200-c2614d29d1ab",
+      "duration_ms": 1224,
+      "environment": "staging",
+      "funnel_stage": "added_payment"
+    },
+    {
+      "id": "7f54a511-01fa-464e-9eb7-4b5653ffd3a2",
+      "duration_ms": 3627,
+      "environment": "production",
+      "funnel_stage": "signed_up"
+    },
+    {
+      "id": "3ae88926-b423-4cde-8857-511761554667",
+      "duration_ms": 4198,
+      "environment": "staging",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "0ad45230-bdf6-4ba5-9c9c-96de65a674c2",
+      "duration_ms": 3673,
+      "environment": "production",
+      "funnel_stage": "completed_purchase"
+    },
+    {
+      "id": "5024bdc6-dcb3-4df3-93ee-cdc6ebd14d2c",
+      "duration_ms": 4816,
+      "environment": "staging",
+      "funnel_stage": "completed_purchase"
+    },
+    {
+      "id": "4a1dab32-6aed-4dc7-a3e0-5309b5a1b949",
+      "duration_ms": 1043,
+      "environment": "staging",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "cd2372c2-2bff-417b-9324-01fcf758dce2",
+      "duration_ms": 3869,
+      "environment": "staging",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "3e49fd09-1b19-48b8-9830-20816fcc57dd",
+      "duration_ms": 3669,
+      "environment": "staging",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "beed10b6-4f6e-474b-9eda-b0276550f74a",
+      "duration_ms": 2881,
+      "environment": "production",
+      "funnel_stage": "added_payment"
+    },
+    {
+      "id": "82af085c-138d-494c-ab0a-beddc77444cb",
+      "duration_ms": 1034,
+      "environment": "production",
+      "funnel_stage": "added_payment"
+    },
+    {
+      "id": "d1a69d87-f54e-4019-ba35-844e59e1ac09",
+      "duration_ms": 1309,
+      "environment": "production",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "2c6a6e9a-3280-47a1-8187-222b257d5e52",
+      "duration_ms": 1352,
+      "environment": "production",
+      "funnel_stage": "signed_up"
+    },
+    {
+      "id": "7e7e7419-a0c1-4035-85d9-5f51f387e1bd",
+      "duration_ms": 3900,
+      "environment": "staging",
+      "funnel_stage": "added_payment"
+    },
+    {
+      "id": "50ee7a92-a091-41e0-b891-b0c3dd3f487e",
+      "duration_ms": 1336,
+      "environment": "staging",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "4d85a3d2-a1a2-4485-b134-8c2a780b3657",
+      "duration_ms": 2350,
+      "environment": "production",
+      "funnel_stage": "added_payment"
+    },
+    {
+      "id": "7634c169-4f76-4388-92fe-28bf81e0d489",
+      "duration_ms": 3802,
+      "environment": "production",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "13a4a492-497d-416d-94ea-120a5e659654",
+      "duration_ms": 839,
+      "environment": "staging",
+      "funnel_stage": "completed_purchase"
+    },
+    {
+      "id": "cab4923b-f448-4385-8de7-ad6c949077c2",
+      "duration_ms": 436,
+      "environment": "staging",
+      "funnel_stage": "signed_up"
+    },
+    {
+      "id": "80599b93-79c2-42e4-9ae1-a991524f93ff",
+      "duration_ms": 1335,
+      "environment": "production",
+      "funnel_stage": "completed_purchase"
+    },
+    {
+      "id": "d65e59dd-e62d-4d06-8f9b-85581a7f195b",
+      "duration_ms": 2913,
+      "environment": "production",
+      "funnel_stage": "signed_up"
+    },
+    {
+      "id": "7010ed13-b526-422d-bf6c-21f70a0537f0",
+      "duration_ms": 3699,
+      "environment": "production",
+      "funnel_stage": "added_payment"
+    },
+    {
+      "id": "632dbb5e-486b-46bf-aafd-e7d95f733a3e",
+      "duration_ms": 3448,
+      "environment": "staging",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "55ab946d-a5b5-4dc2-a181-c85eca0ac6ac",
+      "duration_ms": 639,
+      "environment": "staging",
+      "funnel_stage": "visited_site"
+    },
+    {
+      "id": "48bddb3e-62f5-4f2b-adaa-44ca8ed6ad5e",
+      "duration_ms": 2164,
+      "environment": "production",
+      "funnel_stage": "added_payment"
+    },
+    {
+      "id": "2434a678-a9e2-4ba9-952e-6abb14dd5061",
+      "duration_ms": 2965,
+      "environment": "staging",
+      "funnel_stage": "completed_purchase"
+    }
+  ],
+  "services": [
+    {
+      "name": "auth-service",
+      "environment": "production",
+      "error_rate": 0.028
+    },
+    {
+      "name": "auth-service",
+      "environment": "staging",
+      "error_rate": 0.109
+    },
+    {
+      "name": "billing-api",
+      "environment": "production",
+      "error_rate": 0.022
+    },
+    {
+      "name": "billing-api",
+      "environment": "staging",
+      "error_rate": 0.088
+    },
+    {
+      "name": "user-dashboard",
+      "environment": "production",
+      "error_rate": 0.1
+    },
+    {
+      "name": "user-dashboard",
+      "environment": "staging",
+      "error_rate": 0.056
+    },
+    {
+      "name": "search-worker",
+      "environment": "production",
+      "error_rate": 0.028
+    },
+    {
+      "name": "search-worker",
+      "environment": "staging",
+      "error_rate": 0.108
+    }
+  ],
+  "deployments": [
+    {
+      "id": "e99630f7-af77-420e-bf46-25afbd20563b",
+      "timestamp": "2025-12-02T00:00:00",
+      "service": "auth-service",
+      "environment": "staging",
+      "status": "failed"
+    },
+    {
+      "id": "f37fd50d-2e25-45ee-8f11-d8dc5cd33369",
+      "timestamp": "2026-01-01T00:00:00",
+      "service": "billing-api",
+      "environment": "staging",
+      "status": "failed"
+    },
+    {
+      "id": "27aa7cbc-2337-4bbc-bffe-77c839feb99c",
+      "timestamp": "2025-12-26T00:00:00",
+      "service": "auth-service",
+      "environment": "staging",
+      "status": "success"
+    },
+    {
+      "id": "bd17c5e8-d5ca-49ab-8a2e-6a93c5580bb2",
+      "timestamp": "2025-12-16T00:00:00",
+      "service": "auth-service",
+      "environment": "staging",
+      "status": "success"
+    },
+    {
+      "id": "2e4bebc4-2989-4880-a77d-1be96070b6a1",
+      "timestamp": "2025-12-13T00:00:00",
+      "service": "billing-api",
+      "environment": "staging",
+      "status": "success"
+    },
+    {
+      "id": "3ccec76c-b836-4448-ad26-1ec55d42b9e9",
+      "timestamp": "2025-12-19T00:00:00",
+      "service": "search-worker",
+      "environment": "staging",
+      "status": "failed"
+    },
+    {
+      "id": "f7315749-4f39-49a8-bd3a-258288b4f474",
+      "timestamp": "2025-12-25T00:00:00",
+      "service": "search-worker",
+      "environment": "production",
+      "status": "failed"
+    },
+    {
+      "id": "70cafdd8-fc04-4f08-9207-0158f2771f63",
+      "timestamp": "2025-12-11T00:00:00",
+      "service": "search-worker",
+      "environment": "staging",
+      "status": "failed"
+    },
+    {
+      "id": "297ca4ff-f75d-499f-ab2d-5b0987079ad4",
+      "timestamp": "2025-12-16T00:00:00",
+      "service": "billing-api",
+      "environment": "production",
+      "status": "failed"
+    },
+    {
+      "id": "5f07c1a5-dfc6-40ce-bb07-fd31a4244f23",
+      "timestamp": "2025-12-31T00:00:00",
+      "service": "auth-service",
+      "environment": "production",
+      "status": "failed"
+    }
+  ],
+  "incidents": [
+    {
+      "id": "73069588-45d5-468d-a90a-3abbc35b9fea",
+      "timestamp": "2025-12-30T00:00:00",
+      "severity": "sev3",
+      "mttr_mins": 23,
+      "service": "search-worker",
+      "environment": "production"
+    },
+    {
+      "id": "737d1fb6-d113-46e0-b8d7-7b9ae916da57",
+      "timestamp": "2025-12-02T00:00:00",
+      "severity": "sev2",
+      "mttr_mins": 8,
+      "service": "search-worker",
+      "environment": "production"
+    },
+    {
+      "id": "62dbc850-3c5b-43a7-9fbb-f0b1808389c8",
+      "timestamp": "2025-12-20T00:00:00",
+      "severity": "sev1",
+      "mttr_mins": 52,
+      "service": "billing-api",
+      "environment": "production"
+    },
+    {
+      "id": "b6f6dbf1-d6d4-41cc-995d-82f8ee4a9b5d",
+      "timestamp": "2025-12-22T00:00:00",
+      "severity": "sev3",
+      "mttr_mins": 47,
+      "service": "billing-api",
+      "environment": "production"
+    },
+    {
+      "id": "78f2ce6b-d46b-415d-aada-79a34970ed9a",
+      "timestamp": "2025-12-31T00:00:00",
+      "severity": "sev3",
+      "mttr_mins": 111,
+      "service": "billing-api",
+      "environment": "staging"
+    },
+    {
+      "id": "144823f7-e7e6-46c7-8158-24639d8776a0",
+      "timestamp": "2025-12-18T00:00:00",
+      "severity": "sev1",
+      "mttr_mins": 37,
+      "service": "billing-api",
+      "environment": "production"
+    },
+    {
+      "id": "871c0884-9bdf-40f2-ba2c-0f19f0b2a5d1",
+      "timestamp": "2025-12-15T00:00:00",
+      "severity": "sev2",
+      "mttr_mins": 19,
+      "service": "user-dashboard",
+      "environment": "production"
+    },
+    {
+      "id": "6b79afcc-3d0a-4f0c-8c39-4ec71f317405",
+      "timestamp": "2025-12-23T00:00:00",
+      "severity": "sev3",
+      "mttr_mins": 106,
+      "service": "search-worker",
+      "environment": "production"
+    },
+    {
+      "id": "98c3e3ca-7ff4-4ec6-a7b7-b4c6d6312a80",
+      "timestamp": "2025-12-29T00:00:00",
+      "severity": "sev3",
+      "mttr_mins": 7,
+      "service": "billing-api",
+      "environment": "production"
+    },
+    {
+      "id": "5a5226e6-9d64-4932-8066-853d6de299a1",
+      "timestamp": "2025-12-23T00:00:00",
+      "severity": "sev1",
+      "mttr_mins": 78,
+      "service": "search-worker",
+      "environment": "production"
+    },
+    {
+      "id": "f982f4e0-8603-456a-95ea-cbcfab1021ce",
+      "timestamp": "2025-12-11T00:00:00",
+      "severity": "sev2",
+      "mttr_mins": 13,
+      "service": "auth-service",
+      "environment": "staging"
+    },
+    {
+      "id": "630aa767-a2bb-422b-8b25-1279785ac5d0",
+      "timestamp": "2025-12-05T00:00:00",
+      "severity": "sev2",
+      "mttr_mins": 37,
+      "service": "auth-service",
+      "environment": "staging"
+    },
+    {
+      "id": "bba205ca-3dba-4da8-9844-f9fc114b9547",
+      "timestamp": "2025-12-07T00:00:00",
+      "severity": "sev3",
+      "mttr_mins": 85,
+      "service": "auth-service",
+      "environment": "staging"
+    },
+    {
+      "id": "56ab087a-8bc7-4e81-9a30-45280b599562",
+      "timestamp": "2025-12-28T00:00:00",
+      "severity": "sev3",
+      "mttr_mins": 27,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "10275b53-2285-42ef-8fbe-4fe92ea9c542",
+      "timestamp": "2025-12-12T00:00:00",
+      "severity": "sev3",
+      "mttr_mins": 104,
+      "service": "search-worker",
+      "environment": "production"
+    }
+  ],
+  "latency_samples": [
+    {
+      "id": "33107475-ca86-4225-8b36-e356339b77a8",
+      "timestamp": "2025-12-23T00:00:00",
+      "latency_ms": 15000,
+      "service": "auth-service",
+      "environment": "staging"
+    },
+    {
+      "id": "d0be73ee-fd37-4539-a5f2-02f983f02dc7",
+      "timestamp": "2025-12-03T00:00:00",
+      "latency_ms": 178,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "c7e53bbb-dcb5-4c53-9b62-a8df493e904d",
+      "timestamp": "2025-12-31T00:00:00",
+      "latency_ms": 117,
+      "service": "auth-service",
+      "environment": "staging"
+    },
+    {
+      "id": "e3b56360-6fdc-4bad-9e36-8127cca1b45c",
+      "timestamp": "2025-12-24T00:00:00",
+      "latency_ms": 83,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "7f072cb9-2fd3-40c0-b945-f2fd56cb1ab0",
+      "timestamp": "2025-12-04T00:00:00",
+      "latency_ms": 217,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "ba220065-1526-4718-8d18-0a824447ceab",
+      "timestamp": "2025-12-03T00:00:00",
+      "latency_ms": 285,
+      "service": "search-worker",
+      "environment": "production"
+    },
+    {
+      "id": "1a43db54-523a-4993-8b34-46bc8ba435cc",
+      "timestamp": "2025-12-19T00:00:00",
+      "latency_ms": 112,
+      "service": "auth-service",
+      "environment": "staging"
+    },
+    {
+      "id": "b7b8c1a5-9a45-493d-b227-890e4e76833a",
+      "timestamp": "2025-12-11T00:00:00",
+      "latency_ms": 171,
+      "service": "search-worker",
+      "environment": "production"
+    },
+    {
+      "id": "ba108217-0ad7-49a2-b277-16ec59fefbbc",
+      "timestamp": "2025-12-10T00:00:00",
+      "latency_ms": 247,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "67fd64c4-a334-458a-abd2-b5121335e5db",
+      "timestamp": "2025-12-24T00:00:00",
+      "latency_ms": 49,
+      "service": "user-dashboard",
+      "environment": "production"
+    },
+    {
+      "id": "ad973b67-9b89-45cb-9942-644c248d31ec",
+      "timestamp": "2025-12-02T00:00:00",
+      "latency_ms": 35,
+      "service": "search-worker",
+      "environment": "production"
+    },
+    {
+      "id": "5dc7b3e6-a529-44ff-874c-c8903c6a3174",
+      "timestamp": "2025-12-28T00:00:00",
+      "latency_ms": 54,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "732e2016-add7-42c9-a747-b93c9ae77eab",
+      "timestamp": "2025-12-02T00:00:00",
+      "latency_ms": 36,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "5df06e8c-878a-4ed9-a33f-fc8292ec89af",
+      "timestamp": "2025-12-18T00:00:00",
+      "latency_ms": 59,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "06a241af-1d0a-47f7-b5e4-a4713fe68c9c",
+      "timestamp": "2025-12-12T00:00:00",
+      "latency_ms": 162,
+      "service": "billing-api",
+      "environment": "staging"
+    },
+    {
+      "id": "4303cbc1-1e25-45b8-8fc9-c86be9ddebf5",
+      "timestamp": "2025-12-16T00:00:00",
+      "latency_ms": 218,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "7dbf4bc1-ffa6-43d0-aa9e-5c8db1a8b71f",
+      "timestamp": "2025-12-26T00:00:00",
+      "latency_ms": 166,
+      "service": "billing-api",
+      "environment": "production"
+    },
+    {
+      "id": "b69f68c3-e60f-4420-ac33-350c73b911d8",
+      "timestamp": "2025-12-28T00:00:00",
+      "latency_ms": 57,
+      "service": "search-worker",
+      "environment": "production"
+    },
+    {
+      "id": "109fd8ee-b5a4-4200-98f0-dd23aaf78c67",
+      "timestamp": "2025-12-07T00:00:00",
+      "latency_ms": 183,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "b34191b8-ed65-42b4-b5a5-f8e6b6391f04",
+      "timestamp": "2025-12-05T00:00:00",
+      "latency_ms": 100,
+      "service": "billing-api",
+      "environment": "staging"
+    },
+    {
+      "id": "cac4d0eb-3373-430e-bc31-a5971f119c0f",
+      "timestamp": "2025-12-16T00:00:00",
+      "latency_ms": 134,
+      "service": "billing-api",
+      "environment": "production"
+    },
+    {
+      "id": "9280c5aa-8dd4-495b-9c63-b6f306ba8cd3",
+      "timestamp": "2025-12-07T00:00:00",
+      "latency_ms": 272,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "10d4de39-1612-47c9-a25d-f9a89ca8a5c4",
+      "timestamp": "2025-12-07T00:00:00",
+      "latency_ms": 86,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "68d0a2a8-c4e7-47dd-a929-de738693fd9d",
+      "timestamp": "2025-12-10T00:00:00",
+      "latency_ms": 265,
+      "service": "auth-service",
+      "environment": "production"
+    },
+    {
+      "id": "8471b4b0-ae1b-4f69-b740-d83173318749",
+      "timestamp": "2025-12-22T00:00:00",
+      "latency_ms": 57,
+      "service": "user-dashboard",
+      "environment": "production"
+    },
+    {
+      "id": "6ec01269-2108-4dd9-b75d-1e3cc48d5650",
+      "timestamp": "2025-12-04T00:00:00",
+      "latency_ms": 113,
+      "service": "auth-service",
+      "environment": "production"
+    },
+    {
+      "id": "5299e505-2976-4ab2-aa26-f7704ddb1b36",
+      "timestamp": "2025-12-16T00:00:00",
+      "latency_ms": 98,
+      "service": "billing-api",
+      "environment": "staging"
+    },
+    {
+      "id": "143029a9-d88f-4c94-88b7-63d5e519dd7e",
+      "timestamp": "2025-12-02T00:00:00",
+      "latency_ms": 285,
+      "service": "user-dashboard",
+      "environment": "production"
+    },
+    {
+      "id": "9d4b2bf9-4d85-49c7-a001-7720200b2903",
+      "timestamp": "2025-12-12T00:00:00",
+      "latency_ms": 160,
+      "service": "auth-service",
+      "environment": "production"
+    },
+    {
+      "id": "b87b6384-9fdd-4e2e-a8a2-b7ad2bd3cdcd",
+      "timestamp": "2025-12-14T00:00:00",
+      "latency_ms": 98,
+      "service": "user-dashboard",
+      "environment": "production"
+    },
+    {
+      "id": "a4364fcd-f2d3-4761-8ba3-627914cb0564",
+      "timestamp": "2025-12-06T00:00:00",
+      "latency_ms": 34,
+      "service": "user-dashboard",
+      "environment": "production"
+    },
+    {
+      "id": "7f7f6c0a-07c0-4116-a394-ed549e3c5a88",
+      "timestamp": "2025-12-08T00:00:00",
+      "latency_ms": 233,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "67f5ae02-af5b-4f47-8eae-71cfce000af0",
+      "timestamp": "2025-12-17T00:00:00",
+      "latency_ms": 145,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "7bf7e1d3-6a66-4fce-b089-fc6d2877f5d9",
+      "timestamp": "2025-12-30T00:00:00",
+      "latency_ms": 50,
+      "service": "search-worker",
+      "environment": "production"
+    },
+    {
+      "id": "51beb80e-b7e6-414c-9c8a-49225005680f",
+      "timestamp": "2025-12-22T00:00:00",
+      "latency_ms": 93,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "51b1943c-1b2e-4edb-8fc8-5fc083d5bceb",
+      "timestamp": "2025-12-28T00:00:00",
+      "latency_ms": 209,
+      "service": "billing-api",
+      "environment": "staging"
+    },
+    {
+      "id": "18c8a616-2410-4e9a-bf77-9cae7318b96d",
+      "timestamp": "2025-12-29T00:00:00",
+      "latency_ms": 156,
+      "service": "auth-service",
+      "environment": "staging"
+    },
+    {
+      "id": "3f8ea40a-6b0a-40e3-9d89-6047dd39d793",
+      "timestamp": "2025-12-02T00:00:00",
+      "latency_ms": 216,
+      "service": "billing-api",
+      "environment": "staging"
+    },
+    {
+      "id": "7f8e5483-28ca-4a1d-835b-ec2c3098f7b2",
+      "timestamp": "2025-12-03T00:00:00",
+      "latency_ms": 180,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "f1fac6e7-170d-4507-85ee-e1d47f53a88e",
+      "timestamp": "2025-12-04T00:00:00",
+      "latency_ms": 177,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "0c74dc0f-5a57-4539-9556-0a2d3713b466",
+      "timestamp": "2025-12-02T00:00:00",
+      "latency_ms": 143,
+      "service": "auth-service",
+      "environment": "staging"
+    },
+    {
+      "id": "d8e049de-0217-4a0e-8964-90ab4926ce5f",
+      "timestamp": "2025-12-17T00:00:00",
+      "latency_ms": 260,
+      "service": "auth-service",
+      "environment": "staging"
+    },
+    {
+      "id": "673ba8bd-c38c-4dec-9da3-9a73ba3df7ff",
+      "timestamp": "2025-12-28T00:00:00",
+      "latency_ms": 155,
+      "service": "user-dashboard",
+      "environment": "production"
+    },
+    {
+      "id": "5cce5ba9-31d4-4e09-8fd3-3afc91fdfa4f",
+      "timestamp": "2025-12-20T00:00:00",
+      "latency_ms": 46,
+      "service": "user-dashboard",
+      "environment": "production"
+    },
+    {
+      "id": "479bc637-8cc3-4f3b-83af-fcfe734a6ca3",
+      "timestamp": "2025-12-20T00:00:00",
+      "latency_ms": 278,
+      "service": "auth-service",
+      "environment": "production"
+    },
+    {
+      "id": "56ce4b42-fc9e-4dcb-8b7e-62685f89ed12",
+      "timestamp": "2025-12-29T00:00:00",
+      "latency_ms": 221,
+      "service": "user-dashboard",
+      "environment": "production"
+    },
+    {
+      "id": "0b990034-0a4e-4552-8005-1b1066c14dca",
+      "timestamp": "2025-12-26T00:00:00",
+      "latency_ms": 280,
+      "service": "auth-service",
+      "environment": "production"
+    },
+    {
+      "id": "74fd33d1-84f2-4d0f-b947-4bfacdd0b4d4",
+      "timestamp": "2025-12-10T00:00:00",
+      "latency_ms": 190,
+      "service": "billing-api",
+      "environment": "production"
+    },
+    {
+      "id": "9dd2f9de-fd98-4e33-a498-abe92999bbef",
+      "timestamp": "2025-12-22T00:00:00",
+      "latency_ms": 183,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "901bcdef-b56f-48ce-bd66-971e88476c56",
+      "timestamp": "2025-12-16T00:00:00",
+      "latency_ms": 280,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "1c0f0bdc-ac7e-437c-94cc-1e2a5e4cb287",
+      "timestamp": "2025-12-06T00:00:00",
+      "latency_ms": 28,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "f791f1e5-43f9-4d6b-b97e-be8798cf1188",
+      "timestamp": "2025-12-07T00:00:00",
+      "latency_ms": 33,
+      "service": "billing-api",
+      "environment": "production"
+    },
+    {
+      "id": "b89f7039-a107-4c46-8634-17182ba6adb3",
+      "timestamp": "2025-12-14T00:00:00",
+      "latency_ms": 265,
+      "service": "search-worker",
+      "environment": "production"
+    },
+    {
+      "id": "b35556a5-f2bd-42f2-9293-f70508150147",
+      "timestamp": "2025-12-06T00:00:00",
+      "latency_ms": 144,
+      "service": "auth-service",
+      "environment": "production"
+    },
+    {
+      "id": "69b7c0fa-26c4-42f6-ab35-2f85504e2687",
+      "timestamp": "2026-01-01T00:00:00",
+      "latency_ms": 245,
+      "service": "billing-api",
+      "environment": "staging"
+    },
+    {
+      "id": "ba370623-bc5f-44dd-992f-3c1edf70fb2a",
+      "timestamp": "2025-12-16T00:00:00",
+      "latency_ms": 261,
+      "service": "auth-service",
+      "environment": "production"
+    },
+    {
+      "id": "a987b218-ff84-4aef-9336-723b8f964685",
+      "timestamp": "2025-12-16T00:00:00",
+      "latency_ms": 126,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "57a2be4e-887b-43e5-a980-f80875ac824c",
+      "timestamp": "2025-12-22T00:00:00",
+      "latency_ms": 108,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "476cf68c-3f1b-40d0-b514-105831383975",
+      "timestamp": "2025-12-13T00:00:00",
+      "latency_ms": 267,
+      "service": "user-dashboard",
+      "environment": "production"
+    },
+    {
+      "id": "35102852-b474-4349-89fc-2cd8c56bad4c",
+      "timestamp": "2025-12-02T00:00:00",
+      "latency_ms": 172,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "cb9faf6d-ef3a-4f27-af06-fccb8f7c1d59",
+      "timestamp": "2025-12-17T00:00:00",
+      "latency_ms": 198,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "65001423-faeb-4d19-a550-8ea26133a34d",
+      "timestamp": "2025-12-29T00:00:00",
+      "latency_ms": 298,
+      "service": "user-dashboard",
+      "environment": "production"
+    },
+    {
+      "id": "143b45e3-b6d1-46bb-b48f-709c49a22441",
+      "timestamp": "2025-12-23T00:00:00",
+      "latency_ms": 41,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "33baba88-36c7-46fa-baa4-f052bf519362",
+      "timestamp": "2025-12-12T00:00:00",
+      "latency_ms": 151,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "3d4196fe-963a-4617-bdab-07e79d9d028e",
+      "timestamp": "2025-12-28T00:00:00",
+      "latency_ms": 75,
+      "service": "billing-api",
+      "environment": "production"
+    },
+    {
+      "id": "0d700ea4-3b9b-4d45-a350-55e439c59df9",
+      "timestamp": "2025-12-11T00:00:00",
+      "latency_ms": 291,
+      "service": "auth-service",
+      "environment": "staging"
+    },
+    {
+      "id": "23310a28-c550-4ca8-ae62-990c19bd4f93",
+      "timestamp": "2025-12-22T00:00:00",
+      "latency_ms": 261,
+      "service": "auth-service",
+      "environment": "production"
+    },
+    {
+      "id": "c1836315-330f-4be1-a689-b4247a3a10e1",
+      "timestamp": "2025-12-19T00:00:00",
+      "latency_ms": 263,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "a6fd0cb1-16e6-45c0-84cb-294fe86e8e63",
+      "timestamp": "2025-12-23T00:00:00",
+      "latency_ms": 50,
+      "service": "billing-api",
+      "environment": "production"
+    },
+    {
+      "id": "2d007d05-d66d-4627-a1da-ce6a6afa828c",
+      "timestamp": "2025-12-03T00:00:00",
+      "latency_ms": 109,
+      "service": "auth-service",
+      "environment": "staging"
+    },
+    {
+      "id": "f64e3dfc-bfbe-4c7a-afc5-97382fb21e66",
+      "timestamp": "2025-12-07T00:00:00",
+      "latency_ms": 273,
+      "service": "user-dashboard",
+      "environment": "production"
+    },
+    {
+      "id": "edaf3766-1b78-4ede-9a4f-fc0c9165f2ed",
+      "timestamp": "2026-01-01T00:00:00",
+      "latency_ms": 172,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "f0458043-e3a6-4a70-be71-0b558639bd41",
+      "timestamp": "2025-12-18T00:00:00",
+      "latency_ms": 298,
+      "service": "billing-api",
+      "environment": "staging"
+    },
+    {
+      "id": "2999394c-54a7-469b-9cd6-6b09cf0e6d2b",
+      "timestamp": "2025-12-24T00:00:00",
+      "latency_ms": 118,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "ca6fbff8-564c-4bd2-bc92-fd81039b058c",
+      "timestamp": "2025-12-10T00:00:00",
+      "latency_ms": 115,
+      "service": "user-dashboard",
+      "environment": "production"
+    },
+    {
+      "id": "53f30073-83e9-4ef4-ad7d-f5d0d3b59af7",
+      "timestamp": "2025-12-27T00:00:00",
+      "latency_ms": 227,
+      "service": "auth-service",
+      "environment": "staging"
+    },
+    {
+      "id": "7a3a6e96-23ff-43d3-bb4f-b88a2f4dd219",
+      "timestamp": "2025-12-11T00:00:00",
+      "latency_ms": 68,
+      "service": "user-dashboard",
+      "environment": "production"
+    },
+    {
+      "id": "c0f63229-725d-4259-bc4b-1eec6231ee73",
+      "timestamp": "2026-01-01T00:00:00",
+      "latency_ms": 153,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "b1594847-5c0b-4b10-a757-cb1042f525b9",
+      "timestamp": "2025-12-23T00:00:00",
+      "latency_ms": 25,
+      "service": "billing-api",
+      "environment": "production"
+    },
+    {
+      "id": "67c96204-28e3-43b6-8e8a-dc4b77242041",
+      "timestamp": "2025-12-11T00:00:00",
+      "latency_ms": 80,
+      "service": "user-dashboard",
+      "environment": "production"
+    },
+    {
+      "id": "3818cfd3-3889-436a-9d58-17e85e175b66",
+      "timestamp": "2025-12-12T00:00:00",
+      "latency_ms": 171,
+      "service": "billing-api",
+      "environment": "staging"
+    },
+    {
+      "id": "5fa5e0aa-9b11-4530-bd24-7c11bf6b8cdf",
+      "timestamp": "2025-12-28T00:00:00",
+      "latency_ms": 252,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "37e9d2e2-d35a-407a-aa02-17d0cd4f8b2b",
+      "timestamp": "2025-12-08T00:00:00",
+      "latency_ms": 295,
+      "service": "billing-api",
+      "environment": "production"
+    },
+    {
+      "id": "13fe8a29-5c9d-4ee0-b42a-045687365a84",
+      "timestamp": "2025-12-16T00:00:00",
+      "latency_ms": 248,
+      "service": "auth-service",
+      "environment": "production"
+    },
+    {
+      "id": "929c93b3-33c0-4bf1-8167-999fe723ada3",
+      "timestamp": "2025-12-06T00:00:00",
+      "latency_ms": 300,
+      "service": "billing-api",
+      "environment": "production"
+    },
+    {
+      "id": "3495311e-ae27-4432-9dc1-e7eb711c7673",
+      "timestamp": "2025-12-22T00:00:00",
+      "latency_ms": 286,
+      "service": "search-worker",
+      "environment": "production"
+    },
+    {
+      "id": "741423b5-0e3e-45f2-8f06-71c7720b274b",
+      "timestamp": "2025-12-04T00:00:00",
+      "latency_ms": 281,
+      "service": "billing-api",
+      "environment": "staging"
+    },
+    {
+      "id": "ce920136-ac3a-412f-b65e-6cb58f0d5540",
+      "timestamp": "2025-12-18T00:00:00",
+      "latency_ms": 49,
+      "service": "user-dashboard",
+      "environment": "production"
+    },
+    {
+      "id": "37c86152-beed-4af9-80c5-9f30d1031424",
+      "timestamp": "2025-12-20T00:00:00",
+      "latency_ms": 150,
+      "service": "auth-service",
+      "environment": "production"
+    },
+    {
+      "id": "fe7ee362-8a89-40f0-9052-91d3b34c6c73",
+      "timestamp": "2025-12-19T00:00:00",
+      "latency_ms": 196,
+      "service": "auth-service",
+      "environment": "production"
+    },
+    {
+      "id": "2e13418d-68ab-40ea-897e-c6d1081fc6dc",
+      "timestamp": "2025-12-03T00:00:00",
+      "latency_ms": 261,
+      "service": "billing-api",
+      "environment": "staging"
+    },
+    {
+      "id": "e821e716-eac8-4da1-9e9f-6f5b72d35458",
+      "timestamp": "2025-12-21T00:00:00",
+      "latency_ms": 215,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "59077299-dc3b-4dd8-a74e-02a9220b9ea9",
+      "timestamp": "2025-12-30T00:00:00",
+      "latency_ms": 296,
+      "service": "auth-service",
+      "environment": "production"
+    },
+    {
+      "id": "fa8dae42-ba54-4920-a099-d18087623997",
+      "timestamp": "2025-12-15T00:00:00",
+      "latency_ms": 221,
+      "service": "billing-api",
+      "environment": "production"
+    },
+    {
+      "id": "ac6a7c85-7687-4c62-8c61-845efa7e5d94",
+      "timestamp": "2025-12-08T00:00:00",
+      "latency_ms": 31,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "27b608dc-589d-4cb0-b5eb-89c23f5cf2f3",
+      "timestamp": "2025-12-06T00:00:00",
+      "latency_ms": 137,
+      "service": "user-dashboard",
+      "environment": "production"
+    },
+    {
+      "id": "6b535a19-a902-473f-8f39-f648083f64c3",
+      "timestamp": "2025-12-03T00:00:00",
+      "latency_ms": 77,
+      "service": "auth-service",
+      "environment": "production"
+    },
+    {
+      "id": "7249f62c-0898-4462-980c-b95c19d45deb",
+      "timestamp": "2025-12-26T00:00:00",
+      "latency_ms": 54,
+      "service": "auth-service",
+      "environment": "production"
+    },
+    {
+      "id": "8a2db2e6-3bfd-48a6-b05f-ddf566fadca0",
+      "timestamp": "2025-12-09T00:00:00",
+      "latency_ms": 42,
+      "service": "billing-api",
+      "environment": "production"
+    },
+    {
+      "id": "d0d75e37-3bf2-425f-8a0d-2b73fe54ee4b",
+      "timestamp": "2025-12-28T00:00:00",
+      "latency_ms": 277,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "a903ae67-fc56-4b53-a4ac-b722e0527739",
+      "timestamp": "2025-12-25T00:00:00",
+      "latency_ms": 174,
+      "service": "billing-api",
+      "environment": "staging"
+    },
+    {
+      "id": "97777f10-f2d2-493f-8e85-140d0f9aeb70",
+      "timestamp": "2025-12-23T00:00:00",
+      "latency_ms": 160,
+      "service": "billing-api",
+      "environment": "staging"
+    },
+    {
+      "id": "f10bce9c-582b-41ee-b8e8-035b0c00988a",
+      "timestamp": "2025-12-15T00:00:00",
+      "latency_ms": 273,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "605fb1eb-4cc5-4e0d-a633-20186883ac6e",
+      "timestamp": "2025-12-10T00:00:00",
+      "latency_ms": 233,
+      "service": "billing-api",
+      "environment": "staging"
+    },
+    {
+      "id": "24f43c62-b523-40de-9b87-d29c4cfd0fc1",
+      "timestamp": "2025-12-25T00:00:00",
+      "latency_ms": 135,
+      "service": "search-worker",
+      "environment": "production"
+    },
+    {
+      "id": "87ad8b26-8eaa-4841-aaa0-426df7c0d5f7",
+      "timestamp": "2025-12-15T00:00:00",
+      "latency_ms": 231,
+      "service": "billing-api",
+      "environment": "staging"
+    },
+    {
+      "id": "143df5b3-a58e-43dd-948c-1d84340de049",
+      "timestamp": "2025-12-25T00:00:00",
+      "latency_ms": 150,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "0d31812e-30c3-4756-9453-f867b97e6224",
+      "timestamp": "2025-12-30T00:00:00",
+      "latency_ms": 294,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "cdfd9531-302b-4831-92a1-fe7ddfa59722",
+      "timestamp": "2025-12-11T00:00:00",
+      "latency_ms": 40,
+      "service": "billing-api",
+      "environment": "staging"
+    },
+    {
+      "id": "03ece8ff-e8b3-4763-b4ff-3f3a4d9dbaeb",
+      "timestamp": "2025-12-26T00:00:00",
+      "latency_ms": 190,
+      "service": "billing-api",
+      "environment": "production"
+    },
+    {
+      "id": "7a9a8ef5-c11b-41c4-bfe3-f366bf337a15",
+      "timestamp": "2025-12-02T00:00:00",
+      "latency_ms": 80,
+      "service": "billing-api",
+      "environment": "production"
+    },
+    {
+      "id": "48769153-c688-43fe-9255-5c758d55119e",
+      "timestamp": "2025-12-20T00:00:00",
+      "latency_ms": 142,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "8347f1da-5c11-4b6d-82f5-b3f54ef4c34d",
+      "timestamp": "2025-12-15T00:00:00",
+      "latency_ms": 203,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "ea11905b-51fa-4efa-96f8-9f7ac2fa1da8",
+      "timestamp": "2025-12-29T00:00:00",
+      "latency_ms": 260,
+      "service": "billing-api",
+      "environment": "staging"
+    },
+    {
+      "id": "38a56b49-dd34-4a18-9001-9ed40bb401e7",
+      "timestamp": "2025-12-22T00:00:00",
+      "latency_ms": 231,
+      "service": "billing-api",
+      "environment": "production"
+    },
+    {
+      "id": "54720d2d-3239-4ffb-a704-6f254b91b8cb",
+      "timestamp": "2025-12-24T00:00:00",
+      "latency_ms": 233,
+      "service": "billing-api",
+      "environment": "staging"
+    },
+    {
+      "id": "f186e47a-a794-4320-8cf6-e8b87fd238c3",
+      "timestamp": "2025-12-14T00:00:00",
+      "latency_ms": 145,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "bd5609c4-a446-4663-b93b-17fbf76d15fd",
+      "timestamp": "2025-12-08T00:00:00",
+      "latency_ms": 270,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "8bea75c1-b866-47aa-a3d4-526b2b54ff7a",
+      "timestamp": "2025-12-27T00:00:00",
+      "latency_ms": 200,
+      "service": "search-worker",
+      "environment": "production"
+    },
+    {
+      "id": "0f09105c-f50d-4a37-a44d-9fecfd85d7fa",
+      "timestamp": "2025-12-03T00:00:00",
+      "latency_ms": 297,
+      "service": "auth-service",
+      "environment": "production"
+    },
+    {
+      "id": "2332a50e-6992-496e-81a2-5ed1c3abb5f1",
+      "timestamp": "2025-12-02T00:00:00",
+      "latency_ms": 44,
+      "service": "billing-api",
+      "environment": "production"
+    },
+    {
+      "id": "74bd0c93-8177-4661-b7fe-032c02571851",
+      "timestamp": "2025-12-10T00:00:00",
+      "latency_ms": 97,
+      "service": "user-dashboard",
+      "environment": "production"
+    },
+    {
+      "id": "01b158e9-0406-4f44-bce4-0679a8c6dbc0",
+      "timestamp": "2025-12-13T00:00:00",
+      "latency_ms": 267,
+      "service": "search-worker",
+      "environment": "production"
+    },
+    {
+      "id": "fa3c1628-8926-41df-8655-68b7b8e19f56",
+      "timestamp": "2026-01-01T00:00:00",
+      "latency_ms": 291,
+      "service": "user-dashboard",
+      "environment": "production"
+    },
+    {
+      "id": "2de46e91-e8e6-4840-b090-f5a0ce610199",
+      "timestamp": "2025-12-16T00:00:00",
+      "latency_ms": 240,
+      "service": "auth-service",
+      "environment": "production"
+    },
+    {
+      "id": "86c5d1d6-9ea9-4508-b122-75923db02235",
+      "timestamp": "2025-12-16T00:00:00",
+      "latency_ms": 96,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "67f1698c-f594-4a54-9f80-4eeb143a9aff",
+      "timestamp": "2025-12-24T00:00:00",
+      "latency_ms": 223,
+      "service": "search-worker",
+      "environment": "production"
+    },
+    {
+      "id": "d90dd19b-d3fb-4043-af1d-5a1a4ccb2355",
+      "timestamp": "2025-12-10T00:00:00",
+      "latency_ms": 135,
+      "service": "auth-service",
+      "environment": "production"
+    },
+    {
+      "id": "79db7862-8d7d-4772-a08e-2f5c61177270",
+      "timestamp": "2025-12-30T00:00:00",
+      "latency_ms": 227,
+      "service": "auth-service",
+      "environment": "production"
+    },
+    {
+      "id": "6f14b3f6-d867-488b-bff6-b824152aeaec",
+      "timestamp": "2025-12-10T00:00:00",
+      "latency_ms": 107,
+      "service": "user-dashboard",
+      "environment": "production"
+    },
+    {
+      "id": "361f6d90-3ad1-4a33-8ae4-ac11eb4d8f42",
+      "timestamp": "2025-12-04T00:00:00",
+      "latency_ms": 290,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "e63949d4-47c6-4688-acf3-2053af36b8cc",
+      "timestamp": "2025-12-31T00:00:00",
+      "latency_ms": 58,
+      "service": "auth-service",
+      "environment": "production"
+    },
+    {
+      "id": "9647ff9f-3508-407a-b622-d84204022b3c",
+      "timestamp": "2025-12-03T00:00:00",
+      "latency_ms": 181,
+      "service": "billing-api",
+      "environment": "staging"
+    },
+    {
+      "id": "3d8f95f4-905f-4096-a996-56e24c9d6907",
+      "timestamp": "2025-12-03T00:00:00",
+      "latency_ms": 59,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "b962c8a7-b076-47dc-bd0c-e433ca5e151b",
+      "timestamp": "2025-12-20T00:00:00",
+      "latency_ms": 91,
+      "service": "auth-service",
+      "environment": "staging"
+    },
+    {
+      "id": "1375ee90-d6b3-41e4-bb6d-ca0d6fe5040b",
+      "timestamp": "2025-12-31T00:00:00",
+      "latency_ms": 70,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "c8969c5b-45f8-428d-a255-e1bb07958c1f",
+      "timestamp": "2025-12-08T00:00:00",
+      "latency_ms": 187,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "6e8d9644-601b-4bcb-b0ee-bcce8d93e14a",
+      "timestamp": "2025-12-25T00:00:00",
+      "latency_ms": 202,
+      "service": "billing-api",
+      "environment": "staging"
+    },
+    {
+      "id": "12d15585-b68e-47fa-bf17-5534cc4d5819",
+      "timestamp": "2025-12-30T00:00:00",
+      "latency_ms": 171,
+      "service": "auth-service",
+      "environment": "staging"
+    },
+    {
+      "id": "277eb0aa-a247-441d-88ad-0899b630794d",
+      "timestamp": "2025-12-28T00:00:00",
+      "latency_ms": 214,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "4eea9db8-f165-4779-8154-7950176de21f",
+      "timestamp": "2025-12-21T00:00:00",
+      "latency_ms": 74,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "2ff8e87e-1659-4c89-a1eb-faa91a2bd69c",
+      "timestamp": "2025-12-08T00:00:00",
+      "latency_ms": 158,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "16f142a2-06b9-49aa-9a71-67c768759545",
+      "timestamp": "2025-12-15T00:00:00",
+      "latency_ms": 282,
+      "service": "user-dashboard",
+      "environment": "production"
+    },
+    {
+      "id": "4ab6821c-0328-4136-a29e-f3d8dd1ca267",
+      "timestamp": "2025-12-13T00:00:00",
+      "latency_ms": 186,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "e7bbaefc-8f3d-497f-a6b0-da0ab98f5dbe",
+      "timestamp": "2025-12-08T00:00:00",
+      "latency_ms": 63,
+      "service": "billing-api",
+      "environment": "production"
+    },
+    {
+      "id": "4d16f049-44d7-4f9a-a38b-05b72b64777c",
+      "timestamp": "2025-12-11T00:00:00",
+      "latency_ms": 214,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "6bcd5ce7-46a5-4fe8-af46-f1b12ace1aa9",
+      "timestamp": "2025-12-28T00:00:00",
+      "latency_ms": 52,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "3f2086c2-f1b8-4d65-806f-64d65c72aebd",
+      "timestamp": "2025-12-07T00:00:00",
+      "latency_ms": 59,
+      "service": "search-worker",
+      "environment": "production"
+    },
+    {
+      "id": "f2e61828-01bb-419c-8dfe-111722af711f",
+      "timestamp": "2025-12-18T00:00:00",
+      "latency_ms": 74,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "70b27304-545c-488d-9cb9-075ecdd7f460",
+      "timestamp": "2025-12-06T00:00:00",
+      "latency_ms": 214,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "f280df1d-9a6c-4db9-9217-1c884ce953a7",
+      "timestamp": "2025-12-06T00:00:00",
+      "latency_ms": 89,
+      "service": "billing-api",
+      "environment": "staging"
+    },
+    {
+      "id": "51b30182-f7fe-404f-a5f3-0779f6ee5cdb",
+      "timestamp": "2025-12-22T00:00:00",
+      "latency_ms": 110,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "d105c8d6-47c1-4017-a045-2909536d47d7",
+      "timestamp": "2025-12-02T00:00:00",
+      "latency_ms": 144,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "2e0fb5b3-8bae-491e-bf4c-c10f979c30cf",
+      "timestamp": "2025-12-29T00:00:00",
+      "latency_ms": 122,
+      "service": "auth-service",
+      "environment": "staging"
+    },
+    {
+      "id": "d4cee27c-4a94-4e9f-8c35-1e4f703e957f",
+      "timestamp": "2025-12-02T00:00:00",
+      "latency_ms": 127,
+      "service": "auth-service",
+      "environment": "staging"
+    },
+    {
+      "id": "3df51967-4d86-40bd-a222-4f9623a13e20",
+      "timestamp": "2025-12-11T00:00:00",
+      "latency_ms": 275,
+      "service": "user-dashboard",
+      "environment": "production"
+    },
+    {
+      "id": "72f60958-12ef-4101-a082-786fca00ef58",
+      "timestamp": "2025-12-10T00:00:00",
+      "latency_ms": 236,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "b113d50b-dea0-40c6-ab9e-d274ec6a37ad",
+      "timestamp": "2025-12-15T00:00:00",
+      "latency_ms": 279,
+      "service": "search-worker",
+      "environment": "production"
+    },
+    {
+      "id": "8972abbd-cff2-41c4-a53f-9644b39e4df2",
+      "timestamp": "2025-12-07T00:00:00",
+      "latency_ms": 204,
+      "service": "auth-service",
+      "environment": "production"
+    },
+    {
+      "id": "2a9528c3-5ae1-4bad-aa29-60fda85894df",
+      "timestamp": "2025-12-08T00:00:00",
+      "latency_ms": 147,
+      "service": "auth-service",
+      "environment": "staging"
+    },
+    {
+      "id": "1b1f2eb1-6e32-45a8-8bd5-cc86f73936e9",
+      "timestamp": "2025-12-02T00:00:00",
+      "latency_ms": 189,
+      "service": "auth-service",
+      "environment": "production"
+    },
+    {
+      "id": "8ed8a80d-84cf-4e39-bf31-c29f82bbad84",
+      "timestamp": "2025-12-24T00:00:00",
+      "latency_ms": 133,
+      "service": "billing-api",
+      "environment": "staging"
+    },
+    {
+      "id": "96add4df-adf7-4924-85b8-386b768b4f7e",
+      "timestamp": "2025-12-21T00:00:00",
+      "latency_ms": 220,
+      "service": "billing-api",
+      "environment": "staging"
+    },
+    {
+      "id": "eba900e1-6a7d-4d96-8ba1-72331ac3bf31",
+      "timestamp": "2026-01-01T00:00:00",
+      "latency_ms": 267,
+      "service": "auth-service",
+      "environment": "production"
+    },
+    {
+      "id": "7490adeb-57d3-47d3-8fd8-0bbb592c1107",
+      "timestamp": "2025-12-06T00:00:00",
+      "latency_ms": 92,
+      "service": "billing-api",
+      "environment": "staging"
+    },
+    {
+      "id": "b25f13df-b8d4-4848-b02b-a49f18fdd2b9",
+      "timestamp": "2025-12-21T00:00:00",
+      "latency_ms": 263,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "1d763a66-b5f5-4cb0-8f68-58780b705933",
+      "timestamp": "2025-12-30T00:00:00",
+      "latency_ms": 173,
+      "service": "auth-service",
+      "environment": "staging"
+    },
+    {
+      "id": "ee0f65a8-2a13-4c1f-8cd0-15c1ad5900dd",
+      "timestamp": "2025-12-12T00:00:00",
+      "latency_ms": 75,
+      "service": "billing-api",
+      "environment": "production"
+    },
+    {
+      "id": "f55dce6d-6d26-4b37-8f52-42d354bbbcf8",
+      "timestamp": "2025-12-15T00:00:00",
+      "latency_ms": 101,
+      "service": "search-worker",
+      "environment": "production"
+    },
+    {
+      "id": "a3f66c61-2fb7-4dab-af38-3b43a137f8e4",
+      "timestamp": "2025-12-07T00:00:00",
+      "latency_ms": 227,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "638abdf6-6df7-4cd3-979a-a0517317591a",
+      "timestamp": "2026-01-01T00:00:00",
+      "latency_ms": 121,
+      "service": "auth-service",
+      "environment": "production"
+    },
+    {
+      "id": "cbc72f1a-cf08-4a54-b429-9924c0986750",
+      "timestamp": "2025-12-26T00:00:00",
+      "latency_ms": 162,
+      "service": "auth-service",
+      "environment": "production"
+    },
+    {
+      "id": "327375bf-5373-4f4d-9da4-9cb92fdc9992",
+      "timestamp": "2025-12-07T00:00:00",
+      "latency_ms": 294,
+      "service": "search-worker",
+      "environment": "production"
+    },
+    {
+      "id": "503b4078-a39c-4ec6-b746-4c02871854c1",
+      "timestamp": "2025-12-24T00:00:00",
+      "latency_ms": 270,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "753659ef-d873-4ad9-9a1b-af0e591196dc",
+      "timestamp": "2025-12-14T00:00:00",
+      "latency_ms": 78,
+      "service": "billing-api",
+      "environment": "staging"
+    },
+    {
+      "id": "1e2c2e7d-502c-40ee-a24a-66a6ac0f6801",
+      "timestamp": "2025-12-03T00:00:00",
+      "latency_ms": 63,
+      "service": "billing-api",
+      "environment": "staging"
+    },
+    {
+      "id": "82c56b21-2430-42da-b185-0eb85f90fc87",
+      "timestamp": "2025-12-29T00:00:00",
+      "latency_ms": 113,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "2f8d8ded-6c4c-450b-a23a-d0fc93267d25",
+      "timestamp": "2025-12-13T00:00:00",
+      "latency_ms": 90,
+      "service": "search-worker",
+      "environment": "production"
+    },
+    {
+      "id": "2fe5b140-23ea-4956-89f1-137d7d592e19",
+      "timestamp": "2025-12-15T00:00:00",
+      "latency_ms": 105,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "02740f73-f3ab-4a0d-9be9-fdb3dd92dd7c",
+      "timestamp": "2025-12-13T00:00:00",
+      "latency_ms": 47,
+      "service": "search-worker",
+      "environment": "production"
+    },
+    {
+      "id": "a72f947d-8164-42cb-8fc3-d7d3f6bd80c7",
+      "timestamp": "2025-12-26T00:00:00",
+      "latency_ms": 216,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "71a0449d-d703-462f-b5cb-e3f56a66c184",
+      "timestamp": "2025-12-11T00:00:00",
+      "latency_ms": 271,
+      "service": "search-worker",
+      "environment": "production"
+    },
+    {
+      "id": "4ac66780-3874-4f3c-82d4-9b56cbbed980",
+      "timestamp": "2025-12-30T00:00:00",
+      "latency_ms": 35,
+      "service": "auth-service",
+      "environment": "staging"
+    },
+    {
+      "id": "751303b9-c7de-46ea-ab0f-be4449e64c22",
+      "timestamp": "2025-12-25T00:00:00",
+      "latency_ms": 295,
+      "service": "search-worker",
+      "environment": "production"
+    },
+    {
+      "id": "d2c2a960-8b09-41ab-866d-ceb344945e09",
+      "timestamp": "2025-12-14T00:00:00",
+      "latency_ms": 78,
+      "service": "user-dashboard",
+      "environment": "production"
+    },
+    {
+      "id": "6cd6f011-fd61-413b-b7f2-5d368bddcee3",
+      "timestamp": "2025-12-08T00:00:00",
+      "latency_ms": 245,
+      "service": "auth-service",
+      "environment": "production"
+    },
+    {
+      "id": "dcb91d5f-593c-472b-8347-dbca7321a8b2",
+      "timestamp": "2025-12-23T00:00:00",
+      "latency_ms": 36,
+      "service": "auth-service",
+      "environment": "staging"
+    },
+    {
+      "id": "35ba9357-3ca8-4f31-8fd7-f3b9c68fcba5",
+      "timestamp": "2025-12-05T00:00:00",
+      "latency_ms": 80,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "34fa32b6-d043-4e4c-b4e5-0699c8ebe27a",
+      "timestamp": "2025-12-27T00:00:00",
+      "latency_ms": 91,
+      "service": "auth-service",
+      "environment": "staging"
+    },
+    {
+      "id": "52daf681-2b1a-476c-89ec-bc5198cbaa52",
+      "timestamp": "2025-12-15T00:00:00",
+      "latency_ms": 163,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "fc48f615-83b0-435c-9ba6-fdf8f3d04ffb",
+      "timestamp": "2025-12-14T00:00:00",
+      "latency_ms": 156,
+      "service": "auth-service",
+      "environment": "production"
+    },
+    {
+      "id": "46feacd4-fe13-43cd-8f2d-5c15eb346d3a",
+      "timestamp": "2025-12-02T00:00:00",
+      "latency_ms": 230,
+      "service": "billing-api",
+      "environment": "production"
+    },
+    {
+      "id": "3f5fbf4f-d417-4230-9274-ee11b61df906",
+      "timestamp": "2025-12-25T00:00:00",
+      "latency_ms": 94,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "73b5bad5-600b-4b35-aa0a-a7d5a0b85755",
+      "timestamp": "2025-12-28T00:00:00",
+      "latency_ms": 157,
+      "service": "auth-service",
+      "environment": "production"
+    },
+    {
+      "id": "efb3b939-b1d8-4887-8739-cc7bbff30c8d",
+      "timestamp": "2025-12-20T00:00:00",
+      "latency_ms": 283,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "de70bd30-00a2-4367-94fb-09f053c93ae7",
+      "timestamp": "2025-12-02T00:00:00",
+      "latency_ms": 269,
+      "service": "auth-service",
+      "environment": "staging"
+    },
+    {
+      "id": "88d00abd-cbb1-4c79-9036-708dd9a09007",
+      "timestamp": "2025-12-12T00:00:00",
+      "latency_ms": 203,
+      "service": "search-worker",
+      "environment": "production"
+    },
+    {
+      "id": "44bed486-7ea5-4387-b63b-e5cbd3293724",
+      "timestamp": "2025-12-02T00:00:00",
+      "latency_ms": 239,
+      "service": "user-dashboard",
+      "environment": "staging"
+    },
+    {
+      "id": "da385db5-90ee-4067-a16e-9fe593f37596",
+      "timestamp": "2025-12-22T00:00:00",
+      "latency_ms": 300,
+      "service": "search-worker",
+      "environment": "staging"
+    },
+    {
+      "id": "c8acffcf-a04d-4d14-997d-bae10bc2ea72",
+      "timestamp": "2025-12-04T00:00:00",
+      "latency_ms": 44,
+      "service": "search-worker",
+      "environment": "production"
+    }
+  ],
+  "funnel_stages": [
+    {
+      "stage_name": "visited_site",
+      "environment": "production",
+      "drop_off_rate": 0.1
+    },
+    {
+      "stage_name": "signed_up",
+      "environment": "production",
+      "drop_off_rate": 0.30000000000000004
+    },
+    {
+      "stage_name": "added_payment",
+      "environment": "production",
+      "drop_off_rate": 0.5
+    },
+    {
+      "stage_name": "completed_purchase",
+      "environment": "production",
+      "drop_off_rate": 0.7
+    },
+    {
+      "stage_name": "visited_site",
+      "environment": "staging",
+      "drop_off_rate": 0.1
+    },
+    {
+      "stage_name": "signed_up",
+      "environment": "staging",
+      "drop_off_rate": 0.30000000000000004
+    },
+    {
+      "stage_name": "added_payment",
+      "environment": "staging",
+      "drop_off_rate": 0.5
+    },
+    {
+      "stage_name": "completed_purchase",
+      "environment": "staging",
+      "drop_off_rate": 0.7
+    }
+  ]
+}

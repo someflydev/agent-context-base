@@ -72,3 +72,5 @@ work/
 
 # Generated faker output
 examples/canonical-faker/*/output/
+medium.json
+large.json
