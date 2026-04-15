@@ -15963,6 +15963,177 @@
       ],
       "rank": 100,
       "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/CATALOG.md",
+      "category": "analytics",
+      "summary": "Plotly + HTMX arc canonical example file.",
+      "stacks": [],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [
+        "add-visualization-panel"
+      ],
+      "patterns": [
+        "plotly",
+        "htmx",
+        "server-rendered-viz"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/domain/fixtures/small.json",
+      "category": "analytics",
+      "summary": "Plotly + HTMX arc canonical example file.",
+      "stacks": [],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [
+        "add-visualization-panel"
+      ],
+      "patterns": [
+        "plotly",
+        "htmx",
+        "server-rendered-viz"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/domain/fixtures/smoke.json",
+      "category": "analytics",
+      "summary": "Plotly + HTMX arc canonical example file.",
+      "stacks": [],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [
+        "add-visualization-panel"
+      ],
+      "patterns": [
+        "plotly",
+        "htmx",
+        "server-rendered-viz"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/domain/generate_fixtures.py",
+      "category": "analytics",
+      "summary": "Plotly + HTMX arc canonical example file.",
+      "stacks": [],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [
+        "add-visualization-panel"
+      ],
+      "patterns": [
+        "plotly",
+        "htmx",
+        "server-rendered-viz"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/domain/page-layout-spec.md",
+      "category": "analytics",
+      "summary": "Plotly + HTMX arc canonical example file.",
+      "stacks": [],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [
+        "add-visualization-panel"
+      ],
+      "patterns": [
+        "plotly",
+        "htmx",
+        "server-rendered-viz"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/domain/parity-matrix.md",
+      "category": "analytics",
+      "summary": "Plotly + HTMX arc canonical example file.",
+      "stacks": [],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [
+        "add-visualization-panel"
+      ],
+      "patterns": [
+        "plotly",
+        "htmx",
+        "server-rendered-viz"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/domain/seed-data-contract.md",
+      "category": "analytics",
+      "summary": "Plotly + HTMX arc canonical example file.",
+      "stacks": [],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [
+        "add-visualization-panel"
+      ],
+      "patterns": [
+        "plotly",
+        "htmx",
+        "server-rendered-viz"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/domain/spec.md",
+      "category": "analytics",
+      "summary": "Plotly + HTMX arc canonical example file.",
+      "stacks": [],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [
+        "add-visualization-panel"
+      ],
+      "patterns": [
+        "plotly",
+        "htmx",
+        "server-rendered-viz"
+      ],
+      "rank": 100,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/domain/verification-contract.md",
+      "category": "analytics",
+      "summary": "Plotly + HTMX arc canonical example file.",
+      "stacks": [],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [
+        "add-visualization-panel"
+      ],
+      "patterns": [
+        "plotly",
+        "htmx",
+        "server-rendered-viz"
+      ],
+      "rank": 100,
+      "stability": "canonical"
     }
   ]
 }

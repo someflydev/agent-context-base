@@ -9992,3 +9992,93 @@ examples:
     docker_supported: false
     scenario_harness: ""
     confidence: medium
+  - name: canonical-analytics-catalog
+    path: examples/canonical-analytics/CATALOG.md
+    language: markdown
+    stack_tags: []
+    archetype_tags: []
+    verification_level: draft
+    verification_targets: []
+    docker_supported: false
+    scenario_harness: ""
+    confidence: low
+  - name: canonical-analytics-small-fixture
+    path: examples/canonical-analytics/domain/fixtures/small.json
+    language: json
+    stack_tags: []
+    archetype_tags: []
+    verification_level: draft
+    verification_targets: []
+    docker_supported: false
+    scenario_harness: ""
+    confidence: low
+  - name: canonical-analytics-smoke-fixture
+    path: examples/canonical-analytics/domain/fixtures/smoke.json
+    language: json
+    stack_tags: []
+    archetype_tags: []
+    verification_level: draft
+    verification_targets: []
+    docker_supported: false
+    scenario_harness: ""
+    confidence: low
+  - name: canonical-analytics-generate-fixtures
+    path: examples/canonical-analytics/domain/generate_fixtures.py
+    language: python
+    stack_tags: []
+    archetype_tags: []
+    verification_level: draft
+    verification_targets: []
+    docker_supported: false
+    scenario_harness: ""
+    confidence: low
+  - name: canonical-analytics-page-layout
+    path: examples/canonical-analytics/domain/page-layout-spec.md
+    language: markdown
+    stack_tags: []
+    archetype_tags: []
+    verification_level: draft
+    verification_targets: []
+    docker_supported: false
+    scenario_harness: ""
+    confidence: low
+  - name: canonical-analytics-parity-matrix
+    path: examples/canonical-analytics/domain/parity-matrix.md
+    language: markdown
+    stack_tags: []
+    archetype_tags: []
+    verification_level: draft
+    verification_targets: []
+    docker_supported: false
+    scenario_harness: ""
+    confidence: low
+  - name: canonical-analytics-seed-data-contract
+    path: examples/canonical-analytics/domain/seed-data-contract.md
+    language: markdown
+    stack_tags: []
+    archetype_tags: []
+    verification_level: draft
+    verification_targets: []
+    docker_supported: false
+    scenario_harness: ""
+    confidence: low
+  - name: canonical-analytics-spec
+    path: examples/canonical-analytics/domain/spec.md
+    language: markdown
+    stack_tags: []
+    archetype_tags: []
+    verification_level: draft
+    verification_targets: []
+    docker_supported: false
+    scenario_harness: ""
+    confidence: low
+  - name: canonical-analytics-verification-contract
+    path: examples/canonical-analytics/domain/verification-contract.md
+    language: markdown
+    stack_tags: []
+    archetype_tags: []
+    verification_level: draft
+    verification_targets: []
+    docker_supported: false
+    scenario_harness: ""
+    confidence: low
