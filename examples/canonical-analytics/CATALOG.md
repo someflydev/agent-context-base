@@ -13,7 +13,7 @@ Dogfoods: examples/canonical-faker/ (TenantCore domain, generation_patterns.py)
 | Implementation | Path                               | Status | Notes |
 |----------------|------------------------------------|--------|-------|
 | Python         | examples/canonical-analytics/python/ | [x]  |       |
-| Go             | examples/canonical-analytics/go/     | [ ]  |       |
+| Go             | examples/canonical-analytics/go/     | [x]  |       |
 | Rust           | examples/canonical-analytics/rust/   | [ ]  |       |
 | Elixir         | examples/canonical-analytics/elixir/ | [ ]  |       |
 

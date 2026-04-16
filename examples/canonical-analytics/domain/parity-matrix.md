@@ -6,39 +6,39 @@ Status legend: [ ] not started · [~] partial · [x] complete
 
 | Chart Family          | Python | Go | Rust | Elixir |
 |-----------------------|--------|----|------|--------|
-| Time Series           | [x]    | [ ]| [ ]  | [ ]    |
-| Category Comparison   | [x]    | [ ]| [ ]  | [ ]    |
-| Distribution          | [x]    | [ ]| [ ]  | [ ]    |
-| Heatmap               | [x]    | [ ]| [ ]  | [ ]    |
-| Funnel                | [x]    | [ ]| [ ]  | [ ]    |
-| Incident Distribution | [x]    | [ ]| [ ]  | [ ]    |
+| Time Series           | [x]    | [x]| [ ]  | [ ]    |
+| Category Comparison   | [x]    | [x]| [ ]  | [ ]    |
+| Distribution          | [x]    | [x]| [ ]  | [ ]    |
+| Heatmap               | [x]    | [x]| [ ]  | [ ]    |
+| Funnel                | [x]    | [x]| [ ]  | [ ]    |
+| Incident Distribution | [x]    | [x]| [ ]  | [ ]    |
 
 ## Fragment Endpoint Parity
 
 | Endpoint              | Python | Go | Rust | Elixir |
 |-----------------------|--------|----|------|--------|
-| /fragments/chart      | [x]    | [ ]| [ ]  | [ ]    |
-| /fragments/summary    | [x]    | [ ]| [ ]  | [ ]    |
-| /fragments/details    | [x]    | [ ]| [ ]  | [ ]    |
+| /fragments/chart      | [x]    | [x]| [ ]  | [ ]    |
+| /fragments/summary    | [x]    | [x]| [ ]  | [ ]    |
+| /fragments/details    | [x]    | [x]| [ ]  | [ ]    |
 
 ## Filter State Parity
 
 | Filter                | Python | Go | Rust | Elixir |
 |-----------------------|--------|----|------|--------|
-| date_from / date_to   | [x]    | [ ]| [ ]  | [ ]    |
-| services (multi)      | [x]    | [ ]| [ ]  | [ ]    |
-| severity (multi)      | [x]    | [ ]| [ ]  | [ ]    |
-| environment (multi)   | [x]    | [ ]| [ ]  | [ ]    |
+| date_from / date_to   | [x]    | [x]| [ ]  | [ ]    |
+| services (multi)      | [x]    | [x]| [ ]  | [ ]    |
+| severity (multi)      | [x]    | [x]| [ ]  | [ ]    |
+| environment (multi)   | [x]    | [x]| [ ]  | [ ]    |
 
 ## Verification Parity
 
 | Verification Item         | Python | Go | Rust | Elixir |
 |---------------------------|--------|----|------|--------|
-| Smoke test: all routes    | [x]    | [ ]| [ ]  | [ ]    |
-| Figure builder unit tests | [x]    | [ ]| [ ]  | [ ]    |
-| Aggregation unit tests    | [x]    | [ ]| [ ]  | [ ]    |
-| Filter-to-chart alignment | [x]    | [ ]| [ ]  | [ ]    |
-| Empty state handling      | [x]    | [ ]| [ ]  | [ ]    |
-| Fixture determinism test  | [x]    | [ ]| [ ]  | [ ]    |
+| Smoke test: all routes    | [x]    | [x]| [ ]  | [ ]    |
+| Figure builder unit tests | [x]    | [x]| [ ]  | [ ]    |
+| Aggregation unit tests    | [x]    | [x]| [ ]  | [ ]    |
+| Filter-to-chart alignment | [x]    | [x]| [ ]  | [ ]    |
+| Empty state handling      | [x]    | [x]| [ ]  | [ ]    |
+| Fixture determinism test  | [x]    | [x]| [ ]  | [ ]    |
 
 Update this matrix as each implementation prompt completes.
