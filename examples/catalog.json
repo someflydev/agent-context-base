@@ -16944,6 +16944,805 @@
       "patterns": [],
       "rank": 50,
       "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/cmd/server/main.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/tests/smoke/routes_smoke_test.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/tests/unit/filters_test.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/tests/unit/charts_time_series_test.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/tests/unit/charts_service_bar_test.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/tests/unit/charts_heatmap_test.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/tests/unit/analytics_services_test.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/tests/unit/analytics_heatmap_test.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/tests/unit/analytics_funnel_test.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/tests/unit/analytics_distributions_test.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/tests/unit/analytics_incidents_test.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/tests/unit/helpers_test.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/tests/unit/analytics_events_test.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/tests/unit/charts_latency_test.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/tests/unit/charts_funnel_test.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/tests/unit/charts_incident_test.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/filters/filters.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/config/config.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/charts/service_bar.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/charts/funnel_chart.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/charts/time_series.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/charts/incident_bar.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/charts/latency_boxplot.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/charts/heatmap_chart.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/charts/plotly.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/charts/latency_histogram.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/data/models.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/data/loader.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/views/pages_templ.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/views/summary_helpers.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/views/fragments_templ.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/views/base_templ.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/views/helpers.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/handlers/health.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/handlers/pages.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/handlers/fragments.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/analytics/services.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/analytics/heatmap.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/analytics/events.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/analytics/distributions.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/analytics/helpers.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/analytics/incidents.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/analytics/funnel.go",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/views/fragments.templ",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/views/base.templ",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/internal/views/pages.templ",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-analytics/go/README.md",
+      "category": "analytics",
+      "summary": "Go implementation of the analytics workbench",
+      "stacks": [
+        "go-echo-templ-htmx-plotly"
+      ],
+      "archetypes": [
+        "analytics-workbench"
+      ],
+      "workflows": [],
+      "patterns": [
+        "plotly-figure-builder"
+      ],
+      "rank": 50,
+      "stability": "canonical"
     }
   ]
 }
