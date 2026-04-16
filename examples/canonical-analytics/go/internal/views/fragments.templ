@@ -1,0 +1,57 @@
+package views
+
+templ Summary(summary any) {
+    <div class="bg-white border rounded shadow-sm p-4 w-64" id="summary-card">
+        if summary != nil {
+            <!-- Just render basic struct details or something generic, since summary types vary -->
+            <pre class="text-xs text-gray-700 whitespace-pre-wrap overflow-hidden">{ formatSummary(summary) }</pre>
+        }
+    </div>
+}
+
+templ Chart(figureJSON string) {
+    <div id="chart-panel" data-figure={ figureJSON } class="w-full h-96 plotly-chart"></div>
+    <script>
+    if (typeof Plotly !== 'undefined') {
+        var chartDiv = document.getElementById("chart-panel");
+        if (chartDiv && chartDiv.dataset.figure) {
+            try {
+                var figure = JSON.parse(chartDiv.dataset.figure);
+                Plotly.newPlot("chart-panel", figure.data, figure.layout);
+            } catch(e) {}
+        }
+    }
+    </script>
+}
+
+templ ChartPair(figureJSON1 string, figureJSON2 string) {
+    <div class="flex flex-col space-y-4">
+        <div id="chart-panel" data-figure={ figureJSON1 } class="w-full h-96 plotly-chart"></div>
+        <div id="chart-panel-box" data-figure={ figureJSON2 } class="w-full h-96 plotly-chart"></div>
+    </div>
+    <script>
+    if (typeof Plotly !== 'undefined') {
+        var chartDiv = document.getElementById("chart-panel");
+        if (chartDiv && chartDiv.dataset.figure) {
+            try {
+                var figure = JSON.parse(chartDiv.dataset.figure);
+                Plotly.newPlot("chart-panel", figure.data, figure.layout);
+            } catch(e) {}
+        }
+        var boxDiv = document.getElementById("chart-panel-box");
+        if (boxDiv && boxDiv.dataset.figure) {
+            try {
+                var figureBox = JSON.parse(boxDiv.dataset.figure);
+                Plotly.newPlot("chart-panel-box", figureBox.data, figureBox.layout);
+            } catch(e) {}
+        }
+    }
+    </script>
+}
+
+templ Details(details any) {
+    <div class="bg-white border rounded shadow-sm p-4 mt-6" id="details-panel">
+        <h3 class="text-lg font-medium mb-4">Details</h3>
+        <pre class="text-xs text-gray-700 whitespace-pre-wrap">{ formatSummary(details) }</pre>
+    </div>
+}

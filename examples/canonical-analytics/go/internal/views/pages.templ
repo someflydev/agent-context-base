@@ -1,0 +1,18 @@
+package views
+
+templ PageTemplate(data TemplateData) {
+    @Base(data) {
+        if data.ViewName == "Overview" {
+            @Chart(data.FigureJSON)
+            // Can add more here, overview typically combines stuff. For now just chart.
+        } else if data.ViewName == "Distributions" {
+            @ChartPair(data.FigureJSON, data.FigureJSONBox)
+        } else {
+            @Chart(data.FigureJSON)
+        }
+        
+        if data.ViewName == "Services" {
+            <div id="details-panel" hx-get="/fragments/details?view=services" hx-trigger="load"></div>
+        }
+    }
+}

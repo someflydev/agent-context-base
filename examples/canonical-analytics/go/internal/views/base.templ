@@ -1,0 +1,168 @@
+package views
+
+import "analytics-workbench-go/internal/filters"
+
+type SelectOption struct {
+	Value    string
+	Label    string
+	Selected bool
+}
+
+type TemplateData struct {
+	ViewName         string
+	FigureJSON       string
+	FigureJSONBox    string // for distributions view
+	Summary          any
+	ActiveFilters    filters.FilterState
+	ServicesList     []SelectOption
+	EnvironmentsList []SelectOption
+	SeverityList     []SelectOption
+}
+
+templ Base(data TemplateData) {
+	<!DOCTYPE html>
+	<html lang="en">
+	<head>
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<title>Analytics Workbench - { data.ViewName }</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+		<script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+	</head>
+	<body class="bg-gray-50 text-gray-900 font-sans">
+		<nav class="bg-white border-b border-gray-200 px-4 py-2.5">
+			<div class="flex flex-wrap items-center justify-between">
+				<a href="/" class="text-xl font-semibold">Analytics</a>
+				<div class="flex space-x-4">
+					<a href="/trends" class={ "px-3 py-2 rounded", templ.KV("bg-blue-100 text-blue-700", data.ViewName == "Trends"), templ.KV("text-gray-600 hover:bg-gray-100", data.ViewName != "Trends") }>Trends</a>
+					<a href="/services" class={ "px-3 py-2 rounded", templ.KV("bg-blue-100 text-blue-700", data.ViewName == "Services"), templ.KV("text-gray-600 hover:bg-gray-100", data.ViewName != "Services") }>Services</a>
+					<a href="/distributions" class={ "px-3 py-2 rounded", templ.KV("bg-blue-100 text-blue-700", data.ViewName == "Distributions"), templ.KV("text-gray-600 hover:bg-gray-100", data.ViewName != "Distributions") }>Distributions</a>
+					<a href="/heatmap" class={ "px-3 py-2 rounded", templ.KV("bg-blue-100 text-blue-700", data.ViewName == "Heatmap"), templ.KV("text-gray-600 hover:bg-gray-100", data.ViewName != "Heatmap") }>Heatmap</a>
+					<a href="/funnel" class={ "px-3 py-2 rounded", templ.KV("bg-blue-100 text-blue-700", data.ViewName == "Funnel"), templ.KV("text-gray-600 hover:bg-gray-100", data.ViewName != "Funnel") }>Funnel</a>
+					<a href="/incidents" class={ "px-3 py-2 rounded", templ.KV("bg-blue-100 text-blue-700", data.ViewName == "Incidents"), templ.KV("text-gray-600 hover:bg-gray-100", data.ViewName != "Incidents") }>Incidents</a>
+				</div>
+			</div>
+		</nav>
+		
+		<div class="flex h-[calc(100vh-65px)] overflow-hidden">
+			<!-- Sidebar Filter Panel -->
+			<aside class="w-72 flex-shrink-0 border-r bg-white p-4 overflow-y-auto">
+				<form method="get" hx-get="/fragments/chart" hx-target="#content-panel" hx-swap="innerHTML" hx-push-url="true" id="filter-form">
+					<input type="hidden" name="view" value={ data.ViewName }/>
+					
+					<div class="mb-4">
+						<label class="block text-sm font-medium text-gray-700 mb-1">Date From</label>
+						<input type="date" name="date_from" value={ getDateString(data.ActiveFilters.DateFrom) } class="border rounded p-1 w-full text-sm"/>
+					</div>
+					<div class="mb-4">
+						<label class="block text-sm font-medium text-gray-700 mb-1">Date To</label>
+						<input type="date" name="date_to" value={ getDateString(data.ActiveFilters.DateTo) } class="border rounded p-1 w-full text-sm"/>
+					</div>
+					
+					<div class="mb-4">
+						<label class="block text-sm font-medium text-gray-700 mb-1">Services</label>
+						<select name="services" multiple class="border rounded p-1 min-h-[80px] w-full text-sm">
+							for _, s := range data.ServicesList {
+								if s.Selected {
+									<option value={ s.Value } selected>{ s.Label }</option>
+								} else {
+									<option value={ s.Value }>{ s.Label }</option>
+								}
+							}
+						</select>
+					</div>
+					
+					<div class="mb-4">
+						<label class="block text-sm font-medium text-gray-700 mb-1">Environment</label>
+						<select name="environment" multiple class="border rounded p-1 min-h-[80px] w-full text-sm">
+							for _, e := range data.EnvironmentsList {
+								if e.Selected {
+									<option value={ e.Value } selected>{ e.Label }</option>
+								} else {
+									<option value={ e.Value }>{ e.Label }</option>
+								}
+							}
+						</select>
+					</div>
+					
+					if data.ViewName == "Incidents" {
+					<div class="mb-4">
+						<label class="block text-sm font-medium text-gray-700 mb-1">Severity</label>
+						<select name="severity" multiple class="border rounded p-1 min-h-[80px] w-full text-sm">
+							for _, s := range data.SeverityList {
+								if s.Selected {
+									<option value={ s.Value } selected>{ s.Label }</option>
+								} else {
+									<option value={ s.Value }>{ s.Label }</option>
+								}
+							}
+						</select>
+					</div>
+					}
+					
+					<button type="submit" class="bg-blue-600 text-white w-full px-4 py-2 rounded hover:bg-blue-700 text-sm font-medium" 
+							hx-get="/fragments/summary" hx-target="#summary-card" hx-swap="outerHTML" hx-include="#filter-form">
+						Apply Filters
+					</button>
+				</form>
+			</aside>
+			
+			<!-- Main Content -->
+			<main class="flex-1 overflow-y-auto p-6" id="main-content">
+				<div class="flex justify-between items-start mb-6">
+					<h1 class="text-2xl font-bold">{ data.ViewName }</h1>
+					<div id="summary-card">
+						@Summary(data.Summary)
+					</div>
+				</div>
+				
+				<div id="content-panel">
+					{ children... }
+				</div>
+			</main>
+		</div>
+		
+		<footer class="border-t bg-white px-4 py-2 text-xs text-gray-500 flex justify-between">
+			<span>Fixture: smoke</span>
+			<span>Seed: 42</span>
+		</footer>
+
+		<script>
+		function renderPlotly(containerId, figureJsonStr) {
+			if (!figureJsonStr) return;
+			try {
+				var figure = JSON.parse(figureJsonStr);
+				Plotly.newPlot(containerId, figure.data, figure.layout);
+			} catch(e) {
+				console.error("Error rendering chart:", e);
+			}
+		}
+		
+		document.addEventListener("DOMContentLoaded", function() {
+			var chartDiv = document.getElementById("chart-panel");
+			if (chartDiv && chartDiv.dataset.figure) {
+				renderPlotly("chart-panel", chartDiv.dataset.figure);
+			}
+			var boxDiv = document.getElementById("chart-panel-box");
+			if (boxDiv && boxDiv.dataset.figure) {
+				renderPlotly("chart-panel-box", boxDiv.dataset.figure);
+			}
+		});
+		
+		document.addEventListener("htmx:afterSwap", function(evt) {
+			if (evt.detail.target.id === "content-panel" || evt.detail.target.id === "main-content") {
+				var chartDiv = document.getElementById("chart-panel");
+				if (chartDiv && chartDiv.dataset.figure) {
+					renderPlotly("chart-panel", chartDiv.dataset.figure);
+				}
+				var boxDiv = document.getElementById("chart-panel-box");
+				if (boxDiv && boxDiv.dataset.figure) {
+					renderPlotly("chart-panel-box", boxDiv.dataset.figure);
+				}
+			}
+		});
+		</script>
+	</body>
+	</html>
+}
