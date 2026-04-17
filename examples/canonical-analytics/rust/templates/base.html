@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Workbench (Rust)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.body.addEventListener("htmx:afterSwap", function(event) {
+                renderAllCharts();
+            });
+            renderAllCharts();
+        });
+
+        function renderAllCharts() {
+            document.querySelectorAll('[data-figure]').forEach(function(el) {
+                if (el.getAttribute('data-rendered')) return;
+                var fig = JSON.parse(el.getAttribute('data-figure'));
+                Plotly.newPlot(el, fig.data, fig.layout, {responsive: true});
+                el.setAttribute('data-rendered', 'true');
+            });
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans antialiased">
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex space-x-8">
+                    <a href="/" class="inline-flex items-center px-1 pt-1 border-b-2 {% if view_name == "overview" %}border-blue-500 text-gray-900{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %} text-sm font-medium">
+                        Overview
+                    </a>
+                    <a href="/trends" class="inline-flex items-center px-1 pt-1 border-b-2 {% if view_name == "trends" %}border-blue-500 text-gray-900{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %} text-sm font-medium">
+                        Trends
+                    </a>
+                    <a href="/services" class="inline-flex items-center px-1 pt-1 border-b-2 {% if view_name == "services" %}border-blue-500 text-gray-900{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %} text-sm font-medium">
+                        Services
+                    </a>
+                    <a href="/distributions" class="inline-flex items-center px-1 pt-1 border-b-2 {% if view_name == "distributions" %}border-blue-500 text-gray-900{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %} text-sm font-medium">
+                        Distributions
+                    </a>
+                    <a href="/heatmap" class="inline-flex items-center px-1 pt-1 border-b-2 {% if view_name == "heatmap" %}border-blue-500 text-gray-900{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %} text-sm font-medium">
+                        Heatmap
+                    </a>
+                    <a href="/funnel" class="inline-flex items-center px-1 pt-1 border-b-2 {% if view_name == "funnel" %}border-blue-500 text-gray-900{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %} text-sm font-medium">
+                        Funnel
+                    </a>
+                    <a href="/incidents" class="inline-flex items-center px-1 pt-1 border-b-2 {% if view_name == "incidents" %}border-blue-500 text-gray-900{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %} text-sm font-medium">
+                        Incidents
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 mt-12 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
+            Rust / Axum / Askama / Plotly.rs Analytics Workbench Example
+        </div>
+    </footer>
+</body>
+</html>

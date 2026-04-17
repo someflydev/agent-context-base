@@ -1,0 +1,14 @@
+<div class="grid grid-cols-2 gap-6 w-full">
+    {% if figure_json_b.is_some() %}
+    <div class="bg-white shadow rounded-lg p-6">
+        <div data-figure="{{ figure_json|e }}" class="w-full h-96"></div>
+    </div>
+    <div class="bg-white shadow rounded-lg p-6">
+        <div data-figure="{{ figure_json_b.as_ref().unwrap()|e }}" class="w-full h-96"></div>
+    </div>
+    {% else %}
+    <div class="bg-white shadow rounded-lg p-6 col-span-2">
+        <div data-figure="{{ figure_json|e }}" class="w-full h-96"></div>
+    </div>
+    {% endif %}
+</div>

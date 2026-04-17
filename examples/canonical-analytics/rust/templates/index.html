@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-6">
+    <h1 class="text-2xl font-bold text-gray-900">Overview</h1>
+    
+    <div class="grid grid-cols-2 gap-6">
+        <div class="bg-white shadow rounded-lg p-6">
+            <h2 class="text-lg font-medium mb-4">Event Trend</h2>
+            <div data-figure="{{ trends_figure_json|e }}" class="w-full h-80"></div>
+        </div>
+        <div class="bg-white shadow rounded-lg p-6">
+            <h2 class="text-lg font-medium mb-4">Service Error Rates</h2>
+            <div data-figure="{{ services_figure_json|e }}" class="w-full h-80"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
