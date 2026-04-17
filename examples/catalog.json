@@ -17743,6 +17743,1081 @@
       ],
       "rank": 50,
       "stability": "canonical"
+    },
+    {
+      "name": "examples-canonical-analytics-rust-Cargo-toml",
+      "path": "examples/canonical-analytics/rust/Cargo.toml",
+      "language": "toml",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-tests-smoke-rs",
+      "path": "examples/canonical-analytics/rust/tests/smoke.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-tests-unit_analytics-rs",
+      "path": "examples/canonical-analytics/rust/tests/unit_analytics.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-tests-unit_charts-rs",
+      "path": "examples/canonical-analytics/rust/tests/unit_charts.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-templates-index-html",
+      "path": "examples/canonical-analytics/rust/templates/index.html",
+      "language": "html",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-templates-base-html",
+      "path": "examples/canonical-analytics/rust/templates/base.html",
+      "language": "html",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-templates-trends-html",
+      "path": "examples/canonical-analytics/rust/templates/trends.html",
+      "language": "html",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-templates-distributions-html",
+      "path": "examples/canonical-analytics/rust/templates/distributions.html",
+      "language": "html",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-templates-funnel-html",
+      "path": "examples/canonical-analytics/rust/templates/funnel.html",
+      "language": "html",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-templates-incidents-html",
+      "path": "examples/canonical-analytics/rust/templates/incidents.html",
+      "language": "html",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-templates-heatmap-html",
+      "path": "examples/canonical-analytics/rust/templates/heatmap.html",
+      "language": "html",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-templates-services-html",
+      "path": "examples/canonical-analytics/rust/templates/services.html",
+      "language": "html",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-templates-fragments-details-html",
+      "path": "examples/canonical-analytics/rust/templates/fragments/details.html",
+      "language": "html",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-templates-fragments-chart-html",
+      "path": "examples/canonical-analytics/rust/templates/fragments/chart.html",
+      "language": "html",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-templates-fragments-summary-html",
+      "path": "examples/canonical-analytics/rust/templates/fragments/summary.html",
+      "language": "html",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-src-test_plotly-rs",
+      "path": "examples/canonical-analytics/rust/src/test_plotly.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-src-lib-rs",
+      "path": "examples/canonical-analytics/rust/src/lib.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-src-main-rs",
+      "path": "examples/canonical-analytics/rust/src/main.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-src-bin_test-rs",
+      "path": "examples/canonical-analytics/rust/src/bin_test.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-src-filters-mod-rs",
+      "path": "examples/canonical-analytics/rust/src/filters/mod.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-src-charts-funnel_chart-rs",
+      "path": "examples/canonical-analytics/rust/src/charts/funnel_chart.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-src-charts-time_series-rs",
+      "path": "examples/canonical-analytics/rust/src/charts/time_series.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-src-charts-test-rs",
+      "path": "examples/canonical-analytics/rust/src/charts/test.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-src-charts-incident_bar-rs",
+      "path": "examples/canonical-analytics/rust/src/charts/incident_bar.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-src-charts-service_bar-rs",
+      "path": "examples/canonical-analytics/rust/src/charts/service_bar.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-src-charts-mod-rs",
+      "path": "examples/canonical-analytics/rust/src/charts/mod.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-src-charts-latency_histogram-rs",
+      "path": "examples/canonical-analytics/rust/src/charts/latency_histogram.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-src-charts-heatmap_chart-rs",
+      "path": "examples/canonical-analytics/rust/src/charts/heatmap_chart.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-src-charts-latency_boxplot-rs",
+      "path": "examples/canonical-analytics/rust/src/charts/latency_boxplot.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-src-data-models-rs",
+      "path": "examples/canonical-analytics/rust/src/data/models.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-src-data-mod-rs",
+      "path": "examples/canonical-analytics/rust/src/data/mod.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-src-data-loader-rs",
+      "path": "examples/canonical-analytics/rust/src/data/loader.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-src-handlers-health-rs",
+      "path": "examples/canonical-analytics/rust/src/handlers/health.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-src-handlers-mod-rs",
+      "path": "examples/canonical-analytics/rust/src/handlers/mod.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-src-handlers-fragments-rs",
+      "path": "examples/canonical-analytics/rust/src/handlers/fragments.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-src-handlers-pages-rs",
+      "path": "examples/canonical-analytics/rust/src/handlers/pages.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-src-analytics-events-rs",
+      "path": "examples/canonical-analytics/rust/src/analytics/events.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-src-analytics-services-rs",
+      "path": "examples/canonical-analytics/rust/src/analytics/services.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-src-analytics-heatmap-rs",
+      "path": "examples/canonical-analytics/rust/src/analytics/heatmap.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-src-analytics-incidents-rs",
+      "path": "examples/canonical-analytics/rust/src/analytics/incidents.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-src-analytics-funnel-rs",
+      "path": "examples/canonical-analytics/rust/src/analytics/funnel.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-src-analytics-mod-rs",
+      "path": "examples/canonical-analytics/rust/src/analytics/mod.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
+    },
+    {
+      "name": "examples-canonical-analytics-rust-src-analytics-distributions-rs",
+      "path": "examples/canonical-analytics/rust/src/analytics/distributions.rs",
+      "language": "rust",
+      "stack_tags": [
+        "rust-axum-modern"
+      ],
+      "archetype_tags": [
+        "interactive-data-service"
+      ],
+      "category": "Example",
+      "summary": "Rust Analytics",
+      "stability": "alpha",
+      "verification_level": "syntax-checked",
+      "confidence": "medium",
+      "verification_targets": [
+        "file exists"
+      ],
+      "docker_supported": false,
+      "scenario_harness": "",
+      "workflows": [],
+      "patterns": [],
+      "stacks": [],
+      "archetypes": []
     }
   ]
 }
