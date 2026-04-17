@@ -62,6 +62,7 @@ memory/summaries/
 # Search and local indexes
 data/
 !verification/examples/data/
+!examples/**/src/data/
 tmp/
 logs/
 .qdrant/
