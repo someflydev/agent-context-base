@@ -1,6 +1,6 @@
 # Canonical Analytics Examples
 
-Status: [ ] not started · [~] partial · [x] complete
+Status: [x] complete · [~] partial · [x] complete
 
 ## Ops & Product Analytics Workbench
 
@@ -15,7 +15,7 @@ Dogfoods: examples/canonical-faker/ (TenantCore domain, generation_patterns.py)
 | Python         | examples/canonical-analytics/python/ | [x]  |       |
 | Go             | examples/canonical-analytics/go/     | [x]  |       |
 | Rust           | examples/canonical-analytics/rust/   | [x]  |       |
-| Elixir         | examples/canonical-analytics/elixir/ | [ ]  |       |
+| Elixir         | examples/canonical-analytics/elixir/ | [x]  |       |
 
 ## Chart Family Coverage
 

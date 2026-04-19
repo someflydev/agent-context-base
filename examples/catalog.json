@@ -18818,6 +18818,2998 @@
       "patterns": [],
       "stacks": [],
       "archetypes": []
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/.formatter.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: .formatter.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/.gitignore",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: .gitignore",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/AGENTS.md",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: AGENTS.md",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/assets/css/app.css",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: app.css",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/assets/js/app.js",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: app.js",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/assets/tsconfig.json",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: tsconfig.json",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/config/config.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: config.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/config/dev.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: dev.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/config/prod.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: prod.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/config/runtime.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: runtime.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/config/test.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: test.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: analytics_workbench.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/analytics/distributions.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: distributions.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/analytics/events.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: events.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/analytics/funnel.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: funnel.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/analytics/heatmap.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: heatmap.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/analytics/incidents.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: incidents.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/analytics/services.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: services.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/application.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: application.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/charts/funnel_chart.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: funnel_chart.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/charts/heatmap_chart.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: heatmap_chart.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/charts/incident_bar.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: incident_bar.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/charts/latency_boxplot.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: latency_boxplot.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/charts/latency_histogram.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: latency_histogram.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/charts/service_bar.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: service_bar.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/charts/time_series.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: time_series.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/data/loader.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: loader.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/data/store.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: store.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/filters.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: filters.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: analytics_workbench_web.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/components/core_components.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: core_components.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/components/layouts.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: layouts.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/components/layouts/root.html.heex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: root.html.heex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/error_html.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: error_html.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/error_json.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: error_json.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/fragment_controller.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: fragment_controller.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/fragment_html.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: fragment_html.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/fragment_html/chart.html.heex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: chart.html.heex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/fragment_html/details.html.heex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: details.html.heex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/fragment_html/summary.html.heex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: summary.html.heex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/health_controller.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: health_controller.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_controller.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: page_controller.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: page_html.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/distributions.html.heex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: distributions.html.heex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/funnel.html.heex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: funnel.html.heex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/heatmap.html.heex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: heatmap.html.heex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/home.html.heex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: home.html.heex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/incidents.html.heex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: incidents.html.heex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/index.html.heex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: index.html.heex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/services.html.heex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: services.html.heex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/trends.html.heex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: trends.html.heex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/endpoint.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: endpoint.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/gettext.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: gettext.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/router.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: router.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/telemetry.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: telemetry.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/priv/gettext/en/LC_MESSAGES/errors.po",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: errors.po",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/priv/gettext/errors.pot",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: errors.pot",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/priv/static/favicon.ico",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: favicon.ico",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/priv/static/images/logo.svg",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: logo.svg",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/priv/static/robots.txt",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: robots.txt",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/analytics/events_test.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: events_test.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/filters_test.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: filters_test.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench_web/controllers/error_html_test.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: error_html_test.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench_web/controllers/error_json_test.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: error_json_test.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench_web/smoke_test.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: smoke_test.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/test/support/conn_case.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: conn_case.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/test/test_helper.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: test_helper.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/.formatter.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: .formatter.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/.gitignore",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: .gitignore",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/config/config.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: config.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/config/dev.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: dev.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/config/prod.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: prod.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/config/runtime.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: runtime.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/config/test.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: test.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: analytics_workbench.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/analytics/distributions.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: distributions.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/analytics/events.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: events.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/analytics/funnel.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: funnel.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/analytics/heatmap.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: heatmap.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/analytics/incidents.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: incidents.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/analytics/services.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: services.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/application.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: application.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/charts/funnel_chart.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: funnel_chart.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/charts/heatmap_chart.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: heatmap_chart.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/charts/incident_bar.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: incident_bar.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/charts/latency_boxplot.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: latency_boxplot.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/charts/latency_histogram.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: latency_histogram.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/charts/service_bar.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: service_bar.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/charts/time_series.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: time_series.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/data/loader.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: loader.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/data/store.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: store.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/filters.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: filters.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: analytics_workbench_web.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/components/core_components.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: core_components.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/components/layouts.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: layouts.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/components/layouts/root.html.heex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: root.html.heex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/error_html.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: error_html.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/error_json.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: error_json.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/fragment_controller.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: fragment_controller.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/fragment_html.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: fragment_html.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/fragment_html/chart.html.heex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: chart.html.heex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/fragment_html/details.html.heex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: details.html.heex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/fragment_html/summary.html.heex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: summary.html.heex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/health_controller.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: health_controller.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_controller.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: page_controller.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: page_html.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/distributions.html.heex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: distributions.html.heex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/funnel.html.heex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: funnel.html.heex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/heatmap.html.heex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: heatmap.html.heex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/home.html.heex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: home.html.heex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/incidents.html.heex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: incidents.html.heex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/index.html.heex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: index.html.heex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/services.html.heex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: services.html.heex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/trends.html.heex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: trends.html.heex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/endpoint.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: endpoint.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/gettext.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: gettext.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/router.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: router.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/analytics/distributions_test.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: distributions_test.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/analytics/events_test.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: events_test.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/analytics/funnel_test.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: funnel_test.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/analytics/heatmap_test.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: heatmap_test.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/analytics/incidents_test.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: incidents_test.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/analytics/services_test.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: services_test.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/charts/funnel_chart_test.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: funnel_chart_test.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/charts/heatmap_chart_test.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: heatmap_chart_test.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/charts/incident_bar_test.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: incident_bar_test.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/charts/latency_boxplot_test.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: latency_boxplot_test.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/charts/latency_histogram_test.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: latency_histogram_test.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/charts/service_bar_test.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: service_bar_test.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/charts/time_series_test.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: time_series_test.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/filters_test.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: filters_test.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench_web/controllers/error_html_test.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: error_html_test.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench_web/controllers/error_json_test.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: error_json_test.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench_web/smoke_test.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: smoke_test.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/test/support/conn_case.ex",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: conn_case.ex",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
+    },
+    {
+      "path": "examples/canonical-analytics/elixir/analytics_workbench/test/test_helper.exs",
+      "category": "analytics",
+      "summary": "Elixir analytics workbench component: test_helper.exs",
+      "stacks": [
+        "elixir-phoenix"
+      ],
+      "archetypes": [
+        "interactive-data-service"
+      ],
+      "workflows": [
+        "implement-canonical-analytics"
+      ],
+      "patterns": [
+        "server-rendered-viz",
+        "htmx",
+        "plotly",
+        "utility-first-css"
+      ],
+      "rank": 80,
+      "stability": "verified-runtime"
     }
   ]
 }

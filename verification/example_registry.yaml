@@ -12201,3 +12201,1227 @@ examples:
       - file exists
     docker_supported: false
     scenario_harness: ""
+  - name: formatter-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/.formatter.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: gitignore
+    path: examples/canonical-analytics/elixir/analytics_workbench/.gitignore
+    language: git
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: AGENTS-md
+    path: examples/canonical-analytics/elixir/analytics_workbench/AGENTS.md
+    language: markdown
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: assets-css-app-css
+    path: examples/canonical-analytics/elixir/analytics_workbench/assets/css/app.css
+    language: css
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: assets-js-app-js
+    path: examples/canonical-analytics/elixir/analytics_workbench/assets/js/app.js
+    language: javascript
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: assets-tsconfig-json
+    path: examples/canonical-analytics/elixir/analytics_workbench/assets/tsconfig.json
+    language: json
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: config-config-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/config/config.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: config-dev-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/config/dev.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: config-prod-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/config/prod.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: config-runtime-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/config/runtime.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: config-test-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/config/test.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-analytics-distributions-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/analytics/distributions.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-analytics-events-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/analytics/events.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-analytics-funnel-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/analytics/funnel.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-analytics-heatmap-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/analytics/heatmap.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-analytics-incidents-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/analytics/incidents.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-analytics-services-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/analytics/services.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-application-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/application.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-charts-funnel_chart-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/charts/funnel_chart.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-charts-heatmap_chart-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/charts/heatmap_chart.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-charts-incident_bar-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/charts/incident_bar.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-charts-latency_boxplot-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/charts/latency_boxplot.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-charts-latency_histogram-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/charts/latency_histogram.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-charts-service_bar-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/charts/service_bar.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-charts-time_series-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/charts/time_series.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-data-loader-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/data/loader.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-data-store-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/data/store.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-filters-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/filters.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-components-core_components-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/components/core_components.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-components-layouts-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/components/layouts.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-components-layouts-root-html-heex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/components/layouts/root.html.heex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-error_html-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/error_html.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-error_json-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/error_json.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-fragment_controller-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/fragment_controller.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-fragment_html-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/fragment_html.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-fragment_html-chart-html-heex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/fragment_html/chart.html.heex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-fragment_html-details-html-heex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/fragment_html/details.html.heex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-fragment_html-summary-html-heex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/fragment_html/summary.html.heex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-health_controller-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/health_controller.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-page_controller-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_controller.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-page_html-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-page_html-distributions-html-heex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/distributions.html.heex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-page_html-funnel-html-heex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/funnel.html.heex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-page_html-heatmap-html-heex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/heatmap.html.heex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-page_html-home-html-heex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/home.html.heex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-page_html-incidents-html-heex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/incidents.html.heex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-page_html-index-html-heex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/index.html.heex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-page_html-services-html-heex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/services.html.heex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-page_html-trends-html-heex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/trends.html.heex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-endpoint-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/endpoint.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-gettext-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/gettext.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-router-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/router.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-telemetry-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/telemetry.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: priv-gettext-en-LC_MESSAGES-errors-po
+    path: examples/canonical-analytics/elixir/analytics_workbench/priv/gettext/en/LC_MESSAGES/errors.po
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: priv-gettext-errors-pot
+    path: examples/canonical-analytics/elixir/analytics_workbench/priv/gettext/errors.pot
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: priv-static-favicon-ico
+    path: examples/canonical-analytics/elixir/analytics_workbench/priv/static/favicon.ico
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: priv-static-images-logo-svg
+    path: examples/canonical-analytics/elixir/analytics_workbench/priv/static/images/logo.svg
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: priv-static-robots-txt
+    path: examples/canonical-analytics/elixir/analytics_workbench/priv/static/robots.txt
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: test-analytics_workbench-analytics-events_test-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/analytics/events_test.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: test-analytics_workbench-filters_test-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/filters_test.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: test-analytics_workbench_web-controllers-error_html_test-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench_web/controllers/error_html_test.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: test-analytics_workbench_web-controllers-error_json_test-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench_web/controllers/error_json_test.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: test-analytics_workbench_web-smoke_test-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench_web/smoke_test.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: test-support-conn_case-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/test/support/conn_case.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: test-test_helper-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/test/test_helper.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: formatter-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/.formatter.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: gitignore
+    path: examples/canonical-analytics/elixir/analytics_workbench/.gitignore
+    language: git
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: config-config-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/config/config.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: config-dev-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/config/dev.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: config-prod-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/config/prod.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: config-runtime-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/config/runtime.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: config-test-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/config/test.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-analytics-distributions-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/analytics/distributions.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-analytics-events-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/analytics/events.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-analytics-funnel-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/analytics/funnel.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-analytics-heatmap-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/analytics/heatmap.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-analytics-incidents-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/analytics/incidents.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-analytics-services-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/analytics/services.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-application-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/application.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-charts-funnel_chart-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/charts/funnel_chart.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-charts-heatmap_chart-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/charts/heatmap_chart.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-charts-incident_bar-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/charts/incident_bar.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-charts-latency_boxplot-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/charts/latency_boxplot.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-charts-latency_histogram-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/charts/latency_histogram.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-charts-service_bar-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/charts/service_bar.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-charts-time_series-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/charts/time_series.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-data-loader-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/data/loader.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-data-store-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/data/store.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench-filters-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench/filters.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-components-core_components-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/components/core_components.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-components-layouts-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/components/layouts.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-components-layouts-root-html-heex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/components/layouts/root.html.heex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-error_html-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/error_html.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-error_json-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/error_json.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-fragment_controller-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/fragment_controller.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-fragment_html-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/fragment_html.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-fragment_html-chart-html-heex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/fragment_html/chart.html.heex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-fragment_html-details-html-heex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/fragment_html/details.html.heex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-fragment_html-summary-html-heex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/fragment_html/summary.html.heex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-health_controller-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/health_controller.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-page_controller-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_controller.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-page_html-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-page_html-distributions-html-heex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/distributions.html.heex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-page_html-funnel-html-heex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/funnel.html.heex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-page_html-heatmap-html-heex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/heatmap.html.heex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-page_html-home-html-heex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/home.html.heex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-page_html-incidents-html-heex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/incidents.html.heex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-page_html-index-html-heex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/index.html.heex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-page_html-services-html-heex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/services.html.heex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-controllers-page_html-trends-html-heex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/controllers/page_html/trends.html.heex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-endpoint-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/endpoint.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-gettext-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/gettext.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: lib-analytics_workbench_web-router-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/router.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: test-analytics_workbench-analytics-distributions_test-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/analytics/distributions_test.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: test-analytics_workbench-analytics-events_test-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/analytics/events_test.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: test-analytics_workbench-analytics-funnel_test-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/analytics/funnel_test.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: test-analytics_workbench-analytics-heatmap_test-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/analytics/heatmap_test.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: test-analytics_workbench-analytics-incidents_test-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/analytics/incidents_test.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: test-analytics_workbench-analytics-services_test-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/analytics/services_test.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: test-analytics_workbench-charts-funnel_chart_test-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/charts/funnel_chart_test.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: test-analytics_workbench-charts-heatmap_chart_test-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/charts/heatmap_chart_test.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: test-analytics_workbench-charts-incident_bar_test-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/charts/incident_bar_test.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: test-analytics_workbench-charts-latency_boxplot_test-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/charts/latency_boxplot_test.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: test-analytics_workbench-charts-latency_histogram_test-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/charts/latency_histogram_test.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: test-analytics_workbench-charts-service_bar_test-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/charts/service_bar_test.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: test-analytics_workbench-charts-time_series_test-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/charts/time_series_test.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: test-analytics_workbench-filters_test-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench/filters_test.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: test-analytics_workbench_web-controllers-error_html_test-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench_web/controllers/error_html_test.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: test-analytics_workbench_web-controllers-error_json_test-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench_web/controllers/error_json_test.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: test-analytics_workbench_web-smoke_test-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/test/analytics_workbench_web/smoke_test.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: test-support-conn_case-ex
+    path: examples/canonical-analytics/elixir/analytics_workbench/test/support/conn_case.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
+  - name: test-test_helper-exs
+    path: examples/canonical-analytics/elixir/analytics_workbench/test/test_helper.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix
+    archetype_tags:
+      - interactive-data-service
+    verification_level: smoke-verified
+    confidence: high
