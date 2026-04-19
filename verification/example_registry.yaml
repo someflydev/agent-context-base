@@ -12219,42 +12219,6 @@ examples:
       - interactive-data-service
     verification_level: smoke-verified
     confidence: high
-  - name: AGENTS-md
-    path: examples/canonical-analytics/elixir/analytics_workbench/AGENTS.md
-    language: markdown
-    stack_tags:
-      - elixir-phoenix
-    archetype_tags:
-      - interactive-data-service
-    verification_level: smoke-verified
-    confidence: high
-  - name: assets-css-app-css
-    path: examples/canonical-analytics/elixir/analytics_workbench/assets/css/app.css
-    language: css
-    stack_tags:
-      - elixir-phoenix
-    archetype_tags:
-      - interactive-data-service
-    verification_level: smoke-verified
-    confidence: high
-  - name: assets-js-app-js
-    path: examples/canonical-analytics/elixir/analytics_workbench/assets/js/app.js
-    language: javascript
-    stack_tags:
-      - elixir-phoenix
-    archetype_tags:
-      - interactive-data-service
-    verification_level: smoke-verified
-    confidence: high
-  - name: assets-tsconfig-json
-    path: examples/canonical-analytics/elixir/analytics_workbench/assets/tsconfig.json
-    language: json
-    stack_tags:
-      - elixir-phoenix
-    archetype_tags:
-      - interactive-data-service
-    verification_level: smoke-verified
-    confidence: high
   - name: config-config-exs
     path: examples/canonical-analytics/elixir/analytics_workbench/config/config.exs
     language: elixir
@@ -12680,60 +12644,6 @@ examples:
     confidence: high
   - name: lib-analytics_workbench_web-router-ex
     path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/router.ex
-    language: elixir
-    stack_tags:
-      - elixir-phoenix
-    archetype_tags:
-      - interactive-data-service
-    verification_level: smoke-verified
-    confidence: high
-  - name: lib-analytics_workbench_web-telemetry-ex
-    path: examples/canonical-analytics/elixir/analytics_workbench/lib/analytics_workbench_web/telemetry.ex
-    language: elixir
-    stack_tags:
-      - elixir-phoenix
-    archetype_tags:
-      - interactive-data-service
-    verification_level: smoke-verified
-    confidence: high
-  - name: priv-gettext-en-LC_MESSAGES-errors-po
-    path: examples/canonical-analytics/elixir/analytics_workbench/priv/gettext/en/LC_MESSAGES/errors.po
-    language: elixir
-    stack_tags:
-      - elixir-phoenix
-    archetype_tags:
-      - interactive-data-service
-    verification_level: smoke-verified
-    confidence: high
-  - name: priv-gettext-errors-pot
-    path: examples/canonical-analytics/elixir/analytics_workbench/priv/gettext/errors.pot
-    language: elixir
-    stack_tags:
-      - elixir-phoenix
-    archetype_tags:
-      - interactive-data-service
-    verification_level: smoke-verified
-    confidence: high
-  - name: priv-static-favicon-ico
-    path: examples/canonical-analytics/elixir/analytics_workbench/priv/static/favicon.ico
-    language: elixir
-    stack_tags:
-      - elixir-phoenix
-    archetype_tags:
-      - interactive-data-service
-    verification_level: smoke-verified
-    confidence: high
-  - name: priv-static-images-logo-svg
-    path: examples/canonical-analytics/elixir/analytics_workbench/priv/static/images/logo.svg
-    language: elixir
-    stack_tags:
-      - elixir-phoenix
-    archetype_tags:
-      - interactive-data-service
-    verification_level: smoke-verified
-    confidence: high
-  - name: priv-static-robots-txt
-    path: examples/canonical-analytics/elixir/analytics_workbench/priv/static/robots.txt
     language: elixir
     stack_tags:
       - elixir-phoenix
@@ -13425,3 +13335,55 @@ examples:
       - interactive-data-service
     verification_level: smoke-verified
     confidence: high
+  - name: canonical-analytics-python
+    path: examples/canonical-analytics/python/
+    language: directory
+    stack_tags:
+      - python-fastapi-jinja2-htmx-plotly
+    archetype_tags:
+      - analytics-workbench
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - directory exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: canonical-analytics-go
+    path: examples/canonical-analytics/go/
+    language: directory
+    stack_tags:
+      - go-echo-templ-htmx-plotly
+    archetype_tags:
+      - analytics-workbench
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - directory exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: canonical-analytics-rust
+    path: examples/canonical-analytics/rust/
+    language: directory
+    stack_tags:
+      - rust-axum-askama-htmx-plotly
+    archetype_tags:
+      - analytics-workbench
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - directory exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: canonical-analytics-elixir
+    path: examples/canonical-analytics/elixir/
+    language: directory
+    stack_tags:
+      - elixir-phoenix-htmx-plotly
+    archetype_tags:
+      - analytics-workbench
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - directory exists
+    docker_supported: false
+    scenario_harness: ""
