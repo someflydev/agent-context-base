@@ -8,6 +8,9 @@ Infer project shape from the repo goal, not only from language choice.
   - `context/archetypes/prompt-first-repo.md`
 - HTTP service, API routes, handlers, backing storage
   - `context/archetypes/backend-api-service.md`
+- JWT-protected API, RBAC, tenant-scoped routes, `/me` discoverability, route metadata driven auth
+  - `context/archetypes/tenant-aware-backend-api.md`
+  # added by PROMPT_134
 - command tree, flags, shell-facing behavior
   - `context/archetypes/cli-tool.md`
 - ingestion, transforms, analytics outputs
@@ -39,6 +42,9 @@ Infer project shape from the repo goal, not only from language choice.
   - `context/archetypes/prompt-first-repo.md`
 - "Build an API service with FastAPI and Redis"
   - `context/archetypes/backend-api-service.md`
+- "Build a JWT-protected multi-tenant API with RBAC"
+  - `context/archetypes/tenant-aware-backend-api.md`
+  # added by PROMPT_134
 - "Add a subcommand for local data export"
   - `context/archetypes/cli-tool.md`
 - "Index notes into Qdrant and answer questions locally"

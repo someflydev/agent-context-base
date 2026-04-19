@@ -2,6 +2,90 @@
   "version": 1,
   "entries": [
     {
+      "path": "examples/canonical-auth/README.md",
+      "category": "authentication",
+      "summary": "Overview for the JWT auth, RBAC, and multi-tenant canonical example family.",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac",
+        "typescript-hono-jose-rbac",
+        "go-echo-golang-jwt-rbac",
+        "rust-axum-jsonwebtoken-rbac",
+        "java-spring-jjwt-rbac",
+        "kotlin-http4k-jjwt-rbac",
+        "ruby-hanami-ruby-jwt-rbac",
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "multi-tenant"
+      ],
+      "rank": 92,
+      "stability": "foundation"
+    },
+    {
+      "path": "examples/canonical-auth/CATALOG.md",
+      "category": "authentication",
+      "summary": "Language status catalog for the canonical auth arc.",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac",
+        "typescript-hono-jose-rbac",
+        "go-echo-golang-jwt-rbac",
+        "rust-axum-jsonwebtoken-rbac",
+        "java-spring-jjwt-rbac",
+        "kotlin-http4k-jjwt-rbac",
+        "ruby-hanami-ruby-jwt-rbac",
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "catalog",
+        "language-matrix",
+        "auth-arc"
+      ],
+      "rank": 88,
+      "stability": "foundation"
+    },
+    {
+      "path": "examples/canonical-auth/domain/spec.md",
+      "category": "authentication",
+      "summary": "Foundation placeholder for the shared JWT auth domain spec scheduled in PROMPT_135.",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac",
+        "typescript-hono-jose-rbac",
+        "go-echo-golang-jwt-rbac",
+        "rust-axum-jsonwebtoken-rbac",
+        "java-spring-jjwt-rbac",
+        "kotlin-http4k-jjwt-rbac",
+        "ruby-hanami-ruby-jwt-rbac",
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "shared-domain",
+        "auth-contract",
+        "foundation-placeholder"
+      ],
+      "rank": 84,
+      "stability": "foundation"
+    },
+    {
       "path": "examples/canonical-api/README-faceted-filter-examples.md",
       "category": "api",
       "summary": "Cross-language correctness reference for the split include/exclude filter panel pattern: shared dataset, algorithm contract, and HTML data-* attribute contract for all 14 implementations.",

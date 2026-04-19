@@ -195,6 +195,30 @@ Infer the active stack from repo signals, touched files, and user language.
   - `context/doctrine/data-acquisition-invariants.md`
 - "Wire a Qdrant-backed local index"
   - `context/stacks/qdrant.md`
+- "How do I add JWT auth to my FastAPI app?"
+  - `context/stacks/python-fastapi-pyjwt-rbac.md`
+  # added by PROMPT_134
+- "Show me RBAC with JWT in Go"
+  - `context/stacks/go-echo-golang-jwt-rbac.md`
+  # added by PROMPT_134
+- "How do I verify a JWT in Rust / Axum?"
+  - `context/stacks/rust-axum-jsonwebtoken-rbac.md`
+  # added by PROMPT_134
+- "Show me Hono JWT auth with jose"
+  - `context/stacks/typescript-hono-jose-rbac.md`
+  # added by PROMPT_134
+- "Show me Spring Boot JWT auth with JJWT"
+  - `context/stacks/java-spring-jjwt-rbac.md`
+  # added by PROMPT_134
+- "Show me Kotlin http4k JWT auth"
+  - `context/stacks/kotlin-http4k-jjwt-rbac.md`
+  # added by PROMPT_134
+- "Show me Hanami JWT auth"
+  - `context/stacks/ruby-hanami-ruby-jwt-rbac.md`
+  # added by PROMPT_134
+- "Show me Phoenix JWT auth with Joken"
+  - `context/stacks/elixir-phoenix-joken-rbac.md`
+  # added by PROMPT_134
 
 ## Terminal Stacks
 
@@ -257,6 +281,25 @@ stack selection guidance.
   - `context/stacks/faker-php.yaml`
 - `faker-elixir`
   - `context/stacks/faker-elixir.yaml`
+
+## JWT Auth, RBAC, And Multi-Tenant Backend Patterns
+
+- `python-fastapi-pyjwt-rbac`
+  - `context/stacks/python-fastapi-pyjwt-rbac.md`
+- `typescript-hono-jose-rbac`
+  - `context/stacks/typescript-hono-jose-rbac.md`
+- `go-echo-golang-jwt-rbac`
+  - `context/stacks/go-echo-golang-jwt-rbac.md`
+- `rust-axum-jsonwebtoken-rbac`
+  - `context/stacks/rust-axum-jsonwebtoken-rbac.md`
+- `java-spring-jjwt-rbac`
+  - `context/stacks/java-spring-jjwt-rbac.md`
+- `kotlin-http4k-jjwt-rbac`
+  - `context/stacks/kotlin-http4k-jjwt-rbac.md`
+- `ruby-hanami-ruby-jwt-rbac`
+  - `context/stacks/ruby-hanami-ruby-jwt-rbac.md`
+- `elixir-phoenix-joken-rbac`
+  - `context/stacks/elixir-phoenix-joken-rbac.md`
 
 ## Guardrails
 

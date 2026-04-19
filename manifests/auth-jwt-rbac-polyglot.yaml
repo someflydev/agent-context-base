@@ -1,0 +1,94 @@
+schema_version: 2
+name: auth-jwt-rbac-polyglot
+description: JWT auth, RBAC, and multi-tenant canonical example family across Python, TypeScript, Go, Rust, Java, Kotlin, Ruby, and Elixir.
+archetype: tenant-aware-backend-api
+primary_stack: python-fastapi-pyjwt-rbac
+secondary_stacks:
+  - typescript-hono-jose-rbac
+  - go-echo-golang-jwt-rbac
+  - rust-axum-jsonwebtoken-rbac
+  - java-spring-jjwt-rbac
+  - kotlin-http4k-jjwt-rbac
+  - ruby-hanami-ruby-jwt-rbac
+  - elixir-phoenix-joken-rbac
+triggers:
+  - jwt auth
+  - rbac api
+  - multi-tenant auth
+  - /me endpoint
+  - permission catalog
+aliases:
+  - jwt-arc
+  - auth examples
+  - tenant auth
+required_context:
+  - context/doctrine/core-principles.md
+  - context/doctrine/testing-philosophy.md
+  - context/doctrine/jwt-auth-request-context.md
+  - context/doctrine/rbac-permission-taxonomy.md
+  - context/doctrine/tenant-boundary-enforcement.md
+  - context/doctrine/route-metadata-registry.md
+  - context/doctrine/me-endpoint-discoverability.md
+  - context/archetypes/tenant-aware-backend-api.md
+  - context/stacks/python-fastapi-pyjwt-rbac.md
+optional_context:
+  - context/stacks/typescript-hono-jose-rbac.md
+  - context/stacks/go-echo-golang-jwt-rbac.md
+  - context/stacks/rust-axum-jsonwebtoken-rbac.md
+  - context/stacks/java-spring-jjwt-rbac.md
+  - context/stacks/kotlin-http4k-jjwt-rbac.md
+  - context/stacks/ruby-hanami-ruby-jwt-rbac.md
+  - context/stacks/elixir-phoenix-joken-rbac.md
+  - context/skills/jwt-middleware-implementation.md
+  - context/skills/permission-catalog-design.md
+  - context/skills/me-endpoint-design.md
+  - context/skills/route-metadata-annotation.md
+  - context/workflows/add-protected-endpoint.md
+  - context/workflows/add-tenant-aware-canonical-example.md
+preferred_examples:
+  - examples/canonical-auth/README.md
+  - examples/canonical-auth/CATALOG.md
+  - examples/canonical-auth/domain/spec.md
+recommended_templates:
+  - templates/readme/README.template.md
+  - templates/agent-md/AGENT.template.md
+  - templates/claude-md/CLAUDE.template.md
+  - templates/gitignore/.gitignore.template
+  - templates/manifest/profile-summary.template.yaml
+repo_signals:
+  - auth/
+  - registry/
+  - me/
+  - acl_ver
+task_hints:
+  - add-protected-endpoint
+  - add-tenant-aware-canonical-example
+warnings:
+  - Tokens are short-lived authorization snapshots; the database remains the source of truth.
+  - Route metadata should drive authorization, docs, and /me output from one registry.
+  - Tenant-admins compose from the platform permission catalog; they do not invent new atoms.
+bootstrap_defaults:
+  - include_generated_profile
+  - include_smoke_tests
+  - include_integration_tests
+  - include_manifest_summary
+compose_files:
+  - docker-compose.yml
+  - docker-compose.test.yml
+compose_project_name_dev: "{repo_slug}"
+compose_project_name_test: "{repo_slug}-test"
+port_band_app_dev: 14000-14099
+port_band_app_test: 15000-15099
+port_band_data_dev: 24000-24099
+port_band_data_test: 25000-25099
+data_isolation:
+  - docker/volumes/dev
+  - docker/volumes/test
+  - tenant fixtures and auth seeds must stay isolated between dev and test stacks
+dokku_relevance: optional
+smoke_test_expectations:
+  - token issuance or fixture-backed login path
+  - protected route allows authorized request
+  - protected route rejects unauthorized request
+  - /me returns allowed routes from the registry
+prompt_first_support: supported

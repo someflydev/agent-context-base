@@ -91,3 +91,22 @@ Dogfooding is not optional: it is the mechanism that keeps the repo's artifacts 
 - Inspect payload: `python .acb/scripts/acb_inspect.py`
 - Context tools (when available): `python3 scripts/work.py budget-report --bundle <files>` - scored bundle evaluation
 - Context tools (when available): `python3 scripts/work.py route-check "<prompt>"` - heuristic capability routing
+
+## JWT Auth, RBAC, and Multi-Tenant Patterns
+
+The jwt-auth arc (PROMPT_134–140) adds canonical examples for JWT-backed
+authentication and RBAC across 8 backend languages. All examples share the
+same domain spec, permission catalog, and fixture data.
+
+Key docs:
+- `context/doctrine/jwt-auth-request-context.md`
+- `context/doctrine/rbac-permission-taxonomy.md`
+- `context/doctrine/route-metadata-registry.md`
+- `context/doctrine/me-endpoint-discoverability.md`
+- `examples/canonical-auth/` (after PROMPT_136–139)
+
+Quick answers:
+- Permission naming: `{service}:{resource}:{action}`
+- Preferred libraries: PyJWT (Python), jose (TS), golang-jwt/jwt (Go),
+  jsonwebtoken (Rust), JJWT (Java/Kotlin), ruby-jwt (Ruby), Joken (Elixir)
+- `/me` endpoint: JSON + optional HTMX variant, filtered by effective permissions

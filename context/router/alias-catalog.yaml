@@ -270,6 +270,24 @@ stacks:
     target: context/stacks/ruby-hanami.md
   - alias: hanami
     target: context/stacks/ruby-hanami.md
+  - alias: jwt-auth
+    target: context/doctrine/jwt-auth-request-context.md
+    # added by PROMPT_134
+  - alias: rbac
+    target: context/doctrine/rbac-permission-taxonomy.md
+    # added by PROMPT_134
+  - alias: tenant-boundary
+    target: context/doctrine/tenant-boundary-enforcement.md
+    # added by PROMPT_134
+  - alias: route-registry
+    target: context/doctrine/route-metadata-registry.md
+    # added by PROMPT_134
+  - alias: me-endpoint
+    target: context/doctrine/me-endpoint-discoverability.md
+    # added by PROMPT_134
+  - alias: jwt-arc
+    target: examples/canonical-auth/
+    # added by PROMPT_134
   - alias: redis
     target: context/stacks/redis.md
   - alias: redis streams

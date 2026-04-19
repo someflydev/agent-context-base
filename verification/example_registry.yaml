@@ -1,4 +1,67 @@
 examples:
+  - name: canonical-auth-readme
+    path: examples/canonical-auth/README.md
+    language: markdown
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+      - typescript-hono-jose-rbac
+      - go-echo-golang-jwt-rbac
+      - rust-axum-jsonwebtoken-rbac
+      - java-spring-jjwt-rbac
+      - kotlin-http4k-jjwt-rbac
+      - ruby-hanami-ruby-jwt-rbac
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: medium
+    verification_targets:
+      - file exists
+      - auth arc navigation present
+    docker_supported: false
+    scenario_harness: ""
+  - name: canonical-auth-catalog
+    path: examples/canonical-auth/CATALOG.md
+    language: markdown
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+      - typescript-hono-jose-rbac
+      - go-echo-golang-jwt-rbac
+      - rust-axum-jsonwebtoken-rbac
+      - java-spring-jjwt-rbac
+      - kotlin-http4k-jjwt-rbac
+      - ruby-hanami-ruby-jwt-rbac
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: medium
+    verification_targets:
+      - file exists
+      - language status table present
+    docker_supported: false
+    scenario_harness: ""
+  - name: canonical-auth-domain-spec-placeholder
+    path: examples/canonical-auth/domain/spec.md
+    language: markdown
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+      - typescript-hono-jose-rbac
+      - go-echo-golang-jwt-rbac
+      - rust-axum-jsonwebtoken-rbac
+      - java-spring-jjwt-rbac
+      - kotlin-http4k-jjwt-rbac
+      - ruby-hanami-ruby-jwt-rbac
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: medium
+    verification_targets:
+      - file exists
+      - foundation placeholder present
+    docker_supported: false
+    scenario_harness: ""
   - name: fastapi-endpoint-example-doc
     path: examples/canonical-api/fastapi-endpoint-example.md
     language: markdown

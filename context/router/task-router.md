@@ -41,6 +41,38 @@ Route from what the user is trying to do, not from internal file names.
 - "show the analytics canonical example catalog"
   - load `examples/canonical-analytics/CATALOG.md`
   # added by PROMPT_133
+- "how do I add JWT auth to my FastAPI app"
+  - load `context/stacks/python-fastapi-pyjwt-rbac.md`
+  - load `context/skills/jwt-middleware-implementation.md`
+  # added by PROMPT_134
+- "show me RBAC with JWT in Go"
+  - load `context/stacks/go-echo-golang-jwt-rbac.md`
+  - load `context/doctrine/rbac-permission-taxonomy.md`
+  # added by PROMPT_134
+- "what is the permission naming standard"
+  - load `context/doctrine/rbac-permission-taxonomy.md`
+  - load `context/skills/permission-catalog-design.md`
+  # added by PROMPT_134
+- "how do I build a /me endpoint"
+  - load `context/doctrine/me-endpoint-discoverability.md`
+  - load `context/skills/me-endpoint-design.md`
+  # added by PROMPT_134
+- "show me multi-tenant JWT examples"
+  - load `examples/canonical-auth/README.md`
+  - load `context/archetypes/tenant-aware-backend-api.md`
+  # added by PROMPT_134
+- "how do I verify a JWT in Rust / Axum"
+  - load `context/stacks/rust-axum-jsonwebtoken-rbac.md`
+  - load `context/skills/jwt-middleware-implementation.md`
+  # added by PROMPT_134
+- "what permission does this route require"
+  - load `context/doctrine/route-metadata-registry.md`
+  - load `context/skills/route-metadata-annotation.md`
+  # added by PROMPT_134
+- "how do I invalidate stale tokens"
+  - load `context/doctrine/jwt-auth-request-context.md`
+  - load `context/skills/jwt-middleware-implementation.md`
+  # added by PROMPT_134
 
 - "add a feature", "build this capability", "implement this flow"
   - load `context/workflows/add-feature.md`

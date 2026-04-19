@@ -157,6 +157,24 @@ Status: COMPLETE (PROMPT_127–133)
 - domain: Ops & Product Analytics Workbench (dogfooding canonical-faker)
 - overview: docs/plotly-htmx-arc-overview.md
 
+## JWT Auth, RBAC, and Multi-Tenant Backend Patterns Arc
+
+Status: FOUNDATION COMPLETE (PROMPT_134 of 134–140)
+
+- doctrines: jwt-auth-request-context.md, rbac-permission-taxonomy.md,
+  tenant-boundary-enforcement.md, route-metadata-registry.md,
+  me-endpoint-discoverability.md
+- archetype: tenant-aware-backend-api
+- stacks: 8 JWT auth backend stacks across Python, TypeScript, Go, Rust, Java,
+  Kotlin, Ruby, and Elixir
+- skills: jwt-middleware-implementation, permission-catalog-design,
+  me-endpoint-design, route-metadata-annotation
+- workflows: add-protected-endpoint, add-tenant-aware-canonical-example
+- manifest: manifests/auth-jwt-rbac-polyglot.yaml
+- examples: examples/canonical-auth/ scaffolded; language implementations land
+  in PROMPT_136–139
+- status note: shared domain spec and parity matrix arrive in PROMPT_135
+
 ## Future Direction
 
 Clearly future-facing, not implemented yet:
