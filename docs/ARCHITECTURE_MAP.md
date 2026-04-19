@@ -144,6 +144,20 @@ Skills: `context/skills/terminal-example-selection.md`,
 - Tests:      `verification/faker/` (per-language + parity runner)
 - Status:     COMPLETE (PROMPT_126)
 
+## Analytics and Backend-Driven Visualization Arc (PROMPT_127–132)
+
+- Doctrine:   `context/doctrine/backend-driven-visualization.md` (6 rules)
+- Archetype:  `context/archetypes/interactive-data-service.md`
+- Stacks:     `context/stacks/analytics-{python,go,rust,elixir}.yaml` (4 stacks)
+- Skills:     `context/skills/analytics-figure-design.md`, `context/skills/htmx-fragment-design.md`
+- Workflow:   `context/workflows/implement-canonical-analytics.md`
+- Manifest:   `manifests/analytics-polyglot.yaml`
+- Domain:     `examples/canonical-analytics/domain/` (Ops & Product, 6 chart families)
+- Examples:   `examples/canonical-analytics/` (4 examples: Python, Go, Rust, Elixir)
+- Docs:       `docs/faker-arc-overview.md` (dogfooded), `memory/concepts/analytics-arc.md`
+- Tests:      `verification/analytics/` (smoke tests + parity runner)
+- Status:     COMPLETE (PROMPT_132)
+
 ## Future Direction
 
 Clearly future-facing, not implemented yet:
