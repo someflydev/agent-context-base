@@ -8,6 +8,40 @@ Route from what the user is trying to do, not from internal file names.
 
 ## Common Task Mappings
 
+- "show me a plotly chart example in python"
+  - load `examples/canonical-analytics/python/`
+  - load `context/stacks/python-fastapi-jinja2-htmx-plotly.md`
+  # added by PROMPT_133
+- "show me a plotly chart example in go"
+  - load `examples/canonical-analytics/go/`
+  - load `context/stacks/go-echo-templ-htmx-plotly.md`
+  # added by PROMPT_133
+- "show me a plotly chart example in rust"
+  - load `examples/canonical-analytics/rust/`
+  - load `context/stacks/rust-axum-askama-htmx-plotly.md`
+  # added by PROMPT_133
+- "show me a plotly chart example in elixir"
+  - load `examples/canonical-analytics/elixir/`
+  - load `context/stacks/elixir-phoenix-htmx-plotly.md`
+  # added by PROMPT_133
+- "visualization anti-patterns", "what charts should I avoid"
+  - load `context/doctrine/plotly-htmx-server-rendered-viz.md`
+  # added by PROMPT_133
+- "tailwind filter panel styling", "tailwind for analytics ui"
+  - load `context/doctrine/tailwind-utility-first.md`
+  - load `context/doctrine/filter-panel-rendering-rules.md`
+  # added by PROMPT_133
+- "what is the difference between LiveView and HTMX in elixir"
+  - load `context/stacks/elixir-phoenix-htmx-plotly.md` (When to Use HTMX section)
+  # added by PROMPT_133
+- "cross-stack parity status for analytics"
+  - load `examples/canonical-analytics/domain/parity-matrix.md`
+  - load `verification/analytics/run_parity_check.py`
+  # added by PROMPT_133
+- "show the analytics canonical example catalog"
+  - load `examples/canonical-analytics/CATALOG.md`
+  # added by PROMPT_133
+
 - "add a feature", "build this capability", "implement this flow"
   - load `context/workflows/add-feature.md`
 - "fix a bug", "regression", "this is broken"
