@@ -144,19 +144,18 @@ Skills: `context/skills/terminal-example-selection.md`,
 - Tests:      `verification/faker/` (per-language + parity runner)
 - Status:     COMPLETE (PROMPT_126)
 
-## Analytics and Backend-Driven Visualization Arc (PROMPT_127–132)
+## Plotly + HTMX + Tailwind Analytics Arc
 
-- Doctrine:   `context/doctrine/backend-driven-visualization.md` (6 rules)
-- Archetype:  `context/archetypes/interactive-data-service.md`
-- Stacks:     `context/stacks/analytics-{python,go,rust,elixir}.yaml` (4 stacks)
-- Skills:     `context/skills/analytics-figure-design.md`, `context/skills/htmx-fragment-design.md`
-- Workflow:   `context/workflows/implement-canonical-analytics.md`
-- Manifest:   `manifests/analytics-polyglot.yaml`
-- Domain:     `examples/canonical-analytics/domain/` (Ops & Product, 6 chart families)
-- Examples:   `examples/canonical-analytics/` (4 examples: Python, Go, Rust, Elixir)
-- Docs:       `docs/faker-arc-overview.md` (dogfooded), `memory/concepts/analytics-arc.md`
-- Tests:      `verification/analytics/` (smoke tests + parity runner)
-- Status:     COMPLETE (PROMPT_132)
+Status: COMPLETE (PROMPT_127–133)
+
+- doctrine: plotly-htmx-server-rendered-viz.md, tailwind-utility-first.md
+- archetype: analytics-workbench
+- stacks: 4 (Python/FastAPI/Jinja2, Go/Echo/templ, Rust/Axum/Askama, Elixir/Phoenix/HEEx)
+- skills: chart-type-selection, plotly-figure-builder-design
+- workflow: add-visualization-panel
+- canonical examples: python/, go/, rust/, elixir/ — all 6 chart families
+- domain: Ops & Product Analytics Workbench (dogfooding canonical-faker)
+- overview: docs/plotly-htmx-arc-overview.md
 
 ## Future Direction
 
