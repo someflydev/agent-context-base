@@ -1,18 +1,36 @@
-# Canonical Auth Examples Catalog
+# Canonical Auth Examples
 
-Status: `[ ]` planned · `[~]` partial · `[x]` complete
+JWT auth, RBAC, and tenant-aware backend examples sharing one TenantCore IAM
+domain contract.
 
-## JWT Auth, RBAC, and Multi-Tenant Backend Patterns
+## Domain
 
-Domain spec: `examples/canonical-auth/domain/spec.md`
+- `domain/spec.md` - authoritative entity, permission, JWT, flow, route, and
+  `/me` specification
+- `domain/verification-contract.md` - required smoke and unit tests for every
+  implementation
+- `domain/parity-matrix.md` - cross-language implementation tracking
 
-| Implementation | Path | Status | Notes |
-| --- | --- | --- | --- |
-| Python | `examples/canonical-auth/python/` | [ ] | PROMPT_136 |
-| TypeScript | `examples/canonical-auth/typescript/` | [ ] | PROMPT_136 |
-| Go | `examples/canonical-auth/go/` | [ ] | PROMPT_137 |
-| Rust | `examples/canonical-auth/rust/` | [ ] | PROMPT_137 |
-| Java | `examples/canonical-auth/java/` | [ ] | PROMPT_138 |
-| Kotlin | `examples/canonical-auth/kotlin/` | [ ] | PROMPT_138 |
-| Ruby | `examples/canonical-auth/ruby/` | [ ] | PROMPT_139 |
-| Elixir | `examples/canonical-auth/elixir/` | [ ] | PROMPT_139 |
+## Implementations
+
+| Language | Framework | Auth Library | Path | Status |
+| --- | --- | --- | --- | --- |
+| Python | FastAPI | PyJWT | `examples/canonical-auth/python/` | [ ] |
+| TypeScript | Hono | jose | `examples/canonical-auth/typescript/` | [ ] |
+| Go | Echo | golang-jwt/jwt | `examples/canonical-auth/go/` | [ ] |
+| Rust | Axum | jsonwebtoken | `examples/canonical-auth/rust/` | [ ] |
+| Java | Spring Boot | JJWT | `examples/canonical-auth/java/` | [ ] |
+| Kotlin | http4k | JJWT | `examples/canonical-auth/kotlin/` | [ ] |
+| Ruby | Hanami | ruby-jwt | `examples/canonical-auth/ruby/` | [ ] |
+| Elixir | Phoenix | Joken | `examples/canonical-auth/elixir/` | [ ] |
+
+## How to Run Any Example
+
+Read the `README.md` in the target example directory for setup, run, and test
+commands. Each implementation loads shared fixtures from
+`examples/canonical-auth/domain/fixtures/`.
+
+## Parity Status
+
+See `domain/parity-matrix.md` for implementation-level parity and verification
+progress across Python, TypeScript, Go, Rust, Java, Kotlin, Ruby, and Elixir.
