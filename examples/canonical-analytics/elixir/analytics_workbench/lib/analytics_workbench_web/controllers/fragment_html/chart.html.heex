@@ -1,0 +1,14 @@
+<div id="chart-panel"
+     data-figure={@figure_json}
+     class="bg-white p-4 border border-gray-200 rounded-lg shadow-sm w-full h-96">
+  <!-- Plotly chart will be rendered here -->
+</div>
+<script>
+  (function() {
+    var div = document.getElementById("chart-panel");
+    if (div && div.dataset.figure) {
+      var fig = JSON.parse(div.dataset.figure);
+      Plotly.newPlot("chart-panel", fig.data, fig.layout, {responsive: true});
+    }
+  })();
+</script>

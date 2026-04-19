@@ -1,0 +1,21 @@
+<h3 class="font-bold text-gray-700 mb-2 border-b pb-2">Summary</h3>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+  <%= case @view do %>
+    <% "index" -> %>
+      <div><span class="text-xs text-gray-500 block uppercase">Total Events</span><span class="font-bold">{@summary.total_events}</span></div>
+    <% "trends" -> %>
+      <div><span class="text-xs text-gray-500 block uppercase">Total Events</span><span class="font-bold">{@summary.total_events}</span></div>
+    <% "services" -> %>
+      <div><span class="text-xs text-gray-500 block uppercase">Avg Error Rate</span><span class="font-bold">{Float.round(@summary.avg_error_rate * 100, 2)}%</span></div>
+    <% "distributions" -> %>
+      <div><span class="text-xs text-gray-500 block uppercase">P50 Latency</span><span class="font-bold">{@summary.p50}ms</span></div>
+      <div><span class="text-xs text-gray-500 block uppercase">P95 Latency</span><span class="font-bold">{@summary.p95}ms</span></div>
+      <div><span class="text-xs text-gray-500 block uppercase">P99 Latency</span><span class="font-bold">{@summary.p99}ms</span></div>
+    <% "incidents" -> %>
+      <div><span class="text-xs text-gray-500 block uppercase">Total Incidents</span><span class="font-bold">{@summary.total_incidents}</span></div>
+    <% "funnel" -> %>
+      <div><span class="text-xs text-gray-500 block uppercase">Conv. Rate</span><span class="font-bold">{Float.round(@summary.conversion_rate * 100, 2)}%</span></div>
+    <% "heatmap" -> %>
+      <div><span class="text-xs text-gray-500 block uppercase">Total Events</span><span class="font-bold">{@summary.total_events}</span></div>
+  <% end %>
+</div>

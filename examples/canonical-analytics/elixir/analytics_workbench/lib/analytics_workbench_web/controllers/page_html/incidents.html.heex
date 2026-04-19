@@ -1,0 +1,110 @@
+<div class="flex flex-col md:flex-row gap-6">
+  <aside class="w-full md:w-64 bg-white p-4 border border-gray-200 rounded-lg shadow-sm self-start">
+    <h3 class="font-bold text-gray-700 mb-4 border-b pb-2">Filters</h3>
+    <form method="get"
+          hx-get={~p"/fragments/chart?view=#{@view_name}"}
+          hx-target="#content-panel"
+          hx-swap="innerHTML"
+          hx-push-url="true"
+          class="space-y-4">
+      
+      <div>
+        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Services</label>
+        <select name="services[]" multiple class="border rounded p-1 min-h-[100px] w-full text-sm">
+          <%= for s <- @services_list do %>
+            <option value={s} selected={s in @filters.services}><%= s %></option>
+          <% end %>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Environment</label>
+        <select name="environment[]" multiple class="border rounded p-1 min-h-[80px] w-full text-sm">
+          <%= for e <- @environment_list do %>
+            <option value={e} selected={e in @filters.environment}><%= e %></option>
+          <% end %>
+        </select>
+      </div>
+
+      <%= if @view_name == "incidents" do %>
+      <div>
+        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Severity</label>
+        <select name="severity[]" multiple class="border rounded p-1 min-h-[80px] w-full text-sm">
+          <%= for s <- @severity_list do %>
+            <option value={s} selected={s in @filters.severity}><%= s %></option>
+          <% end %>
+        </select>
+      </div>
+      <% end %>
+
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">From</label>
+          <input type="date" name="date_from" value={@filters.date_from} class="border rounded p-1 w-full text-sm" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">To</label>
+          <input type="date" name="date_to" value={@filters.date_to} class="border rounded p-1 w-full text-sm" />
+        </div>
+      </div>
+
+      <button type="submit"
+              class="w-full bg-blue-600 text-white px-4 py-2 rounded font-medium hover:bg-blue-700 transition">
+        Apply Filters
+      </button>
+    </form>
+  </aside>
+
+  <div id="content-panel" class="flex-1 space-y-6">
+    <div id="chart-panel"
+         data-figure={@figure_json}
+         class="bg-white p-4 border border-gray-200 rounded-lg shadow-sm w-full h-96">
+      <!-- Plotly chart will be rendered here -->
+    </div>
+    
+    <div id="summary-panel" class="bg-white p-4 border border-gray-200 rounded-lg shadow-sm">
+      <h3 class="font-bold text-gray-700 mb-2 border-b pb-2">Summary</h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <%= case @view_name do %>
+          <% "index" -> %>
+            <div><span class="text-xs text-gray-500 block uppercase">Total Events</span><span class="font-bold">{@summary.total_events}</span></div>
+          <% "trends" -> %>
+            <div><span class="text-xs text-gray-500 block uppercase">Total Events</span><span class="font-bold">{@summary.total_events}</span></div>
+          <% "services" -> %>
+            <div><span class="text-xs text-gray-500 block uppercase">Avg Error Rate</span><span class="font-bold">{Float.round(@summary.avg_error_rate * 100, 2)}%</span></div>
+          <% "distributions" -> %>
+            <div><span class="text-xs text-gray-500 block uppercase">P50 Latency</span><span class="font-bold">{@summary.p50}ms</span></div>
+            <div><span class="text-xs text-gray-500 block uppercase">P95 Latency</span><span class="font-bold">{@summary.p95}ms</span></div>
+            <div><span class="text-xs text-gray-500 block uppercase">P99 Latency</span><span class="font-bold">{@summary.p99}ms</span></div>
+          <% "incidents" -> %>
+            <div><span class="text-xs text-gray-500 block uppercase">Total Incidents</span><span class="font-bold">{@summary.total_incidents}</span></div>
+          <% "funnel" -> %>
+            <div><span class="text-xs text-gray-500 block uppercase">Conv. Rate</span><span class="font-bold">{Float.round(@summary.conversion_rate * 100, 2)}%</span></div>
+          <% "heatmap" -> %>
+            <div><span class="text-xs text-gray-500 block uppercase">Total Events</span><span class="font-bold">{@summary.total_events}</span></div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    function renderChart() {
+      var div = document.getElementById("chart-panel");
+      if (div && div.dataset.figure) {
+        var fig = JSON.parse(div.dataset.figure);
+        Plotly.newPlot("chart-panel", fig.data, fig.layout, {responsive: true});
+      }
+    }
+    
+    renderChart();
+    
+    // Re-render chart on HTMX content swap
+    document.body.addEventListener('htmx:afterSwap', function(evt) {
+      if (evt.detail.target.id === 'content-panel' || evt.detail.target.id === 'chart-panel') {
+        renderChart();
+      }
+    });
+  })();
+</script>
