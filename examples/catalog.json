@@ -60,7 +60,7 @@
     {
       "path": "examples/canonical-auth/domain/spec.md",
       "category": "authentication",
-      "summary": "Foundation placeholder for the shared JWT auth domain spec scheduled in PROMPT_135.",
+      "summary": "Authoritative TenantCore IAM domain spec covering entities, permission atoms, JWT claims, flows, routes, and /me response shape.",
       "stacks": [
         "python-fastapi-pyjwt-rbac",
         "typescript-hono-jose-rbac",
@@ -80,9 +80,308 @@
       "patterns": [
         "shared-domain",
         "auth-contract",
-        "foundation-placeholder"
+        "tenantcore-iam"
       ],
       "rank": 84,
+      "stability": "foundation"
+    },
+    {
+      "path": "examples/canonical-auth/domain/parity-matrix.md",
+      "category": "authentication",
+      "summary": "Cross-language parity tracker for the eight canonical auth implementations.",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac",
+        "typescript-hono-jose-rbac",
+        "go-echo-golang-jwt-rbac",
+        "rust-axum-jsonwebtoken-rbac",
+        "java-spring-jjwt-rbac",
+        "kotlin-http4k-jjwt-rbac",
+        "ruby-hanami-ruby-jwt-rbac",
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "parity-matrix",
+        "language-matrix",
+        "auth-arc"
+      ],
+      "rank": 82,
+      "stability": "foundation"
+    },
+    {
+      "path": "examples/canonical-auth/domain/verification-contract.md",
+      "category": "authentication",
+      "summary": "Shared smoke-test and unit-test proof required before a canonical auth implementation is marked complete.",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac",
+        "typescript-hono-jose-rbac",
+        "go-echo-golang-jwt-rbac",
+        "rust-axum-jsonwebtoken-rbac",
+        "java-spring-jjwt-rbac",
+        "kotlin-http4k-jjwt-rbac",
+        "ruby-hanami-ruby-jwt-rbac",
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "verification-contract",
+        "smoke-tests",
+        "auth-arc"
+      ],
+      "rank": 83,
+      "stability": "foundation"
+    },
+    {
+      "path": "examples/canonical-auth/domain/generate_fixtures.py",
+      "category": "authentication",
+      "summary": "Deterministic standard-library fixture generator for the shared TenantCore IAM auth corpus.",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac",
+        "typescript-hono-jose-rbac",
+        "go-echo-golang-jwt-rbac",
+        "rust-axum-jsonwebtoken-rbac",
+        "java-spring-jjwt-rbac",
+        "kotlin-http4k-jjwt-rbac",
+        "ruby-hanami-ruby-jwt-rbac",
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "deterministic-fixtures",
+        "shared-fixtures",
+        "fixture-generator"
+      ],
+      "rank": 81,
+      "stability": "foundation"
+    },
+    {
+      "path": "examples/canonical-auth/domain/fixtures/.gitkeep",
+      "category": "authentication",
+      "summary": "Tracking sentinel for the canonical auth fixture directory.",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac",
+        "typescript-hono-jose-rbac",
+        "go-echo-golang-jwt-rbac",
+        "rust-axum-jsonwebtoken-rbac",
+        "java-spring-jjwt-rbac",
+        "kotlin-http4k-jjwt-rbac",
+        "ruby-hanami-ruby-jwt-rbac",
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "shared-fixtures"
+      ],
+      "rank": 40,
+      "stability": "foundation"
+    },
+    {
+      "path": "examples/canonical-auth/domain/fixtures/tenants.json",
+      "category": "authentication",
+      "summary": "Seed tenants for the shared canonical auth fixture corpus.",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac",
+        "typescript-hono-jose-rbac",
+        "go-echo-golang-jwt-rbac",
+        "rust-axum-jsonwebtoken-rbac",
+        "java-spring-jjwt-rbac",
+        "kotlin-http4k-jjwt-rbac",
+        "ruby-hanami-ruby-jwt-rbac",
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "shared-fixtures",
+        "tenant-seed"
+      ],
+      "rank": 77,
+      "stability": "foundation"
+    },
+    {
+      "path": "examples/canonical-auth/domain/fixtures/users.json",
+      "category": "authentication",
+      "summary": "Seed users for super-admin, tenant-admin, and tenant-member auth flows.",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac",
+        "typescript-hono-jose-rbac",
+        "go-echo-golang-jwt-rbac",
+        "rust-axum-jsonwebtoken-rbac",
+        "java-spring-jjwt-rbac",
+        "kotlin-http4k-jjwt-rbac",
+        "ruby-hanami-ruby-jwt-rbac",
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "shared-fixtures",
+        "user-seed"
+      ],
+      "rank": 78,
+      "stability": "foundation"
+    },
+    {
+      "path": "examples/canonical-auth/domain/fixtures/memberships.json",
+      "category": "authentication",
+      "summary": "Seed memberships mapping users to tenant roles for the auth domain.",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac",
+        "typescript-hono-jose-rbac",
+        "go-echo-golang-jwt-rbac",
+        "rust-axum-jsonwebtoken-rbac",
+        "java-spring-jjwt-rbac",
+        "kotlin-http4k-jjwt-rbac",
+        "ruby-hanami-ruby-jwt-rbac",
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "shared-fixtures",
+        "membership-seed"
+      ],
+      "rank": 78,
+      "stability": "foundation"
+    },
+    {
+      "path": "examples/canonical-auth/domain/fixtures/groups.json",
+      "category": "authentication",
+      "summary": "Seed tenant-scoped groups used to compose effective RBAC permissions.",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac",
+        "typescript-hono-jose-rbac",
+        "go-echo-golang-jwt-rbac",
+        "rust-axum-jsonwebtoken-rbac",
+        "java-spring-jjwt-rbac",
+        "kotlin-http4k-jjwt-rbac",
+        "ruby-hanami-ruby-jwt-rbac",
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "shared-fixtures",
+        "group-seed"
+      ],
+      "rank": 77,
+      "stability": "foundation"
+    },
+    {
+      "path": "examples/canonical-auth/domain/fixtures/permissions.json",
+      "category": "authentication",
+      "summary": "Seed subset of the platform-owned permission catalog used by auth examples.",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac",
+        "typescript-hono-jose-rbac",
+        "go-echo-golang-jwt-rbac",
+        "rust-axum-jsonwebtoken-rbac",
+        "java-spring-jjwt-rbac",
+        "kotlin-http4k-jjwt-rbac",
+        "ruby-hanami-ruby-jwt-rbac",
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "shared-fixtures",
+        "permission-catalog"
+      ],
+      "rank": 79,
+      "stability": "foundation"
+    },
+    {
+      "path": "examples/canonical-auth/domain/fixtures/group_permissions.json",
+      "category": "authentication",
+      "summary": "Seed join rows granting catalog permissions to tenant groups.",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac",
+        "typescript-hono-jose-rbac",
+        "go-echo-golang-jwt-rbac",
+        "rust-axum-jsonwebtoken-rbac",
+        "java-spring-jjwt-rbac",
+        "kotlin-http4k-jjwt-rbac",
+        "ruby-hanami-ruby-jwt-rbac",
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "shared-fixtures",
+        "permission-assignment"
+      ],
+      "rank": 76,
+      "stability": "foundation"
+    },
+    {
+      "path": "examples/canonical-auth/domain/fixtures/user_groups.json",
+      "category": "authentication",
+      "summary": "Seed join rows assigning users to tenant groups for effective permissions.",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac",
+        "typescript-hono-jose-rbac",
+        "go-echo-golang-jwt-rbac",
+        "rust-axum-jsonwebtoken-rbac",
+        "java-spring-jjwt-rbac",
+        "kotlin-http4k-jjwt-rbac",
+        "ruby-hanami-ruby-jwt-rbac",
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "shared-fixtures",
+        "group-membership"
+      ],
+      "rank": 76,
       "stability": "foundation"
     },
     {

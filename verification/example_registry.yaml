@@ -41,7 +41,7 @@ examples:
       - language status table present
     docker_supported: false
     scenario_harness: ""
-  - name: canonical-auth-domain-spec-placeholder
+  - name: canonical-auth-domain-spec
     path: examples/canonical-auth/domain/spec.md
     language: markdown
     stack_tags:
@@ -59,7 +59,237 @@ examples:
     confidence: medium
     verification_targets:
       - file exists
-      - foundation placeholder present
+      - tenantcore iam sections present
+    docker_supported: false
+    scenario_harness: ""
+  - name: canonical-auth-parity-matrix
+    path: examples/canonical-auth/domain/parity-matrix.md
+    language: markdown
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+      - typescript-hono-jose-rbac
+      - go-echo-golang-jwt-rbac
+      - rust-axum-jsonwebtoken-rbac
+      - java-spring-jjwt-rbac
+      - kotlin-http4k-jjwt-rbac
+      - ruby-hanami-ruby-jwt-rbac
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: medium
+    verification_targets:
+      - file exists
+      - parity headers present
+    docker_supported: false
+    scenario_harness: ""
+  - name: canonical-auth-verification-contract
+    path: examples/canonical-auth/domain/verification-contract.md
+    language: markdown
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+      - typescript-hono-jose-rbac
+      - go-echo-golang-jwt-rbac
+      - rust-axum-jsonwebtoken-rbac
+      - java-spring-jjwt-rbac
+      - kotlin-http4k-jjwt-rbac
+      - ruby-hanami-ruby-jwt-rbac
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: medium
+    verification_targets:
+      - file exists
+      - smoke test list present
+    docker_supported: false
+    scenario_harness: ""
+  - name: canonical-auth-generate-fixtures
+    path: examples/canonical-auth/domain/generate_fixtures.py
+    language: python
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+      - typescript-hono-jose-rbac
+      - go-echo-golang-jwt-rbac
+      - rust-axum-jsonwebtoken-rbac
+      - java-spring-jjwt-rbac
+      - kotlin-http4k-jjwt-rbac
+      - ruby-hanami-ruby-jwt-rbac
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: behavior-verified
+    confidence: medium
+    verification_targets:
+      - parses
+      - writes deterministic json fixtures
+    docker_supported: false
+    scenario_harness: ""
+  - name: canonical-auth-fixtures-gitkeep
+    path: examples/canonical-auth/domain/fixtures/.gitkeep
+    language: text
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+      - typescript-hono-jose-rbac
+      - go-echo-golang-jwt-rbac
+      - rust-axum-jsonwebtoken-rbac
+      - java-spring-jjwt-rbac
+      - kotlin-http4k-jjwt-rbac
+      - ruby-hanami-ruby-jwt-rbac
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: medium
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: canonical-auth-fixtures-tenants
+    path: examples/canonical-auth/domain/fixtures/tenants.json
+    language: json
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+      - typescript-hono-jose-rbac
+      - go-echo-golang-jwt-rbac
+      - rust-axum-jsonwebtoken-rbac
+      - java-spring-jjwt-rbac
+      - kotlin-http4k-jjwt-rbac
+      - ruby-hanami-ruby-jwt-rbac
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: behavior-verified
+    confidence: medium
+    verification_targets:
+      - valid json
+      - tenant seed count verified
+    docker_supported: false
+    scenario_harness: ""
+  - name: canonical-auth-fixtures-users
+    path: examples/canonical-auth/domain/fixtures/users.json
+    language: json
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+      - typescript-hono-jose-rbac
+      - go-echo-golang-jwt-rbac
+      - rust-axum-jsonwebtoken-rbac
+      - java-spring-jjwt-rbac
+      - kotlin-http4k-jjwt-rbac
+      - ruby-hanami-ruby-jwt-rbac
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: behavior-verified
+    confidence: medium
+    verification_targets:
+      - valid json
+      - user seed count verified
+    docker_supported: false
+    scenario_harness: ""
+  - name: canonical-auth-fixtures-memberships
+    path: examples/canonical-auth/domain/fixtures/memberships.json
+    language: json
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+      - typescript-hono-jose-rbac
+      - go-echo-golang-jwt-rbac
+      - rust-axum-jsonwebtoken-rbac
+      - java-spring-jjwt-rbac
+      - kotlin-http4k-jjwt-rbac
+      - ruby-hanami-ruby-jwt-rbac
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: behavior-verified
+    confidence: medium
+    verification_targets:
+      - valid json
+      - membership seed count verified
+    docker_supported: false
+    scenario_harness: ""
+  - name: canonical-auth-fixtures-groups
+    path: examples/canonical-auth/domain/fixtures/groups.json
+    language: json
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+      - typescript-hono-jose-rbac
+      - go-echo-golang-jwt-rbac
+      - rust-axum-jsonwebtoken-rbac
+      - java-spring-jjwt-rbac
+      - kotlin-http4k-jjwt-rbac
+      - ruby-hanami-ruby-jwt-rbac
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: behavior-verified
+    confidence: medium
+    verification_targets:
+      - valid json
+      - group seed count verified
+    docker_supported: false
+    scenario_harness: ""
+  - name: canonical-auth-fixtures-permissions
+    path: examples/canonical-auth/domain/fixtures/permissions.json
+    language: json
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+      - typescript-hono-jose-rbac
+      - go-echo-golang-jwt-rbac
+      - rust-axum-jsonwebtoken-rbac
+      - java-spring-jjwt-rbac
+      - kotlin-http4k-jjwt-rbac
+      - ruby-hanami-ruby-jwt-rbac
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: behavior-verified
+    confidence: medium
+    verification_targets:
+      - valid json
+      - permission seed count verified
+    docker_supported: false
+    scenario_harness: ""
+  - name: canonical-auth-fixtures-group-permissions
+    path: examples/canonical-auth/domain/fixtures/group_permissions.json
+    language: json
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+      - typescript-hono-jose-rbac
+      - go-echo-golang-jwt-rbac
+      - rust-axum-jsonwebtoken-rbac
+      - java-spring-jjwt-rbac
+      - kotlin-http4k-jjwt-rbac
+      - ruby-hanami-ruby-jwt-rbac
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: behavior-verified
+    confidence: medium
+    verification_targets:
+      - valid json
+      - group permission assignments verified
+    docker_supported: false
+    scenario_harness: ""
+  - name: canonical-auth-fixtures-user-groups
+    path: examples/canonical-auth/domain/fixtures/user_groups.json
+    language: json
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+      - typescript-hono-jose-rbac
+      - go-echo-golang-jwt-rbac
+      - rust-axum-jsonwebtoken-rbac
+      - java-spring-jjwt-rbac
+      - kotlin-http4k-jjwt-rbac
+      - ruby-hanami-ruby-jwt-rbac
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: behavior-verified
+    confidence: medium
+    verification_targets:
+      - valid json
+      - user group assignments verified
     docker_supported: false
     scenario_harness: ""
   - name: fastapi-endpoint-example-doc
