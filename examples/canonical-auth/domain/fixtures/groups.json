@@ -1,0 +1,23 @@
+[
+  {
+    "created_at": "2025-01-01T00:00:00Z",
+    "id": "g-acme-iam-0001",
+    "name": "IAM Admins",
+    "slug": "iam-admins",
+    "tenant_id": "t-acme-0001"
+  },
+  {
+    "created_at": "2025-01-01T00:00:00Z",
+    "id": "g-acme-billing-0001",
+    "name": "Billing Readers",
+    "slug": "billing-readers",
+    "tenant_id": "t-acme-0001"
+  },
+  {
+    "created_at": "2025-01-01T00:00:00Z",
+    "id": "g-globex-reports-0001",
+    "name": "Report Viewers",
+    "slug": "report-viewers",
+    "tenant_id": "t-globex-0001"
+  }
+]

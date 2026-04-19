@@ -1,0 +1,56 @@
+[
+  {
+    "acl_ver": 1,
+    "created_at": "2025-01-01T00:00:00Z",
+    "display_name": "Super Admin",
+    "email": "superadmin@tenantcore.dev",
+    "id": "u-super-0001",
+    "is_active": true,
+    "tenant_id": null
+  },
+  {
+    "acl_ver": 1,
+    "created_at": "2025-01-01T00:00:00Z",
+    "display_name": "Acme Admin",
+    "email": "admin@acme.example",
+    "id": "u-acme-admin-0001",
+    "is_active": true,
+    "tenant_id": "t-acme-0001"
+  },
+  {
+    "acl_ver": 1,
+    "created_at": "2025-01-01T00:00:00Z",
+    "display_name": "Alice Member",
+    "email": "alice@acme.example",
+    "id": "u-acme-member-0001",
+    "is_active": true,
+    "tenant_id": "t-acme-0001"
+  },
+  {
+    "acl_ver": 1,
+    "created_at": "2025-01-01T00:00:00Z",
+    "display_name": "Bob Member",
+    "email": "bob@acme.example",
+    "id": "u-acme-member-0002",
+    "is_active": true,
+    "tenant_id": "t-acme-0001"
+  },
+  {
+    "acl_ver": 1,
+    "created_at": "2025-01-01T00:00:00Z",
+    "display_name": "Globex Admin",
+    "email": "admin@globex.example",
+    "id": "u-globex-admin-0001",
+    "is_active": true,
+    "tenant_id": "t-globex-0001"
+  },
+  {
+    "acl_ver": 1,
+    "created_at": "2025-01-01T00:00:00Z",
+    "display_name": "Carol Member",
+    "email": "carol@globex.example",
+    "id": "u-globex-member-0001",
+    "is_active": true,
+    "tenant_id": "t-globex-0001"
+  }
+]

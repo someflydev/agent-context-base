@@ -1,0 +1,20 @@
+[
+  {
+    "group_id": "g-acme-iam-0001",
+    "id": "ug-acme-alice-0001",
+    "joined_at": "2025-01-03T00:00:00Z",
+    "user_id": "u-acme-member-0001"
+  },
+  {
+    "group_id": "g-acme-billing-0001",
+    "id": "ug-acme-bob-0001",
+    "joined_at": "2025-01-03T00:00:00Z",
+    "user_id": "u-acme-member-0002"
+  },
+  {
+    "group_id": "g-globex-reports-0001",
+    "id": "ug-globex-carol-0001",
+    "joined_at": "2025-01-03T00:00:00Z",
+    "user_id": "u-globex-member-0001"
+  }
+]

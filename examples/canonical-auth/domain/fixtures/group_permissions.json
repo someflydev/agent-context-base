@@ -1,0 +1,74 @@
+[
+  {
+    "granted_at": "2025-01-02T00:00:00Z",
+    "group_id": "g-acme-iam-0001",
+    "id": "gp-acme-iam-01",
+    "permission_id": "perm-iam-user-read"
+  },
+  {
+    "granted_at": "2025-01-02T00:00:00Z",
+    "group_id": "g-acme-iam-0001",
+    "id": "gp-acme-iam-02",
+    "permission_id": "perm-iam-user-create"
+  },
+  {
+    "granted_at": "2025-01-02T00:00:00Z",
+    "group_id": "g-acme-iam-0001",
+    "id": "gp-acme-iam-03",
+    "permission_id": "perm-iam-user-invite"
+  },
+  {
+    "granted_at": "2025-01-02T00:00:00Z",
+    "group_id": "g-acme-iam-0001",
+    "id": "gp-acme-iam-04",
+    "permission_id": "perm-iam-group-read"
+  },
+  {
+    "granted_at": "2025-01-02T00:00:00Z",
+    "group_id": "g-acme-iam-0001",
+    "id": "gp-acme-iam-05",
+    "permission_id": "perm-iam-group-create"
+  },
+  {
+    "granted_at": "2025-01-02T00:00:00Z",
+    "group_id": "g-acme-iam-0001",
+    "id": "gp-acme-iam-06",
+    "permission_id": "perm-iam-group-assign-permission"
+  },
+  {
+    "granted_at": "2025-01-02T00:00:00Z",
+    "group_id": "g-acme-iam-0001",
+    "id": "gp-acme-iam-07",
+    "permission_id": "perm-iam-group-assign-user"
+  },
+  {
+    "granted_at": "2025-01-02T00:00:00Z",
+    "group_id": "g-acme-iam-0001",
+    "id": "gp-acme-iam-08",
+    "permission_id": "perm-iam-permission-read"
+  },
+  {
+    "granted_at": "2025-01-02T00:00:00Z",
+    "group_id": "g-acme-billing-0001",
+    "id": "gp-acme-billing-01",
+    "permission_id": "perm-iam-user-read"
+  },
+  {
+    "granted_at": "2025-01-02T00:00:00Z",
+    "group_id": "g-acme-billing-0001",
+    "id": "gp-acme-billing-02",
+    "permission_id": "perm-billing-invoice-read"
+  },
+  {
+    "granted_at": "2025-01-02T00:00:00Z",
+    "group_id": "g-globex-reports-0001",
+    "id": "gp-globex-report-01",
+    "permission_id": "perm-reports-usage-read"
+  },
+  {
+    "granted_at": "2025-01-02T00:00:00Z",
+    "group_id": "g-globex-reports-0001",
+    "id": "gp-globex-report-02",
+    "permission_id": "perm-iam-user-read"
+  }
+]

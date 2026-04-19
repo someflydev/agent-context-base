@@ -1,0 +1,62 @@
+[
+  {
+    "created_at": "2025-01-01T00:00:00Z",
+    "description": "Read tenant users",
+    "id": "perm-iam-user-read",
+    "name": "iam:user:read"
+  },
+  {
+    "created_at": "2025-01-01T00:00:00Z",
+    "description": "Create tenant users",
+    "id": "perm-iam-user-create",
+    "name": "iam:user:create"
+  },
+  {
+    "created_at": "2025-01-01T00:00:00Z",
+    "description": "Invite tenant users",
+    "id": "perm-iam-user-invite",
+    "name": "iam:user:invite"
+  },
+  {
+    "created_at": "2025-01-01T00:00:00Z",
+    "description": "Read tenant groups",
+    "id": "perm-iam-group-read",
+    "name": "iam:group:read"
+  },
+  {
+    "created_at": "2025-01-01T00:00:00Z",
+    "description": "Create tenant groups",
+    "id": "perm-iam-group-create",
+    "name": "iam:group:create"
+  },
+  {
+    "created_at": "2025-01-01T00:00:00Z",
+    "description": "Assign catalog permissions to tenant groups",
+    "id": "perm-iam-group-assign-permission",
+    "name": "iam:group:assign_permission"
+  },
+  {
+    "created_at": "2025-01-01T00:00:00Z",
+    "description": "Assign tenant users to groups",
+    "id": "perm-iam-group-assign-user",
+    "name": "iam:group:assign_user"
+  },
+  {
+    "created_at": "2025-01-01T00:00:00Z",
+    "description": "Read permission catalog",
+    "id": "perm-iam-permission-read",
+    "name": "iam:permission:read"
+  },
+  {
+    "created_at": "2025-01-01T00:00:00Z",
+    "description": "Read invoices",
+    "id": "perm-billing-invoice-read",
+    "name": "billing:invoice:read"
+  },
+  {
+    "created_at": "2025-01-01T00:00:00Z",
+    "description": "Read usage reports",
+    "id": "perm-reports-usage-read",
+    "name": "reports:usage:read"
+  }
+]
