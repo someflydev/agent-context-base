@@ -63,6 +63,7 @@ memory/summaries/
 data/
 !verification/examples/data/
 !examples/**/src/data/
+!examples/**/lib/**/data/
 tmp/
 logs/
 .qdrant/
