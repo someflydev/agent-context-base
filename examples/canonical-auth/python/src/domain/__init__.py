@@ -1,0 +1,1 @@
+# examples/canonical-auth/python/src/domain/__init__.py
