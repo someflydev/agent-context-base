@@ -14654,3 +14654,653 @@ examples:
       - file exists
     docker_supported: false
     scenario_harness: ""
+  - name: -gitignore-java
+    path: examples/canonical-auth/java/.gitignore
+    language: text
+    stack_tags:
+      - java-spring-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: README-md-java
+    path: examples/canonical-auth/java/README.md
+    language: text
+    stack_tags:
+      - java-spring-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: pom-xml-java
+    path: examples/canonical-auth/java/pom.xml
+    language: text
+    stack_tags:
+      - java-spring-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: TenantCoreAuthApplication-java-java
+    path: examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/TenantCoreAuthApplication.java
+    language: java
+    stack_tags:
+      - java-spring-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: AuthContext-java-java
+    path: examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/auth/AuthContext.java
+    language: java
+    stack_tags:
+      - java-spring-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: CustomPermissionEvaluator-java-java
+    path: examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/auth/CustomPermissionEvaluator.java
+    language: java
+    stack_tags:
+      - java-spring-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: JwtFilter-java-java
+    path: examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/auth/JwtFilter.java
+    language: java
+    stack_tags:
+      - java-spring-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: JwtService-java-java
+    path: examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/auth/JwtService.java
+    language: java
+    stack_tags:
+      - java-spring-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: JwtConfig-java-java
+    path: examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/config/JwtConfig.java
+    language: java
+    stack_tags:
+      - java-spring-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: SecurityConfig-java-java
+    path: examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/config/SecurityConfig.java
+    language: java
+    stack_tags:
+      - java-spring-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: StoreConfig-java-java
+    path: examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/config/StoreConfig.java
+    language: java
+    stack_tags:
+      - java-spring-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: Group-java-java
+    path: examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/domain/Group.java
+    language: java
+    stack_tags:
+      - java-spring-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: InMemoryStore-java-java
+    path: examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/domain/InMemoryStore.java
+    language: java
+    stack_tags:
+      - java-spring-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: Permission-java-java
+    path: examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/domain/Permission.java
+    language: java
+    stack_tags:
+      - java-spring-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: Tenant-java-java
+    path: examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/domain/Tenant.java
+    language: java
+    stack_tags:
+      - java-spring-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: User-java-java
+    path: examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/domain/User.java
+    language: java
+    stack_tags:
+      - java-spring-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: RouteMetadata-java-java
+    path: examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/registry/RouteMetadata.java
+    language: java
+    stack_tags:
+      - java-spring-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: RouteRegistry-java-java
+    path: examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/registry/RouteRegistry.java
+    language: java
+    stack_tags:
+      - java-spring-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: AdminController-java-java
+    path: examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/routes/AdminController.java
+    language: java
+    stack_tags:
+      - java-spring-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: AuthController-java-java
+    path: examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/routes/AuthController.java
+    language: java
+    stack_tags:
+      - java-spring-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: GroupController-java-java
+    path: examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/routes/GroupController.java
+    language: java
+    stack_tags:
+      - java-spring-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: HealthController-java-java
+    path: examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/routes/HealthController.java
+    language: java
+    stack_tags:
+      - java-spring-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: MeController-java-java
+    path: examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/routes/MeController.java
+    language: java
+    stack_tags:
+      - java-spring-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: PermissionController-java-java
+    path: examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/routes/PermissionController.java
+    language: java
+    stack_tags:
+      - java-spring-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: UserController-java-java
+    path: examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/routes/UserController.java
+    language: java
+    stack_tags:
+      - java-spring-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: AuthIntegrationTest-java-java
+    path: examples/canonical-auth/java/src/test/java/dev/tenantcore/auth/AuthIntegrationTest.java
+    language: java
+    stack_tags:
+      - java-spring-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: JwtServiceTest-java-java
+    path: examples/canonical-auth/java/src/test/java/dev/tenantcore/auth/JwtServiceTest.java
+    language: java
+    stack_tags:
+      - java-spring-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: MeControllerTest-java-java
+    path: examples/canonical-auth/java/src/test/java/dev/tenantcore/auth/MeControllerTest.java
+    language: java
+    stack_tags:
+      - java-spring-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: -gitignore-kotlin
+    path: examples/canonical-auth/kotlin/.gitignore
+    language: text
+    stack_tags:
+      - kotlin-http4k-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: README-md-kotlin
+    path: examples/canonical-auth/kotlin/README.md
+    language: text
+    stack_tags:
+      - kotlin-http4k-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: build-gradle-kts-kotlin
+    path: examples/canonical-auth/kotlin/build.gradle.kts
+    language: text
+    stack_tags:
+      - kotlin-http4k-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: settings-gradle-kts-kotlin
+    path: examples/canonical-auth/kotlin/settings.gradle.kts
+    language: text
+    stack_tags:
+      - kotlin-http4k-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: Main-kt-kotlin
+    path: examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/Main.kt
+    language: kotlin
+    stack_tags:
+      - kotlin-http4k-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: AuthContext-kt-kotlin
+    path: examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/auth/AuthContext.kt
+    language: kotlin
+    stack_tags:
+      - kotlin-http4k-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: JwtMiddleware-kt-kotlin
+    path: examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/auth/JwtMiddleware.kt
+    language: kotlin
+    stack_tags:
+      - kotlin-http4k-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: RbacFilter-kt-kotlin
+    path: examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/auth/RbacFilter.kt
+    language: kotlin
+    stack_tags:
+      - kotlin-http4k-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: TokenService-kt-kotlin
+    path: examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/auth/TokenService.kt
+    language: kotlin
+    stack_tags:
+      - kotlin-http4k-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: InMemoryStore-kt-kotlin
+    path: examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/domain/InMemoryStore.kt
+    language: kotlin
+    stack_tags:
+      - kotlin-http4k-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: Models-kt-kotlin
+    path: examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/domain/Models.kt
+    language: kotlin
+    stack_tags:
+      - kotlin-http4k-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: RouteRegistry-kt-kotlin
+    path: examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/registry/RouteRegistry.kt
+    language: kotlin
+    stack_tags:
+      - kotlin-http4k-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: AdminRoutes-kt-kotlin
+    path: examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/routes/AdminRoutes.kt
+    language: kotlin
+    stack_tags:
+      - kotlin-http4k-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: AuthRoutes-kt-kotlin
+    path: examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/routes/AuthRoutes.kt
+    language: kotlin
+    stack_tags:
+      - kotlin-http4k-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: GroupRoutes-kt-kotlin
+    path: examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/routes/GroupRoutes.kt
+    language: kotlin
+    stack_tags:
+      - kotlin-http4k-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: HealthRoutes-kt-kotlin
+    path: examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/routes/HealthRoutes.kt
+    language: kotlin
+    stack_tags:
+      - kotlin-http4k-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: MeRoutes-kt-kotlin
+    path: examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/routes/MeRoutes.kt
+    language: kotlin
+    stack_tags:
+      - kotlin-http4k-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: PermissionRoutes-kt-kotlin
+    path: examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/routes/PermissionRoutes.kt
+    language: kotlin
+    stack_tags:
+      - kotlin-http4k-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: UserRoutes-kt-kotlin
+    path: examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/routes/UserRoutes.kt
+    language: kotlin
+    stack_tags:
+      - kotlin-http4k-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: AuthIntegrationTest-kt-kotlin
+    path: examples/canonical-auth/kotlin/src/test/kotlin/dev/tenantcore/auth/AuthIntegrationTest.kt
+    language: kotlin
+    stack_tags:
+      - kotlin-http4k-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: MeRoutesTest-kt-kotlin
+    path: examples/canonical-auth/kotlin/src/test/kotlin/dev/tenantcore/auth/MeRoutesTest.kt
+    language: kotlin
+    stack_tags:
+      - kotlin-http4k-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: TokenServiceTest-kt-kotlin
+    path: examples/canonical-auth/kotlin/src/test/kotlin/dev/tenantcore/auth/TokenServiceTest.kt
+    language: kotlin
+    stack_tags:
+      - kotlin-http4k-jjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""

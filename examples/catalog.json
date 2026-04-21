@@ -8422,6 +8422,1106 @@
       "patterns": []
     },
     {
+      "path": "examples/canonical-auth/java/.gitignore",
+      "category": "authentication",
+      "summary": "Java canonical auth example implementation file.",
+      "stacks": [
+        "java-spring-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "spring-security"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/java/README.md",
+      "category": "authentication",
+      "summary": "Java canonical auth example implementation file.",
+      "stacks": [
+        "java-spring-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "spring-security"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/java/pom.xml",
+      "category": "authentication",
+      "summary": "Java canonical auth example implementation file.",
+      "stacks": [
+        "java-spring-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "spring-security"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/TenantCoreAuthApplication.java",
+      "category": "authentication",
+      "summary": "Java canonical auth example implementation file.",
+      "stacks": [
+        "java-spring-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "spring-security"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/auth/AuthContext.java",
+      "category": "authentication",
+      "summary": "Java canonical auth example implementation file.",
+      "stacks": [
+        "java-spring-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "spring-security"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/auth/CustomPermissionEvaluator.java",
+      "category": "authentication",
+      "summary": "Java canonical auth example implementation file.",
+      "stacks": [
+        "java-spring-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "spring-security"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/auth/JwtFilter.java",
+      "category": "authentication",
+      "summary": "Java canonical auth example implementation file.",
+      "stacks": [
+        "java-spring-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "spring-security"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/auth/JwtService.java",
+      "category": "authentication",
+      "summary": "Java canonical auth example implementation file.",
+      "stacks": [
+        "java-spring-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "spring-security"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/config/JwtConfig.java",
+      "category": "authentication",
+      "summary": "Java canonical auth example implementation file.",
+      "stacks": [
+        "java-spring-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "spring-security"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/config/SecurityConfig.java",
+      "category": "authentication",
+      "summary": "Java canonical auth example implementation file.",
+      "stacks": [
+        "java-spring-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "spring-security"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/config/StoreConfig.java",
+      "category": "authentication",
+      "summary": "Java canonical auth example implementation file.",
+      "stacks": [
+        "java-spring-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "spring-security"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/domain/Group.java",
+      "category": "authentication",
+      "summary": "Java canonical auth example implementation file.",
+      "stacks": [
+        "java-spring-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "spring-security"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/domain/InMemoryStore.java",
+      "category": "authentication",
+      "summary": "Java canonical auth example implementation file.",
+      "stacks": [
+        "java-spring-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "spring-security"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/domain/Permission.java",
+      "category": "authentication",
+      "summary": "Java canonical auth example implementation file.",
+      "stacks": [
+        "java-spring-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "spring-security"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/domain/Tenant.java",
+      "category": "authentication",
+      "summary": "Java canonical auth example implementation file.",
+      "stacks": [
+        "java-spring-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "spring-security"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/domain/User.java",
+      "category": "authentication",
+      "summary": "Java canonical auth example implementation file.",
+      "stacks": [
+        "java-spring-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "spring-security"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/registry/RouteMetadata.java",
+      "category": "authentication",
+      "summary": "Java canonical auth example implementation file.",
+      "stacks": [
+        "java-spring-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "spring-security"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/registry/RouteRegistry.java",
+      "category": "authentication",
+      "summary": "Java canonical auth example implementation file.",
+      "stacks": [
+        "java-spring-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "spring-security"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/routes/AdminController.java",
+      "category": "authentication",
+      "summary": "Java canonical auth example implementation file.",
+      "stacks": [
+        "java-spring-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "spring-security"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/routes/AuthController.java",
+      "category": "authentication",
+      "summary": "Java canonical auth example implementation file.",
+      "stacks": [
+        "java-spring-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "spring-security"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/routes/GroupController.java",
+      "category": "authentication",
+      "summary": "Java canonical auth example implementation file.",
+      "stacks": [
+        "java-spring-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "spring-security"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/routes/HealthController.java",
+      "category": "authentication",
+      "summary": "Java canonical auth example implementation file.",
+      "stacks": [
+        "java-spring-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "spring-security"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/routes/MeController.java",
+      "category": "authentication",
+      "summary": "Java canonical auth example implementation file.",
+      "stacks": [
+        "java-spring-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "spring-security"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/routes/PermissionController.java",
+      "category": "authentication",
+      "summary": "Java canonical auth example implementation file.",
+      "stacks": [
+        "java-spring-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "spring-security"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/java/src/main/java/dev/tenantcore/auth/routes/UserController.java",
+      "category": "authentication",
+      "summary": "Java canonical auth example implementation file.",
+      "stacks": [
+        "java-spring-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "spring-security"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/java/src/test/java/dev/tenantcore/auth/AuthIntegrationTest.java",
+      "category": "authentication",
+      "summary": "Java canonical auth example implementation file.",
+      "stacks": [
+        "java-spring-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "spring-security"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/java/src/test/java/dev/tenantcore/auth/JwtServiceTest.java",
+      "category": "authentication",
+      "summary": "Java canonical auth example implementation file.",
+      "stacks": [
+        "java-spring-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "spring-security"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/java/src/test/java/dev/tenantcore/auth/MeControllerTest.java",
+      "category": "authentication",
+      "summary": "Java canonical auth example implementation file.",
+      "stacks": [
+        "java-spring-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "spring-security"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/kotlin/.gitignore",
+      "category": "authentication",
+      "summary": "Kotlin canonical auth example implementation file.",
+      "stacks": [
+        "kotlin-http4k-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "http4k"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/kotlin/README.md",
+      "category": "authentication",
+      "summary": "Kotlin canonical auth example implementation file.",
+      "stacks": [
+        "kotlin-http4k-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "http4k"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/kotlin/build.gradle.kts",
+      "category": "authentication",
+      "summary": "Kotlin canonical auth example implementation file.",
+      "stacks": [
+        "kotlin-http4k-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "http4k"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/kotlin/settings.gradle.kts",
+      "category": "authentication",
+      "summary": "Kotlin canonical auth example implementation file.",
+      "stacks": [
+        "kotlin-http4k-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "http4k"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/Main.kt",
+      "category": "authentication",
+      "summary": "Kotlin canonical auth example implementation file.",
+      "stacks": [
+        "kotlin-http4k-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "http4k"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/auth/AuthContext.kt",
+      "category": "authentication",
+      "summary": "Kotlin canonical auth example implementation file.",
+      "stacks": [
+        "kotlin-http4k-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "http4k"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/auth/JwtMiddleware.kt",
+      "category": "authentication",
+      "summary": "Kotlin canonical auth example implementation file.",
+      "stacks": [
+        "kotlin-http4k-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "http4k"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/auth/RbacFilter.kt",
+      "category": "authentication",
+      "summary": "Kotlin canonical auth example implementation file.",
+      "stacks": [
+        "kotlin-http4k-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "http4k"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/auth/TokenService.kt",
+      "category": "authentication",
+      "summary": "Kotlin canonical auth example implementation file.",
+      "stacks": [
+        "kotlin-http4k-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "http4k"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/domain/InMemoryStore.kt",
+      "category": "authentication",
+      "summary": "Kotlin canonical auth example implementation file.",
+      "stacks": [
+        "kotlin-http4k-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "http4k"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/domain/Models.kt",
+      "category": "authentication",
+      "summary": "Kotlin canonical auth example implementation file.",
+      "stacks": [
+        "kotlin-http4k-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "http4k"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/registry/RouteRegistry.kt",
+      "category": "authentication",
+      "summary": "Kotlin canonical auth example implementation file.",
+      "stacks": [
+        "kotlin-http4k-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "http4k"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/routes/AdminRoutes.kt",
+      "category": "authentication",
+      "summary": "Kotlin canonical auth example implementation file.",
+      "stacks": [
+        "kotlin-http4k-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "http4k"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/routes/AuthRoutes.kt",
+      "category": "authentication",
+      "summary": "Kotlin canonical auth example implementation file.",
+      "stacks": [
+        "kotlin-http4k-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "http4k"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/routes/GroupRoutes.kt",
+      "category": "authentication",
+      "summary": "Kotlin canonical auth example implementation file.",
+      "stacks": [
+        "kotlin-http4k-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "http4k"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/routes/HealthRoutes.kt",
+      "category": "authentication",
+      "summary": "Kotlin canonical auth example implementation file.",
+      "stacks": [
+        "kotlin-http4k-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "http4k"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/routes/MeRoutes.kt",
+      "category": "authentication",
+      "summary": "Kotlin canonical auth example implementation file.",
+      "stacks": [
+        "kotlin-http4k-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "http4k"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/routes/PermissionRoutes.kt",
+      "category": "authentication",
+      "summary": "Kotlin canonical auth example implementation file.",
+      "stacks": [
+        "kotlin-http4k-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "http4k"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/kotlin/src/main/kotlin/dev/tenantcore/auth/routes/UserRoutes.kt",
+      "category": "authentication",
+      "summary": "Kotlin canonical auth example implementation file.",
+      "stacks": [
+        "kotlin-http4k-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "http4k"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/kotlin/src/test/kotlin/dev/tenantcore/auth/AuthIntegrationTest.kt",
+      "category": "authentication",
+      "summary": "Kotlin canonical auth example implementation file.",
+      "stacks": [
+        "kotlin-http4k-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "http4k"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/kotlin/src/test/kotlin/dev/tenantcore/auth/MeRoutesTest.kt",
+      "category": "authentication",
+      "summary": "Kotlin canonical auth example implementation file.",
+      "stacks": [
+        "kotlin-http4k-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "http4k"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/kotlin/src/test/kotlin/dev/tenantcore/auth/TokenServiceTest.kt",
+      "category": "authentication",
+      "summary": "Kotlin canonical auth example implementation file.",
+      "stacks": [
+        "kotlin-http4k-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac",
+        "tenant-aware-api",
+        "http4k"
+      ],
+      "rank": 82,
+      "stability": "experimental"
+    },
+    {
       "path": "examples/canonical-auth/python/.gitignore",
       "category": "authentication",
       "summary": "Canonical auth Python component: .gitignore",

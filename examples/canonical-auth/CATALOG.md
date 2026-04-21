@@ -19,8 +19,8 @@ domain contract.
 | TypeScript | Hono | jose | `examples/canonical-auth/typescript/` | [x] |
 | Go | Echo | golang-jwt/jwt | `examples/canonical-auth/go/` | [x] |
 | Rust | Axum | jsonwebtoken | `examples/canonical-auth/rust/` | [x] |
-| Java | Spring Boot | JJWT | `examples/canonical-auth/java/` | [ ] |
-| Kotlin | http4k | JJWT | `examples/canonical-auth/kotlin/` | [ ] |
+| Java | Spring Boot | JJWT | `examples/canonical-auth/java/` | [x] |
+| Kotlin | http4k | JJWT | `examples/canonical-auth/kotlin/` | [x] |
 | Ruby | Hanami | ruby-jwt | `examples/canonical-auth/ruby/` | [ ] |
 | Elixir | Phoenix | Joken | `examples/canonical-auth/elixir/` | [ ] |
 
