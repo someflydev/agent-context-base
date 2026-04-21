@@ -14094,3 +14094,563 @@ examples:
       - tenant-aware-backend-api
     verification_level: smoke-verified
     confidence: high
+
+  - name: main-go-go
+    path: examples/canonical-auth/go/main.go
+    language: go
+    stack_tags:
+      - go-echo-golang-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: auth_test-go-go
+    path: examples/canonical-auth/go/tests/auth_test.go
+    language: go
+    stack_tags:
+      - go-echo-golang-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: me_test-go-go
+    path: examples/canonical-auth/go/tests/me_test.go
+    language: go
+    stack_tags:
+      - go-echo-golang-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: token_test-go-go
+    path: examples/canonical-auth/go/tests/token_test.go
+    language: go
+    stack_tags:
+      - go-echo-golang-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: token-go-go
+    path: examples/canonical-auth/go/internal/auth/token.go
+    language: go
+    stack_tags:
+      - go-echo-golang-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: claims-go-go
+    path: examples/canonical-auth/go/internal/auth/claims.go
+    language: go
+    stack_tags:
+      - go-echo-golang-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: middleware-go-go
+    path: examples/canonical-auth/go/internal/auth/middleware.go
+    language: go
+    stack_tags:
+      - go-echo-golang-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: routes-go-go
+    path: examples/canonical-auth/go/internal/registry/routes.go
+    language: go
+    stack_tags:
+      - go-echo-golang-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: models-go-go
+    path: examples/canonical-auth/go/internal/domain/models.go
+    language: go
+    stack_tags:
+      - go-echo-golang-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: store-go-go
+    path: examples/canonical-auth/go/internal/domain/store.go
+    language: go
+    stack_tags:
+      - go-echo-golang-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: users-go-go
+    path: examples/canonical-auth/go/internal/routes/users.go
+    language: go
+    stack_tags:
+      - go-echo-golang-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: me-go-go
+    path: examples/canonical-auth/go/internal/routes/me.go
+    language: go
+    stack_tags:
+      - go-echo-golang-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: auth-go-go
+    path: examples/canonical-auth/go/internal/routes/auth.go
+    language: go
+    stack_tags:
+      - go-echo-golang-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: groups-go-go
+    path: examples/canonical-auth/go/internal/routes/groups.go
+    language: go
+    stack_tags:
+      - go-echo-golang-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: health-go-go
+    path: examples/canonical-auth/go/internal/routes/health.go
+    language: go
+    stack_tags:
+      - go-echo-golang-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: admin-go-go
+    path: examples/canonical-auth/go/internal/routes/admin.go
+    language: go
+    stack_tags:
+      - go-echo-golang-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: go-mod-go
+    path: examples/canonical-auth/go/go.mod
+    language: text
+    stack_tags:
+      - go-echo-golang-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: go-sum-go
+    path: examples/canonical-auth/go/go.sum
+    language: text
+    stack_tags:
+      - go-echo-golang-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: README-md-go
+    path: examples/canonical-auth/go/README.md
+    language: text
+    stack_tags:
+      - go-echo-golang-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: me_tests-rs-rust
+    path: examples/canonical-auth/rust/tests/me_tests.rs
+    language: rust
+    stack_tags:
+      - rust-axum-jsonwebtoken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: auth_tests-rs-rust
+    path: examples/canonical-auth/rust/tests/auth_tests.rs
+    language: rust
+    stack_tags:
+      - rust-axum-jsonwebtoken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: token_tests-rs-rust
+    path: examples/canonical-auth/rust/tests/token_tests.rs
+    language: rust
+    stack_tags:
+      - rust-axum-jsonwebtoken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: mod-rs-rust
+    path: examples/canonical-auth/rust/tests/common/mod.rs
+    language: rust
+    stack_tags:
+      - rust-axum-jsonwebtoken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-rs-rust
+    path: examples/canonical-auth/rust/src/lib.rs
+    language: rust
+    stack_tags:
+      - rust-axum-jsonwebtoken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: main-rs-rust
+    path: examples/canonical-auth/rust/src/main.rs
+    language: rust
+    stack_tags:
+      - rust-axum-jsonwebtoken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: claims-rs-rust
+    path: examples/canonical-auth/rust/src/auth/claims.rs
+    language: rust
+    stack_tags:
+      - rust-axum-jsonwebtoken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: token-rs-rust
+    path: examples/canonical-auth/rust/src/auth/token.rs
+    language: rust
+    stack_tags:
+      - rust-axum-jsonwebtoken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: mod-rs-rust
+    path: examples/canonical-auth/rust/src/auth/mod.rs
+    language: rust
+    stack_tags:
+      - rust-axum-jsonwebtoken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: middleware-rs-rust
+    path: examples/canonical-auth/rust/src/auth/middleware.rs
+    language: rust
+    stack_tags:
+      - rust-axum-jsonwebtoken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: mod-rs-rust
+    path: examples/canonical-auth/rust/src/registry/mod.rs
+    language: rust
+    stack_tags:
+      - rust-axum-jsonwebtoken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: routes-rs-rust
+    path: examples/canonical-auth/rust/src/registry/routes.rs
+    language: rust
+    stack_tags:
+      - rust-axum-jsonwebtoken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: models-rs-rust
+    path: examples/canonical-auth/rust/src/domain/models.rs
+    language: rust
+    stack_tags:
+      - rust-axum-jsonwebtoken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: store-rs-rust
+    path: examples/canonical-auth/rust/src/domain/store.rs
+    language: rust
+    stack_tags:
+      - rust-axum-jsonwebtoken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: mod-rs-rust
+    path: examples/canonical-auth/rust/src/domain/mod.rs
+    language: rust
+    stack_tags:
+      - rust-axum-jsonwebtoken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: groups-rs-rust
+    path: examples/canonical-auth/rust/src/routes/groups.rs
+    language: rust
+    stack_tags:
+      - rust-axum-jsonwebtoken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: health-rs-rust
+    path: examples/canonical-auth/rust/src/routes/health.rs
+    language: rust
+    stack_tags:
+      - rust-axum-jsonwebtoken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: me-rs-rust
+    path: examples/canonical-auth/rust/src/routes/me.rs
+    language: rust
+    stack_tags:
+      - rust-axum-jsonwebtoken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: users-rs-rust
+    path: examples/canonical-auth/rust/src/routes/users.rs
+    language: rust
+    stack_tags:
+      - rust-axum-jsonwebtoken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: auth-rs-rust
+    path: examples/canonical-auth/rust/src/routes/auth.rs
+    language: rust
+    stack_tags:
+      - rust-axum-jsonwebtoken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: mod-rs-rust
+    path: examples/canonical-auth/rust/src/routes/mod.rs
+    language: rust
+    stack_tags:
+      - rust-axum-jsonwebtoken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: admin-rs-rust
+    path: examples/canonical-auth/rust/src/routes/admin.rs
+    language: rust
+    stack_tags:
+      - rust-axum-jsonwebtoken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: Cargo-toml-rust
+    path: examples/canonical-auth/rust/Cargo.toml
+    language: text
+    stack_tags:
+      - rust-axum-jsonwebtoken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: README-md-rust
+    path: examples/canonical-auth/rust/README.md
+    language: text
+    stack_tags:
+      - rust-axum-jsonwebtoken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""

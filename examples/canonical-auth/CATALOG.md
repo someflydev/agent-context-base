@@ -17,8 +17,8 @@ domain contract.
 | --- | --- | --- | --- | --- |
 | Python | FastAPI | PyJWT | `examples/canonical-auth/python/` | [x] |
 | TypeScript | Hono | jose | `examples/canonical-auth/typescript/` | [x] |
-| Go | Echo | golang-jwt/jwt | `examples/canonical-auth/go/` | [ ] |
-| Rust | Axum | jsonwebtoken | `examples/canonical-auth/rust/` | [ ] |
+| Go | Echo | golang-jwt/jwt | `examples/canonical-auth/go/` | [x] |
+| Rust | Axum | jsonwebtoken | `examples/canonical-auth/rust/` | [x] |
 | Java | Spring Boot | JJWT | `examples/canonical-auth/java/` | [ ] |
 | Kotlin | http4k | JJWT | `examples/canonical-auth/kotlin/` | [ ] |
 | Ruby | Hanami | ruby-jwt | `examples/canonical-auth/ruby/` | [ ] |
