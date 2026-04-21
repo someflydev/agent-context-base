@@ -4,8 +4,8 @@ Status legend: [ ] not started · [~] partial · [x] complete
 
 | Language | JWT middleware | Request-scoped auth context | Route metadata registry | All 14 routes | /me JSON | /me allowed_routes | Super-admin flow | Tenant-admin flows | Tenant-member flow | Cross-tenant denial | Stale acl_ver test | Smoke tests passing | README.md |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Python | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
-| TypeScript | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
+| Python | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] |
+| TypeScript | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [x] | [~] | [x] |
 | Go | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
 | Rust | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
 | Java | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] |
@@ -15,3 +15,4 @@ Status legend: [ ] not started · [~] partial · [x] complete
 
 Update each row only after that language implementation passes the shared smoke
 and unit-test contract.
+\n* [~] TypeScript smoke tests passing: Tests are fully implemented but could not be executed locally because the bun runtime is not available.

@@ -13680,3 +13680,417 @@ examples:
       - directory exists
     docker_supported: false
     scenario_harness: ""
+  - name: python-uv-lock
+    path: examples/canonical-auth/python/uv.lock
+    language: python
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: python-pyproject-toml
+    path: examples/canonical-auth/python/pyproject.toml
+    language: python
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: python-README-md
+    path: examples/canonical-auth/python/README.md
+    language: markdown
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: python-tests-test_me-py
+    path: examples/canonical-auth/python/tests/test_me.py
+    language: python
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: python-tests-conftest-py
+    path: examples/canonical-auth/python/tests/conftest.py
+    language: python
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: python-tests-test_auth-py
+    path: examples/canonical-auth/python/tests/test_auth.py
+    language: python
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: python-tests-test_token-py
+    path: examples/canonical-auth/python/tests/test_token.py
+    language: python
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: python-src-__init__-py
+    path: examples/canonical-auth/python/src/__init__.py
+    language: python
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: python-src-main-py
+    path: examples/canonical-auth/python/src/main.py
+    language: python
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: python-src-auth-token-py
+    path: examples/canonical-auth/python/src/auth/token.py
+    language: python
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: python-src-auth-claims-py
+    path: examples/canonical-auth/python/src/auth/claims.py
+    language: python
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: python-src-auth-__init__-py
+    path: examples/canonical-auth/python/src/auth/__init__.py
+    language: python
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: python-src-auth-middleware-py
+    path: examples/canonical-auth/python/src/auth/middleware.py
+    language: python
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: python-src-registry-routes-py
+    path: examples/canonical-auth/python/src/registry/routes.py
+    language: python
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: python-src-domain-store-py
+    path: examples/canonical-auth/python/src/domain/store.py
+    language: python
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: python-src-domain-models-py
+    path: examples/canonical-auth/python/src/domain/models.py
+    language: python
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: python-src-domain-__init__-py
+    path: examples/canonical-auth/python/src/domain/__init__.py
+    language: python
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: python-src-routes-auth-py
+    path: examples/canonical-auth/python/src/routes/auth.py
+    language: python
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: python-src-routes-me-py
+    path: examples/canonical-auth/python/src/routes/me.py
+    language: python
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: python-src-routes-users-py
+    path: examples/canonical-auth/python/src/routes/users.py
+    language: python
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: python-src-routes-health-py
+    path: examples/canonical-auth/python/src/routes/health.py
+    language: python
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: python-src-routes-groups-py
+    path: examples/canonical-auth/python/src/routes/groups.py
+    language: python
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: python-src-routes-admin-py
+    path: examples/canonical-auth/python/src/routes/admin.py
+    language: python
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: python-src-routes-permissions-py
+    path: examples/canonical-auth/python/src/routes/permissions.py
+    language: python
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: typescript-README-md
+    path: examples/canonical-auth/typescript/README.md
+    language: markdown
+    stack_tags:
+      - typescript-hono-jose-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: typescript-package-json
+    path: examples/canonical-auth/typescript/package.json
+    language: json
+    stack_tags:
+      - typescript-hono-jose-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: typescript-tsconfig-json
+    path: examples/canonical-auth/typescript/tsconfig.json
+    language: json
+    stack_tags:
+      - typescript-hono-jose-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: typescript-tests-auth-test-ts
+    path: examples/canonical-auth/typescript/tests/auth.test.ts
+    language: typescript
+    stack_tags:
+      - typescript-hono-jose-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: typescript-tests-me-test-ts
+    path: examples/canonical-auth/typescript/tests/me.test.ts
+    language: typescript
+    stack_tags:
+      - typescript-hono-jose-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: typescript-tests-token-test-ts
+    path: examples/canonical-auth/typescript/tests/token.test.ts
+    language: typescript
+    stack_tags:
+      - typescript-hono-jose-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: typescript-src-index-ts
+    path: examples/canonical-auth/typescript/src/index.ts
+    language: typescript
+    stack_tags:
+      - typescript-hono-jose-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: typescript-src-auth-middleware-ts
+    path: examples/canonical-auth/typescript/src/auth/middleware.ts
+    language: typescript
+    stack_tags:
+      - typescript-hono-jose-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: typescript-src-auth-context-ts
+    path: examples/canonical-auth/typescript/src/auth/context.ts
+    language: typescript
+    stack_tags:
+      - typescript-hono-jose-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: typescript-src-auth-token-ts
+    path: examples/canonical-auth/typescript/src/auth/token.ts
+    language: typescript
+    stack_tags:
+      - typescript-hono-jose-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: typescript-src-registry-routes-ts
+    path: examples/canonical-auth/typescript/src/registry/routes.ts
+    language: typescript
+    stack_tags:
+      - typescript-hono-jose-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: typescript-src-domain-models-ts
+    path: examples/canonical-auth/typescript/src/domain/models.ts
+    language: typescript
+    stack_tags:
+      - typescript-hono-jose-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: typescript-src-domain-store-ts
+    path: examples/canonical-auth/typescript/src/domain/store.ts
+    language: typescript
+    stack_tags:
+      - typescript-hono-jose-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: typescript-src-routes-permissions-ts
+    path: examples/canonical-auth/typescript/src/routes/permissions.ts
+    language: typescript
+    stack_tags:
+      - typescript-hono-jose-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: typescript-src-routes-admin-ts
+    path: examples/canonical-auth/typescript/src/routes/admin.ts
+    language: typescript
+    stack_tags:
+      - typescript-hono-jose-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: typescript-src-routes-groups-ts
+    path: examples/canonical-auth/typescript/src/routes/groups.ts
+    language: typescript
+    stack_tags:
+      - typescript-hono-jose-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: typescript-src-routes-health-ts
+    path: examples/canonical-auth/typescript/src/routes/health.ts
+    language: typescript
+    stack_tags:
+      - typescript-hono-jose-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: typescript-src-routes-users-ts
+    path: examples/canonical-auth/typescript/src/routes/users.ts
+    language: typescript
+    stack_tags:
+      - typescript-hono-jose-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: typescript-src-routes-me-ts
+    path: examples/canonical-auth/typescript/src/routes/me.ts
+    language: typescript
+    stack_tags:
+      - typescript-hono-jose-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: typescript-src-routes-auth-ts
+    path: examples/canonical-auth/typescript/src/routes/auth.ts
+    language: typescript
+    stack_tags:
+      - typescript-hono-jose-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: python--gitignore
+    path: examples/canonical-auth/python/.gitignore
+    language: python
+    stack_tags:
+      - python-fastapi-pyjwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+  - name: typescript--gitignore
+    path: examples/canonical-auth/typescript/.gitignore
+    language: typescript
+    stack_tags:
+      - typescript-hono-jose-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high

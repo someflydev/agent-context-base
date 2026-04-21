@@ -20811,6 +20811,926 @@
       ],
       "rank": 85,
       "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/python/uv.lock",
+      "category": "authentication",
+      "summary": "Canonical auth Python component: uv.lock",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/python/pyproject.toml",
+      "category": "authentication",
+      "summary": "Canonical auth Python component: pyproject.toml",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/python/README.md",
+      "category": "authentication",
+      "summary": "Canonical auth Python component: README.md",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/python/tests/test_me.py",
+      "category": "authentication",
+      "summary": "Canonical auth Python component: test_me.py",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/python/tests/conftest.py",
+      "category": "authentication",
+      "summary": "Canonical auth Python component: conftest.py",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/python/tests/test_auth.py",
+      "category": "authentication",
+      "summary": "Canonical auth Python component: test_auth.py",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/python/tests/test_token.py",
+      "category": "authentication",
+      "summary": "Canonical auth Python component: test_token.py",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/python/src/__init__.py",
+      "category": "authentication",
+      "summary": "Canonical auth Python component: __init__.py",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/python/src/main.py",
+      "category": "authentication",
+      "summary": "Canonical auth Python component: main.py",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/python/src/auth/token.py",
+      "category": "authentication",
+      "summary": "Canonical auth Python component: token.py",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/python/src/auth/claims.py",
+      "category": "authentication",
+      "summary": "Canonical auth Python component: claims.py",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/python/src/auth/__init__.py",
+      "category": "authentication",
+      "summary": "Canonical auth Python component: __init__.py",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/python/src/auth/middleware.py",
+      "category": "authentication",
+      "summary": "Canonical auth Python component: middleware.py",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/python/src/registry/routes.py",
+      "category": "authentication",
+      "summary": "Canonical auth Python component: routes.py",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/python/src/domain/store.py",
+      "category": "authentication",
+      "summary": "Canonical auth Python component: store.py",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/python/src/domain/models.py",
+      "category": "authentication",
+      "summary": "Canonical auth Python component: models.py",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/python/src/domain/__init__.py",
+      "category": "authentication",
+      "summary": "Canonical auth Python component: __init__.py",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/python/src/routes/auth.py",
+      "category": "authentication",
+      "summary": "Canonical auth Python component: auth.py",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/python/src/routes/me.py",
+      "category": "authentication",
+      "summary": "Canonical auth Python component: me.py",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/python/src/routes/users.py",
+      "category": "authentication",
+      "summary": "Canonical auth Python component: users.py",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/python/src/routes/health.py",
+      "category": "authentication",
+      "summary": "Canonical auth Python component: health.py",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/python/src/routes/groups.py",
+      "category": "authentication",
+      "summary": "Canonical auth Python component: groups.py",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/python/src/routes/admin.py",
+      "category": "authentication",
+      "summary": "Canonical auth Python component: admin.py",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/python/src/routes/permissions.py",
+      "category": "authentication",
+      "summary": "Canonical auth Python component: permissions.py",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/typescript/README.md",
+      "category": "authentication",
+      "summary": "Canonical auth TypeScript component: README.md",
+      "stacks": [
+        "typescript-hono-jose-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/typescript/package.json",
+      "category": "authentication",
+      "summary": "Canonical auth TypeScript component: package.json",
+      "stacks": [
+        "typescript-hono-jose-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/typescript/tsconfig.json",
+      "category": "authentication",
+      "summary": "Canonical auth TypeScript component: tsconfig.json",
+      "stacks": [
+        "typescript-hono-jose-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/typescript/tests/auth.test.ts",
+      "category": "authentication",
+      "summary": "Canonical auth TypeScript component: auth.test.ts",
+      "stacks": [
+        "typescript-hono-jose-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/typescript/tests/me.test.ts",
+      "category": "authentication",
+      "summary": "Canonical auth TypeScript component: me.test.ts",
+      "stacks": [
+        "typescript-hono-jose-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/typescript/tests/token.test.ts",
+      "category": "authentication",
+      "summary": "Canonical auth TypeScript component: token.test.ts",
+      "stacks": [
+        "typescript-hono-jose-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/typescript/src/index.ts",
+      "category": "authentication",
+      "summary": "Canonical auth TypeScript component: index.ts",
+      "stacks": [
+        "typescript-hono-jose-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/typescript/src/auth/middleware.ts",
+      "category": "authentication",
+      "summary": "Canonical auth TypeScript component: middleware.ts",
+      "stacks": [
+        "typescript-hono-jose-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/typescript/src/auth/context.ts",
+      "category": "authentication",
+      "summary": "Canonical auth TypeScript component: context.ts",
+      "stacks": [
+        "typescript-hono-jose-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/typescript/src/auth/token.ts",
+      "category": "authentication",
+      "summary": "Canonical auth TypeScript component: token.ts",
+      "stacks": [
+        "typescript-hono-jose-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/typescript/src/registry/routes.ts",
+      "category": "authentication",
+      "summary": "Canonical auth TypeScript component: routes.ts",
+      "stacks": [
+        "typescript-hono-jose-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/typescript/src/domain/models.ts",
+      "category": "authentication",
+      "summary": "Canonical auth TypeScript component: models.ts",
+      "stacks": [
+        "typescript-hono-jose-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/typescript/src/domain/store.ts",
+      "category": "authentication",
+      "summary": "Canonical auth TypeScript component: store.ts",
+      "stacks": [
+        "typescript-hono-jose-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/typescript/src/routes/permissions.ts",
+      "category": "authentication",
+      "summary": "Canonical auth TypeScript component: permissions.ts",
+      "stacks": [
+        "typescript-hono-jose-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/typescript/src/routes/admin.ts",
+      "category": "authentication",
+      "summary": "Canonical auth TypeScript component: admin.ts",
+      "stacks": [
+        "typescript-hono-jose-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/typescript/src/routes/groups.ts",
+      "category": "authentication",
+      "summary": "Canonical auth TypeScript component: groups.ts",
+      "stacks": [
+        "typescript-hono-jose-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/typescript/src/routes/health.ts",
+      "category": "authentication",
+      "summary": "Canonical auth TypeScript component: health.ts",
+      "stacks": [
+        "typescript-hono-jose-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/typescript/src/routes/users.ts",
+      "category": "authentication",
+      "summary": "Canonical auth TypeScript component: users.ts",
+      "stacks": [
+        "typescript-hono-jose-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/typescript/src/routes/me.ts",
+      "category": "authentication",
+      "summary": "Canonical auth TypeScript component: me.ts",
+      "stacks": [
+        "typescript-hono-jose-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/typescript/src/routes/auth.ts",
+      "category": "authentication",
+      "summary": "Canonical auth TypeScript component: auth.ts",
+      "stacks": [
+        "typescript-hono-jose-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/python/.gitignore",
+      "category": "authentication",
+      "summary": "Canonical auth Python component: .gitignore",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/typescript/.gitignore",
+      "category": "authentication",
+      "summary": "Canonical auth TypeScript component: .gitignore",
+      "stacks": [
+        "typescript-hono-jose-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-auth",
+        "rbac"
+      ],
+      "rank": 90,
+      "stability": "canonical"
     }
   ]
 }
