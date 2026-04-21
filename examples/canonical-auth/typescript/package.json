@@ -1,0 +1,18 @@
+{
+  "name": "canonical-auth-typescript",
+  "version": "0.1.0",
+  "description": "TenantCore IAM TypeScript Canonical Example",
+  "module": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "hono": "^4.0.0",
+    "jose": "^5.2.0"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.0.0"
+  }
+}
