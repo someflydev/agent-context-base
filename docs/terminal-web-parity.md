@@ -5,6 +5,10 @@
 Helps future assistants and operators decide when a capability should be
 exposed as a terminal tool, a web UI, or both.
 
+**Status:** The terminal surface of this model is implemented in
+`examples/canonical-terminal/`. The web surface uses the canonical-api
+examples for the same domain.
+
 ## When Terminal is the Right Choice
 
 ### Automation and scripting pipelines
@@ -98,3 +102,5 @@ When building both, consider:
 - `context/archetypes/backend-api-service.md`
 - `examples/canonical-terminal/DECISION_GUIDE.md`
 - `examples/canonical-api/`
+- `docs/terminal-validation-contract.md`
+- `docs/ARCHITECTURE_MAP.md` (Terminal section)

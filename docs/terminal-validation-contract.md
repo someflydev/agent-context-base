@@ -6,6 +6,9 @@ Defines how terminal tools (CLI, TUI, dual-mode) must be tested to satisfy the
 terminal tooling doctrine in
 `context/doctrine/terminal-ux-first-class.md`.
 
+**Status:** Fully implemented. All 14 canonical terminal examples satisfy this
+contract. Verification via `python3 scripts/run_verification.py --tier fast`.
+
 ## 1. CLI Smoke Tests
 
 Every terminal example must include at least one CLI smoke test that:
@@ -169,17 +172,15 @@ Terminal smoke tests integrate with verification tiers as follows:
 - `--tier terminal`: runs the shared cross-language terminal harness and may
   include PTY-driven validation when dependencies are available
 
-Implementers for later prompts must ensure terminal smoke tests pass under
-`python3 scripts/run_verification.py --tier fast` and register example-specific
-discovery paths in `verification/` when those examples land.
+All terminal examples must pass under `python3 scripts/run_verification.py --tier fast`
+and register example-specific discovery paths in `verification/`.
 
-## 9. Phase 2 Additions
+## 9. Cross-Language Smoke Harness
 
-Phase 2 adds a shared harness under `verification/terminal/` so terminal
-examples can be validated through one Python entry point instead of language-
-specific test runners.
+A shared harness under `verification/terminal/` validates all terminal examples
+through one Python entry point instead of language-specific test runners.
 
-### Cross-Language Smoke Harness
+### Harness Components
 
 - `verification/terminal/harness.py` runs per-example smoke commands with a
   shared timeout, fixture environment, pass/fail contract, and optional golden
@@ -226,3 +227,11 @@ PTY tests require `pexpect`. The shared terminal harness is exposed through
 A minimal fixture-backed HTTP API is available in
 `examples/canonical-terminal/docker/` for exploring live-data modes. This is
 not required for any smoke test and must remain optional.
+
+## See Also
+
+- `docs/ARCHITECTURE_MAP.md` — terminal section for arc status and verification
+  integration
+- `docs/terminal-web-parity.md` — parity model between terminal and web examples
+- `context/doctrine/terminal-ux-first-class.md` — governing doctrine for
+  terminal tooling requirements
