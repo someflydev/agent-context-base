@@ -206,4 +206,5 @@ flowchart TD
 1. [`docs/usage/SPEC_DRIVEN_ACB_PAYLOADS.md`](usage/SPEC_DRIVEN_ACB_PAYLOADS.md)
 2. [`docs/runtime-state-workflow.md`](runtime-state-workflow.md)
 3. [`docs/usage/ASSISTANT_BEHAVIOR_SPEC.md`](usage/ASSISTANT_BEHAVIOR_SPEC.md)
-4. [`scripts/README.md`](../scripts/README.md)
+4. [`docs/usage/ADVANCED_ASSISTANT_OPERATIONS.md`](usage/ADVANCED_ASSISTANT_OPERATIONS.md)
+5. [`scripts/README.md`](../scripts/README.md)

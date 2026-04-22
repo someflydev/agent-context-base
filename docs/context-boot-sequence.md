@@ -70,3 +70,5 @@ flowchart TD
     H --> I[work.py checkpoint]
     I --> J[validate]
 ```
+
+For the full session execution loop including validation outcomes, see [`docs/ARCHITECTURE_MAP.md`](ARCHITECTURE_MAP.md).

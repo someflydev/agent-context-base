@@ -80,6 +80,8 @@ flowchart LR
     J --> K[done or incomplete or blocked]
 ```
 
+For the full session execution loop including validation outcomes, see [`docs/ARCHITECTURE_MAP.md`](../ARCHITECTURE_MAP.md).
+
 ## Composition Rules
 
 1. `scripts/new_repo.py` or `scripts/acb_payload.py` selects archetype, primary stack, manifests, and support services.

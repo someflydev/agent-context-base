@@ -20,6 +20,8 @@ flowchart LR
 
 The assistant does not jump from request to code. Runtime-state rehydration, routing, and manifest selection happen first.
 
+This is a simplified view. The authoritative session execution loop including blocked/incomplete/done outcomes is in [`docs/ARCHITECTURE_MAP.md`](ARCHITECTURE_MAP.md).
+
 ## Repo Generation
 
 ```mermaid
