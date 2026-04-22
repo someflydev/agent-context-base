@@ -632,7 +632,13 @@ def _markdown_paths(repo_root: Path) -> list[Path]:
             continue
         for path in root.rglob("*.md"):
             rel = path.relative_to(repo_root).as_posix()
-            if "verification/fixtures" in rel or "/deps/" in rel:
+            if (
+                "verification/fixtures" in rel
+                or "/deps/" in rel
+                or "/node_modules/" in rel
+                or "/vendor/" in rel
+                or "/.bundle/" in rel
+            ):
                 continue
             paths.append(path)
     return sorted(set(paths))

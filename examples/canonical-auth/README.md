@@ -1,27 +1,43 @@
 # Canonical Auth Examples
 
-This family covers JWT-backed authentication, RBAC, and tenant-aware backend
-patterns across eight backend language ecosystems.
+JWT-backed authentication, RBAC, and tenant-aware backend patterns implemented
+across eight backend language ecosystems.
 
-Status:
+## Implementations
 
-- Foundation landed in `PROMPT_134`
-- Shared domain spec is scheduled for `PROMPT_135`
-- Language implementations are scheduled for `PROMPT_136` through `PROMPT_139`
-- Hardening and parity closure are scheduled for `PROMPT_140`
+| Language | Path | Notes |
+| --- | --- | --- |
+| Python | `python/` | FastAPI + PyJWT |
+| TypeScript | `typescript/` | Hono + jose |
+| Go | `go/` | Echo + golang-jwt |
+| Rust | `rust/` | Axum + jsonwebtoken |
+| Java | `java/` | Spring Boot + JJWT |
+| Kotlin | `kotlin/` | http4k + JJWT |
+| Ruby | `ruby/` | Hanami + ruby-jwt |
+| Elixir | `elixir/` | Phoenix + Joken |
 
 ## Navigation
 
-- `CATALOG.md` — implementation status by language
+- `CATALOG.md` — per-language status, verification level, and known gaps
 - `domain/spec.md` — shared JWT, permission, and route contract
+- `docs/jwt-auth-arc-overview.md` — arc goals, design decisions, and scope
+- `docs/jwt-auth-arc-gaps.md` — documented parity gaps and environment blockers
 
-## Planned Implementations
+## Shared Domain
 
-- `python/`
-- `typescript/`
-- `go/`
-- `rust/`
-- `java/`
-- `kotlin/`
-- `ruby/`
-- `elixir/`
+All implementations use the same fixture data, permission catalog, and route
+contract from `domain/`. The shared contract ensures cross-language parity is
+testable and that an example can be compared directly against any other.
+
+## Verification
+
+```bash
+# Run the cross-language parity check
+python3 verification/auth/run_parity_check.py
+
+# Run the fast repo verification suite
+python3 scripts/run_verification.py --tier fast
+```
+
+Known parity gaps are documented in `docs/jwt-auth-arc-gaps.md` rather than
+hidden by skipping or stubbing.

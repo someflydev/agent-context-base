@@ -73,14 +73,14 @@ machine-readable instead of dissolving into handler-specific conditionals.
 
 | Language | Path | Status |
 | --- | --- | --- |
-| Python | `examples/canonical-auth/python/` | planned |
-| TypeScript | `examples/canonical-auth/typescript/` | planned |
-| Go | `examples/canonical-auth/go/` | planned |
-| Rust | `examples/canonical-auth/rust/` | planned |
-| Java | `examples/canonical-auth/java/` | planned |
-| Kotlin | `examples/canonical-auth/kotlin/` | planned |
-| Ruby | `examples/canonical-auth/ruby/` | planned |
-| Elixir | `examples/canonical-auth/elixir/` | planned |
+| Python | `examples/canonical-auth/python/` | implemented |
+| TypeScript | `examples/canonical-auth/typescript/` | implemented |
+| Go | `examples/canonical-auth/go/` | implemented |
+| Rust | `examples/canonical-auth/rust/` | implemented |
+| Java | `examples/canonical-auth/java/` | implemented |
+| Kotlin | `examples/canonical-auth/kotlin/` | implemented |
+| Ruby | `examples/canonical-auth/ruby/` | implemented |
+| Elixir | `examples/canonical-auth/elixir/` | implemented |
 
 ## Stacks
 

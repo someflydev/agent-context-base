@@ -2,6 +2,16 @@
 
 `agent-context-base` is a context-first foundation for generating and running assistant-friendly repositories. It is not an app template and not a prompt dump. It is a system for keeping specs, validation rules, canonical examples, repo generation, and session startup narrow enough that long autonomous sessions stay trustworthy.
 
+## Start Here By Goal
+
+| Goal | Where to go |
+| --- | --- |
+| Understand this base repo | Read [`AGENT.md`](AGENT.md) → [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md) |
+| Generate a new repo | Read [`docs/usage/STARTING_NEW_PROJECTS.md`](docs/usage/STARTING_NEW_PROJECTS.md) → run `python scripts/new_repo.py` |
+| Work inside a generated repo | Run `python3 .acb/scripts/work.py resume` → read `.acb/SESSION_BOOT.md` |
+| Browse canonical examples | See [`examples/catalog.json`](examples/catalog.json) and [`verification/example_registry.yaml`](verification/example_registry.yaml) |
+| Verify the repo | Run `python3 scripts/run_verification.py --tier fast` |
+
 ## What Problem It Solves
 
 Assistant-led development drifts when context is loaded loosely, validation is implied instead of stated, and a later session has to rediscover repo intent from scratch. This repo addresses that by keeping:

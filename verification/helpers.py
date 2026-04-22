@@ -96,6 +96,8 @@ EXAMPLE_SKIP_PATH_PARTS = {
     "nimcache",
     # Go modules vendor
     "vendor",
+    # Ruby Bundler local config
+    ".bundle",
     # Generic
     ".git",
 }
