@@ -1,20 +1,6 @@
 # Session Start
 
-Use this checklist when starting or resuming work.
-
-## Read First
-
-1. `AGENT.md` or `CLAUDE.md`
-2. `python3 scripts/work.py resume` when the repo has a root `scripts/` directory, or `python3 .acb/scripts/work.py resume` in compact derived repos
-3. `context/TASK.md` and `context/SESSION.md` when they exist
-4. `context/MEMORY.md` only if durable repo-local truths matter
-5. `PLAN.md` when milestone context matters
-6. `tmp/*.md` only when there is an active local checklist or ad hoc session plan relevant to the task
-7. `.acb/SESSION_BOOT.md` when present
-8. `.acb/profile/selection.json` when present
-9. `.acb/specs/AGENT_RULES.md` and `.acb/specs/VALIDATION.md` when present
-10. `.acb/validation/CHECKLIST.md` and `.acb/validation/COVERAGE.md` when present
-11. `README.md` and `docs/` only when they exist and are clearly current
+Read first: see [`docs/context-boot-sequence.md`](context-boot-sequence.md).
 
 ## Quick Commands
 

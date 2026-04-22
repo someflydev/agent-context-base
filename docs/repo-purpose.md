@@ -64,3 +64,19 @@ The most developed stacks in this base are:
 - Ruby / Hanami
 
 Supporting infra packs cover systems such as Redis, MongoDB, DuckDB, DuckDB+Parquet, Trino, NATS JetStream, Kafka, RabbitMQ, Meilisearch, Elasticsearch, TimescaleDB, Qdrant, and MinIO. Additional stacks can be added by extending the same router, manifest, example, and verification structure.
+
+## Why It Stays Small
+
+It stays understandable because each layer has one job:
+
+- routers classify the task
+- manifests assemble the bundle
+- doctrine sets durable rules
+- workflows sequence the work
+- stacks and archetypes localize technical detail
+- canonical examples shape implementation
+- templates scaffold generated repos
+- verification keeps the whole system honest
+- memory artifacts preserve current task state
+
+This repo stays deliberately small. It prefers explicit files, machine-readable metadata, and lightweight scripts over hidden repo-factory abstractions.
