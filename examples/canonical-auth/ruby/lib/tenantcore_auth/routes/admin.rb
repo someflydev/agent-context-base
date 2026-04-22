@@ -6,7 +6,7 @@ module TenantcoreAuth
   module Routes
     class Admin
       def index(request, store, _token_service)
-        auth = Auth::RbacHelper.require_super_admin!(request)
+        auth = ::TenantcoreAuth::Auth::RbacHelper.require_super_admin!(request)
         return forbidden unless auth.has_permission?("admin:tenant:create")
 
         tenants = store.list_tenants.map { |tenant| { id: tenant.id, slug: tenant.slug, name: tenant.name } }
@@ -14,7 +14,7 @@ module TenantcoreAuth
       end
 
       def create(request, store, _token_service)
-        auth = Auth::RbacHelper.require_super_admin!(request)
+        auth = ::TenantcoreAuth::Auth::RbacHelper.require_super_admin!(request)
         return forbidden unless auth.has_permission?("admin:tenant:create")
 
         payload = parse_json(request)

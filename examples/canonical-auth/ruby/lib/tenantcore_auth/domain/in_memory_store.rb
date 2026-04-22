@@ -126,10 +126,10 @@ module TenantcoreAuth
 
       def get_groups_for_user(user_id, tenant_id)
         group_ids = @user_groups.select { |row| row.user_id == user_id }.map(&:group_id)
-        group_ids.filter_map do |group_id|
+        group_ids.map do |group_id|
           group = @groups_by_id[group_id]
           group if group && group.tenant_id == tenant_id
-        end
+        end.compact
       end
 
       def get_effective_permissions(user_id)
@@ -143,9 +143,9 @@ module TenantcoreAuth
           admin_permissions
         else
           group_ids = @user_groups.select { |row| row.user_id == user_id }.map(&:group_id).to_set
-          @group_permissions.filter_map do |row|
+          @group_permissions.map do |row|
             @permissions_by_id[row.permission_id]&.name if group_ids.include?(row.group_id)
-          end.uniq.sort
+          end.compact.uniq.sort
         end
       end
 

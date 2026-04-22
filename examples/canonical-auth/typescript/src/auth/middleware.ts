@@ -1,8 +1,9 @@
-import { MiddlewareHandler } from "hono";
 import { jwtVerify } from "jose";
-import { AuthContext, hasPermission } from "./context";
-import { getVerificationKey } from "./token";
-import { store } from "../domain/store";
+import { hasPermission } from "./context.ts";
+import type { AuthContext } from "./context.ts";
+import type { MiddlewareHandler } from "hono";
+import { getVerificationKey } from "./token.ts";
+import { store } from "../domain/store.ts";
 
 export const jwtMiddleware: MiddlewareHandler = async (c, next) => {
   const authHeader = c.req.header("Authorization");

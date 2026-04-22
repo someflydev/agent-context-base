@@ -1,6 +1,7 @@
-import { expect, test, describe } from "bun:test";
-import { issueToken, getVerificationKey } from "../src/auth/token";
-import { store } from "../src/domain/store";
+import assert from "node:assert/strict";
+import { describe, test } from "node:test";
+import { issueToken, getVerificationKey } from "../src/auth/token.ts";
+import { store } from "../src/domain/store.ts";
 import { jwtVerify } from "jose";
 
 process.env.TENANTCORE_TEST_SECRET = "test-secret-12345";
@@ -12,7 +13,7 @@ describe("Token Unit Tests", () => {
     if (!user) throw new Error("Fixture user missing");
 
     const token = await issueToken(user, store);
-    expect(token).toBeTruthy();
+    assert.ok(token);
 
     const key = await getVerificationKey();
     const { payload } = await jwtVerify(token, key, {
@@ -20,15 +21,15 @@ describe("Token Unit Tests", () => {
       audience: "tenantcore-api",
     });
 
-    expect(payload.iss).toBe("tenantcore-auth");
-    expect(payload.aud).toBe("tenantcore-api");
-    expect(payload.sub).toBe(user.id);
-    expect((payload.exp as number) - (payload.iat as number)).toBe(900);
-    expect(payload.tenant_id).toBe(user.tenant_id);
-    expect(payload.tenant_role).toBe("tenant_member");
-    expect(Array.isArray(payload.groups)).toBe(true);
-    expect(Array.isArray(payload.permissions)).toBe(true);
-    expect(payload.acl_ver).toBe(user.acl_ver);
+    assert.equal(payload.iss, "tenantcore-auth");
+    assert.equal(payload.aud, "tenantcore-api");
+    assert.equal(payload.sub, user.id);
+    assert.equal((payload.exp as number) - (payload.iat as number), 900);
+    assert.equal(payload.tenant_id, user.tenant_id);
+    assert.equal(payload.tenant_role, "tenant_member");
+    assert.equal(Array.isArray(payload.groups), true);
+    assert.equal(Array.isArray(payload.permissions), true);
+    assert.equal(payload.acl_ver, user.acl_ver);
   });
 
   test("super_admin token shape", async () => {
@@ -43,7 +44,7 @@ describe("Token Unit Tests", () => {
       audience: "tenantcore-api",
     });
 
-    expect(payload.tenant_id).toBeUndefined();
-    expect(payload.tenant_role).toBe("super_admin");
+    assert.equal(payload.tenant_id, undefined);
+    assert.equal(payload.tenant_role, "super_admin");
   });
 });

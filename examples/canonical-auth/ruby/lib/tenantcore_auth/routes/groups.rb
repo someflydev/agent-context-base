@@ -6,13 +6,13 @@ module TenantcoreAuth
   module Routes
     class Groups
       def index(request, store, _token_service)
-        auth = Auth::RbacHelper.require_permission!(request, "iam:group:read")
+        auth = ::TenantcoreAuth::Auth::RbacHelper.require_permission!(request, "iam:group:read")
         groups = store.list_groups(auth.tenant_id).map { |group| serialize_group(group) }
         [200, json_headers, [JSON.generate(groups: groups)]]
       end
 
       def create(request, store, _token_service)
-        auth = Auth::RbacHelper.require_permission!(request, "iam:group:create")
+        auth = ::TenantcoreAuth::Auth::RbacHelper.require_permission!(request, "iam:group:create")
         payload = parse_json(request)
         unknown_permissions = payload.fetch("permission_names", []).reject { |name| store.get_permission_by_name(name) }
         return [400, json_headers, [JSON.generate(error: "Unknown permissions", names: unknown_permissions)]] unless unknown_permissions.empty?
@@ -27,7 +27,7 @@ module TenantcoreAuth
       end
 
       def assign_permission(request, store, _token_service, id:)
-        auth = Auth::RbacHelper.require_permission!(request, "iam:group:assign_permission")
+        auth = ::TenantcoreAuth::Auth::RbacHelper.require_permission!(request, "iam:group:assign_permission")
         payload = parse_json(request)
         result = store.assign_permission_to_group(id, payload.fetch("permission"), auth.tenant_id)
         return forbidden unless result
@@ -36,7 +36,7 @@ module TenantcoreAuth
       end
 
       def assign_user(request, store, _token_service, id:)
-        auth = Auth::RbacHelper.require_permission!(request, "iam:group:assign_user")
+        auth = ::TenantcoreAuth::Auth::RbacHelper.require_permission!(request, "iam:group:assign_user")
         payload = parse_json(request)
         result = store.assign_user_to_group(id, payload.fetch("user_id"), auth.tenant_id)
         return forbidden unless result

@@ -1,12 +1,14 @@
+import { serve } from "@hono/node-server";
 import { Hono } from "hono";
+import { pathToFileURL } from "url";
 
-import authRoutes from "./routes/auth";
-import meRoutes from "./routes/me";
-import usersRoutes from "./routes/users";
-import groupsRoutes from "./routes/groups";
-import adminRoutes from "./routes/admin";
-import permissionsRoutes from "./routes/permissions";
-import healthRoutes from "./routes/health";
+import authRoutes from "./routes/auth.ts";
+import meRoutes from "./routes/me.ts";
+import usersRoutes from "./routes/users.ts";
+import groupsRoutes from "./routes/groups.ts";
+import adminRoutes from "./routes/admin.ts";
+import permissionsRoutes from "./routes/permissions.ts";
+import healthRoutes from "./routes/health.ts";
 
 const app = new Hono();
 
@@ -18,7 +20,11 @@ app.route("/", adminRoutes);
 app.route("/", permissionsRoutes);
 app.route("/", healthRoutes);
 
-export default {
-  port: process.env.PORT || 3000,
-  fetch: app.fetch,
-};
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  serve({
+    fetch: app.fetch,
+    port: Number(process.env.PORT || 3000),
+  });
+}
+
+export default app;

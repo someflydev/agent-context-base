@@ -7,7 +7,7 @@ module TenantcoreAuth
   module Routes
     class Me
       def call(request, store, _token_service)
-        auth = Auth::RbacHelper.require_auth!(request)
+        auth = ::TenantcoreAuth::Auth::RbacHelper.require_auth!(request)
         tenant_name = auth.tenant_id ? store.get_tenant_name(auth.tenant_id) : nil
         allowed_routes = Registry.get_allowed_routes(auth).map do |route|
           route.slice(:method, :path, :permission, :description)

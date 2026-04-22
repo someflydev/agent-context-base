@@ -36,7 +36,7 @@ module TenantcoreAuth
     end
 
     def guide_sections(auth)
-      get_allowed_routes(auth).filter_map { |route| route[:docs_section] }.uniq
+      get_allowed_routes(auth).map { |route| route[:docs_section] }.compact.uniq
     end
   end
 end

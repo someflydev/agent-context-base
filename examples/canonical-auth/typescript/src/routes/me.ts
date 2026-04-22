@@ -1,8 +1,8 @@
 import { Hono } from "hono";
-import { jwtMiddleware } from "../auth/middleware";
-import { AuthContext } from "../auth/context";
-import { store } from "../domain/store";
-import { getAllowedRoutes } from "../registry/routes";
+import { jwtMiddleware } from "../auth/middleware.ts";
+import { store } from "../domain/store.ts";
+import { getAllowedRoutes } from "../registry/routes.ts";
+import type { AuthContext } from "../auth/context.ts";
 
 const app = new Hono();
 

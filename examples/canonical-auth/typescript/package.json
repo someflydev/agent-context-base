@@ -5,14 +5,13 @@
   "module": "src/index.ts",
   "type": "module",
   "scripts": {
-    "start": "bun run src/index.ts",
-    "test": "bun test"
+    "start": "node --experimental-strip-types --experimental-specifier-resolution=node src/index.ts",
+    "test": "node --test --experimental-strip-types --experimental-specifier-resolution=node tests/*.test.ts"
   },
   "dependencies": {
+    "@hono/node-server": "^1.13.0",
     "hono": "^4.0.0",
     "jose": "^5.2.0"
   },
-  "devDependencies": {
-    "@types/bun": "^1.0.0"
-  }
+  "devDependencies": {}
 }

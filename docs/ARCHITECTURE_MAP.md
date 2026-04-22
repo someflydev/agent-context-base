@@ -159,7 +159,7 @@ Status: COMPLETE (PROMPT_127–133)
 
 ## JWT Auth, RBAC, and Multi-Tenant Backend Patterns Arc
 
-Status: FOUNDATION COMPLETE (PROMPT_134 of 134–140)
+Status: HARDENED AND VERIFIED (PROMPT_134-140)
 
 - doctrines: jwt-auth-request-context.md, rbac-permission-taxonomy.md,
   tenant-boundary-enforcement.md, route-metadata-registry.md,
@@ -171,9 +171,12 @@ Status: FOUNDATION COMPLETE (PROMPT_134 of 134–140)
   me-endpoint-design, route-metadata-annotation
 - workflows: add-protected-endpoint, add-tenant-aware-canonical-example
 - manifest: manifests/auth-jwt-rbac-polyglot.yaml
-- examples: examples/canonical-auth/ scaffolded; language implementations land
-  in PROMPT_136–139
-- status note: shared domain spec and parity matrix arrive in PROMPT_135
+- canonical examples: python, typescript, go, rust, java, kotlin, ruby, elixir
+- domain: TenantCore IAM (dogfoods the canonical-faker TenantCore surface)
+- overview: docs/jwt-auth-arc-overview.md
+- verification: docs/jwt-auth-arc-overview.md (`Verification Status`) and
+  `verification/auth/run_parity_check.py` confirm the full eight-language arc
+  is green
 
 ## Future Direction
 

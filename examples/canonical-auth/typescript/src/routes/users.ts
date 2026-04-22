@@ -1,12 +1,13 @@
 import { Hono } from "hono";
-import { jwtMiddleware, requirePermission } from "../auth/middleware";
-import { store } from "../domain/store";
-import { AuthContext } from "../auth/context";
-import { User, Membership, UserGroup } from "../domain/models";
+import { jwtMiddleware, requirePermission } from "../auth/middleware.ts";
+import { store } from "../domain/store.ts";
+import type { AuthContext } from "../auth/context.ts";
+import type { User, Membership, UserGroup } from "../domain/models.ts";
 
 const app = new Hono();
 
-app.use("*", jwtMiddleware);
+app.use("/users", jwtMiddleware);
+app.use("/users/:id", jwtMiddleware);
 
 app.get("/users", requirePermission("iam:user:read"), async (c) => {
   const auth = c.get("auth") as AuthContext;

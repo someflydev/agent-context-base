@@ -1,6 +1,6 @@
 import { SignJWT, generateKeyPair, exportJWK, importJWK } from "jose";
-import { User } from "../domain/models";
-import { InMemoryStore, store as globalStore } from "../domain/store";
+import { InMemoryStore, store as globalStore } from "../domain/store.ts";
+import type { User } from "../domain/models.ts";
 
 let _privateKey: any;
 let _publicKey: any;

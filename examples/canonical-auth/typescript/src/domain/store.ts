@@ -1,6 +1,7 @@
 import { readFileSync } from "fs";
 import { join } from "path";
-import {
+import { fileURLToPath } from "url";
+import type {
   User,
   Tenant,
   Membership,
@@ -8,9 +9,14 @@ import {
   Permission,
   GroupPermission,
   UserGroup,
-} from "./models";
+} from "./models.ts";
 
-const fixturesDir = join(import.meta.dir, "../../..", "domain", "fixtures");
+const fixturesDir = join(
+  fileURLToPath(new URL(".", import.meta.url)),
+  "../../..",
+  "domain",
+  "fixtures"
+);
 
 export class InMemoryStore {
   public users: User[] = [];

@@ -1,7 +1,8 @@
-import { expect, test, describe } from "bun:test";
-import { issueToken } from "../src/auth/token";
-import { store } from "../src/domain/store";
-import app from "../src/index";
+import assert from "node:assert/strict";
+import { describe, test } from "node:test";
+import { issueToken } from "../src/auth/token.ts";
+import { store } from "../src/domain/store.ts";
+import app from "../src/index.ts";
 
 process.env.TENANTCORE_TEST_SECRET = "test-secret-12345";
 process.env.TENANTCORE_TEST_ALG = "HS256";
@@ -16,9 +17,9 @@ describe("Auth Flow Smoke Tests", () => {
       body: JSON.stringify({ email: "alice@acme.example", password: "password" }),
     });
     const res = await fetchClient(req);
-    expect(res.status).toBe(200);
+    assert.equal(res.status, 200);
     const data: any = await res.json();
-    expect(data.access_token).toBeTruthy();
+    assert.ok(data.access_token);
   });
 
   test("Flow 2: GET /me", async () => {
@@ -29,7 +30,7 @@ describe("Auth Flow Smoke Tests", () => {
       headers: { Authorization: `Bearer ${token}` },
     });
     const res = await fetchClient(req);
-    expect(res.status).toBe(200);
+    assert.equal(res.status, 200);
   });
 
   test("Flow 3: Super Admin - Create Tenant", async () => {
@@ -49,7 +50,7 @@ describe("Auth Flow Smoke Tests", () => {
       })
     });
     const res = await fetchClient(req);
-    expect(res.status).toBe(200);
+    assert.equal(res.status, 200);
   });
 
   test("Flow 4: Tenant Admin - Create Group", async () => {
@@ -68,7 +69,7 @@ describe("Auth Flow Smoke Tests", () => {
       })
     });
     const res = await fetchClient(req);
-    expect(res.status).toBe(200);
+    assert.equal(res.status, 200);
   });
 
   test("Flow 5: Tenant Admin - Assign Permission", async () => {
@@ -101,7 +102,7 @@ describe("Auth Flow Smoke Tests", () => {
       body: JSON.stringify({ permission_id: permId })
     });
     const assignRes = await fetchClient(assignReq);
-    expect(assignRes.status).toBe(200);
+    assert.equal(assignRes.status, 200);
   });
 
   test("Flow 6: Tenant Admin - Invite User", async () => {
@@ -120,7 +121,7 @@ describe("Auth Flow Smoke Tests", () => {
       })
     });
     const res = await fetchClient(req);
-    expect(res.status).toBe(200);
+    assert.equal(res.status, 200);
   });
 
   test("Flow 7: Tenant Admin - Assign User to Group", async () => {
@@ -158,7 +159,7 @@ describe("Auth Flow Smoke Tests", () => {
       body: JSON.stringify({ user_id: user.id })
     });
     const assignRes = await fetchClient(assignReq);
-    expect(assignRes.status).toBe(200);
+    assert.equal(assignRes.status, 200);
   });
 
   test("Flow 8: Tenant Member - Read Users", async () => {
@@ -169,7 +170,7 @@ describe("Auth Flow Smoke Tests", () => {
       headers: { Authorization: `Bearer ${token}` },
     });
     const res = await fetchClient(req);
-    expect([200, 403]).toContain(res.status);
+    assert.ok([200, 403].includes(res.status));
   });
 
   test("Flow 9: Cross-Tenant Denial", async () => {
@@ -181,7 +182,7 @@ describe("Auth Flow Smoke Tests", () => {
       headers: { Authorization: `Bearer ${token}` },
     });
     const res = await fetchClient(req);
-    expect(res.status).toBe(403);
+    assert.equal(res.status, 403);
   });
 
   test("Flow 10: Stale ACL Version Denial", async () => {
@@ -194,6 +195,6 @@ describe("Auth Flow Smoke Tests", () => {
       headers: { Authorization: `Bearer ${token}` },
     });
     const res = await fetchClient(req);
-    expect(res.status).toBe(401);
+    assert.equal(res.status, 401);
   });
 });

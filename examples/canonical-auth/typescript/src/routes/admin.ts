@@ -1,11 +1,11 @@
 import { Hono } from "hono";
-import { jwtMiddleware, requireSuperAdmin } from "../auth/middleware";
-import { store } from "../domain/store";
-import { Tenant, User } from "../domain/models";
+import { jwtMiddleware, requireSuperAdmin } from "../auth/middleware.ts";
+import { store } from "../domain/store.ts";
+import type { Tenant, User } from "../domain/models.ts";
 
 const app = new Hono();
 
-app.use("*", jwtMiddleware, requireSuperAdmin);
+app.use("/admin/tenants", jwtMiddleware, requireSuperAdmin);
 
 app.get("/admin/tenants", async (c) => {
   return c.json({ tenants: store.tenants });

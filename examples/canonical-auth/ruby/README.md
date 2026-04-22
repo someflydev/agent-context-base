@@ -3,15 +3,14 @@
 ## What it is
 
 This is the Ruby canonical implementation of the TenantCore IAM domain. It
-shows a Hanami-shaped Rack service using `ruby-jwt` for JWT issuance and
+shows a Rack service with Hanami-like boundaries using `ruby-jwt` for JWT issuance and
 verification, an in-memory fixture-backed store, a machine-readable route
 registry, and a `/me` discoverability endpoint driven by effective
 permissions.
 
 ## Requirements
 
-- Ruby 3.2+ (the example uses `Data.define` semantics and falls back to
-  `Struct` when needed)
+- Ruby 2.6+
 - Bundler
 
 ## How to run
@@ -52,10 +51,12 @@ curl http://127.0.0.1:9292/me \
 - `ruby-jwt` is used directly, not through Devise or Warden, so claim
   validation stays explicit.
 - The request-scoped auth context is stored in Rack env and read by the route
-  handlers, which mirrors Hanami action boundaries cleanly.
+  handlers, which keeps the code Hanami-shaped without taking a hard runtime
+  dependency on Hanami itself.
 - The example uses an in-memory fixture store so the teaching focus stays on
   token validation, RBAC, `acl_ver`, and tenant isolation.
 - `RS256` is the default documented shape, but `TENANTCORE_TEST_SECRET`
   switches tests to `HS256` for simpler local execution.
-- In a Rails codebase, `devise-jwt` or `warden-jwt_auth` would be the more
-  integrated choice; this example stays lower-level on purpose.
+- In a Rails or Hanami codebase, framework-integrated auth libraries may be a
+  better fit; this example stays lower-level on purpose so the JWT and RBAC
+  invariants are explicit.

@@ -1,6 +1,6 @@
 import { Hono } from "hono";
-import { store } from "../domain/store";
-import { issueToken } from "../auth/token";
+import { store } from "../domain/store.ts";
+import { issueToken } from "../auth/token.ts";
 
 const app = new Hono();
 

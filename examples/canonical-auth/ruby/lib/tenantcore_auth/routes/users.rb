@@ -6,7 +6,7 @@ module TenantcoreAuth
   module Routes
     class Users
       def index(request, store, _token_service)
-        auth = Auth::RbacHelper.require_permission!(request, "iam:user:read")
+        auth = ::TenantcoreAuth::Auth::RbacHelper.require_permission!(request, "iam:user:read")
         users = store.list_users(auth.tenant_id).map do |user|
           serialize_user(user)
         end
@@ -14,7 +14,7 @@ module TenantcoreAuth
       end
 
       def show(request, store, _token_service, id:)
-        auth = Auth::RbacHelper.require_permission!(request, "iam:user:read")
+        auth = ::TenantcoreAuth::Auth::RbacHelper.require_permission!(request, "iam:user:read")
         user = store.get_user_by_id(id)
         return forbidden unless user && user.tenant_id == auth.tenant_id
 
@@ -22,7 +22,7 @@ module TenantcoreAuth
       end
 
       def create(request, store, _token_service)
-        auth = Auth::RbacHelper.require_permission!(request, "iam:user:invite")
+        auth = ::TenantcoreAuth::Auth::RbacHelper.require_permission!(request, "iam:user:invite")
         payload = parse_json(request)
         user = store.invite_user(
           tenant_id: auth.tenant_id,
@@ -34,7 +34,7 @@ module TenantcoreAuth
       end
 
       def update(request, store, _token_service, id:)
-        auth = Auth::RbacHelper.require_permission!(request, "iam:user:update")
+        auth = ::TenantcoreAuth::Auth::RbacHelper.require_permission!(request, "iam:user:update")
         user = store.get_user_by_id(id)
         return forbidden unless user && user.tenant_id == auth.tenant_id
 

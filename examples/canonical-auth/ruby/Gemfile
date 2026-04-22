@@ -1,10 +1,9 @@
 source "https://rubygems.org"
 
-ruby ">= 3.2.0"
+ruby ">= 2.6.0"
 
-gem "hanami", "~> 2.1"
 gem "jwt", "~> 2.8"
-gem "rack", "~> 3.0"
+gem "rack", "~> 2.2"
 
 group :test do
   gem "rack-test", "~> 2.1"

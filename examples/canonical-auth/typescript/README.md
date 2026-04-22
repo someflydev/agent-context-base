@@ -6,18 +6,19 @@ This is the TypeScript canonical implementation of the TenantCore IAM domain. It
 
 ## Requirements
 
-- Bun 1.x or newer
+- Node.js 22.x or newer
+- `npm install`
 
-## How to Run
+## How to run
 
 ```bash
-bun run src/index.ts
+npm start
 ```
 
-## How to Test
+## How to test
 
 ```bash
-bun test
+npm test
 ```
 
 ## Key Files and What They Do
@@ -49,3 +50,4 @@ This example is a simplification for educational purposes:
 - **In-Memory Store:** In a real-world production application, the `InMemoryStore` would be replaced by a robust relational database (like PostgreSQL) with proper indexing, caching, and connection pooling.
 - **Refresh Tokens:** This example focuses purely on short-lived access tokens. A real system would implement a secure mechanism for refresh tokens or session rotation.
 - **HS256 Test Mode:** The codebase uses `ES256` keys by default, but allows an override via `TENANTCORE_TEST_SECRET` and `TENANTCORE_TEST_ALG` to use symmetric `HS256` keys during unit testing.
+- **No Bun Requirement for Verification:** The smoke and unit tests run on stock Node 22, so parity checks do not depend on Bun being installed on the host.
