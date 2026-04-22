@@ -57,7 +57,8 @@ baseline strategy.
 When multiple implementations share one domain and one fixture corpus, a parity
 runner catches behavioral drift between implementations. This repo provides
 `verification/schema-validation/run_parity_check.py` for the Python examples so
-the universally required fixture rules in `PARITY.md` can be checked from one
+the universally required fixture rules in
+`examples/canonical-schema-validation/PARITY.md` can be checked from one
 entry point. Other languages keep their parity checks in toolchain-specific
 test runners.
 
@@ -94,12 +95,28 @@ changes, the exported schema changes even if runtime validator logic in
 `validator` or `garde` did not. Commit the schema baseline and compare it in CI
 after regeneration.
 
+### Kotlin (Konform / Hibernate Validator)
+
+Drift risk depends on the lane. Konform rules are Kotlin code, not annotations,
+so schema drift from renaming or restructuring is a code change that the
+compiler catches. Hibernate Validator annotation drift appears when DTOs are
+renamed without updating `@field:NotBlank` or similar. Commit a JSON Schema
+baseline when using SpringDoc for contract generation.
+
+### Ruby (dry-validation / dry-schema)
+
+`dry-schema` and `dry-validation` are a layered pair. `dry-schema` handles
+structure and type coercions; `dry-validation` adds higher-level rules. Schema
+drift most commonly appears when `dry-schema` contracts are published externally
+and the Predicate Predicates or type coercions change. A round-trip fixture
+check against a committed schema baseline is the primary protection.
+
 ### Elixir (ex_json_schema)
 
 The schema is an external artifact, not the same construct used by
-`Ecto.Changeset`. Drift appears when the changeset logic evolves and the JSON
-Schema file does not. The primary protection is a round-trip fixture check with
-at least one known-valid and one known-invalid payload.
+`Ecto.Changeset` or `Norm`. Drift appears when the changeset logic evolves and
+the JSON Schema file does not. The primary protection is a round-trip fixture
+check with at least one known-valid and one known-invalid payload.
 
 ## The Cross-Field Rule Gap
 
@@ -110,3 +127,9 @@ other semantic rules remain easier or only possible in runtime code. That means
 an exported contract can intentionally be weaker than runtime enforcement. When
 that happens, document the gap explicitly and, if the schema is published, use
 `$comment` or surrounding docs to state which stricter rules remain runtime-only.
+
+## See Also
+
+- [`docs/schema-validation-arc-overview.md`](schema-validation-arc-overview.md) — arc structure, lanes, language matrix
+- [`examples/canonical-schema-validation/PARITY.md`](../examples/canonical-schema-validation/PARITY.md) — cross-language parity requirements
+- [`context/doctrine/schema-validation-contracts.md`](../context/doctrine/schema-validation-contracts.md) — schema validation doctrine
