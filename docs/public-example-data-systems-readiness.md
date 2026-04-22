@@ -1,5 +1,7 @@
 # Public Example Data Systems Readiness
 
+_Readiness self-assessment: use this doc to evaluate whether the canonical example set for data acquisition and data systems is ready for public visibility._
+
 This expansion adds a focused context layer for non-trivial public example repos that acquire, retain, normalize, enrich, persist, and serve external data.
 
 ## Capability Overview

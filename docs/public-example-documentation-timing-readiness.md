@@ -1,5 +1,7 @@
 # Public Example Documentation Timing Readiness
 
+_Readiness self-assessment: use this doc to evaluate whether a future public example repo has earned its front-facing documentation._
+
 This repository now has explicit governance for delaying front-facing docs in a future public non-trivial example repo until the implementation is real enough to describe honestly.
 
 ## Why This Matters

@@ -1,5 +1,7 @@
 # Public Example Backend-Driven UI Readiness
 
+_Readiness self-assessment: use this doc to evaluate whether the canonical example set for backend-driven interactive UIs is ready for public visibility._
+
 This expansion adds a focused capability layer for future public example repos that need backend-driven interactive UIs with exact query semantics.
 
 ## Capability Overview
