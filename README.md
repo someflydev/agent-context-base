@@ -6,7 +6,7 @@
 
 | Goal | Where to go |
 | --- | --- |
-| Understand this base repo | Read [`AGENT.md`](AGENT.md) → [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md) |
+| Understand this base repo | Read [`AGENT.md`](AGENT.md) → [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md) → [`docs/ARCHITECTURE_MAP.md`](docs/ARCHITECTURE_MAP.md) |
 | Generate a new repo | Read [`docs/usage/STARTING_NEW_PROJECTS.md`](docs/usage/STARTING_NEW_PROJECTS.md) → run `python scripts/new_repo.py` |
 | Work inside a generated repo | Run `python3 .acb/scripts/work.py resume` → read `.acb/SESSION_BOOT.md` |
 | Browse canonical examples | See [`examples/catalog.json`](examples/catalog.json) and [`verification/example_registry.yaml`](verification/example_registry.yaml) |
@@ -14,141 +14,110 @@
 
 ## What Problem It Solves
 
-Assistant-led development drifts when context is loaded loosely, validation is implied instead of stated, and a later session has to rediscover repo intent from scratch. This repo addresses that by keeping:
+- Context loaded loosely causes assistant drift; this repo keeps canonical specs, validation rules, and routing in one narrow, loadable surface
+- Later sessions rediscover repo intent from scratch; runtime continuity (`PLAN.md`, `TASK.md`, `SESSION.md`) makes session state visible and grounded
+- Improvised patterns accumulate silently; canonical examples with enforced verification prevent drift at the pattern level
+- Repo generation from templates is opaque; `.acb/` bundles make the generation contract explicit, inspectable, and diffable
 
-- canonical specs under [`context/specs/`](context/specs/README.md)
-- canonical validation narratives under [`context/validation/`](context/validation/README.md)
-- machine-readable composition rules under [`context/acb/profile-rules.json`](context/acb/profile-rules.json)
-- repo-local runtime continuity under [`docs/runtime-state-workflow.md`](docs/runtime-state-workflow.md) and [`scripts/work.py`](scripts/work.py)
-- generation and inspection tooling under [`scripts/README.md`](scripts/README.md)
-- verification coverage under [`verification/README.md`](verification/README.md)
+See [`docs/repo-purpose.md`](docs/repo-purpose.md) for a full explanation of what this repo optimizes for and what it deliberately does not try to be.
 
-## What “Context-First” Means Here
+## Canonical Examples
 
-Context-first means assistants should read the smallest stable context surface that can still explain:
+Fully implemented example families verified by `python3 scripts/run_verification.py --tier fast`. Browse via [`examples/catalog.json`](examples/catalog.json) and [`verification/example_registry.yaml`](verification/example_registry.yaml).
 
-- what this repo is
-- what shape it is supposed to have
-- what boundary is currently being changed
-- what proof is required before claiming completion
+| Family | What It Shows | Languages / Stacks | Key Files |
+|--------|--------------|-------------------|-----------|
+| **canonical-api** | JSON, HTML fragment, data endpoint, faceted filter | Python/FastAPI, TypeScript/Hono/Bun, Go/Echo, Rust/Axum, Elixir/Phoenix, Scala/Tapir/ZIO, Kotlin/http4k/Exposed, Ruby/Hanami, Clojure/Kit, Crystal/Kemal, Dart/Dartfrog, OCaml/Dream, Nim/Jester, Zig/Zap+Jetzig (14 stacks) | `examples/canonical-api/` |
+| **canonical-auth** | JWT/RBAC/multi-tenant backend auth | Python/PyJWT, TypeScript/jose, Go/golang-jwt, Rust/jsonwebtoken, Java/JJWT, Kotlin/JJWT, Ruby/ruby-jwt, Elixir/Joken (8 languages) | `examples/canonical-auth/` |
+| **canonical-analytics** | Plotly+HTMX server-rendered charts (6 chart families) | Python/FastAPI/Jinja2, Go/Echo/templ, Rust/Axum/Askama, Elixir/Phoenix/HEEx (4 stacks) | `examples/canonical-analytics/` |
+| **canonical-schema-validation** | Validation, contract generation, serialization (3 lanes, 18 examples) | Python, TypeScript, Go, Rust, Kotlin, Ruby, Elixir (7 languages) | `examples/canonical-schema-validation/` |
+| **canonical-faker** | Synthetic data generation (TenantCore domain) | Python, JavaScript, Go, Rust, Java, Kotlin, Scala, Ruby, PHP, Elixir (10 languages) | `examples/canonical-faker/` |
+| **canonical-terminal** | CLI tools, TUI apps, dual-mode CLI+TUI (14 examples, 2 per language) | Python (click+blessed, typer+textual), TypeScript (commander+ink, yargs+blessed), Go (cobra+bubbletea, urfave+tview), Rust (clap+ratatui, argh+tui-realm), Ruby (thor+tty, clamp+tty), Java (picocli+lanterna, jcommander+jline), Elixir (optionparser+owl, optimus+ratatouille) | `examples/canonical-terminal/` |
+| **canonical-storage** | Storage pattern references | PostgreSQL, Redis, MongoDB, DuckDB+Parquet, DuckDB+Polars, MinIO/Parquet, NATS+MongoDB, Trino | `examples/canonical-storage/` |
+| **canonical-multi-backend** | Polyglot service coordination | Duos and trios covering REST, gRPC, NATS JetStream, Kafka, RabbitMQ, NIFs | `examples/canonical-multi-backend/` |
+| **canonical-dokku** | Dokku-deployable service stubs | Python/FastAPI, TypeScript/Hono/Bun, Go/Echo, Elixir/Phoenix | `examples/canonical-dokku/` |
+| **canonical-rag** | Retrieval-augmented generation patterns | — | `examples/canonical-rag/` |
+| **canonical-cli** | CLI-only tools (no TUI) | — | `examples/canonical-cli/` |
+| **canonical-data-acquisition** | Data acquisition services | — | `examples/canonical-data-acquisition/` |
+| **canonical-observability** | Observability patterns (metrics, tracing, logging) | — | `examples/canonical-observability/` |
+| **canonical-integration-tests** | Integration test harness patterns | — | `examples/canonical-integration-tests/` |
+| **canonical-smoke-tests** | Smoke test patterns | — | `examples/canonical-smoke-tests/` |
+| **canonical-seed-data** | Seed data patterns | — | `examples/canonical-seed-data/` |
+| **canonical-workflows** | Workflow orchestration patterns | — | `examples/canonical-workflows/` |
+| **canonical-prompts** | Prompt authoring and iteration patterns | — | `examples/canonical-prompts/` |
 
-The goal is explicit over implicit: route first, then load only the active workflow, stack surface, archetype, examples, and validation path.
+## First-Class Stacks
 
-## Repo-Local Runtime State
+The most developed stacks in this base are:
 
-This repo now treats session continuity as visible repo-local state instead of hidden assistant memory.
+- Python / FastAPI / `uv` / Ruff / `orjson` / Polars
+- TypeScript / Hono / Bun / Drizzle
+- Rust / Axum
+- Go / Echo / templ
+- Elixir / Phoenix
+- Scala / Tapir / http4s / ZIO
+- Kotlin / http4k / Exposed
+- Nim / Jester / HappyX
+- Clojure / Kit / next.jdbc / Hiccup
+- Dart / Dartfrog
+- OCaml / Dream / Caqti / Tyxml
+- Crystal / Kemal / Avram
+- Zig / Zap / Jetzig
+- Ruby / Hanami
 
-- `PLAN.md` holds milestone-level roadmap state
-- `context/TASK.md` holds the current active slice
-- `context/SESSION.md` holds compact working state and the next safe step
-- `context/MEMORY.md` holds durable repo-local truths
-- `tmp/*.md` holds local ad hoc session checklists or scratch execution plans when needed
+Supporting infra packs cover Redis, MongoDB, DuckDB, DuckDB+Parquet, Trino, NATS JetStream, Kafka, RabbitMQ, Meilisearch, Elasticsearch, TimescaleDB, Qdrant, and MinIO. Additional stacks can be added by extending the router, manifest, example, and verification structure.
 
-Those files are local runtime artifacts, not committed doctrine. `scripts/work.py` manages their startup and checkpoint loop with grounded heuristics such as line counts, changed-file breadth, elapsed-time staleness, recent git anchors, inferred next-step cues from `context/TASK.md` and `context/SESSION.md`, and whether recent work likely deserves a `context/MEMORY.md` promotion review. It also prefers repo-local `PLAN.example.md`, `context/TASK.example.md`, `context/SESSION.example.md`, and `context/MEMORY.example.md` scaffold files when a repo chooses to provide them. It does not pretend to know live token-window usage.
+## Docs Index
 
-## `.acb/` In Generated Repos
+### Architecture and design
 
-Generated repos keep their repo-local operating bundle under `.acb/`. That hidden directory is the continuity boundary between canonical source material in this base repo and the child repo’s local startup surface.
+- [`docs/ARCHITECTURE_MAP.md`](docs/ARCHITECTURE_MAP.md) — system map, arc statuses, directory index
+- [`docs/architecture/ASSISTANT_RUNTIME_MODEL.md`](docs/architecture/ASSISTANT_RUNTIME_MODEL.md) — subsystem table, pipeline
+- [`docs/architecture/CONTEXT_ENGINEERING_GUIDE.md`](docs/architecture/CONTEXT_ENGINEERING_GUIDE.md) — which artifact solves which problem
+- [`docs/architecture-mental-model.md`](docs/architecture-mental-model.md) — companion diagrams (runtime, generation, verification, multi-agent)
 
-Typical generated layout:
+### Operator usage
 
-```text
-.acb/
-  README.md
-  SESSION_BOOT.md
-  INDEX.json
-  profile/
-    selection.json
-  specs/
-    PRODUCT.md
-    ARCHITECTURE.md
-    AGENT_RULES.md
-    VALIDATION.md
-    EVOLUTION.md
-  validation/
-    CHECKLIST.md
-    MATRIX.json
-    COVERAGE.md
-    COVERAGE.json
-  doctrines/
-    ACTIVE_DOCTRINES.md
-  routers/
-    README.md
-  scripts/
-    work.py
-    acb_inspect.py
-    acb_verify.py
-```
+- [`docs/usage/STARTING_NEW_PROJECTS.md`](docs/usage/STARTING_NEW_PROJECTS.md) — new repo generation workflow and 100 example prompts
+- [`docs/usage/ADVANCED_ASSISTANT_OPERATIONS.md`](docs/usage/ADVANCED_ASSISTANT_OPERATIONS.md) — long sessions, multi-agent, higher autonomy
+- [`docs/usage/SPEC_DRIVEN_ACB_PAYLOADS.md`](docs/usage/SPEC_DRIVEN_ACB_PAYLOADS.md) — `.acb/` composition and drift detection
+- [`docs/usage/ASSISTANT_BEHAVIOR_SPEC.md`](docs/usage/ASSISTANT_BEHAVIOR_SPEC.md) — normative behavior contract (MUST/SHOULD)
+- [`docs/CONTRIBUTOR_PLAYBOOK.md`](docs/CONTRIBUTOR_PLAYBOOK.md) — how to extend stacks, examples, archetypes, verification
 
-Why it exists:
+### Session startup and continuity
 
-- future sessions can rehydrate locally without reopening the base repo
-- spec-driven and validation-driven work becomes explicit
-- origin metadata and hashes make drift visible
-- coverage summaries make validation gaps visible
+- [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md) — deterministic startup contract + boot diagram
+- [`docs/runtime-state-workflow.md`](docs/runtime-state-workflow.md) — PLAN/TASK/SESSION/MEMORY roles, checkpoint doctrine
+- [`docs/startup-context-visibility.md`](docs/startup-context-visibility.md) — three-level startup visibility model
+- [`docs/session-start.md`](docs/session-start.md) — quick-start checklist and commands
+- [`docs/memory-layer-overview.md`](docs/memory-layer-overview.md) — memory artifact roles and decision flow
 
-## Spec-Driven And Validation-Driven Development
+### Arc overviews (completed capability sets)
 
-The system composes canonical product, architecture, agent, evolution, and validation modules into repo-local `.acb/specs/*.md` files. Validation is treated as a first-class autonomy rail, not a trailing note.
+- [`docs/jwt-auth-arc-overview.md`](docs/jwt-auth-arc-overview.md) — JWT/RBAC arc (8 languages, verified)
+- [`docs/plotly-htmx-arc-overview.md`](docs/plotly-htmx-arc-overview.md) — analytics arc (4 stacks)
+- [`docs/faker-arc-overview.md`](docs/faker-arc-overview.md) — synthetic data arc (10 languages)
+- [`docs/schema-validation-arc-overview.md`](docs/schema-validation-arc-overview.md) — validation arc (7 languages, 3 lanes)
 
-Current hardening features:
+### Reference
 
-- canonical source headers on spec and validation modules
-- `.acb/INDEX.json` with source metadata and hashes
-- `.acb/validation/COVERAGE.json` and `.acb/validation/COVERAGE.md`
-- `.acb/scripts/work.py` for compact derived repos that do not expose a root `scripts/` directory
-- `.acb/scripts/acb_inspect.py` for visibility
-- `.acb/scripts/acb_verify.py` for local payload drift, optional canonical drift, and coverage gaps
+- [`docs/repo-purpose.md`](docs/repo-purpose.md) — what the repo optimizes for and first-class stacks
+- [`docs/repo-layout.md`](docs/repo-layout.md) — directory roles
+- [`docs/assistant-failure-modes.md`](docs/assistant-failure-modes.md) — failure taxonomy and mitigations
+- [`docs/context-evolution.md`](docs/context-evolution.md) — changelog of architectural changes
+- [`docs/terminal-validation-contract.md`](docs/terminal-validation-contract.md) — terminal example verification contract
+- [`docs/terminal-web-parity.md`](docs/terminal-web-parity.md) — parity model between terminal and web examples
+- [`docs/deployment-readiness-checklists.md`](docs/deployment-readiness-checklists.md) — deployment readiness checklists
+- [`docs/schema-validation-drift-detection.md`](docs/schema-validation-drift-detection.md) — drift detection for schema-validation arc
+- [`docs/jwt-auth-arc-prompt-pack.md`](docs/jwt-auth-arc-prompt-pack.md) — prompt pack for JWT auth arc
+- [`docs/system-quick-reference.md`](docs/system-quick-reference.md) — quick operational reference after boot
+- [`docs/system-self-explanation.md`](docs/system-self-explanation.md) — layer-by-layer explanation of the system
 
-## First 10 Minutes
+### Readiness assessments
 
-1. Read [`AGENT.md`](AGENT.md) or [`CLAUDE.md`](CLAUDE.md).
-2. Read [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md).
-3. Read [`docs/runtime-state-workflow.md`](docs/runtime-state-workflow.md).
-4. Run `python3 scripts/work.py resume`.
-5. Inspect available shapes with `python scripts/new_repo.py --list-archetypes` and `python scripts/new_repo.py --list-stacks`.
-6. Preview a bundle with `python scripts/preview_context_bundle.py backend-api-fastapi-polars --show-weights --show-anchors`.
-7. Generate a repo and start a fresh session inside that generated repo.
-
-Example:
-
-```bash
-python scripts/new_repo.py analytics-api \
-  --archetype backend-api-service \
-  --primary-stack python-fastapi-uv-ruff-orjson-polars \
-  --manifest backend-api-fastapi-polars \
-  --smoke-tests \
-  --integration-tests \
-  --seed-data \
-  --initial-prompt-file /tmp/operator-brief.txt \
-  --target-dir /tmp/analytics-api
-```
-
-Inside the generated repo, the recommended first read order is:
-
-1. `AGENT.md`
-2. `python3 scripts/work.py resume` when the repo has a root `scripts/` directory, or `python3 .acb/scripts/work.py resume` in compact derived repos
-3. `context/TASK.md`
-4. `context/SESSION.md`
-5. `context/MEMORY.md` only if needed
-6. `PLAN.md` when milestone context matters
-7. `.acb/SESSION_BOOT.md`
-8. `.acb/profile/selection.json`
-9. `.acb/specs/AGENT_RULES.md`
-10. `.acb/specs/VALIDATION.md`
-11. `.acb/validation/CHECKLIST.md`
-12. `.acb/validation/COVERAGE.md`
-13. `.acb/generation-report.json`
-
-## Diagrams And Deeper Docs
-
-- [`docs/ARCHITECTURE_MAP.md`](docs/ARCHITECTURE_MAP.md)
-- [`docs/runtime-state-workflow.md`](docs/runtime-state-workflow.md)
-- [`docs/usage/SPEC_DRIVEN_ACB_PAYLOADS.md`](docs/usage/SPEC_DRIVEN_ACB_PAYLOADS.md)
-- [`docs/usage/ASSISTANT_BEHAVIOR_SPEC.md`](docs/usage/ASSISTANT_BEHAVIOR_SPEC.md)
-- [`docs/usage/STARTING_NEW_PROJECTS.md`](docs/usage/STARTING_NEW_PROJECTS.md)
-- [`scripts/README.md`](scripts/README.md)
-- [`verification/README.md`](verification/README.md)
+- [`docs/public-example-backend-driven-ui-readiness.md`](docs/public-example-backend-driven-ui-readiness.md) — readiness self-assessment for backend-driven HTMX/Plotly example sets
+- [`docs/public-example-data-systems-readiness.md`](docs/public-example-data-systems-readiness.md) — readiness self-assessment for data acquisition and data systems example sets
+- [`docs/public-example-documentation-timing-readiness.md`](docs/public-example-documentation-timing-readiness.md) — readiness self-assessment for when a public example repo has earned its docs
 
 ## Verification Commands
 
