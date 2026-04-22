@@ -73,6 +73,70 @@ Route from what the user is trying to do, not from internal file names.
   - load `context/doctrine/jwt-auth-request-context.md`
   - load `context/skills/jwt-middleware-implementation.md`
   # added by PROMPT_134
+- "how do I add JWT auth to my app", "how do I add JWT auth to my service", "add JWT auth"
+  - load `context/doctrine/jwt-auth-request-context.md`
+  - load `context/skills/jwt-middleware-implementation.md`
+  # added by PROMPT_140
+- "what is the permission naming convention", "how do I name permissions"
+  - load `context/doctrine/rbac-permission-taxonomy.md`
+  - load `context/skills/permission-catalog-design.md`
+  # added by PROMPT_140
+- "show me RBAC with custom claims in Go", "show me RBAC with JWT in Go"
+  - load `examples/canonical-auth/go/`
+  - load `context/stacks/go-echo-golang-jwt-rbac.md`
+  # added by PROMPT_140
+- "show me RBAC with custom claims in Rust", "show me RBAC with JWT in Rust"
+  - load `examples/canonical-auth/rust/`
+  - load `context/stacks/rust-axum-jsonwebtoken-rbac.md`
+  # added by PROMPT_140
+- "show me RBAC with custom claims in Python", "show me RBAC with JWT in Python"
+  - load `examples/canonical-auth/python/`
+  - load `context/stacks/python-fastapi-pyjwt-rbac.md`
+  # added by PROMPT_140
+- "show me RBAC with custom claims in TypeScript", "show me RBAC with JWT in TypeScript"
+  - load `examples/canonical-auth/typescript/`
+  - load `context/stacks/typescript-hono-jose-rbac.md`
+  # added by PROMPT_140
+- "how do I build a /me endpoint", "build a me endpoint"
+  - load `context/skills/me-endpoint-design.md`
+  - load `context/doctrine/me-endpoint-discoverability.md`
+  - load `examples/canonical-auth/python/src/routes/me.py`
+  # added by PROMPT_140
+- "how do I invalidate JWT tokens", "handle stale authorization", "stale acl_ver"
+  - load `context/doctrine/jwt-auth-request-context.md`
+  - load `context/skills/jwt-middleware-implementation.md`
+  # added by PROMPT_140
+- "how does multi-tenancy work with JWT", "tenant-aware JWT auth"
+  - load `context/doctrine/tenant-boundary-enforcement.md`
+  - load `context/archetypes/tenant-aware-backend-api.md`
+  # added by PROMPT_140
+- "show me route metadata", "show me route annotation for auth"
+  - load `context/doctrine/route-metadata-registry.md`
+  - load `context/skills/route-metadata-annotation.md`
+  # added by PROMPT_140
+- "what claims should a JWT contain", "JWT claim shape"
+  - load `examples/canonical-auth/domain/spec.md`
+  - load `context/doctrine/jwt-auth-request-context.md`
+  # added by PROMPT_140
+- "how do I test JWT auth", "auth smoke tests"
+  - load `examples/canonical-auth/domain/verification-contract.md`
+  - load `examples/canonical-auth/python/tests/`
+  # added by PROMPT_140
+- "show me the permission catalog", "permission catalog for auth"
+  - load `examples/canonical-auth/domain/spec.md`
+  - load `context/doctrine/rbac-permission-taxonomy.md`
+  # added by PROMPT_140
+- "how does super-admin work", "super-admin vs tenant-admin"
+  - load `examples/canonical-auth/domain/spec.md`
+  - load `context/doctrine/tenant-boundary-enforcement.md`
+  # added by PROMPT_140
+- "cross-stack parity status for auth examples", "auth parity status"
+  - load `examples/canonical-auth/domain/parity-matrix.md`
+  - load `verification/auth/run_parity_check.py`
+  # added by PROMPT_140
+- "show the auth canonical example catalog", "auth canonical example catalog"
+  - load `examples/canonical-auth/CATALOG.md`
+  # added by PROMPT_140
 
 - "add a feature", "build this capability", "implement this flow"
   - load `context/workflows/add-feature.md`

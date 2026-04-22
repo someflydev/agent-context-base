@@ -288,6 +288,50 @@ stacks:
   - alias: jwt-arc
     target: examples/canonical-auth/
     # added by PROMPT_134
+  - alias: jwt auth
+    target:
+      - context/doctrine/jwt-auth-request-context.md
+      - context/skills/jwt-middleware-implementation.md
+    # added by PROMPT_140
+  - alias: add jwt auth
+    target:
+      - context/doctrine/jwt-auth-request-context.md
+      - context/skills/jwt-middleware-implementation.md
+    # added by PROMPT_140
+  - alias: permission naming convention
+    target:
+      - context/doctrine/rbac-permission-taxonomy.md
+      - context/skills/permission-catalog-design.md
+    # added by PROMPT_140
+  - alias: name permissions
+    target:
+      - context/doctrine/rbac-permission-taxonomy.md
+      - context/skills/permission-catalog-design.md
+    # added by PROMPT_140
+  - alias: me endpoint
+    target:
+      - context/doctrine/me-endpoint-discoverability.md
+      - context/skills/me-endpoint-design.md
+    # added by PROMPT_140
+  - alias: route metadata
+    target:
+      - context/doctrine/route-metadata-registry.md
+      - context/skills/route-metadata-annotation.md
+    # added by PROMPT_140
+  - alias: jwt claim shape
+    target: examples/canonical-auth/domain/spec.md
+    # added by PROMPT_140
+  - alias: auth verification contract
+    target: examples/canonical-auth/domain/verification-contract.md
+    # added by PROMPT_140
+  - alias: auth parity
+    target:
+      - examples/canonical-auth/domain/parity-matrix.md
+      - verification/auth/run_parity_check.py
+    # added by PROMPT_140
+  - alias: auth catalog
+    target: examples/canonical-auth/CATALOG.md
+    # added by PROMPT_140
   - alias: redis
     target: context/stacks/redis.md
   - alias: redis streams
