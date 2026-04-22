@@ -3,6 +3,8 @@
 ## Purpose
 This arc provides a stable way to compare synthetic data generation and faker libraries across ten languages. Cross-language faker comparison requires a shared domain to prevent collapsing distinct ecosystem behaviors into simple atomic data generation. Realistic synthetic data requires an explicit graph layer on top of faker libraries to enforce constraints. After working through these examples, a developer should be able to design a realistic data generation pipeline and choose the right library stack for their language.
 
+**Status:** Complete (PROMPT_119–126). All 10 language examples are implemented and verified. See `examples/canonical-faker/CATALOG.md`.
+
 ## The Core Insight
 Faker libraries generate realistic atomic values. They do not generate relational systems. The arc explicitly teaches building the graph layer on top: parent-first ordering, ID pools, weighted distributions, temporal realism, and cross-field consistency. Every example demonstrates this pattern.
 
@@ -26,7 +28,14 @@ The domain includes 7 entities:
 - **audit_events**: Activity log tying users, projects, and organizations together.
 - **api_keys**: Organization credentials tied to specific users.
 - **invitations**: Pending or accepted requests to join an organization.
-The examples support 4 output profiles: smoke, small, medium, and large.
+The examples support 4 output profiles:
+
+- **smoke** (seed=42, 3 orgs / 10 users / ~50 audit events — deterministic, for CI gates)
+- **small** (20 orgs / 200 users / ~2,000 audit events — fast local runs)
+- **medium** (200 orgs / 5,000 users / ~50,000 audit events — realistic volume, demo/staging)
+- **large** (2,000 orgs / 50,000 users / ~500,000 audit events — performance and batch testing)
+
+See `examples/canonical-faker/domain/profiles.md` for full per-entity row count targets.
 
 ## Language Matrix
 
@@ -35,13 +44,23 @@ The examples support 4 output profiles: smoke, small, medium, and large.
 | Python       | Faker + Mimesis       | factory_boy            | Multi-locale, schema-based gen  |
 | JavaScript   | @faker-js/faker       | Chance                 | Distribution helpers, seeding   |
 | Go           | gofakeit              | go-faker/faker         | Struct-tag vs. imperative       |
-| Rust         | fake (fake-rs)        | —                      | Builder pattern, typed pipeline |
-| Java         | Datafaker             | —                      | Orchestration above providers   |
+| Rust         | fake (fake-rs)        | none                   | Builder pattern, typed pipeline |
+| Java         | Datafaker             | none                   | Orchestration above providers   |
 | Kotlin       | kotlin-faker          | Datafaker              | DSL vs. JVM interop             |
-| Scala        | Datafaker (JVM)       | —                      | Functional pipeline, LazyList   |
+| Scala        | Datafaker (JVM)       | none                   | Functional pipeline, LazyList   |
 | Ruby         | faker                 | ffaker                 | faker vs. ffaker contrast       |
 | PHP          | FakerPHP/Faker        | Nelmio Alice           | Imperative vs. declarative      |
 | Elixir       | Faker                 | ExMachina              | Functional Enum pipeline, Mix   |
+
+_none = no mainstream secondary library recommended for this language; the primary library is sufficient for the full TenantCore domain._
+
+## Verification Status
+- All ten language examples are implemented and verified. See
+  `examples/canonical-faker/CATALOG.md` for per-language status.
+- Repo-wide context validation still passes:
+  `python3 scripts/validate_context.py` and
+  `python3 scripts/run_verification.py --tier fast`.
+- Parity runner: `verification/faker/run_parity_check.py`
 
 ## Key Distinctions to Preserve
 

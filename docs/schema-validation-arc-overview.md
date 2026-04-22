@@ -12,6 +12,9 @@ type-driven workflows answer different engineering questions. After working
 through this arc, a developer should be able to choose the right lane, the
 right library, and the right example for a validation or contract task.
 
+**Status:** Complete (PROMPT_113–118). 18 examples across 7 languages in 3
+lanes. See `examples/canonical-schema-validation/CATALOG.md`.
+
 ## The Three Lanes
 
 ### Lane A — Runtime Validation
@@ -92,6 +95,14 @@ requiring a large application. The five models are:
 - `ReviewRequest` — reviewer routing and escalation metadata; exercises list
   uniqueness, optional notes, and priority-driven due-date rules
 
+## Verification Status
+- All 18 examples across 7 languages are implemented and tracked in
+  `examples/canonical-schema-validation/PARITY.md`.
+- Repo-wide context validation still passes:
+  `python3 scripts/validate_context.py` and
+  `python3 scripts/run_verification.py --tier fast`.
+- Parity runner: `verification/schema-validation/run_parity_check.py`
+
 ## Key Distinctions to Preserve
 
 - `serde + schemars` in Rust is Lane B, not Lane A. `serde` defines wire shape,
@@ -120,8 +131,13 @@ requiring a large application. The five models are:
   lane
 - `context/skills/contract-generation-path-selection.md` — schema export and
   drift guidance
-- `context/stacks/schema-validation-{language}.yaml` — per-language library
-  choices
+- `context/stacks/schema-validation-python.yaml` — Python library choices
+- `context/stacks/schema-validation-typescript.yaml` — TypeScript library choices
+- `context/stacks/schema-validation-go.yaml` — Go library choices
+- `context/stacks/schema-validation-rust.yaml` — Rust library choices
+- `context/stacks/schema-validation-kotlin.yaml` — Kotlin library choices
+- `context/stacks/schema-validation-ruby.yaml` — Ruby library choices
+- `context/stacks/schema-validation-elixir.yaml` — Elixir library choices
 
 ## Routing Questions This Arc Can Answer
 
@@ -142,3 +158,17 @@ requiring a large application. The five models are:
   Lane C: `python/pydantic/`, `typescript/zod/`
 - "Detect drift between schema and runtime" ->
   `docs/schema-validation-drift-detection.md`
+- "Show me Ruby dry-validation examples" ->
+  `ruby/dry-validation/`, Lane A
+- "What is the difference between io-ts and Zod?" ->
+  both are Lane C; io-ts uses codec-based FP decode/encode semantics, Zod uses
+  schema-first parse semantics -> `typescript/zod/` vs `typescript/io-ts/`
+- "Compare Konform vs Hibernate Validator in Kotlin" ->
+  `kotlin/konform/` (Kotlin DSL) vs `kotlin/hibernate-validator/` (Bean
+  Validation annotations)
+- "Show me how Go handles contract generation ergonomics" ->
+  `go/openapi-generation/` and the Go ergonomic gap note in this overview
+- "What fixtures are shared across all 7 languages?" ->
+  `examples/canonical-schema-validation/domain/`
+- "Show me a cross-field rule example in Python" ->
+  `python/pydantic/` (plan-tier constraint in `WorkspaceConfig`)
