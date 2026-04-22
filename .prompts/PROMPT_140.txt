@@ -11,7 +11,8 @@ PROMPT_137: JWT Auth Arc — Go + Rust.
 PROMPT_138: JWT Auth Arc — Java + Kotlin.
 PROMPT_139: JWT Auth Arc — Ruby + Elixir.
 
-This prompt (PROMPT_140) completes the arc:
+This prompt (PROMPT_140) hardens the arc and completes it only when the gap
+audit is clean:
   - Arc overview documentation
   - Cross-stack parity check runner
   - Router polish (verify all auth routing questions are answerable)
@@ -95,8 +96,12 @@ Run full verification audit before touching anything:
   python3 scripts/run_verification.py --tier fast
 
 Do NOT begin writing until all passing tests from earlier prompts still pass.
-This prompt does not fix PROMPT_134–139 gaps — resolve those first.
-If gaps exist in the parity matrix, document them in a gaps file (see PART 7).
+This prompt may harden documentation, routing, parity tooling, and gap-audit
+surfaces, but it does not repair earlier implementation gaps. If earlier
+prompt outputs are still partial, document them and do not claim arc
+completion.
+If gaps exist in the parity matrix or catalog status, document them in a gaps
+file (see PART 8) before writing any "complete" language.
 
 ================================================================================
 BACKGROUND: WHY HARDENING IS A SEPARATE PROMPT
@@ -247,7 +252,8 @@ PART 2: CREATE verification/auth/run_parity_check.py
 Create: verification/auth/run_parity_check.py
 
 This is the cross-stack parity runner. It checks that all 8 language
-implementations exist and are complete.
+implementations exist and reports whether the arc is fully complete or still
+has documented partial rows.
 
   #!/usr/bin/env python3
   """
@@ -255,8 +261,10 @@ implementations exist and are complete.
 
   Checks:
   1. All 8 implementation directories exist.
-  2. CATALOG.md marks all 8 implementations as [x].
-  3. parity-matrix.md has no [ ] (not started) cells.
+  2. CATALOG.md includes all 8 implementations and reports their current
+     status accurately.
+  3. parity-matrix.md has no [ ] (not started) cells and reports any [~]
+     partial rows explicitly.
   4. Fixture files (users, tenants, groups, permissions, memberships) exist
      and are valid JSON with minimum entry counts.
   5. Domain spec contains all required sections.
@@ -310,21 +318,21 @@ implementations exist and are complete.
     def test_catalog_exists(self):
       self.assertTrue((AUTH_DIR / "CATALOG.md").exists())
 
-    def test_all_implementations_marked_complete(self):
+    def test_all_implementations_present_in_catalog(self):
       catalog = (AUTH_DIR / "CATALOG.md").read_text()
       display_names = {
         "python": "Python", "typescript": "TypeScript",
         "go": "Go", "rust": "Rust", "java": "Java",
         "kotlin": "Kotlin", "ruby": "Ruby", "elixir": "Elixir"
       }
-      for lang, name in display_names.items():
-        found_complete = False
+      for _lang, name in display_names.items():
+        found_any_status = False
         for line in catalog.splitlines():
-          if name in line and "[x]" in line:
-            found_complete = True
+          if name in line and any(status in line for status in ("[x]", "[~]", "[ ]")):
+            found_any_status = True
             break
-        self.assertTrue(found_complete,
-          f"{name} not marked [x] in CATALOG.md")
+        self.assertTrue(found_any_status,
+          f"{name} missing from CATALOG.md status table")
 
   class TestParityMatrixCompleteness(unittest.TestCase):
     def test_no_not_started_cells(self):
@@ -333,6 +341,15 @@ implementations exist and are complete.
                      if "| [ ]" in line or "|[ ]" in line]
       self.assertEqual(not_started, [],
         f"Parity matrix has incomplete rows:\n" + "\n".join(not_started))
+
+    def test_no_partial_rows_when_claiming_completion(self):
+      matrix = (AUTH_DIR / "domain" / "parity-matrix.md").read_text()
+      partial_rows = [line for line in matrix.splitlines()
+                     if "| [~]" in line or "|[~]" in line]
+      self.assertEqual(partial_rows, [],
+        "Parity matrix still has partial rows that must be documented in "
+        "docs/jwt-auth-arc-gaps.md before claiming arc completion:\n" +
+        "\n".join(partial_rows))
 
   class TestFixtureFiles(unittest.TestCase):
     def test_fixture_files_exist_and_valid(self):
@@ -447,7 +464,13 @@ PART 4: UPDATE examples/catalog.json
 
 Read examples/catalog.json to understand the schema. Pattern after existing entries.
 
-Add 9 entries: 8 language implementations + 1 domain spec reference.
+Ensure 9 canonical auth discovery entries exist exactly once: 8 language
+implementation directory entries + 1 domain spec reference.
+
+Do not duplicate existing file-level canonical-auth entries already present in
+`examples/catalog.json`. If a top-level implementation directory or the domain
+spec entry already exists with materially correct metadata, normalize it rather
+than appending a duplicate.
 
 Each entry must include: path, category, summary, stacks, archetypes,
 workflows, patterns, rank, stability.
@@ -652,6 +675,12 @@ Before writing the arc completion documentation, perform this audit:
      and contain "How to run" and "How to test" sections.
      If any README is missing or incomplete, create or patch it.
 
+  C2. Audit earlier prompt-required support artifacts that may still be
+      missing even when the README exists. In particular, verify the Ruby
+      example still satisfies PROMPT_139's required file surface, including
+      `Gemfile.lock`. If a required artifact is missing and cannot be produced
+      cleanly in this prompt, record it in docs/jwt-auth-arc-gaps.md.
+
   D. Verify that verification/unit/test_jwt_auth_arc_foundation.py and
      verification/unit/test_jwt_auth_arc_domain.py both pass.
      If either fails, fix the specific failing test (likely a missing file).
@@ -682,8 +711,8 @@ Stage and commit with deliberate grouping. Use `git add <paths>` when file bound
   - docs/jwt-auth-arc-prompt-pack.md
   - verification/auth/run_parity_check.py
   - context/router/task-router.md — router polish (auth routing coverage)
-  - examples/catalog.json — 9 new entries (8 implementations + domain spec)
-  - docs/ARCHITECTURE_MAP.md — jwt-auth arc marked COMPLETE
+  - examples/catalog.json — canonical auth discovery entries normalized
+  - docs/ARCHITECTURE_MAP.md — jwt-auth arc status updated from the gap audit
   - memory/concepts/jwt-auth-arc.md
   [- docs/jwt-auth-arc-gaps.md — if any gaps found]
 
@@ -691,7 +720,7 @@ Stage and commit with deliberate grouping. Use `git add <paths>` when file bound
 ARC COMPLETION SUMMARY
 ================================================================================
 
-After PROMPT_140, the JWT Auth, RBAC, and Multi-Tenant Patterns arc is complete:
+If the gap audit is clean after PROMPT_140, the JWT Auth, RBAC, and Multi-Tenant Patterns arc is complete:
 
   PROMPT_134 — Foundation
     5 doctrines, 1 archetype (tenant-aware-backend-api), 8 stacks, 4 skills,
@@ -720,7 +749,8 @@ After PROMPT_140, the JWT Auth, RBAC, and Multi-Tenant Patterns arc is complete:
 
   PROMPT_140 — Hardening
     Arc overview, prompt pack summary, parity runner, router polish,
-    catalog.json (9 entries), ARCHITECTURE_MAP, memory/concepts entry, gap audit
+    catalog.json normalization, ARCHITECTURE_MAP, memory/concepts entry,
+    and the final gap audit
 
 The arc teaches JWT-backed authentication and RBAC across 8 backend language
 ecosystems, with a shared TenantCore IAM domain, a platform-owned permission
