@@ -5,7 +5,7 @@ Use these checks before calling a repo deploy-ready.
 ## Baseline
 
 - the active manifest still matches the repo shape
-- `python scripts/validate_context.py` passes if docs, manifests, examples, or templates changed
+- `python3 scripts/validate_context.py` passes if docs, manifests, examples, or templates changed
 - at least one smoke path proves boot or a representative happy path
 - real storage, queue, search, or release behavior has one minimal real-boundary check when applicable
 - `docker-compose.yml` and `docker-compose.test.yml` declare explicit `name:`
@@ -19,9 +19,22 @@ Use these checks before calling a repo deploy-ready.
 - `docs/deployment.md` names config, smoke target, and rollback posture
 - post-deploy smoke remains small and loud
 
+See `context/doctrine/deployment-philosophy-dokku.md` for the full Dokku deployment doctrine.
+
 ## Prompt-First Repo
 
-- prompt numbering is monotonic
-- `PROMPTS.md` matches the real prompt set
+- `.prompts/` prompt files are monotonically numbered with no gaps
 - generated profile files still describe the repo accurately
 - routing docs still point to a small bundle instead of a broad dump
+
+## CLI Tool
+
+- binary builds cleanly (`go build`, `cargo build --release`, or equivalent)
+- `--help` output matches the README usage section
+- smoke test passes without a TTY (piped input, no interactive prompt fallback)
+- `--version` output reflects the current release tag
+
+## See Also
+
+- `docs/ARCHITECTURE_MAP.md` — system overview, arc statuses, directory index
+- `context/doctrine/deployment-philosophy-dokku.md` — Dokku deployment doctrine
