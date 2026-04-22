@@ -8140,30 +8140,20 @@
     {
       "path": "examples/canonical-auth/domain/spec.md",
       "category": "authentication",
-      "summary": "Authoritative TenantCore IAM domain spec covering entities, permission atoms, JWT claims, flows, routes, and /me response shape.",
-      "stacks": [
-        "python-fastapi-pyjwt-rbac",
-        "typescript-hono-jose-rbac",
-        "go-echo-golang-jwt-rbac",
-        "rust-axum-jsonwebtoken-rbac",
-        "java-spring-jjwt-rbac",
-        "kotlin-http4k-jjwt-rbac",
-        "ruby-hanami-ruby-jwt-rbac",
-        "elixir-phoenix-joken-rbac"
-      ],
+      "summary": "TenantCore IAM domain spec - 24+ permissions, 10 flows, route metadata, /me shape, shared fixtures.",
+      "stacks": [],
       "archetypes": [
         "tenant-aware-backend-api"
       ],
-      "workflows": [
-        "add-tenant-aware-canonical-example"
-      ],
+      "workflows": [],
       "patterns": [
-        "shared-domain",
-        "auth-contract",
-        "tenantcore-iam"
+        "cross-language-parity",
+        "permission-catalog",
+        "jwt-claim-shape",
+        "me-endpoint"
       ],
-      "rank": 84,
-      "stability": "foundation"
+      "rank": 92,
+      "stability": "canonical"
     },
     {
       "path": "examples/canonical-auth/domain/verification-contract.md",
@@ -8192,6 +8182,30 @@
       ],
       "rank": 83,
       "stability": "foundation"
+    },
+    {
+      "path": "examples/canonical-auth/go/",
+      "category": "authentication",
+      "summary": "Echo + golang-jwt/jwt JWT auth with RBAC, multi-tenant scoping, route metadata, and /me endpoint.",
+      "stacks": [
+        "go-echo-golang-jwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-protected-endpoint",
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-rbac",
+        "route-metadata",
+        "me-endpoint",
+        "tenant-scoped-api",
+        "in-memory-fixture-store"
+      ],
+      "rank": 88,
+      "stability": "canonical"
     },
     {
       "path": "examples/canonical-auth/go/README.md",
@@ -8420,6 +8434,30 @@
       "archetypes": [],
       "workflows": [],
       "patterns": []
+    },
+    {
+      "path": "examples/canonical-auth/java/",
+      "category": "authentication",
+      "summary": "Spring Boot + JJWT JWT auth with RBAC, multi-tenant scoping, route metadata, and /me endpoint.",
+      "stacks": [
+        "java-spring-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-protected-endpoint",
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-rbac",
+        "route-metadata",
+        "me-endpoint",
+        "tenant-scoped-api",
+        "in-memory-fixture-store"
+      ],
+      "rank": 88,
+      "stability": "canonical"
     },
     {
       "path": "examples/canonical-auth/java/.gitignore",
@@ -9038,6 +9076,30 @@
       "stability": "experimental"
     },
     {
+      "path": "examples/canonical-auth/kotlin/",
+      "category": "authentication",
+      "summary": "http4k + JJWT JWT auth with RBAC, multi-tenant scoping, route metadata, and /me endpoint.",
+      "stacks": [
+        "kotlin-http4k-jjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-protected-endpoint",
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-rbac",
+        "route-metadata",
+        "me-endpoint",
+        "tenant-scoped-api",
+        "in-memory-fixture-store"
+      ],
+      "rank": 88,
+      "stability": "canonical"
+    },
+    {
       "path": "examples/canonical-auth/kotlin/.gitignore",
       "category": "authentication",
       "summary": "Kotlin canonical auth example implementation file.",
@@ -9520,6 +9582,30 @@
       ],
       "rank": 82,
       "stability": "experimental"
+    },
+    {
+      "path": "examples/canonical-auth/python/",
+      "category": "authentication",
+      "summary": "FastAPI + PyJWT JWT auth with RBAC, multi-tenant scoping, route metadata, and /me endpoint.",
+      "stacks": [
+        "python-fastapi-pyjwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-protected-endpoint",
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-rbac",
+        "route-metadata",
+        "me-endpoint",
+        "tenant-scoped-api",
+        "in-memory-fixture-store"
+      ],
+      "rank": 88,
+      "stability": "canonical"
     },
     {
       "path": "examples/canonical-auth/python/.gitignore",
@@ -10022,6 +10108,30 @@
       "stability": "canonical"
     },
     {
+      "path": "examples/canonical-auth/rust/",
+      "category": "authentication",
+      "summary": "Axum + jsonwebtoken JWT auth with RBAC, multi-tenant scoping, route metadata, and /me endpoint.",
+      "stacks": [
+        "rust-axum-jsonwebtoken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-protected-endpoint",
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-rbac",
+        "route-metadata",
+        "me-endpoint",
+        "tenant-scoped-api",
+        "in-memory-fixture-store"
+      ],
+      "rank": 88,
+      "stability": "canonical"
+    },
+    {
       "path": "examples/canonical-auth/rust/Cargo.toml",
       "category": "authentication",
       "summary": "Rust canonical auth example implementation file.",
@@ -10308,6 +10418,30 @@
       "archetypes": [],
       "workflows": [],
       "patterns": []
+    },
+    {
+      "path": "examples/canonical-auth/typescript/",
+      "category": "authentication",
+      "summary": "Hono (Bun) + jose JWT auth with RBAC, multi-tenant scoping, route metadata, and /me endpoint.",
+      "stacks": [
+        "typescript-hono-jose-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-protected-endpoint",
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-rbac",
+        "route-metadata",
+        "me-endpoint",
+        "tenant-scoped-api",
+        "in-memory-fixture-store"
+      ],
+      "rank": 88,
+      "stability": "canonical"
     },
     {
       "path": "examples/canonical-auth/typescript/.gitignore",
@@ -23349,6 +23483,30 @@
       "stability": "canonical"
     },
     {
+      "path": "examples/canonical-auth/ruby/",
+      "category": "authentication",
+      "summary": "Hanami-shaped Rack + ruby-jwt JWT auth with RBAC, multi-tenant scoping, route metadata, and /me endpoint.",
+      "stacks": [
+        "ruby-hanami-ruby-jwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-protected-endpoint",
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-rbac",
+        "route-metadata",
+        "me-endpoint",
+        "tenant-scoped-api",
+        "in-memory-fixture-store"
+      ],
+      "rank": 88,
+      "stability": "canonical"
+    },
+    {
       "path": "examples/canonical-auth/ruby/.gitignore",
       "category": "auth",
       "summary": "Canonical auth example component: .gitignore",
@@ -23875,6 +24033,30 @@
       ],
       "rank": 80,
       "stability": "structure-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/",
+      "category": "authentication",
+      "summary": "Phoenix + Joken JWT auth with RBAC, multi-tenant scoping, route metadata, and /me endpoint.",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "add-protected-endpoint",
+        "add-tenant-aware-canonical-example"
+      ],
+      "patterns": [
+        "jwt-rbac",
+        "route-metadata",
+        "me-endpoint",
+        "tenant-scoped-api",
+        "in-memory-fixture-store"
+      ],
+      "rank": 88,
+      "stability": "canonical"
     },
     {
       "path": "examples/canonical-auth/elixir/.gitignore",
