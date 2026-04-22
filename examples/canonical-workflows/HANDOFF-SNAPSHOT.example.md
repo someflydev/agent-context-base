@@ -26,7 +26,7 @@ Add the memory layer docs and starter templates, then refine the helper scripts 
 ## Remaining Work
 
 - Integrate memory behavior into `AGENT.md` and `CLAUDE.md`.
-- Update `docs/context-boot-sequence.md`, `docs/system-operating-manual.md`, and `docs/session-start.md`.
+- Update `docs/context-boot-sequence.md`, `docs/system-quick-reference.md`, and `docs/session-start.md`.
 - Add `scripts/init_memory.py`, `scripts/create_handoff_snapshot.py`, and `scripts/check_memory_freshness.py`.
 - Update `scripts/README.md` and `templates/README.md`.
 
@@ -51,7 +51,7 @@ Add the memory layer docs and starter templates, then refine the helper scripts 
 - `AGENT.md`
 - `CLAUDE.md`
 - `docs/context-boot-sequence.md`
-- `docs/system-operating-manual.md`
+- `docs/system-quick-reference.md`
 - `docs/session-start.md`
 - `scripts/README.md`
 
