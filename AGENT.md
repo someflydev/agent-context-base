@@ -1,5 +1,9 @@
 # AGENT.md
 
+> **Sync note:** AGENT.md and CLAUDE.md are intentionally near-identical. When
+> updating operating rules, update both files. AGENT.md is the source of truth
+> for rule wording; CLAUDE.md may add Claude Code-specific notes.
+
 Purpose: boot an assistant into the smallest useful context bundle for this repo.
 
 Read [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md) first. This repo now has a canonical spec/validation layer for `.acb/` generation, plus a repo-local runtime-state workflow for session restart and checkpointing.
@@ -86,7 +90,7 @@ Dogfooding is not optional: it is the mechanism that keeps the repo's artifacts 
 
 ## Verification
 
-- Base repo: `python scripts/validate_context.py`
+- Base repo: `python3 scripts/validate_context.py`
 - Generated repo: `python .acb/scripts/acb_verify.py`
 - Inspect payload: `python .acb/scripts/acb_inspect.py`
 - Context tools (when available): `python3 scripts/work.py budget-report --bundle <files>` - scored bundle evaluation

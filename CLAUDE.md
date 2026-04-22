@@ -1,5 +1,9 @@
 # CLAUDE.md
 
+> **Sync note:** AGENT.md and CLAUDE.md are intentionally near-identical. When
+> updating operating rules, update both files. AGENT.md is the source of truth
+> for rule wording; CLAUDE.md may add Claude Code-specific notes.
+
 Use this file as a boot entrypoint, not as the full source of truth.
 
 Follow [`docs/context-boot-sequence.md`](docs/context-boot-sequence.md) before broad exploration.
@@ -37,15 +41,15 @@ Load one dominant path, not a broad survey.
   task-specific context. Use it to gauge complexity posture and quota readiness.
 - After `work.py resume`, use its git anchor, recent-change clues, next-step
   signal, and plan-review signal to decide what to read next. Then read
-  `context/TASK.md`, then `context/SESSION.md`, then `context/MEMORY.md` only
-  if durable repo-local truths matter. Read `tmp/*.md` only when there is an
+  `context/TASK.md` and `context/SESSION.md`; read `context/MEMORY.md` only
+  when durable repo-local truths matter; read `tmp/*.md` only when there is an
   active local markdown checkbox checklist or action plan for the current
-  session.
+  session; read `PLAN.md` only when milestone context matters.
 - After reading `context/TASK.md` and `context/SESSION.md`, refresh them when
   they are stale relative to the current prompt boundary, recent commits, or
   active changed-file surface. Do not assume `work.py checkpoint` rewrites
-  stale runtime notes automatically; update them when the active slice or next
-  safe step has changed.
+  stale runtime notes automatically; update the files when the active slice or
+  next safe step has changed.
 - After `work.py resume`, check `memory/INDEX.md` and load any `memory/summaries/` artifact relevant to the current work before starting task-specific context loading.
 - For medium or larger sessions, use `work.py startup-trace write` to self-declare what was loaded. This feeds into `work.py budget-report` for context scoring.
 - Before starting a new prompt session, run `python3 scripts/work.py next` to check the queue, quota state, and whether a resume summary exists.
@@ -61,7 +65,7 @@ Load one dominant path, not a broad survey.
   concise and do not commit them.
 - If you create a handoff for the next session, create `tmp/HANDOFF.md`.
   Treat it as local-only runtime state and do not commit it.
-- Update `PLAN.md` only when a `.prompts` megaprompt or major decision materially changes phases or milestones.
+- Update `PLAN.md` only when a `.prompts` megaprompt or a major decision materially reshapes phases, milestones, or the near-to-mid-term roadmap.
 - If a repo provides `PLAN.example.md`, `context/TASK.example.md`, `context/SESSION.example.md`, or `context/MEMORY.example.md`, `init` and `checkpoint` will scaffold missing runtime files from those examples.
 - Do not claim completion without running the stated proof path.
 - If proof is unavailable, report the work as `blocked` or `incomplete` instead of `done`.
