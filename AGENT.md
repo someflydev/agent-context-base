@@ -88,6 +88,17 @@ When implementing a new arc, prefer dogfooding existing repo artifacts over buil
 
 Dogfooding is not optional: it is the mechanism that keeps the repo's artifacts coherent and its context system trustworthy. A new example that builds parallel seed infrastructure is a signal that the canonical-faker arc's outputs are not usable — which is itself a bug to fix.
 
+## Grafting to Existing Repos
+
+Use `python3 scripts/work.py graft /path/to/repo` to install ACB discipline
+into any locally cloned repo. See docs/graft-command.md for details.
+
+The vendored analysis prompt lives at:
+  templates/prompts/analyze-and-reverse-engineer.txt
+
+Do not modify that file for repo-specific purposes. It is a general-purpose
+template. Repo-specific context belongs in the promptset it generates.
+
 ## Verification
 
 - Base repo: `python3 scripts/validate_context.py`

@@ -1,0 +1,261 @@
+You have been dropped into a repository that has just been grafted with the ACB
+session discipline. Your job in this session is to analyze the repo deeply and
+produce a high-quality promptset that the operator can execute session by session
+to improve, extend, or harden this codebase.
+
+This is not a planning session. You will produce real artifacts.
+
+================================================================================
+BOOT SEQUENCE
+================================================================================
+
+Run this first:
+
+  python3 scripts/work.py resume
+
+Study the output. Then read, in order:
+
+  1. README.md (or the closest equivalent — OVERVIEW.md, docs/README.md, etc.)
+  2. The root directory listing (ls or equivalent — look at the shape of the repo)
+  3. Every manifest file you find: package.json, Cargo.toml, go.mod, pyproject.toml,
+     build.gradle, pom.xml, mix.exs, Gemfile, composer.json, etc.
+  4. The primary entry point(s): main.py, src/main.rs, cmd/, app.py, index.ts, etc.
+  5. Any existing docs/ or documentation directory
+  6. .github/workflows/ or CI configuration if present
+  7. Any existing test directory structure (tests/, spec/, __tests__/, etc.)
+  8. memory/INDEX.md (may be empty — that is fine)
+
+Do not start writing until you have completed this boot sequence.
+
+================================================================================
+PHASE 1 — REPOSITORY ANALYSIS
+================================================================================
+
+After reading, answer these questions internally (you do not need to print
+the answers, but you must have answered them before proceeding):
+
+IDENTITY
+  - What does this software actually do? (Not what framework it uses — what does it do
+    for its users or operators?)
+  - Who uses it? (CLI tool for developers, web app for end users, library for other
+    engineers, data pipeline for analysts, etc.)
+  - What is the primary domain? (e-commerce, developer tooling, healthcare, finance,
+    logistics, media, internal tooling, etc.)
+
+TECHNICAL SHAPE
+  - What language(s) and version(s)?
+  - What framework(s) and major libraries?
+  - What is the architectural style? (monolith, microservices, library, CLI, pipeline, etc.)
+  - What does the data model look like? (key entities/models)
+  - What is the test coverage situation? (none, partial, good — be honest)
+  - What is the build and deployment story? (CI/CD, Docker, bare metal, etc.)
+
+STATE OF THE CODE
+  - What is clearly done and working?
+  - What is clearly incomplete, broken, or skipped (TODOs, FIXMEs, stub functions,
+    empty test files, commented-out code)?
+  - What structural or conceptual debt is visible? (copy-paste, missing abstractions,
+    inconsistent naming, undocumented assumptions)
+  - What is the most important thing that is missing?
+
+If after reading you cannot confidently answer the IDENTITY questions, stop here.
+Write a message to the operator explaining what you found and what specific
+information you need before you can generate a useful promptset. Do not guess.
+
+================================================================================
+PHASE 2 — PROMPTSET DESIGN
+================================================================================
+
+Design a promptset. A promptset is a sequence of numbered prompt files, each
+representing one focused session of assistant work. Design it with these rules:
+
+SESSION SIZING
+  Each prompt should be completable in one session (roughly 30–120 minutes of
+  real work, or 1–5 meaningful commits). If a task is too large, split it.
+  If two tasks are too small individually, merge them.
+
+ORDERING
+  Prompts must be ordered so that each builds on what the previous established.
+  Foundation before features. Hardening after implementation. Documentation after
+  both. Do not put documentation before there is something to document.
+
+DOMAIN FIRST
+  The first prompt after any necessary setup should establish the domain model:
+  the core entities, their relationships, and the data shapes they produce.
+  Even if models already exist in the repo, documenting them in a domain spec
+  makes every subsequent prompt faster and more consistent.
+
+HONEST SCOPE
+  Generate as many prompts as the repo actually needs. A healthy range is 5–15.
+  Do not pad. Do not compress. If the repo needs 3 prompts, generate 3.
+  If it needs 20, generate 20.
+
+NAMING
+  Name each prompt by what it produces, not by what it touches.
+  Good: "Add pagination and filtering to the jobs API"
+  Bad:  "Work on routes.py"
+
+================================================================================
+PHASE 3 — ARTIFACT GENERATION
+================================================================================
+
+Write these artifacts. Do not skip any.
+
+--------------------------------------------------------------------------------
+A. PLAN.md (at the repo root, only when roadmap-level tracking is warranted)
+--------------------------------------------------------------------------------
+
+If PLAN.md already exists, read it first and decide whether to extend or replace.
+If it is a placeholder, replace it. If it reflects real work, extend it.
+If roadmap-level tracking is not yet warranted, skip PLAN.md and record the active
+slice in context/TASK.md plus any local session checklist in `tmp/*.md` instead.
+
+When warranted, write a PLAN.md with:
+
+  ## Project Summary
+  2–4 sentences: what the project is, who it serves, and what phase of development
+  it is in (early, active, maintenance, etc.).
+
+  ## Prompt Queue
+  A table or numbered list of all prompts you will create, with a one-line
+  description of each.
+
+  ## Current State
+  A brief honest assessment: what works, what is missing, what is technical debt.
+
+  ## Near-Term Goals
+  3–6 bullet points for what the promptset will accomplish.
+
+Keep PLAN.md under 80 lines.
+
+--------------------------------------------------------------------------------
+B. context/TASK.md
+--------------------------------------------------------------------------------
+
+Write the active task as: "Execute analysis promptset starting with PROMPT_01."
+
+List the prompts as a checklist under ## Subtasks.
+
+--------------------------------------------------------------------------------
+C. context/SESSION.md
+--------------------------------------------------------------------------------
+
+Write a session summary:
+  - What you found in Phase 1 (key facts only, terse)
+  - What promptset you generated (titles only)
+  - What the operator should do next (run PROMPT_01)
+
+Keep it under 30 lines.
+
+--------------------------------------------------------------------------------
+D. .prompts/PROMPT_01.txt through .prompts/PROMPT_NN.txt
+--------------------------------------------------------------------------------
+
+Write all prompts you designed in Phase 2.
+
+Each prompt file must follow this structure exactly:
+
+  [one-line description of what this prompt produces]
+
+  ================================================================================
+  CONTEXT
+  ================================================================================
+
+  [2–5 sentences: what the previous prompt(s) established, what this one builds on]
+
+  ================================================================================
+  BOOT SEQUENCE
+  ================================================================================
+
+  Run this first:
+
+    python3 scripts/work.py resume
+
+  Then read:
+    [list only the files actually relevant to this prompt's task]
+
+  ================================================================================
+  TASK
+  ================================================================================
+
+  [The actual work. Be concrete. Name files. Specify formats. Include examples
+   where helpful. Do not leave ambiguity about what "done" looks like.]
+
+  ================================================================================
+  VERIFICATION
+  ================================================================================
+
+  [How the assistant proves the work is complete. A command to run, a file to
+   inspect, a behavior to demonstrate. If no automated verification exists yet,
+   say so and specify what manual check suffices.]
+
+  ================================================================================
+  COMMIT
+  ================================================================================
+
+  Run: python3 scripts/work.py checkpoint
+
+  Stage and commit with deliberate grouping. Use `git add <paths>` when file boundaries are clean; use `git add -p` only when you need to separate mixed hunks in the same file:
+
+    [PROMPT_NN] <one-line description matching the prompt title>
+
+    - <file or artifact 1>
+    - <file or artifact 2>
+    ...
+
+  ================================================================================
+
+Do NOT include filler, motivational language, or meta-commentary in the prompts.
+Every sentence should be either an instruction or a fact the assistant needs.
+
+--------------------------------------------------------------------------------
+E. memory/summaries/PROMPT_00_analysis.md
+--------------------------------------------------------------------------------
+
+Write a compact summary of what you found and what you generated. This is the
+artifact future sessions will read to orient themselves.
+
+Format:
+
+  # Repo Analysis Summary
+
+  ## Repo Identity
+  [3–5 sentences]
+
+  ## Technical Stack
+  [bullet list]
+
+  ## State at Analysis Time
+  [bullet list: done / incomplete / debt]
+
+  ## Promptset Generated
+  [numbered list of prompt titles]
+
+  ## Key Facts for Future Sessions
+  [any domain or architectural decisions that will affect future work]
+
+Keep it under 60 lines.
+
+--------------------------------------------------------------------------------
+F. memory/INDEX.md — update
+--------------------------------------------------------------------------------
+
+Add an entry:
+  - [Repo Analysis](summaries/PROMPT_00_analysis.md) — initial analysis: stack, domain, promptset
+
+================================================================================
+COMMIT
+================================================================================
+
+Run: python3 scripts/work.py checkpoint
+
+Stage and commit with deliberate grouping. Use `git add <paths>` when file boundaries are clean; use `git add -p` only when you need to separate mixed hunks in the same file:
+
+  [ANALYZE] Initial ACB analysis — promptset and domain summary
+
+  - PLAN.md
+  - context/TASK.md
+  - context/SESSION.md
+  - .prompts/PROMPT_01.txt through .prompts/PROMPT_NN.txt
+  - memory/summaries/PROMPT_00_analysis.md
+  - memory/INDEX.md

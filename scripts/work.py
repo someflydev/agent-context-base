@@ -91,6 +91,116 @@ class StartupTraceInfo:
     mtime: float
 
 
+@dataclass(frozen=True)
+class GraftItem:
+    dest: Path          # relative to target repo root
+    content: str | None # None = directory marker
+    reason: str
+
+
+MEMORY_INDEX_STUB = "# Memory Index\n\n<!-- Add entries as: - [Title](file.md) — one-line hook -->\n"
+
+CONTEXT_TASK_STUB = """\
+# TASK.md
+
+## Active Task
+- Describe the current task here.
+
+## Subtasks
+- [ ] Subtask one
+- [ ] Subtask two
+
+## Blockers
+- None.
+
+## Last Updated
+- YYYY-MM-DD
+"""
+
+CONTEXT_SESSION_STUB = """\
+# SESSION.md
+
+## Session Goal
+- State the goal for this session.
+
+## Next Safe Step
+- Describe the next concrete action a fresh assistant can take.
+
+## Last Updated
+- YYYY-MM-DD
+"""
+
+CONTEXT_MEMORY_STUB = """\
+# MEMORY.md
+# (gitignored — do not commit)
+
+## Durable Repo Truths
+<!-- Add stable facts, recurring guardrails, and known pitfalls here. -->
+
+## Last Updated
+- YYYY-MM-DD
+"""
+
+GRAFT_CLAUDE_MD = """\
+# CLAUDE.md
+
+This repo uses the ACB session discipline.
+
+## Session Start
+
+Run `python3 scripts/work.py resume` at the start of every session. Study its
+output before loading any other files.
+
+Check `memory/INDEX.md` when resuming interrupted work.
+
+Read `context/TASK.md` and `context/SESSION.md` before starting work.
+
+## Checkpointing
+
+Use `python3 scripts/work.py checkpoint` after meaningful changes and before
+ending a session.
+
+## Commit Conventions
+
+- Use `[PROMPT_N]` prefixes for prompt-driven sessions.
+- Use `[FIX]`, `[REFACTOR]`, `[DOCS]`, etc. for other work.
+- Do not add Co-Authored-By trailers.
+
+## Runtime Files
+
+Keep `context/TASK.md` and `context/SESSION.md` action-oriented and concise.
+Use `tmp/*.md` for session-scoped checklists. Do not commit `tmp/*.md`.
+"""
+
+GRAFT_AGENT_MD = """\
+# AGENT.md
+
+## Session Start
+
+Run `python3 scripts/work.py resume` first. Study its output before reading
+anything else.
+
+Read `context/TASK.md` and `context/SESSION.md` before starting work.
+
+Read `memory/INDEX.md` when resuming interrupted work.
+
+## During the Session
+
+Run `python3 scripts/work.py checkpoint` after meaningful changes and before
+ending a session.
+
+## Commit Conventions
+
+- One prefix per commit.
+- Prefer `git add <paths>` and use `git add -p` only when file-level staging
+  is insufficient.
+
+## Completion Standards
+
+- Do not claim completion without running the stated proof path.
+- If proof is unavailable, report blocked or incomplete instead of done.
+"""
+
 STARTUP_FEATURE_DEFAULTS = {
     "budget_report_enabled": False,
     "startup_trace_enabled": False,
@@ -410,6 +520,30 @@ def build_parser() -> argparse.ArgumentParser:
     log_quota_parser.add_argument("--session-status", help="Session status, used primarily for codex.")
     log_quota_parser.add_argument("--notes", help="Operator notes about quota state.")
     log_quota_parser.add_argument("--slug", help="Project slug. Defaults to the repo root directory name.")
+
+    graft_parser = subparsers.add_parser(
+        "graft",
+        help="Install ACB discipline into an existing local repo.",
+    )
+    graft_parser.add_argument(
+        "target",
+        help="Path to the repo to graft. Must be a directory.",
+    )
+    graft_parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Print what would be written without touching any files.",
+    )
+    graft_parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Overwrite files that already exist in the target repo.",
+    )
+    graft_parser.add_argument(
+        "--no-prompts",
+        action="store_true",
+        help="Skip creating .prompts/ and the analyze-and-reverse-engineer template.",
+    )
 
     return parser
 
@@ -2556,6 +2690,147 @@ def handle_checkpoint(repo_root: Path, script_cmd: str, force: bool, strict: boo
     return 1 if strict and inspection.warnings else 0
 
 
+def build_graft_manifest(repo_root: Path, target: Path, no_prompts: bool) -> list[GraftItem]:
+    work_py_path = repo_root / "scripts" / "work.py"
+    work_py_content = work_py_path.read_text(encoding="utf-8")
+
+    items: list[GraftItem] = [
+        GraftItem(dest=Path("scripts/work.py"), content=work_py_content, reason="ACB session management tool"),
+        GraftItem(dest=Path("memory/"), content=None, reason="memory root"),
+        GraftItem(dest=Path("memory/INDEX.md"), content=MEMORY_INDEX_STUB, reason="memory index — promote durable findings here"),
+        GraftItem(dest=Path("memory/concepts/"), content=None, reason="memory concepts tier"),
+        GraftItem(dest=Path("memory/summaries/"), content=None, reason="memory summaries tier"),
+        GraftItem(dest=Path("memory/sessions/"), content=None, reason="memory sessions tier"),
+        GraftItem(dest=Path("context/"), content=None, reason="runtime context root"),
+        GraftItem(dest=Path("context/TASK.md"), content=CONTEXT_TASK_STUB, reason="active task runtime file"),
+        GraftItem(dest=Path("context/SESSION.md"), content=CONTEXT_SESSION_STUB, reason="session runtime file"),
+        GraftItem(dest=Path("context/MEMORY.md"), content=CONTEXT_MEMORY_STUB, reason="durable repo-local memory (gitignored by convention)"),
+        GraftItem(dest=Path("CLAUDE.md"), content=GRAFT_CLAUDE_MD, reason="assistant boot entrypoint"),
+        GraftItem(dest=Path("AGENT.md"), content=GRAFT_AGENT_MD, reason="assistant operating rules"),
+    ]
+
+    if not no_prompts:
+        template_path = repo_root / "templates" / "prompts" / "analyze-and-reverse-engineer.txt"
+        if not template_path.exists():
+            raise RuntimeError(f"Graft template not found: {template_path}. Re-clone agent-context-base.")
+        template_content = template_path.read_text(encoding="utf-8")
+        items.extend([
+            GraftItem(dest=Path(".prompts/"), content=None, reason=".prompts/ directory for prompt-first workflow"),
+            GraftItem(
+                dest=Path(".prompts/analyze-and-reverse-engineer.txt"),
+                content=template_content,
+                reason="starter analysis prompt — run this first",
+            ),
+        ])
+
+    return items
+
+
+def handle_graft(
+    repo_root: Path,
+    *,
+    target: Path,
+    dry_run: bool,
+    force: bool,
+    no_prompts: bool,
+) -> int:
+    print("ACB Graft")
+    print("=========")
+
+    target = target.resolve()
+    if not target.exists() or not target.is_dir():
+        print(f"Error: target does not exist or is not a directory: {target}")
+        return 1
+    if not (target / ".git").exists():
+        print("Warning: target does not appear to be a git repository. Continuing anyway.")
+    if target == repo_root.resolve():
+        print("Error: target is the agent-context-base repo itself.")
+        return 1
+
+    manifest = build_graft_manifest(repo_root, target, no_prompts)
+
+    will_write_new: list[GraftItem] = []
+    will_overwrite: list[GraftItem] = []
+    will_skip: list[GraftItem] = []
+
+    for item in manifest:
+        dest_path = target / item.dest
+        if item.content is None:
+            if not dest_path.exists():
+                will_write_new.append(item)
+            else:
+                will_skip.append(item)
+        elif dest_path.exists():
+            if force:
+                will_overwrite.append(item)
+            else:
+                will_skip.append(item)
+        else:
+            will_write_new.append(item)
+
+    if will_write_new:
+        print("")
+        print("Will write (new):")
+        for item in will_write_new:
+            print(f"  {item.dest}  — {item.reason}")
+    if will_overwrite:
+        print("")
+        print("Will write (overwrite):")
+        for item in will_overwrite:
+            print(f"  {item.dest}  — {item.reason}")
+    if will_skip:
+        print("")
+        print("Will skip (already exists):")
+        for item in will_skip:
+            print(f"  {item.dest}  — {item.reason}")
+
+    if dry_run:
+        print("")
+        print("Dry run — no files were written.")
+        return 0
+
+    print("")
+    print("Writing files:")
+    for item in manifest:
+        dest_path = target / item.dest
+        if item.content is None:
+            dest_path.mkdir(parents=True, exist_ok=True)
+            gitkeep = dest_path / ".gitkeep"
+            if not any(dest_path.iterdir()) and not gitkeep.exists():
+                gitkeep.write_text("", encoding="utf-8")
+                print(f"  Created directory: {item.dest} (with .gitkeep)")
+            else:
+                print(f"  Ensured directory: {item.dest}")
+        elif dest_path.exists() and not force:
+            continue
+        else:
+            existed = dest_path.exists()
+            dest_path.parent.mkdir(parents=True, exist_ok=True)
+            dest_path.write_text(item.content, encoding="utf-8")
+            verb = "Overwrote" if existed else "Wrote"
+            print(f"  {verb}: {item.dest}")
+
+    print("")
+    print(f"Graft complete. Add these lines to {target}/.gitignore if not already present:")
+    print("")
+    print("    work/")
+    print("    PLAN.md")
+    print("    context/MEMORY.md")
+
+    print("")
+    print("Next steps:")
+    print(f"  1. Review the grafted files in {target}")
+    print("  2. Add the .gitignore entries above")
+    print("  3. Commit the grafted files with deliberate staging and a multi-line message")
+    print(f"  4. Open a new session in {target} and run:")
+    print("       python3 scripts/work.py resume")
+    if not no_prompts:
+        print("  5. Then run the analysis prompt:")
+        print("       cat .prompts/analyze-and-reverse-engineer.txt")
+
+    return 0
+
+
 def main(argv: list[str]) -> int:
     parser = build_parser()
     args = parser.parse_args(argv[1:])
@@ -2639,6 +2914,14 @@ def main(argv: list[str]) -> int:
             reset_at_7d=args.reset_at_7d,
             session_status=args.session_status,
             notes=args.notes,
+        )
+    if args.command == "graft":
+        return handle_graft(
+            repo_root,
+            target=Path(args.target),
+            dry_run=args.dry_run,
+            force=args.force,
+            no_prompts=args.no_prompts,
         )
     parser.error(f"Unsupported command: {args.command}")
     return 2
