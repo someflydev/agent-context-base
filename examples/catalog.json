@@ -23347,6 +23347,1260 @@
       ],
       "rank": 87,
       "stability": "canonical"
+    },
+    {
+      "path": "examples/canonical-auth/ruby/.gitignore",
+      "category": "auth",
+      "summary": "Canonical auth example component: .gitignore",
+      "stacks": [
+        "ruby-hanami-ruby-jwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "structure-verified"
+    },
+    {
+      "path": "examples/canonical-auth/ruby/Gemfile",
+      "category": "auth",
+      "summary": "Canonical auth example component: Gemfile",
+      "stacks": [
+        "ruby-hanami-ruby-jwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "structure-verified"
+    },
+    {
+      "path": "examples/canonical-auth/ruby/README.md",
+      "category": "auth",
+      "summary": "Canonical auth example component: README.md",
+      "stacks": [
+        "ruby-hanami-ruby-jwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "structure-verified"
+    },
+    {
+      "path": "examples/canonical-auth/ruby/config.ru",
+      "category": "auth",
+      "summary": "Canonical auth example component: config.ru",
+      "stacks": [
+        "ruby-hanami-ruby-jwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "structure-verified"
+    },
+    {
+      "path": "examples/canonical-auth/ruby/lib/tenantcore_auth/app.rb",
+      "category": "auth",
+      "summary": "Canonical auth example component: app.rb",
+      "stacks": [
+        "ruby-hanami-ruby-jwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "structure-verified"
+    },
+    {
+      "path": "examples/canonical-auth/ruby/lib/tenantcore_auth/auth/auth_context.rb",
+      "category": "auth",
+      "summary": "Canonical auth example component: auth_context.rb",
+      "stacks": [
+        "ruby-hanami-ruby-jwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "structure-verified"
+    },
+    {
+      "path": "examples/canonical-auth/ruby/lib/tenantcore_auth/auth/jwt_middleware.rb",
+      "category": "auth",
+      "summary": "Canonical auth example component: jwt_middleware.rb",
+      "stacks": [
+        "ruby-hanami-ruby-jwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "structure-verified"
+    },
+    {
+      "path": "examples/canonical-auth/ruby/lib/tenantcore_auth/auth/rbac_helper.rb",
+      "category": "auth",
+      "summary": "Canonical auth example component: rbac_helper.rb",
+      "stacks": [
+        "ruby-hanami-ruby-jwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "structure-verified"
+    },
+    {
+      "path": "examples/canonical-auth/ruby/lib/tenantcore_auth/auth/token_service.rb",
+      "category": "auth",
+      "summary": "Canonical auth example component: token_service.rb",
+      "stacks": [
+        "ruby-hanami-ruby-jwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "structure-verified"
+    },
+    {
+      "path": "examples/canonical-auth/ruby/lib/tenantcore_auth/domain/in_memory_store.rb",
+      "category": "auth",
+      "summary": "Canonical auth example component: in_memory_store.rb",
+      "stacks": [
+        "ruby-hanami-ruby-jwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "structure-verified"
+    },
+    {
+      "path": "examples/canonical-auth/ruby/lib/tenantcore_auth/domain/models.rb",
+      "category": "auth",
+      "summary": "Canonical auth example component: models.rb",
+      "stacks": [
+        "ruby-hanami-ruby-jwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "structure-verified"
+    },
+    {
+      "path": "examples/canonical-auth/ruby/lib/tenantcore_auth/registry/route_registry.rb",
+      "category": "auth",
+      "summary": "Canonical auth example component: route_registry.rb",
+      "stacks": [
+        "ruby-hanami-ruby-jwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "structure-verified"
+    },
+    {
+      "path": "examples/canonical-auth/ruby/lib/tenantcore_auth/routes/admin.rb",
+      "category": "auth",
+      "summary": "Canonical auth example component: admin.rb",
+      "stacks": [
+        "ruby-hanami-ruby-jwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "structure-verified"
+    },
+    {
+      "path": "examples/canonical-auth/ruby/lib/tenantcore_auth/routes/auth.rb",
+      "category": "auth",
+      "summary": "Canonical auth example component: auth.rb",
+      "stacks": [
+        "ruby-hanami-ruby-jwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "structure-verified"
+    },
+    {
+      "path": "examples/canonical-auth/ruby/lib/tenantcore_auth/routes/groups.rb",
+      "category": "auth",
+      "summary": "Canonical auth example component: groups.rb",
+      "stacks": [
+        "ruby-hanami-ruby-jwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "structure-verified"
+    },
+    {
+      "path": "examples/canonical-auth/ruby/lib/tenantcore_auth/routes/health.rb",
+      "category": "auth",
+      "summary": "Canonical auth example component: health.rb",
+      "stacks": [
+        "ruby-hanami-ruby-jwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "structure-verified"
+    },
+    {
+      "path": "examples/canonical-auth/ruby/lib/tenantcore_auth/routes/me.rb",
+      "category": "auth",
+      "summary": "Canonical auth example component: me.rb",
+      "stacks": [
+        "ruby-hanami-ruby-jwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "structure-verified"
+    },
+    {
+      "path": "examples/canonical-auth/ruby/lib/tenantcore_auth/routes/permissions.rb",
+      "category": "auth",
+      "summary": "Canonical auth example component: permissions.rb",
+      "stacks": [
+        "ruby-hanami-ruby-jwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "structure-verified"
+    },
+    {
+      "path": "examples/canonical-auth/ruby/lib/tenantcore_auth/routes/users.rb",
+      "category": "auth",
+      "summary": "Canonical auth example component: users.rb",
+      "stacks": [
+        "ruby-hanami-ruby-jwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "structure-verified"
+    },
+    {
+      "path": "examples/canonical-auth/ruby/spec/auth/jwt_middleware_spec.rb",
+      "category": "auth",
+      "summary": "Canonical auth example component: jwt_middleware_spec.rb",
+      "stacks": [
+        "ruby-hanami-ruby-jwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "structure-verified"
+    },
+    {
+      "path": "examples/canonical-auth/ruby/spec/auth/me_spec.rb",
+      "category": "auth",
+      "summary": "Canonical auth example component: me_spec.rb",
+      "stacks": [
+        "ruby-hanami-ruby-jwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "structure-verified"
+    },
+    {
+      "path": "examples/canonical-auth/ruby/spec/auth/token_service_spec.rb",
+      "category": "auth",
+      "summary": "Canonical auth example component: token_service_spec.rb",
+      "stacks": [
+        "ruby-hanami-ruby-jwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "structure-verified"
+    },
+    {
+      "path": "examples/canonical-auth/ruby/spec/integration/auth_integration_spec.rb",
+      "category": "auth",
+      "summary": "Canonical auth example component: auth_integration_spec.rb",
+      "stacks": [
+        "ruby-hanami-ruby-jwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "structure-verified"
+    },
+    {
+      "path": "examples/canonical-auth/ruby/spec/spec_helper.rb",
+      "category": "auth",
+      "summary": "Canonical auth example component: spec_helper.rb",
+      "stacks": [
+        "ruby-hanami-ruby-jwt-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "structure-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/.gitignore",
+      "category": "auth",
+      "summary": "Canonical auth example component: .gitignore",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/README.md",
+      "category": "auth",
+      "summary": "Canonical auth example component: README.md",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/config/config.exs",
+      "category": "auth",
+      "summary": "Canonical auth example component: config.exs",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/config/dev.exs",
+      "category": "auth",
+      "summary": "Canonical auth example component: dev.exs",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/config/prod.exs",
+      "category": "auth",
+      "summary": "Canonical auth example component: prod.exs",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/config/runtime.exs",
+      "category": "auth",
+      "summary": "Canonical auth example component: runtime.exs",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/config/test.exs",
+      "category": "auth",
+      "summary": "Canonical auth example component: test.exs",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/lib/tenantcore_auth/application.ex",
+      "category": "auth",
+      "summary": "Canonical auth example component: application.ex",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/lib/tenantcore_auth/auth/auth_context.ex",
+      "category": "auth",
+      "summary": "Canonical auth example component: auth_context.ex",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/lib/tenantcore_auth/auth/jwt_plug.ex",
+      "category": "auth",
+      "summary": "Canonical auth example component: jwt_plug.ex",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/lib/tenantcore_auth/auth/rbac_plug.ex",
+      "category": "auth",
+      "summary": "Canonical auth example component: rbac_plug.ex",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/lib/tenantcore_auth/auth/token_service.ex",
+      "category": "auth",
+      "summary": "Canonical auth example component: token_service.ex",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/lib/tenantcore_auth/controllers/admin_controller.ex",
+      "category": "auth",
+      "summary": "Canonical auth example component: admin_controller.ex",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/lib/tenantcore_auth/controllers/auth_controller.ex",
+      "category": "auth",
+      "summary": "Canonical auth example component: auth_controller.ex",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/lib/tenantcore_auth/controllers/group_controller.ex",
+      "category": "auth",
+      "summary": "Canonical auth example component: group_controller.ex",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/lib/tenantcore_auth/controllers/health_controller.ex",
+      "category": "auth",
+      "summary": "Canonical auth example component: health_controller.ex",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/lib/tenantcore_auth/controllers/me_controller.ex",
+      "category": "auth",
+      "summary": "Canonical auth example component: me_controller.ex",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/lib/tenantcore_auth/controllers/permission_controller.ex",
+      "category": "auth",
+      "summary": "Canonical auth example component: permission_controller.ex",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/lib/tenantcore_auth/controllers/user_controller.ex",
+      "category": "auth",
+      "summary": "Canonical auth example component: user_controller.ex",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/lib/tenantcore_auth/domain/in_memory_store.ex",
+      "category": "auth",
+      "summary": "Canonical auth example component: in_memory_store.ex",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/lib/tenantcore_auth/domain/models.ex",
+      "category": "auth",
+      "summary": "Canonical auth example component: models.ex",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/lib/tenantcore_auth/endpoint.ex",
+      "category": "auth",
+      "summary": "Canonical auth example component: endpoint.ex",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/lib/tenantcore_auth/error_json.ex",
+      "category": "auth",
+      "summary": "Canonical auth example component: error_json.ex",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/lib/tenantcore_auth/registry/route_registry.ex",
+      "category": "auth",
+      "summary": "Canonical auth example component: route_registry.ex",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/lib/tenantcore_auth/router.ex",
+      "category": "auth",
+      "summary": "Canonical auth example component: router.ex",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/lib/tenantcore_auth.ex",
+      "category": "auth",
+      "summary": "Canonical auth example component: tenantcore_auth.ex",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/mix.exs",
+      "category": "auth",
+      "summary": "Canonical auth example component: mix.exs",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/mix.lock",
+      "category": "auth",
+      "summary": "Canonical auth example component: mix.lock",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/test/tenantcore_auth/auth_integration_test.exs",
+      "category": "auth",
+      "summary": "Canonical auth example component: auth_integration_test.exs",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/test/tenantcore_auth/me_controller_test.exs",
+      "category": "auth",
+      "summary": "Canonical auth example component: me_controller_test.exs",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/test/tenantcore_auth/support/conn_case.ex",
+      "category": "auth",
+      "summary": "Canonical auth example component: conn_case.ex",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/test/tenantcore_auth/token_service_test.exs",
+      "category": "auth",
+      "summary": "Canonical auth example component: token_service_test.exs",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
+    },
+    {
+      "path": "examples/canonical-auth/elixir/test/test_helper.exs",
+      "category": "auth",
+      "summary": "Canonical auth example component: test_helper.exs",
+      "stacks": [
+        "elixir-phoenix-joken-rbac"
+      ],
+      "archetypes": [
+        "tenant-aware-backend-api"
+      ],
+      "workflows": [
+        "implement-canonical-auth"
+      ],
+      "patterns": [
+        "jwt",
+        "rbac",
+        "multi-tenant",
+        "route-registry"
+      ],
+      "rank": 80,
+      "stability": "smoke-verified"
     }
   ]
 }

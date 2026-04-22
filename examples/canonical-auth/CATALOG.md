@@ -21,8 +21,8 @@ domain contract.
 | Rust | Axum | jsonwebtoken | `examples/canonical-auth/rust/` | [x] |
 | Java | Spring Boot | JJWT | `examples/canonical-auth/java/` | [x] |
 | Kotlin | http4k | JJWT | `examples/canonical-auth/kotlin/` | [x] |
-| Ruby | Hanami | ruby-jwt | `examples/canonical-auth/ruby/` | [ ] |
-| Elixir | Phoenix | Joken | `examples/canonical-auth/elixir/` | [ ] |
+| Ruby | Hanami | ruby-jwt | `examples/canonical-auth/ruby/` | [~] |
+| Elixir | Phoenix | Joken | `examples/canonical-auth/elixir/` | [x] |
 
 ## How to Run Any Example
 

@@ -15304,3 +15304,744 @@ examples:
       - file exists
     docker_supported: false
     scenario_harness: ""
+  - name: -gitignore
+    path: examples/canonical-auth/ruby/.gitignore
+    language: text
+    stack_tags:
+      - ruby-hanami-ruby-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: Gemfile
+    path: examples/canonical-auth/ruby/Gemfile
+    language: text
+    stack_tags:
+      - ruby-hanami-ruby-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: README-md
+    path: examples/canonical-auth/ruby/README.md
+    language: markdown
+    stack_tags:
+      - ruby-hanami-ruby-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: config-ru
+    path: examples/canonical-auth/ruby/config.ru
+    language: ruby
+    stack_tags:
+      - ruby-hanami-ruby-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-app-rb
+    path: examples/canonical-auth/ruby/lib/tenantcore_auth/app.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami-ruby-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-auth-auth_context-rb
+    path: examples/canonical-auth/ruby/lib/tenantcore_auth/auth/auth_context.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami-ruby-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-auth-jwt_middleware-rb
+    path: examples/canonical-auth/ruby/lib/tenantcore_auth/auth/jwt_middleware.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami-ruby-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-auth-rbac_helper-rb
+    path: examples/canonical-auth/ruby/lib/tenantcore_auth/auth/rbac_helper.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami-ruby-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-auth-token_service-rb
+    path: examples/canonical-auth/ruby/lib/tenantcore_auth/auth/token_service.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami-ruby-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-domain-in_memory_store-rb
+    path: examples/canonical-auth/ruby/lib/tenantcore_auth/domain/in_memory_store.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami-ruby-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-domain-models-rb
+    path: examples/canonical-auth/ruby/lib/tenantcore_auth/domain/models.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami-ruby-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-registry-route_registry-rb
+    path: examples/canonical-auth/ruby/lib/tenantcore_auth/registry/route_registry.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami-ruby-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-routes-admin-rb
+    path: examples/canonical-auth/ruby/lib/tenantcore_auth/routes/admin.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami-ruby-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-routes-auth-rb
+    path: examples/canonical-auth/ruby/lib/tenantcore_auth/routes/auth.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami-ruby-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-routes-groups-rb
+    path: examples/canonical-auth/ruby/lib/tenantcore_auth/routes/groups.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami-ruby-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-routes-health-rb
+    path: examples/canonical-auth/ruby/lib/tenantcore_auth/routes/health.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami-ruby-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-routes-me-rb
+    path: examples/canonical-auth/ruby/lib/tenantcore_auth/routes/me.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami-ruby-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-routes-permissions-rb
+    path: examples/canonical-auth/ruby/lib/tenantcore_auth/routes/permissions.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami-ruby-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-routes-users-rb
+    path: examples/canonical-auth/ruby/lib/tenantcore_auth/routes/users.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami-ruby-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: spec-auth-jwt_middleware_spec-rb
+    path: examples/canonical-auth/ruby/spec/auth/jwt_middleware_spec.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami-ruby-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: spec-auth-me_spec-rb
+    path: examples/canonical-auth/ruby/spec/auth/me_spec.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami-ruby-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: spec-auth-token_service_spec-rb
+    path: examples/canonical-auth/ruby/spec/auth/token_service_spec.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami-ruby-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: spec-integration-auth_integration_spec-rb
+    path: examples/canonical-auth/ruby/spec/integration/auth_integration_spec.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami-ruby-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: spec-spec_helper-rb
+    path: examples/canonical-auth/ruby/spec/spec_helper.rb
+    language: ruby
+    stack_tags:
+      - ruby-hanami-ruby-jwt-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: structure-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: -gitignore
+    path: examples/canonical-auth/elixir/.gitignore
+    language: text
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: README-md
+    path: examples/canonical-auth/elixir/README.md
+    language: markdown
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: config-config-exs
+    path: examples/canonical-auth/elixir/config/config.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: config-dev-exs
+    path: examples/canonical-auth/elixir/config/dev.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: config-prod-exs
+    path: examples/canonical-auth/elixir/config/prod.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: config-runtime-exs
+    path: examples/canonical-auth/elixir/config/runtime.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: config-test-exs
+    path: examples/canonical-auth/elixir/config/test.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-application-ex
+    path: examples/canonical-auth/elixir/lib/tenantcore_auth/application.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-auth-auth_context-ex
+    path: examples/canonical-auth/elixir/lib/tenantcore_auth/auth/auth_context.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-auth-jwt_plug-ex
+    path: examples/canonical-auth/elixir/lib/tenantcore_auth/auth/jwt_plug.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-auth-rbac_plug-ex
+    path: examples/canonical-auth/elixir/lib/tenantcore_auth/auth/rbac_plug.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-auth-token_service-ex
+    path: examples/canonical-auth/elixir/lib/tenantcore_auth/auth/token_service.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-controllers-admin_controller-ex
+    path: examples/canonical-auth/elixir/lib/tenantcore_auth/controllers/admin_controller.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-controllers-auth_controller-ex
+    path: examples/canonical-auth/elixir/lib/tenantcore_auth/controllers/auth_controller.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-controllers-group_controller-ex
+    path: examples/canonical-auth/elixir/lib/tenantcore_auth/controllers/group_controller.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-controllers-health_controller-ex
+    path: examples/canonical-auth/elixir/lib/tenantcore_auth/controllers/health_controller.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-controllers-me_controller-ex
+    path: examples/canonical-auth/elixir/lib/tenantcore_auth/controllers/me_controller.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-controllers-permission_controller-ex
+    path: examples/canonical-auth/elixir/lib/tenantcore_auth/controllers/permission_controller.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-controllers-user_controller-ex
+    path: examples/canonical-auth/elixir/lib/tenantcore_auth/controllers/user_controller.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-domain-in_memory_store-ex
+    path: examples/canonical-auth/elixir/lib/tenantcore_auth/domain/in_memory_store.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-domain-models-ex
+    path: examples/canonical-auth/elixir/lib/tenantcore_auth/domain/models.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-endpoint-ex
+    path: examples/canonical-auth/elixir/lib/tenantcore_auth/endpoint.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-error_json-ex
+    path: examples/canonical-auth/elixir/lib/tenantcore_auth/error_json.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-registry-route_registry-ex
+    path: examples/canonical-auth/elixir/lib/tenantcore_auth/registry/route_registry.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-router-ex
+    path: examples/canonical-auth/elixir/lib/tenantcore_auth/router.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: lib-tenantcore_auth-ex
+    path: examples/canonical-auth/elixir/lib/tenantcore_auth.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: mix-exs
+    path: examples/canonical-auth/elixir/mix.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: mix-lock
+    path: examples/canonical-auth/elixir/mix.lock
+    language: text
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: test-tenantcore_auth-auth_integration_test-exs
+    path: examples/canonical-auth/elixir/test/tenantcore_auth/auth_integration_test.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: test-tenantcore_auth-me_controller_test-exs
+    path: examples/canonical-auth/elixir/test/tenantcore_auth/me_controller_test.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: test-tenantcore_auth-support-conn_case-ex
+    path: examples/canonical-auth/elixir/test/tenantcore_auth/support/conn_case.ex
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: test-tenantcore_auth-token_service_test-exs
+    path: examples/canonical-auth/elixir/test/tenantcore_auth/token_service_test.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
+  - name: test-test_helper-exs
+    path: examples/canonical-auth/elixir/test/test_helper.exs
+    language: elixir
+    stack_tags:
+      - elixir-phoenix-joken-rbac
+    archetype_tags:
+      - tenant-aware-backend-api
+    verification_level: smoke-verified
+    confidence: high
+    verification_targets:
+      - file exists
+    docker_supported: false
+    scenario_harness: ""
