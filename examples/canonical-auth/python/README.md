@@ -9,14 +9,14 @@ This is the Python canonical implementation of the TenantCore IAM domain. It dem
 - Python 3.11+
 - `uv` (recommended) or `pip`
 
-## How to Run
+## How to run
 
 If you use `uv`:
 ```bash
 uv run uvicorn src.main:app --reload
 ```
 
-## How to Test
+## How to test
 
 Using `uv`:
 ```bash
